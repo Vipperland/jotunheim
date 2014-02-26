@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		.title {
+			color: #0099FF;
+			font-size: 20px;
+			font-family: arial, helvetica, serif;
+			padding-top : 10px;
+			padding-bottom : 10px;
+			padding-left : 10px;
+		}
+		.comment {
+			font-family: arial, helvetica, serif;
+			color: #999999;
+			font-size: 11px;
+			padding-left: 3px;
+		}
+		.codedivtitle {
+			background-color: #99CCFF;
+			font-size: 11px;
+			font-family: courier;
+			padding-left: 30px;
+		}
+		.codedivbody {
+			background-color: #EEEEEE;
+			font-size: 16px;
+			font-family: courier;
+			padding-left: 40px;
+		}
+	</style>
+</head>
+<body>
+	<div class="title">
+		How do I create or manipulate properties?
+	</div>
+	<div class="codedivtitle">
+		# SIRIUS CODE
+	</div>
+	<div class="codedivbody">
+		mystringprop = string value</br>
+		mynumberprop = 100</br>
+		mybooleanprop = true
+	</div>
+	
+	<div class="title">
+		How do I create objects?
+	</div>
+	<div class="codedivtitle">
+		# SIRIUS CODE
+	</div>
+	<div class="codedivbody">
+		#Object</br>
+		<span class="comment">//or</br></span>
+		#Object{}</br>
+		<span class="comment">//or</br></span>
+		#Object{</br>
+		}
+	</div>
+	
+	<div class="title">
+		The Basic available types:
+	</div>
+	<div class="codedivtitle">
+		# SIRIUS CODE
+	</div>
+	<div class="codedivbody">
+		#Object</br>
+		#Array</br>
+		#SiriusObject</br>
+		<span class="comment">// # is a push() equivalent, you can define typed variables instead:</br></span>
+		myobject:Object</br>
+		<span class="comment">//or</br></span>
+		myarray:Array{}</br>
+		<span class="comment">//or</br></span>
+		hybrid:SiriusObject{</br>
+		}
+	</div>
+	
+	
+	<div class="title">
+		Advanced Scripting:
+	</div>
+	<div class="codedivtitle">
+		# SIRIUS CODE
+	</div>
+	<div class="codedivbody">
+		myobject:Object {</br>
+			&emsp;myvar = Hello World!</br>
+			&emsp;myarray : Array {</br>
+				&emsp;&emsp;Hello</br>
+				&emsp;&emsp;World</br>
+				&emsp;&emsp;10000</br>
+				&emsp;&emsp;#Object</br>
+				&emsp;&emsp;#Object{</br>
+					&emsp;&emsp;&emsp;otherarray : Array {</br>
+					&emsp;&emsp;&emsp;	10 = Testing direct index (array[10])</br>
+					&emsp;&emsp;&emsp;}</br>
+				&emsp;&emsp;}</br>
+			&emsp;}</br>
+		}</br>
+	</div>
+	
+	<div class="title">
+		How do I call a method with parameters?
+	</div>
+	<div class="codedivtitle">
+		# SIRIUS CODE
+	</div>
+	<div class="codedivbody">
+		~myfunction_noparams()</br>
+		~myfunction_withparams(HelloWorld,param2,param3)
+		<span class="comment">//hint: All funcions params in this case will lost tab and white spaces</br></span>
+		~myfunction_withparams(</br>
+			&emsp;param1string</br>
+			&emsp;0xFFFFFF</br>
+			&emsp;#Array {</br>
+				&emsp;&emsp;0</br>
+				&emsp;&emsp;1</br>
+				&emsp;&emsp;2</br>
+				&emsp;&emsp;#Object {</br>
+					&emsp;&emsp;&emsp;name = Sample</br>
+				&emsp;&emsp;}</br>
+			&emsp;}</br>
+		)
+	</div>
+	
+</body>
+</html>
