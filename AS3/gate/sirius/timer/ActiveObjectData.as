@@ -8,17 +8,18 @@ package gate.sirius.timer {
 		
 		static private const junk:Vector.<ActiveObjectData> = new Vector.<ActiveObjectData>();
 		
-		static public function recycle(object:gate.sirius.timer.IActiveObject, queue:Vector.<gate.sirius.timer.IActiveObject>):ActiveObjectData {
+		static public function recycle(object:IActiveObject, queue:Vector.<IActiveObject>):ActiveObjectData {
 			return (junk.length > 0 ? junk.pop() : new ActiveObjectData).setValues(object, queue);
 		}
 		
-		public var object:gate.sirius.timer.IActiveObject;
-		public var queue:Vector.<gate.sirius.timer.IActiveObject>;
+		public var object:IActiveObject;
+		public var queue:Vector.<IActiveObject>;
 		
 		public function ActiveObjectData() {
 		}
 		
-		public function setValues(object:gate.sirius.timer.IActiveObject, queue:Vector.<gate.sirius.timer.IActiveObject>):ActiveObjectData {
+		public function setValues(object:IActiveObject, queue:Vector.<IActiveObject>):ActiveObjectData {
+			queue[queue.length] = object;
 			this.object = object;
 			this.queue = queue;
 			return this;

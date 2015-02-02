@@ -1,5 +1,4 @@
-package gate.sirius.serializer.signals
-{
+package gate.sirius.serializer.signals {
 	import gate.sirius.serializer.SruDecoder;
 	import gate.sirius.signals.Signal;
 	
@@ -7,51 +6,41 @@ package gate.sirius.serializer.signals
 	 * ...
 	 * @author Rafael moreira
 	 */
-	public class SruDecoderSignal extends Signal
-	{
+	public class SruDecoderSignal extends Signal {
 		
-		static public const COMPLETE:String = "COMPLETE";
+		private var _canceled:Boolean;
 		
-		static public const START:String = "START";
+		public function SruDecoderSignal() {
+			super(_constructor);
+		}
 		
-		static public const PAUSE:String = "PAUSE";
-		
-		static public const ERROR:String = "ERROR";
-		
-		private var _decoder:SruDecoder;
-		
-		public function SruDecoderSignal(name:String, decoder:SruDecoder)
-		{
-			super(name);
-			_decoder = decoder;
+		private function _constructor(canceled:Boolean = false):void {
+			_canceled = canceled;
 		
 		}
 		
-		public function get decoder():SruDecoder
-		{
-			return _decoder;
+		public function get decoder():SruDecoder {
+			return dispatcher.author as SruDecoder;
 		}
 		
-		public function extractOne(type:Class):*
-		{
-			for each (var t:*in _decoder.content)
-			{
-				if (t is type)
-				{
+		public function get canceled():Boolean {
+			return _canceled;
+		}
+		
+		public function extractOne(type:Class):* {
+			for each (var t:*in decoder.content) {
+				if (t is type) {
 					break;
 				}
 			}
 			return t;
 		}
 		
-		public function extractAll(type:Class):Vector.<Object>
-		{
+		public function extractAll(type:Class):Vector.<Object> {
 			var result:Vector.<Object> = new Vector.<Object>();
 			var len:int = 0;
-			for each (var t:*in _decoder.content)
-			{
-				if (t is type)
-				{
+			for each (var t:*in decoder.content) {
+				if (t is type) {
 					result[len] = t;
 					++len;
 				}

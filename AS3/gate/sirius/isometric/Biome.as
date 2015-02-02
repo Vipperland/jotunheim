@@ -1,19 +1,22 @@
 package gate.sirius.isometric {
 	
+	import flash.display.Stage;
 	import flash.utils.Dictionary;
 	import gate.sirius.isometric.data.BiomeEntry;
 	import gate.sirius.isometric.math.BiomeBounds;
-	import gate.sirius.isometric.math.BiomeBox;
-	import gate.sirius.isometric.math.BiomeFlexPoint;
 	import gate.sirius.isometric.math.BiomeMath;
 	import gate.sirius.isometric.math.BiomePoint;
+	import gate.sirius.isometric.matter.BiomeActivations;
 	import gate.sirius.isometric.matter.BiomeMatter;
+	import gate.sirius.isometric.matter.OrganicBiomeMatter;
 	import gate.sirius.isometric.signal.BiomeColliderSignal;
-	import gate.sirius.isometric.signal.BiomeEntrySignal;
-	import gate.sirius.isometric.signal.BiomeFindSignal;
 	import gate.sirius.isometric.signal.BiomeMatterSignal;
-	import gate.sirius.signals.SignalDispatcher;
-	
+	import gate.sirius.isometric.signal.BiomeSignals;
+	import gate.sirius.isometric.tools.BiomeInteraction;
+	import gate.sirius.isometric.view.BiomeCommunity;
+	import gate.sirius.isometric.view.BiomeViewport;
+	import gate.sirius.timer.ActiveController;
+	import gate.sirius.timer.IActiveController;
 	
 	
 	/**
@@ -23,10 +26,16 @@ package gate.sirius.isometric {
 	public class Biome {
 		
 		/** @private */
-		private var _gridBiome:Dictionary;
+		private var _ticker:IActiveController;
 		
 		/** @private */
-		private var _neighbors:Dictionary;
+		private var _viewport:BiomeViewport;
+		
+		/** @private */
+		private var _community:BiomeCommunity;
+		
+		/** @private */
+		private var _gridBiome:Array;
 		
 		/** @private */
 		private var _matterByName:Dictionary;
@@ -38,93 +47,22 @@ package gate.sirius.isometric {
 		private var _matterBounds:Dictionary;
 		
 		/** @private */
-		private var _isEnabled:Boolean;
+		private var _signals:BiomeSignals;
 		
 		/** @private */
-		private var _baseCost:int;
+		private var _cursor:BiomeInteraction;
+		
+		/** Create missing tiles */
+		public var alwaysCreateTiles:Boolean;
+		
 		
 		/** @private */
-		private var _left:int;
-		
-		/** @private */
-		private var _right:int;
-		
-		/** @private */
-		private var _top:int;
-		
-		/** @private */
-		private var _bottom:int;
-		
-		/** @private */
-		private var _front:int;
-		
-		/** @private */
-		private var _back:int;
-		
-		/** @private */
-		private var _signals:SignalDispatcher;
-		
-		/** @private */
-		private var _location:BiomeFlexPoint;
-		
-		/** @private */
-		private var _viewBox:BiomeFlexPoint;
-		
-		/** @private */
-		private function _expandVisionX():void {
-			++_right;
-			_checkBound(_top, _bottom, _front, _back, function(a:int, b:int):void {
-					_showTile(_getTile(_right, a, b));
-				});
+		private function _disableInteraction():void {
+			_cursor = null;
 		}
 		
-		/** @private */
-		private function _reduceVisionX():void {
-			_checkBound(_top, _bottom, _front, _back, function(a:int, b:int):void {
-					_hideTile(_getTile(_right, a, b));
-				});
-			--_right;
-		}
 		
 		/** @private */
-		private function _expandVisionY():void {
-			++_bottom;
-			_checkBound(_left, _right, _front, _back, function(a:int, b:int):void {
-					_showTile(_getTile(a, _bottom, b));
-				});
-		}
-		
-		/** @private */
-		private function _reduceVisionY():void {
-			_checkBound(_left, _right, _front, _back, function(a:int, b:int):void {
-					_hideTile(_getTile(a, _bottom, b));
-				});
-			--_bottom;
-		}
-		
-		/** @private */
-		private function _expandVisionZ():void {
-			++_back;
-			_checkBound(_left, _right, _top, _bottom, function(a:int, b:int):void {
-					_showTile(_getTile(a, b, _back));
-				});
-		}
-		
-		/** @private */
-		private function _reduceVisionZ():void {
-			_checkBound(_left, _right, _top, _bottom, function(a:int, b:int):void {
-					_hideTile(_getTile(a, b, _back));
-				});
-			--_back;
-		}
-		
-		/** @private */
-		private function _getTile(x:int, y:int, z:int):BiomeEntry {
-			var data:Dictionary = _gridBiome[z] ||= new Dictionary(true);
-			data = data[y] ||= new Dictionary(true);
-			return data[x] ||= _createEntry(x, y, z, data);
-		}
-		
 		protected function _createEntry(x:int, y:int, z:int, data:Dictionary):BiomeEntry {
 			var entry:BiomeEntry = new BiomeEntry(x, y, z, this);
 			data[x] = entry;
@@ -132,8 +70,39 @@ package gate.sirius.isometric {
 			return entry;
 		}
 		
-		/** @private */
-		private function _search(x:int, y:int, z:int):BiomeEntry {
+		
+		/**
+		 * Get entry value from location (will create a new one if not found)
+		 * @param	location
+		 * @return
+		 */
+		public function getTileIn(location:BiomePoint):BiomeEntry {
+			return getTile(location.x, location.y, location.z);
+		}
+		
+		
+		/**
+		 * Get entry value (will create a new one if not found)
+		 * @param	x
+		 * @param	y
+		 * @param	z
+		 * @return
+		 */
+		public function getTile(x:int, y:int, z:int):BiomeEntry {
+			var data:Dictionary = _gridBiome[z] ||= new Dictionary(true);
+			data = data[y] ||= new Dictionary(true);
+			return data[x] ||= _createEntry(x, y, z, data);
+		}
+		
+		
+		/**
+		 * Search a valid entry
+		 * @param	x
+		 * @param	y
+		 * @param	z
+		 * @return
+		 */
+		public function searchTile(x:int, y:int, z:int):BiomeEntry {
 			var r:Dictionary = _gridBiome[z];
 			if (r) {
 				r = r[y];
@@ -144,142 +113,51 @@ package gate.sirius.isometric {
 			return null;
 		}
 		
-		/** @private */
-		private function _showTile(tile:BiomeEntry):void {
-			_signals.send(new BiomeEntrySignal(BiomeEntrySignal.SHOW, tile));
-		}
-		
-		/** @private */
-		private function _hideTile(tile:BiomeEntry):void {
-			_signals.send(new BiomeEntrySignal(BiomeEntrySignal.HIDE, tile));
-		}
 		
 		/** @private */
 		private function _init(x:int = 0, y:int = 0, z:int = 0, w:int = 5, h:int = 5, d:int = 1):void {
-			_gridBiome = new Dictionary(true);
-			_neighbors = new Dictionary(true);
+			_gridBiome = [];
 			_matterByName = new Dictionary(true);
 			_matterLocation = new Dictionary(true);
 			_matterBounds = new Dictionary(true);
-			_location = new BiomeFlexPoint(x, y, z);
-			_viewBox = new BiomeFlexPoint(1, 1, 1);
-			createArea(_location, new BiomeBox(w, h, d), false);
+			_ticker = new ActiveController(60);
+			_signals = new BiomeSignals(this);
+			_viewport = new BiomeViewport(x, y, z, w, h, d, this);
+			_community = new BiomeCommunity(this);
 		}
 		
-		/** @private */
-		private function _showCurrentView():void {
-			
-			_left = _location.x;
-			_right = _location.x + _viewBox.x;
-			
-			_top = _location.y;
-			_bottom = _location.y + _viewBox.y;
-			
-			_front = _location.z;
-			_back = _location.z + _viewBox.z;
-			
-			BiomeMath.iterateArea(_location.x, _location.y, _location.z, _viewBox.x, _viewBox.y, _viewBox.z, function showTile(x:int, y:int, z:int):void {
-					if (_baseCost == 0 || BiomeMath.costOfPointToLocation(_location, x, y, z) <= _baseCost) {
-						_showTile(_getTile(x, y, z));
-					}
-				});
-		
-		}
-		
-		/** @private */
-		protected function _viewBoxSizeChange(width:int, height:int, depth:int):void {
-			var rWidth:int = width - _viewBox.x;
-			var rHeight:int = height - _viewBox.y;
-			var rDepth:int = depth - _viewBox.z;
-			if (rWidth !== 0 && _viewBox.x !== 0) {
-				while (rWidth < 0) {
-					_reduceVisionX();
-					++rWidth;
-				}
-				while (rWidth > 0) {
-					_expandVisionX();
-					--rWidth;
-				}
-			}
-			
-			if (rHeight !== 0 && _viewBox.y !== 0) {
-				while (rHeight < 0) {
-					_reduceVisionY();
-					++rHeight;
-				}
-				while (rHeight > 0) {
-					_expandVisionY();
-					--rHeight;
-				}
-			}
-			
-			if (rDepth !== 0 && _viewBox.z !== 0) {
-				while (rDepth < 0) {
-					_reduceVisionZ();
-					++rDepth;
-				}
-				while (rDepth > 0) {
-					_expandVisionZ();
-					--rDepth;
-				}
-			}
-		}
-		
-		/** @private */
-		private function _checkBound(a:int, b:int, c:int, d:int, handler:Function):void {
-			if (!_isEnabled) {
-				return;
-			}
-			var p:int = c;
-			++b;
-			++d;
-			while (a < b) {
-				while (p < d) {
-					handler(a, p);
-					++p;
-				}
-				p = c;
-				++a;
-			}
-		
-		}
-		
-		/** @private */
-		private function _clearCurrentView():void {
-			BiomeMath.iterateArea(_location.x, _location.y, _location.z, _viewBox.x, _viewBox.y, _viewBox.z, function showTile(x:int, y:int, z:int):void {
-					_hideTile(_search(x, y, z));
-				});
-		}
 		
 		/** @private */
 		private function _addMatterOccupation(matter:BiomeMatter):void {
-			var location:BiomeFlexPoint = matter.location.clone();
-			var bounds:Vector.<BiomePoint> = matter.bounds.copyPoints()
+			var location:BiomePoint = matter.location.cloneStatic();
+			var bounds:Vector.<BiomePoint> = matter.allocation.current.copyPoints();
 			_matterLocation[matter.name] = location;
 			_matterBounds[matter.name] = bounds;
 			var tile:BiomeEntry;
+			var handler:Function = alwaysCreateTiles ? getTile : searchTile;
 			for each (var point:BiomePoint in bounds) {
-				tile = _search(location.x + point.x, location.y + point.y, location.z + point.z);
+				tile = handler(location.x + point.x, location.y + point.y, location.z + point.z);
 				if (tile) {
 					tile.occupation.push(matter);
 				}
 			}
-			_signals.send(new BiomeMatterSignal(BiomeMatterSignal.ADDED, matter));
 		}
 		
+		
+		/** @private */
 		private function _removeMatterOccupation(matter:BiomeMatter):void {
-			var location:BiomeFlexPoint = _matterLocation[matter.name];
+			var location:BiomePoint = _matterLocation[matter.name];
 			var points:Vector.<BiomePoint> = _matterBounds[matter.name];
 			var tile:BiomeEntry;
 			for each (var point:BiomePoint in points) {
-				tile = _search(location.x + point.x, location.y + point.y, location.z + point.z);
+				tile = searchTile(location.x + point.x, location.y + point.y, location.z + point.z);
 				if (tile) {
 					var occ:Vector.<BiomeMatter> = tile.occupation;
 					occ.splice(occ.indexOf(matter), 1);
 				}
 			}
-			_signals.send(new BiomeMatterSignal(BiomeMatterSignal.REMOVED, matter));
 		}
+		
 		
 		/**
 		 * Create a new Biome instance
@@ -289,13 +167,13 @@ package gate.sirius.isometric {
 		 * @param	width		Default width of view box
 		 * @param	height		Default height of view box
 		 * @param	depth		Default depth of view box
-		 * @param	baseCost
+		 * @param	createTiles
 		 */
-		public function Biome(x:int = 0, y:int = 0, z:int = 0, width:int = 5, height:int = 5, depth:int = 5, baseCost:int = 0) {
-			_baseCost = baseCost;
-			_signals = new SignalDispatcher(this);
+		public function Biome(x:int = 0, y:int = 0, z:int = 0, width:int = 5, height:int = 5, depth:int = 5, createTiles:Boolean = true) {
 			_init(x, y, z, width, height, depth);
+			alwaysCreateTiles = createTiles;
 		}
+		
 		
 		/**
 		 * Add a new matter in Biome and register the occupation
@@ -303,13 +181,22 @@ package gate.sirius.isometric {
 		 * @return
 		 */
 		public function addMatter(matter:BiomeMatter):BiomeMatter {
-			if (!_matterByName[matter.name]) {
-				_matterByName[matter.name] = matter;
-				_addMatterOccupation(matter);
-				matter.parent = this;
+			if (_matterByName[matter.name]) {
+				throw new Error("Matter::[" + matter.name + "] already registered.");
+				return null;
 			}
+			_matterByName[matter.name] = matter;
+			matter.parent = this;
+			_addMatterOccupation(matter);
+			var omatter:OrganicBiomeMatter = matter as OrganicBiomeMatter;
+			if (omatter) {
+				_ticker.register(omatter, omatter.fps);
+			}
+			_signals.MATTER_ADDED.send(BiomeMatterSignal, true, matter);
+			matter.activate(BiomeActivations.ADDED, null, this);
 			return matter;
 		}
+		
 		
 		/**
 		 * Remove matter from Biome and clear all occupation, if exists
@@ -318,14 +205,32 @@ package gate.sirius.isometric {
 		 */
 		public function removeMatter(matter:BiomeMatter):BiomeMatter {
 			if (_matterByName[matter.name]) {
+				matter.cancelPendingActivation();
+				matter.activate(BiomeActivations.REMOVED, null, this);
+				_signals.MATTER_REMOVED.send(BiomeMatterSignal, true, matter);
 				delete _matterByName[matter.name];
-				matter.parent = null;
 				_removeMatterOccupation(matter);
+				matter.parent = null;
 				delete _matterLocation[matter.name];
 				delete _matterBounds[matter.name];
+				var omatter:OrganicBiomeMatter = matter as OrganicBiomeMatter;
+				if (omatter) {
+					_ticker.unregister(omatter, false);
+				}
 			}
 			return matter;
 		}
+		
+		
+		/**
+		 * Get a Matter registered by name
+		 * @param	name
+		 * @return
+		 */
+		public function getMatterByName(name:String):BiomeMatter {
+			return _matterByName[name];
+		}
+		
 		
 		/**
 		 * Update a matter occupation in Biome
@@ -336,18 +241,28 @@ package gate.sirius.isometric {
 			_addMatterOccupation(matter);
 		}
 		
+		
+		/**
+		 * Revert a matter occupation in Biome to last posted state
+		 * @param	matter
+		 */
+		private function revertMatter(matter:BiomeMatter):void {
+			matter.location.moveToPoint(_matterLocation[matter.name] || matter.location);
+			matter.allocation.find(_matterBounds[matter.name]);
+		}
+		
+		
 		/**
 		 * Get the all matter occupation from a location
-		 * @param	x
-		 * @param	y
-		 * @param	z
+		 * @param	location
 		 * @param	count
 		 * @return
 		 */
-		public function getMatterOfLocation(x:int, y:int, z:int, count:int = 0):Vector.<BiomeMatter> {
-			var tile:BiomeEntry = _search(x, y, z);
+		public function getMatterOfLocation(location:BiomePoint, count:int = 0):Vector.<BiomeMatter> {
+			var tile:BiomeEntry = searchTile(location.x, location.y, location.z);
 			return tile && tile.occupation.length >= count ? tile.occupation : null;
 		}
+		
 		
 		/**
 		 * Get all matters in a bound location
@@ -356,16 +271,23 @@ package gate.sirius.isometric {
 		 * @param	max
 		 * @return
 		 */
-		public function getMatterOfBounds(location:BiomePoint, bounds:BiomeBounds, max:int = 0):Vector.<BiomeMatter> {
+		public function getOccupation(location:BiomePoint, bounds:BiomeBounds, max:int = 0, skip:BiomeMatter = null, filter:Function = null):Vector.<BiomeMatter> {
 			var result:Vector.<BiomeMatter> = new Vector.<BiomeMatter>();
+			var filtered:Dictionary = new Dictionary(true);
 			main: for each (var point:BiomePoint in bounds.points) {
-				var tile:BiomeEntry = _search(location.x + point.x, location.y + point.y, location.z + point.z);
+				var tile:BiomeEntry = searchTile(location.x + point.x, location.y + point.y, location.z + point.z);
 				if (tile) {
 					for each (var matter:BiomeMatter in tile.occupation) {
-						if (result.indexOf(matter) == -1) {
-							result[result.length] = matter;
-							if (result.length == max) {
-								break main;
+						if (skip == matter) {
+							continue;
+						}
+						if (!filtered[matter.name]) {
+							filtered[matter.name] = true;
+							if (filter == null || filter(matter)) {
+								result[result.length] = matter;
+								if (result.length == max) {
+									break main;
+								}
 							}
 						}
 					}
@@ -374,220 +296,51 @@ package gate.sirius.isometric {
 			return result;
 		}
 		
-		/**
-		 * Move to a location
-		 * @param	x
-		 * @param	y
-		 * @param	z
-		 */
-		public function moveToLocation(x:int, y:int, z:int):void {
-			if (_isEnabled) {
-				_clearCurrentView();
-			}
-			_location.moveToLocation(x, y, z);
-			if (_isEnabled) {
-				_showCurrentView();
-			}
-		}
 		
 		/**
-		 * Move to a point location
-		 * @param	point
+		 * Scan Z-axys for matters
+		 * @param	mouseX
+		 * @param	mouseY
+		 * @param	tileWidth
+		 * @param	tileHeight
+		 * @param	startZ
+		 * @param	maxElements
+		 * @return
 		 */
-		public function moveToPoint(point:BiomePoint):void {
-			moveToLocation(point.x, point.y, point.z);
-		}
-		
-		/**
-		 * Change size of view box and creates missing tiles in view
-		 * @param	x
-		 * @param	y
-		 * @param	z
-		 * @param	cost
-		 */
-		public function changeViewBoxBy(x:int, y:int, z:int):void {
-			setViewBox(_viewBox.x + x, _viewBox.y + y, _viewBox.z + z);
-		}
-		
-		/**
-		 * Decrease or increase view box size
-		 * @param	width
-		 * @param	height
-		 * @param	depth
-		 */
-		public function setViewBox(width:int, height:int, depth:int):void {
-			if (_isEnabled) {
-				_viewBoxSizeChange(width, height, depth);
+		public function depthScan(x:int, y:int, start:int, end:int, ocuppiedOnly:Boolean = true):Vector.<BiomeMatter> {
+			
+			var result:Vector.<BiomeMatter> = new Vector.<BiomeMatter>();
+			var tile:BiomeEntry;
+			var st:int = start;
+			var en:int = end;
+			var rv:Boolean;
+			
+			if (end < start) {
+				st = end;
+				en = start;
+				rv = true;
 			}
 			
-			_viewBox.moveToLocation(width, height, depth);
-		}
-		
-		/**
-		 * Start the creation of all missing tiles when current position changes
-		 */
-		public function startDraw():void {
-			_isEnabled = true;
-			_showCurrentView();
-		}
-		
-		/**
-		 * Stop all tile creation
-		 */
-		public function stopDraw():void {
-			_isEnabled = false;
-			_clearCurrentView();
-		}
-		
-		/**
-		 * Move view box to right
-		 * @param	length
-		 */
-		public function moveRight(length:int = 1):void {
-			_location.moveRight();
-			++_right
-			_checkBound(_top, _bottom, _front, _back, function(a:int, b:int):void {
-					_hideTile(_getTile(_left, a, b));
-					_showTile(_getTile(_right, a, b));
-				});
-			++_left;
-			if (--length > 0) {
-				moveRight(length);
-			}
-		}
-		
-		/**
-		 * Move view box to left
-		 * @param	length
-		 */
-		public function moveLeft(length:int = 1):void {
-			while (length > 0) {
-				_location.moveLeft();
-				--_left;
-				_checkBound(_top, _bottom, _front, _back, function(a:int, b:int):void {
-						_showTile(_getTile(_left, a, b));
-						_hideTile(_getTile(_right, a, b));
-					});
-				--_right;
-				--length;
-			}
-		}
-		
-		/**
-		 * Move view box up
-		 * @param	length
-		 */
-		public function moveUp(length:int = 1):void {
-			while (length > 0) {
-				_location.moveUp();
-				--_top;
-				_checkBound(_left, _right, _front, _back, function(a:int, b:int):void {
-						_hideTile(_getTile(a, _bottom, b));
-						_showTile(_getTile(a, _top, b));
-					});
-				--_bottom;
-				--length;
-			}
-		}
-		
-		/**
-		 * Move view box down
-		 * @param	length
-		 */
-		public function moveDown(length:int = 1):void {
-			while (length > 0) {
-				_location.moveDown();
-				++_bottom;
-				_checkBound(_left, _right, _front, _back, function(a:int, b:int):void {
-						_hideTile(_getTile(a, _top, b));
-						_showTile(_getTile(a, _bottom, b));
-					});
-				++_top;
-				--length;
-			}
-		}
-		
-		/**
-		 * Move view box to front
-		 * @param	length
-		 */
-		public function moveFront(length:int = 1):void {
-			while (length > 0) {
-				_location.moveFront();
-				--_front;
-				_checkBound(_left, _right, _top, _bottom, function(a:int, b:int):void {
-						_hideTile(_getTile(a, b, _back));
-						_showTile(_getTile(a, b, _front));
-					});
-				--_back;
-				--length;
-			}
-		}
-		
-		/**
-		 * Move view box to back
-		 * @param	length
-		 */
-		public function moveBack(length:int = 1):void {
-			while (length > 0) {
-				_location.moveBack();
-				++_back;
-				_checkBound(_left, _right, _top, _bottom, function(a:int, b:int):void {
-						_hideTile(_getTile(a, b, _front));
-						_showTile(_getTile(a, b, _back));
-					});
-				++_front;
-				--length;
-			}
-		
-		}
-		
-		/**
-		 * Get tile occupation from location
-		 * @param	x
-		 * @param	y
-		 * @param	z
-		 * @return
-		 */
-		public function getTile(x:int, y:int, z:int):BiomeEntry {
-			return _search(x, y, z);
-		}
-		
-		/**
-		 * Get tile occupation from point
-		 * @param	point
-		 * @return
-		 */
-		public function getTileFromPoint(point:BiomePoint):BiomeEntry {
-			return _search(point.x, point.y, point.z);
-		}
-		
-		/**
-		 * Get all occupation tiles from a custom area
-		 * @param	point
-		 * @param	width
-		 * @param	height
-		 * @param	depth
-		 * @param	cost
-		 * @param	create
-		 */
-		public function getOccupation(point:BiomePoint, width:int, height:int, depth:int, cost:int = 0, create:Boolean = false):void {
-			var costOf:int;
-			var tile:BiomeEntry;
-			var biome:Biome = this;
-			var handler:Function = create ? _getTile : _search;
-			BiomeMath.iterateArea(point.x, point.y, point.z, width, height, depth, function(x:int, y:int, z:int):void {
-					tile = handler(x, y, z);
-					if (tile) {
-						if (cost == 0 || (costOf = BiomeMath.costOfPointToPoint(tile.location, point)) <= cost) {
-							_signals.send(new BiomeFindSignal(BiomeFindSignal.FIND, point, tile, costOf));
+			while (st < en) {
+				tile = searchTile(x, y, st);
+				if (tile) {
+					if (!ocuppiedOnly || tile.occupation.length > 0) {
+						for each (var matter:BiomeMatter in tile.occupation) {
+							if (result.indexOf(matter) == -1) {
+								result[result.length] = matter;
+							}
 						}
 					}
-				});
+				}
+				++st;
+			}
+			
+			return rv ? result.reverse() : result;
 		
 		}
 		
-		public function colliderBeam(from:BiomePoint, direction:BiomePoint, limit:int = 999, filter:Function = null, create:Boolean = false):void {
+		
+		public function collider(from:BiomePoint, direction:BiomePoint, limit:int = 999, filter:Function = null, create:Boolean = false):void {
 			
 			var i:int = 0;
 			
@@ -605,7 +358,7 @@ package gate.sirius.isometric {
 			var cy:Number = y;
 			var cz:Number = z;
 			
-			var prevtile:BiomeEntry = _search(from.x, from.y, from.z);
+			var prevtile:BiomeEntry = searchTile(from.x, from.y, from.z);
 			
 			var costOf:int;
 			var tile:BiomeEntry;
@@ -616,97 +369,42 @@ package gate.sirius.isometric {
 				};
 			}
 			
-			var handler:Function = create ? _getTile : _search;
-			
+			var handler:Function = create ? getTile : searchTile;
 			while (i < limit) {
-				
 				cx += xs;
 				cy += ys;
 				cz += zs;
-				
-				trace(cx.toFixed(2), cy.toFixed(2), cz.toFixed(2), "---------------", xs.toFixed(2), ys.toFixed(2), zs.toFixed(2));
-				
 				++i;
-				
-				if (int(cx) !== x || int(cy) !== y || int(cz) !== z) {
+				if ((cx >> 0) !== x || (cy >> 0) !== y || (cz >> 0) !== z) {
 					x = cx;
 					y = cy;
 					z = cz;
-					
 					tile = handler(x, y, z);
 					if (tile) {
 						costOf = BiomeMath.costOfPointToPoint(from, tile.location);
 						if (filter(tile, costOf)) {
-							_signals.send(new BiomeColliderSignal(BiomeColliderSignal.PATH, from, tile, costOf));
+							_signals.COLLIDER_PATH.send(BiomeColliderSignal, true, from, tile, costOf);
 							prevtile = tile;
 							continue;
 						}
 					}
-					
 					break;
 				}
-				
 			}
 			
-			_signals.send(new BiomeColliderSignal(BiomeColliderSignal.COLLISION, from, prevtile, costOf));
+			_signals.COLLIDER_END.send(BiomeColliderSignal, true, from, prevtile, costOf);
 		
 		}
 		
-		/**
-		 * Create a biome area without move location
-		 * @param	point
-		 * @param	width
-		 * @param	height
-		 * @param	depth
-		 */
-		public function createArea(point:BiomePoint, box:BiomeBox, show:Boolean = false):void {
-			BiomeMath.iterateArea(point.x, point.y, point.z, box.width, box.height, box.depth, show ? function(x:int, y:int, z:int):void {
-					_showTile(_getTile(x, y, z));
-				} : _getTile);
-		}
 		
 		/**
-		 * Show a custom area
-		 * @param	point
-		 * @param	width
-		 * @param	height
-		 * @param	depth
-		 * @param	cost
-		 * @param	create
+		 * Check if matter is visible
+		 * @param	biomeMatter
 		 */
-		public function showArea(point:BiomePoint, box:BiomeBox, cost:int = 0, create:Boolean = false):void {
-			var costOf:int;
-			var tile:BiomeEntry;
-			var handler:Function = create ? _getTile : _search;
-			BiomeMath.iterateArea(point.x, point.y, point.z, box.width, box.height, box.depth, function(x:int, y:int, z:int):void {
-					tile = handler(x, y, z);
-					if (tile) {
-						if (cost == 0 || (costOf = BiomeMath.costOfPointToPoint(tile.location, point)) <= cost) {
-							_showTile(tile);
-						}
-					}
-				});
+		public function isMatterVisible(biomeMatter:BiomeMatter):void {
+		
 		}
 		
-		/**
-		 * Hide an entire area
-		 * @param	point
-		 * @param	width
-		 * @param	height
-		 * @param	depth
-		 */
-		public function hideArea(point:BiomePoint, box:BiomeBox, cost:int = 0):void {
-			var costOf:int;
-			var tile:BiomeEntry;
-			BiomeMath.iterateArea(point.x, point.y, point.z, box.width, box.height, box.depth, function(x:int, y:int, z:int):void {
-					tile = _search(x, y, z);
-					if (tile) {
-						if (cost == 0 || (costOf = BiomeMath.costOfPointToPoint(tile.location, point)) <= cost) {
-							_hideTile(tile);
-						}
-					}
-				});
-		}
 		
 		/**
 		 * Reset all biome data
@@ -716,25 +414,65 @@ package gate.sirius.isometric {
 			_init();
 		}
 		
+		
 		/**
 		 * Signal dispatcher
 		 */
-		public function get signals():SignalDispatcher {
+		public function get signals():BiomeSignals {
 			return _signals;
 		}
 		
-		/**
-		 * Returns the copy of current location on grid
-		 */
-		public function get location():BiomeFlexPoint {
-			return _location.clone();
-		}
 		
 		/**
-		 * Returns the copy of current view box size
+		 * Default Biome Ticker for render and behaviours
 		 */
-		public function get viewBox():BiomeFlexPoint {
-			return _viewBox.clone();
+		public function get ticker():IActiveController {
+			return _ticker;
+		}
+		
+		
+		/**
+		 * Execute a method for each registered Matter
+		 * @param	handler
+		 */
+		public function iterateMatter(handler:Function):void {
+			for each (var matter:BiomeMatter in _matterByName) {
+				handler(matter);
+			}
+		}
+		
+		
+		/**
+		 * Interaction Controller
+		 * Only available after biome.enableInteraction()
+		 */
+		public function get cursor():BiomeInteraction {
+			return _cursor;
+		}
+		
+		
+		/**
+		 * Logic Tile manageament
+		 */
+		public function get viewport():BiomeViewport {
+			return _viewport;
+		}
+		
+		
+		/**
+		 * Controls large group of objects
+		 */
+		public function get community():BiomeCommunity {
+			return _community;
+		}
+		
+		
+		/**
+		 * Allow Cursor Interaction into Biome Matter
+		 * @param	stage
+		 */
+		public function enableInteracion(stage:Stage, maxObjects:uint = 0):void {
+			_cursor = new BiomeInteraction(stage, this, _disableInteraction, maxObjects);
 		}
 	
 	}

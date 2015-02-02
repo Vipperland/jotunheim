@@ -8,12 +8,12 @@ package gate.sirius.serializer.data {
 	 */
 	public class SruRules {
 		
-		private var _chart:Dictionary;
+		private var _chart:Object;
 		
 		private var _isDisabled:Boolean;
 		
 		public function SruRules() {
-			_chart = new Dictionary(true);
+			_chart = {};
 		}
 		
 		public function allow(param:String):void {
@@ -33,7 +33,7 @@ package gate.sirius.serializer.data {
 		}
 		
 		public function isVisible(param:String):Boolean {
-			return _chart[param] == null;
+			return _isDisabled || !_chart[param];
 		}
 		
 		public function get isDisabled():Boolean {

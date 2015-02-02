@@ -10,14 +10,6 @@ package gate.sirius.timer {
 	 */
 	public class ActiveController implements IActiveController {
 		
-		//static private var _gate:IActiveController;
-		//
-		//static public function get GATE():IActiveController {
-		//return _gate ||= new ActiveController();
-		//}
-		
-		static public const GATE:IActiveController = new ActiveController();
-		
 		private var _fps:uint;
 		
 		private var _timer:Timer;
@@ -26,37 +18,61 @@ package gate.sirius.timer {
 		
 		private var _pools:Vector.<ActiveObjectPool>;
 		
+		private var _poolBySize:Dictionary;
+		
 		private var _objref:Dictionary;
 		
 		private var _delayedref:Dictionary;
 		
-		public function ActiveController() {
+		public function ActiveController(fps:uint = 60) {
 			
 			_timer = new Timer(1000, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onTimerTick, false, 0, true);
 			_objref = new Dictionary(true);
 			_delayedref = new Dictionary(false);
 			_pools = new Vector.<ActiveObjectPool>();
+			_poolBySize = new Dictionary(true);
 			_timeFactor = 1;
 			
-			setFPS(60);
+			setFPS(fps);
 		
 		}
 		
-		public function setFPS(fps:int):void {
+		public function setFPS(fps:uint):void {
+			
+			var pool:ActiveObjectPool;
+			var index:int = 1;
+			
 			_fps = fps;
 			_timer.delay = 1000 / fps;
 			
-			if (_pools.length > fps) {
-				_pools.splice(fps, _pools.length - fps);
-			} else {
-				var i:int = _pools.length;
-				while (i < fps) {
-					if (i in _pools)
-						_pools[i] = new ActiveObjectPool(i + 1);
-					++i;
+			// register existing indexes
+			var current:Vector.<uint> = new Vector.<uint>();
+			for each (pool in _pools) {
+				current[current.length] = pool.size;
+			}
+			
+			// create missing indexes
+			while (index < fps) {
+				var size:uint = (fps / index) >> 0;
+				if (size > 0 && current.indexOf(size) == -1) {
+					pool = new ActiveObjectPool(size);
+					_pools[_pools.length] = pool;
+					_poolBySize[size] = pool;
+					current[current.length] = size;
+				}
+				++index;
+			}
+			
+			//remove unused pools
+			for each (pool in _pools) {
+				index = current.indexOf(size);
+				if (index == -1) {
+					delete _poolBySize[pool.size];
+					_pools.splice(index, 1)[0].dispose();
 				}
 			}
+		
 		}
 		
 		public function start():IActiveController {
@@ -83,13 +99,17 @@ package gate.sirius.timer {
 			if (fps > _fps) {
 				fps = _fps;
 			}
-			var target:int = _fps - fps;
-			_objref[object] = _pools[target].add(object);
+			var target:int = _fps / fps;
+			_objref[object] = (_poolBySize[target] as ActiveObjectPool).add(object);
+			object.onActivate(this);
 			return this;
 		}
 		
-		public function unregister(object:IActiveObject):IActiveController {
+		public function unregister(object:IActiveObject, silent:Boolean = false):IActiveController {
 			(_objref[object] as ActiveObjectData).discard();
+			if (!silent) {
+				object.onDeactivate(this);
+			}
 			delete _objref[object];
 			return this;
 		}
@@ -106,9 +126,9 @@ package gate.sirius.timer {
 			_timeFactor = value;
 		}
 		
-		public function delayedCall(handler:Function, time:int, repeats:int = 0, ... paramaters:Array):void {
+		public function delayedCall(handler:Function, milisseconds:int, repeats:int = 0, ... paramaters:Array):void {
 			cancelDelayedCall(handler);
-			_delayedref[handler] = DelayedCallToken.recycle(handler, time, repeats, paramaters);
+			_delayedref[handler] = DelayedCallToken.recycle(handler, milisseconds, repeats, paramaters);
 		}
 		
 		public function cancelDelayedCall(handler:Function):void {

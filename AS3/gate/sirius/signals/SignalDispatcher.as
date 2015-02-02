@@ -1,26 +1,25 @@
-package gate.sirius.signals
-{
+package gate.sirius.signals {
 	
-	import flash.utils.Dictionary;
+	import gate.sirius.isometric.recycler.Recycler;
 	
 	/**
 	 * ...
 	 * @author Rafael Moreira
 	 */
-	public class SignalDispatcher implements ISignalizer
-	{
+	public class SignalDispatcher implements ISignalDispatcher {
 		
-		protected var _author:Object;
+		/** @private */
+		private var _author:Object;
 		
-		private var _signals:Dictionary;
+		/** @private */
+		private var _signals:Vector.<Function>;
 		
-		private function _getHolder(name:String):Vector.<Function>
-		{
-			return _signals[name] ||= new Vector.<Function>();
-		}
 		
-		public function SignalDispatcher(author:Object)
-		{
+		/**
+		 * Create a new SignalDispatcher instance
+		 * @param	author
+		 */
+		public function SignalDispatcher(author:Object) {
 			this._author = author;
 			reset();
 		}
@@ -30,16 +29,19 @@ package gate.sirius.signals
 		 * @param	name
 		 * @param	handler
 		 */
-		public function hold(name:String, handler:Function):void
-		{
-			_getHolder(name).push(handler);
+		public function hold(handler:Function):void {
+			if (_signals.indexOf(handler) == -1) {
+				_signals[_signals.length] = handler;
+			}
 		}
 		
-		public function push(... rest:Array):void
-		{
-			for each (var entry:Array in rest)
-			{
-				hold(entry[0], entry[1]);
+		/**
+		 *
+		 * @param	... rest
+		 */
+		public function push(... rest:Array):void {
+			for each (var entry:Array in rest) {
+				hold.apply(this, entry);
 			}
 		}
 		
@@ -48,13 +50,10 @@ package gate.sirius.signals
 		 * @param	name
 		 * @param	handler
 		 */
-		public function release(name:String, handler:Function):void
-		{
-			var signals:Vector.<Function> = _getHolder(name);
-			var iof:int = signals.indexOf(handler);
-			if (iof !== -1)
-			{
-				signals.splice(iof, 1);
+		public function release(handler:Function):void {
+			var from:int = _signals.indexOf(handler);
+			if (from !== -1) {
+				_signals.splice(from, 1);
 			}
 		}
 		
@@ -62,35 +61,54 @@ package gate.sirius.signals
 		 * Send a Signal
 		 * @param	signal
 		 */
-		public function send(signal:Signal):void
-		{
-			signal._from = this;
-			var signals:Vector.<Function> = _signals[signal.name];
-			for each (var signalHandler:Function in signals)
-			{
+		public function send(Type:Class, recyclable:Boolean = true, ... props:Array):void {
+			
+			var signal:Signal = Recycler.GATE.collect(Type).content;
+			signal._dispatcher = this;
+			signal._contructor.apply(signal, props);
+			signal._live = true;
+			signal._calls = 0;
+			
+			var ticket:SignalTicket = Recycler.GATE.collect(SignalTicket).content as SignalTicket;
+			ticket._signal = signal as ISignal;
+			ticket._arguments = props;
+			
+			for each (var signalHandler:Function in _signals) {
+				++signal._calls;
 				signalHandler(signal);
+				if (!signal._live) {
+					break;
+				}
 			}
-			signal._from = null;
+			
+			SignalReport.GATE._send(ticket);
+			
+			ticket.dispose();
+			ticket = null;
+			
+			signal.dispose(recyclable);
+			signal._dispatcher = null;
+		
 		}
 		
 		/**
 		 * Remove all Signals
 		 */
-		public function reset():void
-		{
-			_signals = new Dictionary(true);
+		public function reset():void {
+			_signals = new Vector.<Function>();
 		}
 		
 		/**
 		 * Sender Object
 		 */
-		public function get author():Object
-		{
+		public function get author():Object {
 			return _author;
 		}
 		
-		public function dispose():void
-		{
+		/**
+		 * Destroy instance from memory
+		 */
+		public function dispose():void {
 			_signals = null;
 			_author = null;
 		}

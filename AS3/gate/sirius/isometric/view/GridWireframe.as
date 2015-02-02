@@ -3,7 +3,6 @@ package gate.sirius.isometric.view {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;
-	
 	import flash.geom.Rectangle;
 	
 	/**
@@ -12,53 +11,46 @@ package gate.sirius.isometric.view {
 	 */
 	public class GridWireframe extends Bitmap {
 		
-		protected var _spaceX:int;
-		protected var _spaceY:int;
-		protected var _border:int;
+		private var _backgroundColor:uint;
+		private var _fillRect:Rectangle;
+		private var _tileWidth:uint;
+		private var _tileHeight:uint;
+		private var _border:uint;
 		
-		public function GridWireframe(bitmapWidth:int, bitmapHeight:int, columns:int, rows:int, border:int = 0, bgcolor:uint = 0xFF000000, gridcolor:uint = 0xFFFFFFFF) {
-			_border = border;
-			var fullborder:int = (border << 1);
-			var texture:BitmapData = new BitmapData(bitmapWidth + fullborder + 1, bitmapHeight + fullborder + 1, false, bgcolor);
-			_spaceX = bitmapWidth / columns;
-			_spaceY = bitmapHeight / rows;
-			var ty:int = 0;
-			var tx:int = 0;
-			var fillRectangle:Rectangle = new Rectangle(border, border, 1, 1);
-			++rows;
-			++columns;
-			while (ty < rows) {
-				fillRectangle.y = ty * _spaceY + border;
-				fillRectangle.width = bitmapWidth;
-				texture.fillRect(fillRectangle, gridcolor);
-				++ty;
-			}
+		public function GridWireframe(tileWidth:uint, tileHeight:uint, columns:uint, rows:uint, border:uint = 0, bgcolor:uint = 0xFF000000, gridcolor:uint = 0xFFFFFFFF) {
 			
-			fillRectangle.y = border;
-			fillRectangle.width = 1;
-			while (tx < columns) {
-				fillRectangle.x = tx * _spaceX + border;
-				fillRectangle.height = bitmapHeight + 1;
-				texture.fillRect(fillRectangle, gridcolor);
-				++tx;
-			}
+			_tileHeight = tileHeight;
+			_tileWidth = tileWidth;
+			_backgroundColor = gridcolor;
+			
+			var fullborder:uint = (border << 1);
+			
+			var texture:BitmapData = new BitmapData(tileWidth * columns + fullborder, tileHeight * rows + fullborder, true, bgcolor);
+			var ty:uint = 0;
+			var tx:uint = 0;
+			
+			_fillRect = new Rectangle(0, 0, tileWidth - 2, tileHeight - 2);
+			
+			var totalTiles:uint = columns * rows;
+			var currentTile:uint = 0;
 			
 			super(texture, PixelSnapping.NEVER, true);
+			
+			while (currentTile < totalTiles) {
+				flushTile(currentTile % columns, int(currentTile / columns), gridcolor);
+				++currentTile;
+			}
 		}
 		
-		public function get spaceX():int {
-			return _spaceX;
+		public function flushTile(x:int, y:int, color:uint):void {
+			_fillRect.x = x * _tileWidth + 1;
+			_fillRect.y = y * _tileHeight + 1;
+			bitmapData.fillRect(_fillRect, color);
 		}
 		
-		public function get spaceY():int {
-			return _spaceY;
+		public function get backgroundColor():uint {
+			return _backgroundColor;
 		}
-		
-		public function get border():int {
-			return _border;
-		}
-		
-		
 	
 	}
 

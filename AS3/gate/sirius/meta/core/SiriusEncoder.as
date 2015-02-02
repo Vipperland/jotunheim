@@ -8,7 +8,7 @@ package gate.sirius.meta.core {
 	
 	import flash.xml.XMLNode;
 	
-	import mx.utils.DescribeTypeCache;
+	import flash.utils.describeType;
 	
 	public class SiriusEncoder {
 		
@@ -297,11 +297,11 @@ package gate.sirius.meta.core {
 			var prop:XML;
 			var qName:QName;
 			
-			var classInfo:XML = DescribeTypeCache.describeType(obj).typeDescription;
+			var classInfo:XML = describeType(obj);
 			
-			className = classInfo.@name.toString();
+			className = getQualifiedClassName(obj);
 			
-			properties = classInfo..accessor.(hasOwnProperty("@access")) + classInfo..variable;
+			properties = classInfo..accessor.(hasOwnProperty("@access")) + (classInfo..variable + classInfo..constant);
 			
 			var numericIndex:Boolean = false;
 			

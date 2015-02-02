@@ -1,5 +1,4 @@
 package gate.sirius.isometric.signal {
-	import gate.sirius.isometric.Biome;
 	import gate.sirius.isometric.data.BiomeEntry;
 	
 	/**
@@ -8,22 +7,24 @@ package gate.sirius.isometric.signal {
 	 */
 	public class BiomeNeighborSignal extends BiomeEntrySignal {
 		
-		public static const FOUND:String = "found";
-		
-		public static const CASCADE:String = "cascade";
-		
-		public static const FLOW:String = "cascade";
-		
 		protected var _neighbor:BiomeEntry;
 		
-		public function BiomeNeighborSignal(name:String, tile:BiomeEntry, neighbor:BiomeEntry) {
-			super(name, tile);
+		private function _constructor(tile:BiomeEntry, neighbor:BiomeEntry):void {
+			_tile = tile;
 			_neighbor = neighbor;
+		}
 		
+		public function BiomeNeighborSignal(constructor:Function = null) {
+			super(_resolveHandler(constructor, _constructor));
 		}
 		
 		public function get neighbor():BiomeEntry {
 			return _neighbor;
+		}
+		
+		override public function dispose(recyclable:Boolean):void {
+			_neighbor = null;
+			super.dispose(recyclable);
 		}
 	
 	}

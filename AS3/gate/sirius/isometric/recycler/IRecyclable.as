@@ -6,8 +6,16 @@ package gate.sirius.isometric.recycler {
 	 */
 	public interface IRecyclable {
 		
-		function onDump():void;
-		function onCollect():void;
+		/**
+		 * On Added to Recycler
+		 */
+		function recyclerDump():void;
+		
+		/**
+		 * On Collected from Recycler
+		 * @param	...args
+		 */
+		function recyclerCollect(... args:Array):void;
 	
 	}
 

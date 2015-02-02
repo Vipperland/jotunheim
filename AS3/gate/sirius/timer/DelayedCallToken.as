@@ -24,12 +24,13 @@ package gate.sirius.timer {
 		public function DelayedCallToken() {
 		}
 		
-		internal function setValues(handler:Function, delay:int, count:int, parameters:Array):void {
+		internal function setValues(handler:Function, delay:int, count:int, parameters:Array):DelayedCallToken {
 			this.delay = delay;
 			this.handler = handler;
 			this.count = count;
 			this.parameters = parameters;
 			check();
+			return this;
 		}
 		
 		internal function check():void {

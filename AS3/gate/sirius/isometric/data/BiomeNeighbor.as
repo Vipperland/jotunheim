@@ -7,20 +7,33 @@ package gate.sirius.isometric.data {
 	import gate.sirius.isometric.math.BiomePoint;
 	import gate.sirius.isometric.signal.BiomeNeighborSignal;
 	
-	
 	/**
 	 * ...
 	 * @author Rafael Moreira
 	 */
 	public class BiomeNeighbor {
 		
-		public static const LEFT:String = "left";
-		public static const RIGHT:String = "right";
-		public static const TOP:String = "top";
-		public static const BOTTOM:String = "bottom";
-		public static const FRONT:String = "front";
-		public static const BACK:String = "back";
-		public static const NONE:String = "none";
+		public static const LEFT:int = 1;
+		
+		public static const RIGHT:int = 2;
+		
+		public static const TOP:int = 4;
+		
+		public static const BOTTOM:int = 8;
+		
+		public static const FRONT:int = 16;
+		
+		public static const BACK:int = 32;
+		
+		public static const X_ONLY:int = LEFT | RIGHT;
+		
+		public static const Y_ONLY:int = TOP | BOTTOM;
+		
+		public static const Z_ONLY:int = FRONT | BACK;
+		
+		public static const ORTHOGONAL:int = X_ONLY | Y_ONLY;
+		
+		public static const ALL:int = X_ONLY | Y_ONLY | Z_ONLY;
 		
 		/** @private */
 		private var _tile:BiomeEntry;
@@ -58,11 +71,11 @@ package gate.sirius.isometric.data {
 		 * @param	cost
 		 */
 		internal function _cascade(origin:BiomeEntry, x:int, y:int, z:int, cost:int = 0):void {
-			var neightbor:BiomeEntry = _biome.getTile(origin.location.x + x, origin.location.y + y, origin.location.z + z);
-			if (neightbor) {
-				if (cost == 0 || BiomeMath.costOfPointToPoint(origin.location, neightbor.location) <= cost) {
-					_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.CASCADE, origin, neightbor));
-					neightbor.neighbors._cascade(origin, x, y, z, cost);
+			var neighbor:BiomeEntry = _biome.getTile(origin.location.x + x, origin.location.y + y, origin.location.z + z);
+			if (neighbor) {
+				if (cost == 0 || BiomeMath.costOfPointToPoint(origin.location, neighbor.location) <= cost) {
+					_biome.signals.NEIGHBOR_CASCADE.send(BiomeNeighborSignal, true, origin, neighbor);
+					neighbor.neighbors._cascade(origin, x, y, z, cost);
 				}
 			}
 		}
@@ -76,12 +89,12 @@ package gate.sirius.isometric.data {
 		 * @param	data
 		 * @param	delay
 		 */
-		protected function _doTransfer(filter:Function, tile:BiomeEntry, vector:Vector.<BiomeEntry>, levels:int, data:Object, delay:int):void {
+		protected function _doTransfer(filter:Function, origin:BiomeEntry, tile:BiomeEntry, vector:Vector.<BiomeEntry>, levels:int, data:Object, delay:int):void {
 			clearTimeout(_currentCall);
 			if (delay == 0)
-				_transfer(filter, tile, vector, levels, data, delay);
+				_transfer(filter, origin, tile, vector, levels, data, delay);
 			else
-				_currentCall = setTimeout(_transfer, delay, filter, tile, vector, levels, data, delay);
+				_currentCall = setTimeout(_transfer, delay, filter, origin, tile, vector, levels, data, delay);
 		}
 		
 		/**
@@ -90,81 +103,39 @@ package gate.sirius.isometric.data {
 		 * @param	open
 		 * @return
 		 */
-		private function _isClosed(point:BiomeEntry, open:Vector.<BiomeEntry>):Boolean {
-			return point && open.indexOf(point) == -1;
+		private function _isOpen(point:BiomeEntry, closed:Vector.<BiomeEntry>):Boolean {
+			return point && closed.indexOf(point) == -1;
 		}
 		
-		/**
-		 * Flow() will be called in each neighboor
-		 * @param	cost
-		 * @param	filter
-		 * @param	from
-		 * @param	open
-		 * @return
-		 */
-		internal function _flow(cost:int, filter:Function, from:BiomePoint, open:Vector.<BiomeEntry>):Boolean {
-			
-			open[open.length] = _tile;
-			
-			var currentCost:int = 0;
-			
-			if (cost > 0)
-				currentCost = BiomeMath.costOfPointToPoint(from, _tile.location);
-			
-			if (currentCost > cost || !filter(_tile, currentCost))
-				return false;
-			
-			if (_isClosed(left, open))
-				(!_left.neighbors._flow(cost, filter, from, open))
-			
-			if (_isClosed(bottom, open))
-				(!_bottom.neighbors._flow(cost, filter, from, open))
-			
-			if (_isClosed(right, open))
-				(!_right.neighbors._flow(cost, filter, from, open))
-			
-			if (_isClosed(top, open))
-				(!_top.neighbors._flow(cost, filter, from, open))
-			
-			if (_isClosed(back, open))
-				(!_back.neighbors._flow(cost, filter, from, open))
-			
-			if (_isClosed(front, open))
-				(!_front.neighbors._flow(cost, filter, from, open))
-			
-			return true;
-		
-		}
-		
-		internal function _transfer(filter:Function, from:BiomeEntry, open:Vector.<BiomeEntry>, levels:int, data:Object, delay:int):Vector.<BiomeEntry> {
-			open[open.length] = from;
+		internal function _transfer(filter:Function, origin:BiomeEntry, from:BiomeEntry, closed:Vector.<BiomeEntry>, levels:int, data:Object, delay:int):Vector.<BiomeEntry> {
+			closed[closed.length] = from;
 			if (--levels !== -1) {
-				if (_isClosed(left, open)) {
-					if (filter(from, _left, data))
-						_left.neighbors._doTransfer(filter, _left, open, levels, data, delay);
+				if (_isOpen(left, closed)) {
+					if (filter(origin, from, _left, data))
+						_left.neighbors._doTransfer(filter, origin, _left, closed, levels, data, delay);
 				}
-				if (_isClosed(right, open)) {
-					if (filter(from, _right, data))
-						_right.neighbors._doTransfer(filter, _right, open, levels, data, delay);
+				if (_isOpen(right, closed)) {
+					if (filter(origin, from, _right, data))
+						_right.neighbors._doTransfer(filter, origin, _right, closed, levels, data, delay);
 				}
-				if (_isClosed(top, open)) {
-					if (filter(from, _top, data))
-						_top.neighbors._doTransfer(filter, _top, open, levels, data, delay);
+				if (_isOpen(top, closed)) {
+					if (filter(origin, from, _top, data))
+						_top.neighbors._doTransfer(filter, origin, _top, closed, levels, data, delay);
 				}
-				if (_isClosed(bottom, open)) {
-					if (filter(from, _bottom, data))
-						_bottom.neighbors._doTransfer(filter, _bottom, open, levels, data, delay);
+				if (_isOpen(bottom, closed)) {
+					if (filter(origin, from, _bottom, data))
+						_bottom.neighbors._doTransfer(filter, origin, _bottom, closed, levels, data, delay);
 				}
-				if (_isClosed(front, open)) {
-					if (filter(from, _front, data))
-						_front.neighbors._doTransfer(filter, _front, open, levels, data, delay);
+				if (_isOpen(front, closed)) {
+					if (filter(origin, from, _front, data))
+						_front.neighbors._doTransfer(filter, origin, _front, closed, levels, data, delay);
 				}
-				if (_isClosed(back, open)) {
-					if (filter(from, _back, data))
-						_back.neighbors._doTransfer(filter, _back, open, levels, data, delay);
+				if (_isOpen(back, closed)) {
+					if (filter(origin, from, _back, data))
+						_back.neighbors._doTransfer(filter, origin, _back, closed, levels, data, delay);
 				}
 			}
-			return open;
+			return closed;
 		}
 		
 		public function BiomeNeighbor(tile:BiomeEntry, biome:Biome) {
@@ -176,78 +147,62 @@ package gate.sirius.isometric.data {
 		 * The left neighbor
 		 */
 		public function get left():BiomeEntry {
-			return _left ||= _biome.getTileFromPoint(_tile.location.getLeftPoint());
+			return _left ||= _biome.getTileIn(_tile.location.getLeftPoint());
 		}
 		
 		/**
 		 * The right neighbor
 		 */
 		public function get right():BiomeEntry {
-			return _right ||= _biome.getTileFromPoint(_tile.location.getRightPoint());
+			return _right ||= _biome.getTileIn(_tile.location.getRightPoint());
 		}
 		
 		/**
 		 * The top neighbor
 		 */
 		public function get top():BiomeEntry {
-			return _top ||= _biome.getTileFromPoint(_tile.location.getTopPoint());
+			return _top ||= _biome.getTileIn(_tile.location.getTopPoint());
 		}
 		
 		/**
 		 * The bottom neighbor
 		 */
 		public function get bottom():BiomeEntry {
-			return _bottom ||= _biome.getTileFromPoint(_tile.location.getBottomPoint());
+			return _bottom ||= _biome.getTileIn(_tile.location.getBottomPoint());
 		}
 		
 		/**
 		 * The front neighbor
 		 */
 		public function get front():BiomeEntry {
-			return _front ||= _biome.getTileFromPoint(_tile.location.getFrontPoint());
+			return _front ||= _biome.getTileIn(_tile.location.getFrontPoint());
 		}
 		
 		/**
 		 * The back neighbor
 		 */
 		public function get back():BiomeEntry {
-			return _back ||= _biome.getTileFromPoint(_tile.location.getBackPoint());
+			return _back ||= _biome.getTileIn(_tile.location.getBackPoint());
 		}
 		
-		/**
-		 * Send a signal to ach neighbor
-		 */
-		public function updateNeighbors():void {
-			if (left)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _left, _tile));
-			if (right)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _right, _tile));
-			if (top)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _top, _tile));
-			if (bottom)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _bottom, _tile));
-			if (front)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _front, _tile));
-			if (back)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _back, _tile));
-		}
 		
 		/**
-		 * Send a signal to ach neighbor
+		 * Send a signal to each neighbor
 		 */
-		public function filterNeighbors(... exclude:Array):void {
-			if (left && exclude.indexOf(LEFT) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _left, _tile));
-			if (right && exclude.indexOf(RIGHT) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _right, _tile));
-			if (top && exclude.indexOf(TOP) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _top, _tile));
-			if (bottom && exclude.indexOf(BOTTOM) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _bottom, _tile));
-			if (front && exclude.indexOf(FRONT) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _front, _tile));
-			if (back && exclude.indexOf(BACK) == -1)
-				_biome.signals.send(new BiomeNeighborSignal(BiomeNeighborSignal.FOUND, _back, _tile));
+		public function updateNeighbors(hash:int):void {
+			var handler:Function = _biome.signals.NEIGHBOR_UPDATE.send;
+			if (left && (hash & LEFT) == LEFT)
+				handler(BiomeNeighborSignal, true, _left, _tile);
+			if (right && (hash & RIGHT) == RIGHT)
+				handler(BiomeNeighborSignal, true, _right, _tile);
+			if (top && (hash & TOP) == TOP)
+				handler(BiomeNeighborSignal, true, _top, _tile);
+			if (bottom && (hash & BOTTOM) == BOTTOM)
+				handler(BiomeNeighborSignal, true, _bottom, _tile);
+			if (front && (hash & FRONT) == FRONT)
+				handler(BiomeNeighborSignal, true, _front, _tile);
+			if (back && (hash & BACK) == BACK)
+				handler(BiomeNeighborSignal, true, _back, _tile);
 		}
 		
 		/**
@@ -262,25 +217,14 @@ package gate.sirius.isometric.data {
 		}
 		
 		/**
-		 * Search all neighbors
-		 * @param	cost
-		 * @param	filter
-		 */
-		public function flow(cost:int, filter:Function):void {
-			if (cost == 0)
-				cost = 999;
-			_flow(cost, filter, _tile.location, new Vector.<BiomeEntry>);
-		}
-		
-		/**
 		 * Pass a signal through neighbors
 		 * @param	cost
-		 * @param	filter
+		 * @param	filter (origin:BiomeEntry, previous:BiomeEntry, current:BiomeEntry, data:*)
 		 */
 		public function transfer(filter:Function, data:Object, levels:int = 0, delay:int = 0):void {
 			if (levels == 0)
 				levels = 999;
-			_doTransfer(filter, _tile, new Vector.<BiomeEntry>, levels, data, delay);
+			_doTransfer(filter, _tile, _tile, new Vector.<BiomeEntry>, levels, data, delay);
 		}
 	
 	}

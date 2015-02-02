@@ -15,9 +15,11 @@ package gate.sirius.timer {
 		
 		function stop():IActiveController;
 		
+		function setFPS(fps:uint):void;
+		
 		function register(object:IActiveObject, fps:uint):IActiveController;
 		
-		function unregister(object:IActiveObject):IActiveController;
+		function unregister(object:IActiveObject, silent:Boolean = false):IActiveController;
 		
 		function delayedCall(handler:Function, time:int, repeats:int = 0, ... paramaters:Array):void;
 		

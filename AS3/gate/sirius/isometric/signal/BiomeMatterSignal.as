@@ -7,18 +7,14 @@ package gate.sirius.isometric.signal {
 	 */
 	public class BiomeMatterSignal extends BiomeSignal {
 		
-		public static const ADDED:String = "added";
-		
-		public static const REMOVED:String = "removed";
-		
-		public static const UPDATED:String = "updated";
-		
 		protected var _matter:BiomeMatter;
 		
-		
-		public function BiomeMatterSignal(name:String, matter:BiomeMatter) {
+		private function _contructor(matter:BiomeMatter):void {
 			_matter = matter;
-			super(name);
+		}
+		
+		public function BiomeMatterSignal() {
+			super(_contructor);
 		}
 		
 		

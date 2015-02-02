@@ -1,5 +1,6 @@
 package gate.sirius.isometric.math {
 	
+	
 	/**
 	 * ...
 	 * @author Rafael Moreira
@@ -49,9 +50,9 @@ package gate.sirius.isometric.math {
 		
 		
 		public function moveToPoint(point:BiomePoint):void {
-			_x = point._x;
-			_y = point._y;
-			_z = point._z;
+			_x = point.x;
+			_y = point.y;
+			_z = point.z;
 		}
 		
 		
@@ -60,8 +61,8 @@ package gate.sirius.isometric.math {
 		}
 		
 		
-		public function isEqual(value:BiomeFlexPoint):Boolean {
-			return _x == value._x && _y == value._y && _z == value._z;
+		public function cloneStatic():BiomePoint {
+			return BiomePoint.create(_x, _y, _z);
 		}
 		
 		
@@ -77,6 +78,50 @@ package gate.sirius.isometric.math {
 		
 		public function set z(value:int):void {
 			_z = value;
+		}
+		
+		
+		public function join(location:BiomePoint):void {
+			_x += location.x;
+			_y += location.y;
+			_z += location.z;
+		}
+		
+		
+		public function unjoin(location:BiomePoint):void {
+			_x -= location.x;
+			_y -= location.y;
+			_z -= location.z;
+		}
+		
+		
+		override public function getLeftPoint():BiomePoint {
+			return BiomePoint.create(getLeft(), _y, _z);
+		}
+		
+		
+		override public function getRightPoint():BiomePoint {
+			return BiomePoint.create(getRight(), _y, _z);
+		}
+		
+		
+		override public function getTopPoint():BiomePoint {
+			return BiomePoint.create(_x, getTop(), _z);
+		}
+		
+		
+		override public function getBottomPoint():BiomePoint {
+			return BiomePoint.create(_x, getBottom(), _z);
+		}
+		
+		
+		override public function getFrontPoint():BiomePoint {
+			return BiomePoint.create(_x, _y, getFront());
+		}
+		
+		
+		override public function getBackPoint():BiomePoint {
+			return BiomePoint.create(_x, _y, getBack());
 		}
 	
 	}

@@ -5,6 +5,7 @@ package gate.sirius.isometric.data {
 	import gate.sirius.isometric.matter.BiomeMatter;
 	import gate.sirius.isometric.signal.BiomeEntrySignal;
 	
+	
 	/**
 	 * ...
 	 * @author Rafael Moreira
@@ -23,10 +24,14 @@ package gate.sirius.isometric.data {
 		/** @private */
 		private var _occupation:Vector.<BiomeMatter>;
 		
+		/** @private */
+		private var _depth:Number;
+		
 		/**
 		 * Data registrada a entrada
 		 */
 		public var data:Object;
+		
 		
 		/**
 		 * Cria a instancia de uma nova entrada em um Bioma
@@ -37,20 +42,24 @@ package gate.sirius.isometric.data {
 		 */
 		public function BiomeEntry(x:int, y:int, z:int, biome:Biome) {
 			_biome = biome;
-			_location = new BiomePoint(x, y, z);
+			_location = BiomePoint.create(x, y, z);
 			_occupation = new Vector.<BiomeMatter>();
+			_neighbors = new BiomeNeighbor(this, _biome);
 		}
 		
+		
 		public function create():void {
-			_biome.signals.send(new BiomeEntrySignal(BiomeEntrySignal.CREATED, this));
+			_biome.signals.TILE_CREATE.send(BiomeEntrySignal, true, this);
 		}
+		
 		
 		/**
 		 * Pontos de fuga da entrada
 		 */
 		public function get neighbors():BiomeNeighbor {
-			return _neighbors ||= new BiomeNeighbor(this, _biome);
+			return _neighbors;
 		}
+		
 		
 		/**
 		 * Localização do Bioma
@@ -59,12 +68,14 @@ package gate.sirius.isometric.data {
 			return _location;
 		}
 		
+		
 		/**
 		 * Matérias que ocupam a entrada
 		 */
 		public function get occupation():Vector.<BiomeMatter> {
 			return _occupation;
 		}
+		
 		
 		/**
 		 * Filtra a ocupação por um tipo específico ou seleciona toda matéria
@@ -85,6 +96,7 @@ package gate.sirius.isometric.data {
 			return r;
 		}
 		
+		
 		/**
 		 * Verifica se um tipo de matéria específico ocupa a posição
 		 * @param	type
@@ -99,6 +111,7 @@ package gate.sirius.isometric.data {
 			return null;
 		}
 		
+		
 		/**
 		 * Bioma de alocação da entrada
 		 */
@@ -106,16 +119,27 @@ package gate.sirius.isometric.data {
 			return _biome;
 		}
 		
+		
 		public function toString():String {
-			return "[BiomeEntry x=" + _location.x + " y=" + _location.y + " z=" + _location.z + " o=" + _occupation.length + "]";
+			return "[BiomeEntry data=" + data + " neighbors=" + neighbors + " location=" + location + " occupation=" + occupation.length + " id=" + id + "]";
 		}
 		
+		
 		/**
-		 * Identificador da entrada
+		 * Identificador unico de entrada
 		 * @return
 		 */
 		public function get id():String {
 			return "tile_" + _location.x + "_" + _location.y + "_" + _location.z;
+		}
+		
+		
+		/**
+		 * Visibilidade do tile na Viewport
+		 * @return
+		 */
+		public function isVisible():Boolean {
+			return _biome.viewport.isTileVisible(this);
 		}
 	
 	}
