@@ -1,5 +1,6 @@
 package gate.sirius.meta {
 	
+	import flash.display.BlendMode;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -7,6 +8,8 @@ package gate.sirius.meta {
 	import flash.events.TextEvent;
 	import flash.geom.Rectangle;
 	import flash.system.ApplicationDomain;
+	import flash.system.Capabilities;
+	import flash.system.System;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
@@ -32,7 +35,7 @@ package gate.sirius.meta {
 		
 		static protected var _aliases:Dictionary = new Dictionary(true);
 		
-		static protected var _maxConsoleWidth:int = 0;
+		static protected var _maxConsoleWidth:int = 800;
 		
 		static private var _console:Console;
 		
@@ -60,14 +63,15 @@ package gate.sirius.meta {
 		
 		
 		static public function setMaxWidth(target:int = 0):void {
-			_maxConsoleWidth = target > 200 ? target : 200;
+			_maxConsoleWidth = target > 500 ? target : 500;
 		}
 		
 		
 		static public function init(stage:Stage, TargetObject:* = null, ... classes:Array):void {
+			if (_stage) return;
 			_stage = stage;
 			_console = new Console();
-			_TargetObject = new ConsoleRunner(TargetObject);
+			_TargetObject = new ConsoleRunner(stage, TargetObject);
 			_stage.addEventListener(Event.RESIZE, _onResize);
 			SruDecoder.allowClasses.apply(null, classes);
 		}
@@ -114,15 +118,19 @@ package gate.sirius.meta {
 					break;
 				}
 				case Keyboard.DOWN:  {
-					_altPoint(1);
-					e.stopImmediatePropagation();
-					e.preventDefault();
+					if(_altValue){
+						_altPoint(1);
+						e.stopImmediatePropagation();
+						e.preventDefault();
+					}
 					break;
 				}
 				case Keyboard.UP:  {
-					_altPoint(-1);
-					e.stopImmediatePropagation();
-					e.preventDefault();
+					if(_altValue){
+						_altPoint(-1);
+						e.stopImmediatePropagation();
+						e.preventDefault();
+					}
 					break;
 				}
 				
@@ -316,15 +324,21 @@ package gate.sirius.meta {
 			var h:int = _stage.stageHeight;
 			_tf_output.width = _maxConsoleWidth || w;
 			_tf_input.width = _maxConsoleWidth || w;
-			_tf_output.height = h - 101;
-			_tf_input.height = 100;
-			_tf_input.y = h - 100;
-			_tf_input.type = "input";
-			graphics.clear();
-			graphics.beginFill(0, .9);
-			graphics.drawRect(0, 0, _maxConsoleWidth || w, h - 101);
-			graphics.drawRect(0, h - 100, _maxConsoleWidth || w, 100);
-			graphics.endFill();
+			if(_tf_input.visible){
+				_tf_output.height = h - 101;
+				_tf_input.height = 100;
+				_tf_input.y = h - 100;
+				_tf_input.type = "input";
+				graphics.clear();
+				graphics.beginFill(0, .9);
+				graphics.drawRect(0, 0, _maxConsoleWidth || w, h - 101);
+				graphics.drawRect(0, h - 100, _maxConsoleWidth || w, 100);
+				graphics.endFill();
+			}else {
+				_tf_output.height = h;
+				graphics.clear();
+			}
+			
 		}
 		
 		
@@ -332,6 +346,15 @@ package gate.sirius.meta {
 			_stage.addChild(_console);
 			_console._updatePosition();
 			_console.focus();
+		}
+		
+		
+		static public function setLogMode():void {
+			_console.setLogMode();
+		}
+		
+		static public function setDevMode():void {
+			_console.setDevMode();
 		}
 		
 		
@@ -681,11 +704,30 @@ package gate.sirius.meta {
 			setTimeout(_setFocus, 10);
 		}
 		
+		public function setLogMode():void {
+			_tf_input.visible = false;
+			mouseEnabled = false;
+			mouseChildren = false;
+			_updatePosition();
+			pushHighPriorityMessage("!== CONSOLE :: DEBUG MODE ==");
+			pushHighPriorityMessage("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.languages, "/DEBUG:", Capabilities.isDebugger);
+		}
+		
+		public function setDevMode():void {
+			_tf_input.visible = true;
+			mouseEnabled = true;
+			mouseChildren = true;
+			_updatePosition();
+			pushHighPriorityMessage("!== CONSOLE :: DEV MODE ==");
+			pushHighPriorityMessage("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.languages, "/DEBUG:", Capabilities.isDebugger);
+		}
 		
 		protected function _setFocus():void {
 			_tf_input.text = "";
-			_stage.focus = _tf_input;
-			_tf_input.setSelection(_tf_input.length, _tf_input.length);
+			if (_tf_input.visible) {
+				_stage.focus = _tf_input;
+				_tf_input.setSelection(_tf_input.length, _tf_input.length);
+			}
 		}
 	
 	}

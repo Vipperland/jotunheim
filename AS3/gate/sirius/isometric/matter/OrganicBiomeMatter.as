@@ -10,7 +10,7 @@ package gate.sirius.isometric.matter {
 	 * ...
 	 * @author Rafael moreira
 	 */
-	public class OrganicBiomeMatter extends BiomeMatter implements IActiveObject {
+	public class OrganicBiomeMatter extends BiomeMatter implements IOrganicBiomeMatter {
 		
 		/** @private */
 		private var _fps:uint;
@@ -86,6 +86,7 @@ package gate.sirius.isometric.matter {
 		 */
 		public function tick(time:Number):void {
 			if (!_idle) {
+				_behaviours.onTick(_ticker);
 				if (_toUpdate && _parent) {
 					_toUpdate = false;
 					_parent.postMatter(this);

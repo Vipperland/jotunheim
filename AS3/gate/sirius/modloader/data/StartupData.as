@@ -40,7 +40,7 @@ package gate.sirius.modloader.data {
 			var data:String;
 			var stream:FileStream = new FileStream();
 			if (!config.exists) {
-				data = "//SIRIUS CONFIG FILE\nloadorder{\n\t@add Loader Screen 1\n\t@add CoreData 1\n}\nproperties{\n\t//statup properties\n}";
+				data = "//SIRIUS CONFIG FILE\nloadorder{\n\t@add loader 1\n\t@add core 1\n}\nproperties{\n\t//statup properties\n}";
 				stream.open(config, FileMode.WRITE);
 				stream.writeUTFBytes(data);
 			} else {
@@ -56,7 +56,7 @@ package gate.sirius.modloader.data {
 		public function createInfoFile(file:File, name:String, version:String, author:String, description:String, preinit:String):void {
 			var stream:FileStream = new FileStream();
 			stream.open(file, FileMode.WRITE);
-			var content:String = "mod{\n\t@name " + name + " " + version + "\n\t@author " + author + "\n\t@description " + description + "\n\t@onload " + preinit + "\n}\n";
+			var content:String = "mod{\n\t@name " + name.split(" ").join("_") + " " + version + "\n\t@author " + author + "\n\t@description " + description + "\n\t@onload " + preinit + "\n}\n";
 			stream.writeUTFBytes(content);
 			stream.close();
 			stream = null;

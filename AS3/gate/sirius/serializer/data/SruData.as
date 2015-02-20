@@ -1,6 +1,7 @@
 package gate.sirius.serializer.data {
 	import gate.sirius.serializer.hosts.SruObject;
 	
+	
 	/**
 	 * ...
 	 * @author Rafael moreira
@@ -8,49 +9,83 @@ package gate.sirius.serializer.data {
 	public class SruData implements IParserModule {
 		
 		static private const CRLF:String = "\r\n";
+		
 		static private const LF:String = "\r";
+		
 		static private const CR:String = "\n";
+		
 		static private const TAB:String = "	";
+		
 		static private const EMPTY:String = "";
+		
 		static private const SPACE:String = " ";
+		
 		static private const DOT:String = ".";
+		
 		static private const DOUBLE_SPACE:String = SPACE + SPACE;
 		
 		static private const CALL_METHOD:String = "~";
+		
 		static private const CALL_METHOD_START:String = "(";
+		
 		static private const CALL_METHOD_END:String = ")";
 		
 		static private const REFERENCE:String = "$";
+		
 		static private const REFERENCE_SPLIT:String = "<";
+		
 		static private const REFERENCE_FILE_NAME:String = "file";
 		
 		static private const QUERY:String = "@";
+		
 		static private const PARAMETER_SET:String = "=";
+		
 		static private const OBJECT_TYPE:String = ":";
 		
 		static private const OBJECT_PUSH:String = "#";
+		
 		static private const OBJECT_OPEN:String = "{";
+		
 		static private const OBJECT_CLOSE:String = "}";
+		
 		static private const OBJECT_EMPTY:String = "{}";
 		
 		static private const COMMENT_BLOCK_START:String = "/*";
+		
 		static private const COMMENT_BLOCK_END:String = "*/";
 		
 		static private const COMMENT_LINE:String = "//";
 		
+		private var paramPath:Array;
+		
+		private var currentPath:String;
+		
 		public var lineValue:String;
+		
 		public var lineClear:String;
+		
 		public var lineLength:int;
+		
 		public var command:String;
+		
 		public var lines:Array;
+		
 		public var totalLines:int;
+		
 		public var currentLine:int;
+		
 		public var indexBuffer:int;
+		
 		public var paramValueBuffer:Array;
+		
 		public var splitCommand:String;
+		
 		public var pathOpen:Boolean;
+		
 		public var skippedLines:String;
+		
 		public var fileName:String;
+		
 		
 		private function _parseValue(value:String):* {
 			value = _getLineValue(value);
@@ -72,6 +107,7 @@ package gate.sirius.serializer.data {
 			return value;
 		}
 		
+		
 		private function _extractObjectProps():void {
 			indexBuffer = lineValue.indexOf(OBJECT_EMPTY); // remove {}
 			pathOpen = false;
@@ -87,15 +123,27 @@ package gate.sirius.serializer.data {
 			paramValueBuffer = lineClear.split(splitCommand);
 		}
 		
+		
 		private function _getClearLine(value:String):String {
 			value = value.split(TAB).join(EMPTY);
 			value = value.split(SPACE).join(EMPTY);
 			return value;
 		}
 		
+		
+		private function _pathLine():String {
+			var s:String = currentLine.toString();
+			while (s.length < 8) {
+				s = "0" + s;
+			}
+			return s;
+		}
+		
+		
 		public function SruData() {
 			reset();
 		}
+		
 		
 		public function push(value:String):void {
 			value = value.split(CRLF).join(CR);
@@ -104,9 +152,11 @@ package gate.sirius.serializer.data {
 			totalLines = lines.length;
 		}
 		
+		
 		public function isEmptyLine():Boolean {
 			return lineClear.length == 0 || lineClear.substr(0, 2) == COMMENT_LINE;
 		}
+		
 		
 		public function nextLine():Boolean {
 			lineValue = lines[currentLine];
@@ -121,6 +171,7 @@ package gate.sirius.serializer.data {
 			reset();
 			return false;
 		}
+		
 		
 		private function _getLineValue(value:String):String {
 			lineLength = value.length;
@@ -143,6 +194,7 @@ package gate.sirius.serializer.data {
 			return value;
 		}
 		
+		
 		public function reset():void {
 			lines = [];
 			skippedLines = "";
@@ -153,54 +205,63 @@ package gate.sirius.serializer.data {
 			command = null;
 		}
 		
+		
 		public function hasBuffer():Boolean {
 			return nextLine();
 		}
+		
 		
 		// }
 		public function isObjectClose():Boolean {
 			return lineClear == OBJECT_CLOSE;
 		}
 		
+		
 		// ~
 		public function isMethod():Boolean {
 			return command == CALL_METHOD;
 		}
+		
 		
 		// )
 		public function isMethodEnd():Boolean {
 			return lineClear.indexOf(")") == lineLength - 1;
 		}
 		
+		
 		// @
 		public function isQuery():Boolean {
 			return command == QUERY;
 		}
+		
 		
 		// 
 		public function isBufferEmpty():Boolean {
 			return lines.length == 0;
 		}
 		
+		
 		// $
 		public function isReference():Boolean {
 			if (command == REFERENCE) {
 				_parseReference();
 				return true;
-			}else {
+			} else {
 				return false;
 			}
 		}
 		
+		
 		private function _parseReference():void {
-			paramValueBuffer = lineClear.substr(1, lineLength-1).split(REFERENCE_SPLIT);
-			switch(getParamName().toLowerCase()) {
-				case REFERENCE_FILE_NAME : {
+			paramValueBuffer = lineClear.substr(1, lineLength - 1).split(REFERENCE_SPLIT);
+			switch (getParamName().toLowerCase()) {
+				case REFERENCE_FILE_NAME:  {
 					fileName = getParamValue();
 					break;
 				}
 			}
 		}
+		
 		
 		// =
 		public function isValueSet():Boolean {
@@ -213,11 +274,13 @@ package gate.sirius.serializer.data {
 			}
 		}
 		
+		
 		// ~callFooBar[()]
 		public function isFreeExecution():Boolean {
 			indexBuffer = lineClear.lastIndexOf("()", lineLength);
 			return (indexBuffer - lineLength) == -2;
 		}
+		
 		
 		// [#]myObject | myObject [:] ObjectType
 		public function isObjectKey():Boolean {
@@ -231,11 +294,13 @@ package gate.sirius.serializer.data {
 		
 		}
 		
+		
 		// [#]ObjectType
 		public function isObjectPush():Boolean {
 			_extractObjectProps();
 			return splitCommand == OBJECT_PUSH;
 		}
+		
 		
 		// myObject [{]
 		public function isObjectOpen():Boolean {
@@ -243,11 +308,13 @@ package gate.sirius.serializer.data {
 			return indexBuffer == lineLength - 1;
 		}
 		
+		
 		// ~callFooBar([arg1,arg2,...,argN])
 		public function hasInlineArguments():Boolean {
 			indexBuffer = lineClear.lastIndexOf(CALL_METHOD_END, lineLength - 1);
 			return indexBuffer !== -1 && (indexBuffer - lineClear.indexOf(CALL_METHOD_START)) > 1;
 		}
+		
 		
 		// ~callFooBar([arg1,arg2,...,argN])
 		public function getInlineMethodArgs():Array {
@@ -258,35 +325,42 @@ package gate.sirius.serializer.data {
 			return paramValueBuffer;
 		}
 		
+		
 		// [myObject] : ObjectType
 		public function getParamName():String {
 			return paramValueBuffer[0];
 		}
+		
 		
 		// myObject : [ObjectType] | #[ObjectType]
 		public function getObjectType():String {
 			return paramValueBuffer[1];
 		}
 		
+		
 		// [someValue] | myVar = [someValue]
 		public function getParamValue():* {
 			return _parseValue(paramValueBuffer[1]);
 		}
+		
 		
 		// [Hello World!(string)] | [true|false(boolean)] | [0xFF|3.14|360(number)]
 		public function getLineValue():* {
 			return _parseValue(lineValue);
 		}
 		
+		
 		public function getObjectName():String {
 			return lineClear.substring(0, indexBuffer);
 		}
+		
 		
 		// ~[callFooBar]
 		public function getMethodName():String {
 			indexBuffer = lineClear.indexOf(CALL_METHOD_START);
 			return lineClear.substring(1, indexBuffer);
 		}
+		
 		
 		// @[myQueryName] prop1 prop2 ... propN
 		public function getQueryName():String {
@@ -299,34 +373,43 @@ package gate.sirius.serializer.data {
 			return paramValueBuffer.shift();
 		}
 		
+		
 		// @myQueryName [prop1 prop2 ... propN]
 		public function getQueryArguments():Array {
 			return paramValueBuffer;
 		}
 		
+		
 		public function skipLine():void {
 			skippedLines += _pathLine() + "	" + lineValue + "\n";
 		}
+		
 		
 		public function releaseLog():void {
 			skippedLines = "";
 		}
 		
+		
 		public function hasCommentStart():Boolean {
 			return lineClear.lastIndexOf(COMMENT_BLOCK_START) !== -1;
 		}
+		
 		
 		public function hasCommentEnd():Boolean {
 			return lineClear.lastIndexOf(COMMENT_BLOCK_END) == lineClear.length - 2;
 		}
 		
-		private function _pathLine():String {
-			var s:String = currentLine.toString();
-			while (s.length < 8) {
-				s = "0" + s;
+		
+		public function writeProperty(target:Object):void {
+			paramPath = getParamName().split(".");
+			if (paramPath.length > 1) {
+				paramValueBuffer[0] = paramPath.pop();
+				for each (currentPath in paramPath)
+					target = target[currentPath];
 			}
-			return s;
+			target[getParamName()] = getParamValue();
 		}
+	
 	
 	}
 

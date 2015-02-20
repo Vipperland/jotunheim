@@ -23,6 +23,8 @@ package gate.sirius.serializer {
 	 * //	Basics
 	 * propName = test					Set String Variable
 	 * propName = 1						Set Number Variable
+	 * propName = 0xFF					Set Number Variable
+	 * propName = 0001					Set Number Variable
 	 * propName = true					Set Boolean Variable
 	 *
 	 * //	Objects
@@ -33,7 +35,7 @@ package gate.sirius.serializer {
 	 * prop:ClassName					Equals to myProp = new ClassName();
 	 * propA.propB:ClassName			Equals to myObject.prop = new ClassName(); and set value to cursor
 	 * prop:ClassName{					Equals to myProp = new ClassName(); and set value to cursor
-	 * }								Close current object and set the parent object to cursor
+	 * }								Close current object and set the previous object to cursor
 	 * 			Ex.:
 	 * 				users:Array {
 	 * 					#Object {
@@ -53,15 +55,14 @@ package gate.sirius.serializer {
 	 * 					~addChild(
 	 * 						#Loader {
 	 * 							~load(
-	 * 								#UrlRequest {
-	 * 									url=foobar.jpg
-	 * 								}
+	 * 								#UrlRequest(foobar.jpg)
 	 * 							)
 	 * 						}
 	 * 					)
 	 * 					x = 10
 	 * 					y = 10
 	 * 				}
+	 * 
 	 *
 	 * * //	Queries
 	 * @ methodName						Equal to myFunction();
@@ -71,10 +72,6 @@ package gate.sirius.serializer {
 	 * 				numbers:Array
 	 * 				@ numbers.push a b c d e f ...
 	 * 				@ numbers.splice 1 2
-	 *
-	 * //	Advanced
-	 * <propA=propB						Injects propB in propA
-	 * <propA.propB=propC.propD			Injects propD in propB
 	 *
 	 * @author Rafael moreira
 	 */
@@ -154,6 +151,11 @@ package gate.sirius.serializer {
 		 * @private
 		 */
 		private var _currentObject:Object;
+		
+		/**
+		 * @private
+		 */
+		private var _tempObject:Object;
 		
 		/**
 		 * @private
@@ -244,8 +246,6 @@ package gate.sirius.serializer {
 		 * @private
 		 */
 		private var _targetObject:Object;
-		
-		private var _fileId:String;
 		
 		
 		/**
@@ -490,7 +490,7 @@ package gate.sirius.serializer {
 						//if (_currentObject is IList) {
 						//_currentObject.set(_data.getParamName(), _data.getParamValue());
 						//} else {
-						_currentObject[_data.getParamName()] = _data.getParamValue();
+						_data.writeProperty(_currentObject);
 							//}
 					} catch (e:Error) {
 						_signals.ERROR.send(SruErrorSignal, true, e.message, _data.currentLine, _data.lineValue, 2001, e.getStackTrace(), _data.fileName);

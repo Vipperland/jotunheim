@@ -94,10 +94,10 @@ package gate.sirius.modloader {
 				if (!mods_dir.exists) {
 					mods_dir.createDirectory();
 				}
-				var loader:File = mods_dir.resolvePath("loaderscreen");
+				var loader:File = mods_dir.resolvePath("loader");
 				if (!loader.exists) {
 					loader.createDirectory();
-					_config.createInfoFile(loader.resolvePath("info.sru"), "Loader Screen", "0.0.0", null, null, "UILoaderScreen");
+					_config.createInfoFile(loader.resolvePath("info.sru"), "loader", "0.0.0", null, null, "UILoaderScreen");
 				}
 				var core:File = mods_dir.resolvePath("core");
 				if (!core.exists) {
@@ -460,11 +460,11 @@ package gate.sirius.modloader {
 		}
 		
 		
-		public function start(skipDomains:Array):ModLoader {
+		public function start(skipDomains:Array, useStorage:Boolean):ModLoader {
 			_loadPhase = 0;
 			_createTicket();
 			_cache.avoidDomains(skipDomains);
-			_scan(new File(File.applicationDirectory.nativePath));
+			_scan(new File(useStorage ? File.applicationStorageDirectory.nativePath : File.applicationDirectory.nativePath));
 			return this;
 		}
 		

@@ -1,4 +1,5 @@
 package gate.sirius.meta.core {
+	import flash.display.Stage;
 	import gate.sirius.meta.Console;
 	
 	
@@ -12,17 +13,26 @@ package gate.sirius.meta.core {
 		
 		private var _displayList:Array;
 		
+		private var _stage:Stage;
+		
 		
 		public function get root():Object {
 			return _target;
 		}
+		
 		
 		public function get console():Console {
 			return Console.getInstance();
 		}
 		
 		
-		public function ConsoleRunner(target:*) {
+		public function get stage():Stage {
+			return _stage;
+		}
+		
+		
+		public function ConsoleRunner(stage:Stage, target:*) {
+			_stage = stage;
 			_target = target;
 		}
 		

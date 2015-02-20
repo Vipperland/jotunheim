@@ -7,6 +7,7 @@ package gate.sirius.isometric.matter {
 	import gate.sirius.isometric.math.BiomeBounds;
 	import gate.sirius.isometric.math.BiomeFlexPoint;
 	import gate.sirius.isometric.math.BiomePoint;
+	import gate.sirius.timer.IActiveObject;
 	
 	
 	/**
