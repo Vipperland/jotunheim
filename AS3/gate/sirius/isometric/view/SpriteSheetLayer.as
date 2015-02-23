@@ -9,15 +9,15 @@ package gate.sirius.isometric.view {
 	 */
 	public class SpriteSheetLayer {
 		
-		private var _offset:Point;
+		internal var _offset:Point;
 		
 		private var _width:int;
 		
 		private var _height:int;
 		
-		private var _frames:Vector.<BitmapData>;
+		internal var _frames:Vector.<BitmapData>;
 		
-		private var _currentFrame:uint;
+		internal var _currentFrame:uint;
 		
 		
 		public function SpriteSheetLayer(x:int = 0, y:int = 0) {
@@ -27,7 +27,7 @@ package gate.sirius.isometric.view {
 		}
 		
 		
-		public function addFrame(texture:BitmapData):void {
+		public function addFrame(texture:BitmapData):SpriteSheetLayer {
 			_frames[_frames.length] = texture;
 			if (texture.width > _width) {
 				_width = texture.width;
@@ -35,6 +35,7 @@ package gate.sirius.isometric.view {
 			if (texture.height > _height) {
 				_height = texture.height;
 			}
+			return this;
 		}
 		
 		
@@ -64,11 +65,14 @@ package gate.sirius.isometric.view {
 		}
 		
 		
+		public function get length():uint {
+			return _frames.length;
+		}
+		
+		
 		public function next():void {
-			if (_currentFrame == _frames.length) {
+			if (++_currentFrame == _frames.length) {
 				_currentFrame = 0;
-			} else {
-				++_currentFrame;
 			}
 		}
 		
@@ -82,9 +86,12 @@ package gate.sirius.isometric.view {
 		}
 		
 		
-		public function clone():SpriteSheetLayer {
-			var layer:SpriteSheetLayer = new SpriteSheetLayer(_offset.x, _offset.y);
+		public function clone(offset:Point = null):SpriteSheetLayer {
+			offset = offset || _offset;
+			var layer:SpriteSheetLayer = new SpriteSheetLayer(offset.x, offset.y);
 			layer._frames = _frames;
+			layer._width = _width;
+			layer._height = _height;
 			return layer;
 		}
 		

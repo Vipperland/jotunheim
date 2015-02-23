@@ -67,6 +67,10 @@ package gate.sirius.isometric.matter {
 			_matter = null;
 			_behind = null;
 		}
+		
+		public function toString():String {
+			return "[DepthInfo name=" + _matter.name + " current=" + current + " x=" + x + " y=" + y + " z=" + z + " width=" + width + " height=" + height + " depth=" + depth + "]";
+		}
 	
 	}
 

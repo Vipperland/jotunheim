@@ -1,6 +1,7 @@
 package gate.sirius.isometric.view {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.geom.Point;
 	
 	
 	/**
@@ -16,10 +17,12 @@ package gate.sirius.isometric.view {
 		private var _canvas:BitmapData;
 		
 		
-		public function SpriteSheet(width:uint, height:uint) {
+		public function SpriteSheet(width:uint = 0, height:uint = 0) {
 			_layers = [];
 			_visible = new Vector.<SpriteSheetLayer>();
-			_createCanvas(width, height);
+			if (width > 3 && height > 3) {
+				_createCanvas(width, height);
+			}
 		}
 		
 		
@@ -30,10 +33,27 @@ package gate.sirius.isometric.view {
 		}
 		
 		
+		public function detectSize():void {
+			var tx:uint = 0;
+			var ty:uint = 0;
+			for each (var layer:SpriteSheetLayer in _layers) {
+				if (tx < layer.width) {
+					tx = layer.width;
+				}
+				if (ty < layer.height) {
+					ty = layer.height;
+				}
+			}
+			_createCanvas(tx, ty);
+		}
+		
+		
 		public function addLayer(id:uint, layer:SpriteSheetLayer, visible:Boolean):SpriteSheetLayer {
-			_layers[id] = layer;
-			if (visible) {
-				showLayer(id);
+			if (layer) {
+				_layers[id] = layer;
+				if (visible) {
+					showLayer(id);
+				}
 			}
 			return layer;
 		}
@@ -56,7 +76,6 @@ package gate.sirius.isometric.view {
 				if (_visible.indexOf(layer) == -1) {
 					_visible[_visible.length] = layer;
 				}
-				update();
 			}
 		}
 		
@@ -68,7 +87,6 @@ package gate.sirius.isometric.view {
 				var iof:int = _visible.indexOf(layer);
 				if (iof !== -1) {
 					_visible.splice(iof, 1);
-					update();
 				}
 			}
 		}
@@ -121,8 +139,53 @@ package gate.sirius.isometric.view {
 		}
 		
 		
+		public function get length():uint {
+			return _layers.length;
+		}
+		
+		
 		public function clear():void {
 			_canvas.fillRect(_canvas.rect, 0x0);
+		}
+		
+		
+		public function clone():SpriteSheet {
+			var layer:SpriteSheetLayer;
+			var clayer:SpriteSheetLayer;
+			var i:uint;
+			var copy:SpriteSheet = new SpriteSheet();
+			
+			for (i = 0; i < _layers.length; i++) {
+				layer = _layers[i] as SpriteSheetLayer;
+				clayer = layer ? layer.clone() : null;
+				copy._layers[i] = clayer;
+				if (layer && _visible.indexOf(layer) !== -1) {
+					copy._visible[i] = clayer;
+				}
+			}
+			if (!_canvas) {
+				detectSize();	
+			}
+			copy._createCanvas(_canvas.width, _canvas.height);
+			copy.update();
+			
+			return copy;
+		}
+		
+		public function merge(sprite:SpriteSheet, offset:Point):void {
+			for each(var layer:SpriteSheetLayer in sprite._layers) {
+				addLayer(length, layer.clone(offset), sprite._visible.indexOf(layer) !== -1);
+			}
+			update();
+		}
+		
+		public function dispose():void {
+			if (_canvas) {
+				_layers = null;
+				_visible = null;
+				_canvas.dispose();
+				_canvas = null;
+			}
 		}
 	
 	}

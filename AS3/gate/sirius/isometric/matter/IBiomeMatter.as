@@ -1,5 +1,6 @@
 package gate.sirius.isometric.matter {
 	
+	import flash.display.DisplayObject;
 	import gate.sirius.isometric.behaviours.MatterBehaviours;
 	import gate.sirius.isometric.Biome;
 	import gate.sirius.isometric.data.BiomeEntry;
@@ -49,11 +50,11 @@ package gate.sirius.isometric.matter {
 		function get depth():uint;
 		
 		/**
-		 * Custom matter content value
+		 * Displayable content
 		 * Can be any value
 		 */
-		function get content():*;
-		function set content(value:*):void;
+		function get content():DisplayObject;
+		function set content(value:DisplayObject):void;
 		
 		/**
 		 * Internal object behaviours

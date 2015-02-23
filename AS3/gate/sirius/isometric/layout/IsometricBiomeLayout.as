@@ -63,13 +63,19 @@ package gate.sirius.isometric.layout {
 					continue;
 				depthA = matterA.depthInfo;
 				depthA.visited = false;
+				depthA.current = 0;
 				if (!_noSort)
 					result[countA] = matterA;
 				countB = 0;
 				for each (matterB in objects) {
 					if (matterA !== matterB && _filter(matterB)) {
 						depthB = matterB.depthInfo;
-						if (depthB.x < depthA.width && depthB.y < depthA.height && depthB.z < depthA.depth) {
+						if (depthA.x == depthB.x && depthA.y == depthB.y && depthA.width == depthB.width && depthA.height == depthB.height) {
+							if (depthB.depth < depthA.depth) {
+								depthA.behind[countB] = depthB.matter;
+								++countB;
+							}
+						} else if (depthB.x < depthA.width && depthB.y < depthA.height && depthB.z < depthA.depth) {
 							depthA.behind[countB] = depthB.matter;
 							++countB;
 						}
@@ -107,13 +113,11 @@ package gate.sirius.isometric.layout {
 				
 				depth.behind.splice(0, depth.behind.length);
 				
-				depth.current = countA;
+				depth.current = ++countA;
 				
 				if (_postFilter !== null) {
-					_postFilter(matter);
+					_postFilter(depth.matter);
 				}
-				
-				++countA;
 				
 			}
 		

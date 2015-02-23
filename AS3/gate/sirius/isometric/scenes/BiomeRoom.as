@@ -231,12 +231,14 @@ package gate.sirius.isometric.scenes {
 			return _behaviours;
 		}
 		
+		
 		/**
 		 * Custom data
 		 */
 		public function get data():Object {
 			return _data;
 		}
+		
 		
 		public function set data(value:Object):void {
 			_data = value;
@@ -245,6 +247,16 @@ package gate.sirius.isometric.scenes {
 		
 		public function toString():String {
 			return "[BiomeRoom {id:" + _id + ", objects:" + _objects.length + ", size:" + (_bounds.width + "x" + _bounds.height + "x" + _bounds.depth) + ", location:" + _location.x + "," + _location.y + "," + _location.z + "}]";
+		}
+		
+		
+		public function dispose(recycle:Boolean):void {
+			
+			for each (var matter:BiomeMatter in _objects) {
+				matter.dispose(recycle);
+			}
+			_map = null;
+			_behaviours.dispose();
 		}
 	
 	}

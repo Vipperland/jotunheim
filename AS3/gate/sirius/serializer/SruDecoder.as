@@ -409,12 +409,12 @@ package gate.sirius.serializer {
 					break;
 				}
 				
-				if (_data.hasCommentStart()) {
+				if (_data.isCommentStart()) {
 					_skipping = true;
 					continue;
 				}
 				if (_skipping) {
-					if (_data.hasCommentEnd()) {
+					if (_data.isCommentEnd()) {
 						_skipping = false;
 					}
 					continue;

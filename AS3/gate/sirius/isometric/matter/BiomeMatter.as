@@ -1,5 +1,6 @@
 package gate.sirius.isometric.matter {
 	
+	import flash.display.DisplayObject;
 	import flash.utils.clearInterval;
 	import flash.utils.setTimeout;
 	import gate.sirius.isometric.behaviours.MatterBehaviours;
@@ -39,7 +40,7 @@ package gate.sirius.isometric.matter {
 		protected var _location:BiomeFlexPoint;
 		
 		/** @private */
-		protected var _content:*;
+		protected var _content:DisplayObject;
 		
 		/** @private */
 		protected var _tile:BiomeEntry;
@@ -205,15 +206,15 @@ package gate.sirius.isometric.matter {
 		
 		
 		/**
-		 * Custom matter content value
+		 * Displayable object
 		 * Can be any value
 		 */
-		public function get content():* {
+		public function get content():DisplayObject {
 			return _content;
 		}
 		
 		
-		public function set content(value:*):void {
+		public function set content(value:DisplayObject):void {
 			_content = value;
 		}
 		
@@ -232,6 +233,8 @@ package gate.sirius.isometric.matter {
 		public function get depthInfo():DepthInfo {
 			return _depthInfo;
 		}
+		
+		
 		
 		
 		/**

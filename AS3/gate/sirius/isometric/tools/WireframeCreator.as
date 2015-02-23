@@ -17,7 +17,7 @@ package gate.sirius.isometric.tools {
 	 */
 	public class WireframeCreator {
 		
-		public static function create(color:int, width:uint, height:uint, depth:uint, bounds:BiomeBounds, location:BiomePoint):DisplayObject {
+		public static function create(color:int, width:uint, height:uint, depth:uint, bounds:BiomeBounds, location:BiomePoint):Bitmap {
 			
 			var s:Shape = new Shape();
 			var hw:int = width >> 1;

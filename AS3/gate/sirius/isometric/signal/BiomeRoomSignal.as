@@ -22,6 +22,10 @@ package gate.sirius.isometric.signal {
 			_room = null;
 			super.dispose(recyclable);
 		}
+		
+		public function get room():BiomeRoom {
+			return _room;
+		}
 	
 	}
 }

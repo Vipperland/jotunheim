@@ -390,13 +390,13 @@ package gate.sirius.serializer.data {
 		}
 		
 		
-		public function hasCommentStart():Boolean {
-			return lineClear.lastIndexOf(COMMENT_BLOCK_START) !== -1;
+		public function isCommentStart():Boolean {
+			return lineClear.indexOf(COMMENT_BLOCK_START) == 0;
 		}
 		
 		
-		public function hasCommentEnd():Boolean {
-			return lineClear.lastIndexOf(COMMENT_BLOCK_END) == lineClear.length - 2;
+		public function isCommentEnd():Boolean {
+			return lineClear.lastIndexOf(COMMENT_BLOCK_END) == 0;
 		}
 		
 		

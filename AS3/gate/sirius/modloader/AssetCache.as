@@ -108,6 +108,11 @@ package gate.sirius.modloader {
 			return _cached[name] as Def;
 		}
 		
+		public function hasTexture(name:String):Boolean {
+			var def:Def = _getDefinition(name);
+			return def !== null;
+		}
+		
 		
 		public function getTexture(name:String):BitmapData {
 			var def:Def = _getDefinition(name);
@@ -116,10 +121,9 @@ package gate.sirius.modloader {
 					return def.b;
 				} else if (def.c) {
 					return def.create();
-				} else {
-					_logMissingAccess("getTexture", name)
 				}
 			}
+			_logMissingAccess("getTexture", name);
 			return null;
 		}
 		

@@ -32,17 +32,18 @@ package gate.sirius.isometric.view {
 		
 		/**
 		 * Get aq registered room
-		 * @param	roomId
+		 * @param	id
 		 * @return
 		 */
-		public function getRoom(roomId:String):BiomeRoom {
-			return _ploting[roomId] as BiomeRoom;
+		public function getRoom(id:String):BiomeRoom {
+			return _ploting[id] as BiomeRoom;
 		}
 		
 		
 		/**
 		 * Add a room data into biome (hide state)
 		 * @param	room
+		 * @param	show
 		 * @return
 		 */
 		public function addRoom(room:BiomeRoom, show:Boolean = false):BiomeRoom {
@@ -74,6 +75,14 @@ package gate.sirius.isometric.view {
 			return room;
 		}
 		
+		/**
+		 * Remove all rooms
+		 */
+		public function clearRooms():void {
+			for each(var room:BiomeRoom in _ploting) {
+				removeRoom(room.id);
+			}
+		}
 		
 		/**
 		 * Show room objects and tiles
