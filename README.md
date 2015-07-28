@@ -1,4 +1,15 @@
-sirius
+Sirius Framework
 ======
+**Targets**
+  - JavaScript;
+  - HAXE;
+  - ActionScript 3 (AIR);
+  - PHP;
 
-ActionScript 3
+=====
+
+JavaScript fast tutorial:
+
+  Sirius *main class*
+  
+  
