@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>Sirius</title>
+	<meta name="description" content="" />
+</head>
+<body>
+	
+	<script src="seo.sirius.js"></script>
+	<script>
+		// Habilita SEO schemes para WEBSITE, BREADCRUMBS e/ou PRODUCT 
+		Sirius.seo.init(SEO.WEBSITE | SEO.BREADCRUMBS | SEO.PRODUCT);
+		// Define propriedades para WEBSITE .build(nome,url,nome_alternativo)
+		Sirius.seo.website.build('Teste SEO','http://testseo.com','Framework SEO');
+		// Define propriedades para BREADCRUMBS .add(nome,url)
+		Sirius.seo.breadcrumbs.add("Produtos", "/produtos/");
+		Sirius.seo.breadcrumbs.add("Produto", "/produtos/id=teste_id");
+		// Define propriedades para PRODUCT .build(nome,imagem,descrição,id) .brand(nome,imagem,url) .offer(moeda,disponibilidade,valor_minimo,malor_maximo) .review(média,numero_notas)
+		Sirius.seo.product.build('Ferramenta para SEO','seotool.jpg','Apenas um teste para ferramentas de SEO','teste_id');
+		Sirius.seo.product.brand('Sirius','sirius.jpg','gateofsirius.com');
+		// Publicar os dados de SEO
+		Sirius.seo.publish();
+	</script>
+</body>
+</html>
