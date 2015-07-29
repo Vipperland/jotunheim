@@ -84,7 +84,7 @@ import sirius.utils.Dice;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.tools.Utils")
 class Utils{

@@ -5,7 +5,7 @@ import js.html.Element;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Div")
 class Div extends Display implements IDiv {

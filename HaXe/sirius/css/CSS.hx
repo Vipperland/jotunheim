@@ -6,7 +6,7 @@ import js.html.StyleElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.css.CSS")
 class CSS implements ICSS {

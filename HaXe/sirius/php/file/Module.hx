@@ -8,7 +8,7 @@ import sys.io.File;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 class Module {
 	

@@ -3,7 +3,7 @@ import js.Browser;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Output")
 class Output extends Display{

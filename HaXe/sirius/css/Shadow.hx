@@ -5,7 +5,7 @@ import sirius.utils.Dice;
 
 /**
  * ...
- * @author Rafael Moreira <rafael@gateofsirius.com>
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com> <rafael@gateofsirius.com>
  */
 @:expose("sru.css.Shadow")
 class Shadow extends CSS {

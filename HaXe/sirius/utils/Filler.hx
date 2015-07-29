@@ -3,7 +3,7 @@ import haxe.Log;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.utils.Filler")
 class Filler{

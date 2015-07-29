@@ -4,7 +4,7 @@ import js.html.StyleElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Style")
 class Style extends Display {

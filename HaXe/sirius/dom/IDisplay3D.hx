@@ -2,7 +2,7 @@ package sirius.dom;
 import sirius.math.Point3D;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface IDisplay3D extends IDisplay {

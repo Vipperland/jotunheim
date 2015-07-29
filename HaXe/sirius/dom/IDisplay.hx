@@ -7,7 +7,7 @@ import sirius.events.IDispatcher;
 import sirius.utils.ITable;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface IDisplay {

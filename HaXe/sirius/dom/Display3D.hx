@@ -7,7 +7,7 @@ import sirius.math.Point3D;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Display3D")
 class Display3D extends Div implements IDisplay3D {

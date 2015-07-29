@@ -4,7 +4,7 @@ import js.html.Element;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Body")
 class Body extends Display {

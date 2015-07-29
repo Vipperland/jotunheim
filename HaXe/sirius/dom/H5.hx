@@ -3,7 +3,7 @@ import js.Browser;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.H5")
 class H5 extends Display{

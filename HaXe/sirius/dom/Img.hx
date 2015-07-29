@@ -4,7 +4,7 @@ import js.html.ImageElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Img")
 class Img extends Display{

@@ -2,7 +2,7 @@ package sirius.modules;
 import sirius.dom.IDisplay;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface ILoader {

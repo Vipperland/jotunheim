@@ -3,7 +3,7 @@ import sirius.dom.IDisplay;
 import sirius.dom.IDisplay3D;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface IEvent {

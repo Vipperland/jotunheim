@@ -2,7 +2,7 @@ package sirius.dom;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Sprite")
 class Sprite extends Div {

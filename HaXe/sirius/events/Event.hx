@@ -4,7 +4,7 @@ import sirius.dom.IDisplay3D;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.events.Event")
 class Event implements IEvent {

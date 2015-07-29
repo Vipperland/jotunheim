@@ -1,7 +1,7 @@
 package sirius.modules;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface IMod {

@@ -4,7 +4,7 @@ import js.html.BaseElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.TD")
 class TD extends Display{

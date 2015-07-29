@@ -1,7 +1,7 @@
 package sirius.css;
 
 /**
- * @author Rafael Moreira <rafael@gateofsirius.com>
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com> <rafael@gateofsirius.com>
  */
 
 interface IColor {

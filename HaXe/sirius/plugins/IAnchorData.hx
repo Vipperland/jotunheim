@@ -1,7 +1,7 @@
 package sirius.plugins;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface IAnchorData {

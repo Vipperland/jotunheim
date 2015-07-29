@@ -3,7 +3,7 @@ import sirius.tools.Key;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.tools.DCall")
 class DCall {

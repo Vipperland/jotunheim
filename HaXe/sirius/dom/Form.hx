@@ -8,7 +8,7 @@ import sirius.utils.ITable;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Form")
 class Form extends Display {

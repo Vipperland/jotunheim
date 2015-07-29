@@ -7,7 +7,7 @@ import sirius.events.IEvent;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Input")
 class Input extends Display {

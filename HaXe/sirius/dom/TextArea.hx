@@ -4,7 +4,7 @@ import js.html.TextAreaElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.TextArea")
 class TextArea extends Input {

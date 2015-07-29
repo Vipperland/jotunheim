@@ -4,7 +4,7 @@ import js.html.CanvasElement;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Canvas")
 class Canvas extends Display{

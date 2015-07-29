@@ -10,7 +10,7 @@ import sirius.utils.Filler;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.modules.Loader")
 class Loader implements ILoader {

@@ -3,7 +3,7 @@ import js.html.Element;
 import sirius.dom.IDisplay;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface ITable {

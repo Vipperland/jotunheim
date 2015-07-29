@@ -3,7 +3,7 @@ import js.html.CSSStyleSheet;
 import js.html.StyleElement;
 
 /**
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
 interface ICSS {

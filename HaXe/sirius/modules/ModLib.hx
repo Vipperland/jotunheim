@@ -15,7 +15,7 @@ import sirius.utils.Filler;
 
 /**
  * ...
- * @author Rafael Moreira
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 class ModLib {
 	
