@@ -18,7 +18,7 @@ import sirius.events.Dispatcher;
 import sirius.events.Event;
 import sirius.events.EventGroup;
 import sirius.net.Domain;
-import sirius.seo.BasicSEO;
+import sirius.seo.SEOTool;
 import sirius.tools.IAgent;
 import sirius.tools.Utils;
 
@@ -47,7 +47,7 @@ class Sirius {
 	
 	static public var agent(get, null):IAgent;
 	
-	static public var seo:BasicSEO = new BasicSEO();
+	static public var seo:SEOTool = new SEOTool();
 	
 	static private var _loglevel:UInt = 100;
 	

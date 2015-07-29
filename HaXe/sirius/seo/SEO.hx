@@ -25,12 +25,7 @@ class SEO {
 	
 	public function publish():Void {
 		object.innerHTML = Json.stringify(data);
-		if (object.parentElement == null) {
-			Browser.document.head.appendChild(object);
-			Sirius.log("Sirius::SEO @" + typeOf() + " --PUBLISHED", 10);
-		}else {
-			Sirius.log("Sirius::SEO @" + typeOf() + " --UPDATED", 10);
-		}
+		if (object.parentElement == null) Browser.document.head.appendChild(object);
 	}
 	
 	public function typeOf():String {
