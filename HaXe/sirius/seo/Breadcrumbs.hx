@@ -1,5 +1,4 @@
 package sirius.seo;
-import haxe.Log;
 
 /**
  * ...

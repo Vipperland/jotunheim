@@ -1,6 +1,5 @@
 package sirius.seo;
 import haxe.Json;
-import haxe.Log;
 import js.Browser;
 import js.html.ScriptElement;
 
@@ -20,7 +19,6 @@ class SEO {
 		Reflect.setField(data, "@type", type);
 		object = Browser.document.createScriptElement();
 		object.type = "application/ld+json";
-		Sirius.log("Sirius::SEO @" + typeOf() + " --CREATED", 10);
 	}
 	
 	public function publish():Void {

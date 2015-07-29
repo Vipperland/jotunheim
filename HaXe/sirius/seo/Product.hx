@@ -1,10 +1,4 @@
 package sirius.seo;
-import haxe.Json;
-import haxe.Log;
-import js.Browser;
-import js.html.ScriptElement;
-import sirius.dom.Display;
-import sirius.dom.Style;
 
 /**
  * ...

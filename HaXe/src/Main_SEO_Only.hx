@@ -1,11 +1,12 @@
 package;
-import sirius.Sirius;
+import sirius.seo.SEOTool;
+import sirius.SEO_Sirius;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class Main{
+class Main_SEO_Only{
 
 	static public function main() {
 	}
