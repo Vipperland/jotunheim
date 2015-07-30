@@ -1,6 +1,5 @@
 package sirius.dom;
 
-import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;
 import js.html.Element;
@@ -32,10 +31,13 @@ class Display implements IDisplay {
 	
 	public var data:Dynamic;
 	
+	/** INNER data 
+	 * @private
+	 **/
 	private var _data:Dynamic;
 	
 	/** Default target element */
-	public var Self:Element;
+	public var element:Element;
 	
 	/** Custom Event Dispatcher */
 	public var dispatcher:IDispatcher;
@@ -51,7 +53,7 @@ class Display implements IDisplay {
 		if (q == null) {
 			q = Browser.document.createDivElement();
 		}
-		Self = q;
+		element = q;
 		data = { };
 		_data = { };
 		dispatcher = new Dispatcher(this);
@@ -61,7 +63,7 @@ class Display implements IDisplay {
 	}
 	
 	public function exists(q:String):Bool {
-		return Self != null && Self.querySelector(q) != null;
+		return element != null && element.querySelector(q) != null;
 	}
 	
 	public function enable(q:Array<Dynamic>):IDisplay {
@@ -77,25 +79,25 @@ class Display implements IDisplay {
 	
 	
 	public function select(q:String):ITable {
-		return Sirius.all(q, Self);
+		return Sirius.all(q, element);
 	}
 	
 	
 	public function one(q:String):IDisplay {
-		return Sirius.select(q, Self);
+		return Sirius.select(q, element);
 	}
 	
 	
 	public function all():ITable {
-		return Sirius.all("*", Self);
+		return Sirius.all("*", element);
 	}
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {
 		if (o == null) o = { };
-		o.scrollX = Self.scrollLeft;
-		o.scrollY = Self.scrollTop;
-		o.x = Self.offsetLeft;
-		o.y = Self.offsetTop;
+		o.scrollX = element.scrollLeft;
+		o.scrollY = element.scrollTop;
+		o.x = element.offsetLeft;
+		o.y = element.offsetTop;
 		o.viewX = o.x - Browser.window.scrollX;
 		o.viewY = o.y - Browser.window.scrollY;
 		return o;
@@ -107,7 +109,7 @@ class Display implements IDisplay {
 	}
 	
 	public function length():Int {
-		return Self.children.length;
+		return element.children.length;
 	}
 	
 	public function index():Int {
@@ -116,8 +118,8 @@ class Display implements IDisplay {
 	
 	public function indexOf(q:IDisplay):Int {
 		var r:Int = -1;
-		Dice.Children(Self, function(c:Node, i:Int) {
-			return c == q.Self;
+		Dice.Children(element, function(c:Node, i:Int) {
+			return c == q.element;
 		}, function(i:Int, f:Bool) {
 			r = f ? i : -1;
 		});
@@ -128,10 +130,10 @@ class Display implements IDisplay {
 		q.dispatcher.apply();
 		q.parent = this;
 		if (at != -1 && at < length()) {
-			var sw:Node = Self.childNodes.item(at);
-			Self.insertBefore(q.Self, sw);
+			var sw:Node = element.childNodes.item(at);
+			element.insertBefore(q.element, sw);
 		}else {
-			Self.appendChild(q.Self);	
+			element.appendChild(q.element);	
 		}
 		return this;
 	}
@@ -153,7 +155,7 @@ class Display implements IDisplay {
 	
 	public function remove():IDisplay {
 		this.parent = null;
-		if (Self.parentElement != null) Self.parentElement.removeChild(Self);
+		if (element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
 	}
 	
@@ -163,12 +165,12 @@ class Display implements IDisplay {
 			if (v != null && v.length > 0) {
 				if (v.substr(0, 1) == "/") {
 					v = v.substr(1, v.length - 1);
-					if (Self.classList.contains(v)) {
-						Self.classList.remove(v);
+					if (element.classList.contains(v)) {
+						element.classList.remove(v);
 					}
 				}else {
-					if (!Self.classList.contains(v)) {
-						Self.classList.add(v);
+					if (!element.classList.contains(v)) {
+						element.classList.add(v);
 					}
 				}
 			}
@@ -177,45 +179,45 @@ class Display implements IDisplay {
 	}
 	
 	public function cursor(?value:String):String {
-		if (value != null) Self.style.cursor = value;
-		return Self.style.cursor;
+		if (value != null) element.style.cursor = value;
+		return element.style.cursor;
 	}
 	
 	public function detach():Void {
-		Self.style.position = "absolute";
+		element.style.position = "absolute";
 	}
 	
 	public function attach():Void {
-		Self.style.position = "relative";
+		element.style.position = "relative";
 	}
 	
 	public function show():Void {
-		Self.hidden = false;
+		element.hidden = false;
 	}
 	
 	public function hide():Void {
-		Self.hidden = true;
+		element.hidden = true;
 	}
 	
 	public function attribute(name:String, ?value:String):String {
-		if (Reflect.getProperty(Self, name) != null) {
-			if (value != null) Reflect.setProperty(Self, name, value);
-			return Reflect.getProperty(Self, name);
+		if (Reflect.getProperty(element, name) != null) {
+			if (value != null) Reflect.setProperty(element, name, value);
+			return Reflect.getProperty(element, name);
 		}
-		if (value != null) Self.setAttribute(name, value);
-		return Self.getAttribute(name);
+		if (value != null) element.setAttribute(name, value);
+		return element.getAttribute(name);
 		
 	}
 	
 	public function build(q:String, ?plainText:Bool = false):IDisplay {
-		if (plainText) Self.innerText = q;
-		else Self.innerHTML = q;
+		if (plainText) element.innerText = q;
+		else element.innerHTML = q;
 		return this;
 	}
 	
 	public function style(write:Dynamic):IDisplay {
 		Dice.All(write, function(p:String, v:String) {
-			Reflect.setField(Self.style, p, "" + v);
+			Reflect.setField(element.style, p, "" + v);
 		});
 		return this;
 	}
@@ -233,16 +235,16 @@ class Display implements IDisplay {
 	
 	public function clear(?fast:Bool):IDisplay {
 		if (fast) {
-			Self.innerHTML = "";
+			element.innerHTML = "";
 		}else{
-			var i:Int = Self.children.length;
-			while (i-- > 0) Self.removeChild(Self.childNodes.item(i));
+			var i:Int = element.children.length;
+			while (i-- > 0) element.removeChild(element.childNodes.item(i));
 		}
 		return this;
 	}
 	
-	public function on(type:String, handler:Dynamic, ?capture:Bool):IDisplay {
-		dispatcher.event(type).add(handler, capture);
+	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay {
+		dispatcher.auto(type, handler, mode);
 		return this;
 	}
 	
@@ -254,9 +256,9 @@ class Display implements IDisplay {
 	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
 		if (complete != null) target.onComplete = complete;
 		if (ease != null) target.ease = ease;
-		if(Self != null){
-			Tween.stop(Self);
-			Tween.to(Self, time, target);
+		if(element != null){
+			Tween.stop(element);
+			Tween.to(element, time, target);
 		}
 		return this;
 	}
@@ -264,9 +266,9 @@ class Display implements IDisplay {
 	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
 		if (complete != null) target.onComplete = complete;
 		if (ease != null) target.ease = ease;
-		if(Self != null){
-			Tween.stop(Self);
-			Tween.from(Self, time, target);
+		if(element != null){
+			Tween.stop(element);
+			Tween.from(element, time, target);
 		}
 		return this;
 	}
@@ -274,16 +276,16 @@ class Display implements IDisplay {
 	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
 		if (complete != null) from.onComplete = complete;
 		if (ease != null) from.ease = ease;
-		if(Self != null){
-			Tween.stop(Self);
-			Tween.fromTo(Self, time, from, to);
+		if(element != null){
+			Tween.stop(element);
+			Tween.fromTo(element, time, from, to);
 		}
 		return this;
 	}
 	
 	public function buildParent():IDisplay {
-		if (Self.parentElement != null && parent == null) {
-			parent = Utils.displayFrom(Self.parentElement);
+		if (element.parentElement != null && parent == null) {
+			parent = Utils.displayFrom(element.parentElement);
 		}
 		return this;
 	}
@@ -300,14 +302,14 @@ class Display implements IDisplay {
 	
 	public function width(?value:Float, ?pct:Bool):Float {
 		if (value != null)
-			Self.style.width = value + (pct ? "%" : "px");
-		return Self.clientWidth;
+			element.style.width = value + (pct ? "%" : "px");
+		return element.clientWidth;
 	}
 	
 	public function height(?value:Float, ?pct:Bool):Float {
 		if (value != null)
-			Self.style.height = value + (pct ? "%" : "px");
-		return Self.clientHeight;
+			element.style.height = value + (pct ? "%" : "px");
+		return element.clientHeight;
 	}
 	
 	public function fit(width:Float, height:Float, ?pct:Bool):IDisplay {
@@ -318,22 +320,22 @@ class Display implements IDisplay {
 	
 	public function overflow(?mode:String):String {
 		if (mode != null)
-			Self.style.overflow = mode;
-		return Self.style.overflow;
+			element.style.overflow = mode;
+		return element.style.overflow;
 	}
 	
 	public function isFullyVisible():Bool {
-		var rect:DOMRect = this.Self.getBoundingClientRect();
+		var rect:DOMRect = this.element.getBoundingClientRect();
 		return rect.top >= 0 && rect.left >= 0 && rect.bottom <= Utils.viewportHeight() && rect.right <= Utils.viewportWidth();
 	}
 	
 	public function isVisible():Bool {
-		var rect:DOMRect = this.Self.getBoundingClientRect();
+		var rect:DOMRect = this.element.getBoundingClientRect();
 		return rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth();
 	}
 	
 	public function isHidden():Bool {
-		return Self.hidden;
+		return element.hidden;
 	}
 	
 }

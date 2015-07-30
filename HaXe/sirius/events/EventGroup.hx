@@ -44,8 +44,8 @@ class EventGroup implements IEventGroup {
 	}
 	
 	public function prepare(t:IDisplay):IEventGroup	{
-		t.Self.removeEventListener(name, _runner, capture);
-		t.Self.addEventListener(name, _runner, capture);
+		t.element.removeEventListener(name, _runner, capture);
+		t.element.addEventListener(name, _runner, capture);
 		return this;
 	}
 	

@@ -541,6 +541,4 @@ class Dispatcher implements IDispatcher {
 		return auto("touchcancel", handler, mode);
 	}
 	
-	
-	
 }

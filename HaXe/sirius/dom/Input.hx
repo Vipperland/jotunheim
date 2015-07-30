@@ -27,7 +27,7 @@ class Input extends Display {
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createInputElement();
 		super(q, null, d);
-		object = cast Self;
+		object = cast element;
 	}
 	
 	public function type(?q:String):String {

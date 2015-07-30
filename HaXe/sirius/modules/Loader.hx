@@ -1,12 +1,7 @@
 package sirius.modules;
 import haxe.Http;
-import haxe.Json;
-import haxe.Log;
-import sirius.dom.Display;
 import sirius.dom.IDisplay;
 import sirius.modules.ModLib;
-import sirius.utils.Dice;
-import sirius.utils.Filler;
 
 /**
  * ...
@@ -27,18 +22,17 @@ class Loader implements ILoader {
 		_noCache = noCache;
 	}
 	
-	public function loadAll(files:Array<String>, complete:Dynamic, error:Dynamic):ILoader {
-		_error = error;
-		_complete = complete;
-		if (files == null) files = [];
-		_toload = _toload.concat(files);
+	public function add(files:Array<String>, ?complete:Dynamic, ?error:Dynamic):ILoader {
+		if(_error != null) _error = error;
+		if (complete != null) _complete = complete;
+		if (files != null && files.length > 0) _toload = _toload.concat(files);
 		return this;
 	}
 	
 	public function start():ILoader {
 		if (!_isBusy) {
-			_loadNext();
 			_isBusy = true;
+			_loadNext();
 		}
 		return this;
 	}
@@ -49,7 +43,9 @@ class Loader implements ILoader {
 			var r:Http = new Http(f + (_noCache ? "" : "?t=" + Date.now().getTime()));
 			r.async = true;
 			r.onError = function(e) {
-				_error(e);
+				if (_error != null) {
+					_error(e);
+				}
 				_loadNext();
 			}
 			r.onData = function(d) {
@@ -59,7 +55,9 @@ class Loader implements ILoader {
 			r.request(false);
 		}else {
 			_isBusy = false;
-			_complete(this);
+			if (_complete != null) {
+				_complete(this);
+			}
 		}
 	}
 	

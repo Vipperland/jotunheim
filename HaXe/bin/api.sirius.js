@@ -115,6 +115,7 @@ _$List_ListIterator.prototype = {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
+	sirius_Sirius.init();
 };
 Math.__name__ = true;
 var Reflect = function() { };
@@ -489,17 +490,16 @@ var sirius_modules_Loader = $hx_exports.sru.modules.Loader = function(noCache) {
 sirius_modules_Loader.__name__ = true;
 sirius_modules_Loader.__interfaces__ = [sirius_modules_ILoader];
 sirius_modules_Loader.prototype = {
-	loadAll: function(files,complete,error) {
-		this._error = error;
-		this._complete = complete;
-		if(files == null) files = [];
-		this._toload = this._toload.concat(files);
+	add: function(files,complete,error) {
+		if(this._error != null) this._error = error;
+		if(complete != null) this._complete = complete;
+		if(files != null && files.length > 0) this._toload = this._toload.concat(files);
 		return this;
 	}
 	,start: function() {
 		if(!this._isBusy) {
-			this._loadNext();
 			this._isBusy = true;
+			this._loadNext();
 		}
 		return this;
 	}
@@ -510,7 +510,7 @@ sirius_modules_Loader.prototype = {
 			var r = new haxe_Http(f + (this._noCache?"":"?t=" + new Date().getTime()));
 			r.async = true;
 			r.onError = function(e) {
-				_g._error(e);
+				if(_g._error != null) _g._error(e);
 				_g._loadNext();
 			};
 			r.onData = function(d) {
@@ -520,7 +520,7 @@ sirius_modules_Loader.prototype = {
 			r.request(false);
 		} else {
 			this._isBusy = false;
-			this._complete(this);
+			if(this._complete != null) this._complete(this);
 		}
 	}
 	,build: function(module,data) {
@@ -556,7 +556,7 @@ sirius_Sirius.select = function(q,t) {
 	if(q == null) q = "*";
 	t = (t == null?window.document:t).querySelector(q);
 	if(t != null) return sirius_tools_Utils.displayFrom(t); else {
-		haxe_Log.trace("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET",{ fileName : "Sirius.hx", lineNumber : 59, className : "sirius.Sirius", methodName : "select"});
+		sirius_Sirius.log("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET",10);
 		return null;
 	}
 };
@@ -573,19 +573,21 @@ sirius_Sirius.jQuery = function(q) {
 	return $(q);;
 };
 sirius_Sirius.onLoad = function(handler) {
+	sirius_Sirius._initialized = true;
 	window.document.addEventListener("DOMContentLoaded",handler);
 };
 sirius_Sirius.init = function(handler,files) {
-	sirius_Sirius.resources.loadAll(files,handler,sirius_Sirius._fileError);
-	sirius_Sirius.onLoad(function() {
-		haxe_Log.trace("Sirius::READY[" + Std.string(sirius_Sirius.get_agent()) + "]",{ fileName : "Sirius.hx", lineNumber : 140, className : "sirius.Sirius", methodName : "init"});
-		sirius_Sirius.body = new sirius_dom_Body(window.document.body);
-		sirius_Sirius.document = new sirius_dom_Document();
-		sirius_Sirius.resources.start();
-	});
+	sirius_Sirius.resources.add(files,handler,sirius_Sirius._fileError);
+	if(!sirius_Sirius._initialized) sirius_Sirius.onLoad(sirius_Sirius._onLoaded); else sirius_Sirius.log("Sirius::init() > Alread initialized",10,2);
+};
+sirius_Sirius._onLoaded = function() {
+	sirius_Sirius.log("Sirius::init() > INITIALIZED // " + sirius_tools_Utils.toString(sirius_Sirius.get_agent(),true),10,1);
+	sirius_Sirius.body = new sirius_dom_Body(window.document.body);
+	sirius_Sirius.document = new sirius_dom_Document();
+	sirius_Sirius.resources.start();
 };
 sirius_Sirius._fileError = function(error) {
-	haxe_Log.trace("[ERROR] Sirius::init() > " + error,{ fileName : "Sirius.hx", lineNumber : 148, className : "sirius.Sirius", methodName : "_fileError"});
+	sirius_Sirius.log("Sirius::init(/GET_RESOURCE/) > " + error,10,3);
 };
 sirius_Sirius.get_agent = function() {
 	if(sirius_Sirius.agent == null) {
@@ -605,9 +607,32 @@ sirius_Sirius.get_agent = function() {
 	}
 	return sirius_Sirius.agent;
 };
-sirius_Sirius.log = function(q,level) {
+sirius_Sirius.log = function(q,level,type) {
+	if(type == null) type = -1;
 	if(level == null) level = 10;
-	if(_$UInt_UInt_$Impl_$.gt(sirius_Sirius._loglevel,level)) haxe_Log.trace(q,{ fileName : "Sirius.hx", lineNumber : 183, className : "sirius.Sirius", methodName : "log"});
+	if(_$UInt_UInt_$Impl_$.gt(sirius_Sirius._loglevel,level)) {
+		var t;
+		switch(type) {
+		case -1:
+			t = "";
+			break;
+		case 0:
+			t = "[MESSAGE] ";
+			break;
+		case 1:
+			t = "[>SYSTEM] ";
+			break;
+		case 2:
+			t = "[WARNING] ";
+			break;
+		case 3:
+			t = "[!ERROR!] ";
+			break;
+		default:
+			t = "";
+		}
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 202, className : "sirius.Sirius", methodName : "log"});
+	}
 };
 sirius_Sirius.logLevel = function(q) {
 	sirius_Sirius._loglevel = q;
@@ -949,7 +974,7 @@ var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t,d) {
 		var _this = window.document;
 		q = _this.createElement("div");
 	}
-	this.Self = q;
+	this.element = q;
 	this.data = { };
 	this._data = { };
 	this.dispatcher = new sirius_events_Dispatcher(this);
@@ -967,7 +992,7 @@ sirius_dom_Display.create = function(q) {
 };
 sirius_dom_Display.prototype = {
 	exists: function(q) {
-		return this.Self != null && this.Self.querySelector(q) != null;
+		return this.element != null && this.element.querySelector(q) != null;
 	}
 	,enable: function(q) {
 		var d = this.dispatcher;
@@ -980,20 +1005,20 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,select: function(q) {
-		return sirius_Sirius.all(q,this.Self);
+		return sirius_Sirius.all(q,this.element);
 	}
 	,one: function(q) {
-		return sirius_Sirius.select(q,this.Self);
+		return sirius_Sirius.select(q,this.element);
 	}
 	,all: function() {
-		return sirius_Sirius.all("*",this.Self);
+		return sirius_Sirius.all("*",this.element);
 	}
 	,getScroll: function(o) {
 		if(o == null) o = { };
-		o.scrollX = this.Self.scrollLeft;
-		o.scrollY = this.Self.scrollTop;
-		o.x = this.Self.offsetLeft;
-		o.y = this.Self.offsetTop;
+		o.scrollX = this.element.scrollLeft;
+		o.scrollY = this.element.scrollTop;
+		o.x = this.element.offsetLeft;
+		o.y = this.element.offsetTop;
 		o.viewX = o.x - window.scrollX;
 		o.viewY = o.y - window.scrollY;
 		return o;
@@ -1003,15 +1028,15 @@ sirius_dom_Display.prototype = {
 		return this.children.obj(i);
 	}
 	,length: function() {
-		return this.Self.children.length;
+		return this.element.children.length;
 	}
 	,index: function() {
 		if(this.parent != null) return this.parent.indexOf(this); else return null;
 	}
 	,indexOf: function(q) {
 		var r = -1;
-		sirius_utils_Dice.Children(this.Self,function(c,i) {
-			return c == q.Self;
+		sirius_utils_Dice.Children(this.element,function(c,i) {
+			return c == q.element;
 		},function(i1,f) {
 			if(f) r = i1; else r = -1;
 		});
@@ -1022,9 +1047,9 @@ sirius_dom_Display.prototype = {
 		q.dispatcher.apply();
 		q.parent = this;
 		if(at != -1 && at < this.length()) {
-			var sw = this.Self.childNodes.item(at);
-			this.Self.insertBefore(q.Self,sw);
-		} else this.Self.appendChild(q.Self);
+			var sw = this.element.childNodes.item(at);
+			this.element.insertBefore(q.element,sw);
+		} else this.element.appendChild(q.element);
 		return this;
 	}
 	,addChildren: function(q) {
@@ -1041,7 +1066,7 @@ sirius_dom_Display.prototype = {
 	}
 	,remove: function() {
 		this.parent = null;
-		if(this.Self.parentElement != null) this.Self.parentElement.removeChild(this.Self);
+		if(this.element.parentElement != null) this.element.parentElement.removeChild(this.element);
 		return this;
 	}
 	,css: function(styles) {
@@ -1051,45 +1076,45 @@ sirius_dom_Display.prototype = {
 			if(v != null && v.length > 0) {
 				if(HxOverrides.substr(v,0,1) == "/") {
 					v = HxOverrides.substr(v,1,v.length - 1);
-					if(_g.Self.classList.contains(v)) _g.Self.classList.remove(v);
-				} else if(!_g.Self.classList.contains(v)) _g.Self.classList.add(v);
+					if(_g.element.classList.contains(v)) _g.element.classList.remove(v);
+				} else if(!_g.element.classList.contains(v)) _g.element.classList.add(v);
 			}
 		});
 		return this;
 	}
 	,cursor: function(value) {
-		if(value != null) this.Self.style.cursor = value;
-		return this.Self.style.cursor;
+		if(value != null) this.element.style.cursor = value;
+		return this.element.style.cursor;
 	}
 	,detach: function() {
-		this.Self.style.position = "absolute";
+		this.element.style.position = "absolute";
 	}
 	,attach: function() {
-		this.Self.style.position = "relative";
+		this.element.style.position = "relative";
 	}
 	,show: function() {
-		this.Self.hidden = false;
+		this.element.hidden = false;
 	}
 	,hide: function() {
-		this.Self.hidden = true;
+		this.element.hidden = true;
 	}
 	,attribute: function(name,value) {
-		if(Reflect.getProperty(this.Self,name) != null) {
-			if(value != null) Reflect.setProperty(this.Self,name,value);
-			return Reflect.getProperty(this.Self,name);
+		if(Reflect.getProperty(this.element,name) != null) {
+			if(value != null) Reflect.setProperty(this.element,name,value);
+			return Reflect.getProperty(this.element,name);
 		}
-		if(value != null) this.Self.setAttribute(name,value);
-		return this.Self.getAttribute(name);
+		if(value != null) this.element.setAttribute(name,value);
+		return this.element.getAttribute(name);
 	}
 	,build: function(q,plainText) {
 		if(plainText == null) plainText = false;
-		if(plainText) this.Self.innerText = q; else this.Self.innerHTML = q;
+		if(plainText) this.element.innerText = q; else this.element.innerHTML = q;
 		return this;
 	}
 	,style: function(write) {
 		var _g = this;
 		sirius_utils_Dice.All(write,function(p,v) {
-			_g.Self.style[p] = "" + v;
+			_g.element.style[p] = "" + v;
 		});
 		return this;
 	}
@@ -1103,14 +1128,14 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,clear: function(fast) {
-		if(fast) this.Self.innerHTML = ""; else {
-			var i = this.Self.children.length;
-			while(i-- > 0) this.Self.removeChild(this.Self.childNodes.item(i));
+		if(fast) this.element.innerHTML = ""; else {
+			var i = this.element.children.length;
+			while(i-- > 0) this.element.removeChild(this.element.childNodes.item(i));
 		}
 		return this;
 	}
-	,on: function(type,handler,capture) {
-		this.dispatcher.event(type).add(handler,capture);
+	,on: function(type,handler,mode) {
+		this.dispatcher.auto(type,handler,mode);
 		return this;
 	}
 	,fadeTo: function(value,time) {
@@ -1122,9 +1147,9 @@ sirius_dom_Display.prototype = {
 		if(time == null) time = 1;
 		if(complete != null) target.onComplete = complete;
 		if(ease != null) target.ease = ease;
-		if(this.Self != null) {
-			sirius_transitions_Tween.stop(this.Self);
-			sirius_transitions_Tween.to(this.Self,time,target);
+		if(this.element != null) {
+			sirius_transitions_Tween.stop(this.element);
+			sirius_transitions_Tween.to(this.element,time,target);
 		}
 		return this;
 	}
@@ -1132,9 +1157,9 @@ sirius_dom_Display.prototype = {
 		if(time == null) time = 1;
 		if(complete != null) target.onComplete = complete;
 		if(ease != null) target.ease = ease;
-		if(this.Self != null) {
-			sirius_transitions_Tween.stop(this.Self);
-			sirius_transitions_Tween.from(this.Self,time,target);
+		if(this.element != null) {
+			sirius_transitions_Tween.stop(this.element);
+			sirius_transitions_Tween.from(this.element,time,target);
 		}
 		return this;
 	}
@@ -1142,14 +1167,14 @@ sirius_dom_Display.prototype = {
 		if(time == null) time = 1;
 		if(complete != null) from.onComplete = complete;
 		if(ease != null) from.ease = ease;
-		if(this.Self != null) {
-			sirius_transitions_Tween.stop(this.Self);
-			sirius_transitions_Tween.fromTo(this.Self,time,from,to);
+		if(this.element != null) {
+			sirius_transitions_Tween.stop(this.element);
+			sirius_transitions_Tween.fromTo(this.element,time,from,to);
 		}
 		return this;
 	}
 	,buildParent: function() {
-		if(this.Self.parentElement != null && this.parent == null) this.parent = sirius_tools_Utils.displayFrom(this.Self.parentElement);
+		if(this.element.parentElement != null && this.parent == null) this.parent = sirius_tools_Utils.displayFrom(this.element.parentElement);
 		return this;
 	}
 	,activate: function(handler) {
@@ -1161,12 +1186,12 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,width: function(value,pct) {
-		if(value != null) this.Self.style.width = value + (pct?"%":"px");
-		return this.Self.clientWidth;
+		if(value != null) this.element.style.width = value + (pct?"%":"px");
+		return this.element.clientWidth;
 	}
 	,height: function(value,pct) {
-		if(value != null) this.Self.style.height = value + (pct?"%":"px");
-		return this.Self.clientHeight;
+		if(value != null) this.element.style.height = value + (pct?"%":"px");
+		return this.element.clientHeight;
 	}
 	,fit: function(width,height,pct) {
 		this.width(width,pct);
@@ -1174,19 +1199,19 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,overflow: function(mode) {
-		if(mode != null) this.Self.style.overflow = mode;
-		return this.Self.style.overflow;
+		if(mode != null) this.element.style.overflow = mode;
+		return this.element.style.overflow;
 	}
 	,isFullyVisible: function() {
-		var rect = this.Self.getBoundingClientRect();
+		var rect = this.element.getBoundingClientRect();
 		return rect.top >= 0 && rect.left >= 0 && rect.bottom <= sirius_tools_Utils.viewportHeight() && rect.right <= sirius_tools_Utils.viewportWidth();
 	}
 	,isVisible: function() {
-		var rect = this.Self.getBoundingClientRect();
+		var rect = this.element.getBoundingClientRect();
 		return rect.bottom >= 0 && rect.right >= 0 && rect.top <= sirius_tools_Utils.viewportHeight() && rect.left <= sirius_tools_Utils.viewportWidth();
 	}
 	,isHidden: function() {
-		return this.Self.hidden;
+		return this.element.hidden;
 	}
 	,__class__: sirius_dom_Display
 };
@@ -1322,17 +1347,17 @@ sirius_dom_Div.prototype = $extend(sirius_dom_Display.prototype,{
 			if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
 			var p;
 			if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
-			this.Self.style.background = c + " " + r + " " + p;
+			this.element.style.background = c + " " + r + " " + p;
 			haxe_Log.trace(c + " " + r + " " + p,{ fileName : "Div.hx", lineNumber : 36, className : "sirius.dom.Div", methodName : "background"});
-			if(attachment != null && attachment.length > 0) this.Self.style.backgroundAttachment = attachment;
+			if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
 		}
-		return this.Self.style.background;
+		return this.element.style.background;
 	}
 	,__class__: sirius_dom_Div
 });
 var sirius_dom_Button = function(q,d) {
 	sirius_dom_Div.call(this,q,d);
-	this.Self.style.textAlign = "center";
+	this.element.style.textAlign = "center";
 	this.cursor("pointer");
 };
 sirius_dom_Button.__name__ = true;
@@ -1346,7 +1371,7 @@ var sirius_dom_Canvas = $hx_exports.sru.dom.Canvas = function(q,d) {
 		q = _this.createElement("canvas");
 	}
 	sirius_dom_Display.call(this,q,null,d);
-	this.paper = this.Self;
+	this.paper = this.element;
 };
 sirius_dom_Canvas.__name__ = true;
 sirius_dom_Canvas.__super__ = sirius_dom_Display;
@@ -1555,8 +1580,8 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	,__class__: sirius_dom_Display3D
 });
 var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
-	this.element = window.document.documentElement;
 	sirius_dom_Display.call(this,window.document);
+	this.element = window.document.documentElement;
 	this.dispatcher.wheel($bind(this,this.stopScroll),true);
 	this.prepare();
 };
@@ -1574,9 +1599,9 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		if(window.pageXOffset != null) {
 			o.x = window.pageXOffset;
 			o.y = window.pageYOffset;
-		} else if(sirius_Sirius.body.Self.scrollTop != 0) {
-			o.x = sirius_Sirius.body.Self.scrollLeft;
-			o.y = sirius_Sirius.body.Self.scrollTop;
+		} else if(sirius_Sirius.body.element.scrollTop != 0) {
+			o.x = sirius_Sirius.body.element.scrollLeft;
+			o.y = sirius_Sirius.body.element.scrollTop;
 		} else {
 			o.x = this.element.scrollLeft;
 			o.y = this.element.scrollTop;
@@ -1597,7 +1622,7 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		if(offX == null) offX = 0;
 		if(time == null) time = 1;
 		if(typeof(target) == "string") target = sirius_Sirius.select(target);
-		if(Object.prototype.hasOwnProperty.call(target,"Self")) target = target.Self;
+		if(Object.prototype.hasOwnProperty.call(target,"element")) target = target.Self;
 		this.easeScroll(target.offsetLeft - offX,target.offsetTop - offY,time,ease);
 	}
 	,trackCursor: function() {
@@ -1659,7 +1684,7 @@ var sirius_dom_Form = $hx_exports.sru.dom.Form = function(q,d) {
 		q = _this.createElement("form");
 	}
 	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.Self;
+	this.object = this.element;
 };
 sirius_dom_Form.__name__ = true;
 sirius_dom_Form.__super__ = sirius_dom_Display;
@@ -1835,7 +1860,7 @@ var sirius_dom_Img = $hx_exports.sru.dom.Img = function(q,d) {
 		q = _this.createElement("img");
 	}
 	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.Self;
+	this.object = this.element;
 };
 sirius_dom_Img.__name__ = true;
 sirius_dom_Img.__super__ = sirius_dom_Display;
@@ -1857,7 +1882,7 @@ var sirius_dom_Input = $hx_exports.sru.dom.Input = function(q,d) {
 		q = _this.createElement("input");
 	}
 	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.Self;
+	this.object = this.element;
 };
 sirius_dom_Input.__name__ = true;
 sirius_dom_Input.__super__ = sirius_dom_Display;
@@ -2270,13 +2295,13 @@ var sirius_dom_Style = $hx_exports.sru.dom.Style = function(q,d) {
 		q = _this.createElement("style");
 	}
 	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.Self;
+	this.object = this.element;
 };
 sirius_dom_Style.__name__ = true;
 sirius_dom_Style.__super__ = sirius_dom_Display;
 sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
 	publish: function() {
-		window.document.head.appendChild(this.Self);
+		window.document.head.appendChild(this.element);
 	}
 	,__class__: sirius_dom_Style
 });
@@ -2712,8 +2737,8 @@ sirius_events_EventGroup.prototype = {
 		return this;
 	}
 	,prepare: function(t) {
-		t.Self.removeEventListener(this.name,$bind(this,this._runner),this.capture);
-		t.Self.addEventListener(this.name,$bind(this,this._runner),this.capture);
+		t.element.removeEventListener(this.name,$bind(this,this._runner),this.capture);
+		t.element.addEventListener(this.name,$bind(this,this._runner),this.capture);
 		return this;
 	}
 	,cancel: function() {
@@ -2836,16 +2861,16 @@ sirius_modules_ModLib.register = function(file,content) {
 			if(i != -1) {
 				var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
 				if(mod.name == null) mod.name = file;
-				haxe_Log.trace("Building Module [" + mod.name + "]",{ fileName : "ModLib.hx", lineNumber : 39, className : "sirius.modules.ModLib", methodName : "register"});
+				sirius_Sirius.log("Building Module [" + mod.name + "]",10,1);
 				var end = v.indexOf(";;;");
 				content = v.substring(i + 2,end == -1?v.length:end);
 				if(mod.require != null) {
 					var dependencies = mod.require.split(";");
-					haxe_Log.trace("\tValidating dependencies...",{ fileName : "ModLib.hx", lineNumber : 44, className : "sirius.modules.ModLib", methodName : "register"});
+					sirius_Sirius.log("\tValidating dependencies...",10,1);
 					sirius_utils_Dice.Values(dependencies,function(v1) {
 						var set = Reflect.field(sirius_modules_ModLib.CACHE,v1);
-						if(set == null) haxe_Log.trace("\t\t[WARNING] MODULE(" + v1 + ") : MISSING",{ fileName : "ModLib.hx", lineNumber : 48, className : "sirius.modules.ModLib", methodName : "register"}); else {
-							haxe_Log.trace("\t\t[" + v1 + "] OK!",{ fileName : "ModLib.hx", lineNumber : 50, className : "sirius.modules.ModLib", methodName : "register"});
+						if(set == null) sirius_Sirius.log("MODULE(" + v1 + ") : MISSING",10,2); else {
+							sirius_Sirius.log("\t\t[" + v1 + "] OK!",10,1);
 							content = content.split("<import " + v1 + "/>").join(set);
 						}
 					});
@@ -2855,7 +2880,7 @@ sirius_modules_ModLib.register = function(file,content) {
 					if(t != null) t.addChild(sirius_modules_ModLib.build(mod.name));
 				}
 				sirius_modules_ModLib.CACHE[mod.name] = content;
-			} else haxe_Log.trace("\t[ERROR] (" + HxOverrides.substr(v,0,15) + "...) Missing or Invalid MODULE tag in [" + file + "]",{ fileName : "ModLib.hx", lineNumber : 67, className : "sirius.modules.ModLib", methodName : "register"});
+			} else sirius_Sirius.log("\t(" + HxOverrides.substr(v,0,15) + "...) Missing or Invalid MODULE tag in [" + file + "]",10,3);
 		}
 	}); else sirius_modules_ModLib.CACHE[file] = content;
 };
@@ -2885,7 +2910,7 @@ sirius_plugins_Anchor.init = function() {
 };
 sirius_plugins_Anchor.prototype = {
 	_scroll: function(e) {
-		var d = e.target.Self.getAttribute("data");
+		var d = e.target.element.getAttribute("data");
 		if(d != null) {
 			var k = sirius_plugins_SruObject.fromString(d);
 			if(k.id != null) {
@@ -3135,14 +3160,17 @@ sirius_tools_Utils.fixArray = function(path) {
 	return copy;
 };
 sirius_tools_Utils.screenInfo = function() {
-	return sirius_tools_Utils.screenOrientation() + "@" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight();
+	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
 };
 sirius_tools_Utils.displayFrom = function(t) {
 	if(t.nodeType != 1) return new sirius_dom_Display(t);
-	var ObjClass = Reflect.field(sirius_tools_Utils.typeOf,t.tagName.toLowerCase());
-	if(ObjClass == null) return new sirius_dom_Display(t); else {
-		return new ObjClass(t);
+	var OC = Reflect.field(sirius_tools_Utils.typeOf,t.tagName.toLowerCase());
+	if(OC == null) return new sirius_dom_Display(t); else {
+		return new OC(t);
 	}
+};
+sirius_tools_Utils.toString = function(o,json) {
+	if(json == true) return JSON.stringify(o); else return Std.string(o);
 };
 var sirius_transitions_Ease = $hx_exports.Ease = function() { };
 sirius_transitions_Ease.__name__ = true;
@@ -3272,8 +3300,8 @@ var sirius_utils_Table = $hx_exports.sru.utils.Table = function(q,t) {
 			element = result.item(i);
 			_g.content[_g.content.length] = sirius_tools_Utils.displayFrom(element);
 			_g.elements[_g.elements.length] = element;
-		}); else haxe_Log.trace("[WARNING] TABLE(" + q + ") : NO RESULT",{ fileName : "Table.hx", lineNumber : 44, className : "sirius.utils.Table", methodName : "new"});
-	} else haxe_Log.trace("[ERROR] TABLE(QUERY,TARGET) : NULL QUERY_SELECTOR",{ fileName : "Table.hx", lineNumber : 47, className : "sirius.utils.Table", methodName : "new"});
+		}); else sirius_Sirius.log("TABLE(" + q + ") : NO RESULT",10,2);
+	} else sirius_Sirius.log("TABLE(QUERY,TARGET) : NULL QUERY_SELECTOR",10,3);
 };
 sirius_utils_Table.__name__ = true;
 sirius_utils_Table.__interfaces__ = [sirius_utils_ITable];
@@ -3309,8 +3337,10 @@ sirius_utils_Table.prototype = {
 		sirius_utils_Dice.Call(this.content,method,args);
 		return this;
 	}
-	,onEvent: function(name,handler,capture) {
-		this.call(name,[handler,capture]);
+	,on: function(name,handler,mode) {
+		this.each(function(v) {
+			v.dispatcher.auto(name,handler,mode);
+		});
 		return this;
 	}
 	,merge: function(tables) {
@@ -3322,6 +3352,228 @@ sirius_utils_Table.prototype = {
 			t.elements = t.elements.concat(v.elements);
 		});
 		return t;
+	}
+	,onWheel: function(handler,mode) {
+		return this.on("wheel",handler,mode);
+	}
+	,onCopy: function(handler,mode) {
+		return this.on("copy",handler,mode);
+	}
+	,onCut: function(handler,mode) {
+		return this.on("cut",handler,mode);
+	}
+	,onPaste: function(handler,mode) {
+		return this.on("paste",handler,mode);
+	}
+	,onAbort: function(handler,mode) {
+		return this.on("abort",handler,mode);
+	}
+	,onBlur: function(handler,mode) {
+		return this.on("blur",handler,mode);
+	}
+	,onFocusIn: function(handler,mode) {
+		return this.on("focusin",handler,mode);
+	}
+	,onFocusOut: function(handler,mode) {
+		return this.on("focusout",handler,mode);
+	}
+	,onCanPlay: function(handler,mode) {
+		return this.on("canplay",handler,mode);
+	}
+	,onCanPlayThrough: function(handler,mode) {
+		return this.on("canplaythrough",handler,mode);
+	}
+	,onChange: function(handler,mode) {
+		return this.on("change",handler,mode);
+	}
+	,onClick: function(handler,mode) {
+		return this.on("click",handler,mode);
+	}
+	,onContextMenu: function(handler,mode) {
+		return this.on("contextmenu",handler,mode);
+	}
+	,onDblClick: function(handler,mode) {
+		return this.on("dblclick",handler,mode);
+	}
+	,onDrag: function(handler,mode) {
+		return this.on("drag",handler,mode);
+	}
+	,onDragEnd: function(handler,mode) {
+		return this.on("dragend",handler,mode);
+	}
+	,onDragEnter: function(handler,mode) {
+		return this.on("dragenter",handler,mode);
+	}
+	,onDragLeave: function(handler,mode) {
+		return this.on("dragleave",handler,mode);
+	}
+	,onDragOver: function(handler,mode) {
+		return this.on("dragover",handler,mode);
+	}
+	,onDragStart: function(handler,mode) {
+		return this.on("dragstart",handler,mode);
+	}
+	,onDrop: function(handler,mode) {
+		return this.on("drop",handler,mode);
+	}
+	,onDurationChange: function(handler,mode) {
+		return this.on("durationchange",handler,mode);
+	}
+	,onEmptied: function(handler,mode) {
+		return this.on("emptied",handler,mode);
+	}
+	,onEnded: function(handler,mode) {
+		return this.on("ended",handler,mode);
+	}
+	,onInput: function(handler,mode) {
+		return this.on("input",handler,mode);
+	}
+	,onInvalid: function(handler,mode) {
+		return this.on("invalid",handler,mode);
+	}
+	,onKeyDown: function(handler,mode) {
+		return this.on("keydown",handler,mode);
+	}
+	,onKeyPress: function(handler,mode) {
+		return this.on("keypress",handler,mode);
+	}
+	,onKeyUp: function(handler,mode) {
+		return this.on("keyup",handler,mode);
+	}
+	,onLoad: function(handler,mode) {
+		return this.on("load",handler,mode);
+	}
+	,onLoadedData: function(handler,mode) {
+		return this.on("loadeddata",handler,mode);
+	}
+	,onLoadedMetadata: function(handler,mode) {
+		return this.on("loadedmetadata",handler,mode);
+	}
+	,onLoadStart: function(handler,mode) {
+		return this.on("loadstart",handler,mode);
+	}
+	,onMouseDown: function(handler,mode) {
+		return this.on("mousedown",handler,mode);
+	}
+	,onMouseEnter: function(handler,mode) {
+		return this.on("mouseenter",handler,mode);
+	}
+	,onMouseLeave: function(handler,mode) {
+		return this.on("mouseleave",handler,mode);
+	}
+	,onMouseMove: function(handler,mode) {
+		return this.on("mousemove",handler,mode);
+	}
+	,onMouseOut: function(handler,mode) {
+		return this.on("mouseout",handler,mode);
+	}
+	,onMouseOver: function(handler,mode) {
+		return this.on("mouseover",handler,mode);
+	}
+	,onMouseUp: function(handler,mode) {
+		return this.on("mouseup",handler,mode);
+	}
+	,onPause: function(handler,mode) {
+		return this.on("pause",handler,mode);
+	}
+	,onPlay: function(handler,mode) {
+		return this.on("play",handler,mode);
+	}
+	,onPlaying: function(handler,mode) {
+		return this.on("playing",handler,mode);
+	}
+	,onProgress: function(handler,mode) {
+		return this.on("progress",handler,mode);
+	}
+	,onRateChange: function(handler,mode) {
+		return this.on("ratechange",handler,mode);
+	}
+	,onReset: function(handler,mode) {
+		return this.on("reset",handler,mode);
+	}
+	,onScroll: function(handler,mode) {
+		return this.on("scroll",handler,mode);
+	}
+	,onSeeked: function(handler,mode) {
+		return this.on("seeked",handler,mode);
+	}
+	,onSeeking: function(handler,mode) {
+		return this.on("seeking",handler,mode);
+	}
+	,onSelect: function(handler,mode) {
+		return this.on("select",handler,mode);
+	}
+	,onShow: function(handler,mode) {
+		return this.on("show",handler,mode);
+	}
+	,onStalled: function(handler,mode) {
+		return this.on("stalled",handler,mode);
+	}
+	,onSubmit: function(handler,mode) {
+		return this.on("submit",handler,mode);
+	}
+	,onSuspend: function(handler,mode) {
+		return this.on("suspend",handler,mode);
+	}
+	,onTimeUpdate: function(handler,mode) {
+		return this.on("timeupdate",handler,mode);
+	}
+	,onVolumeChange: function(handler,mode) {
+		return this.on("volumechange",handler,mode);
+	}
+	,onWaiting: function(handler,mode) {
+		return this.on("waiting",handler,mode);
+	}
+	,onPointerCancel: function(handler,mode) {
+		return this.on("pointercancel",handler,mode);
+	}
+	,onPointerDown: function(handler,mode) {
+		return this.on("pointerdown",handler,mode);
+	}
+	,onPointerUp: function(handler,mode) {
+		return this.on("pointerup",handler,mode);
+	}
+	,onPointerMove: function(handler,mode) {
+		return this.on("pointermove",handler,mode);
+	}
+	,onPointerOut: function(handler,mode) {
+		return this.on("pointerout",handler,mode);
+	}
+	,onPointerOver: function(handler,mode) {
+		return this.on("pointerover",handler,mode);
+	}
+	,onPointerEnter: function(handler,mode) {
+		return this.on("pointerenter",handler,mode);
+	}
+	,onPointerLeave: function(handler,mode) {
+		return this.on("pointerleave",handler,mode);
+	}
+	,onGotPointerCapture: function(handler,mode) {
+		return this.on("gotpointercapture",handler,mode);
+	}
+	,onLostPointerCapture: function(handler,mode) {
+		return this.on("lostpointercapture",handler,mode);
+	}
+	,onPointerLockChange: function(handler,mode) {
+		return this.on("pointerlockchange",handler,mode);
+	}
+	,onPointerLockError: function(handler,mode) {
+		return this.on("pointerlockerror",handler,mode);
+	}
+	,onError: function(handler,mode) {
+		return this.on("error",handler,mode);
+	}
+	,onTouchStart: function(handler,mode) {
+		return this.on("touchstart",handler,mode);
+	}
+	,onTouchEnd: function(handler,mode) {
+		return this.on("touchend",handler,mode);
+	}
+	,onTouchMove: function(handler,mode) {
+		return this.on("touchmove",handler,mode);
+	}
+	,onTouchCancel: function(handler,mode) {
+		return this.on("touchcancel",handler,mode);
 	}
 	,__class__: sirius_utils_Table
 };
@@ -3353,6 +3605,7 @@ sirius_Sirius.resources = new sirius_modules_Loader();
 sirius_Sirius.domain = new sirius_net_Domain();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_Sirius._loglevel = 100;
+sirius_Sirius._initialized = false;
 sirius_bit_BitIO.P01 = 1;
 sirius_bit_BitIO.P02 = 2;
 sirius_bit_BitIO.P03 = 4;

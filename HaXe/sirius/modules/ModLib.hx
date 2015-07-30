@@ -36,18 +36,18 @@ class ModLib {
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
-						Log.trace("Building Module [" + mod.name + "]");
+						Sirius.log("Building Module [" + mod.name + "]", 10, 1);
 						var end:Int = v.indexOf(";;;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
-							Log.trace("	Validating dependencies...");
+							Sirius.log("	Validating dependencies...", 10, 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v);
 								if (set == null) {
-									Log.trace("		[WARNING] MODULE(" + v + ") : MISSING");
+									Sirius.log("MODULE(" + v + ") : MISSING", 10, 2);
 								}else {
-									Log.trace("		[" + v + "] OK!");
+									Sirius.log("		[" + v + "] OK!", 10, 1);
 									content = content.split("<import " + v + "/>").join(set);
 								}
 							});
@@ -64,7 +64,7 @@ class ModLib {
 						#end
 						Reflect.setField(CACHE, mod.name, content);
 					}else {
-						Log.trace("	[ERROR] (" + v.substr(0, 15) + "...) Missing or Invalid MODULE tag in [" + file + "]");
+						Sirius.log("	(" + v.substr(0, 15) + "...) Missing or Invalid MODULE tag in [" + file + "]", 10, 3);
 					}
 			}
 			});

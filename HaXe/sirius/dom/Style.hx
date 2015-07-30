@@ -14,11 +14,11 @@ class Style extends Display {
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createStyleElement();
 		super(q, null, d);
-		object = cast Self;
+		object = cast element;
 	}
 	
 	public function publish():Void {
-		Browser.document.head.appendChild(cast Self);
+		Browser.document.head.appendChild(cast element);
 	}
 	
 }

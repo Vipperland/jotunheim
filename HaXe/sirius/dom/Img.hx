@@ -14,7 +14,7 @@ class Img extends Display{
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createImageElement();
 		super(q, null, d);
-		object = cast Self;
+		object = cast element;
 	}
 	
 	public function src(?value:String):String {

@@ -9,18 +9,35 @@
 	
 	<script src="seo.sirius.min.js"></script>
 	<script>
-		// Habilita SEO schemes para WEBSITE, BREADCRUMBS e/ou PRODUCT 
-		Sirius.seo.init(SEO.WEBSITE | SEO.BREADCRUMBS | SEO.PRODUCT);
-		// Define propriedades para WEBSITE .build(nome,url,nome_alternativo)
-		Sirius.seo.website.build('Teste SEO','http://testseo.com','Framework SEO');
-		// Define propriedades para BREADCRUMBS .add(nome,url)
-		Sirius.seo.breadcrumbs.add("Produtos", "/produtos/");
-		Sirius.seo.breadcrumbs.add("Produto", "/produtos/id=teste_id");
-		// Define propriedades para PRODUCT .build(nome,imagem,descrição,id) .brand(nome,imagem,url) .offer(moeda,disponibilidade,valor_minimo,malor_maximo) .review(média,numero_notas)
-		Sirius.seo.product.build('Ferramenta para SEO','seotool.jpg','Apenas um teste para ferramentas de SEO','teste_id');
-		Sirius.seo.product.brand('Sirius','sirius.jpg','gateofsirius.com');
+		// ============================================================ SEO ================================================
+		var seo = Sirius.SEO;
+		// Habilita SEO schemes para WEBSITE, BREADCRUMBS e/ou PRODUCT, pode usar um ou mais, apenas tags definidas serão publicadas.
+		seo.init(SEO.WEBSITE | SEO.BREADCRUMBS | SEO.PRODUCT);
+		// Define propriedades para WEBSITE .build(nome,url,nome_alternativo*)
+		seo.website.build('Teste SEO','http://testseo.com','Framework SEO');
+		// Define propriedades para BREADCRUMBS .add(nome,url_do_produto)
+		seo.breadcrumbs.add("Produtos", "/produtos/");
+		seo.breadcrumbs.add("Produto", "/produtos/id=teste_id");
+		// Define propriedades para PRODUCT .build(nome,imagem*,descrição*,id*) .brand(nome,imagem*,url*) .offer(moeda,disponibilidade,valor_minimo*,malor_maximo*) .review(média,numero_notas)
+		seo.product.build('Ferramenta para SEO','seotool.jpg','Apenas um teste para ferramentas de SEO','teste_id');
+		seo.product.brand('Sirius','sirius.jpg','gateofsirius.com');
+		seo.product.offer('BRL','InStock',100.00,200.00); 
 		// Publicar os dados de SEO
-		Sirius.seo.publish();
+		seo.publish();
+		// =========================================================== /SEO/ ===============================================
+		
+		// =========================================================== DEBUG ===============================================
+		// Exibe o resultado do teste
+		var result = document.createElement('div');
+		var i = 0;
+		var j = document.head.children.length;
+		while(i<j){
+			var n = document.head.children.item(i++);
+			if(n.type == 'application/ld+json') result.innerHTML += '<p><b>&lt;script type="' + n.type + '"&gt;</b><br/>' + n.innerText + '<br/><b>&lt;/script&gt;</b></p>';
+		}
+		document.body.appendChild(result);
+		// ========================================================== /DEBUG/ ==============================================
+		
 	</script>
 </body>
 </html>

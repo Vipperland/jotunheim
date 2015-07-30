@@ -14,7 +14,7 @@ class Canvas extends Display{
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createCanvasElement();
 		super(q, null, d);
-		paper = cast Self;
+		paper = cast element;
 	}
 	
 }

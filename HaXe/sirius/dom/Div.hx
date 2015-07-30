@@ -32,11 +32,11 @@ class Div extends Display implements IDiv {
 			var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
 			var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
 			var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
-			Self.style.background = c + " " + r + " " + p;
+			element.style.background = c + " " + r + " " + p;
 			Log.trace(c + " " + r + " " + p);
-			if (attachment != null && attachment.length > 0) Self.style.backgroundAttachment = attachment;
+			if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
 		}
-		return Self.style.background;
+		return element.style.background;
 	}
 	
 }

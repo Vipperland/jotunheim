@@ -1,4 +1,5 @@
 package sirius.tools;
+import haxe.Json;
 import js.Browser;
 import js.html.Element;
 import sirius.dom.A;
@@ -124,7 +125,7 @@ class Utils{
 	}
 	
 	static public function screenInfo():String {
-		return screenOrientation() + "@" + viewportWidth() + "x" + viewportHeight();
+		return screenOrientation() + "(" + viewportWidth() + "x" + viewportHeight() + ")";
 	}
 	
 	static public var typeOf:Dynamic = { 
@@ -150,8 +151,12 @@ class Utils{
 	static public function displayFrom(t:Element):IDisplay {
 		if (t.nodeType != 1) 
 			return new Display(t);
-		var ObjClass:Dynamic = Reflect.field(typeOf, t.tagName.toLowerCase());
-		return ObjClass == null ? new Display(t) : untyped __js__('new ObjClass(t)');
+		var OC:Dynamic = Reflect.field(typeOf, t.tagName.toLowerCase());
+		return OC == null ? new Display(t) : untyped __js__('new OC(t)');
+	}
+	
+	static public function toString(o:Dynamic, ?json:Bool):String {
+		return json == true ? Json.stringify(o) : Std.string(o);
 	}
 	
 }

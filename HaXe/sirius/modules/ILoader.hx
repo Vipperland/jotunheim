@@ -27,7 +27,7 @@ interface ILoader {
 	 * @param	error
 	 * @return
 	 */
-	public function loadAll (files:Array<String>, complete:Dynamic, error:Dynamic):ILoader;
+	public function add (files:Array<String>, ?complete:Dynamic, ?error:Dynamic):ILoader;
 	
 	/**
 	 * Init Loader proccess

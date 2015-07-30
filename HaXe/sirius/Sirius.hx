@@ -51,12 +51,14 @@ class Sirius {
 	
 	static private var _loglevel:UInt = 100;
 	
+	static private var _initialized:Bool = false;
+	
 	static public function select(?q:String = "*", ?t:Dynamic = null):IDisplay {
 		t = (t == null ? Browser.document : t).querySelector(q);
 		if (t != null) {
 			return Utils.displayFrom(t);
 		}else {
-			Log.trace("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET");
+			log("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET", 10);
 			return null;
 		}
 	}
@@ -131,21 +133,29 @@ class Sirius {
 	}
 	
 	static public function onLoad(handler:Dynamic):Void {
+		_initialized = true;
 		Browser.document.addEventListener("DOMContentLoaded", handler);
 	}
 	
-	static public function init(handler:Dynamic, ?files:Array<String> = null):Void {
-		resources.loadAll(files, handler, _fileError);
-		onLoad(function() {
-			Log.trace("Sirius::READY[" + agent + "]");
-			body = new Body(Browser.document.body);
-			document = new Document();
-			resources.start();
-		});
+	static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
+		resources.add(files, handler, _fileError);
+		if (!_initialized) {
+			onLoad(_onLoaded);
+		}else{
+			log("Sirius::init() > Alread initialized", 10, 2);
+		}
+		
+	}
+	
+	static private function _onLoaded():Void {
+		log("Sirius::init() > INITIALIZED // " + Utils.toString(agent, true), 10, 1);
+		body = new Body(Browser.document.body);
+		document = new Document();
+		resources.start();
 	}
 	
 	static private function _fileError(error:String) {
-		Log.trace("[ERROR] Sirius::init() > " + error);
+		log("Sirius::init(/GET_RESOURCE/) > " + error, 10, 3);
 	}
 	
 	static private function get_agent():IAgent {
@@ -164,7 +174,7 @@ class Sirius {
 			var chrome:Bool = ~/Chrome/i.match(ua);
 			var chromium:Bool = ~/Chromium/i.match(ua);
 			// Check all other versions, including mobile version
-			agent = cast { 
+			agent = cast {
 				ie: ie > 0, 
 				ieVr : ie,	
 				opera: opera, 
@@ -179,8 +189,18 @@ class Sirius {
 	}
 	
 	
-	static public function log(q:Dynamic, level:UInt = 10):Void {
-		if(level < _loglevel) Log.trace(q);
+	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {
+		if (level < _loglevel) {
+			var t:String = switch(type) {
+				case -1 : "";
+				case 0 : "[MESSAGE] ";
+				case 1 : "[>SYSTEM] ";
+				case 2 : "[WARNING] ";
+				case 3 : "[!ERROR!] ";
+				default : "";
+			}
+			Log.trace(t + q);
+		}
 	}
 	
 	static public function logLevel(q:UInt):Void {

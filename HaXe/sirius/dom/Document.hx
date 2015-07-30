@@ -20,11 +20,9 @@ class Document extends Display {
 		Browser.window.scroll(__scroll__.x, __scroll__.y);
 	}
 	
-	public var element:Element;
-	
 	public function new() {
-		element = Browser.document.documentElement;
 		super(cast Browser.document);
+		element = Browser.document.documentElement;
 		dispatcher.wheel(stopScroll, true);
 		prepare();
 	}
@@ -38,9 +36,9 @@ class Document extends Display {
 		if (Browser.window.pageXOffset != null) {
 			o.x = Browser.window.pageXOffset;
 			o.y = Browser.window.pageYOffset;
-		}else if(Sirius.body.Self.scrollTop != 0){
-			o.x = Sirius.body.Self.scrollLeft;
-			o.y = Sirius.body.Self.scrollTop;
+		}else if(Sirius.body.element.scrollTop != 0){
+			o.x = Sirius.body.element.scrollLeft;
+			o.y = Sirius.body.element.scrollTop;
 		}else {
 			o.x = element.scrollLeft;
 			o.y = element.scrollTop;	
@@ -62,7 +60,7 @@ class Document extends Display {
 		if (Std.is(target, String)) {
 			target = Sirius.select(target);
 		}
-		if (Reflect.hasField(target, "Self")) {
+		if (Reflect.hasField(target, "element")) {
 			target = target.Self;
 		}
 		easeScroll(target.offsetLeft - offX, target.offsetTop - offY, time, ease);

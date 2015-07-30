@@ -104,8 +104,7 @@ class Dice {
 			if (each(a++) == true)	break;
 		}
 		
-		if(complete != null) complete(a, a != b);
-		
+		if (complete != null) complete(a, a != b);
 	}
 	
 	#if !php

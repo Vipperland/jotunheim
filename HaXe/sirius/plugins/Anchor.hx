@@ -28,7 +28,7 @@ class Anchor {
 	}
 	
 	private function _scroll(e:IEvent):Void {
-		var d:String = e.target.Self.getAttribute("data");
+		var d:String = e.target.element.getAttribute("data");
 		if (d != null) {
 			var k:IAnchorData = SruObject.fromString(d);
 			if (k.id != null) {

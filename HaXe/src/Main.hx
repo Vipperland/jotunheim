@@ -1,4 +1,5 @@
 package;
+import haxe.Log;
 import sirius.Sirius;
 
 /**
@@ -8,6 +9,7 @@ import sirius.Sirius;
 class Main{
 
 	static public function main() {
+		Sirius.init();
 	}
 	
 }
