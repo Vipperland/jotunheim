@@ -12,13 +12,14 @@ class Creator {
 
 	static public var plugins:Array<ICSS> = [];
 	
-	static public function init(scripts:Array<Dynamic>):Void {
+	static public function init(scripts:Array<Dynamic>, ?max:Int = 100):Void {
 		Dice.Values(scripts, function(V:Dynamic) {
 			plugins[plugins.length] = untyped __js__("new V();");
 		});
-		Dice.Count(0, 1001, function(a:Int, b:Int){
+		var l:Int = max + 1;
+		Dice.Count(0, l, function(a:Int, b:Int) {
 			Dice.Values(plugins, function(v:ICSS) {
-				if(v.countable)	v.add(a);
+				if(v.countable)	v.add(a, max);
 			});
 		});
 		Dice.Values(plugins, function(v:ICSS) {

@@ -115,7 +115,13 @@ _$List_ListIterator.prototype = {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
-	sirius_Sirius.init();
+	sirius_css_Creator.init([sirius_css_Common,sirius_css_Color,sirius_css_Shadow]);
+	sirius_Sirius.init(Main._init);
+};
+Main._init = function() {
+	var d = new sirius_dom_Div();
+	sirius_Sirius.body.addChild(d);
+	d.build(sirius_css_Creator.valueOf());
 };
 Math.__name__ = true;
 var Reflect = function() { };
@@ -159,6 +165,9 @@ Std.parseInt = function(x) {
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
+};
+Std.parseFloat = function(x) {
+	return parseFloat(x);
 };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
@@ -564,7 +573,7 @@ sirius_Sirius.all = function(q,t) {
 	if(q == null) q = "*";
 	return new sirius_utils_Table(q,t);
 };
-sirius_Sirius.list = function(q,t) {
+sirius_Sirius.elements = function(q,t) {
 	if(q == null) q = "*";
 	return sirius_Sirius.all(q,t).elements;
 };
@@ -631,7 +640,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 202, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 151, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -682,7 +691,7 @@ var sirius_css_CSS = $hx_exports.sru.css.CSS = function(countable) {
 sirius_css_CSS.__name__ = true;
 sirius_css_CSS.__interfaces__ = [sirius_css_ICSS];
 sirius_css_CSS.prototype = {
-	add: function(a) {
+	add: function(a,b) {
 	}
 	,hasSelector: function(id) {
 		return sirius_css_CSS.ALL.innerText.indexOf(id) != -1;
@@ -790,10 +799,10 @@ var sirius_css_Common = $hx_exports.sru.css.Common = function() {
 sirius_css_Common.__name__ = true;
 sirius_css_Common.__super__ = sirius_css_CSS;
 sirius_css_Common.prototype = $extend(sirius_css_CSS.prototype,{
-	add: function(a) {
+	add: function(a,b) {
 		var m;
 		if(a < 0) m = a + "n"; else m = "-" + a;
-		if(a > -1) this.setSelector(".z" + m,"z-index:" + a + ";");
+		if(a > -100) this.setSelector(".z" + m,"z-index:" + a + ";");
 		this.setSelector(".o" + m,"outline:" + a + ";");
 		this.setSelector(".w" + m,"width:" + a + "px;");
 		this.setSelector(".h" + m,"height:" + a + "px;");
@@ -822,7 +831,7 @@ sirius_css_Common.prototype = $extend(sirius_css_CSS.prototype,{
 		if(a > 0) {
 			if(a < 300) this.setSelector(".txt" + m,"font-size:" + a + "px;");
 			if(a < 101) this.setSelector(".round" + m," border-radius:" + a + "px;");
-			var p = (a / 1000 * 100).toFixed(1);
+			var p = (a / b * 100).toFixed(1);
 			var i = p.split(".");
 			var n = i[0];
 			var j = i[1];
@@ -840,20 +849,22 @@ sirius_css_Common.prototype = $extend(sirius_css_CSS.prototype,{
 			this.setSelector(".mg-l-" + k + "p","margin-left:" + Std.string(p) + "%;");
 			this.setSelector(".mg-r-" + k + "p","margin-right:" + Std.string(p) + "%;");
 			this.setSelector(".ln-" + k + "p","line-height:" + Std.string(p) + "%;");
-			this.add(-a);
+			this.add(-a,b);
 		}
 	}
 	,__class__: sirius_css_Common
 });
 var sirius_css_Creator = $hx_exports.CSS = function() { };
 sirius_css_Creator.__name__ = true;
-sirius_css_Creator.init = function(scripts) {
+sirius_css_Creator.init = function(scripts,max) {
+	if(max == null) max = 100;
 	sirius_utils_Dice.Values(scripts,function(V) {
 		sirius_css_Creator.plugins[sirius_css_Creator.plugins.length] = new V();;
 	});
-	sirius_utils_Dice.Count(0,1001,function(a,b) {
+	var l = max + 1;
+	sirius_utils_Dice.Count(0,l,function(a,b) {
 		sirius_utils_Dice.Values(sirius_css_Creator.plugins,function(v) {
-			if(v.countable) v.add(a);
+			if(v.countable) v.add(a,max);
 		});
 	});
 	sirius_utils_Dice.Values(sirius_css_Creator.plugins,function(v1) {
@@ -1211,7 +1222,7 @@ sirius_dom_Display.prototype = {
 		return rect.bottom >= 0 && rect.right >= 0 && rect.top <= sirius_tools_Utils.viewportHeight() && rect.left <= sirius_tools_Utils.viewportWidth();
 	}
 	,isHidden: function() {
-		return this.element.hidden;
+		return this.element == null || this.element.hidden;
 	}
 	,__class__: sirius_dom_Display
 };
@@ -2896,13 +2907,7 @@ sirius_modules_ModLib.build = function(module,data) {
 	return new sirius_dom_Display().build(sirius_modules_ModLib.get(module,data));
 };
 var sirius_plugins_Anchor = $hx_exports.sru.plugins.Anchor = function() {
-	var _g = this;
-	this.elements = sirius_Sirius.all("[type=anchor]");
-	this.elements.each(function(d) {
-		d.dispatcher.click($bind(_g,_g._scroll));
-		d.cursor("pointer");
-		d.prepare();
-	});
+	sirius_Sirius.all("[plugin~=anchor]").onClick($bind(this,this._scroll));
 };
 sirius_plugins_Anchor.__name__ = true;
 sirius_plugins_Anchor.init = function() {
@@ -2910,34 +2915,19 @@ sirius_plugins_Anchor.init = function() {
 };
 sirius_plugins_Anchor.prototype = {
 	_scroll: function(e) {
-		var d = e.target.element.getAttribute("data");
+		var d = e.target.attribute("scroll-target");
 		if(d != null) {
-			var k = sirius_plugins_SruObject.fromString(d);
-			if(k.id != null) {
-				var ease = (k.ease != null?k.ease:"circ_in_out").toUpperCase();
-				sirius_Sirius.document.scrollTo(k.id,k.time != null?Std.parseInt(k.time):1,Reflect.field(sirius_transitions_Ease,ease),0,k.y != null?Std.parseInt(k.y):100);
-			} else haxe_Log.trace("Anchor: Missing data='id:?' for element.",{ fileName : "Anchor.hx", lineNumber : 38, className : "sirius.plugins.Anchor", methodName : "_scroll"});
+			var time = Std.parseFloat(sirius_utils_Dice.One(e.target.attribute("scroll-time"),1));
+			var obj = sirius_Sirius.select(d);
+			var x = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("scroll-offx"),0));
+			var y = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("scroll-offy"),100));
+			if(obj != null) {
+				var ease = sirius_transitions_Ease.fromString(sirius_utils_Dice.One(e.target.attribute("scroll-ease"),"LINEAR.X"));
+				sirius_Sirius.document.scrollTo(obj,time,ease,x,y);
+			} else sirius_Sirius.log("Anchor: Missing scroll-target='id:?' for Anchor plugin.",10,3);
 		}
 	}
 	,__class__: sirius_plugins_Anchor
-};
-var sirius_plugins_IAnchorData = function() { };
-sirius_plugins_IAnchorData.__name__ = true;
-sirius_plugins_IAnchorData.prototype = {
-	__class__: sirius_plugins_IAnchorData
-};
-var sirius_plugins_SruObject = function() { };
-sirius_plugins_SruObject.__name__ = true;
-sirius_plugins_SruObject.fromString = function(value) {
-	var o = { };
-	var d = value.split(";");
-	sirius_utils_Dice.Values(d,function(v) {
-		var a = v.split(":");
-		var p = a.shift();
-		v = a.join(":");
-		o[p] = v;
-	});
-	return o;
 };
 var sirius_seo_SEO = function(type) {
 	this.data = { };
@@ -3178,6 +3168,17 @@ sirius_transitions_Ease._F = function(n) {
 	n = window[n];;
 	return n != null?{ x : n.easeNone, I : n.easeIn, O : n.easeOut, IO : n.easeInOut, OI : n.easeOutIn}:{ };
 };
+sirius_transitions_Ease.fromString = function(q) {
+	var q1 = [];
+	var C = Reflect.field(sirius_transitions_Ease,q1[0]);
+	var e = null;
+	if(C != null) {
+		if(q1.length > 1) e = Reflect.field(C,q1[1]);
+		if(e == null) e = C.X;
+		return e;
+	}
+	return sirius_transitions_Ease.LINEAR.X;
+};
 var sirius_transitions_IEasing = function() { };
 sirius_transitions_IEasing.__name__ = true;
 sirius_transitions_IEasing.prototype = {
@@ -3260,8 +3261,15 @@ sirius_utils_Dice.Call = function(q,method,args) {
 sirius_utils_Dice.Count = function(from,to,each,complete) {
 	var a = Math.min(from,to);
 	var b = Math.max(from,to);
-	while(a < b) if(each(a++) == true) break;
+	while(a < b) if(each(a++,b) == true) break;
 	if(complete != null) complete(a,a != b);
+};
+sirius_utils_Dice.One = function(from,alt) {
+	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
+		from = v;
+		return from == null;
+	});
+	if(from == null) return alt; else return from;
 };
 sirius_utils_Dice.Children = function(of,each,complete) {
 	sirius_utils_Dice.Count(0,of.childNodes.length,function(i) {

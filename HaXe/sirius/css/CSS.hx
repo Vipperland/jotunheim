@@ -30,7 +30,7 @@ class CSS implements ICSS {
 	
 	/* INTERFACE sirius.css.ICSS */
 	
-	public function add(a:Int):Void { }
+	public function add(a:Int,b:Int):Void { }
 	
 	public function hasSelector(id:String):Bool {
 		return ALL.innerText.indexOf(id) != -1;

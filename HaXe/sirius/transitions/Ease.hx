@@ -22,4 +22,16 @@ class Ease {
 	public static var QUART:IEasing = _F("Quart");
 	public static var QUINT:IEasing = _F("Quint");
 	
+	public static function fromString(q:String):Dynamic {
+		var q:Array<String> = [];
+		var C:IEasing = Reflect.field(Ease, q[0]);
+		var e:Dynamic = null;
+		if (C != null) {
+			if (q.length > 1) e = Reflect.field(C, q[1]);
+			if (e == null)	e = C.X;
+			return e;
+		}
+		return LINEAR.X;
+	}
+	
 }

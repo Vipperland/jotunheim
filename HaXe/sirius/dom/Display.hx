@@ -335,7 +335,7 @@ class Display implements IDisplay {
 	}
 	
 	public function isHidden():Bool {
-		return element.hidden;
+		return element == null || element.hidden;
 	}
 	
 }

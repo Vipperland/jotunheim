@@ -3,6 +3,7 @@ import haxe.Log;
 import sirius.dom.IDisplay;
 import sirius.events.IEvent;
 import sirius.transitions.Ease;
+import sirius.utils.Dice;
 import sirius.utils.ITable;
 
 /**
@@ -12,30 +13,26 @@ import sirius.utils.ITable;
 @:expose("sru.plugins.Anchor")
 class Anchor {
 	
-	public var elements:ITable;
-	
 	static public function init():Anchor {
 		return new Anchor();
 	}
 	
 	public function new() {
-		elements = Sirius.all("[type=anchor]");
-		elements.each(function(d:IDisplay) {
-			d.dispatcher.click(_scroll);
-			d.cursor("pointer");
-			d.prepare();
-		});
+		Sirius.all("[plugin~=anchor]").onClick(_scroll);
 	}
 	
 	private function _scroll(e:IEvent):Void {
-		var d:String = e.target.element.getAttribute("data");
+		var d:String = e.target.attribute("scroll-target");
 		if (d != null) {
-			var k:IAnchorData = SruObject.fromString(d);
-			if (k.id != null) {
-				var ease:String = (k.ease != null ? k.ease : "circ_in_out").toUpperCase();
-				Sirius.document.scrollTo(k.id, k.time != null ? Std.parseInt(k.time) : 1, Reflect.field(Ease, ease), 0, k.y != null ? Std.parseInt(k.y) : 100);
+			var time:Float = Std.parseFloat(Dice.One(e.target.attribute("scroll-time"), 1));
+			var obj:IDisplay = Sirius.select(d);
+			var x:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offx"), 0));
+			var y:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offy"), 100));
+			if (obj != null) {
+				var ease:Dynamic = Ease.fromString(Dice.One(e.target.attribute("scroll-ease"), "LINEAR.X"));
+				Sirius.document.scrollTo(obj, time, ease, x, y);
 			}else {
-				Log.trace("Anchor: Missing data='id:?' for element.");
+				Sirius.log("Anchor: Missing scroll-target='id:?' for Anchor plugin.", 10, 3);
 			}
 		}
 		

@@ -1,7 +1,10 @@
 package sirius.modules;
 import haxe.Http;
-import sirius.dom.IDisplay;
 import sirius.modules.ModLib;
+
+#if js
+	import sirius.dom.IDisplay;
+#end
 
 /**
  * ...
@@ -41,7 +44,9 @@ class Loader implements ILoader {
 		if (_toload.length > 0) {
 			var f:String = _toload.shift();
 			var r:Http = new Http(f + (_noCache ? "" : "?t=" + Date.now().getTime()));
-			r.async = true;
+			#if js
+				r.async = true;
+			#end
 			r.onError = function(e) {
 				if (_error != null) {
 					_error(e);
@@ -61,9 +66,13 @@ class Loader implements ILoader {
 		}
 	}
 	
-	public function build(module:String, ?data:Dynamic):IDisplay {
-		return ModLib.build(module, data);
-	}
+	#if js
+	
+		public function build(module:String, ?data:Dynamic):IDisplay {
+			return ModLib.build(module, data);
+		}
+		
+	#end
 	
 	public function get(module:String, ?data:Dynamic):String {
 		return ModLib.get(module, data);
@@ -74,9 +83,9 @@ class Loader implements ILoader {
 
 /*
 	[Module:{
-		"name"			:"testModule",				// Unique module identifier
-		"target"		:"selector",				// Auto append module in target selector
-		"require"		:"modA;modB;...;modN",		// Dependencies that will be writed in module
+		"name"		:"testModule",				// Unique module identifier
+		"target"		:"selector",					// Auto append module in target selector
+		"require"	:"modA;modB;...;modN",			// Dependencies that will be writed in module
 		"filler"		:"myFunctionName",			// Call this function and write returned data in module
 		"repeat"		: true | false				// Repeat module structure for each property in filler result
 	}]

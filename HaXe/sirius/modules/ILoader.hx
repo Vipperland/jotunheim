@@ -1,5 +1,8 @@
 package sirius.modules;
-import sirius.dom.IDisplay;
+
+#if js
+	import sirius.dom.IDisplay;
+#end
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -12,13 +15,17 @@ interface ILoader {
 	 */
 	public function get (module:String, ?data:Dynamic = null) : String;
 	
-	/**
-	 * Draws a module in a DOMElement
-	 * @param	module
-	 * @param	data
-	 * @return
-	 */
-	public function build (module:String, ?data:Dynamic = null) : IDisplay;
+	#if js
+	
+		/**
+		 * Draws a module in a DOMElement
+		 * @param	module
+		 * @param	data
+		 * @return
+		 */
+		public function build (module:String, ?data:Dynamic = null) : IDisplay;
+	
+	#end
 	
 	/**
 	 * Load a list of files

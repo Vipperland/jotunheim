@@ -8,7 +8,7 @@ import js.html.StyleElement;
 
 interface ICSS {
 	public var countable:Bool;
-	public function add(a:Int):Void;
+	public function add(a:Int,b:Int):Void;
 	public function hasSelector(id:String):Bool;
 	public function setSelector(id:String, style:String):Void;
 	public function apply():Void;

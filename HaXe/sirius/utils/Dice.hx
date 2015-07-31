@@ -101,10 +101,26 @@ class Dice {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
 		while (a < b) {
-			if (each(a++) == true)	break;
+			if (each(a++,b) == true) break;
 		}
 		
 		if (complete != null) complete(a, a != b);
+	}
+	
+	/**
+	 * Return the first valid value, if no one found, will return an alternative value
+	 * @param	from
+	 * @param	alt
+	 * @return
+	 */
+	public static function One(from:Dynamic, ?alt:Dynamic):Dynamic {
+		if (Std.is(from, Array)) {
+			Values(from, function(v:Dynamic) {
+				from = v;
+				return from == null;
+			});
+		}
+		return from == null ? alt : from;
 	}
 	
 	#if !php

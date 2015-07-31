@@ -73,9 +73,9 @@ class Common extends CSS {
 		
 	}
 	
-	override public function add(a:Int):Void {
+	override public function add(a:Int,b:Int):Void {
 		var m:String = (a < 0) ? a + "n" : "-" + a;
-		if(a>-1)	setSelector(".z" + m, "z-index:" + a + ";");
+		if (a > -100)	setSelector(".z" + m, "z-index:" + a + ";");
 		setSelector(".o" + m, "outline:" + a + ";");
 		setSelector(".w" + m, "width:" + a + "px;");
 		setSelector(".h" + m, "height:" + a + "px;");
@@ -108,7 +108,7 @@ class Common extends CSS {
 			if (a < 101) {
 				setSelector(".round" + m, " border-radius:" + a + "px;");
 			}
-			var p:Dynamic = untyped __js__("(a / 1000 * 100).toFixed(1)");
+			var p:Dynamic = untyped __js__("(a / b * 100).toFixed(1)");
 			var i:Array<String> = p.split(".");
 			var n:String = i[0];
 			var j:String = i[1];
@@ -125,7 +125,7 @@ class Common extends CSS {
 			setSelector(".mg-l-" + k + "p", "margin-left:" + p + "%;");
 			setSelector(".mg-r-" + k + "p", "margin-right:" + p + "%;");
 			setSelector(".ln-" + k + "p", "line-height:" + p + "%;");
-			add( -a);
+			add(-a,b);
 		}
 	}
 	

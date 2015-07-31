@@ -7,10 +7,12 @@ import sirius.utils.Filler;
 #if js
 	import sirius.dom.IDisplay;
 	import sirius.dom.Display;
+	import sirius.Sirius;
 #elseif php
 	import php.Lib;
 	import sys.FileSystem;
 	import sys.io.File;
+	import sirius.php.Sirius;
 #end
 
 /**
