@@ -1,17 +1,14 @@
 #Sirius Framework
 ======
-##**Targets**
-- JavaScript;
-- HAXE;
-- PHP;
-=====
 ###The **Sirius** Main class for JavaScript & Haxe:
 
     .all(q:String):**ITable** of all elements (document.querySelectorAll(*selector*));
     .select(q:String):**IDisplay** of a single element (document.querySelector(*selector*));
     .elements(q:String):**Array<Elements>** (document.querySelectorAll(*selector*)); 
-  
-######The ITable interface:
+ 	
+ 	Each **Element** in **ITable** will be converted to a **Display** object.
+======
+#####The ITable interface:
 
 	.content:Array<**IDisplay**>;
 	.elements:Array<*Element*>;
