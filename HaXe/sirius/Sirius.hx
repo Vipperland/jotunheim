@@ -19,6 +19,7 @@ import sirius.net.Domain;
 import sirius.seo.SEOTool;
 import sirius.tools.IAgent;
 import sirius.tools.Utils;
+import sirius.transitions.Animator;
 
 import sirius.modules.ILoader;
 import sirius.utils.ITable;
@@ -129,6 +130,7 @@ class Sirius {
 				safari: ~/Safari/i.match(ua) && !chrome && !chromium, 
 				chrome: ~/Chrome/i.match(ua) && !chromium && !opera,
 				mobile: ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua),
+				animator: Animator.available,
 				display: Utils.screenInfo()
 			};
 		}
@@ -152,6 +154,10 @@ class Sirius {
 	
 	static public function logLevel(q:UInt):Void {
 		_loglevel = q;
+	}
+	
+	static public function clearDB():Void {
+		Display.DATA = { };
 	}
 	
 	

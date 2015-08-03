@@ -3,7 +3,7 @@ import js.Browser;
 import js.html.Element;
 import js.html.MouseEvent;
 import sirius.events.IEvent;
-import sirius.transitions.Tween;
+import sirius.transitions.Animator;
 
 /**
  * ...
@@ -49,11 +49,11 @@ class Document extends Display {
 	public function easeScroll(x:Float, y:Float, time:Float = 1, ease:Dynamic = null):Void {
 		stopScroll();
 		getScroll(__scroll__);
-		Tween.to(__scroll__, time, { x:x, y:y, ease:ease, onUpdate:_applyScroll } );
+		Animator.to(__scroll__, time, { x:x, y:y, ease:ease, onUpdate:_applyScroll } );
 	}
 	
 	public function stopScroll() {
-		Tween.stop(__scroll__);
+		Animator.stop(__scroll__);
 	}
 	
 	public function scrollTo(target:Dynamic, time:Float = 1, ease:Dynamic = null, offX:Int = 0, offY:Int = 0):Void {

@@ -12,8 +12,11 @@ class Key {
 		return _counter++;
 	}
 	
-	public static function GEN(size:UInt, table:String, ?mixCase:Bool = true):String {
+	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";
+	
+	public static function GEN(?size:UInt=9, ?table:String, ?mixCase:Bool = true):String {
 		var s:String = "";
+		if (table == null) table = TABLE;
 		var l:UInt = table.length;
 		var c:String = null;
 		while (s.length < size) {

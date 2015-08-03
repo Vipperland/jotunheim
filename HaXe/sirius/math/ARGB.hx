@@ -14,7 +14,17 @@ class ARGB{
 	
 	public function new(q:Dynamic, ?g:Int, ?b:Int, ?a:Int) {
 		
-		var s:Bool = Std.is(q, String) && (q.substr(0, 2) == "0x" || q.substr(0, 1) == "#");
+		var s:Bool = Std.is(q, String) && (q.substr(0,3) == "rgb" ||  q.substr(0, 2) == "0x" || q.substr(0, 1) == "#");
+		
+		if (s && q.substr(0, 3) == "rgb") {
+			s = false;
+			q = q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
+			q = q.split(",");
+			b = Std.parseInt(q[2]);
+			g = Std.parseInt(q[1]);
+			q = Std.parseInt(q[0]);
+			
+		}
 		
 		if (!s && q <= 0xFF) {
 			this.a = a <= 0xFF ? (a < 0 ? 0 : a) : 0xFF;
@@ -65,7 +75,7 @@ class ARGB{
 		return new ARGB(r2 > 0xFF ? 0xFF : r2, g2 > 0xFF ? 0xFF : g2, b2 > 0xFF ? 0xFF : b2, a);
 	}
 	
-	public function html():String {
+	public function hex():String {
 		var r:String = untyped __js__("this.value().toString(16)");
 		while (r.length < 6) r = "0" + r;
 		return "#" + r;

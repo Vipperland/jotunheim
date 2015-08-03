@@ -188,7 +188,7 @@ interface IDisplay {
 	 * @param	write
 	 * @return
 	 */
-	public function style(write:Dynamic):IDisplay;
+	public function style(?p:Dynamic, ?v:Dynamic):Dynamic;
 	
 	/**
 	 * Apply all dispatcher events

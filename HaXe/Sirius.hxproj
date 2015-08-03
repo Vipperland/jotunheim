@@ -11,7 +11,7 @@
     <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="JavaScript" />
-    <movie background="#FFFFFF" />
+    <movie background="#FCFCFC" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -47,7 +47,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Webserver" />
-    <option testMovieCommand="bin/index.html" />
+    <option testMovieCommand="bin/pie-chart.html" />
   </options>
   <!-- Plugin storage -->
   <storage />

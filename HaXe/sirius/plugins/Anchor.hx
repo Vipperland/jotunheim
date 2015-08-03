@@ -24,12 +24,12 @@ class Anchor {
 	private function _scroll(e:IEvent):Void {
 		var d:String = e.target.attribute("scroll-target");
 		if (d != null) {
-			var time:Float = Std.parseFloat(Dice.One(e.target.attribute("scroll-time"), 1));
+			var time:Float = Std.parseFloat(Dice.One(e.target.attribute("scroll-time"), 1).value);
 			var obj:IDisplay = Sirius.select(d);
-			var x:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offx"), 0));
-			var y:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offy"), 100));
+			var x:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offx"), 0).value);
+			var y:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offy"), 100).value);
 			if (obj != null) {
-				var ease:Dynamic = Ease.fromString(Dice.One(e.target.attribute("scroll-ease"), "LINEAR.X"));
+				var ease:Dynamic = Ease.fromString(Dice.One(e.target.attribute("scroll-ease"), "LINEAR.X").value);
 				Sirius.document.scrollTo(obj, time, ease, x, y);
 			}else {
 				Sirius.log("Anchor: Missing scroll-target='id:?' for Anchor plugin.", 10, 3);

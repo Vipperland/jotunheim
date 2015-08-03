@@ -1,5 +1,6 @@
 package sirius.dom;
 
+import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;
 import js.html.Element;
@@ -7,10 +8,12 @@ import js.html.Node;
 import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
+import sirius.math.ARGB;
 import sirius.Sirius;
+import sirius.tools.Key;
 import sirius.tools.Ticker;
 import sirius.tools.Utils;
-import sirius.transitions.Tween;
+import sirius.transitions.Animator;
 import sirius.utils.Dice;
 import sirius.utils.ITable;
 
@@ -21,6 +24,8 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Display")
 class Display implements IDisplay {
 	
+	public static var DATA:Dynamic = { };
+	
 	public static function ofKind(q:String):IDisplay {
 		return new Display(Browser.document.createElement(q));
 	}
@@ -28,6 +33,8 @@ class Display implements IDisplay {
 	public static function create(q:Dynamic):IDisplay {
 		return new Display(q);
 	}
+	
+	private var _uid:String;
 	
 	public var data:Dynamic;
 	
@@ -48,18 +55,30 @@ class Display implements IDisplay {
 	
 	public var children:ITable;
 	
+	
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
 		if (Std.is(q, String)) q = Sirius.select(q, t);
 		if (q == null) {
 			q = Browser.document.createDivElement();
 		}
 		element = q;
-		data = { };
-		_data = { };
 		dispatcher = new Dispatcher(this);
 		if (d != null) css(d);
 		body = Sirius.body;
 		buildParent();
+		
+		if (hasAttribute("sirius-uid")) {
+			_uid = attribute("sirius-uid");
+			data = Reflect.field(DATA, _uid);
+			_data = data.__data__;
+		}else {
+			_uid = attribute("sirius-uid", Key.GEN());
+			data = { __data__: { }};
+			_data = data.__data__;
+			Reflect.setField(DATA, _uid, data);
+		}
+		
+		
 	}
 	
 	public function exists(q:String):Bool {
@@ -199,14 +218,20 @@ class Display implements IDisplay {
 		element.hidden = true;
 	}
 	
+	public function hasAttribute(name:String):Bool {
+		return Reflect.getProperty(element, name) != null || (element.getAttribute != null && element.getAttribute(name) != null);
+	}
+	
 	public function attribute(name:String, ?value:String):String {
 		if (Reflect.getProperty(element, name) != null) {
 			if (value != null) Reflect.setProperty(element, name, value);
 			return Reflect.getProperty(element, name);
 		}
-		if (value != null) element.setAttribute(name, value);
-		return element.getAttribute(name);
-		
+		if(element.setAttribute != null){
+			if (value != null) element.setAttribute(name, value);
+			return element.getAttribute(name);
+		}
+		return null;
 	}
 	
 	public function build(q:String, ?plainText:Bool = false):IDisplay {
@@ -215,10 +240,21 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function style(write:Dynamic):IDisplay {
-		Dice.All(write, function(p:String, v:String) {
-			Reflect.setField(element.style, p, "" + v);
-		});
+	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
+		if (p != null) {
+			if (Std.is(p, String)) {
+				if (v != null) {
+					Reflect.setField(element.style, p, Std.string(v));
+				}
+				v = Reflect.field(element.style, p);
+				if (p.toLowerCase().indexOf("color") > 0) v = new ARGB(v);
+				return v;
+			}else {
+				Dice.All(p, function(p:String, v:String) {
+					Reflect.setField(element.style, p, Std.string(v));
+				});
+			}
+		}
 		return this;
 	}
 	
@@ -257,8 +293,8 @@ class Display implements IDisplay {
 		if (complete != null) target.onComplete = complete;
 		if (ease != null) target.ease = ease;
 		if(element != null){
-			Tween.stop(element);
-			Tween.to(element, time, target);
+			Animator.stop(element);
+			Animator.to(element, time, target);
 		}
 		return this;
 	}
@@ -267,8 +303,8 @@ class Display implements IDisplay {
 		if (complete != null) target.onComplete = complete;
 		if (ease != null) target.ease = ease;
 		if(element != null){
-			Tween.stop(element);
-			Tween.from(element, time, target);
+			Animator.stop(element);
+			Animator.from(element, time, target);
 		}
 		return this;
 	}
@@ -277,8 +313,8 @@ class Display implements IDisplay {
 		if (complete != null) from.onComplete = complete;
 		if (ease != null) from.ease = ease;
 		if(element != null){
-			Tween.stop(element);
-			Tween.fromTo(element, time, from, to);
+			Animator.stop(element);
+			Animator.fromTo(element, time, from, to);
 		}
 		return this;
 	}

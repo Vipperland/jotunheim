@@ -1,5 +1,4 @@
 package;
-import haxe.Log;
 import sirius.css.Color;
 import sirius.css.Common;
 import sirius.css.Creator;
