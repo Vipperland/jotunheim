@@ -3,11 +3,11 @@
 class sirius_utils_Dice {
 	public function __construct(){}
 	static function All($q, $each, $complete = null) {
+		$v = null;
+		$p = null;
+		$c = $complete !== null;
+		$i = true;
 		if($q !== null) {
-			$v = null;
-			$p = null;
-			$c = $complete !== null;
-			$i = true;
 			if(Std::is($q, _hx_qtype("Array"))) {
 				$q = php_Lib::objectOfAssociativeArray($q);
 			}
@@ -35,40 +35,39 @@ class sirius_utils_Dice {
 				call_user_func_array($complete, array($p, $v, $i));
 			}
 		}
+		return _hx_anonymous(array("param" => $p, "value" => $v, "completed" => $i));
 	}
 	static function Params($q, $each, $complete = null) {
-		sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_0"), 'execute'), sirius_utils_Dice_1($complete, $each, $q));
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_0"), 'execute'), sirius_utils_Dice_1($complete, $each, $q));
 	}
 	static function Values($q, $each, $complete = null) {
-		sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_2"), 'execute'), sirius_utils_Dice_3($complete, $each, $q));
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_2"), 'execute'), sirius_utils_Dice_3($complete, $each, $q));
 	}
 	static function Call($q, $method, $args = null) {
 		if($args === null) {
 			$args = (new _hx_array(array()));
 		}
-		sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$args, &$method, &$q), "sirius_utils_Dice_4"), 'execute'), null);
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$args, &$method, &$q), "sirius_utils_Dice_4"), 'execute'), null);
 	}
 	static function Count($from, $to, $each, $complete = null) {
 		$a = Math::min($from, $to);
 		$b = Math::max($from, $to);
 		while($a < $b) {
-			if(_hx_equal(call_user_func_array($each, array($a++, $b)), true)) {
+			if(_hx_equal(call_user_func_array($each, array($a, $b, ++$a === $b)), true)) {
 				break;
 			}
 		}
+		$c = $a === $b;
 		if($complete !== null) {
-			call_user_func_array($complete, array($a, $a !== $b));
+			call_user_func_array($complete, array($a, $b, $c));
 		}
+		return _hx_anonymous(array("from" => $from, "to" => $b, "completed" => $c, "value" => $a));
 	}
 	static function One($from, $alt = null) {
 		if(Std::is($from, _hx_qtype("Array"))) {
 			sirius_utils_Dice::Values($from, array(new _hx_lambda(array(&$alt, &$from), "sirius_utils_Dice_5"), 'execute'), null);
 		}
-		if($from === null) {
-			return $alt;
-		} else {
-			return $from;
-		}
+		return _hx_anonymous(array("value" => (($from === null || _hx_equal($from, "")) ? $alt : $from)));
 	}
 	function __toString() { return 'sirius.utils.Dice'; }
 }

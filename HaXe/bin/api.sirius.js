@@ -112,17 +112,6 @@ _$List_ListIterator.prototype = {
 	}
 	,__class__: _$List_ListIterator
 };
-var Main = function() { };
-Main.__name__ = true;
-Main.main = function() {
-	sirius_css_Creator.init([sirius_css_Common,sirius_css_Color,sirius_css_Shadow]);
-	sirius_Sirius.init(Main._init);
-};
-Main._init = function() {
-	var d = new sirius_dom_Div();
-	sirius_Sirius.body.addChild(d);
-	d.build(sirius_css_Creator.valueOf());
-};
 Math.__name__ = true;
 var Reflect = function() { };
 Reflect.__name__ = true;
@@ -3792,5 +3781,4 @@ sirius_transitions_Ease.BACK = sirius_transitions_Ease._F("Back");
 sirius_transitions_Ease.ELASTIC = sirius_transitions_Ease._F("Elastic");
 sirius_transitions_Ease.QUART = sirius_transitions_Ease._F("Quart");
 sirius_transitions_Ease.QUINT = sirius_transitions_Ease._F("Quint");
-Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);

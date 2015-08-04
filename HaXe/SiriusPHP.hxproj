@@ -47,7 +47,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Webserver" />
-    <option testMovieCommand="bin/index.html" />
+    <option testMovieCommand="bin/php_db.html" />
   </options>
   <!-- Plugin storage -->
   <storage />

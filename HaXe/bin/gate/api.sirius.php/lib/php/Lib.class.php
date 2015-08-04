@@ -5,6 +5,9 @@ class php_Lib {
 	static function hprint($v) {
 		echo(Std::string($v));
 	}
+	static function toPhpArray($a) {
+		return $a->a;
+	}
 	static function objectOfAssociativeArray($arr) {
 		foreach($arr as $key => $value){
 			if(is_array($value)) $arr[$key] = php_Lib::objectOfAssociativeArray($value);
