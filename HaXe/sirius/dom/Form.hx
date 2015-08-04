@@ -1,4 +1,5 @@
 package sirius.dom;
+import data.IFormData;
 import haxe.Log;
 import js.Browser;
 import js.html.FormElement;
@@ -17,7 +18,7 @@ class Form extends Display {
 	
 	public var object:FormElement;
 	
-	public var inputData:FormData;
+	public var inputData:IFormData;
 	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createFormElement();
@@ -50,7 +51,7 @@ class Form extends Display {
 		object.submit();
 	}
 	
-	public function formData():FormData {
+	public function formData():IFormData {
 		if (inputData == null) inputData = new FormData(this);
 		else inputData.from(this);
 		return inputData;

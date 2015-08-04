@@ -1,10 +1,11 @@
 package sirius.math;
+import math.IPoint3D;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-class Point3D {
+class Point3D implements IPoint3D {
 	
 	public var x:Float;
 	

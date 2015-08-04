@@ -1,11 +1,12 @@
 package sirius.data;
+import data.IFormData;
 import sirius.dom.IDisplay;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-class FormData {
+class FormData implements IFormData {
 	
 	private var _form:IDisplay;
 	
@@ -26,7 +27,7 @@ class FormData {
 		if(target != null) from(target);
 	}
 	
-	public function reset() {
+	public function reset():Void {
 		fields = [];
 		invalid = [];
 		values = { };
@@ -34,7 +35,7 @@ class FormData {
 		messages = { };
 	}
 	
-	public function from(target:IDisplay) {
+	public function from(target:IDisplay):Void {
 		reset();
 		_form = target;
 		target.select("[form-data]").each(function(el:IDisplay) {

@@ -93,6 +93,6 @@ class BitIO {
 		return v;
 	}
 	
-	static public var IO:Array<Dynamic> = [unwrite, write, toggle];
+	static public var X:Array<Dynamic> = [unwrite, write, toggle];
 	
 }

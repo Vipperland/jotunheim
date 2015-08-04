@@ -1,10 +1,11 @@
 package sirius.math;
+import math.IPoint;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-class Point{
+class Point implements IPoint {
 	
 	public var x:Float;
 	

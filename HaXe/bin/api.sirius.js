@@ -112,6 +112,17 @@ _$List_ListIterator.prototype = {
 	}
 	,__class__: _$List_ListIterator
 };
+var Main = function() { };
+Main.__name__ = true;
+Main.main = function() {
+	sirius_css_Creator.init([sirius_css_Common,sirius_css_Color,sirius_css_Shadow]);
+	sirius_Sirius.init(Main._init);
+};
+Main._init = function() {
+	var d = new sirius_dom_Div();
+	sirius_Sirius.body.addChild(d);
+	d.build(sirius_css_Creator.valueOf());
+};
 Math.__name__ = true;
 var Reflect = function() { };
 Reflect.__name__ = true;
@@ -170,6 +181,11 @@ _$UInt_UInt_$Impl_$.gt = function(a,b) {
 	var aNeg = a < 0;
 	var bNeg = b < 0;
 	if(aNeg != bNeg) return aNeg; else return a > b;
+};
+var data_IFormData = function() { };
+data_IFormData.__name__ = true;
+data_IFormData.prototype = {
+	__class__: data_IFormData
 };
 var haxe_Http = function(url) {
 	this.url = url;
@@ -453,6 +469,22 @@ js_Browser.createXMLHttpRequest = function() {
 	if(typeof XMLHttpRequest != "undefined") return new XMLHttpRequest();
 	if(typeof ActiveXObject != "undefined") return new ActiveXObject("Microsoft.XMLHTTP");
 	throw new js__$Boot_HaxeError("Unable to create XMLHttpRequest object.");
+};
+var math_IARGB = function() { };
+math_IARGB.__name__ = true;
+math_IARGB.prototype = {
+	__class__: math_IARGB
+};
+var math_IPoint = function() { };
+math_IPoint.__name__ = true;
+math_IPoint.prototype = {
+	__class__: math_IPoint
+};
+var math_IPoint3D = function() { };
+math_IPoint3D.__name__ = true;
+math_IPoint3D.__interfaces__ = [math_IPoint];
+math_IPoint3D.prototype = {
+	__class__: math_IPoint3D
 };
 var sirius_net_Domain = function() {
 	this._parseURI();
@@ -928,6 +960,7 @@ var sirius_data_FormData = function(target) {
 	if(target != null) this.from(target);
 };
 sirius_data_FormData.__name__ = true;
+sirius_data_FormData.__interfaces__ = [data_IFormData];
 sirius_data_FormData.prototype = {
 	reset: function() {
 		this.fields = [];
@@ -2802,11 +2835,12 @@ var sirius_math_ARGB = function(q,g,b,a) {
 		s = false;
 		q = q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
 		q = q.split(",");
+		if(q.length == 4) a = Std.parseInt(q[3]);
 		b = Std.parseInt(q[2]);
 		g = Std.parseInt(q[1]);
 		q = Std.parseInt(q[0]);
 	}
-	if(!s && q <= 255) {
+	if(!s && q <= 255 && g != null) {
 		if(a <= 255) {
 			if(a < 0) this.a = 0; else this.a = a;
 		} else this.a = 255;
@@ -2827,9 +2861,10 @@ var sirius_math_ARGB = function(q,g,b,a) {
 		this.g = x >> 8 & 255;
 		this.b = x & 255;
 	}
-	if(a == 0) a = 255;
+	if(a == null) a = 255;
 };
 sirius_math_ARGB.__name__ = true;
+sirius_math_ARGB.__interfaces__ = [math_IARGB];
 sirius_math_ARGB.prototype = {
 	value32: function() {
 		return this.a << 24 | this.r << 16 | this.g << 8 | this.b;
@@ -2863,7 +2898,7 @@ sirius_math_ARGB.prototype = {
 		return "#" + r;
 	}
 	,css: function() {
-		return "rgb(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+		return "rgb(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed() + ")";
 	}
 	,__class__: sirius_math_ARGB
 };
@@ -2873,6 +2908,7 @@ var sirius_math_Point3D = function(x,y,z) {
 	this.z = z;
 };
 sirius_math_Point3D.__name__ = true;
+sirius_math_Point3D.__interfaces__ = [math_IPoint3D];
 sirius_math_Point3D.prototype = {
 	__class__: sirius_math_Point3D
 };
@@ -3755,7 +3791,7 @@ sirius_bit_BitIO.P29 = 268435456;
 sirius_bit_BitIO.P30 = 536870912;
 sirius_bit_BitIO.P31 = 1073741824;
 sirius_bit_BitIO.P32 = -2147483648;
-sirius_bit_BitIO.IO = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
+sirius_bit_BitIO.X = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
 sirius_css_Color.COLORS = { aliceblue : { color : "#f0f8ff"}, antiquewhite : { color : "#faebd7"}, aqua : { color : "#00ffff"}, aquamarine : { color : "#7fffd4"}, azure : { color : "#f0ffff"}, beige : { color : "#f5f5dc"}, bisque : { color : "#ffe4c4"}, black : { color : "#000000"}, blanchedalmond : { color : "#ffebcd"}, blue : { color : "#0000ff"}, blueviolet : { color : "#8a2be2"}, brown : { color : "#a52a2a"}, burlywood : { color : "#deb887"}, cadetblue : { color : "#5f9ea0"}, chartreuse : { color : "#7fff00"}, chocolate : { color : "#d2691e"}, coral : { color : "#ff7f50"}, cornflowerblue : { color : "#6495ed"}, cornsilk : { color : "#fff8dc"}, crimson : { color : "#dc143c"}, cyan : { color : "#00ffff"}, darkblue : { color : "#00008b"}, darkcyan : { color : "#008b8b"}, darkgoldenrod : { color : "#b8860b"}, darkgray : { color : "#a9a9a9"}, darkgreen : { color : "#006400"}, darkkhaki : { color : "#bdb76b"}, darkmagenta : { color : "#8b008b"}, darkolivegreen : { color : "#556b2f"}, darkorange : { color : "#ff8c00"}, darkorchid : { color : "#9932cc"}, darkred : { color : "#8b0000"}, darksalmon : { color : "#e9967a"}, darkseagreen : { color : "#8fbc8f"}, darkslateblue : { color : "#483d8b"}, darkslategray : { color : "#2f4f4f"}, darkturquoise : { color : "#00ced1"}, darkviolet : { color : "#9400d3"}, deeppink : { color : "#ff1493"}, deepskyblue : { color : "#00bfff"}, dimgray : { color : "#696969"}, dodgerblue : { color : "#1e90ff"}, firebrick : { color : "#b22222"}, floralwhite : { color : "#fffaf0"}, forestgreen : { color : "#228b22"}, fuchsia : { color : "#ff00ff"}, gainsboro : { color : "#dcdcdc"}, ghostwhite : { color : "#f8f8ff"}, gold : { color : "#ffd700"}, goldenrod : { color : "#daa520"}, gray : { color : "#808080"}, green : { color : "#008000"}, greenyellow : { color : "#adff2f"}, honeydew : { color : "#f0fff0"}, hotpink : { color : "#ff69b4"}, indianred : { color : "#cd5c5c"}, indigo : { color : "#4b0082"}, ivory : { color : "#fffff0"}, khaki : { color : "#f0e68c"}, lavender : { color : "#e6e6fa"}, lavenderblush : { color : "#fff0f5"}, lawngreen : { color : "#7cfc00"}, lemonchiffon : { color : "#fffacd"}, lightblue : { color : "#add8e6"}, lightcoral : { color : "#f08080"}, lightcyan : { color : "#e0ffff"}, lightgoldenrodyellow : { color : "#fafad2"}, lightgray : { color : "#d3d3d3"}, lightgreen : { color : "#90ee90"}, lightpink : { color : "#ffb6c1"}, lightsalmon : { color : "#ffa07a"}, lightseagreen : { color : "#20b2aa"}, lightskyblue : { color : "#87cefa"}, lightslategray : { color : "#778899"}, lightsteelblue : { color : "#b0c4de"}, lightyellow : { color : "#ffffe0"}, lime : { color : "#00ff00"}, limegreen : { color : "#32cd32"}, linen : { color : "#faf0e6"}, magenta : { color : "#ff00ff"}, maroon : { color : "#800000"}, mediumaquamarine : { color : "#66cdaa"}, mediumblue : { color : "#0000cd"}, mediumorchid : { color : "#ba55d3"}, mediumpurple : { color : "#9370db"}, mediumseagreen : { color : "#3cb371"}, mediumslateblue : { color : "#7b68ee"}, mediumspringgreen : { color : "#00fa9a"}, mediumturquoise : { color : "#48d1cc"}, mediumvioletred : { color : "#c71585"}, midnightblue : { color : "#191970"}, mintcream : { color : "#f5fffa"}, mistyrose : { color : "#ffe4e1"}, moccasin : { color : "#ffe4b5"}, navajowhite : { color : "#ffdead"}, navy : { color : "#000080"}, oldlace : { color : "#fdf5e6"}, olive : { color : "#808000"}, olivedrab : { color : "#6b8e23"}, orange : { color : "#ffa500"}, orangered : { color : "#ff4500"}, orchid : { color : "#da70d6"}, palegoldenrod : { color : "#eee8aa"}, palegreen : { color : "#98fb98"}, paleturquoise : { color : "#afeeee"}, palevioletred : { color : "#db7093"}, papayawhip : { color : "#ffefd5"}, peachpuff : { color : "#ffdab9"}, peru : { color : "#cd853f"}, pink : { color : "#ffc0cb"}, plum : { color : "#dda0dd"}, powderblue : { color : "#b0e0e6"}, purple : { color : "#800080"}, rebeccapurple : { color : "#663399"}, red : { color : "#ff0000"}, rosybrown : { color : "#bc8f8f"}, royalblue : { color : "#4169e1"}, saddlebrown : { color : "#8b4513"}, salmon : { color : "#fa8072"}, sandybrown : { color : "#f4a460"}, seagreen : { color : "#2e8b57"}, seashell : { color : "#fff5ee"}, sienna : { color : "#a0522d"}, silver : { color : "#c0c0c0"}, skyblue : { color : "#87ceeb"}, slateblue : { color : "#6a5acd"}, slategray : { color : "#708090"}, snow : { color : "#fffafa"}, springgreen : { color : "#00ff7f"}, steelblue : { color : "#4682b4"}, tan : { color : "#d2b48c"}, teal : { color : "#008080"}, thistle : { color : "#d8bfd8"}, tomato : { color : "#ff6347"}, turquoise : { color : "#40e0d0"}, violet : { color : "#ee82ee"}, wheat : { color : "#f5deb3"}, white : { color : "#ffffff"}, whitesmoke : { color : "#f5f5f5"}, yellow : { color : "#ffff00"}, yellowgreen : { color : "#9acd32"}};
 sirius_css_Color.FLAT = [];
 sirius_css_Color.ALL = [];
@@ -3781,4 +3817,5 @@ sirius_transitions_Ease.BACK = sirius_transitions_Ease._F("Back");
 sirius_transitions_Ease.ELASTIC = sirius_transitions_Ease._F("Elastic");
 sirius_transitions_Ease.QUART = sirius_transitions_Ease._F("Quart");
 sirius_transitions_Ease.QUINT = sirius_transitions_Ease._F("Quint");
+Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
