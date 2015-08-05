@@ -1,0 +1,291 @@
+
+/*-- COLORS --*/
+
+
+
+
+
+/*-------------- BACKGROUND COLORS --------------*/
+.bg-red{ background-color:#F66;}
+.bg-green{ background-color:#0C9;}
+.bg-blue{ background-color:#09C;}
+.bg-yellow{ background-color:#ffcb08;}
+.bg-white{ background-color:#FFF;}
+.bg-black{ background-color:#000;}
+.bg-gelo{background-color:#ecf0f1;}
+.bg-gray{background-color:#666;}
+.bg-pink{background-color:#f45f9f;}
+.bg-orange{background-color:#ff8e45;}
+.bg-sepia{background-color:#e8d473;}
+.bg-cobalt{background-color:#517e93;}
+.bg-hashish{background-color:#96a668;}
+.bg-beige{background-color:#e3d6b3;}
+.bg-purple{background-color:#ac89bb;}
+.bg-dark-green{ background-color:#1FA001;}
+.bg-dark-blue{ background-color:#002157;}
+.bg-dark-gelo{background-color:#e7e7e7;}
+.bg-bordo{ background-color:#9e0032;}
+.bg-light-gray{background-color:#ccc;}
+.bg-dark-gray{background-color:#3f3f41;}
+
+
+
+/*-------------- TEXT COLORS --------------*/
+.txt-bordo{ color:#9e0032;}
+.txt-red{ color:#F66;}
+.txt-green{ color:#0C9;}
+.txt-dark-green{ color:#1FA001;}
+.txt-blue{ color:#09C;}
+.txt-dark-blue{ color:#002157;}
+.txt-yellow{ color:#ffcb08;}
+.txt-dark-yellow{ color:#F0AC00;}
+.txt-white{ color:#FFF;}
+.txt-black{ color:#000;}
+.txt-gray{ color:#666;}
+.txt-light-gray{ color:#ccc;}
+
+
+
+
+/*-------------- BORDER COLORS --------------*/
+.bord-red{ border-color:#F66;}
+.bord-green{ border-color:#0C9;}
+.bord-blue{ border-color:#09C;}
+.bord-yellow{ border-color:#ffcb08;}
+.bord-white{ border-color:#FFF;}
+.bord-black{ border-color:#000;}
+.bord-gelo{ border-color:#ecf0f1;}
+.bord-light-gray{ border-color:#ccc;}
+.bord-gray{ border-color:#666;}
+.bord-dark-gray{ border-color:#3f3f41;}
+.bord-pink{ border-color:#f45f9f;}
+.bord-orange{ border-color:#ff8e45;}
+.bord-sepia{ border-color:#e8d473;}
+.bord-cobalt{ border-color:#517e93;}
+.bord-hashish{ border-color:#96a668;}
+.bord-beige{ border-color:#e3d6b3;}
+.bord-purple{ border-color:#ac89bb;}
+
+
+
+
+
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*//*-- XS --*/
+@media (max-width: 767px) {
+	
+	
+	
+/*-------------- BACKGROUND COLORS XS --------------*/	
+.bg-red-xs{ background-color:#F66;}
+.bg-green-xs{ background-color:#0C9;}
+.bg-blue-xs{ background-color:#09C;}
+.bg-yellow-xs{ background-color:#ffcb08;}
+.bg-white-xs{ background-color:#FFF;}
+.bg-black-xs{ background-color:#000;}
+.bg-gelo-xs{background-color:#ecf0f1;}
+.bg-gray-xs{background-color:#666;}
+.bg-dark-gray-xs{background-color:#3f3f41;}
+.bg-pink-xs{background-color:#f45f9f;}
+.bg-orange-xs{background-color:#ff8e45;}
+.bg-sepia-xs{background-color:#e8d473;}
+.bg-cobalt-xs{background-color:#517e93;}
+.bg-hashish-xs{background-color:#96a668;}
+.bg-beige-xs{background-color:#e3d6b3;}
+.bg-purple-xs{background-color:#ac89bb;}
+.bg-dark-green-xs{ background-color:#1FA001;}
+.bg-dark-blue-xs{ background-color:#002157;}
+.bg-dark-gelo-xs{background-color:#e7e7e7;}
+.bg-bordo-xs{ background-color:#9e0032;}
+.bg-light-gray-xs{background-color:#ccc;}
+.bg-dark-gray-xs{background-color:#3f3f41;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*//*-- SM --*/
+@media (min-width: 768px) and (max-width: 1000px) {
+
+
+
+	
+/*-------------- BACKGROUND COLORS SM --------------*/	
+.bg-red-sm{ background-color:#F66;}
+.bg-green-sm{ background-color:#0C9;}
+.bg-blue-sm{ background-color:#09C;}
+.bg-yellow-sm{ background-color:#ffcb08;}
+.bg-white-sm{ background-color:#FFF;}
+.bg-black-sm{ background-color:#000;}
+.bg-gelo-sm{background-color:#ecf0f1;}
+.bg-gray-sm{background-color:#666;}
+.bg-dark-gray-sm{background-color:#3f3f41;}
+.bg-pink-sm{background-color:#f45f9f;}
+.bg-orange-sm{background-color:#ff8e45;}
+.bg-sepia-sm{background-color:#e8d473;}
+.bg-cobalt-sm{background-color:#517e93;}
+.bg-hashish-sm{background-color:#96a668;}
+.bg-beige-sm{background-color:#e3d6b3;}
+.bg-purple-sm{background-color:#ac89bb;}
+.bg-dark-green-xs{ background-color:#1FA001;}
+.bg-dark-blue-xs{ background-color:#002157;}
+.bg-dark-gelo-xs{background-color:#e7e7e7;}
+.bg-bordo-xs{ background-color:#9e0032;}
+.bg-light-gray-xs{background-color:#ccc;}
+.bg-dark-gray-xs{background-color:#3f3f41;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*//*-- MD --*/
+@media (min-width: 1001px) and (max-width: 1169px) {
+	
+	
+	
+	
+	
+	
+/*-------------- BACKGROUND COLORS MD --------------*/	
+.bg-red-md{ background-color:#F66;}
+.bg-green-md{ background-color:#0C9;}
+.bg-blue-md{ background-color:#09C;}
+.bg-yellow-md{ background-color:#ffcb08;}
+.bg-white-md{ background-color:#FFF;}
+.bg-black-md{ background-color:#000;}
+.bg-gelo-md{background-color:#ecf0f1;}
+.bg-gray-md{background-color:#666;}
+.bg-dark-gray-md{background-color:#3f3f41;}
+.bg-pink-md{background-color:#f45f9f;}
+.bg-orange-md{background-color:#ff8e45;}
+.bg-sepia-md{background-color:#e8d473;}
+.bg-cobalt-md{background-color:#517e93;}
+.bg-hashish-md{background-color:#96a668;}
+.bg-beige-md{background-color:#e3d6b3;}
+.bg-purple-md{background-color:#ac89bb;}
+.bg-dark-green-md{ background-color:#1FA001;}
+.bg-dark-blue-md{ background-color:#002157;}
+.bg-dark-gelo-md{background-color:#e7e7e7;}
+.bg-bordo-md{ background-color:#9e0032;}
+.bg-light-gray-md{background-color:#ccc;}
+.bg-dark-gray-md{background-color:#3f3f41;}
+
+
+
+
+
+
+
+
+
+
+}
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*/
+/*========================================================================================================================================================*//*-- LG --*/
+@media (min-width: 1170px) {
+	
+	
+	
+
+/*-------------- BACKGROUND COLORS LG --------------*/	
+.bg-red-lg{ background-color:#F66;}
+.bg-green-lg{ background-color:#0C9;}
+.bg-blue-lg{ background-color:#09C;}
+.bg-yellow-lg{ background-color:#ffcb08;}
+.bg-white-lg{ background-color:#FFF;}
+.bg-black-lg{ background-color:#000;}
+.bg-gelo-lg{background-color:#ecf0f1;}
+.bg-gray-lg{background-color:#666;}
+.bg-dark-gray-lg{background-color:#3f3f41;}
+.bg-pink-lg{background-color:#f45f9f;}
+.bg-orange-lg{background-color:#ff8e45;}
+.bg-sepia-lg{background-color:#e8d473;}
+.bg-cobalt-lg{background-color:#517e93;}
+.bg-hashish-lg{background-color:#96a668;}
+.bg-beige-lg{background-color:#e3d6b3;}
+.bg-purple-lg{background-color:#ac89bb;}
+.bg-dark-green-lg{ background-color:#1FA001;}
+.bg-dark-blue-lg{ background-color:#002157;}
+.bg-dark-gelo-lg{background-color:#e7e7e7;}
+.bg-bordo-lg{ background-color:#9e0032;}
+.bg-light-gray-lg{background-color:#ccc;}
+.bg-dark-gray-lg{background-color:#3f3f41;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

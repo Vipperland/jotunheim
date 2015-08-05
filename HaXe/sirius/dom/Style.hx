@@ -15,6 +15,7 @@ class Style extends Display {
 		if (q == null) q = Browser.document.createStyleElement();
 		super(q, null, d);
 		object = cast element;
+		object.type = "text/css";
 	}
 	
 	public function publish():Void {

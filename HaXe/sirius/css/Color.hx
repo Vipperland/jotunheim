@@ -36,7 +36,7 @@ class Color extends CSS {
 	public function new():Void {
 		super(false);
 		if (!_active) {
-			setSelector(".transparent", "background-color:transparent;");
+			setSelector(".bg-transparent", "background-color:transparent;");
 			_active = true;
 			_parse();
 		}
@@ -46,9 +46,9 @@ class Color extends CSS {
 		Dice.All(COLORS, function(p:String, v:Dynamic) {
 			v.name = p;
 			setSelector(".bg-" + p, "background-color:" + v.color + ";");
-			setSelector(".bg-" + p + ":hover", "background-color:" + v.color + ";");
 			setSelector(".txt-" + p, "color:" + v.color + ";");
 			setSelector(".bord-" + p, "border-color:" + v.color + ";");
+			setSelector(".bord-" + p + "", "border-color:" + v.color + ";");
 		});
 	}
 	

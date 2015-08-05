@@ -9,9 +9,9 @@ class Sprite extends Div {
 
 	public var content:Div;
 	
-	public function new(?q:Dynamic, ?d:String = "wh-100p center abs") {
+	public function new(?q:Dynamic, ?d:String = "wh-100pc disp-tab abs") {
 		super(null, d);
-		content = new Div(q);
+		content = new Div(q, "disp-tab-cell vert-m txt-c");
 		addChild(content);
 	}
 	

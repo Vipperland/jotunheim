@@ -1,9 +1,13 @@
 package;
+import js.html.Text;
 import sirius.css.Color;
-import sirius.css.Common;
+import sirius.css.Decoration;
+import sirius.css.Measures;
 import sirius.css.Creator;
 import sirius.css.Shadow;
 import sirius.dom.Div;
+import sirius.dom.Span;
+import sirius.dom.Sprite;
 import sirius.Sirius;
 
 /**
@@ -13,14 +17,27 @@ import sirius.Sirius;
 class Main{
 
 	static public function main() {
-		Creator.init([Common, Color, Shadow]);
-		Sirius.init(_init);
+		//Creator.init([Measures, Decoration, Color, Shadow]);
+		//Sirius.init(_init);
 	}
 	
 	static private function _init() {
-		var d:Div = new Div();
-		Sirius.body.addChild(d);
-		d.build(Creator.valueOf());
+		//var d:Div = new Div();
+		//Sirius.body.enlarge();
+		////d.build(Creator.valueOf());
+		////d.build(Creator.all().innerText);
+		//var d:Sprite = new Sprite();
+		//d.fit(100, 100, true);
+		//d.css("bg-lightblue");
+		//
+		//var t:Span = new Span();
+		//t.build("Test");
+		//t.css("arial txt-100");
+		//
+		//d.content.addChild(t);
+		//
+		//Sirius.body.addChild(d);
+		
 	}
 	
 }

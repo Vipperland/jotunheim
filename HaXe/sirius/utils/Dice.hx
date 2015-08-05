@@ -105,11 +105,14 @@ class Dice {
 	 * @param	each
 	 * @param	complete
 	 */
-	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
+	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:Dynamic = null, ?increment:UInt = 1):IDice {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
+		if (increment == null || increment < 1) {
+			increment = 1;
+		}
 		while (a < b) {
-			if (each(a,b,(++a)==b) == true) break;
+			if (each(a,b,(a+=increment)==b) == true) break;
 		}
 		var c:Bool = a == b;
 		if (complete != null) complete(a, b, c);

@@ -5,7 +5,7 @@ import js.Browser;
 import js.html.BodyElement;
 import js.html.Element;
 import sirius.css.Color;
-import sirius.css.Common;
+import sirius.css.Measures;
 import sirius.css.Creator;
 import sirius.css.Shadow;
 import sirius.dom.Body;

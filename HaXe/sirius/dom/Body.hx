@@ -14,8 +14,8 @@ class Body extends Display {
 		super(q,null,d);
 	}
 	
-	public function enlarge(?scroll:String = "no-scroll"):Body {
-		this.css("wh-100p" + (scroll != null ? " " + scroll : "") + " padd-0 marg-0 abs");
+	public function enlarge(?scroll:String = "over-hid"):Body {
+		this.css("wh-100pc" + (scroll != null ? " " + scroll : "") + " padd-0 marg-0 pos-abs");
 		return this;
 	}
 	
