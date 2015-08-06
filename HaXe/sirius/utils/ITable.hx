@@ -19,6 +19,13 @@ interface ITable {
 	public var elements:Array<Element>;
 	
 	/**
+	 * Return all elements with contains a specific value
+	 * @param	q
+	 * @return
+	 */
+	public function contains(q:String):ITable;
+	
+	/**
 	 * Run a method on each element with Dice.Values(h,c)
 	 * @param	h
 	 * @param	c

@@ -72,13 +72,13 @@ class Input extends Display {
 	
 	public function restrict(q:EReg):Void {
 		if (_rtc == null && q != null) {
-			dispatcher.keyDown(_update, 0);
-			dispatcher.keyUp(_update, 0);
-			dispatcher.focusOut(_update, 0);
+			events.keyDown(_update, 0);
+			events.keyUp(_update, 0);
+			events.focusOut(_update, 0);
 		}else if (q == null) {
-			dispatcher.keyDown(_update, -1);
-			dispatcher.keyUp(_update, -1);
-			dispatcher.focusOut(_update, -1);
+			events.keyDown(_update, -1);
+			events.keyUp(_update, -1);
+			events.focusOut(_update, -1);
 		}
 		_rtc = q;
 	}

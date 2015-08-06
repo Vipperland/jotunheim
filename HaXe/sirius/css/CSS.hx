@@ -39,7 +39,7 @@ class CSS implements ICSS {
 	public static function createStyle():StyleElement {
 		var e:StyleElement = new Style().object;
 		e.type = "text/css";
-		e.innerText = "";
+		e.innerHTML = "";
 		return e;
 	}
 	
@@ -52,6 +52,11 @@ class CSS implements ICSS {
 			SM = createStyle();
 			MD = createStyle();
 			LG = createStyle();
+			Browser.document.head.appendChild(cast ALL);
+			Browser.document.head.appendChild(cast XS);
+			Browser.document.head.appendChild(cast SM);
+			Browser.document.head.appendChild(cast MD);
+			Browser.document.head.appendChild(cast LG);
 		}
 		this.countable = countable;
 	}
@@ -61,7 +66,7 @@ class CSS implements ICSS {
 	public function add(a:Int,b:Int):Void { }
 	
 	public function hasSelector(id:String):Bool {
-		return ALL.innerText.indexOf(id) != -1;
+		return ALL.innerHTML.indexOf(id) != -1;
 	}
 	
 	public function setSelector(id:String, style:String, ?important:Bool):Void {
@@ -74,23 +79,16 @@ class CSS implements ICSS {
 	}
 	
 	private function _add(id:String, style:String, important:Bool):String {
-		return  (id + "{" + style + "}");// + (important ? id + "-i {" + style.split(";").join(" !important;") + "}" : "");
+		return  (id + "{" + style + "}") + (important ? id + "-i {" + style.split(";").join(" !important;") + "}" : "");
 	}
 	
 	public function apply():Void {
-		ALL.innerText += style;
-		XS.innerText += "@media (max-width: 767px) {" + styleXS + "}";
-		SM.innerText += "@media (min-width: 768px) and (max-width: 1000px) {" + styleSM + "}";
-		MD.innerText += "@media (min-width: 1001px) and (max-width: 1169px) {" + styleMD + "}";
-		LG.innerText += "@media (min-width: 1170px) {" + styleLG + "}";
+		ALL.innerHTML += style;
+		XS.innerHTML += "@media (max-width: 767px) {" + styleXS + "}";
+		SM.innerHTML += "@media (min-width: 768px) and (max-width: 1000px) {" + styleSM + "}";
+		MD.innerHTML += "@media (min-width: 1001px) and (max-width: 1169px) {" + styleMD + "}";
+		LG.innerHTML += "@media (min-width: 1170px) {" + styleLG + "}";
 		reset();
-		if (ALL.parentElement == null) {
-			Browser.document.head.appendChild(cast ALL);
-			Browser.document.head.appendChild(cast XS);
-			Browser.document.head.appendChild(cast SM);
-			Browser.document.head.appendChild(cast MD);
-			Browser.document.head.appendChild(cast LG);
-		}
 	}
 	
 	public function reset() {

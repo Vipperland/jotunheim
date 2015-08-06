@@ -23,7 +23,7 @@ class Document extends Display {
 	public function new() {
 		super(cast Browser.document);
 		element = Browser.document.documentElement;
-		dispatcher.wheel(stopScroll, true);
+		events.wheel(stopScroll, true);
 		prepare();
 	}
 	
@@ -71,7 +71,7 @@ class Document extends Display {
 			return;
 		}
 		__cursor__.enabled = true;
-		dispatcher.mouseMove(function(e:IEvent) {
+		events.mouseMove(function(e:IEvent) {
 			var me:MouseEvent = cast e.event;
 			__cursor__.x = me.clientX;
 			__cursor__.y = me.clientY;

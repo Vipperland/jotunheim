@@ -34,7 +34,7 @@ class Color extends CSS {
 	}
 	
 	public function new():Void {
-		super(false);
+		super(false,true);
 		if (!_active) {
 			setSelector(".bg-transparent", "background-color:transparent;");
 			_active = true;
@@ -48,7 +48,6 @@ class Color extends CSS {
 			setSelector(".bg-" + p, "background-color:" + v.color + ";");
 			setSelector(".txt-" + p, "color:" + v.color + ";");
 			setSelector(".bord-" + p, "border-color:" + v.color + ";");
-			setSelector(".bord-" + p + "", "border-color:" + v.color + ";");
 		});
 	}
 	

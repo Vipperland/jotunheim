@@ -1,8 +1,7 @@
 package;
 import js.html.Text;
 import sirius.css.Color;
-import sirius.css.Decoration;
-import sirius.css.Measures;
+import sirius.css.Basic;
 import sirius.css.Creator;
 import sirius.css.Shadow;
 import sirius.dom.Div;
@@ -37,7 +36,6 @@ class Main{
 		//d.content.addChild(t);
 		//
 		//Sirius.body.addChild(d);
-		
 	}
 	
 }

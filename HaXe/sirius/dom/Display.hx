@@ -3,8 +3,10 @@ package sirius.dom;
 import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;
+import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.Node;
+import js.JQuery;
 import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
@@ -43,11 +45,9 @@ class Display implements IDisplay {
 	 **/
 	private var _data:Dynamic;
 	
-	/** Default target element */
 	public var element:Element;
 	
-	/** Custom Event Dispatcher */
-	public var dispatcher:IDispatcher;
+	public var events:IDispatcher;
 	
 	public var parent:IDisplay;
 	
@@ -62,7 +62,7 @@ class Display implements IDisplay {
 			q = Browser.document.createDivElement();
 		}
 		element = q;
-		dispatcher = new Dispatcher(this);
+		events = new Dispatcher(this);
 		if (d != null) css(d);
 		body = Sirius.body;
 		buildParent();
@@ -86,7 +86,7 @@ class Display implements IDisplay {
 	}
 	
 	public function enable(q:Array<Dynamic>):IDisplay {
-		var d:IDispatcher = this.dispatcher;
+		var d:IDispatcher = this.events;
 		Dice.Values(q, function(v:Dynamic) {
 			if (!Std.is(v, Array))	v = [v, false];
 			var o:Dynamic = v[0];
@@ -146,7 +146,7 @@ class Display implements IDisplay {
 	}
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
-		q.dispatcher.apply();
+		q.events.apply();
 		q.parent = this;
 		if (at != -1 && at < length()) {
 			var sw:Node = element.childNodes.item(at);
@@ -180,17 +180,14 @@ class Display implements IDisplay {
 	
 	public function css(styles:String):IDisplay {
 		var s:Array<String> = styles.split(" ");
+		var cl:DOMTokenList = element.classList;
 		Dice.Values(s, function(v:String) {
 			if (v != null && v.length > 0) {
 				if (v.substr(0, 1) == "/") {
 					v = v.substr(1, v.length - 1);
-					if (element.classList.contains(v)) {
-						element.classList.remove(v);
-					}
+					if (cl.contains(v)) cl.remove(v);
 				}else {
-					if (!element.classList.contains(v)) {
-						element.classList.add(v);
-					}
+					if (!cl.contains(v)) cl.add(v);
 				}
 			}
 		});
@@ -259,7 +256,7 @@ class Display implements IDisplay {
 	}
 	
 	public function prepare():IDisplay {
-		this.dispatcher.apply();
+		this.events.apply();
 		return this;
 	}
 	
@@ -280,7 +277,7 @@ class Display implements IDisplay {
 	}
 	
 	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay {
-		dispatcher.auto(type, handler, mode);
+		events.auto(type, handler, mode);
 		return this;
 	}
 	
@@ -372,6 +369,10 @@ class Display implements IDisplay {
 	
 	public function isHidden():Bool {
 		return element == null || element.hidden;
+	}
+	
+	public function jQuery():JQuery {
+		return Sirius.jQuery(element);
 	}
 	
 }

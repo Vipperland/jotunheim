@@ -2,6 +2,7 @@ package sirius.dom;
 
 import haxe.Constraints.Function;
 import js.html.Element;
+import js.JQuery;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.utils.ITable;
@@ -35,7 +36,7 @@ interface IDisplay {
 	/**
 	 * Custom Event Dispatcher
 	 */
-	public var dispatcher : IDispatcher;
+	public var events : IDispatcher;
 	
 	/**
 	 * Check if a selector exists
@@ -319,6 +320,12 @@ interface IDisplay {
 	 * @return
 	 */
 	public function isHidden():Bool;
+	
+	/**
+	 * Return Element as JQuery object structure
+	 * @return
+	 */
+	public function jQuery():JQuery;
 	
 	
 	
