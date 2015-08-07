@@ -11,6 +11,11 @@ package sirius.modules;
 interface ILoader {
 	
 	/**
+	 * Last error info
+	 */
+	public var lastError : Dynamic;
+	
+	/**
 	 * Read the content of an loaded module
 	 */
 	public function get (module:String, ?data:Dynamic = null) : String;
@@ -40,6 +45,15 @@ interface ILoader {
 	 * Init Loader proccess
 	 * @return
 	 */
-	public function start():ILoader;
+	public function start (?complete:Dynamic, ?error:Dynamic) : ILoader;
+	
+	/**
+	 * Add listeners to load complete and laod error
+	 * @param	complete
+	 * @param	error
+	 * @return
+	 */
+	public function listen (?complete:Dynamic, ?error:Dynamic) : ILoader;
+
 
 }

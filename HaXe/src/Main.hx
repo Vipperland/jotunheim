@@ -1,8 +1,6 @@
 package;
 import js.html.Text;
 import sirius.css.Color;
-import sirius.css.Basic;
-import sirius.css.Creator;
 import sirius.css.Shadow;
 import sirius.dom.Div;
 import sirius.dom.Span;

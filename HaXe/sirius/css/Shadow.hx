@@ -21,7 +21,7 @@ class Shadow extends CSS {
 	}
 	
 	public function new() {
-		super(false);
+		super();
 		if (!_active) {
 			_active = true;
 			_parse();

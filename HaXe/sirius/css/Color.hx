@@ -1,5 +1,4 @@
 package sirius.css;
-import haxe.Log;
 import sirius.utils.Dice;
 
 /**
@@ -34,9 +33,9 @@ class Color extends CSS {
 	}
 	
 	public function new():Void {
-		super(false,true);
+		super();
 		if (!_active) {
-			setSelector(".bg-transparent", "background-color:transparent;");
+			distribute(".bg-transparent", "background-color:transparent;");
 			_active = true;
 			_parse();
 		}
@@ -45,9 +44,9 @@ class Color extends CSS {
 	private function _parse():Void {
 		Dice.All(COLORS, function(p:String, v:Dynamic) {
 			v.name = p;
-			setSelector(".bg-" + p, "background-color:" + v.color + ";");
-			setSelector(".txt-" + p, "color:" + v.color + ";");
-			setSelector(".bord-" + p, "border-color:" + v.color + ";");
+			distribute(".bg-" + p, "background-color:" + v.color + ";");
+			distribute(".txt-" + p, "color:" + v.color + ";");
+			distribute(".bord-" + p, "border-color:" + v.color + ";");
 		});
 	}
 	

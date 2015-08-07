@@ -5,9 +5,8 @@ import js.Browser;
 import js.html.BodyElement;
 import js.html.Element;
 import js.JQuery;
+import sirius.css.Automator;
 import sirius.css.Color;
-import sirius.css.Basic;
-import sirius.css.Creator;
 import sirius.css.Shadow;
 import sirius.dom.Body;
 import sirius.dom.Display;
@@ -82,7 +81,13 @@ class Sirius {
 	}
 	
 	static public function onLoad(handler:Dynamic):Void {
-		Browser.document.addEventListener("DOMContentLoaded", handler);
+		if(handler != null){
+			if (Browser.document.readyState == "complete") {
+				handler();
+			}else {
+				Browser.document.addEventListener("DOMContentLoaded", handler);
+			}
+		}
 	}
 	
 	static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
@@ -90,11 +95,7 @@ class Sirius {
 		if (!_initialized) {
 			_initialized = true;
 			log("Sirius::init() > INITIALIZED // " + Utils.toString(agent, true), 10, 1);
-			if (Browser.document.readyState == "complete") {
-				_onLoaded();
-			}else {
-				onLoad(_onLoaded);
-			}
+			onLoad(_onLoaded);
 		}else{
 			log("Sirius::init() > Alread initialized" + (body == null ? " // Waiting for DOM Loading Event..." : " // DOM is LOADED"), 10, 2);
 		}

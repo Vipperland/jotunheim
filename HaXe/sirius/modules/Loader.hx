@@ -1,6 +1,7 @@
 package sirius.modules;
 import haxe.Http;
 import sirius.modules.ModLib;
+import sirius.utils.Dice;
 
 #if js
 	import sirius.dom.IDisplay;
@@ -16,24 +17,38 @@ class Loader implements ILoader {
 	private static var FILES:Dynamic = { };
 	
 	private var _toload:Array<String> = [];
-	private var _complete:Dynamic;
+	private var _onComplete:Array<Dynamic>;
+	private var _onError:Array<Dynamic>;
 	private var _isBusy:Bool;
-	private var _error:Dynamic;
 	private var _noCache:Bool;
+	
+	public var lastError:Dynamic;
 	
 	public function new(?noCache:Bool = false){
 		_noCache = noCache;
+		_onComplete = [];
+		_onError = [];
+	}
+	
+	public function listen(?complete:Dynamic, ?error:Dynamic):ILoader {
+		if (error != null && Lambda.indexOf(_onError, error) == -1) {
+			_onError[_onError.length] = error;
+		}
+		if (complete != null && Lambda.indexOf(_onComplete, complete) == -1) {
+			_onComplete[_onComplete.length] = complete;
+		}
+		return this;
 	}
 	
 	public function add(files:Array<String>, ?complete:Dynamic, ?error:Dynamic):ILoader {
-		if(_error != null) _error = error;
-		if (complete != null) _complete = complete;
+		listen(complete, error);
 		if (files != null && files.length > 0) _toload = _toload.concat(files);
 		return this;
 	}
 	
-	public function start():ILoader {
+	public function start(?complete:Dynamic, ?error:Dynamic):ILoader {
 		if (!_isBusy) {
+			listen(complete, error);
 			_isBusy = true;
 			_loadNext();
 		}
@@ -60,10 +75,23 @@ class Loader implements ILoader {
 			r.request(false);
 		}else {
 			_isBusy = false;
-			if (_complete != null) {
-				_complete(this);
-			}
+			_complete();
 		}
+	}
+	
+	private function _error(e:Dynamic):Void {
+		lastError = e;
+		Dice.Values(_onError, function(v:Dynamic) {
+			if (v != null) v(this);
+		});
+	}
+	
+	private function _complete():Void {
+		Dice.Values(_onComplete, function(v:Dynamic) {
+			if (v != null) v(this);
+		});
+		_onComplete = [];
+		_onError = [];
 	}
 	
 	#if js

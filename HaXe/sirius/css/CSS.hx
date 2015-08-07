@@ -1,4 +1,5 @@
 package sirius.css;
+import css.CSSGroup;
 import haxe.Log;
 import js.Browser;
 import js.html.CSSStyleSheet;
@@ -12,87 +13,31 @@ import sirius.dom.Style;
 @:expose("sru.css.CSS")
 class CSS implements ICSS {
 	
-	public static var ALL:StyleElement;
+	public static var ALL:CSSGroup;
 	
-	public static var XS:StyleElement;
 	
-	public static var SM:StyleElement;
-	
-	public static var MD:StyleElement;
-	
-	public static var LG:StyleElement;
-	
-	public var style:String;
-	
-	public var styleXS:String;
-	
-	public var styleSM:String;
-	
-	public var styleMD:String;
-	
-	public var styleLG:String;
-	
-	public var countable:Bool = true;
-	
-	public var important:Bool;
-	
-	public static function createStyle():StyleElement {
-		var e:StyleElement = new Style().object;
-		e.type = "text/css";
-		e.innerHTML = "";
-		return e;
-	}
-	
-	public function new(?countable:Bool = true, ?important:Bool = false) {
-		this.important = important;
-		reset();
-		if (ALL == null) {
-			ALL = createStyle();
-			XS = createStyle();
-			SM = createStyle();
-			MD = createStyle();
-			LG = createStyle();
-			Browser.document.head.appendChild(cast ALL);
-			Browser.document.head.appendChild(cast XS);
-			Browser.document.head.appendChild(cast SM);
-			Browser.document.head.appendChild(cast MD);
-			Browser.document.head.appendChild(cast LG);
-		}
-		this.countable = countable;
+	public function new() {
+		if (ALL == null) ALL = new CSSGroup();
 	}
 	
 	/* INTERFACE sirius.css.ICSS */
 	
 	public function add(a:Int,b:Int):Void { }
 	
-	public function hasSelector(id:String):Bool {
-		return ALL.innerHTML.indexOf(id) != -1;
+	public function setSelector(id:String, style:String, ?mode:String):Void {
+		ALL.setSelector(id, style, mode);
 	}
 	
-	public function setSelector(id:String, style:String, ?important:Bool):Void {
-		important = this.important || important;
-		this.style += _add(id, style, important);
-		this.styleXS += _add(id + "-xs", style, important);
-		this.styleSM += _add(id + "-sm", style, important);
-		this.styleMD += _add(id + "-md", style, important);
-		this.styleLG += _add(id + "-lg", style, important);
+	public function distribute(id:String, style:String):Void {
+		ALL.distribute(id, style);
 	}
 	
 	private function _add(id:String, style:String, important:Bool):String {
 		return  (id + "{" + style + "}") + (important ? id + "-i {" + style.split(";").join(" !important;") + "}" : "");
 	}
 	
-	public function apply():Void {
-		ALL.innerHTML += style;
-		XS.innerHTML += "@media (max-width: 767px) {" + styleXS + "}";
-		SM.innerHTML += "@media (min-width: 768px) and (max-width: 1000px) {" + styleSM + "}";
-		MD.innerHTML += "@media (min-width: 1001px) and (max-width: 1169px) {" + styleMD + "}";
-		LG.innerHTML += "@media (min-width: 1170px) {" + styleLG + "}";
-		reset();
-	}
-	
-	public function reset() {
-		style = styleXS = styleSM = styleMD = styleLG = "";
+	public function build():Void {
+		ALL.build();
 	}
 	
 }
