@@ -16,6 +16,22 @@ interface ILoader {
 	public var lastError : Dynamic;
 	
 	/**
+	 * Total files in queue
+	 */
+	public var totalFiles:Int;
+	
+	/**
+	 * Total of loaded files
+	 */
+	public var totalLoaded:Int;
+	
+	/**
+	 * Total Load Progress
+	 * @return
+	 */
+	public function progress():Float;
+	
+	/**
 	 * Read the content of an loaded module
 	 */
 	public function get (module:String, ?data:Dynamic = null) : String;

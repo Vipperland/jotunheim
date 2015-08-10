@@ -18,14 +18,14 @@ class Anchor {
 	}
 	
 	public function new() {
-		Sirius.all("[plugin~=anchor]").onClick(_scroll);
+		Sirius.select("[plugin~=anchor]").onClick(_scroll);
 	}
 	
 	private function _scroll(e:IEvent):Void {
 		var d:String = e.target.attribute("scroll-target");
 		if (d != null) {
 			var time:Float = Std.parseFloat(Dice.One(e.target.attribute("scroll-time"), 1).value);
-			var obj:IDisplay = Sirius.select(d);
+			var obj:IDisplay = Sirius.one(d);
 			var x:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offx"), 0).value);
 			var y:Int = Std.parseInt(Dice.One(e.target.attribute("scroll-offy"), 100).value);
 			if (obj != null) {

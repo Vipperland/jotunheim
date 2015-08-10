@@ -2,32 +2,24 @@ package sirius;
 
 import haxe.Log;
 import js.Browser;
-import js.html.BodyElement;
 import js.html.Element;
 import js.JQuery;
 import sirius.css.Automator;
-import sirius.css.Color;
-import sirius.css.Shadow;
 import sirius.dom.Body;
 import sirius.dom.Display;
 import sirius.dom.Document;
 import sirius.dom.IDisplay;
-import sirius.events.Dispatcher;
-import sirius.events.Event;
-import sirius.events.EventGroup;
+import sirius.modules.ILoader;
+import sirius.modules.Loader;
 import sirius.net.Domain;
 import sirius.seo.SEOTool;
 import sirius.tools.IAgent;
 import sirius.tools.Utils;
 import sirius.transitions.Animator;
-
-import sirius.modules.ILoader;
 import sirius.utils.ITable;
-import sirius.modules.Loader;
 import sirius.utils.Table;
 
-import sirius.plugins.Anchor;
-import sirius.tools.Ticker;
+
 
 /**
  * ...
@@ -52,12 +44,12 @@ class Sirius {
 	
 	static private var _initialized:Bool = false;
 	
-	static public function select(?q:String = "*", ?t:Dynamic = null):IDisplay {
+	static public function one(?q:String = "*", ?t:Dynamic = null):IDisplay {
 		t = (t == null ? Browser.document : t).querySelector(q);
 		if (t != null) {
 			return Utils.displayFrom(t);
 		}else {
-			log("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET", 10);
+			log("Sirius->Table::status[ NULL TARGET (" + q + ") ]", 10, 3);
 			return null;
 		}
 	}
@@ -68,12 +60,12 @@ class Sirius {
 	 * @param	t
 	 * @return
 	 */
-	static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
+	static public function select(?q:String = "*", ?t:Dynamic = null):ITable {
 		return new Table(q, t);
 	}
 	
 	static public function elements(?q:String = "*", ?t:Dynamic = null):Array<Element> {
-		return all(q, t).elements;
+		return select(q, t).elements;
 	}
 	
 	static public function jQuery(?q:Dynamic = "*"):JQuery {
@@ -94,22 +86,29 @@ class Sirius {
 		resources.add(files, handler, _fileError);
 		if (!_initialized) {
 			_initialized = true;
-			log("Sirius::init() > INITIALIZED // " + Utils.toString(agent, true), 10, 1);
+			log("Sirius->Core::init[ Loading DOM... ]", 10, 1);
 			onLoad(_onLoaded);
 		}else{
-			log("Sirius::init() > Alread initialized" + (body == null ? " // Waiting for DOM Loading Event..." : " // DOM is LOADED"), 10, 2);
+			log("Sirius->Core::init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
 		}
 	}
 	
 	static private function _onLoaded():Void {
-		log("Sirius::init() > RESOURCES LOADED", 10, 1);
+		if (resources.totalFiles > 0) {
+			log("Sirius->Resources::status [ READY (" + resources.totalLoaded + "/" + resources.totalFiles + ") ]", 10, 1);
+		}
+		log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 		body = new Body(Browser.document.body);
 		document = new Document();
 		resources.start();
 	}
 	
+	static private function status():Void {
+		log("Sirius->Core::status[ INITIALIZED " + Utils.toString(agent, true) + " ] ", 10, 1);
+	}
+	
 	static private function _fileError(error:String) {
-		log("Sirius::init(/GET_RESOURCE/) > " + error, 10, 3);
+		log("Sirius->Resources::status[ " + error + " ]", 10, 3);
 	}
 	
 	static private function get_agent():IAgent {

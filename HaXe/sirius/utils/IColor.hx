@@ -1,4 +1,4 @@
-package sirius.css;
+package utils;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com> <rafael@gateofsirius.com>

@@ -57,7 +57,7 @@ class Display implements IDisplay {
 	
 	
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
-		if (Std.is(q, String)) q = Sirius.select(q, t);
+		if (Std.is(q, String)) q = Sirius.one(q, t);
 		if (q == null) {
 			q = Browser.document.createDivElement();
 		}
@@ -98,17 +98,17 @@ class Display implements IDisplay {
 	
 	
 	public function select(q:String):ITable {
-		return Sirius.all(q, element);
-	}
-	
-	
-	public function one(q:String):IDisplay {
 		return Sirius.select(q, element);
 	}
 	
 	
+	public function one(q:String):IDisplay {
+		return Sirius.one(q, element);
+	}
+	
+	
 	public function all():ITable {
-		return Sirius.all("*", element);
+		return Sirius.select("*", element);
 	}
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {

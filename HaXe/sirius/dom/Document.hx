@@ -58,7 +58,7 @@ class Document extends Display {
 	
 	public function scrollTo(target:Dynamic, time:Float = 1, ease:Dynamic = null, offX:Int = 0, offY:Int = 0):Void {
 		if (Std.is(target, String)) {
-			target = Sirius.select(target);
+			target = Sirius.one(target);
 		}
 		if (Reflect.hasField(target, "element")) {
 			target = target.Self;

@@ -22,12 +22,22 @@ class Loader implements ILoader {
 	private var _isBusy:Bool;
 	private var _noCache:Bool;
 	
+	public var totalFiles:Int;
+	
+	public var totalLoaded:Int;
+	
 	public var lastError:Dynamic;
 	
 	public function new(?noCache:Bool = false){
 		_noCache = noCache;
 		_onComplete = [];
 		_onError = [];
+		totalLoaded = 0;
+		totalFiles = 0;
+	}
+	
+	public function progress():Float {
+		return totalLoaded / totalFiles;
 	}
 	
 	public function listen(?complete:Dynamic, ?error:Dynamic):ILoader {
@@ -42,7 +52,10 @@ class Loader implements ILoader {
 	
 	public function add(files:Array<String>, ?complete:Dynamic, ?error:Dynamic):ILoader {
 		listen(complete, error);
-		if (files != null && files.length > 0) _toload = _toload.concat(files);
+		if (files != null && files.length > 0) {
+			_toload = _toload.concat(files);
+			totalFiles += files.length;
+		}
 		return this;
 	}
 	
@@ -63,12 +76,14 @@ class Loader implements ILoader {
 				r.async = true;
 			#end
 			r.onError = function(e) {
+				++totalLoaded;
 				if (_error != null) {
 					_error(e);
 				}
 				_loadNext();
 			}
 			r.onData = function(d) {
+				++totalLoaded;
 				ModLib.register(f, d);
 				_loadNext();
 			}

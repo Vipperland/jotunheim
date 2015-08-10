@@ -3,6 +3,7 @@ import haxe.Log;
 import math.IARGB;
 import sirius.math.ARGB;
 import sirius.utils.Dice;
+import utils.Color;
 
 /**
  * ...
@@ -32,6 +33,12 @@ class Shadow extends CSS {
 		Dice.All(Color.COLORS, function(p:String, v:Dynamic) {
 			create(p, new ARGB(v.color));
 		});
+	}
+	
+	public static function init():Void {
+		if (!_active) {
+			new Shadow();
+		}
 	}
 	
 }

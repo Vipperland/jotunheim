@@ -38,18 +38,18 @@ class ModLib {
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
-						Sirius.log("Building Module [" + mod.name + "]", 10, 1);
+						Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]", 10, 1);
 						var end:Int = v.indexOf(";;;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
-							Sirius.log("	Validating dependencies...", 10, 1);
+							Sirius.log("	Sirius->ModLib::dependencies [ FOR " + mod.name + " ]", 10, 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v);
 								if (set == null) {
-									Sirius.log("MODULE(" + v + ") : MISSING", 10, 2);
+									Sirius.log("		Sirius->ModLib::dependency[ MISSING " + v + " ]", 10, 2);
 								}else {
-									Sirius.log("		[" + v + "] OK!", 10, 1);
+									Sirius.log("		Sirius->ModLib::dependency[ OK " + v + " ]", 10, 1);
 									content = content.split("<import " + v + "/>").join(set);
 								}
 							});
@@ -57,7 +57,7 @@ class ModLib {
 						#if js
 							// ============================= JS ONLY =============================
 							if (mod.target != null) {
-								var t:IDisplay = Sirius.select(mod.target);
+								var t:IDisplay = Sirius.one(mod.target);
 								if (t != null) {
 									t.addChild(build(mod.name));
 								}
@@ -66,7 +66,7 @@ class ModLib {
 						#end
 						Reflect.setField(CACHE, mod.name, content);
 					}else {
-						Sirius.log("	(" + v.substr(0, 15) + "...) Missing or Invalid MODULE tag in [" + file + "]", 10, 3);
+						Sirius.log("	Sirius->ModLib::status [ MISSING MODULE END IN " + file + "("  + v.substr(0, 15) + "...) ]", 10, 3);
 					}
 			}
 			});

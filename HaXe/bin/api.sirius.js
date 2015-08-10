@@ -3,10 +3,8 @@ $hx_exports.sru = $hx_exports.sru || {};
 $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
-;$hx_exports.sru.plugins = $hx_exports.sru.plugins || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
-;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -156,6 +154,11 @@ Reflect.fields = function(o) {
 	}
 	return a;
 };
+Reflect.deleteField = function(o,field) {
+	if(!Object.prototype.hasOwnProperty.call(o,field)) return false;
+	delete(o[field]);
+	return true;
+};
 var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
@@ -166,9 +169,6 @@ Std.parseInt = function(x) {
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
-};
-Std.parseFloat = function(x) {
-	return parseFloat(x);
 };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
@@ -186,12 +186,14 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 };
 var css_CSSGroup = function() {
 	this.reset();
-	if(this.ALL == null) {
+	if(this.container == null) {
+		this.container = new sirius_dom_Style();
 		this.ALL = css_CSSGroup._style();
 		this.XS = css_CSSGroup._style();
 		this.SM = css_CSSGroup._style();
 		this.MD = css_CSSGroup._style();
 		this.LG = css_CSSGroup._style();
+		window.document.head.appendChild(this.container.element);
 	}
 };
 css_CSSGroup.__name__ = true;
@@ -205,39 +207,51 @@ css_CSSGroup.prototype = {
 	hasSelector: function(id,mode) {
 		var k;
 		if(mode != null) k = mode; else k = HxOverrides.substr(id,-2,2);
-		if(k == "xs") return this.XS.innerHTML.indexOf(id) != -1;
-		if(k == "sm") return this.SM.innerHTML.indexOf(id) != -1;
-		if(k == "md") return this.MD.innerHTML.indexOf(id) != -1;
-		if(k == "lg") return this.LG.innerHTML.indexOf(id) != -1;
+		if(k != null && k != "") {
+			if(k == "xs") return this.XS.innerHTML.indexOf(id + "{") != -1;
+			if(k == "sm") return this.SM.innerHTML.indexOf(id + "{") != -1;
+			if(k == "md") return this.MD.innerHTML.indexOf(id + "{") != -1;
+			if(k == "lg") return this.LG.innerHTML.indexOf(id + "{") != -1;
+		}
 		return this.ALL.innerHTML.indexOf(id) != -1;
 	}
 	,setSelector: function(id,style,mode) {
 		if(!this.hasSelector(id,mode)) {
-			if(mode == "xs") this.styleXS += this._add(id + "-xs",style); else if(mode == "sm") this.styleSM += this._add(id + "-sm",style); else if(mode == "md") this.styleMD += this._add(id + "-md",style); else if(mode == "lg") this.styleLG += this._add(id + "-lg",style); else this.style += this._add(id,style);
+			if(mode == "xs") this.styleXS += this._add(id,style); else if(mode == "sm") this.styleSM += this._add(id,style); else if(mode == "md") this.styleMD += this._add(id,style); else if(mode == "lg") this.styleLG += this._add(id,style); else this.style += this._add(id,style);
 		}
 	}
 	,distribute: function(id,style) {
-		this.styleXS += this._add(id + "-xs",style);
-		this.styleSM += this._add(id + "-sm",style);
-		this.styleMD += this._add(id + "-md",style);
-		this.styleLG += this._add(id + "-lg",style);
-		this.style += this._add(id,style);
+		this.setSelector(id + "-xs",style,"xs");
+		this.setSelector(id + "-sm",style,"sm");
+		this.setSelector(id + "-md",style,"md");
+		this.setSelector(id + "-lg",style,"lg");
+		this.setSelector(id,style,null);
 	}
 	,_add: function(id,style) {
 		return id + "{" + style + "}";
 	}
 	,build: function() {
-		if(this.style.length > 0) this.ALL.innerHTML += this.style;
-		if(this.styleXS.length > 0) this.XS.innerHTML += "@media (max-width: 767px) {" + this.styleXS + "}";
-		if(this.styleSM.length > 0) this.SM.innerHTML += "@media (min-width: 768px) and (max-width: 1000px) {" + this.styleSM + "}";
-		if(this.styleMD.length > 0) this.MD.innerHTML += "@media (min-width: 1001px) and (max-width: 1169px) {" + this.styleMD + "}";
-		if(this.styleLG.length > 0) this.LG.innerHTML += "@media (min-width: 1170px) {" + this.styleLG + "}";
+		if(this.style.length > 0) {
+			this.ALL.innerHTML += this.style;
+			if(this.ALL.parentElement == null) this.container.element.appendChild(this.ALL);
+		}
+		if(this.styleXS.length > 0) {
+			this.XS.innerHTML = (this.XS.innerHTML.length > 0?css_CSSGroup.MEDIA_XS + this.XS.innerHTML.split(css_CSSGroup.MEDIA_XS).join("").split("}/*EOF*/").join("") + this.styleXS:css_CSSGroup.MEDIA_XS + this.styleXS) + "}/*EOF*/";
+			if(this.XS.parentElement == null) this.container.element.appendChild(this.XS);
+		}
+		if(this.styleSM.length > 0) {
+			this.SM.innerHTML = (this.SM.innerHTML.length > 0?css_CSSGroup.MEDIA_SM + this.SM.innerHTML.split(css_CSSGroup.MEDIA_SM).join("").split("}/*EOF*/").join("") + this.styleSM:css_CSSGroup.MEDIA_SM + this.styleSM) + "}/*EOF*/";
+			if(this.SM.parentElement == null) this.container.element.appendChild(this.SM);
+		}
+		if(this.styleMD.length > 0) {
+			this.MD.innerHTML = (this.MD.innerHTML.length > 0?css_CSSGroup.MEDIA_MD + this.MD.innerHTML.split(css_CSSGroup.MEDIA_MD).join("").split("}/*EOF*/").join("") + this.styleMD:css_CSSGroup.MEDIA_MD + this.styleMD) + "}/*EOF*/";
+			if(this.MD.parentElement == null) this.container.element.appendChild(this.MD);
+		}
+		if(this.styleLG.length > 0) {
+			this.LG.innerHTML = (this.LG.innerHTML.length > 0?css_CSSGroup.MEDIA_LG + this.LG.innerHTML.split(css_CSSGroup.MEDIA_LG).join("").split("}/*EOF*/").join("") + this.styleLG:css_CSSGroup.MEDIA_LG + this.styleLG) + "}/*EOF*/";
+			if(this.LG.parentElement == null) this.container.element.appendChild(this.LG);
+		}
 		this.reset();
-		if(this.ALL.parentElement == null) window.document.head.appendChild(this.ALL);
-		if(this.XS.parentElement == null) window.document.head.appendChild(this.XS);
-		if(this.SM.parentElement == null) window.document.head.appendChild(this.SM);
-		if(this.MD.parentElement == null) window.document.head.appendChild(this.MD);
-		if(this.LG.parentElement == null) window.document.head.appendChild(this.LG);
 	}
 	,reset: function() {
 		this.style = this.styleXS = this.styleSM = this.styleMD = this.styleLG = "";
@@ -583,18 +597,26 @@ var sirius_modules_Loader = $hx_exports.sru.modules.Loader = function(noCache) {
 	this._noCache = noCache;
 	this._onComplete = [];
 	this._onError = [];
+	this.totalLoaded = 0;
+	this.totalFiles = 0;
 };
 sirius_modules_Loader.__name__ = true;
 sirius_modules_Loader.__interfaces__ = [sirius_modules_ILoader];
 sirius_modules_Loader.prototype = {
-	listen: function(complete,error) {
+	progress: function() {
+		return this.totalLoaded / this.totalFiles;
+	}
+	,listen: function(complete,error) {
 		if(error != null && Lambda.indexOf(this._onError,error) == -1) this._onError[this._onError.length] = error;
 		if(complete != null && Lambda.indexOf(this._onComplete,complete) == -1) this._onComplete[this._onComplete.length] = complete;
 		return this;
 	}
 	,add: function(files,complete,error) {
 		this.listen(complete,error);
-		if(files != null && files.length > 0) this._toload = this._toload.concat(files);
+		if(files != null && files.length > 0) {
+			this._toload = this._toload.concat(files);
+			this.totalFiles += files.length;
+		}
 		return this;
 	}
 	,start: function(complete,error) {
@@ -612,10 +634,12 @@ sirius_modules_Loader.prototype = {
 			var r = new haxe_Http(f + (this._noCache?"":"?t=" + new Date().getTime()));
 			r.async = true;
 			r.onError = function(e) {
+				++_g.totalLoaded;
 				if($bind(_g,_g._error) != null) _g._error(e);
 				_g._loadNext();
 			};
 			r.onData = function(d) {
+				++_g.totalLoaded;
 				sirius_modules_ModLib.register(f,d);
 				_g._loadNext();
 			};
@@ -669,21 +693,21 @@ sirius_seo_SEOTool.prototype = {
 var sirius_Sirius = $hx_exports.Sirius = function() { };
 sirius_Sirius.__name__ = true;
 sirius_Sirius.__properties__ = {get_agent:"get_agent"}
-sirius_Sirius.select = function(q,t) {
+sirius_Sirius.one = function(q,t) {
 	if(q == null) q = "*";
 	t = (t == null?window.document:t).querySelector(q);
 	if(t != null) return sirius_tools_Utils.displayFrom(t); else {
-		sirius_Sirius.log("[WARNING] ON QUERY_SELECTOR(" + q + ") : NULL TARGET",10);
+		sirius_Sirius.log("Sirius->Table::status[ NULL TARGET (" + q + ") ]",10,3);
 		return null;
 	}
 };
-sirius_Sirius.all = function(q,t) {
+sirius_Sirius.select = function(q,t) {
 	if(q == null) q = "*";
 	return new sirius_utils_Table(q,t);
 };
 sirius_Sirius.elements = function(q,t) {
 	if(q == null) q = "*";
-	return sirius_Sirius.all(q,t).elements;
+	return sirius_Sirius.select(q,t).elements;
 };
 sirius_Sirius.jQuery = function(q) {
 	if(q == null) q = "*";
@@ -698,18 +722,22 @@ sirius_Sirius.init = function(handler,files) {
 	sirius_Sirius.resources.add(files,handler,sirius_Sirius._fileError);
 	if(!sirius_Sirius._initialized) {
 		sirius_Sirius._initialized = true;
-		sirius_Sirius.log("Sirius::init() > INITIALIZED // " + sirius_tools_Utils.toString(sirius_Sirius.get_agent(),true),10,1);
+		sirius_Sirius.log("Sirius->Core::init[ Loading DOM... ]",10,1);
 		sirius_Sirius.onLoad(sirius_Sirius._onLoaded);
-	} else sirius_Sirius.log("Sirius::init() > Alread initialized" + (sirius_Sirius.body == null?" // Waiting for DOM Loading Event...":" // DOM is LOADED"),10,2);
+	} else sirius_Sirius.log("Sirius->Core::init[ " + (sirius_Sirius.body == null?"Waiting for DOM Loading Event...":"DOM is LOADED") + " ]",10,2);
 };
 sirius_Sirius._onLoaded = function() {
-	sirius_Sirius.log("Sirius::init() > RESOURCES LOADED",10,1);
+	if(sirius_Sirius.resources.totalFiles > 0) sirius_Sirius.log("Sirius->Resources::status [ READY (" + sirius_Sirius.resources.totalLoaded + "/" + sirius_Sirius.resources.totalFiles + ") ]",10,1);
+	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
 	sirius_Sirius.body = new sirius_dom_Body(window.document.body);
 	sirius_Sirius.document = new sirius_dom_Document();
 	sirius_Sirius.resources.start();
 };
+sirius_Sirius.status = function() {
+	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED " + sirius_tools_Utils.toString(sirius_Sirius.get_agent(),true) + " ] ",10,1);
+};
 sirius_Sirius._fileError = function(error) {
-	sirius_Sirius.log("Sirius::init(/GET_RESOURCE/) > " + error,10,3);
+	sirius_Sirius.log("Sirius->Resources::status[ " + error + " ]",10,3);
 };
 sirius_Sirius.get_agent = function() {
 	if(sirius_Sirius.agent == null) {
@@ -753,7 +781,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 158, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 157, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -782,193 +810,126 @@ sirius_bit_BitIO.getString = function(hash,size) {
 	while(v.length < size) v = "0" + v;
 	return v;
 };
-var sirius_css_Automator = $hx_exports.CSSAutomator = function() { };
+var sirius_css_Automator = $hx_exports.Automator = function() { };
 sirius_css_Automator.__name__ = true;
-sirius_css_Automator.scan = function(force) {
+sirius_css_Automator.addRules = function(q) {
+	sirius_utils_Dice.All(q,function(p,v) {
+		sirius_css_Automator._NS[p] = v;
+	});
+};
+sirius_css_Automator.scan = function(dev,force) {
 	if(force == null) force = false;
-	if(sirius_css_Automator.css == null) {
-		sirius_utils_Dice.Values([new sirius_css_Decoration(),new sirius_css_Color()],function(v) {
-			v.build();
-		});
-		sirius_css_Automator.css = new css_CSSGroup();
-	}
-	if(force) sirius_css_Automator._scanBody(); else sirius_Sirius.init(sirius_css_Automator._scanBody);
+	if(dev == null) dev = false;
+	sirius_Sirius.log("Sirius->Automator::scan[ " + (dev?"DEBUG_MODE":"RELEASE_MODE") + (force?"<!FORCED>":" (Waiting for DOM)") + " ]",10,1);
+	sirius_css_Automator._dev = dev;
+	if(sirius_css_Automator.css == null) sirius_css_Automator.css = new css_CSSGroup();
+	if(force) sirius_css_Automator._scanBody(); else sirius_Sirius.init(function() {
+		sirius_Sirius.log("Sirius->Automator::status[ SCANNING ]",10,1);
+		if(sirius_css_Automator._dev) sirius_css_Automator._activate(); else sirius_css_Automator._scanBody();
+		sirius_Sirius.log("Sirius->Automator::status[ ...DONE! ]",10,1);
+	});
+};
+sirius_css_Automator._activate = function() {
+	sirius_css_Automator._scanBody();
+	sirius_tools_Delayer.create(sirius_css_Automator._scanBody,1).call(0);
 };
 sirius_css_Automator._scanBody = function() {
+	var w;
+	var q = "-xs-sm-md-lg";
 	var s;
+	var m;
+	var i;
+	var l;
 	var t = sirius_Sirius.document.element.outerHTML.split("class=");
 	t.shift();
 	sirius_utils_Dice.Values(t,function(v) {
-		var i = HxOverrides.substr(v,0,1);
-		var j = v.indexOf(i,1);
+		var i1 = HxOverrides.substr(v,0,1);
+		var j = v.indexOf(i1,1);
 		if(j > 1) {
 			v = v.substring(1,j);
-			var c = v.split(" ");
-			sirius_utils_Dice.Values(c,function(v1) {
-				c = v1.split("-");
-				s = sirius_css_Automator._parse(c,0);
-				if(s != null && s.indexOf("null") == -1) sirius_css_Automator.css.setSelector("." + v1,s,c.pop());
-			});
+			l = v.length;
+			if(l > 0) {
+				var c = v.split(" ");
+				if(q.indexOf(c[c.length - 1]) != -1) m = c.pop(); else m = "";
+				sirius_utils_Dice.Values(c,function(v1) {
+					c = v1.split("-");
+					s = sirius_css_Automator._selector(c,0,c.length,"");
+					haxe_Log.trace(Std.string(c) + "==" + s,{ fileName : "Automator.hx", lineNumber : 278, className : "sirius.css.Automator", methodName : "_scanBody"});
+				});
+			}
 		}
 	});
 	sirius_css_Automator.css.build();
 };
-sirius_css_Automator._parse = function(c,level) {
+sirius_css_Automator._selector = function(arg,c,l,b) {
+	var p = arg[c];
+	var v = Reflect.field(sirius_css_Automator._NS,p);
+	var r = sirius_css_Automator._level(v,0);
+	if(c > 0) {
+		v = sirius_css_Automator._color(v,p);
+		if(v != null) r = sirius_css_Automator._level(b,1) + Std.string(v); else {
+			v = sirius_css_Automator._measure(v,p);
+			if(v != null) r = sirius_css_Automator._level(b,2) + Std.string(v);
+		}
+	}
+	if(++c == l) return r; else return sirius_css_Automator._selector(arg,c,l,r);
+};
+sirius_css_Automator._level = function(p,l) {
+	if((p instanceof Array) && p.__enum__ == null) return p[l]; else return p;
+};
+sirius_css_Automator._align = function(r,x) {
+	return "ctblr".indexOf(x) != -1;
+};
+sirius_css_Automator._color = function(r,x) {
+	if(HxOverrides.substr(x,0,1) == "x") r = "#" + HxOverrides.substr(x,1,x.length - 1); else if(sirius_tools_Utils.isValid(r) && HxOverrides.substr(r,0,1) == "#") return r;
+	return null;
+};
+sirius_css_Automator._measure = function(r,x) {
+	if(r == null) {
+		var l = x.length;
+		if(HxOverrides.substr(x,l - 2,2) == "pc") r = x.split("d").join(".").split("pc").join("%"); else if(HxOverrides.substr(x,l - 1,1) == "n") r = "-" + x.split("n").join("") + "px"; else {
+			var n = Std.parseInt(x);
+			if(n != null) r = n + "px";
+		}
+		return r;
+	} else return null;
+};
+sirius_css_Automator._parse = function(c,level,x) {
 	var v = c[level];
 	var r = Reflect.field(sirius_css_Automator._NS,c[level]);
-	if(r == null && level > 0) {
-		var l = v.length;
-		if(HxOverrides.substr(v,l - 2,2) == "pc") r = v.split("d").join(".").split("pc").join("%"); else if(HxOverrides.substr(v,l - 1,1) == "n") r = "-" + v.split("n").join("") + "px"; else {
-			var x = Std.parseInt(v);
-			if(x != null) r = x + "px"; else return null;
+	var j = "";
+	if(r == null) {
+		if(level > 0) {
+			var l = v.length;
+			if(HxOverrides.substr(v,l - 2,2) == "pc") r = v.split("d").join(".").split("pc").join("%"); else if(HxOverrides.substr(v,l - 1,1) == "n") r = "-" + v.split("n").join("") + "px"; else if(HxOverrides.substr(v,0,1) == "x") r = "#" + HxOverrides.substr(v,1,l - 1); else {
+				var x1 = Std.parseInt(v);
+				if(x1 != null) r = x1 + "px"; else return null;
+			}
+		} else if(level == 0) return null;
+	} else if(level == 0 && r != "" && c.length > 1) {
+		if((r instanceof Array) && r.__enum__ == null) {
+			r = r[0];
+			j = "-";
 		}
-	} else if(r == null && level == 0) return null;
-	if(++level == c.length) return r + ";"; else return r + (level == 1?":":"") + sirius_css_Automator._parse(c,level);
+		if(v == "txt") {
+			if(level == 1) r = "text"; else {
+				var cl = Reflect.field(sirius_css_Automator._NS,c[1]);
+				if(cl != null) {
+					if(HxOverrides.substr(cl,0,1) == "#") r = "color"; else if("lrcj".indexOf(c[1]) != -1) r = "text-align";
+				}
+			}
+		} else if(v == "bord") {
+			var cl1 = Reflect.field(sirius_css_Automator._NS,c[1]);
+			if(cl1 != null && HxOverrides.substr(cl1,0,1) == "#") r = "border-color"; else if("sol,das,dou,dot".indexOf(HxOverrides.substr(cl1,0,3)) != -1) r = "border-style";
+		} else if(v == "scroll") {
+			var cl2 = Reflect.field(sirius_css_Automator._NS,c[1]);
+			if(cl2 == "x" || cl2 == "y") r = "overflow-" + cl2 + ":scroll;overflow-" + (cl2 == "x"?"y":"x") + ":hidden;";
+		}
+	}
+	x[x.length] = j + Std.string(r);
+	if(++level != c.length) sirius_css_Automator._parse(c,level,x);
+	return x;
 };
-var sirius_css_ICSS = function() { };
-sirius_css_ICSS.__name__ = true;
-sirius_css_ICSS.prototype = {
-	__class__: sirius_css_ICSS
-};
-var sirius_css_CSS = $hx_exports.sru.css.CSS = function() {
-	if(sirius_css_CSS.ALL == null) sirius_css_CSS.ALL = new css_CSSGroup();
-};
-sirius_css_CSS.__name__ = true;
-sirius_css_CSS.__interfaces__ = [sirius_css_ICSS];
-sirius_css_CSS.prototype = {
-	add: function(a,b) {
-	}
-	,setSelector: function(id,style,mode) {
-		sirius_css_CSS.ALL.setSelector(id,style,mode);
-	}
-	,distribute: function(id,style) {
-		sirius_css_CSS.ALL.distribute(id,style);
-	}
-	,_add: function(id,style,important) {
-		return id + "{" + style + "}" + (important?id + "-i {" + style.split(";").join(" !important;") + "}":"");
-	}
-	,build: function() {
-		sirius_css_CSS.ALL.build();
-	}
-	,__class__: sirius_css_CSS
-};
-var sirius_css_Color = $hx_exports.sru.css.Color = function() {
-	sirius_css_CSS.call(this);
-	if(!sirius_css_Color._active) {
-		this.distribute(".bg-transparent","background-color:transparent;");
-		sirius_css_Color._active = true;
-		this._parse();
-	}
-};
-sirius_css_Color.__name__ = true;
-sirius_css_Color.rnd = function(flatOnly) {
-	if(flatOnly == null) flatOnly = false;
-	if(sirius_css_Color.ALL.length == 0) sirius_utils_Dice.All(sirius_css_Color.COLORS,function(p,v1) {
-		v1.name = p;
-		sirius_css_Color.ALL[sirius_css_Color.ALL.length] = v1;
-	});
-	var v;
-	if(flatOnly) v = sirius_css_Color.FLAT; else v = sirius_css_Color.ALL;
-	return v[Std.random(v.length)];
-};
-sirius_css_Color.byName = function(name) {
-	return Reflect.field(sirius_css_Color.COLORS,name);
-};
-sirius_css_Color.__super__ = sirius_css_CSS;
-sirius_css_Color.prototype = $extend(sirius_css_CSS.prototype,{
-	_parse: function() {
-		var _g = this;
-		sirius_utils_Dice.All(sirius_css_Color.COLORS,function(p,v) {
-			v.name = p;
-			_g.distribute(".bg-" + p,"background-color:" + Std.string(v.color) + ";");
-			_g.distribute(".txt-" + p,"color:" + Std.string(v.color) + ";");
-			_g.distribute(".bord-" + p,"border-color:" + Std.string(v.color) + ";");
-		});
-	}
-	,__class__: sirius_css_Color
-});
-var sirius_css_Decoration = $hx_exports.sru.css.Decoration = function() {
-	sirius_css_CSS.call(this);
-	this.distribute(".disp-none","display:none;");
-	this.distribute(".disp-block","display:block;");
-	this.distribute(".disp-inline","display:inline;");
-	this.distribute(".disp-inline-block","display:inline-block;");
-	this.distribute(".vert-baseline","vertical-align:baseline;");
-	this.distribute(".vert-t","vertical-align:top;");
-	this.distribute(".vert-m","vertical-align:middle;");
-	this.distribute(".vert-b","vertical-align:bottom;");
-	this.distribute(".vert-txt-t","vertical-align:text-top;");
-	this.distribute(".vert-txt-b","vertical-align:text-bottom;");
-	this.distribute(".vert-sub","vertical-align:sub;");
-	this.distribute(".vert-sup","vertical-align:super;");
-	this.distribute(".pos-abs","position:absolute;");
-	this.distribute(".pos-rel","position:relative;");
-	this.distribute(".pos-fix","position:fixed;");
-	this.distribute(".pull-r","float:right;");
-	this.distribute(".pull-l","float:left;");
-	this.distribute(".pull-n","float:none;");
-	this.distribute(".over-hid","overflow:hidden;");
-	this.distribute(".over-scroll","overflow:scroll;");
-	this.distribute(".scroll-x","overflow-x:scroll;overflow-y:hidden;");
-	this.distribute(".scroll-y","overflow-y:scroll;overflow-x:hidden;");
-	this.distribute(".txt-l","text-align:left;");
-	this.distribute(".txt-r","text-align:right;");
-	this.distribute(".txt-c","text-align:center;");
-	this.distribute(".txt-j","text-align:justify;");
-	this.distribute(".bold","font-weight:bold;");
-	this.distribute(".regular","font-weight:normal;");
-	this.distribute(".underline","font-weight:underline;");
-	this.distribute(".italic","font-weight:italic;");
-	this.distribute(".thin","font-weight:100;");
-	this.distribute(".up-case","font-transform:uppercase");
-	this.distribute(".lo-case","font-transform:lowercase");
-	this.distribute(".curs-pointer","cursor:pointer");
-	this.distribute(".curs-loading","cursor:loading");
-	this.distribute(".curs-default","cursor:default");
-	this.distribute(".arial","font-family:arial;");
-	this.distribute(".verdana","font-family:verdana;");
-	this.distribute(".tahoma","font-family:tahoma;");
-	this.distribute(".lucida","font-family:lucida console;");
-	this.distribute(".georgia","font-family:georgia;");
-	this.distribute(".trebuchet","font-family:trebuchet ms;");
-	this.distribute(".segoe","font-family:segoe ui;");
-	this.distribute(".disp-tab","display:table;");
-	this.distribute(".disp-tab-cell","display:table-cell");
-	this.distribute(".bord-solid","border-style:solid");
-	this.distribute(".bord-dashed","border-style:dashed");
-	this.distribute(".bord-double","border-style:double");
-	this.distribute(".bord-dotted","border-style:dotted");
-};
-sirius_css_Decoration.__name__ = true;
-sirius_css_Decoration.__super__ = sirius_css_CSS;
-sirius_css_Decoration.prototype = $extend(sirius_css_CSS.prototype,{
-	__class__: sirius_css_Decoration
-});
-var sirius_css_Shadow = $hx_exports.sru.css.Shadow = function() {
-	sirius_css_CSS.call(this);
-	if(!sirius_css_Shadow._active) {
-		sirius_css_Shadow._active = true;
-		this._parse();
-	}
-};
-sirius_css_Shadow.__name__ = true;
-sirius_css_Shadow.__super__ = sirius_css_CSS;
-sirius_css_Shadow.prototype = $extend(sirius_css_CSS.prototype,{
-	create: function(name,color) {
-		var t;
-		if(!js_Boot.__instanceof(color,sirius_math_ARGB)) t = new sirius_math_ARGB(color); else t = color;
-		var tbody = "0 1px 0 " + t.range(.8).hex() + ",0 2px 0 " + t.range(.7).hex() + ",0 3px 0 " + t.range(.5).hex() + ",0 4px 0 " + t.range(.4).hex() + ",0 5px 0 " + t.range(.3).hex() + ",0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);";
-		this.setSelector(".txt-shad-" + name,"text-shadow: " + tbody);
-		this.setSelector(".box-shad-" + name,"box-shadow: " + tbody);
-	}
-	,_parse: function() {
-		var _g = this;
-		sirius_utils_Dice.All(sirius_css_Color.COLORS,function(p,v) {
-			_g.create(p,new sirius_math_ARGB(v.color));
-		});
-	}
-	,__class__: sirius_css_Shadow
-});
 var sirius_css_XCSS = $hx_exports.XCSS = function(data) {
 	this.reset();
 	if(data != null) this.flush(data);
@@ -1051,7 +1012,7 @@ sirius_dom_IDisplay.prototype = {
 	__class__: sirius_dom_IDisplay
 };
 var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t,d) {
-	if(typeof(q) == "string") q = sirius_Sirius.select(q,t);
+	if(typeof(q) == "string") q = sirius_Sirius.one(q,t);
 	if(q == null) {
 		var _this = window.document;
 		q = _this.createElement("div");
@@ -1095,13 +1056,13 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,select: function(q) {
-		return sirius_Sirius.all(q,this.element);
-	}
-	,one: function(q) {
 		return sirius_Sirius.select(q,this.element);
 	}
+	,one: function(q) {
+		return sirius_Sirius.one(q,this.element);
+	}
 	,all: function() {
-		return sirius_Sirius.all("*",this.element);
+		return sirius_Sirius.select("*",this.element);
 	}
 	,getScroll: function(o) {
 		if(o == null) o = { };
@@ -1727,7 +1688,7 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		if(offY == null) offY = 0;
 		if(offX == null) offX = 0;
 		if(time == null) time = 1;
-		if(typeof(target) == "string") target = sirius_Sirius.select(target);
+		if(typeof(target) == "string") target = sirius_Sirius.one(target);
 		if(Object.prototype.hasOwnProperty.call(target,"element")) target = target.Self;
 		this.easeScroll(target.offsetLeft - offX,target.offsetTop - offY,time,ease);
 	}
@@ -2979,26 +2940,26 @@ sirius_modules_ModLib.register = function(file,content) {
 			if(i != -1) {
 				var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
 				if(mod.name == null) mod.name = file;
-				sirius_Sirius.log("Building Module [" + mod.name + "]",10,1);
+				sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]",10,1);
 				var end = v.indexOf(";;;");
 				content = v.substring(i + 2,end == -1?v.length:end);
 				if(mod.require != null) {
 					var dependencies = mod.require.split(";");
-					sirius_Sirius.log("\tValidating dependencies...",10,1);
+					sirius_Sirius.log("\tSirius->ModLib::dependencies [ FOR " + mod.name + " ]",10,1);
 					sirius_utils_Dice.Values(dependencies,function(v1) {
 						var set = Reflect.field(sirius_modules_ModLib.CACHE,v1);
-						if(set == null) sirius_Sirius.log("MODULE(" + v1 + ") : MISSING",10,2); else {
-							sirius_Sirius.log("\t\t[" + v1 + "] OK!",10,1);
+						if(set == null) sirius_Sirius.log("\t\tSirius->ModLib::dependency[ MISSING " + v1 + " ]",10,2); else {
+							sirius_Sirius.log("\t\tSirius->ModLib::dependency[ OK " + v1 + " ]",10,1);
 							content = content.split("<import " + v1 + "/>").join(set);
 						}
 					});
 				}
 				if(mod.target != null) {
-					var t = sirius_Sirius.select(mod.target);
+					var t = sirius_Sirius.one(mod.target);
 					if(t != null) t.addChild(sirius_modules_ModLib.build(mod.name));
 				}
 				sirius_modules_ModLib.CACHE[mod.name] = content;
-			} else sirius_Sirius.log("\t(" + HxOverrides.substr(v,0,15) + "...) Missing or Invalid MODULE tag in [" + file + "]",10,3);
+			} else sirius_Sirius.log("\tSirius->ModLib::status [ MISSING MODULE END IN " + file + "(" + HxOverrides.substr(v,0,15) + "...) ]",10,3);
 		}
 	}); else sirius_modules_ModLib.CACHE[file] = content;
 };
@@ -3012,29 +2973,6 @@ sirius_modules_ModLib.fill = function(module,data,sufix) {
 };
 sirius_modules_ModLib.build = function(module,data) {
 	return new sirius_dom_Display().build(sirius_modules_ModLib.get(module,data));
-};
-var sirius_plugins_Anchor = $hx_exports.sru.plugins.Anchor = function() {
-	sirius_Sirius.all("[plugin~=anchor]").onClick($bind(this,this._scroll));
-};
-sirius_plugins_Anchor.__name__ = true;
-sirius_plugins_Anchor.init = function() {
-	return new sirius_plugins_Anchor();
-};
-sirius_plugins_Anchor.prototype = {
-	_scroll: function(e) {
-		var d = e.target.attribute("scroll-target");
-		if(d != null) {
-			var time = Std.parseFloat(sirius_utils_Dice.One(e.target.attribute("scroll-time"),1).value);
-			var obj = sirius_Sirius.select(d);
-			var x = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("scroll-offx"),0).value);
-			var y = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("scroll-offy"),100).value);
-			if(obj != null) {
-				var ease = sirius_transitions_Ease.fromString(sirius_utils_Dice.One(e.target.attribute("scroll-ease"),"LINEAR.X").value);
-				sirius_Sirius.document.scrollTo(obj,time,ease,x,y);
-			} else sirius_Sirius.log("Anchor: Missing scroll-target='id:?' for Anchor plugin.",10,3);
-		}
-	}
-	,__class__: sirius_plugins_Anchor
 };
 var sirius_seo_SEO = function(type) {
 	this.data = { };
@@ -3192,6 +3130,44 @@ sirius_seo_WebSite.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,__class__: sirius_seo_WebSite
 });
+var sirius_tools_Delayer = $hx_exports.sru.tools.Delayer = function(handler,time,args,thisObj) {
+	this._this = thisObj;
+	this._handler = handler;
+	this._time = time * 1000 | 0;
+	this._args = args;
+	this._cnt = 0;
+	this._rpt = 1;
+};
+sirius_tools_Delayer.__name__ = true;
+sirius_tools_Delayer.create = function(handler,time,args,thisObj) {
+	return new sirius_tools_Delayer(handler,time,args,thisObj);
+};
+sirius_tools_Delayer.prototype = {
+	call: function(repeats) {
+		if(repeats != null) this._rpt = repeats;
+		if(this._id == null) {
+			this._id = "t" + sirius_tools_Key.COUNTER();
+			sirius_tools_Delayer._tks[Std.string(this._id)] = this;
+		}
+		this._tid = setTimeout(this._tick,this._time,this);;
+		return this;
+	}
+	,cancel: function() {
+		this._cnt = 0;
+		if(Object.prototype.hasOwnProperty.call(sirius_tools_Delayer._tks,this._id)) {
+			clearTimeout(this._tid);;
+			Reflect.deleteField(sirius_tools_Delayer._tks,this._id);
+		}
+		return this;
+	}
+	,_tick: function(d) {
+		if(d._handler != null) {
+			d._handler.call(d._thisObj, d._args);
+			if(d._rpt == 0 || ++d._cnt < d._rpt) d.call(); else d._cnt = 0;
+		}
+	}
+	,__class__: sirius_tools_Delayer
+};
 var sirius_tools_IAgent = function() { };
 sirius_tools_IAgent.__name__ = true;
 sirius_tools_IAgent.prototype = {
@@ -3254,6 +3230,9 @@ sirius_tools_Ticker.remove = function(handler) {
 	iof = HxOverrides.indexOf(sirius_tools_Ticker._pool,x,0);
 	if(iof != -1) sirius_tools_Ticker._pool[iof] = null;
 };
+sirius_tools_Ticker.delay = function(handler,time,args) {
+	return sirius_tools_Delayer.create(handler,time,args);
+};
 var sirius_tools_Utils = $hx_exports.sru.tools.Utils = function() { };
 sirius_tools_Utils.__name__ = true;
 sirius_tools_Utils.matchMedia = function(value) {
@@ -3290,6 +3269,12 @@ sirius_tools_Utils.displayFrom = function(t) {
 };
 sirius_tools_Utils.toString = function(o,json) {
 	if(json == true) return JSON.stringify(o); else return Std.string(o);
+};
+sirius_tools_Utils.isValid = function(o) {
+	if(o != null && o != undefined) {
+		if(typeof(o) == "string") return o.length > 0; else return true;
+	}
+	return false;
 };
 var sirius_transitions_Animator = $hx_exports.Animator = function() { };
 sirius_transitions_Animator.__name__ = true;
@@ -3363,28 +3348,6 @@ sirius_transitions_Animator.timeScale = function(o) {
 sirius_transitions_Animator.set = function(o,transform) {
 	o = sirius_transitions_Animator.get(o);
 	if(sirius_transitions_Animator.available && o != null) return sirius_transitions_Animator.tweenObject.set(o,transform); else return null;
-};
-var sirius_transitions_Ease = $hx_exports.Ease = function() { };
-sirius_transitions_Ease.__name__ = true;
-sirius_transitions_Ease._F = function(n) {
-	n = window[n];;
-	return n != null?{ x : n.easeNone, I : n.easeIn, O : n.easeOut, IO : n.easeInOut, OI : n.easeOutIn}:{ };
-};
-sirius_transitions_Ease.fromString = function(q) {
-	var q1 = [];
-	var C = Reflect.field(sirius_transitions_Ease,q1[0]);
-	var e = null;
-	if(C != null) {
-		if(q1.length > 1) e = Reflect.field(C,q1[1]);
-		if(e == null) e = C.X;
-		return e;
-	}
-	return sirius_transitions_Ease.LINEAR.X;
-};
-var sirius_transitions_IEasing = function() { };
-sirius_transitions_IEasing.__name__ = true;
-sirius_transitions_IEasing.prototype = {
-	__class__: sirius_transitions_IEasing
 };
 var sirius_utils_Dice = $hx_exports.sru.utils.Dice = function() { };
 sirius_utils_Dice.__name__ = true;
@@ -3815,6 +3778,10 @@ var Enum = { };
 var q = window.jQuery;
 var js = js || {}
 js.JQuery = q;
+css_CSSGroup.MEDIA_XS = "/*SRU*/@media(min-width:1px) and @media(max-width:767px){ ";
+css_CSSGroup.MEDIA_SM = "/*SRU*/@media(min-width:768px) and (max-width:1000px){ ";
+css_CSSGroup.MEDIA_MD = "/*SRU*/@media(min-width:1001px) and (max-width:1169px){ ";
+css_CSSGroup.MEDIA_LG = "/*SRU*/@media(min-width:1170px){ ";
 js_Boot.__toStr = {}.toString;
 sirius_modules_Loader.FILES = { };
 sirius_seo_SEOTool.WEBSITE = 1;
@@ -3858,30 +3825,19 @@ sirius_bit_BitIO.P30 = 536870912;
 sirius_bit_BitIO.P31 = 1073741824;
 sirius_bit_BitIO.P32 = -2147483648;
 sirius_bit_BitIO.X = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
-sirius_css_Automator._NS = { t : "top", b : "botton", l : "left", r : "right", pc : "%", i : " !important", bord : "border", marg : "margin", padd : "padding", line : "line", w : "width", h : "height", o : "outline", wh : ["width","height"], rad : "radius", a : "auto", txt : "font-size", xs : "", sm : "", md : "", lg : ""};
-sirius_css_Color.COLORS = { aliceblue : { color : "#f0f8ff"}, antiquewhite : { color : "#faebd7"}, aqua : { color : "#00ffff"}, aquamarine : { color : "#7fffd4"}, azure : { color : "#f0ffff"}, beige : { color : "#f5f5dc"}, bisque : { color : "#ffe4c4"}, black : { color : "#000000"}, blanchedalmond : { color : "#ffebcd"}, blue : { color : "#0000ff"}, blueviolet : { color : "#8a2be2"}, brown : { color : "#a52a2a"}, burlywood : { color : "#deb887"}, cadetblue : { color : "#5f9ea0"}, chartreuse : { color : "#7fff00"}, chocolate : { color : "#d2691e"}, coral : { color : "#ff7f50"}, cornflowerblue : { color : "#6495ed"}, cornsilk : { color : "#fff8dc"}, crimson : { color : "#dc143c"}, cyan : { color : "#00ffff"}, darkblue : { color : "#00008b"}, darkcyan : { color : "#008b8b"}, darkgoldenrod : { color : "#b8860b"}, darkgray : { color : "#a9a9a9"}, darkgreen : { color : "#006400"}, darkkhaki : { color : "#bdb76b"}, darkmagenta : { color : "#8b008b"}, darkolivegreen : { color : "#556b2f"}, darkorange : { color : "#ff8c00"}, darkorchid : { color : "#9932cc"}, darkred : { color : "#8b0000"}, darksalmon : { color : "#e9967a"}, darkseagreen : { color : "#8fbc8f"}, darkslateblue : { color : "#483d8b"}, darkslategray : { color : "#2f4f4f"}, darkturquoise : { color : "#00ced1"}, darkviolet : { color : "#9400d3"}, deeppink : { color : "#ff1493"}, deepskyblue : { color : "#00bfff"}, dimgray : { color : "#696969"}, dodgerblue : { color : "#1e90ff"}, firebrick : { color : "#b22222"}, floralwhite : { color : "#fffaf0"}, forestgreen : { color : "#228b22"}, fuchsia : { color : "#ff00ff"}, gainsboro : { color : "#dcdcdc"}, ghostwhite : { color : "#f8f8ff"}, gold : { color : "#ffd700"}, goldenrod : { color : "#daa520"}, gray : { color : "#808080"}, green : { color : "#008000"}, greenyellow : { color : "#adff2f"}, honeydew : { color : "#f0fff0"}, hotpink : { color : "#ff69b4"}, indianred : { color : "#cd5c5c"}, indigo : { color : "#4b0082"}, ivory : { color : "#fffff0"}, khaki : { color : "#f0e68c"}, lavender : { color : "#e6e6fa"}, lavenderblush : { color : "#fff0f5"}, lawngreen : { color : "#7cfc00"}, lemonchiffon : { color : "#fffacd"}, lightblue : { color : "#add8e6"}, lightcoral : { color : "#f08080"}, lightcyan : { color : "#e0ffff"}, lightgoldenrodyellow : { color : "#fafad2"}, lightgray : { color : "#d3d3d3"}, lightgreen : { color : "#90ee90"}, lightpink : { color : "#ffb6c1"}, lightsalmon : { color : "#ffa07a"}, lightseagreen : { color : "#20b2aa"}, lightskyblue : { color : "#87cefa"}, lightslategray : { color : "#778899"}, lightsteelblue : { color : "#b0c4de"}, lightyellow : { color : "#ffffe0"}, lime : { color : "#00ff00"}, limegreen : { color : "#32cd32"}, linen : { color : "#faf0e6"}, magenta : { color : "#ff00ff"}, maroon : { color : "#800000"}, mediumaquamarine : { color : "#66cdaa"}, mediumblue : { color : "#0000cd"}, mediumorchid : { color : "#ba55d3"}, mediumpurple : { color : "#9370db"}, mediumseagreen : { color : "#3cb371"}, mediumslateblue : { color : "#7b68ee"}, mediumspringgreen : { color : "#00fa9a"}, mediumturquoise : { color : "#48d1cc"}, mediumvioletred : { color : "#c71585"}, midnightblue : { color : "#191970"}, mintcream : { color : "#f5fffa"}, mistyrose : { color : "#ffe4e1"}, moccasin : { color : "#ffe4b5"}, navajowhite : { color : "#ffdead"}, navy : { color : "#000080"}, oldlace : { color : "#fdf5e6"}, olive : { color : "#808000"}, olivedrab : { color : "#6b8e23"}, orange : { color : "#ffa500"}, orangered : { color : "#ff4500"}, orchid : { color : "#da70d6"}, palegoldenrod : { color : "#eee8aa"}, palegreen : { color : "#98fb98"}, paleturquoise : { color : "#afeeee"}, palevioletred : { color : "#db7093"}, papayawhip : { color : "#ffefd5"}, peachpuff : { color : "#ffdab9"}, peru : { color : "#cd853f"}, pink : { color : "#ffc0cb"}, plum : { color : "#dda0dd"}, powderblue : { color : "#b0e0e6"}, purple : { color : "#800080"}, rebeccapurple : { color : "#663399"}, red : { color : "#ff0000"}, rosybrown : { color : "#bc8f8f"}, royalblue : { color : "#4169e1"}, saddlebrown : { color : "#8b4513"}, salmon : { color : "#fa8072"}, sandybrown : { color : "#f4a460"}, seagreen : { color : "#2e8b57"}, seashell : { color : "#fff5ee"}, sienna : { color : "#a0522d"}, silver : { color : "#c0c0c0"}, skyblue : { color : "#87ceeb"}, slateblue : { color : "#6a5acd"}, slategray : { color : "#708090"}, snow : { color : "#fffafa"}, springgreen : { color : "#00ff7f"}, steelblue : { color : "#4682b4"}, tan : { color : "#d2b48c"}, teal : { color : "#008080"}, thistle : { color : "#d8bfd8"}, tomato : { color : "#ff6347"}, turquoise : { color : "#40e0d0"}, violet : { color : "#ee82ee"}, wheat : { color : "#f5deb3"}, white : { color : "#ffffff"}, whitesmoke : { color : "#f5f5f5"}, yellow : { color : "#ffff00"}, yellowgreen : { color : "#9acd32"}};
-sirius_css_Color.FLAT = [];
-sirius_css_Color.ALL = [];
-sirius_css_Color._active = false;
-sirius_css_Shadow._active = false;
+sirius_css_Automator._NS = { t : "top", b : "botton", l : "left", r : "right", m : "middle", c : "center", n : "none", pc : "%", p : "%", i : " !important", bord : "border", marg : "margin", padd : "padding", line : "line", w : "width", h : "height", o : "outline", rad : "radius", a : "auto", txt : ["font-size","color","text-align"], bg : "background-color", aliceblue : "#f0f8ff", antiquewhite : "#faebd7", aqua : "#00ffff", aquamarine : "#7fffd4", azure : "#f0ffff", beige : "#f5f5dc", bisque : "#ffe4c4", black : "#000000", blanchedalmond : "#ffebcd", blue : "#0000ff", blueviolet : "#8a2be2", brown : "#a52a2a", burlywood : "#deb887", cadetblue : "#5f9ea0", chartreuse : "#7fff00", chocolate : "#d2691e", coral : "#ff7f50", cornflowerblue : "#6495ed", cornsilk : "#fff8dc", crimson : "#dc143c", cyan : "#00ffff", darkblue : "#00008b", darkcyan : "#008b8b", darkgoldenrod : "#b8860b", darkgray : "#a9a9a9", darkgreen : "#006400", darkkhaki : "#bdb76b", darkmagenta : "#8b008b", darkolivegreen : "#556b2f", darkorange : "#ff8c00", darkorchid : "#9932cc", darkred : "#8b0000", darksalmon : "#e9967a", darkseagreen : "#8fbc8f", darkslateblue : "#483d8b", darkslategray : "#2f4f4f", darkturquoise : "#00ced1", darkviolet : "#9400d3", deeppink : "#ff1493", deepskyblue : "#00bfff", dimgray : "#696969", dodgerblue : "#1e90ff", firebrick : "#b22222", floralwhite : "#fffaf0", forestgreen : "#228b22", fuchsia : "#ff00ff", gainsboro : "#dcdcdc", ghostwhite : "#f8f8ff", gold : "#ffd700", goldenrod : "#daa520", gray : "#808080", green : "#008000", greenyellow : "#adff2f", honeydew : "#f0fff0", hotpink : "#ff69b4", indianred : "#cd5c5c", indigo : "#4b0082", ivory : "#fffff0", khaki : "#f0e68c", lavender : "#e6e6fa", lavenderblush : "#fff0f5", lawngreen : "#7cfc00", lemonchiffon : "#fffacd", lightblue : "#add8e6", lightcoral : "#f08080", lightcyan : "#e0ffff", lightgoldenrodyellow : "#fafad2", lightgray : "#d3d3d3", lightgreen : "#90ee90", lightpink : "#ffb6c1", lightsalmon : "#ffa07a", lightseagreen : "#20b2aa", lightskyblue : "#87cefa", lightslategray : "#778899", lightsteelblue : "#b0c4de", lightyellow : "#ffffe0", lime : "#00ff00", limegreen : "#32cd32", linen : "#faf0e6", magenta : "#ff00ff", maroon : "#800000", mediumaquamarine : "#66cdaa", mediumblue : "#0000cd", mediumorchid : "#ba55d3", mediumpurple : "#9370db", mediumseagreen : "#3cb371", mediumslateblue : "#7b68ee", mediumspringgreen : "#00fa9a", mediumturquoise : "#48d1cc", mediumvioletred : "#c71585", midnightblue : "#191970", mintcream : "#f5fffa", mistyrose : "#ffe4e1", moccasin : "#ffe4b5", navajowhite : "#ffdead", navy : "#000080", oldlace : "#fdf5e6", olive : "#808000", olivedrab : "#6b8e23", orange : "#ffa500", orangered : "#ff4500", orchid : "#da70d6", palegoldenrod : "#eee8aa", palegreen : "#98fb98", paleturquoise : "#afeeee", palevioletred : "#db7093", papayawhip : "#ffefd5", peachpuff : "#ffdab9", peru : "#cd853f", pink : "#ffc0cb", plum : "#dda0dd", powderblue : "#b0e0e6", purple : "#800080", rebeccapurple : "#663399", red : "#ff0000", rosybrown : "#bc8f8f", royalblue : "#4169e1", saddlebrown : "#8b4513", salmon : "#fa8072", sandybrown : "#f4a460", seagreen : "#2e8b57", seashell : "#fff5ee", sienna : "#a0522d", silver : "#c0c0c0", skyblue : "#87ceeb", slateblue : "#6a5acd", slategray : "#708090", snow : "#fffafa", springgreen : "#00ff7f", steelblue : "#4682b4", tan : "#d2b48c", teal : "#008080", thistle : "#d8bfd8", tomato : "#ff6347", turquoise : "#40e0d0", violet : "#ee82ee", wheat : "#f5deb3", white : "#ffffff", whitesmoke : "#f5f5f5", yellow : "#ffff00", yellowgreen : "#9acd32", transparent : "transparent", disp : "display", block : "block", 'inline' : "inline", vert : "vertical-align", sub : "sub", sup : "super", pos : "position", abs : "absolute", rel : "relative", pull : "float", 'float' : "float", over : "overflow", scroll : "scroll", bold : "font-weight:bold,", regular : "font-weight:regular", underline : "font-weight:underline", italic : "font-weight:italic", thin : "font-weight:100", upcase : "font-transform:uppercase", locase : "font-transform:lowercase", curs : "cursor", pointer : "pointer", loading : "loading", arial : "font-family:arial", verdana : "font-family:verdana", tahoma : "font-family:tahoma", lucida : "font-family:lucida", georgia : "font-family:georgia", trebuchet : "font-family:trebuchet", tab : "table", cell : "cell", solid : "solid", dashed : "dashed", 'double' : "double", dotted : "dotted"};
 sirius_dom_Display.DATA = { };
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
 sirius_modules_ModLib.CACHE = { };
+sirius_tools_Delayer._tks = { };
 sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_tools_Ticker._pool = [];
 sirius_tools_Utils.typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_transitions_Animator.available = window.Tween != null || window.TweenMax != null || window.TweenLite != null;
 sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
-sirius_transitions_Ease.LINEAR = sirius_transitions_Ease._F("Linear");
-sirius_transitions_Ease.CIRC = sirius_transitions_Ease._F("Circ");
-sirius_transitions_Ease.CUBIC = sirius_transitions_Ease._F("Cubic");
-sirius_transitions_Ease.QUAD = sirius_transitions_Ease._F("Quad");
-sirius_transitions_Ease.EXPO = sirius_transitions_Ease._F("Expo");
-sirius_transitions_Ease.BACK = sirius_transitions_Ease._F("Back");
-sirius_transitions_Ease.ELASTIC = sirius_transitions_Ease._F("Elastic");
-sirius_transitions_Ease.QUART = sirius_transitions_Ease._F("Quart");
-sirius_transitions_Ease.QUINT = sirius_transitions_Ease._F("Quint");
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
+
+//# sourceMappingURL=api.sirius.js.map

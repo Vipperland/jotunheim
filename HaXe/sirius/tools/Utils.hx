@@ -1,5 +1,6 @@
 package sirius.tools;
 import haxe.Json;
+import haxe.Log;
 import js.Browser;
 import js.html.Element;
 import sirius.dom.A;
@@ -157,6 +158,17 @@ class Utils{
 	
 	static public function toString(o:Dynamic, ?json:Bool):String {
 		return json == true ? Json.stringify(o) : Std.string(o);
+	}
+	
+	static public function isValid(o:Dynamic):Bool {
+		if (o != null && untyped __js__("o != undefined")) {
+			if (Std.is(o, String)) {
+				return o.length > 0;
+			}else {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

@@ -1,10 +1,4 @@
 package;
-import js.html.Text;
-import sirius.css.Color;
-import sirius.css.Shadow;
-import sirius.dom.Div;
-import sirius.dom.Span;
-import sirius.dom.Sprite;
 import sirius.Sirius;
 
 /**

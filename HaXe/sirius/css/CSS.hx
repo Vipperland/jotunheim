@@ -15,7 +15,6 @@ class CSS implements ICSS {
 	
 	public static var ALL:CSSGroup;
 	
-	
 	public function new() {
 		if (ALL == null) ALL = new CSSGroup();
 	}

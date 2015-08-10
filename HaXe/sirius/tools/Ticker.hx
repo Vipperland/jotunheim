@@ -46,4 +46,8 @@ class Ticker {
 		if (iof != -1) _pool[iof] = null;
 	}
 	
+	public static function delay(handler:Dynamic, time:Float, ?args:Array<Dynamic>):Delayer {
+		return Delayer.create(handler, time, args);
+	}
+	
 }
