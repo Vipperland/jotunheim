@@ -812,9 +812,44 @@ sirius_bit_BitIO.getString = function(hash,size) {
 };
 var sirius_css_Automator = $hx_exports.Automator = function() { };
 sirius_css_Automator.__name__ = true;
+sirius_css_Automator.numericKey = function(d,k,n) {
+	var v = k.entry.value;
+	if(n != null && !n.position) {
+		if(d.head.key == "bord") return sirius_css_Automator.borderKey(d,k,n);
+		if(n.color != null) return v + "-color:";
+		if(n.measure != null) return v + ":";
+		return v + ":";
+	}
+	return v + (k.index == 0?"-":"");
+};
+sirius_css_Automator.borderKey = function(d,k,n) {
+	var v = k.entry.value;
+	if(n != null && !n.position) {
+		if(n.color != null) return v + "-color:";
+		if(n.measure != null) return v + "-width:";
+		return v + (d.keys[1].key == "rad"?"-":"-style:");
+	}
+	return v + (k.index == 0?"-":"");
+};
+sirius_css_Automator.appendKey = function(d,k,n) {
+	return "-" + k.entry.value;
+};
+sirius_css_Automator.commonKey = function(d,k,n) {
+	return k.entry.value;
+};
+sirius_css_Automator.valueKey = function(d,k,n) {
+	return k.entry.value + ":";
+};
+sirius_css_Automator.textKey = function(d,k,n) {
+	if(n != null && !n.position) {
+		if(n.color != null) return "color:";
+		if(n.measure != null) return "font-size:";
+	}
+	return "text-align:";
+};
 sirius_css_Automator.addRules = function(q) {
 	sirius_utils_Dice.All(q,function(p,v) {
-		sirius_css_Automator._NS[p] = v;
+		sirius_css_Automator._KEYS[p] = v;
 	});
 };
 sirius_css_Automator.scan = function(dev,force) {
@@ -852,46 +887,34 @@ sirius_css_Automator._scanBody = function() {
 				var c = v.split(" ");
 				sirius_utils_Dice.Values(c,function(v1) {
 					c = v1.split("-");
-					if(q.indexOf(c[c.length - 1]) != -1) m = c.pop(); else m = "";
-					s = sirius_css_Automator._selector(c,c.length - 1,0,"");
-					haxe_Log.trace(m + "==" + Std.string(c) + "==" + s,{ fileName : "Automator.hx", lineNumber : 273, className : "sirius.css.Automator", methodName : "_scanBody"});
-					if(sirius_tools_Utils.isValid(s)) sirius_css_Automator.css.setSelector("." + v1,s,m);
+					if(q.indexOf(c[c.length - 1]) != -1) m = c.pop(); else m = null;
+					if(!sirius_css_Automator.css.hasSelector(m == null?v1:HxOverrides.substr(v1,0,v1.length - 2))) {
+						s = sirius_css_Automator._parse(c).build();
+						if(sirius_tools_Utils.isValid(s)) sirius_css_Automator.css.setSelector("." + v1,s,m);
+					}
 				});
 			}
 		}
 	});
 	sirius_css_Automator.css.build();
 };
-sirius_css_Automator._selector = function(arg,c,t,r) {
-	var p = arg[c];
-	var s = Reflect.field(sirius_css_Automator._NS,p);
-	var v = sirius_css_Automator._level(s,t);
-	var e = v;
-	if(c > 0) {
-		if(sirius_css_Automator._position(v,p)) {
-			t = 0;
-			r = "-" + Std.string(v) + r;
-		} else {
-			v = sirius_css_Automator._color(v,p);
-			if(v != null) {
-				t = 1;
-				r = ":" + Std.string(v) + r;
-			} else {
-				v = sirius_css_Automator._measure(v,p);
-				if(v != null) {
-					t = 2;
-					r = ":" + Std.string(v) + r;
-				} else if(sirius_css_Automator._important(p)) r = e + r; else r = ":" + e + r;
-			}
-		}
-	} else r = Std.string(v) + r;
-	if(c == 0) return r; else return sirius_css_Automator._selector(arg,--c,t,r);
+sirius_css_Automator._parse = function(args) {
+	var r = [];
+	sirius_utils_Dice.All(args,function(p,v) {
+		var val = Reflect.field(sirius_css_Automator._KEYS,v);
+		var v2;
+		if(val != null) v2 = val.value; else v2 = null;
+		r[p] = { index : p, key : v, entry : val, position : sirius_css_Automator._position(v2,v), measure : sirius_css_Automator._measure(v2,v), color : sirius_css_Automator._color(v2,v)};
+	});
+	return new sirius_css__$Automator_Entry(r,sirius_css_Automator._KEYS);
 };
 sirius_css_Automator._important = function(p) {
-	return p == "i" || p.indexOf("style") != -1;
+	return p == "i";
 };
 sirius_css_Automator._level = function(p,l) {
-	if((p instanceof Array) && p.__enum__ == null) return p[l]; else return p;
+	if((p instanceof Array) && p.__enum__ == null) {
+		if(l < p.length) return p[l]; else return p[0];
+	} else return p;
 };
 sirius_css_Automator._position = function(r,x) {
 	return "tblr".indexOf(x) != -1;
@@ -909,6 +932,42 @@ sirius_css_Automator._measure = function(r,x) {
 		}
 		return r;
 	} else return null;
+};
+var sirius_css__$Automator_Entry = function(keys,dict) {
+	this.keys = keys;
+	this.head = keys[0];
+};
+sirius_css__$Automator_Entry.__name__ = true;
+sirius_css__$Automator_Entry.prototype = {
+	build: function() {
+		var _g = this;
+		var r = null;
+		if(this.head != null) {
+			r = "";
+			var c = 0;
+			sirius_utils_Dice.Values(this.keys,function(v) {
+				_g.next = _g.keys[++c];
+				if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v);
+			});
+		}
+		return r;
+	}
+	,_valueOf: function(v) {
+		if(v.color != null) return v.color;
+		if(v.measure != null) return v.measure;
+		return v.key;
+	}
+	,__class__: sirius_css__$Automator_Entry
+};
+var sirius_css_IKey = function() { };
+sirius_css_IKey.__name__ = true;
+sirius_css_IKey.prototype = {
+	__class__: sirius_css_IKey
+};
+var sirius_css_IEntry = function() { };
+sirius_css_IEntry.__name__ = true;
+sirius_css_IEntry.prototype = {
+	__class__: sirius_css_IEntry
 };
 var sirius_css_XCSS = $hx_exports.XCSS = function(data) {
 	this.reset();
@@ -3805,7 +3864,7 @@ sirius_bit_BitIO.P30 = 536870912;
 sirius_bit_BitIO.P31 = 1073741824;
 sirius_bit_BitIO.P32 = -2147483648;
 sirius_bit_BitIO.X = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
-sirius_css_Automator._NS = { t : ["top","top-color","top"], b : ["bottom","bottom-color","bottom"], l : ["left","left-color","left"], r : ["right","right-color","right"], m : "middle", c : "center", n : "none", pc : "%", p : "%", i : " !important", bord : "border", marg : "margin", padd : "padding", line : "line", w : "width", h : "height", o : "outline", rad : "radius", a : "auto", txt : ["text-align","color","font-size"], bg : "background-color", aliceblue : "#f0f8ff", antiquewhite : "#faebd7", aqua : "#00ffff", aquamarine : "#7fffd4", azure : "#f0ffff", beige : "#f5f5dc", bisque : "#ffe4c4", black : "#000000", blanchedalmond : "#ffebcd", blue : "#0000ff", blueviolet : "#8a2be2", brown : "#a52a2a", burlywood : "#deb887", cadetblue : "#5f9ea0", chartreuse : "#7fff00", chocolate : "#d2691e", coral : "#ff7f50", cornflowerblue : "#6495ed", cornsilk : "#fff8dc", crimson : "#dc143c", cyan : "#00ffff", darkblue : "#00008b", darkcyan : "#008b8b", darkgoldenrod : "#b8860b", darkgray : "#a9a9a9", darkgreen : "#006400", darkkhaki : "#bdb76b", darkmagenta : "#8b008b", darkolivegreen : "#556b2f", darkorange : "#ff8c00", darkorchid : "#9932cc", darkred : "#8b0000", darksalmon : "#e9967a", darkseagreen : "#8fbc8f", darkslateblue : "#483d8b", darkslategray : "#2f4f4f", darkturquoise : "#00ced1", darkviolet : "#9400d3", deeppink : "#ff1493", deepskyblue : "#00bfff", dimgray : "#696969", dodgerblue : "#1e90ff", firebrick : "#b22222", floralwhite : "#fffaf0", forestgreen : "#228b22", fuchsia : "#ff00ff", gainsboro : "#dcdcdc", ghostwhite : "#f8f8ff", gold : "#ffd700", goldenrod : "#daa520", gray : "#808080", green : "#008000", greenyellow : "#adff2f", honeydew : "#f0fff0", hotpink : "#ff69b4", indianred : "#cd5c5c", indigo : "#4b0082", ivory : "#fffff0", khaki : "#f0e68c", lavender : "#e6e6fa", lavenderblush : "#fff0f5", lawngreen : "#7cfc00", lemonchiffon : "#fffacd", lightblue : "#add8e6", lightcoral : "#f08080", lightcyan : "#e0ffff", lightgoldenrodyellow : "#fafad2", lightgray : "#d3d3d3", lightgreen : "#90ee90", lightpink : "#ffb6c1", lightsalmon : "#ffa07a", lightseagreen : "#20b2aa", lightskyblue : "#87cefa", lightslategray : "#778899", lightsteelblue : "#b0c4de", lightyellow : "#ffffe0", lime : "#00ff00", limegreen : "#32cd32", linen : "#faf0e6", magenta : "#ff00ff", maroon : "#800000", mediumaquamarine : "#66cdaa", mediumblue : "#0000cd", mediumorchid : "#ba55d3", mediumpurple : "#9370db", mediumseagreen : "#3cb371", mediumslateblue : "#7b68ee", mediumspringgreen : "#00fa9a", mediumturquoise : "#48d1cc", mediumvioletred : "#c71585", midnightblue : "#191970", mintcream : "#f5fffa", mistyrose : "#ffe4e1", moccasin : "#ffe4b5", navajowhite : "#ffdead", navy : "#000080", oldlace : "#fdf5e6", olive : "#808000", olivedrab : "#6b8e23", orange : "#ffa500", orangered : "#ff4500", orchid : "#da70d6", palegoldenrod : "#eee8aa", palegreen : "#98fb98", paleturquoise : "#afeeee", palevioletred : "#db7093", papayawhip : "#ffefd5", peachpuff : "#ffdab9", peru : "#cd853f", pink : "#ffc0cb", plum : "#dda0dd", powderblue : "#b0e0e6", purple : "#800080", rebeccapurple : "#663399", red : "#ff0000", rosybrown : "#bc8f8f", royalblue : "#4169e1", saddlebrown : "#8b4513", salmon : "#fa8072", sandybrown : "#f4a460", seagreen : "#2e8b57", seashell : "#fff5ee", sienna : "#a0522d", silver : "#c0c0c0", skyblue : "#87ceeb", slateblue : "#6a5acd", slategray : "#708090", snow : "#fffafa", springgreen : "#00ff7f", steelblue : "#4682b4", tan : "#d2b48c", teal : "#008080", thistle : "#d8bfd8", tomato : "#ff6347", turquoise : "#40e0d0", violet : "#ee82ee", wheat : "#f5deb3", white : "#ffffff", whitesmoke : "#f5f5f5", yellow : "#ffff00", yellowgreen : "#9acd32", transparent : "transparent", disp : "display", block : "block", 'inline' : "inline", vert : "vertical-align", sub : "sub", sup : "super", pos : "position", abs : "absolute", rel : "relative", pull : "float", 'float' : "float", over : "overflow", scroll : "scroll", bold : "font-weight:bold", regular : "font-weight:regular", underline : "font-weight:underline", italic : "font-weight:italic", thin : "font-weight:100", upcase : "font-transform:uppercase", locase : "font-transform:lowercase", curs : "cursor", pointer : "pointer", loading : "loading", arial : "font-family:arial", verdana : "font-family:verdana", tahoma : "font-family:tahoma", lucida : "font-family:lucida", georgia : "font-family:georgia", trebuchet : "font-family:trebuchet", tab : "table", cell : "cell", solid : "solid", dashed : "dashed", 'double' : "double", dotted : "dotted"};
+sirius_css_Automator._KEYS = { aliceblue : { value : "#f0f8ff", verifier : sirius_css_Automator.commonKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_Automator.commonKey}, aqua : { value : "#00ffff", verifier : sirius_css_Automator.commonKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_Automator.commonKey}, azure : { value : "#f0ffff", verifier : sirius_css_Automator.commonKey}, beige : { value : "#f5f5dc", verifier : sirius_css_Automator.commonKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_Automator.commonKey}, black : { value : "#000000", verifier : sirius_css_Automator.commonKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_Automator.commonKey}, blue : { value : "#0000ff", verifier : sirius_css_Automator.commonKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_Automator.commonKey}, brown : { value : "#a52a2a", verifier : sirius_css_Automator.commonKey}, burlywood : { value : "#deb887", verifier : sirius_css_Automator.commonKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_Automator.commonKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_Automator.commonKey}, chocolate : { value : "#d2691e", verifier : sirius_css_Automator.commonKey}, coral : { value : "#ff7f50", verifier : sirius_css_Automator.commonKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_Automator.commonKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_Automator.commonKey}, crimson : { value : "#dc143c", verifier : sirius_css_Automator.commonKey}, cyan : { value : "#00ffff", verifier : sirius_css_Automator.commonKey}, darkblue : { value : "#00008b", verifier : sirius_css_Automator.commonKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_Automator.commonKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_Automator.commonKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_Automator.commonKey}, darkgreen : { value : "#006400", verifier : sirius_css_Automator.commonKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_Automator.commonKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_Automator.commonKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_Automator.commonKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_Automator.commonKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_Automator.commonKey}, darkred : { value : "#8b0000", verifier : sirius_css_Automator.commonKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_Automator.commonKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_Automator.commonKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_Automator.commonKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_Automator.commonKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_Automator.commonKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_Automator.commonKey}, deeppink : { value : "#ff1493", verifier : sirius_css_Automator.commonKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_Automator.commonKey}, dimgray : { value : "#696969", verifier : sirius_css_Automator.commonKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_Automator.commonKey}, firebrick : { value : "#b22222", verifier : sirius_css_Automator.commonKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_Automator.commonKey}, forestgreen : { value : "#228b22", verifier : sirius_css_Automator.commonKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_Automator.commonKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_Automator.commonKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_Automator.commonKey}, gold : { value : "#ffd700", verifier : sirius_css_Automator.commonKey}, goldenrod : { value : "#daa520", verifier : sirius_css_Automator.commonKey}, gray : { value : "#808080", verifier : sirius_css_Automator.commonKey}, green : { value : "#008000", verifier : sirius_css_Automator.commonKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_Automator.commonKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_Automator.commonKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_Automator.commonKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_Automator.commonKey}, indigo : { value : "#4b0082", verifier : sirius_css_Automator.commonKey}, ivory : { value : "#fffff0", verifier : sirius_css_Automator.commonKey}, khaki : { value : "#f0e68c", verifier : sirius_css_Automator.commonKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_Automator.commonKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_Automator.commonKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_Automator.commonKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_Automator.commonKey}, lightblue : { value : "#add8e6", verifier : sirius_css_Automator.commonKey}, lightcoral : { value : "#f08080", verifier : sirius_css_Automator.commonKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_Automator.commonKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_Automator.commonKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_Automator.commonKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_Automator.commonKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_Automator.commonKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_Automator.commonKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_Automator.commonKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_Automator.commonKey}, lightslategray : { value : "#778899", verifier : sirius_css_Automator.commonKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_Automator.commonKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_Automator.commonKey}, lime : { value : "#00ff00", verifier : sirius_css_Automator.commonKey}, limegreen : { value : "#32cd32", verifier : sirius_css_Automator.commonKey}, linen : { value : "#faf0e6", verifier : sirius_css_Automator.commonKey}, magenta : { value : "#ff00ff", verifier : sirius_css_Automator.commonKey}, maroon : { value : "#800000", verifier : sirius_css_Automator.commonKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_Automator.commonKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_Automator.commonKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_Automator.commonKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_Automator.commonKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_Automator.commonKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_Automator.commonKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_Automator.commonKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_Automator.commonKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_Automator.commonKey}, midnightblue : { value : "#191970", verifier : sirius_css_Automator.commonKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_Automator.commonKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_Automator.commonKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_Automator.commonKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_Automator.commonKey}, navy : { value : "#000080", verifier : sirius_css_Automator.commonKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_Automator.commonKey}, olive : { value : "#808000", verifier : sirius_css_Automator.commonKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_Automator.commonKey}, orange : { value : "#ffa500", verifier : sirius_css_Automator.commonKey}, orangered : { value : "#ff4500", verifier : sirius_css_Automator.commonKey}, orchid : { value : "#da70d6", verifier : sirius_css_Automator.commonKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_Automator.commonKey}, palegreen : { value : "#98fb98", verifier : sirius_css_Automator.commonKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_Automator.commonKey}, palevioletred : { value : "#db7093", verifier : sirius_css_Automator.commonKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_Automator.commonKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_Automator.commonKey}, peru : { value : "#cd853f", verifier : sirius_css_Automator.commonKey}, pink : { value : "#ffc0cb", verifier : sirius_css_Automator.commonKey}, plum : { value : "#dda0dd", verifier : sirius_css_Automator.commonKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_Automator.commonKey}, purple : { value : "#800080", verifier : sirius_css_Automator.commonKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_Automator.commonKey}, red : { value : "#ff0000", verifier : sirius_css_Automator.commonKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_Automator.commonKey}, royalblue : { value : "#4169e1", verifier : sirius_css_Automator.commonKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_Automator.commonKey}, salmon : { value : "#fa8072", verifier : sirius_css_Automator.commonKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_Automator.commonKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_Automator.commonKey}, seashell : { value : "#fff5ee", verifier : sirius_css_Automator.commonKey}, sienna : { value : "#a0522d", verifier : sirius_css_Automator.commonKey}, silver : { value : "#c0c0c0", verifier : sirius_css_Automator.commonKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_Automator.commonKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_Automator.commonKey}, slategray : { value : "#708090", verifier : sirius_css_Automator.commonKey}, snow : { value : "#fffafa", verifier : sirius_css_Automator.commonKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_Automator.commonKey}, steelblue : { value : "#4682b4", verifier : sirius_css_Automator.commonKey}, tan : { value : "#d2b48c", verifier : sirius_css_Automator.commonKey}, teal : { value : "#008080", verifier : sirius_css_Automator.commonKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_Automator.commonKey}, tomato : { value : "#ff6347", verifier : sirius_css_Automator.commonKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_Automator.commonKey}, violet : { value : "#ee82ee", verifier : sirius_css_Automator.commonKey}, wheat : { value : "#f5deb3", verifier : sirius_css_Automator.commonKey}, white : { value : "#ffffff", verifier : sirius_css_Automator.commonKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_Automator.commonKey}, yellow : { value : "#ffff00", verifier : sirius_css_Automator.commonKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_Automator.commonKey}, transparent : { value : "transparent", verifier : sirius_css_Automator.commonKey}, t : { value : "top", verifier : sirius_css_Automator.numericKey}, b : { value : "bottom", verifier : sirius_css_Automator.numericKey}, l : { value : "left", verifier : sirius_css_Automator.numericKey}, r : { value : "right", verifier : sirius_css_Automator.numericKey}, m : { value : "middle", verifier : sirius_css_Automator.commonKey}, c : { value : "center", verifier : sirius_css_Automator.commonKey}, n : { value : "none", verifier : sirius_css_Automator.commonKey}, pc : { value : "%", verifier : sirius_css_Automator.commonKey}, line : { value : "line-height", verifier : sirius_css_Automator.valueKey}, i : { value : " !important", verifier : sirius_css_Automator.commonKey}, marg : { value : "margin", verifier : sirius_css_Automator.numericKey}, padd : { value : "padding", verifier : sirius_css_Automator.numericKey}, bord : { value : "border", verifier : sirius_css_Automator.borderKey}, w : { value : "width", verifier : sirius_css_Automator.valueKey}, h : { value : "height", verifier : sirius_css_Automator.valueKey}, o : { value : "outline", verifier : sirius_css_Automator.valueKey}, display : { value : "display", verifier : sirius_css_Automator.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_Automator.valueKey}, block : { value : "block", verifier : sirius_css_Automator.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_Automator.commonKey}, bg : { value : "background", verifier : sirius_css_Automator.numericKey}, txt : { value : "", verifier : sirius_css_Automator.textKey}, sub : { value : "sub", verifier : sirius_css_Automator.commonKey}, sup : { value : "super", verifier : sirius_css_Automator.commonKey}, pos : { value : "position", verifier : sirius_css_Automator.valueKey}, abs : { value : "absolute", verifier : sirius_css_Automator.commonKey}, rel : { value : "relative", verifier : sirius_css_Automator.commonKey}, fix : { value : "fixed", verifier : sirius_css_Automator.commonKey}, pull : { value : "float", verifier : sirius_css_Automator.valueKey}, 'float' : { value : "float", verifier : sirius_css_Automator.commonKey}, over : { value : "overflow", verifier : sirius_css_Automator.commonKey}, scroll : { value : "scroll", verifier : sirius_css_Automator.commonKey}, bold : { value : "font-weight:bold", verifier : sirius_css_Automator.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_Automator.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_Automator.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_Automator.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_Automator.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_Automator.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_Automator.commonKey}, curs : { value : "cursor", verifier : sirius_css_Automator.valueKey}, pointer : { value : "pointer", verifier : sirius_css_Automator.valueKey}, loading : { value : "loading", verifier : sirius_css_Automator.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_Automator.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_Automator.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_Automator.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_Automator.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_Automator.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_Automator.commonKey}, tab : { value : "table", verifier : sirius_css_Automator.commonKey}, cell : { value : "cell", verifier : sirius_css_Automator.commonKey}, rad : { value : "radius", verifier : sirius_css_Automator.valueKey}, solid : { value : "solid", verifier : sirius_css_Automator.commonKey}, dashed : { value : "dashed", verifier : sirius_css_Automator.commonKey}, 'double' : { value : "double", verifier : sirius_css_Automator.commonKey}, dotted : { value : "dotted", verifier : sirius_css_Automator.commonKey}};
 sirius_dom_Display.DATA = { };
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
@@ -3819,3 +3878,5 @@ sirius_transitions_Animator.available = window.Tween != null || window.TweenMax 
 sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
+
+//# sourceMappingURL=api.sirius.js.map

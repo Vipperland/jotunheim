@@ -1,6 +1,8 @@
 package sirius.css;
 import css.CSSGroup;
+import haxe.Constraints.Function;
 import haxe.Log;
+import sirius.css.Automator.IKey;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;
@@ -14,213 +16,257 @@ import sirius.utils.Dice;
 class Automator {
 	
 	static private var css:CSSGroup;
-		
-	static private var _NS:Dynamic = { 
-		t:['top','top-color','top'],
-		b:['bottom','bottom-color','bottom'],
-		l:['left','left-color','left'],
-		r:['right','right-color','right'],
-		m:'middle',
-		c:'center',
-		n:'none',
-		pc:'%',
-		p:'%',
-		i:' !important',
-		bord:'border',
-		marg:'margin',
-		padd:'padding',
-		line:'line',
-		w:'width',
-		h:'height',
-		o:'outline',
-		rad:'radius',
-		a:'auto',
-		txt:['text-align','color','font-size'],
-		bg:'background-color',
-		aliceblue:'#f0f8ff',
-		antiquewhite:'#faebd7',
-		aqua:'#00ffff',
-		aquamarine:'#7fffd4',
-		azure:'#f0ffff',
-		beige:'#f5f5dc',
-		bisque:'#ffe4c4',
-		black:'#000000',
-		blanchedalmond:'#ffebcd',
-		blue:'#0000ff',
-		blueviolet:'#8a2be2',
-		brown:'#a52a2a',
-		burlywood:'#deb887',
-		cadetblue:'#5f9ea0',
-		chartreuse:'#7fff00',
-		chocolate:'#d2691e',
-		coral:'#ff7f50',
-		cornflowerblue:'#6495ed',
-		cornsilk:'#fff8dc',
-		crimson:'#dc143c',
-		cyan:'#00ffff',
-		darkblue:'#00008b',
-		darkcyan:'#008b8b',
-		darkgoldenrod:'#b8860b',
-		darkgray:'#a9a9a9',
-		darkgreen:'#006400',
-		darkkhaki:'#bdb76b',
-		darkmagenta:'#8b008b',
-		darkolivegreen:'#556b2f',
-		darkorange:'#ff8c00',
-		darkorchid:'#9932cc',
-		darkred:'#8b0000',
-		darksalmon:'#e9967a',
-		darkseagreen:'#8fbc8f',
-		darkslateblue:'#483d8b',
-		darkslategray:'#2f4f4f',
-		darkturquoise:'#00ced1',
-		darkviolet:'#9400d3',
-		deeppink:'#ff1493',
-		deepskyblue:'#00bfff',
-		dimgray:'#696969',
-		dodgerblue:'#1e90ff',
-		firebrick:'#b22222',
-		floralwhite:'#fffaf0',
-		forestgreen:'#228b22',
-		fuchsia:'#ff00ff',
-		gainsboro:'#dcdcdc',
-		ghostwhite:'#f8f8ff',
-		gold:'#ffd700',
-		goldenrod:'#daa520',
-		gray:'#808080',
-		green:'#008000',
-		greenyellow:'#adff2f',
-		honeydew:'#f0fff0',
-		hotpink:'#ff69b4',
-		indianred:'#cd5c5c',
-		indigo:'#4b0082',
-		ivory:'#fffff0',
-		khaki:'#f0e68c',
-		lavender:'#e6e6fa',
-		lavenderblush:'#fff0f5',
-		lawngreen:'#7cfc00',
-		lemonchiffon:'#fffacd',
-		lightblue:'#add8e6',
-		lightcoral:'#f08080',
-		lightcyan:'#e0ffff',
-		lightgoldenrodyellow:'#fafad2',
-		lightgray:'#d3d3d3',
-		lightgreen:'#90ee90',
-		lightpink:'#ffb6c1',
-		lightsalmon:'#ffa07a',
-		lightseagreen:'#20b2aa',
-		lightskyblue:'#87cefa',
-		lightslategray:'#778899',
-		lightsteelblue:'#b0c4de',
-		lightyellow:'#ffffe0',
-		lime:'#00ff00',
-		limegreen:'#32cd32',
-		linen:'#faf0e6',
-		magenta:'#ff00ff',
-		maroon:'#800000',
-		mediumaquamarine:'#66cdaa',
-		mediumblue:'#0000cd',
-		mediumorchid:'#ba55d3',
-		mediumpurple:'#9370db',
-		mediumseagreen:'#3cb371',
-		mediumslateblue:'#7b68ee',
-		mediumspringgreen:'#00fa9a',
-		mediumturquoise:'#48d1cc',
-		mediumvioletred:'#c71585',
-		midnightblue:'#191970',
-		mintcream:'#f5fffa',
-		mistyrose:'#ffe4e1',
-		moccasin:'#ffe4b5',
-		navajowhite:'#ffdead',
-		navy:'#000080',
-		oldlace:'#fdf5e6',
-		olive:'#808000',
-		olivedrab:'#6b8e23',
-		orange:'#ffa500',
-		orangered:'#ff4500',
-		orchid:'#da70d6',
-		palegoldenrod:'#eee8aa',
-		palegreen:'#98fb98',
-		paleturquoise:'#afeeee',
-		palevioletred:'#db7093',
-		papayawhip:'#ffefd5',
-		peachpuff:'#ffdab9',
-		peru:'#cd853f',
-		pink:'#ffc0cb',
-		plum:'#dda0dd',
-		powderblue:'#b0e0e6',
-		purple:'#800080',
-		rebeccapurple:'#663399',
-		red:'#ff0000',
-		rosybrown:'#bc8f8f',
-		royalblue:'#4169e1',
-		saddlebrown:'#8b4513',
-		salmon:'#fa8072',
-		sandybrown:'#f4a460',
-		seagreen:'#2e8b57',
-		seashell:'#fff5ee',
-		sienna:'#a0522d',
-		silver:'#c0c0c0',
-		skyblue:'#87ceeb',
-		slateblue:'#6a5acd',
-		slategray:'#708090',
-		snow:'#fffafa',
-		springgreen:'#00ff7f',
-		steelblue:'#4682b4',
-		tan:'#d2b48c',
-		teal:'#008080',
-		thistle:'#d8bfd8',
-		tomato:'#ff6347',
-		turquoise:'#40e0d0',
-		violet:'#ee82ee',
-		wheat:'#f5deb3',
-		white:'#ffffff',
-		whitesmoke:'#f5f5f5',
-		yellow:'#ffff00',
-		yellowgreen:'#9acd32',
-		transparent:'transparent',
-		disp:'display',
-		block:'block',
-		"inline":'inline',
-		vert:'vertical-align',
-		sub:'sub',
-		sup:'super',
-		pos:'position',
-		abs:'absolute',
-		rel:'relative',
-		pull:'float',
-		float:'float',
-		over:'overflow',
-		scroll:'scroll',
-		bold:'font-weight:bold',
-		regular:'font-weight:regular',
-		underline:'font-weight:underline',
-		italic:'font-weight:italic',
-		thin:'font-weight:100',
-		upcase:'font-transform:uppercase',
-		locase:'font-transform:lowercase',
-		curs:'cursor',
-		pointer:'pointer',
-		loading:'loading',
-		arial:'font-family:arial',
-		verdana:'font-family:verdana',
-		tahoma:'font-family:tahoma',
-		lucida:'font-family:lucida',
-		georgia:'font-family:georgia',
-		trebuchet:'font-family:trebuchet',
-		tab:'table',
-		cell:'cell',
-		solid:'solid',
-		dashed:'dashed',
-		double:'double',
-		dotted:'dotted',
+	
+	static public function numericKey(d:Entry, k:IKey, n:IKey):String {
+		var v:String = k.entry.value;
+		if (n != null && !n.position) {
+			if(d.head.key == 'bord') return borderKey(d, k, n);
+			if (n.color != null) return v + "-color:";
+			if (n.measure != null) return v + ":";
+			return v + ":";
+		}
+		return v + (k.index == 0 ? "-" : "");
+	}
+	
+	static public function borderKey(d:Entry, k:IKey, n:IKey):String {
+		var v:String = k.entry.value;
+		if (n != null && !n.position) {
+			if (n.color != null) return v + "-color:";
+			if (n.measure != null) return v + "-width:";
+			return v + (d.keys[1].key == 'rad' ? '-' : '-style:');
+		}
+		return v + (k.index == 0 ? "-" : "");
+	}
+	
+	static public function appendKey(d:Entry, k:IKey, n:IKey):String {
+		return "-" + k.entry.value;
+	}
+	
+	static public function commonKey(d:Entry, k:IKey, n:IKey):String {
+		return k.entry.value;
+	}
+	
+	static public function valueKey(d:Entry, k:IKey, n:IKey):String {
+		return k.entry.value + ":";
+	}
+	
+	static public function textKey(d:Entry, k:IKey, n:IKey):String {
+		if (n != null && !n.position) {
+			if (n.color != null) return 'color:';
+			if (n.measure != null) return 'font-size:';
+			
+		}
+		return 'text-align:';
+	}
+	
+	
+	
+	static private var _KEYS:Dynamic = {
+		aliceblue:{value:'#f0f8ff',verifier:commonKey},
+		antiquewhite:{value:'#faebd7',verifier:commonKey},
+		aqua:{value:'#00ffff',verifier:commonKey},
+		aquamarine:{value:'#7fffd4',verifier:commonKey},
+		azure:{value:'#f0ffff',verifier:commonKey},
+		beige:{value:'#f5f5dc',verifier:commonKey},
+		bisque:{value:'#ffe4c4',verifier:commonKey},
+		black:{value:'#000000',verifier:commonKey},
+		blanchedalmond:{value:'#ffebcd',verifier:commonKey},
+		blue:{value:'#0000ff',verifier:commonKey},
+		blueviolet:{value:'#8a2be2',verifier:commonKey},
+		brown:{value:'#a52a2a',verifier:commonKey},
+		burlywood:{value:'#deb887',verifier:commonKey},
+		cadetblue:{value:'#5f9ea0',verifier:commonKey},
+		chartreuse:{value:'#7fff00',verifier:commonKey},
+		chocolate:{value:'#d2691e',verifier:commonKey},
+		coral:{value:'#ff7f50',verifier:commonKey},
+		cornflowerblue:{value:'#6495ed',verifier:commonKey},
+		cornsilk:{value:'#fff8dc',verifier:commonKey},
+		crimson:{value:'#dc143c',verifier:commonKey},
+		cyan:{value:'#00ffff',verifier:commonKey},
+		darkblue:{value:'#00008b',verifier:commonKey},
+		darkcyan:{value:'#008b8b',verifier:commonKey},
+		darkgoldenrod:{value:'#b8860b',verifier:commonKey},
+		darkgray:{value:'#a9a9a9',verifier:commonKey},
+		darkgreen:{value:'#006400',verifier:commonKey},
+		darkkhaki:{value:'#bdb76b',verifier:commonKey},
+		darkmagenta:{value:'#8b008b',verifier:commonKey},
+		darkolivegreen:{value:'#556b2f',verifier:commonKey},
+		darkorange:{value:'#ff8c00',verifier:commonKey},
+		darkorchid:{value:'#9932cc',verifier:commonKey},
+		darkred:{value:'#8b0000',verifier:commonKey},
+		darksalmon:{value:'#e9967a',verifier:commonKey},
+		darkseagreen:{value:'#8fbc8f',verifier:commonKey},
+		darkslateblue:{value:'#483d8b',verifier:commonKey},
+		darkslategray:{value:'#2f4f4f',verifier:commonKey},
+		darkturquoise:{value:'#00ced1',verifier:commonKey},
+		darkviolet:{value:'#9400d3',verifier:commonKey},
+		deeppink:{value:'#ff1493',verifier:commonKey},
+		deepskyblue:{value:'#00bfff',verifier:commonKey},
+		dimgray:{value:'#696969',verifier:commonKey},
+		dodgerblue:{value:'#1e90ff',verifier:commonKey},
+		firebrick:{value:'#b22222',verifier:commonKey},
+		floralwhite:{value:'#fffaf0',verifier:commonKey},
+		forestgreen:{value:'#228b22',verifier:commonKey},
+		fuchsia:{value:'#ff00ff',verifier:commonKey},
+		gainsboro:{value:'#dcdcdc',verifier:commonKey},
+		ghostwhite:{value:'#f8f8ff',verifier:commonKey},
+		gold:{value:'#ffd700',verifier:commonKey},
+		goldenrod:{value:'#daa520',verifier:commonKey},
+		gray:{value:'#808080',verifier:commonKey},
+		green:{value:'#008000',verifier:commonKey},
+		greenyellow:{value:'#adff2f',verifier:commonKey},
+		honeydew:{value:'#f0fff0',verifier:commonKey},
+		hotpink:{value:'#ff69b4',verifier:commonKey},
+		indianred:{value:'#cd5c5c',verifier:commonKey},
+		indigo:{value:'#4b0082',verifier:commonKey},
+		ivory:{value:'#fffff0',verifier:commonKey},
+		khaki:{value:'#f0e68c',verifier:commonKey},
+		lavender:{value:'#e6e6fa',verifier:commonKey},
+		lavenderblush:{value:'#fff0f5',verifier:commonKey},
+		lawngreen:{value:'#7cfc00',verifier:commonKey},
+		lemonchiffon:{value:'#fffacd',verifier:commonKey},
+		lightblue:{value:'#add8e6',verifier:commonKey},
+		lightcoral:{value:'#f08080',verifier:commonKey},
+		lightcyan:{value:'#e0ffff',verifier:commonKey},
+		lightgoldenrodyellow:{value:'#fafad2',verifier:commonKey},
+		lightgray:{value:'#d3d3d3',verifier:commonKey},
+		lightgreen:{value:'#90ee90',verifier:commonKey},
+		lightpink:{value:'#ffb6c1',verifier:commonKey},
+		lightsalmon:{value:'#ffa07a',verifier:commonKey},
+		lightseagreen:{value:'#20b2aa',verifier:commonKey},
+		lightskyblue:{value:'#87cefa',verifier:commonKey},
+		lightslategray:{value:'#778899',verifier:commonKey},
+		lightsteelblue:{value:'#b0c4de',verifier:commonKey},
+		lightyellow:{value:'#ffffe0',verifier:commonKey},
+		lime:{value:'#00ff00',verifier:commonKey},
+		limegreen:{value:'#32cd32',verifier:commonKey},
+		linen:{value:'#faf0e6',verifier:commonKey},
+		magenta:{value:'#ff00ff',verifier:commonKey},
+		maroon:{value:'#800000',verifier:commonKey},
+		mediumaquamarine:{value:'#66cdaa',verifier:commonKey},
+		mediumblue:{value:'#0000cd',verifier:commonKey},
+		mediumorchid:{value:'#ba55d3',verifier:commonKey},
+		mediumpurple:{value:'#9370db',verifier:commonKey},
+		mediumseagreen:{value:'#3cb371',verifier:commonKey},
+		mediumslateblue:{value:'#7b68ee',verifier:commonKey},
+		mediumspringgreen:{value:'#00fa9a',verifier:commonKey},
+		mediumturquoise:{value:'#48d1cc',verifier:commonKey},
+		mediumvioletred:{value:'#c71585',verifier:commonKey},
+		midnightblue:{value:'#191970',verifier:commonKey},
+		mintcream:{value:'#f5fffa',verifier:commonKey},
+		mistyrose:{value:'#ffe4e1',verifier:commonKey},
+		moccasin:{value:'#ffe4b5',verifier:commonKey},
+		navajowhite:{value:'#ffdead',verifier:commonKey},
+		navy:{value:'#000080',verifier:commonKey},
+		oldlace:{value:'#fdf5e6',verifier:commonKey},
+		olive:{value:'#808000',verifier:commonKey},
+		olivedrab:{value:'#6b8e23',verifier:commonKey},
+		orange:{value:'#ffa500',verifier:commonKey},
+		orangered:{value:'#ff4500',verifier:commonKey},
+		orchid:{value:'#da70d6',verifier:commonKey},
+		palegoldenrod:{value:'#eee8aa',verifier:commonKey},
+		palegreen:{value:'#98fb98',verifier:commonKey},
+		paleturquoise:{value:'#afeeee',verifier:commonKey},
+		palevioletred:{value:'#db7093',verifier:commonKey},
+		papayawhip:{value:'#ffefd5',verifier:commonKey},
+		peachpuff:{value:'#ffdab9',verifier:commonKey},
+		peru:{value:'#cd853f',verifier:commonKey},
+		pink:{value:'#ffc0cb',verifier:commonKey},
+		plum:{value:'#dda0dd',verifier:commonKey},
+		powderblue:{value:'#b0e0e6',verifier:commonKey},
+		purple:{value:'#800080',verifier:commonKey},
+		rebeccapurple:{value:'#663399',verifier:commonKey},
+		red:{value:'#ff0000',verifier:commonKey},
+		rosybrown:{value:'#bc8f8f',verifier:commonKey},
+		royalblue:{value:'#4169e1',verifier:commonKey},
+		saddlebrown:{value:'#8b4513',verifier:commonKey},
+		salmon:{value:'#fa8072',verifier:commonKey},
+		sandybrown:{value:'#f4a460',verifier:commonKey},
+		seagreen:{value:'#2e8b57',verifier:commonKey},
+		seashell:{value:'#fff5ee',verifier:commonKey},
+		sienna:{value:'#a0522d',verifier:commonKey},
+		silver:{value:'#c0c0c0',verifier:commonKey},
+		skyblue:{value:'#87ceeb',verifier:commonKey},
+		slateblue:{value:'#6a5acd',verifier:commonKey},
+		slategray:{value:'#708090',verifier:commonKey},
+		snow:{value:'#fffafa',verifier:commonKey},
+		springgreen:{value:'#00ff7f',verifier:commonKey},
+		steelblue:{value:'#4682b4',verifier:commonKey},
+		tan:{value:'#d2b48c',verifier:commonKey},
+		teal:{value:'#008080',verifier:commonKey},
+		thistle:{value:'#d8bfd8',verifier:commonKey},
+		tomato:{value:'#ff6347',verifier:commonKey},
+		turquoise:{value:'#40e0d0',verifier:commonKey},
+		violet:{value:'#ee82ee',verifier:commonKey},
+		wheat:{value:'#f5deb3',verifier:commonKey},
+		white:{value:'#ffffff',verifier:commonKey},
+		whitesmoke:{value:'#f5f5f5',verifier:commonKey},
+		yellow:{value:'#ffff00',verifier:commonKey},
+		yellowgreen:{value:'#9acd32',verifier:commonKey},
+		transparent:{value:'transparent',verifier:commonKey},
+		t:{value:'top', verifier:numericKey},
+		b:{value:'bottom', verifier:numericKey},
+		l:{value:'left', verifier:numericKey},
+		r:{value:'right', verifier:numericKey},
+		m:{value:'middle', verifier:commonKey},
+		c:{value:'center', verifier:commonKey},
+		n:{value:'none', verifier:commonKey},
+		pc:{value:'%', verifier:commonKey},
+		line:{value:'line-height', verifier:valueKey},
+		i:{value:' !important', verifier:commonKey},
+		marg:{value:'margin', verifier:numericKey},
+		padd:{value:'padding', verifier:numericKey},
+		bord:{value:'border', verifier:borderKey},
+		w:{value:'width', verifier:valueKey},
+		h:{value:'height', verifier:valueKey},
+		o:{value:'outline', verifier:valueKey},
+		display:{value:'display', verifier:valueKey},
+		vert:{value:'vertical-align', verifier:valueKey},
+		block:{value:'block', verifier:commonKey},
+		"inline":{value:'inline', verifier:commonKey},
+		bg:{value:'background',verifier:numericKey},
+		txt: { value:'', verifier:textKey },
+		sub:{value:'sub',verifier:commonKey},
+		sup:{value:'super',verifier:commonKey},
+		pos:{value:'position',verifier:valueKey},
+		abs:{value:'absolute',verifier:commonKey},
+		rel:{value:'relative',verifier:commonKey},
+		fix:{value:'fixed',verifier:commonKey},
+		pull:{value:'float',verifier:valueKey},
+		float:{value:'float',verifier:commonKey},
+		over:{value:'overflow',verifier:commonKey},
+		scroll:{value:'scroll',verifier:commonKey},
+		bold:{value:'font-weight:bold',verifier:commonKey},
+		regular:{value:'font-weight:regular',verifier:commonKey},
+		underline:{value:'font-weight:underline',verifier:commonKey},
+		italic:{value:'font-weight:italic',verifier:commonKey},
+		thin:{value:'font-weight:100',verifier:commonKey},
+		upcase:{value:'font-transform:uppercase',verifier:commonKey},
+		locase:{value:'font-transform:lowercase',verifier:commonKey},
+		curs:{value:'cursor',verifier:valueKey},
+		pointer:{value:'pointer',verifier:valueKey},
+		loading:{value:'loading',verifier:valueKey},
+		arial:{value:'font-family:arial',verifier:commonKey},
+		verdana:{value:'font-family:verdana',verifier:commonKey},
+		tahoma:{value:'font-family:tahoma',verifier:commonKey},
+		lucida:{value:'font-family:lucida',verifier:commonKey},
+		georgia:{value:'font-family:georgia',verifier:commonKey},
+		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
+		tab:{value:'table',verifier:commonKey},
+		cell:{value:'cell',verifier:commonKey},
+		rad:{value:'radius',verifier:valueKey},
+		solid:{value:'solid',verifier:commonKey},
+		dashed:{value:'dashed',verifier:commonKey},
+		double:{value:'double',verifier:commonKey},
+		dotted:{value:'dotted',verifier:commonKey},
 	};
+
 	
 	static private var _dev:Bool;
 	
-	static public function addRules(q:Dynamic):Void {
+	static public function addRules(q:Array<Dynamic>):Void {
 		Dice.All(q, function(p:String, v:String) {
-			Reflect.setField(_NS, p, v);
+			Reflect.setField(_KEYS, p, v);
 		});
 	}
 	
@@ -268,11 +314,12 @@ class Automator {
 					var c:Array<String> = v.split(" ");
 					Dice.Values(c, function(v:String) {
 						c = v.split("-");
-						m = q.indexOf(c[c.length - 1]) != -1 ? c.pop() : "";
-						s = _selector(c, c.length-1,0,"");
-						Log.trace(m + "==" + c + "==" + s);
-						if (Utils.isValid(s)) {
-							css.setSelector("." + v, s, m);
+						m = q.indexOf(c[c.length - 1]) != -1 ? c.pop() : null;
+						if (!css.hasSelector(m == null ? v : v.substr(0, v.length - 2))) {
+							s = _parse(c).build();
+							if (Utils.isValid(s)) {
+								css.setSelector("." + v, s, m);
+							}
 						}
 					});
 				}
@@ -283,59 +330,52 @@ class Automator {
 		
 	}
 	
-	static private function _selector(arg:Array<String>, c:Int, t:Int, r:String):String {
-		
-		var p:String = arg[c];
-		var s:Dynamic = Reflect.field(_NS, p);
-		var v:Dynamic = _level(s, t);
-		var e:String = v;
-		
-		if (c > 0) {
-			if (_position(v,p)) {
-				t = 0;
-				r = "-" + v + r;
-			}else {
-				v = _color(v, p);
-				if (v != null) {
-					t = 1;
-					r = ":" + v + r;
-				}else {
-					v = _measure(v, p);
-					if (v != null) {
-						t = 2;
-						r = ":" + v + r;
-					}else if (_important(p)) {
-						r = e + r;
-					}else {
-						r = ":" + e + r;
-					}
-				}
-			}
-		}else {
-			r = v + r;
-		}
-		
-		return c == 0 ? r : _selector(arg, --c, t, r);
+	static private function _parse(args:Array<String>):Entry {
+		var r:Array<IKey> = [];
+		Dice.All(args, function(p:Int, v:String) {
+			var val:IEntry = Reflect.field(_KEYS, v);
+			var v2:String = val != null ? val.value : null;
+			r[p] = cast { index:p, key:v, entry:val, position:_position(v2,v), measure:_measure(v2, v), color:_color(v2,v) };
+		});
+		return new Entry(r,_KEYS);
 	}
 	
+	
+	/**
+	 * Check if is a !important element
+	 * @param	p
+	 * @return
+	 */
 	static private function _important(p:String):Bool {
-		return p == "i" || p.indexOf('style') != -1;
+		return p == "i";
 	}
 	
+	/**
+	 * Get a valid value from a Array or String
+	 * @param	p
+	 * @param	l
+	 * @return
+	 */
 	static private function _level(p:Dynamic, l:Int):String {
-		/*
-		 * 0 = Normal
-		 * 1 = Color
-		 * 2 = Measure
-		 * 3 = Align
-		 */
-		return Std.is(p, Array) ? p[l] : p;
+		return Std.is(p, Array) ? l < p.length ? p[l] : p[0] : p;
 	}
 	
+	/**
+	 * Check if value is one of any edge position
+	 * @param	r
+	 * @param	x
+	 * @return
+	 */
 	static private function _position(r:String, x:String):Bool {
 		return "tblr".indexOf(x) != -1;
 	}
 	
+	/**
+	 * Convert value to color (#RRGGBB)
+	 * @param	r
+	 * @param	x
+	 * @return
+	 */
 	static private function _color(r:String, x:String):String {
 		if (x.substr(0, 1) == "x") {
 			r = "#" + x.substr(1, x.length-1);
@@ -345,6 +385,12 @@ class Automator {
 		return null;
 	}
 	
+	/**
+	 * Convert value to numeric (Int|Float)
+	 * @param	r
+	 * @param	x
+	 * @return
+	 */
 	static private function _measure(r:String, x:String):String {
 		if(r == null){
 			var l:Int = x.length;
@@ -364,4 +410,46 @@ class Automator {
 		}
 	}
 	
+}
+
+private class Entry {
+	public var keys:Array<IKey>;
+	public var head:IKey;
+	public var next:IKey;
+	public function new(keys:Array<IKey>, dict:Dynamic) {
+		this.keys = keys;
+		this.head = keys[0];
+	}
+	public function build():String {
+		var r:String = null;
+		if (head != null) {
+			r = "";
+			var c:Int = 0;
+			Dice.Values(keys, function(v:IKey) {
+				next = keys[++c];
+				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v);
+			});
+		}
+		return r;
+	}
+	
+	private function _valueOf(v:IKey):String {
+		if (v.color != null) return v.color;
+		if (v.measure != null) return v.measure;
+		return v.key;
+	}
+}
+
+interface IKey {
+	var index:Int;
+	var key:String;
+	var entry:IEntry;
+	var position:Bool;
+	var measure:String;
+	var color:String;
+}
+
+interface IEntry {
+	var value:String;
+	var verifier:Dynamic;
 }
