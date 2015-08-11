@@ -850,35 +850,51 @@ sirius_css_Automator._scanBody = function() {
 			l = v.length;
 			if(l > 0) {
 				var c = v.split(" ");
-				if(q.indexOf(c[c.length - 1]) != -1) m = c.pop(); else m = "";
 				sirius_utils_Dice.Values(c,function(v1) {
 					c = v1.split("-");
-					s = sirius_css_Automator._selector(c,0,c.length,"");
-					haxe_Log.trace(Std.string(c) + "==" + s,{ fileName : "Automator.hx", lineNumber : 278, className : "sirius.css.Automator", methodName : "_scanBody"});
+					if(q.indexOf(c[c.length - 1]) != -1) m = c.pop(); else m = "";
+					s = sirius_css_Automator._selector(c,c.length - 1,0,"");
+					haxe_Log.trace(m + "==" + Std.string(c) + "==" + s,{ fileName : "Automator.hx", lineNumber : 273, className : "sirius.css.Automator", methodName : "_scanBody"});
+					if(sirius_tools_Utils.isValid(s)) sirius_css_Automator.css.setSelector("." + v1,s,m);
 				});
 			}
 		}
 	});
 	sirius_css_Automator.css.build();
 };
-sirius_css_Automator._selector = function(arg,c,l,b) {
+sirius_css_Automator._selector = function(arg,c,t,r) {
 	var p = arg[c];
-	var v = Reflect.field(sirius_css_Automator._NS,p);
-	var r = sirius_css_Automator._level(v,0);
+	var s = Reflect.field(sirius_css_Automator._NS,p);
+	var v = sirius_css_Automator._level(s,t);
+	var e = v;
 	if(c > 0) {
-		v = sirius_css_Automator._color(v,p);
-		if(v != null) r = sirius_css_Automator._level(b,1) + Std.string(v); else {
-			v = sirius_css_Automator._measure(v,p);
-			if(v != null) r = sirius_css_Automator._level(b,2) + Std.string(v);
+		if(sirius_css_Automator._position(v,p)) {
+			t = 0;
+			r = "-" + Std.string(v) + r;
+		} else {
+			v = sirius_css_Automator._color(v,p);
+			if(v != null) {
+				t = 1;
+				r = ":" + Std.string(v) + r;
+			} else {
+				v = sirius_css_Automator._measure(v,p);
+				if(v != null) {
+					t = 2;
+					r = ":" + Std.string(v) + r;
+				} else if(sirius_css_Automator._important(p)) r = e + r; else r = ":" + e + r;
+			}
 		}
-	}
-	if(++c == l) return r; else return sirius_css_Automator._selector(arg,c,l,r);
+	} else r = Std.string(v) + r;
+	if(c == 0) return r; else return sirius_css_Automator._selector(arg,--c,t,r);
+};
+sirius_css_Automator._important = function(p) {
+	return p == "i" || p.indexOf("style") != -1;
 };
 sirius_css_Automator._level = function(p,l) {
 	if((p instanceof Array) && p.__enum__ == null) return p[l]; else return p;
 };
-sirius_css_Automator._align = function(r,x) {
-	return "ctblr".indexOf(x) != -1;
+sirius_css_Automator._position = function(r,x) {
+	return "tblr".indexOf(x) != -1;
 };
 sirius_css_Automator._color = function(r,x) {
 	if(HxOverrides.substr(x,0,1) == "x") r = "#" + HxOverrides.substr(x,1,x.length - 1); else if(sirius_tools_Utils.isValid(r) && HxOverrides.substr(r,0,1) == "#") return r;
@@ -893,42 +909,6 @@ sirius_css_Automator._measure = function(r,x) {
 		}
 		return r;
 	} else return null;
-};
-sirius_css_Automator._parse = function(c,level,x) {
-	var v = c[level];
-	var r = Reflect.field(sirius_css_Automator._NS,c[level]);
-	var j = "";
-	if(r == null) {
-		if(level > 0) {
-			var l = v.length;
-			if(HxOverrides.substr(v,l - 2,2) == "pc") r = v.split("d").join(".").split("pc").join("%"); else if(HxOverrides.substr(v,l - 1,1) == "n") r = "-" + v.split("n").join("") + "px"; else if(HxOverrides.substr(v,0,1) == "x") r = "#" + HxOverrides.substr(v,1,l - 1); else {
-				var x1 = Std.parseInt(v);
-				if(x1 != null) r = x1 + "px"; else return null;
-			}
-		} else if(level == 0) return null;
-	} else if(level == 0 && r != "" && c.length > 1) {
-		if((r instanceof Array) && r.__enum__ == null) {
-			r = r[0];
-			j = "-";
-		}
-		if(v == "txt") {
-			if(level == 1) r = "text"; else {
-				var cl = Reflect.field(sirius_css_Automator._NS,c[1]);
-				if(cl != null) {
-					if(HxOverrides.substr(cl,0,1) == "#") r = "color"; else if("lrcj".indexOf(c[1]) != -1) r = "text-align";
-				}
-			}
-		} else if(v == "bord") {
-			var cl1 = Reflect.field(sirius_css_Automator._NS,c[1]);
-			if(cl1 != null && HxOverrides.substr(cl1,0,1) == "#") r = "border-color"; else if("sol,das,dou,dot".indexOf(HxOverrides.substr(cl1,0,3)) != -1) r = "border-style";
-		} else if(v == "scroll") {
-			var cl2 = Reflect.field(sirius_css_Automator._NS,c[1]);
-			if(cl2 == "x" || cl2 == "y") r = "overflow-" + cl2 + ":scroll;overflow-" + (cl2 == "x"?"y":"x") + ":hidden;";
-		}
-	}
-	x[x.length] = j + Std.string(r);
-	if(++level != c.length) sirius_css_Automator._parse(c,level,x);
-	return x;
 };
 var sirius_css_XCSS = $hx_exports.XCSS = function(data) {
 	this.reset();
@@ -3778,7 +3758,7 @@ var Enum = { };
 var q = window.jQuery;
 var js = js || {}
 js.JQuery = q;
-css_CSSGroup.MEDIA_XS = "/*SRU*/@media(min-width:1px) and @media(max-width:767px){ ";
+css_CSSGroup.MEDIA_XS = "/*SRU*/@media(min-width:1px) and (max-width:767px){ ";
 css_CSSGroup.MEDIA_SM = "/*SRU*/@media(min-width:768px) and (max-width:1000px){ ";
 css_CSSGroup.MEDIA_MD = "/*SRU*/@media(min-width:1001px) and (max-width:1169px){ ";
 css_CSSGroup.MEDIA_LG = "/*SRU*/@media(min-width:1170px){ ";
@@ -3825,7 +3805,7 @@ sirius_bit_BitIO.P30 = 536870912;
 sirius_bit_BitIO.P31 = 1073741824;
 sirius_bit_BitIO.P32 = -2147483648;
 sirius_bit_BitIO.X = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
-sirius_css_Automator._NS = { t : "top", b : "botton", l : "left", r : "right", m : "middle", c : "center", n : "none", pc : "%", p : "%", i : " !important", bord : "border", marg : "margin", padd : "padding", line : "line", w : "width", h : "height", o : "outline", rad : "radius", a : "auto", txt : ["font-size","color","text-align"], bg : "background-color", aliceblue : "#f0f8ff", antiquewhite : "#faebd7", aqua : "#00ffff", aquamarine : "#7fffd4", azure : "#f0ffff", beige : "#f5f5dc", bisque : "#ffe4c4", black : "#000000", blanchedalmond : "#ffebcd", blue : "#0000ff", blueviolet : "#8a2be2", brown : "#a52a2a", burlywood : "#deb887", cadetblue : "#5f9ea0", chartreuse : "#7fff00", chocolate : "#d2691e", coral : "#ff7f50", cornflowerblue : "#6495ed", cornsilk : "#fff8dc", crimson : "#dc143c", cyan : "#00ffff", darkblue : "#00008b", darkcyan : "#008b8b", darkgoldenrod : "#b8860b", darkgray : "#a9a9a9", darkgreen : "#006400", darkkhaki : "#bdb76b", darkmagenta : "#8b008b", darkolivegreen : "#556b2f", darkorange : "#ff8c00", darkorchid : "#9932cc", darkred : "#8b0000", darksalmon : "#e9967a", darkseagreen : "#8fbc8f", darkslateblue : "#483d8b", darkslategray : "#2f4f4f", darkturquoise : "#00ced1", darkviolet : "#9400d3", deeppink : "#ff1493", deepskyblue : "#00bfff", dimgray : "#696969", dodgerblue : "#1e90ff", firebrick : "#b22222", floralwhite : "#fffaf0", forestgreen : "#228b22", fuchsia : "#ff00ff", gainsboro : "#dcdcdc", ghostwhite : "#f8f8ff", gold : "#ffd700", goldenrod : "#daa520", gray : "#808080", green : "#008000", greenyellow : "#adff2f", honeydew : "#f0fff0", hotpink : "#ff69b4", indianred : "#cd5c5c", indigo : "#4b0082", ivory : "#fffff0", khaki : "#f0e68c", lavender : "#e6e6fa", lavenderblush : "#fff0f5", lawngreen : "#7cfc00", lemonchiffon : "#fffacd", lightblue : "#add8e6", lightcoral : "#f08080", lightcyan : "#e0ffff", lightgoldenrodyellow : "#fafad2", lightgray : "#d3d3d3", lightgreen : "#90ee90", lightpink : "#ffb6c1", lightsalmon : "#ffa07a", lightseagreen : "#20b2aa", lightskyblue : "#87cefa", lightslategray : "#778899", lightsteelblue : "#b0c4de", lightyellow : "#ffffe0", lime : "#00ff00", limegreen : "#32cd32", linen : "#faf0e6", magenta : "#ff00ff", maroon : "#800000", mediumaquamarine : "#66cdaa", mediumblue : "#0000cd", mediumorchid : "#ba55d3", mediumpurple : "#9370db", mediumseagreen : "#3cb371", mediumslateblue : "#7b68ee", mediumspringgreen : "#00fa9a", mediumturquoise : "#48d1cc", mediumvioletred : "#c71585", midnightblue : "#191970", mintcream : "#f5fffa", mistyrose : "#ffe4e1", moccasin : "#ffe4b5", navajowhite : "#ffdead", navy : "#000080", oldlace : "#fdf5e6", olive : "#808000", olivedrab : "#6b8e23", orange : "#ffa500", orangered : "#ff4500", orchid : "#da70d6", palegoldenrod : "#eee8aa", palegreen : "#98fb98", paleturquoise : "#afeeee", palevioletred : "#db7093", papayawhip : "#ffefd5", peachpuff : "#ffdab9", peru : "#cd853f", pink : "#ffc0cb", plum : "#dda0dd", powderblue : "#b0e0e6", purple : "#800080", rebeccapurple : "#663399", red : "#ff0000", rosybrown : "#bc8f8f", royalblue : "#4169e1", saddlebrown : "#8b4513", salmon : "#fa8072", sandybrown : "#f4a460", seagreen : "#2e8b57", seashell : "#fff5ee", sienna : "#a0522d", silver : "#c0c0c0", skyblue : "#87ceeb", slateblue : "#6a5acd", slategray : "#708090", snow : "#fffafa", springgreen : "#00ff7f", steelblue : "#4682b4", tan : "#d2b48c", teal : "#008080", thistle : "#d8bfd8", tomato : "#ff6347", turquoise : "#40e0d0", violet : "#ee82ee", wheat : "#f5deb3", white : "#ffffff", whitesmoke : "#f5f5f5", yellow : "#ffff00", yellowgreen : "#9acd32", transparent : "transparent", disp : "display", block : "block", 'inline' : "inline", vert : "vertical-align", sub : "sub", sup : "super", pos : "position", abs : "absolute", rel : "relative", pull : "float", 'float' : "float", over : "overflow", scroll : "scroll", bold : "font-weight:bold,", regular : "font-weight:regular", underline : "font-weight:underline", italic : "font-weight:italic", thin : "font-weight:100", upcase : "font-transform:uppercase", locase : "font-transform:lowercase", curs : "cursor", pointer : "pointer", loading : "loading", arial : "font-family:arial", verdana : "font-family:verdana", tahoma : "font-family:tahoma", lucida : "font-family:lucida", georgia : "font-family:georgia", trebuchet : "font-family:trebuchet", tab : "table", cell : "cell", solid : "solid", dashed : "dashed", 'double' : "double", dotted : "dotted"};
+sirius_css_Automator._NS = { t : ["top","top-color","top"], b : ["bottom","bottom-color","bottom"], l : ["left","left-color","left"], r : ["right","right-color","right"], m : "middle", c : "center", n : "none", pc : "%", p : "%", i : " !important", bord : "border", marg : "margin", padd : "padding", line : "line", w : "width", h : "height", o : "outline", rad : "radius", a : "auto", txt : ["text-align","color","font-size"], bg : "background-color", aliceblue : "#f0f8ff", antiquewhite : "#faebd7", aqua : "#00ffff", aquamarine : "#7fffd4", azure : "#f0ffff", beige : "#f5f5dc", bisque : "#ffe4c4", black : "#000000", blanchedalmond : "#ffebcd", blue : "#0000ff", blueviolet : "#8a2be2", brown : "#a52a2a", burlywood : "#deb887", cadetblue : "#5f9ea0", chartreuse : "#7fff00", chocolate : "#d2691e", coral : "#ff7f50", cornflowerblue : "#6495ed", cornsilk : "#fff8dc", crimson : "#dc143c", cyan : "#00ffff", darkblue : "#00008b", darkcyan : "#008b8b", darkgoldenrod : "#b8860b", darkgray : "#a9a9a9", darkgreen : "#006400", darkkhaki : "#bdb76b", darkmagenta : "#8b008b", darkolivegreen : "#556b2f", darkorange : "#ff8c00", darkorchid : "#9932cc", darkred : "#8b0000", darksalmon : "#e9967a", darkseagreen : "#8fbc8f", darkslateblue : "#483d8b", darkslategray : "#2f4f4f", darkturquoise : "#00ced1", darkviolet : "#9400d3", deeppink : "#ff1493", deepskyblue : "#00bfff", dimgray : "#696969", dodgerblue : "#1e90ff", firebrick : "#b22222", floralwhite : "#fffaf0", forestgreen : "#228b22", fuchsia : "#ff00ff", gainsboro : "#dcdcdc", ghostwhite : "#f8f8ff", gold : "#ffd700", goldenrod : "#daa520", gray : "#808080", green : "#008000", greenyellow : "#adff2f", honeydew : "#f0fff0", hotpink : "#ff69b4", indianred : "#cd5c5c", indigo : "#4b0082", ivory : "#fffff0", khaki : "#f0e68c", lavender : "#e6e6fa", lavenderblush : "#fff0f5", lawngreen : "#7cfc00", lemonchiffon : "#fffacd", lightblue : "#add8e6", lightcoral : "#f08080", lightcyan : "#e0ffff", lightgoldenrodyellow : "#fafad2", lightgray : "#d3d3d3", lightgreen : "#90ee90", lightpink : "#ffb6c1", lightsalmon : "#ffa07a", lightseagreen : "#20b2aa", lightskyblue : "#87cefa", lightslategray : "#778899", lightsteelblue : "#b0c4de", lightyellow : "#ffffe0", lime : "#00ff00", limegreen : "#32cd32", linen : "#faf0e6", magenta : "#ff00ff", maroon : "#800000", mediumaquamarine : "#66cdaa", mediumblue : "#0000cd", mediumorchid : "#ba55d3", mediumpurple : "#9370db", mediumseagreen : "#3cb371", mediumslateblue : "#7b68ee", mediumspringgreen : "#00fa9a", mediumturquoise : "#48d1cc", mediumvioletred : "#c71585", midnightblue : "#191970", mintcream : "#f5fffa", mistyrose : "#ffe4e1", moccasin : "#ffe4b5", navajowhite : "#ffdead", navy : "#000080", oldlace : "#fdf5e6", olive : "#808000", olivedrab : "#6b8e23", orange : "#ffa500", orangered : "#ff4500", orchid : "#da70d6", palegoldenrod : "#eee8aa", palegreen : "#98fb98", paleturquoise : "#afeeee", palevioletred : "#db7093", papayawhip : "#ffefd5", peachpuff : "#ffdab9", peru : "#cd853f", pink : "#ffc0cb", plum : "#dda0dd", powderblue : "#b0e0e6", purple : "#800080", rebeccapurple : "#663399", red : "#ff0000", rosybrown : "#bc8f8f", royalblue : "#4169e1", saddlebrown : "#8b4513", salmon : "#fa8072", sandybrown : "#f4a460", seagreen : "#2e8b57", seashell : "#fff5ee", sienna : "#a0522d", silver : "#c0c0c0", skyblue : "#87ceeb", slateblue : "#6a5acd", slategray : "#708090", snow : "#fffafa", springgreen : "#00ff7f", steelblue : "#4682b4", tan : "#d2b48c", teal : "#008080", thistle : "#d8bfd8", tomato : "#ff6347", turquoise : "#40e0d0", violet : "#ee82ee", wheat : "#f5deb3", white : "#ffffff", whitesmoke : "#f5f5f5", yellow : "#ffff00", yellowgreen : "#9acd32", transparent : "transparent", disp : "display", block : "block", 'inline' : "inline", vert : "vertical-align", sub : "sub", sup : "super", pos : "position", abs : "absolute", rel : "relative", pull : "float", 'float' : "float", over : "overflow", scroll : "scroll", bold : "font-weight:bold", regular : "font-weight:regular", underline : "font-weight:underline", italic : "font-weight:italic", thin : "font-weight:100", upcase : "font-transform:uppercase", locase : "font-transform:lowercase", curs : "cursor", pointer : "pointer", loading : "loading", arial : "font-family:arial", verdana : "font-family:verdana", tahoma : "font-family:tahoma", lucida : "font-family:lucida", georgia : "font-family:georgia", trebuchet : "font-family:trebuchet", tab : "table", cell : "cell", solid : "solid", dashed : "dashed", 'double' : "double", dotted : "dotted"};
 sirius_dom_Display.DATA = { };
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
@@ -3839,5 +3819,3 @@ sirius_transitions_Animator.available = window.Tween != null || window.TweenMax 
 sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map

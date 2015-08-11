@@ -16,10 +16,10 @@ class Automator {
 	static private var css:CSSGroup;
 		
 	static private var _NS:Dynamic = { 
-		t:'top',
-		b:'botton',
-		l:'left',
-		r:'right',
+		t:['top','top-color','top'],
+		b:['bottom','bottom-color','bottom'],
+		l:['left','left-color','left'],
+		r:['right','right-color','right'],
 		m:'middle',
 		c:'center',
 		n:'none',
@@ -35,7 +35,7 @@ class Automator {
 		o:'outline',
 		rad:'radius',
 		a:'auto',
-		txt:['font-size','color','text-align'],
+		txt:['text-align','color','font-size'],
 		bg:'background-color',
 		aliceblue:'#f0f8ff',
 		antiquewhite:'#faebd7',
@@ -192,7 +192,7 @@ class Automator {
 		float:'float',
 		over:'overflow',
 		scroll:'scroll',
-		bold:'font-weight:bold,',
+		bold:'font-weight:bold',
 		regular:'font-weight:regular',
 		underline:'font-weight:underline',
 		italic:'font-weight:italic',
@@ -266,19 +266,14 @@ class Automator {
 				l = v.length;
 				if (l > 0) {
 					var c:Array<String> = v.split(" ");
-					// XS/SM/MD/LG
-					m = q.indexOf(c[c.length - 1]) != -1 ? c.pop() : "";
-					//// IMPORTANT
-					//i = q.indexOf(c[c.length - 1]) != -1 ? c.pop() == "i" : false;
-					// REST OF
 					Dice.Values(c, function(v:String) {
 						c = v.split("-");
-						s = _selector(c, 0, c.length,"");
-						
-						Log.trace(c + "==" + s);
-						//if (s != null && s.indexOf("null") == -1) {
-							//css.setSelector("." + v, s, m);
-						//}
+						m = q.indexOf(c[c.length - 1]) != -1 ? c.pop() : "";
+						s = _selector(c, c.length-1,0,"");
+						Log.trace(m + "==" + c + "==" + s);
+						if (Utils.isValid(s)) {
+							css.setSelector("." + v, s, m);
+						}
 					});
 				}
 			}
@@ -288,24 +283,43 @@ class Automator {
 		
 	}
 	
-	static private function _selector(arg:Array<String>, c:Int, l:Int, b:Dynamic):String {
-		var p:String = arg[c];
-		var v:Dynamic = Reflect.field(_NS, p);
-		var r:String = _level(v,0);
+	static private function _selector(arg:Array<String>, c:Int, t:Int, r:String):String {
 		
-		if(c > 0){
-			v = _color(v, p);
-			if (v != null) {
-				r = _level(b,1) + v;
+		var p:String = arg[c];
+		var s:Dynamic = Reflect.field(_NS, p);
+		var v:Dynamic = _level(s, t);
+		var e:String = v;
+		
+		if (c > 0) {
+			if (_position(v,p)) {
+				t = 0;
+				r = "-" + v + r;
 			}else {
-				v = _measure(v, p);
+				v = _color(v, p);
 				if (v != null) {
-					r = _level(b,2) + v;
+					t = 1;
+					r = ":" + v + r;
+				}else {
+					v = _measure(v, p);
+					if (v != null) {
+						t = 2;
+						r = ":" + v + r;
+					}else if (_important(p)) {
+						r = e + r;
+					}else {
+						r = ":" + e + r;
+					}
 				}
 			}
+		}else {
+			r = v + r;
 		}
 		
-		return ++c == l ? r : _selector(arg, c, l, r);
+		return c == 0 ? r : _selector(arg, --c, t, r);
+	}
+	
+	static private function _important(p:String):Bool {
+		return p == "i" || p.indexOf('style') != -1;
 	}
 	
 	static private function _level(p:Dynamic, l:Int):String {
@@ -318,8 +332,8 @@ class Automator {
 		return Std.is(p, Array) ? p[l] : p;
 	}
 	
-	static private function _align(r:String, x:String):Bool {
-		return "ctblr".indexOf(x) != -1;
+	static private function _position(r:String, x:String):Bool {
+		return "tblr".indexOf(x) != -1;
 	}
 	
 	static private function _color(r:String, x:String):String {
@@ -348,74 +362,6 @@ class Automator {
 		}else {
 			return null;
 		}
-	}
-	
-	static private function _parse(c:Array<String>, level:Int, x:Array<String>):Array<String> {
-		
-		var v:String = c[level];
-		var r:Dynamic = Reflect.field(_NS, c[level]);
-		var j:String = "";
-		
-		if(r == null){
-			if (level > 0) {
-				var l:Int = v.length;
-				if (v.substr(l - 2, 2) == "pc") {
-					r = v.split("d").join(".").split("pc").join("%");
-				}else if (v.substr(l - 1, 1) == "n") {
-					r = "-" + v.split("n").join("") + "px";
-				}else if (v.substr(0, 1) == "x") {
-					r = "#" + v.substr(1, l-1);
-				}else{
-					var x:Int = Std.parseInt(v);
-					if (x != null) {
-						r = x + "px";
-					}else {
-						return null;
-					}
-				}
-			}else if(level == 0){
-				return null;
-			}
-		}else if (level == 0 && r != '' && c.length > 1) {
-			
-			if (Std.is(r, Array)) {
-				r = r[0];
-				j = "-";
-			}
-			
-			if (v == "txt") {
-				if (level == 1) {
-					r = 'text';
-				}else{
-					var cl:String = Reflect.field(_NS, c[1]);
-					if (cl != null) {
-						if (cl.substr(0, 1) == "#") {
-							r = 'color';
-						}else if ("lrcj".indexOf(c[1]) != -1) {
-							r = 'text-align';
-						}
-					}
-				}
-			}else if (v == "bord") {
-				var cl:String = Reflect.field(_NS, c[1]);
-				if(cl != null && cl.substr(0, 1) == "#") {
-					r = 'border-color';
-				}else if ("sol,das,dou,dot".indexOf(cl.substr(0, 3)) != -1) {
-					r = 'border-style';
-				}
-			}else if (v == "scroll") {
-				var cl:String = Reflect.field(_NS, c[1]);
-				if (cl == 'x' || cl == 'y') {
-					r = 'overflow-' + cl + ':scroll;overflow-' + (cl == 'x' ? 'y' : 'x') + ':hidden;';
-				}
-			}
-		}
-		
-		x[x.length] = j + r;
-		if (++level != c.length) {
-			_parse(c, level, x);
-		}
-		return x;
 	}
 	
 }

@@ -87,7 +87,7 @@ class CSSGroup{
 		return (id + "{" + style + "}");
 	}
 	
-	private static var MEDIA_XS:String = "/*SRU*/@media(min-width:1px) and @media(max-width:767px){ ";
+	private static var MEDIA_XS:String = "/*SRU*/@media(min-width:1px) and (max-width:767px){ ";
 	private static var MEDIA_SM:String = "/*SRU*/@media(min-width:768px) and (max-width:1000px){ ";
 	private static var MEDIA_MD:String = "/*SRU*/@media(min-width:1001px) and (max-width:1169px){ ";
 	private static var MEDIA_LG:String = "/*SRU*/@media(min-width:1170px){ ";

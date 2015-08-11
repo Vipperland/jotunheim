@@ -30,4 +30,4 @@ class Main{
 		//Sirius.body.addChild(d);
 	}
 	
-}
+} 
