@@ -86,10 +86,10 @@ class Sirius {
 		resources.add(files, handler, _fileError);
 		if (!_initialized) {
 			_initialized = true;
-			log("Sirius->Core::init[ Loading DOM... ]", 10, 1);
+			log("Sirius->Core.init[ Loading DOM... ]", 10, 1);
 			onLoad(_onLoaded);
 		}else{
-			log("Sirius->Core::init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
+			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
 		}
 	}
 	

@@ -12,7 +12,7 @@ import sirius.dom.Style;
  */
 class CSSGroup{
 
-	public var ALL:StyleElement;
+	public var CM:StyleElement;
 	
 	public var XS:StyleElement;
 	
@@ -45,7 +45,7 @@ class CSSGroup{
 		reset();
 		if (container == null) {
 			container = new Style();
-			ALL = _style();
+			CM = _style();
 			XS = _style();
 			SM = _style();
 			MD = _style();
@@ -56,13 +56,14 @@ class CSSGroup{
 	
 	public function hasSelector(id:String, ?mode:String):Bool {
 		var k:String = mode != null ? mode : id.substr( -2, 2);
+		id = "." + id + "{";
 		if(k != null && k != ''){
-			if (k == 'xs') return XS.innerHTML.indexOf(id+"{") != -1;
-			if (k == 'sm') return SM.innerHTML.indexOf(id+"{") != -1;
-			if (k == 'md') return MD.innerHTML.indexOf(id+"{") != -1;
-			if (k == 'lg') return LG.innerHTML.indexOf(id + "{") != -1;
+			if (k == 'xs') return XS.innerHTML.indexOf(id) != -1;
+			if (k == 'sm') return SM.innerHTML.indexOf(id) != -1;
+			if (k == 'md') return MD.innerHTML.indexOf(id) != -1;
+			if (k == 'lg') return LG.innerHTML.indexOf(id) != -1;
 		}
-		return ALL.innerHTML.indexOf(id) != -1;
+		return CM.innerHTML.indexOf(id) != -1;
 	}
 	
 	public function setSelector(id:String, style:String, mode:String):Void {
@@ -87,42 +88,26 @@ class CSSGroup{
 		return (id + "{" + style + "}");
 	}
 	
-	private static var MEDIA_XS:String = "/*SRU*/@media(min-width:1px) and (max-width:767px){ ";
-	private static var MEDIA_SM:String = "/*SRU*/@media(min-width:768px) and (max-width:1000px){ ";
-	private static var MEDIA_MD:String = "/*SRU*/@media(min-width:1001px) and (max-width:1169px){ ";
-	private static var MEDIA_LG:String = "/*SRU*/@media(min-width:1170px){ ";
+	private static var SOF:String = "/*SOF*/@media";
+	private static var EOF:String = "}/*EOF*/";
+	private static var MEDIA_XS:String = SOF+"(min-width:1px) and (max-width:767px){ ";
+	private static var MEDIA_SM:String = SOF+"(min-width:768px) and (max-width:1000px){ ";
+	private static var MEDIA_MD:String = SOF+"(min-width:1001px) and (max-width:1169px){ ";
+	private static var MEDIA_LG:String = SOF+"(min-width:1170px){ ";
+	
+	private function _write(e:StyleElement, v:String, h:String):Void {
+		if (v.length > 0) {
+			e.innerHTML = h != '' ? ((e.innerHTML.length > 0 ? (h + e.innerHTML.split(h).join("").split(EOF).join("") + v) : h + v) + EOF) : e.innerHTML + v;
+			if (e.parentElement == null) container.element.appendChild(cast e);
+		}
+	}
 	
 	public function build() {
-		if (style.length > 0) {
-			ALL.innerHTML += style;
-			if (ALL.parentElement == null) {
-				container.element.appendChild(cast ALL);
-			}
-		}
-		if (styleXS.length > 0) {
-			XS.innerHTML = (XS.innerHTML.length > 0 ? (MEDIA_XS + XS.innerHTML.split(MEDIA_XS).join("").split("}/*EOF*/").join("") + styleXS) : MEDIA_XS + styleXS) + "}/*EOF*/";
-			if (XS.parentElement == null) {
-				container.element.appendChild(cast XS);
-			}
-		}
-		if (styleSM.length > 0)	{
-			SM.innerHTML = (SM.innerHTML.length > 0 ? (MEDIA_SM + SM.innerHTML.split(MEDIA_SM).join("").split("}/*EOF*/").join("") + styleSM) : MEDIA_SM + styleSM) + "}/*EOF*/";
-			if (SM.parentElement == null) {
-				container.element.appendChild(cast SM);
-			}
-		}
-		if (styleMD.length > 0)	{
-			MD.innerHTML = (MD.innerHTML.length > 0 ? (MEDIA_MD + MD.innerHTML.split(MEDIA_MD).join("").split("}/*EOF*/").join("") + styleMD) : MEDIA_MD + styleMD) + "}/*EOF*/";
-			if (MD.parentElement == null) {
-				container.element.appendChild(cast MD);
-			}
-		}
-		if (styleLG.length > 0)	{
-			LG.innerHTML = (LG.innerHTML.length > 0 ? (MEDIA_LG + LG.innerHTML.split(MEDIA_LG).join("").split("}/*EOF*/").join("") + styleLG) : MEDIA_LG + styleLG)+ "}/*EOF*/";
-			if (LG.parentElement == null) {
-				container.element.appendChild(cast LG);
-			}
-		}
+		_write(CM, style, '');
+		_write(XS, styleXS, MEDIA_XS);
+		_write(SM, styleSM, MEDIA_SM);
+		_write(MD, styleMD, MEDIA_MD);
+		_write(LG, styleLG, MEDIA_LG);
 		reset();
 	}
 	

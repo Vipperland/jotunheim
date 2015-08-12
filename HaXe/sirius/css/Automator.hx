@@ -2,7 +2,9 @@ package sirius.css;
 import css.CSSGroup;
 import haxe.Constraints.Function;
 import haxe.Log;
+import js.html.Element;
 import sirius.css.Automator.IKey;
+import sirius.dom.IDisplay;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;
@@ -15,30 +17,27 @@ import sirius.utils.Dice;
 @:expose('Automator')
 class Automator {
 	
+	static private var _scx:String = "#xs#sm#md#lg#";
+	
 	static private var css:CSSGroup;
 	
 	static public function numericKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
 		if (n != null && !n.position) {
-			if(d.head.key == 'bord') return borderKey(d, k, n);
 			if (n.color != null) return v + "-color:";
+			if(d.head.key == 'bord') return borderFix(v, d, k, n);
 			if (n.measure != null) return v + ":";
 			return v + ":";
 		}
 		return v + (k.index == 0 ? "-" : "");
 	}
 	
-	static public function borderKey(d:Entry, k:IKey, n:IKey):String {
-		var v:String = k.entry.value;
-		if (n != null && !n.position) {
-			if (n.color != null) return v + "-color:";
-			if (n.measure != null) return v + "-width:";
-			return v + (d.keys[1].key == 'rad' ? '-' : '-style:');
-		}
-		return v + (k.index == 0 ? "-" : "");
+	static public function borderFix(v:String, d:Entry, k:IKey, n:IKey):String {
+		if (n.measure != null) return v + "-width:";
+		return v + (d.keys[1].key == 'rad' ? '-' : '-style:');
 	}
 	
-	static public function appendKey(d:Entry, k:IKey, n:IKey):String {
+	static public function shiftKey(d:Entry, k:IKey, n:IKey):String {
 		return "-" + k.entry.value;
 	}
 	
@@ -46,21 +45,43 @@ class Automator {
 		return k.entry.value;
 	}
 	
+	static public function pushKey(d:Entry, k:IKey, n:IKey):String {
+		return k.entry.value + "-";
+	}
+	
 	static public function valueKey(d:Entry, k:IKey, n:IKey):String {
 		return k.entry.value + ":";
 	}
 	
-	static public function textKey(d:Entry, k:IKey, n:IKey):String {
-		if (n != null && !n.position) {
-			if (n.color != null) return 'color:';
-			if (n.measure != null) return 'font-size:';
-			
+	static public function appendKey(d:Entry, k:IKey, n:IKey):String {
+		return k.entry.value + (n != null ? "-" : "");
+	}
+	
+	static public function scrollKey(d:Entry, k:IKey, n:IKey):String {
+		var v:String = k.entry.value;
+		if (d.head.key == 'scroll') {
+			if (k.index == 0) return '';
+			return "overflow-" + v + ":scroll;overflow-" + (v == 'x'?'y':v) + ":hidden";
 		}
-		return 'text-align:';
+		return commonKey(d, k, n);
+	}
+	
+	static public function textKey(d:Entry, k:IKey, n:IKey):String {
+		if(k.index == 0){
+			if (n != null && !n.position) {
+				if (n.color != null) return 'color:';
+				if (n.measure != null) return 'font-size:';
+			}
+			return 'text-align:';
+		}else {
+			return 'text-';
+		}
 	}
 	
 	
-	
+	/**
+	 * RULE TABLE
+	 */
 	static private var _KEYS:Dynamic = {
 		aliceblue:{value:'#f0f8ff',verifier:commonKey},
 		antiquewhite:{value:'#faebd7',verifier:commonKey},
@@ -203,27 +224,28 @@ class Automator {
 		whitesmoke:{value:'#f5f5f5',verifier:commonKey},
 		yellow:{value:'#ffff00',verifier:commonKey},
 		yellowgreen:{value:'#9acd32',verifier:commonKey},
-		transparent:{value:'transparent',verifier:commonKey},
+		transparent:{value:'bg-color:transparent',verifier:commonKey},
 		t:{value:'top', verifier:numericKey},
 		b:{value:'bottom', verifier:numericKey},
 		l:{value:'left', verifier:numericKey},
 		r:{value:'right', verifier:numericKey},
 		m:{value:'middle', verifier:commonKey},
+		j:{value:'justify', verifier:commonKey},
 		c:{value:'center', verifier:commonKey},
 		n:{value:'none', verifier:commonKey},
 		pc:{value:'%', verifier:commonKey},
-		line:{value:'line-height', verifier:valueKey},
+		line:{value:'line', verifier:pushKey},
 		i:{value:' !important', verifier:commonKey},
 		marg:{value:'margin', verifier:numericKey},
 		padd:{value:'padding', verifier:numericKey},
-		bord:{value:'border', verifier:borderKey},
+		bord:{value:'border', verifier:numericKey},
 		w:{value:'width', verifier:valueKey},
 		h:{value:'height', verifier:valueKey},
 		o:{value:'outline', verifier:valueKey},
-		display:{value:'display', verifier:valueKey},
+		disp:{value:'display', verifier:valueKey},
 		vert:{value:'vertical-align', verifier:valueKey},
 		block:{value:'block', verifier:commonKey},
-		"inline":{value:'inline', verifier:commonKey},
+		"inline":{value:'inline', verifier:appendKey},
 		bg:{value:'background',verifier:numericKey},
 		txt: { value:'', verifier:textKey },
 		sub:{value:'sub',verifier:commonKey},
@@ -233,9 +255,13 @@ class Automator {
 		rel:{value:'relative',verifier:commonKey},
 		fix:{value:'fixed',verifier:commonKey},
 		pull:{value:'float',verifier:valueKey},
-		float:{value:'float',verifier:commonKey},
-		over:{value:'overflow',verifier:commonKey},
-		scroll:{value:'scroll',verifier:commonKey},
+		float:{value:'float',verifier:valueKey},
+		over:{value:'overflow',verifier:valueKey},
+		hid:{value:'hidden',verifier:commonKey},
+		scroll:{value:'scroll',verifier:scrollKey},
+		x:{value:'x',verifier:scrollKey},
+		y:{value:'y',verifier:scrollKey},
+		z:{value:'z-index',verifier:valueKey},
 		bold:{value:'font-weight:bold',verifier:commonKey},
 		regular:{value:'font-weight:regular',verifier:commonKey},
 		underline:{value:'font-weight:underline',verifier:commonKey},
@@ -252,17 +278,21 @@ class Automator {
 		lucida:{value:'font-family:lucida',verifier:commonKey},
 		georgia:{value:'font-family:georgia',verifier:commonKey},
 		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
-		tab:{value:'table',verifier:commonKey},
+		table:{value:'table',verifier:appendKey},
 		cell:{value:'cell',verifier:commonKey},
 		rad:{value:'radius',verifier:valueKey},
 		solid:{value:'solid',verifier:commonKey},
 		dashed:{value:'dashed',verifier:commonKey},
 		double:{value:'double',verifier:commonKey},
 		dotted:{value:'dotted',verifier:commonKey},
+		alpha:{value:'opacity',verifier:valueKey},
+		hidden:{value:'display:none',verifier:commonKey},
 	};
 
 	
 	static private var _dev:Bool;
+	
+	static private var _len:Int = 0;
 	
 	static public function addRules(q:Array<Dynamic>):Void {
 		Dice.All(q, function(p:String, v:String) {
@@ -280,9 +310,12 @@ class Automator {
 			_scanBody();
 		}else {
 			Sirius.init(function() {
-				Sirius.log("Sirius->Automator::status[ SCANNING ]", 10, 1);
-				_dev ? _activate() : _scanBody();
-				Sirius.log("Sirius->Automator::status[ ...DONE! ]", 10, 1);
+				Sirius.log("Sirius->Automator::status[ SCANNING... ]", 10, 1);
+				if (!_dev) {
+					_scanBody();
+				}else {
+					_activate();
+				}
 			});
 		}
 	}
@@ -292,44 +325,86 @@ class Automator {
 		Delayer.create(_scanBody, 1).call(0);
 	}
 	
+	/**
+	 * Scan the entire document for class fragments and create the selectors
+	 */
 	static private function _scanBody():Void {
+		var e:Element = Sirius.document.element;
 		
-		var w:Array<String>;
-		var q:String = "-xs-sm-md-lg";
-		var s:String;
-		var m:String;
-		var i:Bool;
-		var l:Int;
+		var n:Int = e.outerHTML.length;
+		if (n == _len) return;
+		_len = n;
 		
-		var t:Array<String> = Sirius.document.element.outerHTML.split("class=");
-		t.shift();
+		search(e);
+	}
+	
+	/**
+	 * Search all element structure for class attributes
+	 * @param	t
+	 */
+	static public function search(t:Dynamic):Void {
+		
+		if (t == null) return;
+		else if (Std.is(t, IDisplay)) t = t.element;
+		
+		
+		
+		var t:Array<String> = t.outerHTML.split("class=");
+		
+		if (t.length > 0) {
+			t.shift();
+		}
 		
 		Dice.Values(t, function(v:String) {
-			var i:String = v.substr(0, 1);
-			var j:Int = v.indexOf(i, 1);
+			var i:String = v.substr(0, 1);	// class=["] (string start)
+			var j:Int = v.indexOf(i, 1);	// class="["] (string end)
 			if (j > 1) {
 				v = v.substring(1, j);
-				l = v.length;
-				if (l > 0) {
-					var c:Array<String> = v.split(" ");
-					Dice.Values(c, function(v:String) {
-						c = v.split("-");
-						m = q.indexOf(c[c.length - 1]) != -1 ? c.pop() : null;
-						if (!css.hasSelector(m == null ? v : v.substr(0, v.length - 2))) {
-							s = _parse(c).build();
-							if (Utils.isValid(s)) {
-								css.setSelector("." + v, s, m);
-							}
-						}
-					});
-				}
+				if (v.length > 0) assemble(v);
 			}
 		});
 		
 		css.build();
 		
+		Sirius.log("Sirius->Automator.scanner[ DONE! ]",10,1);
+		
 	}
 	
+	/**
+	 * Create selectors from string
+	 * @param	query
+	 */
+	static public function assemble(query:String):Void {
+		var c:Array<String> = query.split(" ");
+		var m:String;
+		var s:String;
+		Dice.Values(c, function(v:String) {
+			c = v.split("-");
+			m = _screen(c);
+			if (!css.hasSelector(v, m)) {
+				s = _parse(c).build();
+				if (Utils.isValid(s)) {
+					if (_dev) Sirius.log("Sirius->Automator.scanner[ CREATE ." + v + " {" + s + ";} ]",10,1);
+					css.setSelector("." + v, s, m);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * If a screen related selector will be applied
+	 * @param	args
+	 * @return
+	 */
+	static private function _screen(args:Array<String>):String {
+		return _scx.indexOf('#' + args[args.length - 1] + '#') != -1 ? args.pop() : null;
+	}
+	
+	/**
+	 * First pass, create the selector structure
+	 * @param	args
+	 * @return
+	 */
 	static private function _parse(args:Array<String>):Entry {
 		var r:Array<IKey> = [];
 		Dice.All(args, function(p:Int, v:String) {
@@ -377,8 +452,8 @@ class Automator {
 	 * @return
 	 */
 	static private function _color(r:String, x:String):String {
-		if (x.substr(0, 1) == "x") {
-			r = "#" + x.substr(1, x.length-1);
+		if (x.substr(0, 1) == "x" && (x.length == 4 || x.length == 7)) {
+			return "#" + x.substring(1, x.length);
 		}else if (Utils.isValid(r) && r.substr(0, 1) == "#") {
 			return r;
 		}
