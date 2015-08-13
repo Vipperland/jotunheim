@@ -257,7 +257,7 @@ class Automator {
 		pull:{value:'float',verifier:valueKey},
 		float:{value:'float',verifier:valueKey},
 		over:{value:'overflow',verifier:valueKey},
-		hid:{value:'hidden',verifier:commonKey},
+		hid:{value:'',verifier:commonKey},
 		scroll:{value:'scroll',verifier:scrollKey},
 		x:{value:'x',verifier:scrollKey},
 		y:{value:'y',verifier:scrollKey},
@@ -286,7 +286,7 @@ class Automator {
 		double:{value:'double',verifier:commonKey},
 		dotted:{value:'dotted',verifier:commonKey},
 		alpha:{value:'opacity',verifier:valueKey},
-		hidden:{value:'display:none',verifier:commonKey},
+		hidden:{value:'',verifier:commonKey},
 	};
 
 	

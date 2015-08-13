@@ -3893,5 +3893,3 @@ sirius_transitions_Animator.available = window.Tween != null || window.TweenMax 
 sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map
