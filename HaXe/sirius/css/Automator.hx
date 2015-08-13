@@ -61,7 +61,7 @@ class Automator {
 		var v:String = k.entry.value;
 		if (d.head.key == 'scroll') {
 			if (k.index == 0) return '';
-			return "overflow-" + v + ":scroll;overflow-" + (v == 'x'?'y':v) + ":hidden";
+			return "overflow-" + v + ":scroll;overflow-" + (v == 'x'?'y':'x') + ":hidden";
 		}
 		return commonKey(d, k, n);
 	}
@@ -292,8 +292,6 @@ class Automator {
 	
 	static private var _dev:Bool;
 	
-	static private var _len:Int = 0;
-	
 	static public function addRules(q:Array<Dynamic>):Void {
 		Dice.All(q, function(p:String, v:String) {
 			Reflect.setField(_KEYS, p, v);
@@ -301,7 +299,7 @@ class Automator {
 	}
 	
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
-		Sirius.log("Sirius->Automator::scan[ " + (dev ? "DEBUG_MODE" : "RELEASE_MODE") + (force ? "<!FORCED>" : " (Waiting for DOM)") + " ]", 10, 1);
+		Sirius.log("Sirius->Automator.scan[ " + (dev ? "ACTIVE_MODE" : "SILENT_MODE") + " ]", 10, 1);
 		_dev = dev;
 		if (css == null) {
 			css = new CSSGroup();
@@ -316,6 +314,7 @@ class Automator {
 				}else {
 					_activate();
 				}
+				Sirius.log("Sirius->Automator.scanner[ DONE! ]",10,1);
 			});
 		}
 	}
@@ -329,13 +328,7 @@ class Automator {
 	 * Scan the entire document for class fragments and create the selectors
 	 */
 	static private function _scanBody():Void {
-		var e:Element = Sirius.document.element;
-		
-		var n:Int = e.outerHTML.length;
-		if (n == _len) return;
-		_len = n;
-		
-		search(e);
+		search(Sirius.document.element);
 	}
 	
 	/**
@@ -365,8 +358,6 @@ class Automator {
 		});
 		
 		css.build();
-		
-		Sirius.log("Sirius->Automator.scanner[ DONE! ]",10,1);
 		
 	}
 	

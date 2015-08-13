@@ -34,8 +34,9 @@ class CSSGroup{
 	
 	public var container:Style;
 	
-	private static function _style():StyleElement {
-		var e:StyleElement = new Style().object;
+	private static function _style(media:String):StyleElement {
+		var e:StyleElement = Browser.document.createStyleElement();
+		e.setAttribute('media-type', media);
 		e.type = "text/css";
 		e.innerHTML = "";
 		return e;
@@ -45,11 +46,11 @@ class CSSGroup{
 		reset();
 		if (container == null) {
 			container = new Style();
-			CM = _style();
-			XS = _style();
-			SM = _style();
-			MD = _style();
-			LG = _style();
+			CM = _style('**');
+			XS = _style('xs');
+			SM = _style('sm');
+			MD = _style('md');
+			LG = _style('lg');
 			Browser.document.head.appendChild(cast container.element);
 		}
 	}
