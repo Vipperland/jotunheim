@@ -370,13 +370,16 @@ class Automator {
 		var m:String;
 		var s:String;
 		Dice.Values(c, function(v:String) {
-			c = v.split("-");
-			m = _screen(c);
-			if (!css.hasSelector(v, m)) {
-				s = _parse(c).build();
-				if (Utils.isValid(s)) {
-					if (_dev) Sirius.log("Sirius->Automator.scanner[ CREATE ." + v + " {" + s + ";} ]",10,1);
-					css.setSelector("." + v, s, m);
+			if (v.length > 1) {
+				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
+				c = v.split("-");
+				m = _screen(c);
+				if (!css.hasSelector(v, m)) {
+					s = _parse(c).build();
+					if (Utils.isValid(s)) {
+						if (_dev) Sirius.log("Sirius->Automator.scanner[ CREATE ." + v + " {" + s + ";} ]",10,1);
+						css.setSelector("." + v, s, m);
+					}
 				}
 			}
 		});
@@ -399,9 +402,11 @@ class Automator {
 	static private function _parse(args:Array<String>):Entry {
 		var r:Array<IKey> = [];
 		Dice.All(args, function(p:Int, v:String) {
-			var val:IEntry = Reflect.field(_KEYS, v);
-			var v2:String = val != null ? val.value : null;
-			r[p] = cast { index:p, key:v, entry:val, position:_position(v2,v), measure:_measure(v2, v), color:_color(v2,v) };
+			if(v.length > 0){
+				var val:IEntry = Reflect.field(_KEYS, v);
+				var v2:String = val != null ? val.value : null;
+				r[p] = cast { index:p, key:v, entry:val, position:_position(v2, v), measure:_measure(v2, v), color:_color(v2, v) };
+			}
 		});
 		return new Entry(r,_KEYS);
 	}

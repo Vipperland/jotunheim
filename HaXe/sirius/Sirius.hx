@@ -128,16 +128,15 @@ class Sirius {
 			var chromium:Bool = ~/Chromium/i.match(ua);
 			// Check all other versions, including mobile version
 			agent = cast {
-				ie: ie > 0, 
-				ieVr : ie,	
+				ie: untyped (ie < 12 ? ie : false), 
+				edge: ie >=12,
 				opera: opera, 
 				firefox: firefox, 
 				safari: ~/Safari/i.match(ua) && !chrome && !chromium, 
 				chrome: ~/Chrome/i.match(ua) && !chromium && !opera,
 				mobile: ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua),
 				jQuery: Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery"),
-				animator: Animator.available,
-				display: Utils.screenInfo()
+				animator: Animator.available
 			};
 		}
 		return agent;
@@ -152,6 +151,7 @@ class Sirius {
 				case 1 : "[>SYSTEM] ";
 				case 2 : "[WARNING] ";
 				case 3 : "[!ERROR!] ";
+				case 4 : "[//TODO:] ";
 				default : "";
 			}
 			Log.trace(t + q);

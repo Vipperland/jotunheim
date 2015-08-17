@@ -9,7 +9,7 @@ IF NOT EXIST ..\bin GOTO END
 for /R %%a in (..\bin\*.js) do (
 	set k=%%a
 	IF /i "!k:~-7!"==".min.js" (
-		ECHO .  [  ] SKIPPED  %%a
+		ECHO .  [  ] SKIPPED %%a
 	) ELSE (
 		jsmin.exe <%%~fa >%%~dpa%%~na.min.js ""
 		ECHO .  [OK] MINIFIED %%a

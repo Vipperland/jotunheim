@@ -67,12 +67,12 @@ class Display implements IDisplay {
 		body = Sirius.body;
 		buildParent();
 		
-		if (hasAttribute("sirius-uid")) {
-			_uid = attribute("sirius-uid");
+		if (hasAttribute("sru-id")) {
+			_uid = attribute("sru-id");
 			data = Reflect.field(DATA, _uid);
 			_data = data.__data__;
 		}else {
-			_uid = attribute("sirius-uid", Key.GEN());
+			_uid = attribute("sru-id", Key.GEN());
 			data = { __data__: { }};
 			_data = data.__data__;
 			Reflect.setField(DATA, _uid, data);
