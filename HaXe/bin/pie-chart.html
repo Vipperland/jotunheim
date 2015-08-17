@@ -72,16 +72,18 @@ vertical-align: middle;
 }
 </style>
 
-<script src="3rd/jquery-2.1.4.min.js"></script>
-<script src="3rd/tween.min.js"></script>
+<script src="3rd/js/jquery-2.1.4.min.js"></script>
+<script src="3rd/js/tween.min.js"></script>
 <script src="api.sirius.js"></script>
 
 <script>
 
+Automator.scan();
+
 Sirius.init(function(){
 	
 	function _update(divA){
-	
+		
 		var divB = divA.one('.ppc-progress-fill');
 		
 		if(!divA.data.motion){
@@ -112,7 +114,7 @@ Sirius.init(function(){
 		
 	}
 	
-	Sirius.all('.progress-pie-chart').each(_update);
+	Sirius.select('.progress-pie-chart').each(_update);
 	
 });
 
@@ -121,49 +123,53 @@ Sirius.init(function(){
 </head>
 
 <body>
-
-	<div class="progress-pie-chart" data-percent="25" style="background-color:#000;">
-		<div class="ppc-progress">
-			<div class="ppc-progress-fill" style="background-color:#999;"></div>
-		</div>
-		<div class="ppc-percents">
-		<div class="pcc-percents-wrapper">
-			<span style="color:#333">%</span>
-		</div>
-		</div>
-	</div>
+	
+	<div class="arial">
 		
-	<div class="progress-pie-chart" data-percent="50" style="background-color:#300;">
-		<div class="ppc-progress">
-			<div class="ppc-progress-fill" style="background-color:#F00;"></div>
+		<div class="progress-pie-chart" data-percent="25" style="background-color:#000;">
+			<div class="ppc-progress">
+				<div class="ppc-progress-fill" style="background-color:#999;"></div>
+			</div>
+			<div class="ppc-percents">
+			<div class="pcc-percents-wrapper">
+				<span style="color:#333">%</span>
+			</div>
+			</div>
 		</div>
-		<div class="ppc-percents">
-		<div class="pcc-percents-wrapper">
-			<span style="color:#900">%</span>
-		</div>
-		</div>
-	</div>
 		
-	<div class="progress-pie-chart" data-percent="75" style="background-color:#030;">
-		<div class="ppc-progress">
-			<div class="ppc-progress-fill" style="background-color:#0F0;"></div>
+		<div class="progress-pie-chart" data-percent="50" style="background-color:#300;">
+			<div class="ppc-progress">
+				<div class="ppc-progress-fill" style="background-color:#F00;"></div>
+			</div>
+			<div class="ppc-percents">
+			<div class="pcc-percents-wrapper">
+				<span style="color:#900">%</span>
+			</div>
+			</div>
 		</div>
-		<div class="ppc-percents">
-		<div class="pcc-percents-wrapper">
-			<span style="color:#090">%</span>
+		
+		<div class="progress-pie-chart" data-percent="75" style="background-color:#030;">
+			<div class="ppc-progress">
+				<div class="ppc-progress-fill" style="background-color:#0F0;"></div>
+			</div>
+			<div class="ppc-percents">
+			<div class="pcc-percents-wrapper">
+				<span style="color:#090">%</span>
+			</div>
+			</div>
 		</div>
+		
+		<div class="progress-pie-chart" data-percent="100" style="background-color:#003;">
+			<div class="ppc-progress">
+				<div class="ppc-progress-fill" style="background-color:#00F;"></div>
+			</div>
+			<div class="ppc-percents">
+			<div class="pcc-percents-wrapper">
+				<span style="color:#009">%</span>
+			</div>
+			</div>
 		</div>
-	</div>
-
-	<div class="progress-pie-chart" data-percent="100" style="background-color:#003;">
-		<div class="ppc-progress">
-			<div class="ppc-progress-fill" style="background-color:#00F;"></div>
-		</div>
-		<div class="ppc-percents">
-		<div class="pcc-percents-wrapper">
-			<span style="color:#009">%</span>
-		</div>
-		</div>
+		
 	</div>
 
 </body>

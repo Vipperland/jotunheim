@@ -38,7 +38,7 @@ class FormData implements IFormData {
 	public function from(target:IDisplay):Void {
 		reset();
 		_form = target;
-		target.select("[form-data]").each(function(el:IDisplay) {
+		target.all("[form-data]").each(function(el:IDisplay) {
 			var n:String = el.attribute("form-data");
 			var r:String = el.attribute("form-option").toLowerCase();
 			var v:String = el.attribute("value");
@@ -64,7 +64,7 @@ class FormData implements IFormData {
 	}
 	
 	public function clear():Void {
-		_form.select("[form-data]").each(function(el:IDisplay) {
+		_form.all("[form-data]").each(function(el:IDisplay) {
 			el.attribute("value", "");
 		});
 	}

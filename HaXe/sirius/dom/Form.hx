@@ -58,8 +58,8 @@ class Form extends Display {
 	}
 	
 	public function getAsInput(i:Int, ?update:Bool):Input {
-		if (children == null || update == true) children = all();
-		return cast children.obj(i);
+		if (_children == null || update == true) _children = children();
+		return cast _children.obj(i);
 	}
 	
 }

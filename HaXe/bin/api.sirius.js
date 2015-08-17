@@ -1036,7 +1036,7 @@ sirius_data_FormData.prototype = {
 		var _g = this;
 		this.reset();
 		this._form = target;
-		target.select("[form-data]").each(function(el) {
+		target.all("[form-data]").each(function(el) {
 			var n = el.attribute("form-data");
 			var r = el.attribute("form-option").toLowerCase();
 			var v = el.attribute("value");
@@ -1059,7 +1059,7 @@ sirius_data_FormData.prototype = {
 		return this.invalid != null && this.invalid.length == 0;
 	}
 	,clear: function() {
-		this._form.select("[form-data]").each(function(el) {
+		this._form.all("[form-data]").each(function(el) {
 			el.attribute("value","");
 		});
 	}
@@ -1114,14 +1114,15 @@ sirius_dom_Display.prototype = {
 		});
 		return this;
 	}
-	,select: function(q) {
+	,all: function(q) {
 		return sirius_Sirius.select(q,this.element);
 	}
 	,one: function(q) {
 		return sirius_Sirius.one(q,this.element);
 	}
-	,all: function() {
-		return sirius_Sirius.select("*",this.element);
+	,children: function() {
+		if(this._children == null) this._children = sirius_Sirius.select("*",this.element);
+		return this._children;
 	}
 	,getScroll: function(o) {
 		if(o == null) o = { };
@@ -1134,8 +1135,8 @@ sirius_dom_Display.prototype = {
 		return o;
 	}
 	,getChild: function(i,update) {
-		if(this.children == null || update == true) this.children = this.all();
-		return this.children.obj(i);
+		if(this._children == null || update == true) this._children = this.children();
+		return this._children.obj(i);
 	}
 	,length: function() {
 		return this.element.children.length;
@@ -1160,10 +1161,12 @@ sirius_dom_Display.prototype = {
 			var sw = this.element.childNodes.item(at);
 			this.element.insertBefore(q.element,sw);
 		} else this.element.appendChild(q.element);
+		this._children = null;
 		return this;
 	}
 	,addChildren: function(q) {
 		q.each($bind(this,this.addChild));
+		this._children = null;
 		return this;
 	}
 	,addText: function(q) {
@@ -1247,7 +1250,7 @@ sirius_dom_Display.prototype = {
 	}
 	,write: function(q) {
 		var i = new sirius_dom_Display().build(q);
-		i.all().each($bind(this,this.addChild));
+		i.children().each($bind(this,this.addChild));
 		return this;
 	}
 	,clear: function(fast) {
@@ -1840,8 +1843,8 @@ sirius_dom_Form.prototype = $extend(sirius_dom_Display.prototype,{
 		return this.inputData;
 	}
 	,getAsInput: function(i,update) {
-		if(this.children == null || update == true) this.children = this.all();
-		return this.children.obj(i);
+		if(this._children == null || update == true) this._children = this.children();
+		return this._children.obj(i);
 	}
 	,__class__: sirius_dom_Form
 });

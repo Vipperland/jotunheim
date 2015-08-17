@@ -53,7 +53,7 @@ class Display implements IDisplay {
 	
 	public var body:Body;
 	
-	public var children:ITable;
+	private var _children:ITable;
 	
 	
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
@@ -97,7 +97,7 @@ class Display implements IDisplay {
 	}
 	
 	
-	public function select(q:String):ITable {
+	public function all(q:String):ITable {
 		return Sirius.select(q, element);
 	}
 	
@@ -107,8 +107,9 @@ class Display implements IDisplay {
 	}
 	
 	
-	public function all():ITable {
-		return Sirius.select("*", element);
+	public function children():ITable {
+		if (_children == null) _children = Sirius.select("*", element);
+		return _children;
 	}
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {
@@ -123,8 +124,8 @@ class Display implements IDisplay {
 	}
 	
 	public function getChild(i:Int, ?update:Bool):IDisplay {
-		if (children == null || update == true) children = all();
-		return cast children.obj(i);
+		if (_children == null || update == true) _children = children();
+		return cast _children.obj(i);
 	}
 	
 	public function length():Int {
@@ -154,11 +155,13 @@ class Display implements IDisplay {
 		}else {
 			element.appendChild(q.element);	
 		}
+		_children = null;
 		return this;
 	}
 	
 	public function addChildren(q:ITable):IDisplay {
 		q.each(addChild);
+		_children = null;
 		return this;
 	}
 	
@@ -262,7 +265,7 @@ class Display implements IDisplay {
 	
 	public function write(q:String):IDisplay {
 		var i:IDisplay = new Display().build(q);
-		i.all().each(addChild);
+		i.children().each(addChild);
 		return this;
 	}
 	

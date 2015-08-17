@@ -56,7 +56,7 @@ interface IDisplay {
 	 * @param	q
 	 * @return
 	 */
-	public function select(q:String):ITable;
+	public function all(q:String):ITable;
 	
 	/**
 	 * Get first child element
@@ -69,7 +69,7 @@ interface IDisplay {
 	 * Get all child elements
 	 * @return
 	 */
-	public function all():ITable;
+	public function children():ITable;
 	
 	/**
 	 * Add custom classes from string
