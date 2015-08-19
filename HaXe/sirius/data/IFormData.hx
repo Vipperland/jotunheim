@@ -13,13 +13,13 @@ interface IFormData {
 	public var valid : Dynamic;
 	public var messages : Dynamic;
 
-	public function reset () : Void;
+	public function reset () : IFormData;
 
-	public function from (target:IDisplay) : Void;
+	public function scan (?target:IDisplay) : IFormData;
 
 	public function valueOf (field:String) : String;
 
 	public function isValid () : Bool;
 
-	public function clear () : Void;
+	public function clear () : IFormData;
 }

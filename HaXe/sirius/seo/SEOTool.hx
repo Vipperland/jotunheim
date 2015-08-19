@@ -1,5 +1,8 @@
 package sirius.seo;
+import seo.Organization;
+import seo.Person;
 import sirius.bit.BitIO;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -14,26 +17,47 @@ class SEOTool{
 	
 	static public var PRODUCT:UInt = 1 << 2;
 	
+	static public var ORGANIZATION:UInt = 1 << 3;
+	
+	static public var PERSON:UInt = 1 << 4;
+	
 	public var website:WebSite;
 	
 	public var product:Product;
 	
 	public var breadcrumbs:Breadcrumbs;
 	
+	public var organization:Organization;
+	
+	public var person:Person;
+	
+	private var _publish:Array<SEO>;
+	
+	private function _create(t:String, O:Dynamic):Void {
+		if (Reflect.field(this, t) == null) {
+			O = untyped __js__("new O()");
+			Reflect.setField(this, t, O);
+			_publish[_publish.length] = O;
+		}
+	}
+	
 	public function new() {
+		_publish = [];
 	}
 	
 	public function init(types:Int = 0):SEOTool {
-		if((types == 0 || BitIO.test(types, WEBSITE)) && website == null) website = new WebSite();
-		if(BitIO.test(types, BREADCRUMBS) && breadcrumbs == null) breadcrumbs = new Breadcrumbs();
-		if (BitIO.test(types, PRODUCT) && product == null) product = new Product();
+		if ((types == 0 || BitIO.test(types, WEBSITE))) _create('website', WebSite);
+		if (BitIO.test(types, BREADCRUMBS)) _create('breadcrumbs', Breadcrumbs);
+		if (BitIO.test(types, PRODUCT)) _create('product', Product);
+		if (BitIO.test(types, ORGANIZATION)) _create('organization', Organization);
+		if (BitIO.test(types, PERSON)) _create('person', Person);
 		return this;
 	}
 	
 	public function publish():Void {
-		if (website != null) website.publish();
-		if (product != null) product.publish();
-		if (breadcrumbs != null) breadcrumbs.publish();
+		Dice.Values(_publish, function(seo:SEO) {
+			seo.publish();
+		});
 	}
 	
 }

@@ -49,7 +49,7 @@ class Display implements IDisplay {
 	
 	public var events:IDispatcher;
 	
-	public var parent:IDisplay;
+	private var _parent:IDisplay;
 	
 	public var body:Body;
 	
@@ -65,7 +65,6 @@ class Display implements IDisplay {
 		events = new Dispatcher(this);
 		if (d != null) css(d);
 		body = Sirius.body;
-		buildParent();
 		
 		if (hasAttribute("sru-id")) {
 			_uid = attribute("sru-id");
@@ -98,7 +97,7 @@ class Display implements IDisplay {
 	
 	
 	public function all(q:String):ITable {
-		return Sirius.select(q, element);
+		return Sirius.all(q, element);
 	}
 	
 	
@@ -108,7 +107,7 @@ class Display implements IDisplay {
 	
 	
 	public function children():ITable {
-		if (_children == null) _children = Sirius.select("*", element);
+		if (_children == null) _children = Sirius.all("*", element);
 		return _children;
 	}
 	
@@ -133,7 +132,7 @@ class Display implements IDisplay {
 	}
 	
 	public function index():Int {
-		return parent != null ? parent.indexOf(this) : null;
+		return _parent != null ? _parent.indexOf(this) : -1;
 	}
 	
 	public function indexOf(q:IDisplay):Int {
@@ -148,7 +147,7 @@ class Display implements IDisplay {
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
 		q.events.apply();
-		q.parent = this;
+		Reflect.setField(q, '_parent', this);
 		if (at != -1 && at < length()) {
 			var sw:Node = element.childNodes.item(at);
 			element.insertBefore(q.element, sw);
@@ -176,7 +175,7 @@ class Display implements IDisplay {
 	}
 	
 	public function remove():IDisplay {
-		this.parent = null;
+		this._parent = null;
 		if (element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
 	}
@@ -234,6 +233,11 @@ class Display implements IDisplay {
 		return null;
 	}
 	
+	public function attributes(values:Dynamic):IDisplay {
+		Dice.All(values, attribute);
+		return this;
+	}
+	
 	public function build(q:String, ?plainText:Bool = false):IDisplay {
 		if (plainText) element.innerText = q;
 		else element.innerHTML = q;
@@ -264,7 +268,7 @@ class Display implements IDisplay {
 	}
 	
 	public function write(q:String):IDisplay {
-		var i:IDisplay = new Display().build(q);
+		var i:IDisplay = new Display().build(q,false);
 		i.children().each(addChild);
 		return this;
 	}
@@ -319,9 +323,9 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function buildParent():IDisplay {
-		if (element.parentElement != null && parent == null) {
-			parent = Utils.displayFrom(element.parentElement);
+	public function parent():IDisplay {
+		if (element.parentElement != null && _parent == null) {
+			_parent = Utils.displayFrom(element.parentElement);
 		}
 		return this;
 	}
@@ -376,6 +380,17 @@ class Display implements IDisplay {
 	
 	public function jQuery():JQuery {
 		return Sirius.jQuery(element);
+	}
+	
+	public function typeOf():String {
+		return "[" + Utils.getClassName(this) + "{element:" + element.tagName + ", length:" + length() + "}]";
+	}
+	
+	public function is(tag:String):Bool {
+		tag = tag.toLowerCase();
+		var segment:String = Utils.getClassName(this).toLowerCase();
+		if (tag.indexOf(".") == -1) segment = segment.split(".").pop();
+		return tag == segment || tag == element.tagName;
 	}
 	
 }

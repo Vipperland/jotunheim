@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Thead")
 class Thead extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Thead {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createTableSectionElement();
 		super(q,null,d);

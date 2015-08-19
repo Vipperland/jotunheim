@@ -12,6 +12,10 @@ import sirius.events.IEvent;
 @:expose("sru.dom.Input")
 class Input extends Display {
 	
+	public static function get(q:String, ?h:IDisplay->Void):Input {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public var object:InputElement;
 	
 	private var _rtc:EReg;
@@ -67,7 +71,7 @@ class Input extends Display {
 	}
 	
 	public function validateEmail():Void {
-		pattern("/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$/");
+		pattern("/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/");
 	}
 	
 	public function restrict(q:EReg):Void {

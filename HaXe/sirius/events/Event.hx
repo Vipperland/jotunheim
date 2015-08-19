@@ -39,4 +39,8 @@ class Event implements IEvent {
 		this.target3d = cast from.target;
 	}
 	
+	public function description():String {
+		return "[Event{name:" + ticket.name + ",target:" + from.target.typeOf() + "}]";
+	}
+	
 }

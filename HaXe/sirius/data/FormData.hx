@@ -1,6 +1,7 @@
 package sirius.data;
 import data.IFormData;
 import sirius.dom.IDisplay;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -24,35 +25,36 @@ class FormData implements IFormData {
 	
 	
 	public function new(?target:IDisplay) {
-		if(target != null) from(target);
+		if(target != null) scan(target);
 	}
 	
-	public function reset():Void {
+	public function reset():IFormData {
 		fields = [];
 		invalid = [];
 		values = { };
 		valid = { };
 		messages = { };
+		return this;
 	}
 	
-	public function from(target:IDisplay):Void {
+	public function scan(?target:IDisplay):IFormData {
 		reset();
-		_form = target;
+		_form = target == null ? Sirius.document : target;
 		target.all("[form-data]").each(function(el:IDisplay) {
 			var n:String = el.attribute("form-data");
-			var r:String = el.attribute("form-option").toLowerCase();
+			var r:Bool = el.hasAttribute("form-required") && Dice.Match(["1","true","yes"],el.attribute("form-required")) > 0;
 			var v:String = el.attribute("value");
 			var m:String = el.attribute("form-message");
 			if (n != null && n.length > 0) {
 				if (Lambda.indexOf(fields, n) == -1) fields[fields.length] = n;
-				var rq:Bool = r.indexOf("required") != -1;
 				Reflect.setField(values, n, v);
 				Reflect.setField(messages, n, m);
-				var i:Bool = !rq || (v != null && v.length > 0);
+				var i:Bool = !r || (v != null && v.length > 0);
 				Reflect.setField(valid, n, i);
 				if (!i) invalid[invalid.length] = n;
 			}
 		});
+		return this;
 	}
 	
 	public function valueOf(field:String):String {
@@ -63,10 +65,13 @@ class FormData implements IFormData {
 		return invalid != null && invalid.length == 0;
 	}
 	
-	public function clear():Void {
+	public function clear():IFormData {
 		_form.all("[form-data]").each(function(el:IDisplay) {
-			el.attribute("value", "");
+			if (!el.hasAttribute("form-persistent")) {
+				el.attribute("value", "");
+			}
 		});
+		return this;
 	}
 	
 }

@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.A")
 class A extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):A {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createAnchorElement();
 		super(q,null,d);

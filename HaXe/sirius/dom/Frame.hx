@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Frame")
 class Frame extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Frame {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createFrameElement();
 		super(q,null,d);

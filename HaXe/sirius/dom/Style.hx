@@ -9,6 +9,10 @@ import js.html.StyleElement;
 @:expose("sru.dom.Style")
 class Style extends Display {
 	
+	public static function get(q:String, ?h:IDisplay->Void):Style {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public var object:StyleElement;
 	
 	public function new(?q:Dynamic, ?d:String = null) {

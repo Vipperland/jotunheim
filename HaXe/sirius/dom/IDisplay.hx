@@ -24,11 +24,6 @@ interface IDisplay {
 	public var element : Element;
 	
 	/**
-	 * The parent container
-	 */
-	public var parent:IDisplay;
-	
-	/**
 	 * Document Body
 	 */
 	public var body:Body;
@@ -124,6 +119,12 @@ interface IDisplay {
 	public function remove():IDisplay;
 	
 	/**
+	 * Parent container
+	 * @return
+	 */
+	public function parent():IDisplay;
+	
+	/**
 	 * Get child by index
 	 * @param	i
 	 * @param	update
@@ -169,6 +170,14 @@ interface IDisplay {
 	 */
 	public function hide():Void;
 	
+	
+	/**
+	 * Check if element have an attribute
+	 * @param	name
+	 * @return
+	 */
+	public function hasAttribute(name:String):Bool;
+	
 	/**
 	 * Get and/or set an element attribute
 	 * @param	name
@@ -176,6 +185,13 @@ interface IDisplay {
 	 * @return
 	 */
 	public function attribute(name:String, ?value:String):String;
+	
+	/**
+	 * Write a list of attributes to object
+	 * @param	values
+	 * @return
+	 */
+	public function attributes(values:Dynamic):IDisplay;
 	
 	/**
 	 * Write InnerText or InnerHTML properties
@@ -326,6 +342,19 @@ interface IDisplay {
 	 * @return
 	 */
 	public function jQuery():JQuery;
+	
+	/**
+	 * Type of element
+	 * @return
+	 */
+	public function typeOf():String;
+	
+	/**
+	 * If Type match a Tag Name or Class Name
+	 * @param	tag
+	 * @return
+	 */
+	public function is(tag:String):Bool;
 	
 	
 	

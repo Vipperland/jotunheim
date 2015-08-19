@@ -14,6 +14,10 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Form")
 class Form extends Display {
 	
+	public static function get(q:String, ?h:IDisplay->Void):Form {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	private var _submit:Input;
 	
 	public var object:FormElement;
@@ -53,7 +57,7 @@ class Form extends Display {
 	
 	public function formData():IFormData {
 		if (inputData == null) inputData = new FormData(this);
-		else inputData.from(this);
+		else inputData.scan(this);
 		return inputData;
 	}
 	

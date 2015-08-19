@@ -8,6 +8,10 @@ import js.Browser;
 @:expose("sru.dom.Audio")
 class Audio extends Display{
 
+	public static function get(q:String, ?h:IDisplay->Void):Audio {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createAudioElement();
 		super(q,null,d);

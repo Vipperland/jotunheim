@@ -6,10 +6,13 @@ package sirius.dom;
  */
 @:extern("sru.dom.Div")
 class Button extends Div {
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Button {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null){
 		super(q,d);
-		element.style.textAlign = "center";
 		cursor("pointer");
 	}
 	

@@ -8,6 +8,10 @@ import js.Browser;
 @:expose("sru.dom.Embed")
 class Embed extends Display{
 
+	public static function get(q:String, ?h:IDisplay->Void):Embed {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createEmbedElement();
 		super(q,null,d);

@@ -8,7 +8,11 @@ import js.html.BaseElement;
  */
 @:expose("sru.dom.TD")
 class TD extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):TD {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createTableCellElement();
 		super(q,null,d);

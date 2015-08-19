@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Link")
 class Link extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Link {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createLinkElement();
 		super(q,null,d);

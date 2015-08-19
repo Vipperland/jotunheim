@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Label")
 class Label extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Label {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createLabelElement();
 		super(q,null,d);

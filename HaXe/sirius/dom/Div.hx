@@ -2,6 +2,7 @@ package sirius.dom;
 import haxe.Log;
 import js.Browser;
 import js.html.Element;
+import sirius.css.Automator;
 
 /**
  * ...
@@ -10,21 +11,26 @@ import js.html.Element;
 @:expose("sru.dom.Div")
 class Div extends Display implements IDiv {
 	
+	public static function get(q:String, ?h:IDisplay->Void):Div {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Element, ?d:String = null) {
 		if (q == null) q = Browser.document.createDivElement();
 		super(q, null, d);
 	}
 	
 	public function alignCenter():Void {
+		Automator.build('marg-a vert-m', ".centered");
 		css("centered /float-l /float-r");
 	}
 	
 	public function alignLeft():Void {
-		css("float-l /centered /float-r");
+		css("/centered float-l /float-r");
 	}
 	
 	public function alignRight():Void {
-		css("float-r /centered /float-l");
+		css("/centered /float-l float-r");
 	}
 	
 	public function background(?value:String, ?repeat:String, ?position:String, ?attachment:String):String {
@@ -33,7 +39,6 @@ class Div extends Display implements IDiv {
 			var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
 			var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
 			element.style.background = c + " " + r + " " + p;
-			Log.trace(c + " " + r + " " + p);
 			if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
 		}
 		return element.style.background;

@@ -92,7 +92,7 @@ class Dispatcher implements IDispatcher {
 		var ie:IEventGroup = event(type);
 		return switch(mode) {
 			case 1, true , "capture" : ie.add(handler, true);
-			case 0, false : ie.add(handler, false);
+			case null, 0, false : ie.add(handler, false);
 			case -1, "remove" : ie.remove(handler);
 			default : ie;
 		}

@@ -40,16 +40,18 @@ class Sirius {
 	
 	static public var seo:SEOTool = new SEOTool();
 	
-	static private var _loglevel:UInt = 100;
+	static private var _loglevel:UInt = 12;
 	
 	static private var _initialized:Bool = false;
 	
-	static public function one(?q:String = "*", ?t:Dynamic = null):IDisplay {
+	static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
 		t = (t == null ? Browser.document : t).querySelector(q);
 		if (t != null) {
-			return Utils.displayFrom(t);
+			t = Utils.displayFrom(t);
+			if (h != null) h(t);
+			return t;
 		}else {
-			log("Sirius->Table::status[ NULL TARGET (" + q + ") ]", 10, 3);
+			log("Sirius->Table::status[ EMPTY (" + q + ") ]", 20, 3);
 			return null;
 		}
 	}
@@ -60,12 +62,12 @@ class Sirius {
 	 * @param	t
 	 * @return
 	 */
-	static public function select(?q:String = "*", ?t:Dynamic = null):ITable {
+	static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
 		return new Table(q, t);
 	}
 	
 	static public function elements(?q:String = "*", ?t:Dynamic = null):Array<Element> {
-		return select(q, t).elements;
+		return all(q, t).elements;
 	}
 	
 	static public function jQuery(?q:Dynamic = "*"):JQuery {
@@ -87,6 +89,7 @@ class Sirius {
 		if (!_initialized) {
 			_initialized = true;
 			log("Sirius->Core.init[ Loading DOM... ]", 10, 1);
+			//
 			onLoad(_onLoaded);
 		}else{
 			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
@@ -144,7 +147,7 @@ class Sirius {
 	
 	
 	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {
-		if (level < _loglevel) {
+		if (level <= _loglevel) {
 			var t:String = switch(type) {
 				case -1 : "";
 				case 0 : "[MESSAGE] ";

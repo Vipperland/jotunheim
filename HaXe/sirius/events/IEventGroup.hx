@@ -17,18 +17,18 @@ interface IEventGroup {
 	
 	public var propagation : Bool;
 	
-	function add (handler:Dynamic, ?capture:Bool) : IEventGroup;
+	public function add (handler:Dynamic, ?capture:Bool) : IEventGroup;
 	
-	function remove (handler:Dynamic) : IEventGroup;
+	public function remove (handler:Dynamic) : IEventGroup;
 	
-	function prepare (t:IDisplay) : IEventGroup;
+	public function prepare (t:IDisplay) : IEventGroup;
 	
-	function cancel () : IEventGroup;
+	public function cancel () : IEventGroup;
 	
-	function preventDefault():Void;
+	public function preventDefault():Void;
 	
-	function reset():IEventGroup;
+	public function reset():IEventGroup;
 	
-	function call():IEventGroup;
+	public function call():IEventGroup;
 	
 }

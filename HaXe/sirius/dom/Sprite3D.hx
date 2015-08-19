@@ -9,7 +9,7 @@ class Sprite3D extends Display3D {
 
 	public var content:Display3D;
 	
-	public function new(?q:Dynamic, ?d:String = "wh-100p center abs") {
+	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc center pos-abs") {
 		super(null, d);
 		setPerspective("1000px");
 		content = new Display3D();

@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.H1")
 class H1 extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):H1 {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createElement("h1");
 		super(q,null,d);

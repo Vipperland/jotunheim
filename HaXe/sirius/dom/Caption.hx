@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Caption")
 class Caption extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Caption {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createTableCaptionElement();
 		super(q,null,d);

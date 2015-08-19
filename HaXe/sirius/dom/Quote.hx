@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Quote")
 class Quote extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Quote {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createQuoteElement();
 		super(q,null,d);

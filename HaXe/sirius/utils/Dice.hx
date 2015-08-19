@@ -135,6 +135,23 @@ class Dice {
 		return cast { value:from == null || from == "" ? alt : from };
 	}
 	
+	/**
+	 * Ammount of values that fit in a table
+	 * @param	list
+	 * @param	values
+	 * @return
+	 */
+	public static function Match(table:Array<Dynamic>, values:Dynamic):Int {
+		if (!Std.is(values, Array)) {
+			values = [values];
+		}
+		var r:Int = 0;
+		Dice.Values(values, function(v:Dynamic) {
+			if (Lambda.indexOf(table, v) != -1) ++r;
+		});
+		return r;
+	}
+	
 	#if !php
 		/**
 		 * For each Child element in an Object
@@ -143,15 +160,17 @@ class Dice {
 		 * @param	complete		c(LastIndex_INT)
 		 */
 		public static function Children(of:Element, each:Dynamic, ?complete:Dynamic = null):IDice {
-			var r:IDice = cast { Children:[] };
+			var r:IDice = cast { children:[] };
 			var l:Int = 0;
 			var c:Element;
-			Count(0, of.childNodes.length, function(i:Int) {
-				c = cast of.childNodes.item(i);
-				r.children[l] = c;
-				return each(c, i);
-			}, complete);
-		return r;
+			if(of != null){
+				Count(0, of.childNodes.length, function(i:Int) {
+					c = cast of.childNodes.item(i);
+					r.children[l] = c;
+					return each(c, i);
+				}, complete);
+			}
+			return r;
 		}
 	
 	#end

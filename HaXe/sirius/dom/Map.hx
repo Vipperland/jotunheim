@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Map")
 class Map extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Map {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createMapElement();
 		super(q,null,d);

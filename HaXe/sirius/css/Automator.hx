@@ -19,7 +19,7 @@ class Automator {
 	
 	static private var _scx:String = "#xs#sm#md#lg#";
 	
-	static private var css:CSSGroup;
+	static private var css:CSSGroup = new CSSGroup();
 	
 	static public function numericKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
@@ -279,6 +279,7 @@ class Automator {
 		georgia:{value:'font-family:georgia',verifier:commonKey},
 		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
 		table:{value:'table',verifier:appendKey},
+		tab:{value:'table',verifier:appendKey},
 		cell:{value:'cell',verifier:commonKey},
 		rad:{value:'radius',verifier:valueKey},
 		solid:{value:'solid',verifier:commonKey},
@@ -301,9 +302,6 @@ class Automator {
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
 		Sirius.log("Sirius->Automator.scan[ " + (dev ? "ACTIVE_MODE" : "SILENT_MODE") + " ]", 10, 1);
 		_dev = dev;
-		if (css == null) {
-			css = new CSSGroup();
-		}
 		if (force) {
 			_scanBody();
 		}else {
@@ -353,7 +351,7 @@ class Automator {
 			var j:Int = v.indexOf(i, 1);	// class="["] (string end)
 			if (j > 1) {
 				v = v.substring(1, j);
-				if (v.length > 0) assemble(v);
+				if (v.length > 0) build(v);
 			}
 		});
 		
@@ -364,25 +362,41 @@ class Automator {
 	/**
 	 * Create selectors from string
 	 * @param	query
+	 * @param	group
 	 */
-	static public function assemble(query:String):Void {
+	static public function build(query:String, ?group:String):Void {
 		var c:Array<String> = query.split(" ");
-		var m:String;
+		var m:String = null;
 		var s:String;
-		Dice.Values(c, function(v:String) {
-			if (v.length > 1) {
-				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
-				c = v.split("-");
-				m = _screen(c);
-				if (!css.hasSelector(v, m)) {
-					s = _parse(c).build();
-					if (Utils.isValid(s)) {
-						if (_dev) Sirius.log("Sirius->Automator.scanner[ CREATE ." + v + " {" + s + ";} ]",10,1);
-						css.setSelector("." + v, s, m);
+		var g:Bool = group != null && group.length > 0;
+		var r:String = '';
+		if (g) m = _screen(group.split("-"));
+		if (!g || !css.hasSelector(group, m)) {
+			Dice.Values(c, function(v:String) {
+				if (v.length > 1) {
+					v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
+					c = v.split("-");
+					if (g) {
+						_screen(c);
+						s = _parse(c).build();
+						r += s + ";";
+					}else {
+						m = _screen(c);
+						if (!css.hasSelector(v, m)) {
+							s = _parse(c).build();
+							if (Utils.isValid(s)) {
+								if (_dev) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
+								css.setSelector("." + v, s, m);
+							}
+						}
 					}
 				}
+			});
+			if (g) {
+				if (_dev) Sirius.log("Sirius->Automator.build[ " + group + " {" + r + "} ]", 10, 1);
+				css.setSelector(group, r, m);
 			}
-		});
+		}
 	}
 	
 	/**
@@ -487,9 +501,11 @@ private class Entry {
 	public var keys:Array<IKey>;
 	public var head:IKey;
 	public var next:IKey;
+	public var missing:Int;
 	public function new(keys:Array<IKey>, dict:Dynamic) {
 		this.keys = keys;
 		this.head = keys[0];
+		this.missing = 0;
 	}
 	public function build():String {
 		var r:String = null;
@@ -501,12 +517,13 @@ private class Entry {
 				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v);
 			});
 		}
-		return r;
+		return missing == keys.length ? null : r;
 	}
 	
 	private function _valueOf(v:IKey):String {
 		if (v.color != null) return v.color;
 		if (v.measure != null) return v.measure;
+		++missing;
 		return v.key;
 	}
 }

@@ -152,7 +152,7 @@ class Utils{
 	static public function displayFrom(t:Element):IDisplay {
 		if (t.nodeType != 1) 
 			return new Display(t);
-		var OC:Dynamic = Reflect.field(typeOf, t.tagName.toLowerCase());
+		var OC:Dynamic = Reflect.field(typeOf, (t.hasAttribute('sru-dom') ? t.getAttribute('sru-dom') : t.tagName).toLowerCase());
 		return OC == null ? new Display(t) : untyped __js__('new OC(t)');
 	}
 	
@@ -169,6 +169,10 @@ class Utils{
 			}
 		}
 		return false;
+	}
+	
+	static public function getClassName(o:Dynamic):String {
+		return o != null ? Type.getClassName(Type.getClass(o)) : "null";
 	}
 	
 }

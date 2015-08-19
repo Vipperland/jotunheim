@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Script")
 class Script extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Script {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createScriptElement();
 		super(q,null,d);

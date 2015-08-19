@@ -4,6 +4,7 @@ package sirius.bit;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+@:expose("sru.bit.BitIO")
 class BitIO {
 
 	static public var P01:Int = 1 << 0;

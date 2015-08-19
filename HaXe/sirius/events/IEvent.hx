@@ -23,4 +23,7 @@ interface IEvent {
 	/// Original object Event
 	public var event : js.html.Event;
 	
+	/// Event description
+	public function description():String;
+	
 }

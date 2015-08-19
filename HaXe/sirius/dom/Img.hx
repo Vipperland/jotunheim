@@ -9,6 +9,10 @@ import js.html.ImageElement;
 @:expose("sru.dom.Img")
 class Img extends Display{
 	
+	public static function get(q:String, ?h:IDisplay->Void):Img {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public var object:ImageElement;
 	
 	public function new(?q:Dynamic, ?d:String = null) {

@@ -18,7 +18,7 @@ class Anchor {
 	}
 	
 	public function new() {
-		Sirius.select("[plugin~=anchor]").onClick(_scroll);
+		Sirius.all("[plugin~=anchor]").onClick(_scroll);
 	}
 	
 	private function _scroll(e:IEvent):Void {

@@ -8,7 +8,11 @@ import js.html.CanvasElement;
  */
 @:expose("sru.dom.Canvas")
 class Canvas extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Canvas {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public var paper:CanvasElement;
 	
 	public function new(?q:Dynamic, ?d:String = null) {

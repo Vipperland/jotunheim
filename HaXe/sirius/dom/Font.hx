@@ -7,7 +7,11 @@ import js.Browser;
  */
 @:expose("sru.dom.Font")
 class Font extends Display{
-
+	
+	public static function get(q:String, ?h:IDisplay->Void):Font {
+		return cast Sirius.one(q,null,h);
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createFontElement();
 		super(q,null,d);
