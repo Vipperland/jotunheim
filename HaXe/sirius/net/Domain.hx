@@ -1,6 +1,9 @@
 package sirius.net;
+import haxe.Log;
 import js.Browser;
 import js.html.Location;
+import sirius.data.DataCache;
+import sirius.dom.Display;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 
@@ -26,9 +29,14 @@ class Domain {
 	
 	public var extension:String;
 	
+	public var tempData:DataCache;
+	
+	public var cachedData:DataCache;
 	
 	public function new() {
 		_parseURI();
+		cachedData = Display.PERSISTENT = new DataCache('persistent', 2592000, 'http://' + host + '/');
+		tempData = Display.TEMP = new DataCache('temporary', 360, 'http://' + host + '/');
 	}
 	
 	private function _parseURI():Void {

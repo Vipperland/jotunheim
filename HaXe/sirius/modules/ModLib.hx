@@ -1,6 +1,7 @@
 package sirius.modules;
 import haxe.Json;
 import haxe.Log;
+import sirius.css.Automator;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 
@@ -23,10 +24,20 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
+	/**
+	 * Check if a plugins exists
+	 * @param	module
+	 * @return
+	 */
 	static public function exists(module:String):Bool {
 		return Reflect.hasField(CACHE, module);
 	}
 	
+	/**
+	 * Register a module
+	 * @param	file
+	 * @param	content
+	 */
 	static public function register(file:String, content:String):Void {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
@@ -45,7 +56,7 @@ class ModLib {
 							var dependencies:Array<String> = mod.require.split(";");
 							Sirius.log("	Sirius->ModLib::dependencies [ FOR " + mod.name + " ]", 10, 1);
 							Dice.Values(dependencies, function(v:String) {
-								var set:String = Reflect.field(CACHE, v);
+								var set:String = Reflect.field(CACHE, v.toLowerCase());
 								if (set == null) {
 									Sirius.log("		Sirius->ModLib::dependency[ MISSING " + v + " ]", 10, 2);
 								}else {
@@ -56,6 +67,10 @@ class ModLib {
 						}
 						#if js
 							// ============================= JS ONLY =============================
+							if (mod.types != null) {
+								var p:Array<String> = mod.types.split(" ").join("").split(";");
+								if (Dice.Match(p, 'css')>0) Automator.build(content);
+							}
 							if (mod.target != null) {
 								var t:IDisplay = Sirius.one(mod.target);
 								if (t != null) {
@@ -64,31 +79,50 @@ class ModLib {
 							}
 							// ***
 						#end
-						Reflect.setField(CACHE, mod.name, content);
+						Reflect.setField(CACHE, mod.name.toLowerCase(), content);
 					}else {
 						Sirius.log("	Sirius->ModLib::status [ MISSING MODULE END IN " + file + "("  + v.substr(0, 15) + "...) ]", 10, 3);
 					}
 			}
 			});
 		}else {
-			Reflect.setField(CACHE, file, content);
+			Reflect.setField(CACHE, file.toLowerCase(), content);
 		}
 	}
 	
+	/**
+	 * Get module content
+	 * @param	name
+	 * @param	data
+	 * @return
+	 */
 	static public function get(name:String, ?data:Dynamic):String {
-		if (!ModLib.exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined Module::" + name + "</span><br/>";
+		name = name.toLowerCase();
+		if (!ModLib.exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		var content:String = Reflect.field(CACHE, name);
 		return (data != null) ? Filler.to(content, data) : content;
 
 	}
 	
+	/**
+	 * Write a content in module
+	 * @param	module
+	 * @param	data
+	 * @param	sufix
+	 * @return
+	 */
 	static public function fill(module:String, data:Dynamic, ?sufix:String = null):String {
 		return Filler.to(get(module), data, sufix);
 	}
 	
 	#if php
-	
+		
 		// ============================= PHP ONLY =============================
+		/**
+		 * Cache a file to post write
+		 * @param	file
+		 * @return
+		 */
 		static public function prepare(file:String):Bool {
 			if (file != null && FileSystem.exists(file)) {
 				ModLib.register(file, File.getContent(file));
@@ -97,6 +131,13 @@ class ModLib {
 			return false;
 		}
 		
+		/**
+		 * Write module and fill with custom data in the flow
+		 * @param	name
+		 * @param	data
+		 * @param	repeat
+		 * @param	sufix
+		 */
 		static public function print(name:String, ?data:Dynamic, ?repeat:Bool, ?sufix:String = null):Void {
 			if (repeat) {
 				var module:String = get(name);
@@ -111,6 +152,12 @@ class ModLib {
 	#elseif js
 		
 		// ============================= JS ONLY =============================
+		/**
+		 * Write module in a DOM element
+		 * @param	module
+		 * @param	data
+		 * @return
+		 */
 		static public function build(module:String, ?data:Dynamic):IDisplay {
 			return new Display().build(get(module, data));
 		}

@@ -5,6 +5,7 @@ import js.Browser;
 import js.html.Element;
 import js.JQuery;
 import sirius.css.Automator;
+import sirius.data.DataCache;
 import sirius.dom.Body;
 import sirius.dom.Display;
 import sirius.dom.Document;
@@ -28,22 +29,37 @@ import sirius.utils.Table;
 @:expose('Sirius')
 class Sirius {
 	
+	/// Global resource loader
 	static public var resources:ILoader = new Loader();
 	
+	/// Main document (if available)
 	static public var document:Document;
 	
+	/// Main body (if available)
 	static public var body:Body;
 	
+	/// Domain information
 	static public var domain:Domain = new Domain();
 	
+	/// Browser information
 	static public var agent(get, null):IAgent;
 	
+	/// SEO Tools
 	static public var seo:SEOTool = new SEOTool();
 	
+	/** @private */
 	static private var _loglevel:UInt = 12;
 	
+	/** @private */
 	static private var _initialized:Bool = false;
 	
+	/**
+	 * QuerySelector a single display
+	 * @param	q
+	 * @param	t
+	 * @param	h
+	 * @return
+	 */
 	static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
 		t = (t == null ? Browser.document : t).querySelector(q);
 		if (t != null) {
@@ -57,7 +73,7 @@ class Sirius {
 	}
 	
 	/**
-	 * 
+	 * Do a QuerySelectorAll and return a display Table
 	 * @param	q
 	 * @param	t
 	 * @return
@@ -66,14 +82,19 @@ class Sirius {
 		return new Table(q, t);
 	}
 	
-	static public function elements(?q:String = "*", ?t:Dynamic = null):Array<Element> {
-		return all(q, t).elements;
-	}
-	
+	/**
+	 * JQuery integration
+	 * @param	q
+	 * @return
+	 */
 	static public function jQuery(?q:Dynamic = "*"):JQuery {
 		return untyped __js__("$(q);");
 	}
 	
+	/**
+	 * On Framework ready
+	 * @param	handler
+	 */
 	static public function onLoad(handler:Dynamic):Void {
 		if(handler != null){
 			if (Browser.document.readyState == "complete") {
@@ -84,18 +105,23 @@ class Sirius {
 		}
 	}
 	
+	/**
+	 * Init Sirius Framework
+	 * @param	handler
+	 * @param	files
+	 */
 	static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
 		resources.add(files, handler, _fileError);
 		if (!_initialized) {
 			_initialized = true;
 			log("Sirius->Core.init[ Loading DOM... ]", 10, 1);
-			//
 			onLoad(_onLoaded);
 		}else{
 			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
 		}
 	}
 	
+	/** @private */
 	static private function _onLoaded():Void {
 		if (resources.totalFiles > 0) {
 			log("Sirius->Resources::status [ READY (" + resources.totalLoaded + "/" + resources.totalFiles + ") ]", 10, 1);
@@ -106,14 +132,19 @@ class Sirius {
 		resources.start();
 	}
 	
+	/**
+	 * Runtime status
+	 */
 	static private function status():Void {
-		log("Sirius->Core::status[ INITIALIZED " + Utils.toString(agent, true) + " ] ", 10, 1);
+		log("Sirius->Core::status[ " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true) + " ] ", 10, 1);
 	}
 	
+	/** @private */
 	static private function _fileError(error:String) {
 		log("Sirius->Resources::status[ " + error + " ]", 10, 3);
 	}
 	
+	/** @private */
 	static private function get_agent():IAgent {
 		if (agent == null) {
 			var ua:String = Browser.navigator.userAgent;
@@ -145,7 +176,12 @@ class Sirius {
 		return agent;
 	}
 	
-	
+	/**
+	 * Level controlled log
+	 * @param	q
+	 * @param	level
+	 * @param	type
+	 */
 	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {
 		if (level <= _loglevel) {
 			var t:String = switch(type) {
@@ -161,12 +197,12 @@ class Sirius {
 		}
 	}
 	
+	/**
+	 * Change log level
+	 * @param	q
+	 */
 	static public function logLevel(q:UInt):Void {
 		_loglevel = q;
-	}
-	
-	static public function clearDB():Void {
-		Display.DATA = { };
 	}
 	
 	
@@ -226,4 +262,19 @@ class Sirius {
 	 *	:target					#news:target				Selects the current active #news element (clicked on a URL containing that anchor name)
 	 *	:valid					input:valid				Selects all input elements with a valid value
 	 *	:visited					a:visited				Selects all visited links
+	 * 
+	 * 
+	 * 
+	 * 		Sirius unique attributes:
+	 * 			sru-id				For persistent data caching and sharing
+	 * 			sru-cached			Loads previous section data
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 */

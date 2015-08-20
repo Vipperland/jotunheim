@@ -5,6 +5,7 @@ import haxe.Log;
 import js.html.Element;
 import sirius.css.Automator.IKey;
 import sirius.dom.IDisplay;
+import sirius.math.ARGB;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;
@@ -64,6 +65,18 @@ class Automator {
 			return "overflow-" + v + ":scroll;overflow-" + (v == 'x'?'y':'x') + ":hidden";
 		}
 		return commonKey(d, k, n);
+	}
+	
+	static public function shadowKey(d:Entry, k:IKey, n:IKey):String {
+		if (d.head == k) {
+			d.cancel();
+			var i:Bool = d.tail.key == 'i';
+			var s:Bool = n.key == 'txt';
+			var t:ARGB = new ARGB(d.keys[s ? 2 : 1].color);
+			var r:String = "0 1px 0 " + t.range(.7).hex() + ",0 2px 0 " + t.range(.6).hex() + ",0 3px 0 " + t.range(.5).hex() + ",0 4px 0 " + t.range(.4).hex() + ",0 5px 0 " + t.range(.3).hex() + ",0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);";
+			return (s ? 'text-shadow' : 'box-shadow') + ':' + r + (i ? ' !important' : '');
+		}
+		return 'shadow';
 	}
 	
 	static public function textKey(d:Entry, k:IKey, n:IKey):String {
@@ -288,6 +301,7 @@ class Automator {
 		dotted:{value:'dotted',verifier:commonKey},
 		alpha:{value:'opacity',verifier:valueKey},
 		hidden:{value:'',verifier:commonKey},
+		shadow:{value:'',verifier:shadowKey},
 	};
 
 	
@@ -336,11 +350,15 @@ class Automator {
 	static public function search(t:Dynamic):Void {
 		
 		if (t == null) return;
-		else if (Std.is(t, IDisplay)) t = t.element;
+		if(!Std.is(t,String)){
+			if (Std.is(t, IDisplay)) t = t.element.outerHTML;
+			else if (Std.is(t, Element)) t = t.outerHTML;
+			else t = Std.string(t);
+		}
 		
 		
 		
-		var t:Array<String> = t.outerHTML.split("class=");
+		var t:Array<String> = t.split("class=");
 		
 		if (t.length > 0) {
 			t.shift();
@@ -500,12 +518,16 @@ class Automator {
 private class Entry {
 	public var keys:Array<IKey>;
 	public var head:IKey;
+	public var tail:IKey;
 	public var next:IKey;
 	public var missing:Int;
+	public var canceled:Bool;
 	public function new(keys:Array<IKey>, dict:Dynamic) {
 		this.keys = keys;
 		this.head = keys[0];
+		this.tail = keys[keys.length - 1];
 		this.missing = 0;
+		this.canceled = false;
 	}
 	public function build():String {
 		var r:String = null;
@@ -515,9 +537,14 @@ private class Entry {
 			Dice.Values(keys, function(v:IKey) {
 				next = keys[++c];
 				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v);
+				return canceled;
 			});
 		}
 		return missing == keys.length ? null : r;
+	}
+	
+	public function cancel():Void {
+		canceled = true;
 	}
 	
 	private function _valueOf(v:IKey):String {
