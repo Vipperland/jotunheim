@@ -115,7 +115,7 @@ class Utils{
 	 * Remove white and null values from array
 	 * @param	path
 	 */
-	static public function fixArray(path:Array<String>) {
+	static public function clearArray(path:Array<String>) {
 		var copy:Array<String> = [];
 		Dice.Values(path, function(v:Dynamic) {
 			if (v != null && v != "") {

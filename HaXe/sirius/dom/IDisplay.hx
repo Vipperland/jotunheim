@@ -3,6 +3,7 @@ package sirius.dom;
 import haxe.Constraints.Function;
 import js.html.Element;
 import js.JQuery;
+import sirius.data.DisplayData;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.utils.ITable;
@@ -16,7 +17,7 @@ interface IDisplay {
 	/**
 	 * Uniq data carrier
 	 */
-	public var data : Dynamic;
+	public var data : DisplayData;
 	
 	/**
 	 * Default target element

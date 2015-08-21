@@ -8,14 +8,14 @@ import haxe.Log;
 @:expose("sru.utils.Filler")
 class Filler{
 	
-	static private var _pattern:Array<String> = ["%", "%"];
+	static private var _pattern:Array<String> = ["{{", "}}"];
 	
 	static private function _apply(path:String, content:String, data:Dynamic, ?pattern:Array<String>):String {
 		if (pattern == null) pattern = _pattern;
 		if (data == null) {
 			content = content.split(_pattern[0] + path + _pattern[1]).join("");
 		}else if (Std.is(data, Float) || Std.is(data, String) || Std.is(data, Bool) || Std.is(data, Int)) {
-			content = content.split("%" + path + "%").join(data);
+			content = content.split(_pattern[0] + path + _pattern[1]).join(data);
 		}else {
 			path = path != null && path != "" ? path + "." : "";
 			Dice.All(data, function(p:String, v:Dynamic) {

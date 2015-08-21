@@ -314,7 +314,7 @@ class Automator {
 	}
 	
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
-		Sirius.log("Sirius->Automator.scan[ " + (dev ? "ACTIVE_MODE" : "SILENT_MODE") + " ]", 10, 1);
+		Sirius.log("Sirius->Automator.scan[ " + (dev == true ? "ACTIVE_MODE" : "SILENT_MODE") + " ]", 10, 1);
 		_dev = dev;
 		if (force) {
 			_scanBody();

@@ -114,19 +114,19 @@ class Sirius {
 		resources.add(files, handler, _fileError);
 		if (!_initialized) {
 			_initialized = true;
-			log("Sirius->Core.init[ Loading DOM... ]", 10, 1);
+			log("Sirius->Core.init[ LOADING... ]", 10, 1);
 			onLoad(_onLoaded);
 		}else{
-			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "DOM is LOADED") + " ]", 10, 2);
+			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
 		}
 	}
 	
 	/** @private */
 	static private function _onLoaded():Void {
 		if (resources.totalFiles > 0) {
-			log("Sirius->Resources::status [ READY (" + resources.totalLoaded + "/" + resources.totalFiles + ") ]", 10, 1);
+			log("Sirius->Resources::status [ MODULES (" + resources.totalLoaded + "/" + resources.totalFiles + ") ]", 10, 1);
 		}
-		log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+		if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 		body = new Body(Browser.document.body);
 		document = new Document();
 		resources.start();
@@ -195,6 +195,13 @@ class Sirius {
 			}
 			Log.trace(t + q);
 		}
+	}
+	
+	static public function build(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
+		var f:Dynamic = (_initialized ? onLoad : init);
+		f(function() {
+			resources.async(file, target, content, handler);
+		});
 	}
 	
 	/**

@@ -1,5 +1,6 @@
 package sirius.dom;
 
+import data.IDataSet;
 import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;
@@ -8,6 +9,8 @@ import js.html.Element;
 import js.html.Node;
 import js.JQuery;
 import sirius.data.DataCache;
+import sirius.data.DataSet;
+import sirius.data.DisplayData;
 import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
@@ -27,9 +30,7 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Display")
 class Display implements IDisplay {
 	
-	public static var PERSISTENT:DataCache;
-	
-	public static var TEMP:DataCache;
+	private static var _DATA:IDataSet = new DataSet();
 	
 	public static function ofKind(q:String):IDisplay {
 		return new Display(Browser.document.createElement(q));
@@ -41,9 +42,7 @@ class Display implements IDisplay {
 	
 	private var _uid:String;
 	
-	public var data:Dynamic;
-	
-	private var _data:Dynamic;
+	public var data:DisplayData;
 	
 	public var element:Element;
 	
@@ -67,16 +66,9 @@ class Display implements IDisplay {
 		body = Sirius.body;
 		
 		if (element != cast Browser.document) {
-			if (hasAttribute("sru-id")) {
-				_uid = attribute("sru-id");
-				var p:Bool = _uid.substr(0, 1) == "~";
-				if (p) _uid = _uid.substr(1, _uid.length);
-				data = (p ? PERSISTENT : TEMP).get(_uid);
-			}else {
-				_uid = attribute("sru-id", Key.GEN());
-				data = TEMP.get(_uid);
-			}
-			_data = data.__data__;
+			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
+			if (!_DATA.exists(_uid)) _DATA.set(_uid, new DisplayData());
+			data = _DATA.get(_uid);
 		}
 		
 	}

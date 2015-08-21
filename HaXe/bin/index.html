@@ -3,24 +3,22 @@
 <head class="marg-0">
 	<meta charset="utf-8"/>
 	<title>Sirius</title>
-	<meta name="description" content="" />
+	<meta name="description" content=""/>
 </head>
-<body class="marg-5 padd-5">
+	
+<body>
 	
 	<link rel="stylesheet" href="3rd/css/bootstrap.css">
 	
 	<script src="api.sirius.js"></script>
 	
+	<div class="w-500 h-50" id="content"></div>
+	
 	<script>
-		Automator.build("w-200 h-200", "#test");
-		Automator.build("txt-c arial bold", "div>p");
-		Automator.scan(true);
+		//Sirius.init(function(){
+			Sirius.build('mod/content.html','#content',[{test:"Hello World"},{test:"Hello World"},{test:"Hello World"}],Automator.scan);
+		//});
 	</script>
-	
-	<div id="test" class="bg-red-lg bg-orange-md bg-yellow-sm bg-green-xs marg-b-10 bord-blue bord-t-10 bord-solid" sru-id="~test_data">
-		<p class="txt-yellow txt-blue-i-sm txt-28 txt-12-lg txt-50-i">Sample</p>
-	</div>
-	
 	
 </body>
 </html>

@@ -31,15 +31,15 @@ class DataCache{
 		return this;
 	}
 	
-	public function set(id:String, data:Dynamic):DataCache {
-		Reflect.setField(_DB, id, data);
+	public function set(p:String, v:Dynamic):DataCache {
+		Reflect.setField(_DB, p, v);
 		return this;
 	}
 	
 	public function get(?id:String):Dynamic {
 		var d:Dynamic = id != null ? Reflect.field(_DB, id) : null;
 		if (d == null) {
-			d = { __data__: { }};
+			d = { };
 			set(id, d);
 		}
 		return d;

@@ -29,21 +29,18 @@ class Domain {
 	
 	public var extension:String;
 	
-	public var tempData:DataCache;
-	
-	public var cachedData:DataCache;
+	public var data:DataCache;
 	
 	public function new() {
 		_parseURI();
-		cachedData = Display.PERSISTENT = new DataCache('persistent', 2592000, 'http://' + host + '/');
-		tempData = Display.TEMP = new DataCache('temporary', 360, 'http://' + host + '/');
+		data = new DataCache('__sru__', 2592000, 'http://' + host + '/');
 	}
 	
 	private function _parseURI():Void {
 		var l:Location = Browser.window.location;
 		host = l.hostname;
 		port = l.port;
-		fragments = Utils.fixArray(l.pathname.split("/"));
+		fragments = Utils.clearArray(l.pathname.split("/"));
 		firstFragment = fragment(0, "");
 		lastFragment = fragment(fragments.length - 1, firstFragment);
 		extension = lastFragment.split(".").pop();

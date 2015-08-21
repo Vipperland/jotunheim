@@ -115,6 +115,25 @@ class Loader implements ILoader {
 			return ModLib.build(module, data);
 		}
 		
+		public function async(file:String, ?target:String, ?data:Dynamic, ?handler:Dynamic):Void {
+			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
+			r.async = true;
+			r.onData = function(d) {
+				ModLib.register(file, d);
+				if (target != null) {
+					var d:IDisplay = Sirius.one(target, null, function(t:IDisplay) {
+						if (!Std.is(data, Array)) data = [data];
+						Dice.All(data, function(p:Int, v:Dynamic) {
+							Reflect.setField(v, '%i', p);
+							t.addChild(build(file, v));
+						});
+					});
+				}
+				if (handler != null) handler(file, d);
+			}
+			r.request(false);
+		}
+		
 	#end
 	
 	public function get(module:String, ?data:Dynamic):String {
