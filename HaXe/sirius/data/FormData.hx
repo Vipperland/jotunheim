@@ -1,7 +1,9 @@
 package sirius.data;
+import data.FormParam;
 import data.IFormData;
 import sirius.dom.IDisplay;
 import sirius.utils.Dice;
+import utils.IDice;
 
 /**
  * ...
@@ -11,65 +13,59 @@ class FormData implements IFormData {
 	
 	private var _form:IDisplay;
 	
-	public var fields:Array<String>;
+	public var params:Array<FormParam>;
 	
-	public var invalid:Array<String>;
+	public var errors:Array<FormParam>;
 	
-	public var values:Dynamic;
-	
-	public var required:Dynamic;
-	
-	public var valid:Dynamic;
-	
-	public var messages:Dynamic;
-	
-	
+	/**
+	 * Create a new Instance of FormData
+	 * form-data			Target param for form
+	 * form-required			
+	 * form-message			
+	 * form-persistent		
+	 * @param	target
+	 */
 	public function new(?target:IDisplay) {
 		if(target != null) scan(target);
 	}
 	
 	public function reset():IFormData {
-		fields = [];
-		invalid = [];
-		values = { };
-		valid = { };
-		messages = { };
+		params = [];
 		return this;
 	}
 	
 	public function scan(?target:IDisplay):IFormData {
 		reset();
 		_form = target == null ? Sirius.document : target;
-		target.all("[form-data]").each(function(el:IDisplay) {
-			var n:String = el.attribute("form-data");
-			var r:Bool = el.hasAttribute("form-required") && Dice.Match(["1","true","yes"],el.attribute("form-required")) > 0;
-			var v:String = el.attribute("value");
-			var m:String = el.attribute("form-message");
-			if (n != null && n.length > 0) {
-				if (Lambda.indexOf(fields, n) == -1) fields[fields.length] = n;
-				Reflect.setField(values, n, v);
-				Reflect.setField(messages, n, m);
-				var i:Bool = !r || (v != null && v.length > 0);
-				Reflect.setField(valid, n, i);
-				if (!i) invalid[invalid.length] = n;
-			}
-		});
+		target.all("[form-data]").each(function(el:IDisplay) { params[params.length] = new FormParam(el); });
 		return this;
 	}
 	
-	public function valueOf(field:String):String {
-		return Reflect.field(values, field);
+	public function valueOf(p:String):FormParam {
+		var res:IDice = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; } );
+		return cast res.value; 
 	}
 	
 	public function isValid():Bool {
-		return invalid != null && invalid.length == 0;
+		errors = [];
+		Dice.Values(params, function(v:FormParam) {	if (!v.isValid()) errors[errors.length] = v; });
+		return errors.length == 0;
+	}
+	
+	public function getParam(p:String):FormParam {
+		var res:IDice = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; });
+		return cast res.value;
+	}
+	
+	public function getData():Dynamic {
+		var d:Dynamic = { };
+		Dice.Values(params, function(v:FormParam) {	return Reflect.setField(d, v.getName(), v.getValue()); } );
+		return d;
 	}
 	
 	public function clear():IFormData {
-		_form.all("[form-data]").each(function(el:IDisplay) {
-			if (!el.hasAttribute("form-persistent")) {
-				el.attribute("value", "");
-			}
+		Dice.Values(params, function(v:FormParam) {
+			v.clear();
 		});
 		return this;
 	}

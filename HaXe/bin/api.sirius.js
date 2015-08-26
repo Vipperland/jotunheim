@@ -1,11 +1,11 @@
 (function (console, $hx_exports) { "use strict";
 $hx_exports.sru = $hx_exports.sru || {};
-$hx_exports.sru.utils = $hx_exports.sru.utils || {};
+$hx_exports.sru.bit = $hx_exports.sru.bit || {};
+;$hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
-;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -286,6 +286,31 @@ css_CSSGroup.prototype = {
 		this.style = this.styleXS = this.styleSM = this.styleMD = this.styleLG = "";
 	}
 	,__class__: css_CSSGroup
+};
+var data_FormParam = function(e) {
+	this._e = e;
+};
+data_FormParam.__name__ = ["data","FormParam"];
+data_FormParam.prototype = {
+	getName: function() {
+		return this._e.attribute("form-data");
+	}
+	,isRequired: function() {
+		return this._e.hasAttribute("form-required") && sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-required")) > 0;
+	}
+	,getMessage: function() {
+		return this._e.attribute("form-message");
+	}
+	,getValue: function() {
+		return this._e.attribute("value");
+	}
+	,isValid: function() {
+		return !this.isRequired() || sirius_tools_Utils.isValid(this.getValue());
+	}
+	,clear: function() {
+		if(sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-persistent")) == 0) this._e.attribute("value","");
+	}
+	,__class__: data_FormParam
 };
 var data_IDataSet = function() { };
 data_IDataSet.__name__ = ["data","IDataSet"];
@@ -893,10 +918,7 @@ sirius_modules_Loader.prototype = {
 			if(target != null) {
 				var d1 = sirius_Sirius.one(target,null,function(t) {
 					if(!((data instanceof Array) && data.__enum__ == null)) data = [data];
-					sirius_utils_Dice.All(data,function(p,v) {
-						v["%i"] = p;
-						t.addChild(_g.build(file,v));
-					});
+					t.addChild(_g.build(file,data));
 				});
 			}
 			if(handler != null) handler(file,d);
@@ -922,11 +944,11 @@ sirius_seo_SEOTool.prototype = {
 	}
 	,init: function(types) {
 		if(types == null) types = 0;
-		if(types == 0 || sirius_bit_BitIO.test(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
-		if(sirius_bit_BitIO.test(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
-		if(sirius_bit_BitIO.test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
-		if(sirius_bit_BitIO.test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",seo_Organization);
-		if(sirius_bit_BitIO.test(types,sirius_seo_SEOTool.PERSON)) this._create("person",seo_Person);
+		if(types == 0 || tools_BitIO.Test(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
+		if(tools_BitIO.Test(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
+		if(tools_BitIO.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
+		if(tools_BitIO.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",seo_Organization);
+		if(tools_BitIO.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",seo_Person);
 		return this;
 	}
 	,publish: function() {
@@ -1033,7 +1055,7 @@ sirius_Sirius.log = function(q,level,type) {
 		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 196, className : "sirius.Sirius", methodName : "log"});
 	}
 };
-sirius_Sirius.build = function(file,target,content,handler) {
+sirius_Sirius.module = function(file,target,content,handler) {
 	var f;
 	if(sirius_Sirius._initialized) f = sirius_Sirius.onLoad; else f = sirius_Sirius.init;
 	f(function() {
@@ -1042,26 +1064,6 @@ sirius_Sirius.build = function(file,target,content,handler) {
 };
 sirius_Sirius.logLevel = function(q) {
 	sirius_Sirius._loglevel = q;
-};
-var sirius_bit_BitIO = $hx_exports.sru.bit.BitIO = function() { };
-sirius_bit_BitIO.__name__ = ["sirius","bit","BitIO"];
-sirius_bit_BitIO.write = function(hash,bit) {
-	return hash | bit;
-};
-sirius_bit_BitIO.unwrite = function(hash,bit) {
-	return hash & ~bit;
-};
-sirius_bit_BitIO.toggle = function(hash,bit) {
-	if(sirius_bit_BitIO.test(hash,bit)) return sirius_bit_BitIO.unwrite(hash,bit); else return sirius_bit_BitIO.write(hash,bit);
-};
-sirius_bit_BitIO.test = function(hash,value) {
-	return (hash & value) == value;
-};
-sirius_bit_BitIO.getString = function(hash,size) {
-	if(size == null) size = 32;
-	var v = hash.toString(2);
-	while(v.length < size) v = "0" + v;
-	return v;
 };
 var sirius_math_ARGB = function(q,g,b,a) {
 	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
@@ -1296,10 +1298,16 @@ sirius_dom_Display.prototype = {
 		return this.element.style.cursor;
 	}
 	,detach: function() {
-		this.element.style.position = "absolute";
+		sirius_css_Automator.build("pos-abs");
+		this.css("pos-abs /pos-rel /pos-fix");
 	}
 	,attach: function() {
-		this.element.style.position = "relative";
+		sirius_css_Automator.build("pos-rel");
+		this.css("/pos-abs pos-rel /pos-fix");
+	}
+	,pin: function() {
+		sirius_css_Automator.build("pos-abs");
+		this.css("/pos-abs /pos-rel pos-fix");
 	}
 	,show: function() {
 		this.element.hidden = false;
@@ -2649,6 +2657,7 @@ var sirius_dom_Script = $hx_exports.sru.dom.Script = function(q,d) {
 		q = _this.createElement("script");
 	}
 	sirius_dom_Display.call(this,q,null,d);
+	this.content = this.element;
 };
 sirius_dom_Script.__name__ = ["sirius","dom","Script"];
 sirius_dom_Script.get = function(q,h) {
@@ -2656,7 +2665,23 @@ sirius_dom_Script.get = function(q,h) {
 };
 sirius_dom_Script.__super__ = sirius_dom_Display;
 sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Script
+	load: function(url,handler) {
+		var _g = this;
+		this.content.src = url;
+		if(handler != null) {
+			if(sirius_Sirius.get_agent().ie < 12) this.events.readyState(function(e) {
+				var st = e.target.attribute("readyState");
+				if(st == "loaded" || st == "complete") {
+					handler(e);
+					_g.events.readyState(handler,-1);
+				}
+			},1); else this.events.load(handler,1);
+		}
+	}
+	,async: function() {
+		this.content.async = true;
+	}
+	,__class__: sirius_dom_Script
 });
 var sirius_dom_Select = $hx_exports.sru.dom.Select = function(q,d) {
 	if(q == null) {
@@ -3215,6 +3240,9 @@ sirius_events_Dispatcher.prototype = {
 	,touchCancel: function(handler,mode) {
 		return this.auto("touchcancel",handler,mode);
 	}
+	,readyState: function(handler,mode) {
+		return this.auto("readystatechange",handler,mode);
+	}
 	,__class__: sirius_events_Dispatcher
 };
 var sirius_tools_Key = $hx_exports.sru.tools.Key = function() { };
@@ -3508,11 +3536,7 @@ sirius_data_FormData.__name__ = ["sirius","data","FormData"];
 sirius_data_FormData.__interfaces__ = [data_IFormData];
 sirius_data_FormData.prototype = {
 	reset: function() {
-		this.fields = [];
-		this.invalid = [];
-		this.values = { };
-		this.valid = { };
-		this.messages = { };
+		this.params = [];
 		return this;
 	}
 	,scan: function(target) {
@@ -3520,30 +3544,41 @@ sirius_data_FormData.prototype = {
 		this.reset();
 		if(target == null) this._form = sirius_Sirius.document; else this._form = target;
 		target.all("[form-data]").each(function(el) {
-			var n = el.attribute("form-data");
-			var r = el.hasAttribute("form-required") && sirius_utils_Dice.Match(["1","true","yes"],el.attribute("form-required")) > 0;
-			var v = el.attribute("value");
-			var m = el.attribute("form-message");
-			if(n != null && n.length > 0) {
-				if(Lambda.indexOf(_g.fields,n) == -1) _g.fields[_g.fields.length] = n;
-				_g.values[n] = v;
-				_g.messages[n] = m;
-				var i = !r || v != null && v.length > 0;
-				_g.valid[n] = i;
-				if(!i) _g.invalid[_g.invalid.length] = n;
-			}
+			_g.params[_g.params.length] = new data_FormParam(el);
 		});
 		return this;
 	}
-	,valueOf: function(field) {
-		return Reflect.field(this.values,field);
+	,valueOf: function(p) {
+		var res = sirius_utils_Dice.Values(this.params,function(v) {
+			return v.getName() == p;
+		});
+		return res.value;
 	}
 	,isValid: function() {
-		return this.invalid != null && this.invalid.length == 0;
+		var _g = this;
+		this.errors = [];
+		sirius_utils_Dice.Values(this.params,function(v) {
+			if(!v.isValid()) _g.errors[_g.errors.length] = v;
+		});
+		return this.errors.length == 0;
+	}
+	,getParam: function(p) {
+		var res = sirius_utils_Dice.Values(this.params,function(v) {
+			return v.getName() == p;
+		});
+		return res.value;
+	}
+	,getData: function() {
+		var d = { };
+		sirius_utils_Dice.Values(this.params,function(v) {
+			Reflect.setField(d,v.getName(),v.getValue());
+			return;
+		});
+		return d;
 	}
 	,clear: function() {
-		this._form.all("[form-data]").each(function(el) {
-			if(!el.hasAttribute("form-persistent")) el.attribute("value","");
+		sirius_utils_Dice.Values(this.params,function(v) {
+			v.clear();
 		});
 		return this;
 	}
@@ -4013,23 +4048,20 @@ sirius_utils_Dice.All = function(q,each,complete) {
 				v = null;
 			}
 		}
-		if(c) complete(p,v,i);
 	}
-	return { param : p, value : v, completed : i};
+	var r = { param : p, value : v, completed : i};
+	if(c) complete(r);
+	return r;
 };
 sirius_utils_Dice.Params = function(q,each,complete) {
 	return sirius_utils_Dice.All(q,function(p,v) {
 		return each(p);
-	},complete != null?function(p1,v1,i) {
-		complete(p1,i);
-	}:null);
+	},complete);
 };
 sirius_utils_Dice.Values = function(q,each,complete) {
 	return sirius_utils_Dice.All(q,function(p,v) {
 		return each(v);
-	},complete != null?function(p1,v1,i) {
-		complete(v1,i);
-	}:null);
+	},complete);
 };
 sirius_utils_Dice.Call = function(q,method,args) {
 	if(args == null) args = [];
@@ -4044,15 +4076,16 @@ sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
 	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
 	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
 	var c = a == b;
-	if(complete != null) complete(a,b,c);
-	return { from : from, to : b, completed : c, value : a};
+	var r = { from : from, to : b, completed : c, value : a};
+	if(c) complete(r);
+	return r;
 };
 sirius_utils_Dice.One = function(from,alt) {
 	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
 		from = v;
 		return from == null;
 	});
-	return { value : from == null || from == ""?alt:from};
+	return { value : sirius_tools_Utils.isValid(from)?from:alt};
 };
 sirius_utils_Dice.Match = function(table,values) {
 	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
@@ -4066,18 +4099,20 @@ sirius_utils_Dice.Children = function(of,each,complete) {
 	var r = { children : []};
 	var l = 0;
 	var c;
-	if(of != null) sirius_utils_Dice.Count(0,of.childNodes.length,function(i) {
-		c = of.childNodes.item(i);
-		r.children[l] = c;
-		return each(c,i);
-	},complete);
+	if(of != null) {
+		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
+		sirius_utils_Dice.Count(0,of.childNodes.length,function(i) {
+			c = of.childNodes.item(i);
+			r.children[l] = c;
+			return each(c,i);
+		},complete);
+	}
 	return r;
 };
 var sirius_utils_Filler = $hx_exports.sru.utils.Filler = function() { };
 sirius_utils_Filler.__name__ = ["sirius","utils","Filler"];
-sirius_utils_Filler._apply = function(path,content,data,pattern) {
-	if(pattern == null) pattern = sirius_utils_Filler._pattern;
-	if(data == null) content = content.split(sirius_utils_Filler._pattern[0] + path + sirius_utils_Filler._pattern[1]).join(""); else if(typeof(data) == "number" || typeof(data) == "string" || typeof(data) == "boolean" || ((data | 0) === data)) content = content.split(sirius_utils_Filler._pattern[0] + path + sirius_utils_Filler._pattern[1]).join(data); else {
+sirius_utils_Filler._apply = function(path,content,data) {
+	if(data == null) content = content.split("{{" + path + "}}").join(""); else if(typeof(data) == "number" || typeof(data) == "string" || typeof(data) == "boolean" || ((data | 0) === data)) content = content.split("{{" + path + "}}").join(data); else {
 		if(path != null && path != "") path = path + "."; else path = "";
 		sirius_utils_Dice.All(data,function(p,v) {
 			content = sirius_utils_Filler._apply(path + p,content,v);
@@ -4085,11 +4120,14 @@ sirius_utils_Filler._apply = function(path,content,data,pattern) {
 	}
 	return content;
 };
-sirius_utils_Filler.setPattern = function(head,tail) {
-	sirius_utils_Filler._pattern = [head,tail];
-};
-sirius_utils_Filler.to = function(value,data,sufix,pattern) {
-	return sirius_utils_Filler._apply(sufix,value,data,pattern);
+sirius_utils_Filler.to = function(value,data,sufix) {
+	var r = "";
+	if((data instanceof Array) && data.__enum__ == null) sirius_utils_Dice.All(data,function(p,v) {
+		haxe_Log.trace(v,{ fileName : "Filler.hx", lineNumber : 37, className : "sirius.utils.Filler", methodName : "to"});
+		v["%i"] = p;
+		r += sirius_utils_Filler._apply(sufix,value,v);
+	}); else r = sirius_utils_Filler._apply(sufix,value,data);
+	return r;
 };
 var sirius_utils_ITable = function() { };
 sirius_utils_ITable.__name__ = ["sirius","utils","ITable"];
@@ -4400,6 +4438,47 @@ sirius_utils_Table.prototype = {
 	}
 	,__class__: sirius_utils_Table
 };
+var tools_BitIO = $hx_exports.sru.bit.BitIO = function(value) {
+	this.value = value;
+};
+tools_BitIO.__name__ = ["tools","BitIO"];
+tools_BitIO.Write = function(hash,bit) {
+	return hash | bit;
+};
+tools_BitIO.Unwrite = function(hash,bit) {
+	return hash & ~bit;
+};
+tools_BitIO.Toggle = function(hash,bit) {
+	if(tools_BitIO.Test(hash,bit)) return tools_BitIO.Unwrite(hash,bit); else return tools_BitIO.Write(hash,bit);
+};
+tools_BitIO.Test = function(hash,value) {
+	return (hash & value) == value;
+};
+tools_BitIO.Value = function(hash,size) {
+	if(size == null) size = 32;
+	var v = hash.toString(2);
+	while(_$UInt_UInt_$Impl_$.gt(size,v.length)) v = "0" + v;
+	return v;
+};
+tools_BitIO.prototype = {
+	toggle: function(bit) {
+		this.value = tools_BitIO.Toggle(this.value,bit);
+	}
+	,set: function(bit) {
+		this.value = tools_BitIO.Write(this.value,bit);
+	}
+	,unset: function(bit) {
+		this.value = tools_BitIO.Unwrite(this.value,bit);
+	}
+	,get: function(bit) {
+		return tools_BitIO.Test(this.value,bit);
+	}
+	,valueOf: function(size) {
+		if(size == null) size = 32;
+		return tools_BitIO.Value(this.value,size);
+	}
+	,__class__: tools_BitIO
+};
 var transitions_ITween = function() { };
 transitions_ITween.__name__ = ["transitions","ITween"];
 transitions_ITween.prototype = {
@@ -4451,39 +4530,6 @@ sirius_Sirius.domain = new sirius_net_Domain();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_Sirius._loglevel = 12;
 sirius_Sirius._initialized = false;
-sirius_bit_BitIO.P01 = 1;
-sirius_bit_BitIO.P02 = 2;
-sirius_bit_BitIO.P03 = 4;
-sirius_bit_BitIO.P04 = 8;
-sirius_bit_BitIO.P05 = 16;
-sirius_bit_BitIO.P06 = 32;
-sirius_bit_BitIO.P07 = 64;
-sirius_bit_BitIO.P08 = 128;
-sirius_bit_BitIO.P09 = 256;
-sirius_bit_BitIO.P10 = 512;
-sirius_bit_BitIO.P11 = 1024;
-sirius_bit_BitIO.P12 = 2048;
-sirius_bit_BitIO.P13 = 4096;
-sirius_bit_BitIO.P14 = 8192;
-sirius_bit_BitIO.P15 = 16384;
-sirius_bit_BitIO.P16 = 32768;
-sirius_bit_BitIO.P17 = 65536;
-sirius_bit_BitIO.P18 = 131072;
-sirius_bit_BitIO.P19 = 262144;
-sirius_bit_BitIO.P20 = 524288;
-sirius_bit_BitIO.P21 = 1048576;
-sirius_bit_BitIO.P22 = 2097152;
-sirius_bit_BitIO.P23 = 4194304;
-sirius_bit_BitIO.P24 = 8388608;
-sirius_bit_BitIO.P25 = 16777216;
-sirius_bit_BitIO.P26 = 33554432;
-sirius_bit_BitIO.P27 = 67108864;
-sirius_bit_BitIO.P28 = 134217728;
-sirius_bit_BitIO.P29 = 268435456;
-sirius_bit_BitIO.P30 = 536870912;
-sirius_bit_BitIO.P31 = 1073741824;
-sirius_bit_BitIO.P32 = -2147483648;
-sirius_bit_BitIO.X = [sirius_bit_BitIO.unwrite,sirius_bit_BitIO.write,sirius_bit_BitIO.toggle];
 sirius_dom_Display._DATA = new sirius_data_DataSet();
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
@@ -4498,7 +4544,39 @@ sirius_tools_Delayer._tks = { };
 sirius_tools_Ticker._pool = [];
 sirius_transitions_Animator.available = window.Tween != null || window.TweenMax != null || window.TweenLite != null;
 sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
-sirius_utils_Filler._pattern = ["{{","}}"];
+tools_BitIO.P01 = 1;
+tools_BitIO.P02 = 2;
+tools_BitIO.P03 = 4;
+tools_BitIO.P04 = 8;
+tools_BitIO.P05 = 16;
+tools_BitIO.P06 = 32;
+tools_BitIO.P07 = 64;
+tools_BitIO.P08 = 128;
+tools_BitIO.P09 = 256;
+tools_BitIO.P10 = 512;
+tools_BitIO.P11 = 1024;
+tools_BitIO.P12 = 2048;
+tools_BitIO.P13 = 4096;
+tools_BitIO.P14 = 8192;
+tools_BitIO.P15 = 16384;
+tools_BitIO.P16 = 32768;
+tools_BitIO.P17 = 65536;
+tools_BitIO.P18 = 131072;
+tools_BitIO.P19 = 262144;
+tools_BitIO.P20 = 524288;
+tools_BitIO.P21 = 1048576;
+tools_BitIO.P22 = 2097152;
+tools_BitIO.P23 = 4194304;
+tools_BitIO.P24 = 8388608;
+tools_BitIO.P25 = 16777216;
+tools_BitIO.P26 = 33554432;
+tools_BitIO.P27 = 67108864;
+tools_BitIO.P28 = 134217728;
+tools_BitIO.P29 = 268435456;
+tools_BitIO.P30 = 536870912;
+tools_BitIO.P31 = 1073741824;
+tools_BitIO.P32 = -2147483648;
+tools_BitIO.X = [tools_BitIO.Unwrite,tools_BitIO.Write,tools_BitIO.Toggle];
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
 

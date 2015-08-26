@@ -8,6 +8,7 @@ import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.Node;
 import js.JQuery;
+import sirius.css.Automator;
 import sirius.data.DataCache;
 import sirius.data.DataSet;
 import sirius.data.DisplayData;
@@ -195,11 +196,18 @@ class Display implements IDisplay {
 	}
 	
 	public function detach():Void {
-		element.style.position = "absolute";
+		Automator.build('pos-abs');
+		css('pos-abs /pos-rel /pos-fix');
 	}
 	
 	public function attach():Void {
-		element.style.position = "relative";
+		Automator.build('pos-rel');
+		css('/pos-abs pos-rel /pos-fix');
+	}
+	
+	public function pin():Void {
+		Automator.build('pos-abs');
+		css('/pos-abs /pos-rel pos-fix');
 	}
 	
 	public function show():Void {

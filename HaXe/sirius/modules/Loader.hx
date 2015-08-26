@@ -1,5 +1,6 @@
 package sirius.modules;
 import haxe.Http;
+import haxe.Json;
 import sirius.modules.ModLib;
 import sirius.utils.Dice;
 
@@ -123,10 +124,7 @@ class Loader implements ILoader {
 				if (target != null) {
 					var d:IDisplay = Sirius.one(target, null, function(t:IDisplay) {
 						if (!Std.is(data, Array)) data = [data];
-						Dice.All(data, function(p:Int, v:Dynamic) {
-							Reflect.setField(v, '%i', p);
-							t.addChild(build(file, v));
-						});
+						t.addChild(build(file, data));
 					});
 				}
 				if (handler != null) handler(file, d);

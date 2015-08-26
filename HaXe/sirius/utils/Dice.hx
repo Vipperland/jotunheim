@@ -1,5 +1,7 @@
 package sirius.utils;
 import haxe.Log;
+import sirius.dom.IDisplay;
+import sirius.tools.Utils;
 import utils.IDice;
 
 #if php
@@ -48,11 +50,10 @@ class Dice {
 				}
 			}
 			
-			if (c) complete(p, v, i);
-			
 		}
-		
-		return cast {param:p,value:v,completed:i};
+		var r:IDice = cast { param:p, value:v, completed:i };
+		if (c) complete(r);
+		return r;
 		
 	}
 	
@@ -65,7 +66,7 @@ class Dice {
 	public static function Params(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(p); }, 
-			(complete != null ? function(p:Dynamic, v:Dynamic, i:Bool) { complete(p,i); } : null)
+			complete
 		);
 	}
 	
@@ -78,7 +79,7 @@ class Dice {
 	public static function Values(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(v); }, 
-			(complete != null ? function(p:Dynamic, v:Dynamic, i:Bool) { complete(v,i); } : null)
+			complete
 		);
 	}
 	
@@ -115,8 +116,9 @@ class Dice {
 			if (each(a,b,(a+=increment)==b) == true) break;
 		}
 		var c:Bool = a == b;
-		if (complete != null) complete(a, b, c);
-		return cast { from:from, to:b, completed:c, value:a };
+		var r:IDice = cast { from:from, to:b, completed:c, value:a };
+		if (c) complete(r);
+		return r;
 	}
 	
 	/**
@@ -132,7 +134,7 @@ class Dice {
 				return from == null;
 			});
 		}
-		return cast { value:from == null || from == "" ? alt : from };
+		return cast { value:Utils.isValid(from) ? from : alt };
 	}
 	
 	/**
@@ -142,9 +144,7 @@ class Dice {
 	 * @return
 	 */
 	public static function Match(table:Array<Dynamic>, values:Dynamic):Int {
-		if (!Std.is(values, Array)) {
-			values = [values];
-		}
+		if (!Std.is(values, Array)) values = [values];
 		var r:Int = 0;
 		Dice.Values(values, function(v:Dynamic) {
 			if (Lambda.indexOf(table, v) != -1) ++r;
@@ -159,11 +159,12 @@ class Dice {
 		 * @param	each			h(e:Element|Node)
 		 * @param	complete		c(LastIndex_INT)
 		 */
-		public static function Children(of:Element, each:Dynamic, ?complete:Dynamic = null):IDice {
+		public static function Children(of:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
 			var r:IDice = cast { children:[] };
 			var l:Int = 0;
 			var c:Element;
-			if(of != null){
+			if (of != null) {
+				if (Std.is(of, IDisplay)) of = of.element;
 				Count(0, of.childNodes.length, function(i:Int) {
 					c = cast of.childNodes.item(i);
 					r.children[l] = c;

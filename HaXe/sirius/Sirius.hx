@@ -197,7 +197,14 @@ class Sirius {
 		}
 	}
 	
-	static public function build(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
+	/**
+	 * Load and fill a external content
+	 * @param	file
+	 * @param	target
+	 * @param	content
+	 * @param	handler
+	 */
+	static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
 		var f:Dynamic = (_initialized ? onLoad : init);
 		f(function() {
 			resources.async(file, target, content, handler);
@@ -273,9 +280,8 @@ class Sirius {
 	 * 
 	 * 
 	 * 		Sirius unique attributes:
-	 * 			sru-id				For persistent data caching and sharing
-	 * 			sru-cached			Loads previous section data
-	 * 
+	 * 			sru-id				For unique or shared data, all elements with same sru-id shared the same data.
+	 * 			
 	 * 
 	 * 
 	 * 

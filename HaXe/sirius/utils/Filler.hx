@@ -8,14 +8,11 @@ import haxe.Log;
 @:expose("sru.utils.Filler")
 class Filler{
 	
-	static private var _pattern:Array<String> = ["{{", "}}"];
-	
-	static private function _apply(path:String, content:String, data:Dynamic, ?pattern:Array<String>):String {
-		if (pattern == null) pattern = _pattern;
+	static private function _apply(path:String, content:String, data:Dynamic):String {
 		if (data == null) {
-			content = content.split(_pattern[0] + path + _pattern[1]).join("");
+			content = content.split("{{" + path + "}}").join("");
 		}else if (Std.is(data, Float) || Std.is(data, String) || Std.is(data, Bool) || Std.is(data, Int)) {
-			content = content.split(_pattern[0] + path + _pattern[1]).join(data);
+			content = content.split("{{" + path + "}}").join(data);
 		}else {
 			path = path != null && path != "" ? path + "." : "";
 			Dice.All(data, function(p:String, v:Dynamic) {
@@ -25,12 +22,26 @@ class Filler{
 		return content;
 	}
 	
-	static public function setPattern(head:String, tail:String):Void {
-		_pattern = [head, tail];
-	}
-	
-	static public function to(value:String, data:Dynamic, ?sufix:String, ?pattern:Array<String>):String {
-		return _apply(sufix, value, data, pattern);
+	/**
+	 * Fill a string block with object data
+	 * If data is an Array, build a block for each content object
+	 * @param	value
+	 * @param	data
+	 * @param	sufix
+	 * @return
+	 */
+	static public function to(value:String, data:Dynamic, ?sufix:String):String {
+		var r:String = "";
+		if (Std.is(data, Array)) {
+			Dice.All(data, function(p:Int, v:Dynamic) {
+				Reflect.setField(v, '%i', p);
+				r += _apply(sufix, value, v);
+				Reflect.deleteField(v, '%i');
+			});
+		}else {
+			r = _apply(sufix, value, data);
+		}
+		return r;
 	}
 	
 }

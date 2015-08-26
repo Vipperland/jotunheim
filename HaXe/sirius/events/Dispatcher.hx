@@ -541,4 +541,10 @@ class Dispatcher implements IDispatcher {
 		return auto("touchcancel", handler, mode);
 	}
 	
+	
+	/** Event */
+	public function readyState(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+		return auto("readystatechange", handler, mode);
+	}
+	
 }

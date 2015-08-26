@@ -263,4 +263,7 @@ interface IDispatcher {
 	/// Event
 	public function touchCancel (?handler:Dynamic, ?mode:Dynamic) : IEventGroup;
 	
+	/// Event
+	public function readyState(?handler:Dynamic, ?mode:Dynamic) : IEventGroup;
+	
 }

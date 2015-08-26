@@ -1,4 +1,5 @@
 package data;
+import sirius.data.FormData;
 import sirius.dom.IDisplay;
 
 /**
@@ -6,20 +7,23 @@ import sirius.dom.IDisplay;
  */
 
 interface IFormData {
-	public var fields : Array<String>;
-	public var invalid : Array<String>;
-	public var values : Dynamic;
-	public var required : Dynamic;
-	public var valid : Dynamic;
-	public var messages : Dynamic;
+	
+	public var params:Array<FormParam>;
+	
+	public var errors:Array<FormParam>;
 
 	public function reset () : IFormData;
 
 	public function scan (?target:IDisplay) : IFormData;
 
-	public function valueOf (field:String) : String;
+	public function valueOf (p:String) : FormParam;
 
 	public function isValid () : Bool;
 
+	public function getParam (p:String) : FormParam;
+
+	public function getData():Dynamic;
+	
 	public function clear () : IFormData;
+	
 }
