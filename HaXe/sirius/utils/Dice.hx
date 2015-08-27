@@ -1,13 +1,13 @@
 package sirius.utils;
 import haxe.Log;
-import sirius.dom.IDisplay;
 import sirius.tools.Utils;
 import utils.IDice;
 
 #if php
 	import php.Lib;
-#elseif !php
+#elseif js
 	import js.html.Element;
+	import sirius.dom.IDisplay;
 #end
 
 /**

@@ -1,11 +1,11 @@
 package sirius.php;
 
 import haxe.Log;
+import php.data.Cache;
 import php.db.Gate;
-import php.Lib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
-import sirius.modules.ModLib;
+import sirius.php.utils.Header;
 
 /**
  * ...
@@ -13,9 +13,13 @@ import sirius.modules.ModLib;
  */
 class Sirius {
 	
+	public static var header:Header = new Header();
+	
 	public static var db:Gate = new Gate();
 	
 	static public var resources:ILoader = new Loader();
+	
+	static public var cache:Cache = new Cache();
 	
 	//static function main() {
 		//var t:Array<Dynamic> = [ { name:"Goddamn ", nick:"Foobar", extra:{message:"- Now with Sweet Potatos!"} }, { name:"Hello", nick:"World", extra:{message:null} } ];

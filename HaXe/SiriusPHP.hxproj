@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\gate\api.sirius.php" />
+    <movie path="bin\sys" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -46,8 +46,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Webserver" />
-    <option testMovieCommand="bin/php_db.html" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="http://192.168.0.100:8500/sys/" />
   </options>
   <!-- Plugin storage -->
   <storage />

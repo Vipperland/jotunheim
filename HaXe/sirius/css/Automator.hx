@@ -58,6 +58,10 @@ class Automator {
 		return k.entry.value + (n != null ? "-" : "");
 	}
 	
+	static public function displayKey(d:Entry, k:IKey, n:IKey):String {
+		return d.head == k ? "display:" + (k.key == 'hidden' ? 'none' : 'block') : k.entry.value;
+	}
+	
 	static public function scrollKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
 		if (d.head.key == 'scroll') {
@@ -300,7 +304,8 @@ class Automator {
 		double:{value:'double',verifier:commonKey},
 		dotted:{value:'dotted',verifier:commonKey},
 		alpha:{value:'opacity',verifier:valueKey},
-		hidden:{value:'',verifier:commonKey},
+		hidden:{value:'',verifier:displayKey},
+		visible:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
 	};
 
@@ -358,7 +363,7 @@ class Automator {
 		
 		
 		
-		var t:Array<String> = t.split("class=");
+		var t:Array<String> = t.split("class=");	// Search all class entries
 		
 		if (t.length > 0) {
 			t.shift();
@@ -368,12 +373,12 @@ class Automator {
 			var i:String = v.substr(0, 1);	// class=["] (string start)
 			var j:Int = v.indexOf(i, 1);	// class="["] (string end)
 			if (j > 1) {
-				v = v.substring(1, j);
-				if (v.length > 0) build(v);
+				v = v.substring(1, j);		// Remove quotes (single & double)
+				if (v.length > 0) build(v);	// If result is not empty
 			}
 		});
 		
-		css.build();
+		css.build(); // Apply changes / Append to ScriptElement
 		
 	}
 	
@@ -383,34 +388,34 @@ class Automator {
 	 * @param	group
 	 */
 	static public function build(query:String, ?group:String):Void {
-		var c:Array<String> = query.split(" ");
-		var m:String = null;
-		var s:String;
-		var g:Bool = group != null && group.length > 0;
-		var r:String = '';
-		if (g) m = _screen(group.split("-"));
-		if (!g || !css.hasSelector(group, m)) {
+		var c:Array<String> = query.split(" ");	// Split class names
+		var m:String = null;	// MediaQueries rule
+		var s:String;	// Final selector
+		var g:Bool = group != null && group.length > 0;	// Is a valid group?
+		var r:String = ''; // Group value, if available
+		if (g) m = _screen(group.split("-")); // Remove MediaQuery rule from group name
+		if (!g || !css.hasSelector(group, m)) {	
 			Dice.Values(c, function(v:String) {
 				if (v.length > 1) {
-					v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
-					c = v.split("-");
-					if (g) {
-						_screen(c);
-						s = _parse(c).build();
+					v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
+					c = v.split("-"); // Split class name sections
+					if (g) { // Rule for groups
+						_screen(c); // Remove @media signature
+						s = _parse(c).build(); // Create class for selector
 						r += s + ";";
-					}else {
-						m = _screen(c);
-						if (!css.hasSelector(v, m)) {
-							s = _parse(c).build();
-							if (Utils.isValid(s)) {
+					}else { // Rule for single class name
+						m = _screen(c); // Target @media
+						if (!css.hasSelector(v, m)) { // Check if selector exists
+							s = _parse(c).build(); // Create class for selector
+							if (Utils.isValid(s)) { // Check if value is valid
 								if (_dev) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
-								css.setSelector("." + v, s, m);
+								css.setSelector("." + v, s, m); // Add selector to correspondent @media group
 							}
 						}
 					}
 				}
 			});
-			if (g) {
+			if (g) { // If is a group, register all classes to correspondent group and @media value
 				if (_dev) Sirius.log("Sirius->Automator.build[ " + group + " {" + r + "} ]", 10, 1);
 				css.setSelector(group, r, m);
 			}
@@ -437,30 +442,18 @@ class Automator {
 			if(v.length > 0){
 				var val:IEntry = Reflect.field(_KEYS, v);
 				var v2:String = val != null ? val.value : null;
+				// create a Entry for the group
+				// Index: Entry point
+				// key: property shortcut
+				// entry: property parser method
+				// position: css common direction values (top,left,bottom and right)
+				// measure: CSS position value (positive or negative, pixels or percent)
+				// color: css Color value in formar #RRGGBB
 				r[p] = cast { index:p, key:v, entry:val, position:_position(v2, v), measure:_measure(v2, v), color:_color(v2, v) };
 			}
 		});
+		// return all Entry structure
 		return new Entry(r,_KEYS);
-	}
-	
-	
-	/**
-	 * Check if is a !important element
-	 * @param	p
-	 * @return
-	 */
-	static private function _important(p:String):Bool {
-		return p == "i";
-	}
-	
-	/**
-	 * Get a valid value from a Array or String
-	 * @param	p
-	 * @param	l
-	 * @return
-	 */
-	static private function _level(p:Dynamic, l:Int):String {
-		return Std.is(p, Array) ? l < p.length ? p[l] : p[0] : p;
 	}
 	
 	/**
@@ -516,12 +509,19 @@ class Automator {
 }
 
 private class Entry {
+	// All pieces of class
 	public var keys:Array<IKey>;
+	// First valid piece
 	public var head:IKey;
+	// Last valid piece
 	public var tail:IKey;
+	// Next piece value
 	public var next:IKey;
+	// Total missing keys
 	public var missing:Int;
+	// If parser is canceled (ignore pendent keys)
 	public var canceled:Bool;
+	
 	public function new(keys:Array<IKey>, dict:Dynamic) {
 		this.keys = keys;
 		this.head = keys[0];
@@ -540,6 +540,7 @@ private class Entry {
 				return canceled;
 			});
 		}
+		// If all keys if missing, return NULL
 		return missing == keys.length ? null : r;
 	}
 	

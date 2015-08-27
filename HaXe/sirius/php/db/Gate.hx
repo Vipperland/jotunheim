@@ -1,9 +1,7 @@
 package php.db;
-import php.db.PDO.PDOClass;
-import php.db.PDO.PDOStatement;
-import php.NativeArray;
-import sirius.utils.Dice;
-import sys.db.Connection;
+import sirius.php.db.pdo.Bridge;
+import sirius.php.db.pdo.Connection;
+import sirius.php.db.pdo.Statement;
 
 /**
  * ...
@@ -11,7 +9,7 @@ import sys.db.Connection;
  */
 class Gate {
 	
-	private var _db:PDOClass;
+	private var _db:Connection;
 	
 	public var command:Command;
 	
@@ -24,32 +22,18 @@ class Gate {
 	
 	public function open(token:Token):Gate {
 		if (!isOpen()) {
-			_db = cast PDO.open(token.host, token.user, token.pass, token.options);
+			_db = Bridge.open(token.host, token.user, token.pass, token.options);
 			command = null;
 		}
 		return this;
 	}
 	
-	public function prepare(query:String, parameters:Array<Dynamic>, ?exec:Bool = true, ?options:Dynamic = null):Gate {
+	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):Command {
 		command = null;
 		if (isOpen()) {
-			command = new Command(_db.prepare(query, options), parameters);
-			if (exec) {
-				command.execute();
-			}
+			var pdo:Statement = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
+			command = new Command(pdo, parameters);
 		}
-		return this;
-	}
-	
-	public function bind(parameters:Array<Dynamic>):Gate {
-		if (isOpen() && command != null) {
-			command.bind(parameters);
-		}
-		return this;
-	}
-	
-	public function execute(?parameters:Array<Dynamic>):Command {
-		command.execute(parameters);
 		return command;
 	}
 	

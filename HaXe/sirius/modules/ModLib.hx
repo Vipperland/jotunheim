@@ -1,11 +1,11 @@
 package sirius.modules;
 import haxe.Json;
 import haxe.Log;
-import sirius.css.Automator;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 
 #if js
+	import sirius.css.Automator;
 	import sirius.dom.IDisplay;
 	import sirius.dom.Display;
 	import sirius.Sirius;
