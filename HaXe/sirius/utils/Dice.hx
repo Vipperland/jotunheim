@@ -117,7 +117,7 @@ class Dice {
 		}
 		var c:Bool = a == b;
 		var r:IDice = cast { from:from, to:b, completed:c, value:a };
-		if (c) complete(r);
+		if (complete != null) complete(r);
 		return r;
 	}
 	

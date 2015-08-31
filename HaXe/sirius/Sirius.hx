@@ -23,8 +23,8 @@ import sirius.modules.ModLib;
 	import sirius.utils.ITable;
 	import sirius.utils.Table;
 #elseif php
-	import php.data.Cache;
-	import php.db.Gate;
+	import sirius.php.data.Cache;
+	import sirius.php.db.Gate;
 	import sirius.php.utils.Header;
 #end
 
@@ -198,9 +198,12 @@ class Sirius {
 		 */
 		static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
 			var f:Dynamic = (_initialized ? onLoad : init);
-			f(function() {
-				loader.async(file, target, content, handler);
-			});
+			f(function() { loader.async(file, target, content, handler); });
+		}
+		
+		static public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+			var f:Dynamic = (_initialized ? onLoad : init);
+			f(function() { loader.request(url, data, handler, method); } );
 		}
 		
 	#elseif php

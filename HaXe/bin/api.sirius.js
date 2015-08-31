@@ -83,6 +83,15 @@ Lambda.exists = function(it,f) {
 	}
 	return false;
 };
+Lambda.filter = function(it,f) {
+	var l = new List();
+	var $it0 = $iterator(it)();
+	while( $it0.hasNext() ) {
+		var x = $it0.next();
+		if(f(x)) l.add(x);
+	}
+	return l;
+};
 Lambda.indexOf = function(it,v) {
 	var i = 0;
 	var $it0 = $iterator(it)();
@@ -98,7 +107,19 @@ var List = function() {
 };
 List.__name__ = ["List"];
 List.prototype = {
-	iterator: function() {
+	add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,iterator: function() {
 		return new _$List_ListIterator(this.h);
 	}
 	,__class__: List
@@ -228,7 +249,14 @@ var haxe_Http = function(url) {
 };
 haxe_Http.__name__ = ["haxe","Http"];
 haxe_Http.prototype = {
-	request: function(post) {
+	setParameter: function(param,value) {
+		this.params = Lambda.filter(this.params,function(p) {
+			return p.param != param;
+		});
+		this.params.push({ param : param, value : value});
+		return this;
+	}
+	,request: function(post) {
 		var me = this;
 		me.responseData = null;
 		var r = this.req = js_Browser.createXMLHttpRequest();
@@ -568,6 +596,23 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
+var modules_IRequest = function() { };
+modules_IRequest.__name__ = ["modules","IRequest"];
+modules_IRequest.prototype = {
+	__class__: modules_IRequest
+};
+var modules_Request = function(success,data) {
+	this.data = data;
+	this.success = success;
+};
+modules_Request.__name__ = ["modules","Request"];
+modules_Request.__interfaces__ = [modules_IRequest];
+modules_Request.prototype = {
+	json: function() {
+		if(this.data != null) return JSON.parse(this.data); else return null;
+	}
+	,__class__: modules_Request
+};
 var sirius_net_Domain = function() {
 	this._parseURI();
 	this.data = new sirius_data_DataCache("__sru__",2592000,"http://" + this.host + "/");
@@ -729,12 +774,25 @@ sirius_modules_Loader.prototype = {
 		};
 		r.request(false);
 	}
+	,request: function(url,data,handler,method) {
+		if(method == null) method = "post";
+		var r = new haxe_Http(url + (this._noCache?"":"?t=" + new Date().getTime()));
+		r.async = true;
+		if(data != null) sirius_utils_Dice.All(data,$bind(r,r.setParameter));
+		r.onData = function(d) {
+			if(handler != null) handler(new modules_Request(true,d));
+		};
+		r.onError = function(d1) {
+			if(handler != null) handler(new modules_Request(false,d1));
+		};
+		r.request(method != null && method.toLowerCase() == "post");
+	}
 	,get: function(module,data) {
 		return sirius_Sirius.resources.get(module,data);
 	}
 	,__class__: sirius_modules_Loader
 };
-var sirius_modules_ModLib = function() {
+var sirius_modules_ModLib = $hx_exports.sru.modules.ModLib = function() {
 };
 sirius_modules_ModLib.__name__ = ["sirius","modules","ModLib"];
 sirius_modules_ModLib.prototype = {
@@ -768,13 +826,16 @@ sirius_modules_ModLib.prototype = {
 					}
 					if(mod.types != null) {
 						var p1 = mod.types.split(" ").join("").split(";");
-						if(sirius_utils_Dice.Match(p1,"css") > 0) sirius_css_Automator.build(content);
+						if(sirius_utils_Dice.Match(p1,"css") > 0) {
+							sirius_css_Automator.build(content);
+							content = null;
+						}
 					}
 					if(mod.target != null) {
 						var t = sirius_Sirius.one(mod.target);
 						if(t != null) t.addChild(_g.build(mod.name));
 					}
-					Reflect.setField(sirius_modules_ModLib.CACHE,mod.name.toLowerCase(),content);
+					if(content != null) Reflect.setField(sirius_modules_ModLib.CACHE,mod.name.toLowerCase(),content);
 				} else sirius_Sirius.log("\tSirius->ModLib::status [ MISSING MODULE END IN " + file + "(" + HxOverrides.substr(v,0,15) + "...) ]",10,3);
 			}
 		}); else Reflect.setField(sirius_modules_ModLib.CACHE,file.toLowerCase(),content);
@@ -895,6 +956,14 @@ sirius_Sirius.module = function(file,target,content,handler) {
 		sirius_Sirius.loader.async(file,target,content,handler);
 	});
 };
+sirius_Sirius.request = function(url,data,handler,method) {
+	if(method == null) method = "post";
+	var f;
+	if(sirius_Sirius._initialized) f = sirius_Sirius.onLoad; else f = sirius_Sirius.init;
+	f(function() {
+		sirius_Sirius.loader.request(url,data,handler,method);
+	});
+};
 sirius_Sirius.log = function(q,level,type) {
 	if(type == null) type = -1;
 	if(level == null) level = 10;
@@ -922,7 +991,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 237, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 240, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1032,14 +1101,24 @@ sirius_css_CSSGroup.prototype = {
 	hasSelector: function(id,mode) {
 		var k;
 		if(mode != null) k = mode; else k = HxOverrides.substr(id,-2,2);
-		id = "." + id + "{";
+		id = (HxOverrides.substr(id,0,1) == "."?"":".") + id + "{";
 		if(k != null && k != "") {
-			if(k == "xs") return this.XS.innerHTML.indexOf(id) != -1;
-			if(k == "sm") return this.SM.innerHTML.indexOf(id) != -1;
-			if(k == "md") return this.MD.innerHTML.indexOf(id) != -1;
-			if(k == "lg") return this.LG.innerHTML.indexOf(id) != -1;
+			if(k == "xs") return (this.XS.innerHTML + this.styleXS).indexOf(id) != -1;
+			if(k == "sm") return (this.SM.innerHTML + this.styleSM).indexOf(id) != -1;
+			if(k == "md") return (this.MD.innerHTML + this.styleMD).indexOf(id) != -1;
+			if(k == "lg") return (this.LG.innerHTML + this.styleLG).indexOf(id) != -1;
 		}
-		return this.CM.innerHTML.indexOf(id) != -1;
+		return (this.CM.innerHTML + this.style).indexOf(id) != -1;
+	}
+	,getByMedia: function(mode) {
+		if(mode != null) {
+			mode = mode.toLowerCase();
+			if(mode == "xs") return this.XS;
+			if(mode == "sm") return this.SM;
+			if(mode == "md") return this.MD;
+			if(mode == "lg") return this.LG;
+		}
+		return this.CM;
 	}
 	,setSelector: function(id,style,mode) {
 		if(!this.hasSelector(id,mode)) {
@@ -3561,7 +3640,7 @@ var sirius_events_Event = $hx_exports.sru.events.Event = function(from,ticket,ev
 	this.ticket = ticket;
 	this.from = from;
 	this.target = from.target;
-	this.target3d = from.target;
+	if(js_Boot.__instanceof(from.target,sirius_dom_IDisplay3D)) this.target3d = from.target; else this.target3d = null;
 };
 sirius_events_Event.__name__ = ["sirius","events","Event"];
 sirius_events_Event.__interfaces__ = [sirius_events_IEvent];
@@ -4123,7 +4202,7 @@ sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
 	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
 	var c = a == b;
 	var r = { from : from, to : b, completed : c, value : a};
-	if(c) complete(r);
+	if(complete != null) complete(r);
 	return r;
 };
 sirius_utils_Dice.One = function(from,alt) {

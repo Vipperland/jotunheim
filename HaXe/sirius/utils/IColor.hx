@@ -1,4 +1,4 @@
-package utils;
+package sirius.utils;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com> <rafael@gateofsirius.com>

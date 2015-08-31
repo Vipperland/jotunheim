@@ -19,6 +19,7 @@ import sirius.Sirius;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+@:expose('sru.modules.ModLib')
 class ModLib {
 	
 	private static var CACHE:Dynamic = { };
@@ -72,7 +73,10 @@ class ModLib {
 							// ============================= JS ONLY =============================
 							if (mod.types != null) {
 								var p:Array<String> = mod.types.split(" ").join("").split(";");
-								if (Dice.Match(p, 'css')>0) Automator.build(content);
+								if (Dice.Match(p, 'css') > 0) {
+									Automator.build(content);
+									content = null;
+								}
 							}
 							if (mod.target != null) {
 								var t:IDisplay = Sirius.one(mod.target);
@@ -82,7 +86,7 @@ class ModLib {
 							}
 							// ***
 						#end
-						Reflect.setField(CACHE, mod.name.toLowerCase(), content);
+						if (content != null) Reflect.setField(CACHE, mod.name.toLowerCase(), content);
 					}else {
 						Sirius.log("	Sirius->ModLib::status [ MISSING MODULE END IN " + file + "("  + v.substr(0, 15) + "...) ]", 10, 3);
 					}

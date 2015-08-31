@@ -79,6 +79,15 @@ interface ILoader {
 	 * @return
 	 */
 	public function listen (?complete:Dynamic, ?error:Dynamic) : ILoader;
+	
+	/**
+	 * Call a url
+	 * @param	url
+	 * @param	data
+	 * @param	handler
+	 * @param	method
+	 */
+	public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void;
 
 
 }

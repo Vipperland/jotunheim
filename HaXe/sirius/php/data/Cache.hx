@@ -1,5 +1,6 @@
-package php.data;
+package sirius.php.data;
 import haxe.Json;
+import php.Lib;
 
 /**
  * ...
@@ -32,7 +33,7 @@ class Cache {
 	}
 	
 	public function json(?print:Bool = true, ?encoding:Dynamic = null):String {
-		var result:String = Json.stringify(this);
+		var result:String = untyped __php__("json_encode($this,256)");
 		if (encoding != null) result = encoding(result);
 		if (print) Lib.print(result);
 		return result;

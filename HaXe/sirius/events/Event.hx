@@ -36,7 +36,7 @@ class Event implements IEvent {
 		this.ticket = ticket;
 		this.from = from;
 		this.target = from.target;
-		this.target3d = cast from.target;
+		this.target3d = Std.is(from.target, IDisplay3D) ? cast from.target : null;
 	}
 	
 	public function description():String {

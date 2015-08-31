@@ -12,21 +12,23 @@
 	
 	<script src="api.sirius.js"></script>
 	
-	<div class="w-100pc h-50"></div>
+	<div class="w-100pc h-50 container"></div>
 	
 	<script>
-		var data = [
-			{o:{name:"Earth",id:['A']}},
-			{o:{name:"Solar System",id:['B']}},
-			{o:{name:"Milk Way",id:['C']}}
-		];
-		Sirius.module(
-			'mod/content.html',
-			'.w-100pc.h-50',
-			data,
-			Automator.scan
-		);
-		//Sirius.inject('file.js');
+		
+		Automator.build("marg-b-1 bord-blue bord-t-2 bord-solid", "div[id*=state_]");
+		
+		Sirius.request("http://192.168.0.100:8500/sys/", {}, function(d) {
+			if (d.success) {
+				Sirius.module(
+					'mod/content.html', //load file
+					'.container', // draw in target selector
+					d.json().states.a, // result data from request
+					Automator.scan // Build CSS after data filler
+				);
+			}
+		});
+		
 	</script>
 	
 </body>

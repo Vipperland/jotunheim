@@ -1,5 +1,6 @@
-package php.db;
+package sirius.php.db;
 import haxe.Log;
+import php.Lib;
 import php.NativeArray;
 import sirius.php.db.pdo.Statement;
 import sirius.Sirius;

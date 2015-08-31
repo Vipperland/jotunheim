@@ -1,5 +1,6 @@
 package sirius.modules;
 import haxe.Http;
+import modules.Request;
 import sirius.modules.ModLib;
 import sirius.Sirius;
 import sirius.utils.Dice;
@@ -130,6 +131,15 @@ class Loader implements ILoader {
 				if (handler != null) handler(file, d);
 			}
 			r.request(false);
+		}
+		
+		public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+			var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
+			r.async = true;
+			if (data != null) Dice.All(data, r.setParameter);
+			r.onData = function(d) { if (handler != null) handler(new Request(true, d)); }
+			r.onError = function(d) { if (handler != null) handler(new Request(false, d)); }
+			r.request(method != null && method.toLowerCase() == 'post');
 		}
 		
 	#end

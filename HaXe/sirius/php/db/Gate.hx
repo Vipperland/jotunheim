@@ -1,7 +1,9 @@
-package php.db;
+package sirius.php.db;
+import php.Lib;
 import sirius.php.db.pdo.Bridge;
 import sirius.php.db.pdo.Connection;
 import sirius.php.db.pdo.Statement;
+import sirius.php.db.Token;
 
 /**
  * ...

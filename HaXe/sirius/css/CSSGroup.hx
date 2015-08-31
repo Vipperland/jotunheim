@@ -57,14 +57,25 @@ class CSSGroup{
 	
 	public function hasSelector(id:String, ?mode:String):Bool {
 		var k:String = mode != null ? mode : id.substr( -2, 2);
-		id = "." + id + "{";
+		id = (id.substr(0,1) == "." ? "" : ".") + id + "{";
 		if(k != null && k != ''){
-			if (k == 'xs') return XS.innerHTML.indexOf(id) != -1;
-			if (k == 'sm') return SM.innerHTML.indexOf(id) != -1;
-			if (k == 'md') return MD.innerHTML.indexOf(id) != -1;
-			if (k == 'lg') return LG.innerHTML.indexOf(id) != -1;
+			if (k == 'xs') return (XS.innerHTML + styleXS).indexOf(id) != -1;
+			if (k == 'sm') return (SM.innerHTML + styleSM).indexOf(id) != -1;
+			if (k == 'md') return (MD.innerHTML + styleMD).indexOf(id) != -1;
+			if (k == 'lg') return (LG.innerHTML + styleLG).indexOf(id) != -1;
 		}
-		return CM.innerHTML.indexOf(id) != -1;
+		return (CM.innerHTML + style).indexOf(id) != -1;
+	}
+	
+	public function getByMedia(mode:String):StyleElement {
+		if (mode != null) {
+			mode = mode.toLowerCase();
+			if (mode == 'xs') return XS;
+			if (mode == 'sm') return SM;
+			if (mode == 'md') return MD;
+			if (mode == 'lg') return LG;
+		}
+		return CM;
 	}
 	
 	public function setSelector(id:String, style:String, mode:String):Void {

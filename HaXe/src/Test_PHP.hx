@@ -1,12 +1,9 @@
 package;
-import haxe.Log;
-import haxe.Utf8;
-import php.db.Command;
-import php.db.Gate;
-import php.db.Token;
-import php.Lib;
-import sirius.Sirius;
+import sirius.php.db.Command;
+import sirius.php.db.Gate;
+import sirius.php.db.Token;
 import sirius.php.utils.Header;
+import sirius.Sirius;
 
 /**
  * ...
