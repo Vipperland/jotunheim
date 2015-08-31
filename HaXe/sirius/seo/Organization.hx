@@ -1,4 +1,4 @@
-package seo;
+package sirius.seo;
 import sirius.seo.Descriptor;
 import sirius.utils.Dice;
 

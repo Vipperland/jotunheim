@@ -309,12 +309,4 @@ class Sirius {
 	 * 		Sirius unique attributes:
 	 * 			sru-id				For unique or shared data, all elements with same sru-id shared the same data.
 	 * 			
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 */

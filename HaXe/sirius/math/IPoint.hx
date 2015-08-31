@@ -1,4 +1,4 @@
-package math;
+package sirius.math;
 
 /**
  * @author Rafael Moreira
