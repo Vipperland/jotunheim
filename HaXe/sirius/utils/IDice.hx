@@ -1,4 +1,4 @@
-package utils;
+package sirius.utils;
 
 /**
  * @author Rafael Moreira

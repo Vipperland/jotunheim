@@ -5,7 +5,7 @@ import sirius.Sirius;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-class Main{
+class Test_JS{
 
 	static public function main() {
 	}

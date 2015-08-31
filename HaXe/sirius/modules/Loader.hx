@@ -1,7 +1,7 @@
 package sirius.modules;
 import haxe.Http;
-import haxe.Json;
 import sirius.modules.ModLib;
+import sirius.Sirius;
 import sirius.utils.Dice;
 
 #if js
@@ -85,7 +85,7 @@ class Loader implements ILoader {
 			}
 			r.onData = function(d) {
 				++totalLoaded;
-				ModLib.register(f, d);
+				Sirius.resources.register(f, d);
 				_loadNext();
 			}
 			r.request(false);
@@ -113,14 +113,14 @@ class Loader implements ILoader {
 	#if js
 	
 		public function build(module:String, ?data:Dynamic):IDisplay {
-			return ModLib.build(module, data);
+			return Sirius.resources.build(module, data);
 		}
 		
 		public function async(file:String, ?target:String, ?data:Dynamic, ?handler:Dynamic):Void {
 			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
 			r.async = true;
 			r.onData = function(d) {
-				ModLib.register(file, d);
+				Sirius.resources.register(file, d);
 				if (target != null) {
 					var d:IDisplay = Sirius.one(target, null, function(t:IDisplay) {
 						if (!Std.is(data, Array)) data = [data];
@@ -135,7 +135,7 @@ class Loader implements ILoader {
 	#end
 	
 	public function get(module:String, ?data:Dynamic):String {
-		return ModLib.get(module, data);
+		return Sirius.resources.get(module, data);
 	}
 	
 }

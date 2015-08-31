@@ -1,6 +1,6 @@
 package sirius.dom;
 
-import data.IDataSet;
+import sirius.data.IDataSet;
 import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;

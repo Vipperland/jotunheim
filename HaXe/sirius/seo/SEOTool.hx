@@ -1,7 +1,7 @@
 package sirius.seo;
-import seo.Organization;
-import seo.Person;
-import tools.BitIO;
+import sirius.seo.Organization;
+import sirius.seo.Person;
+import sirius.tools.BitIO;
 import sirius.utils.Dice;
 
 /**

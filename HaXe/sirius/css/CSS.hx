@@ -1,5 +1,5 @@
 package sirius.css;
-import css.CSSGroup;
+import sirius.css.CSSGroup;
 import haxe.Log;
 import js.Browser;
 import js.html.CSSStyleSheet;

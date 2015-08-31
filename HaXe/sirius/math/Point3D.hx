@@ -1,5 +1,5 @@
 package sirius.math;
-import math.IPoint3D;
+import sirius.math.IPoint3D;
 
 /**
  * ...

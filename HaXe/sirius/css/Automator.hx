@@ -1,5 +1,5 @@
 package sirius.css;
-import css.CSSGroup;
+import sirius.css.CSSGroup;
 import haxe.Constraints.Function;
 import haxe.Log;
 import js.html.Element;

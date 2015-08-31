@@ -1,7 +1,7 @@
 package sirius.utils;
 import haxe.Log;
 import sirius.tools.Utils;
-import utils.IDice;
+import sirius.utils.IDice;
 
 #if php
 	import php.Lib;

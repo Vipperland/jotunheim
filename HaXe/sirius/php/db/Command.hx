@@ -2,7 +2,7 @@ package php.db;
 import haxe.Log;
 import php.NativeArray;
 import sirius.php.db.pdo.Statement;
-import sirius.php.Sirius;
+import sirius.Sirius;
 import sirius.utils.Dice;
 
 /**

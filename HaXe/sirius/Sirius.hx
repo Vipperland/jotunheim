@@ -1,24 +1,32 @@
 package sirius;
 
 import haxe.Log;
-import js.Browser;
-import js.html.Element;
-import js.JQuery;
-import sirius.css.Automator;
-import sirius.data.DataCache;
-import sirius.dom.Body;
-import sirius.dom.Display;
-import sirius.dom.Document;
-import sirius.dom.IDisplay;
-import sirius.modules.ILoader;
-import sirius.modules.Loader;
-import sirius.net.Domain;
-import sirius.seo.SEOTool;
-import sirius.tools.IAgent;
-import sirius.tools.Utils;
-import sirius.transitions.Animator;
-import sirius.utils.ITable;
-import sirius.utils.Table;
+import sirius.modules.ModLib;
+
+#if js
+	import js.Browser;
+	import js.html.Element;
+	import js.JQuery;
+	import sirius.css.Automator;
+	import sirius.data.DataCache;
+	import sirius.dom.Body;
+	import sirius.dom.Display;
+	import sirius.dom.Document;
+	import sirius.dom.IDisplay;
+	import sirius.modules.ILoader;
+	import sirius.modules.Loader;
+	import sirius.net.Domain;
+	import sirius.seo.SEOTool;
+	import sirius.tools.IAgent;
+	import sirius.tools.Utils;
+	import sirius.transitions.Animator;
+	import sirius.utils.ITable;
+	import sirius.utils.Table;
+#elseif php
+	import php.data.Cache;
+	import php.db.Gate;
+	import sirius.php.utils.Header;
+#end
 
 
 
@@ -29,152 +37,185 @@ import sirius.utils.Table;
 @:expose('Sirius')
 class Sirius {
 	
-	/// Global resource loader
-	static public var resources:ILoader = new Loader();
-	
-	/// Main document (if available)
-	static public var document:Document;
-	
-	/// Main body (if available)
-	static public var body:Body;
-	
-	/// Domain information
-	static public var domain:Domain = new Domain();
-	
-	/// Browser information
-	static public var agent(get, null):IAgent;
-	
-	/// SEO Tools
-	static public var seo:SEOTool = new SEOTool();
-	
 	/** @private */
 	static private var _loglevel:UInt = 12;
 	
 	/** @private */
 	static private var _initialized:Bool = false;
 	
-	/**
-	 * QuerySelector a single display
-	 * @param	q
-	 * @param	t
-	 * @param	h
-	 * @return
-	 */
-	static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-		t = (t == null ? Browser.document : t).querySelector(q);
-		if (t != null) {
-			t = Utils.displayFrom(t);
-			if (h != null) h(t);
-			return t;
-		}else {
-			log("Sirius->Table::status[ EMPTY (" + q + ") ]", 20, 3);
-			return null;
-		}
-	}
+	/// Global resource loader
+	static public var resources:ModLib = new ModLib();
 	
-	/**
-	 * Do a QuerySelectorAll and return a display Table
-	 * @param	q
-	 * @param	t
-	 * @return
-	 */
-	static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
-		return new Table(q, t);
-	}
+	#if js
 	
-	/**
-	 * JQuery integration
-	 * @param	q
-	 * @return
-	 */
-	static public function jQuery(?q:Dynamic = "*"):JQuery {
-		return untyped __js__("$(q);");
-	}
-	
-	/**
-	 * On Framework ready
-	 * @param	handler
-	 */
-	static public function onLoad(handler:Dynamic):Void {
-		if(handler != null){
-			if (Browser.document.readyState == "complete") {
-				handler();
+		/// Global resource loader
+		static public var loader:ILoader = new Loader();
+		
+		/// Main document (if available)
+		static public var document:Document;
+		
+		/// Main body (if available)
+		static public var body:Body;
+		
+		/// Domain information
+		static public var domain:Domain = new Domain();
+		
+		/// Browser information
+		static public var agent(get, null):IAgent;
+		
+		/// SEO Tools
+		static public var seo:SEOTool = new SEOTool();
+		
+		/**
+		 * QuerySelector a single display
+		 * @param	q
+		 * @param	t
+		 * @param	h
+		 * @return
+		 */
+		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
+			t = (t == null ? Browser.document : t).querySelector(q);
+			if (t != null) {
+				t = Utils.displayFrom(t);
+				if (h != null) h(t);
+				return t;
 			}else {
-				Browser.document.addEventListener("DOMContentLoaded", handler);
+				log("Sirius->Table::status[ EMPTY (" + q + ") ]", 20, 3);
+				return null;
 			}
 		}
-	}
-	
-	/**
-	 * Init Sirius Framework
-	 * @param	handler
-	 * @param	files
-	 */
-	static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
-		resources.add(files, handler, _fileError);
-		if (!_initialized) {
-			_initialized = true;
-			log("Sirius->Core.init[ LOADING... ]", 10, 1);
-			onLoad(_onLoaded);
-		}else{
-			log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
+		
+		/**
+		 * Do a QuerySelectorAll and return a display Table
+		 * @param	q
+		 * @param	t
+		 * @return
+		 */
+		static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
+			return new Table(q, t);
 		}
-	}
-	
-	/** @private */
-	static private function _onLoaded():Void {
-		if (resources.totalFiles > 0) {
-			log("Sirius->Resources::status [ MODULES (" + resources.totalLoaded + "/" + resources.totalFiles + ") ]", 10, 1);
+		
+		/**
+		 * JQuery integration
+		 * @param	q
+		 * @return
+		 */
+		static public function jQuery(?q:Dynamic = "*"):JQuery {
+			return untyped __js__("$(q);");
 		}
-		if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
-		body = new Body(Browser.document.body);
-		document = new Document();
-		resources.start();
-	}
-	
-	/**
-	 * Runtime status
-	 */
-	static private function status():Void {
-		log("Sirius->Core::status[ " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true) + " ] ", 10, 1);
-	}
-	
-	/** @private */
-	static private function _fileError(error:String) {
-		log("Sirius->Resources::status[ " + error + " ]", 10, 3);
-	}
-	
-	/** @private */
-	static private function get_agent():IAgent {
-		if (agent == null) {
-			var ua:String = Browser.navigator.userAgent;
-			// Dectect version of IE (8 to 12);
-			var ie:Int = ~/MSIE/i.match(ua) ? 8 : 0;
-				ie= ~/MSIE 9/i.match(ua) ? 9 : ie;
-				ie = ~/MSIE 10/i.match(ua) ? 10 : ie;
-				ie = ~/rv:11./i.match(ua) ? 11 : ie;
-				ie = ~/Edge/i.match(ua) ? 12 : ie;
-			// Detect version of each browser for more accurate result
-			var opera:Bool = ~/OPR/i.match(ua);
-			var safari:Bool = ~/Safari/i.match(ua);
-			var firefox:Bool = ~/Firefox/i.match(ua);
-			var chrome:Bool = ~/Chrome/i.match(ua);
-			var chromium:Bool = ~/Chromium/i.match(ua);
-			// Check all other versions, including mobile version
-			agent = cast {
-				ie: untyped (ie < 12 ? ie : false), 
-				edge: ie >=12,
-				opera: opera, 
-				firefox: firefox, 
-				safari: ~/Safari/i.match(ua) && !chrome && !chromium, 
-				chrome: ~/Chrome/i.match(ua) && !chromium && !opera,
-				mobile: ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua),
-				jQuery: Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery"),
-				animator: Animator.available
-			};
+		
+		/**
+		 * On Framework ready
+		 * @param	handler
+		 */
+		static public function onLoad(handler:Dynamic):Void {
+			if(handler != null){
+				if (Browser.document.readyState == "complete") {
+					handler();
+				}else {
+					Browser.document.addEventListener("DOMContentLoaded", handler);
+				}
+			}
 		}
-		return agent;
-	}
+		
+		/**
+		 * Init Sirius Framework
+		 * @param	handler
+		 * @param	files
+		 */
+		static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
+			loader.add(files, handler, _fileError);
+			if (!_initialized) {
+				_initialized = true;
+				log("Sirius->Core.init[ LOADING... ]", 10, 1);
+				onLoad(_onLoaded);
+			}else{
+				log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
+			}
+		}
+		
+		/** @private */
+		static private function _onLoaded():Void {
+			if (loader.totalFiles > 0) {
+				log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
+			}
+			if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+			body = new Body(Browser.document.body);
+			document = new Document();
+			loader.start();
+		}
+		
+		/**
+		 * Runtime status
+		 */
+		static private function status():Void {
+			log("Sirius->Core::status[ " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true) + " ] ", 10, 1);
+		}
+		
+		/** @private */
+		static private function _fileError(error:String) {
+			log("Sirius->Resources::status[ " + error + " ]", 10, 3);
+		}
+		
+		/** @private */
+		static private function get_agent():IAgent {
+			if (agent == null) {
+				var ua:String = Browser.navigator.userAgent;
+				// Dectect version of IE (8 to 12);
+				var ie:Int = ~/MSIE/i.match(ua) ? 8 : 0;
+					ie= ~/MSIE 9/i.match(ua) ? 9 : ie;
+					ie = ~/MSIE 10/i.match(ua) ? 10 : ie;
+					ie = ~/rv:11./i.match(ua) ? 11 : ie;
+					ie = ~/Edge/i.match(ua) ? 12 : ie;
+				// Detect version of each browser for more accurate result
+				var opera:Bool = ~/OPR/i.match(ua);
+				var safari:Bool = ~/Safari/i.match(ua);
+				var firefox:Bool = ~/Firefox/i.match(ua);
+				var chrome:Bool = ~/Chrome/i.match(ua);
+				var chromium:Bool = ~/Chromium/i.match(ua);
+				// Check all other versions, including mobile version
+				agent = cast {
+					ie: untyped (ie < 12 ? ie : false), 
+					edge: ie >=12,
+					opera: opera, 
+					firefox: firefox, 
+					safari: ~/Safari/i.match(ua) && !chrome && !chromium, 
+					chrome: ~/Chrome/i.match(ua) && !chromium && !opera,
+					mobile: ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua),
+					jQuery: Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery"),
+					animator: Animator.available
+				};
+			}
+			return agent;
+		}
+		
+		/**
+		 * Load and fill a external content
+		 * @param	file
+		 * @param	target
+		 * @param	content
+		 * @param	handler
+		 */
+		static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
+			var f:Dynamic = (_initialized ? onLoad : init);
+			f(function() {
+				loader.async(file, target, content, handler);
+			});
+		}
+		
+	#elseif php
+		
+		public static var header:Header = new Header();
+		
+		public static var database:Gate = new Gate();
+		
+		static public var cache:Cache = new Cache();
+		
+		
+		
+	#end
+	
+	
 	
 	/**
 	 * Level controlled log
@@ -195,20 +236,6 @@ class Sirius {
 			}
 			Log.trace(t + q);
 		}
-	}
-	
-	/**
-	 * Load and fill a external content
-	 * @param	file
-	 * @param	target
-	 * @param	content
-	 * @param	handler
-	 */
-	static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
-		var f:Dynamic = (_initialized ? onLoad : init);
-		f(function() {
-			resources.async(file, target, content, handler);
-		});
 	}
 	
 	/**

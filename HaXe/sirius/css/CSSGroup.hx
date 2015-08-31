@@ -1,4 +1,4 @@
-package css;
+package sirius.css;
 
 import haxe.Log;
 import js.Browser;

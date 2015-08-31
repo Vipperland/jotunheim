@@ -1,4 +1,4 @@
-package transitions;
+package sirius.transitions;
 import js.html.svg.Number;
 
 /**

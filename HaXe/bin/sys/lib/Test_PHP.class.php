@@ -1,6 +1,6 @@
 <?php
 
-class MainPHP {
+class Test_PHP {
 	public function __construct(){}
 	static function main() {
 		sirius_Sirius::$header->content(sirius_php_utils_Header::$JSON);
@@ -14,5 +14,5 @@ class MainPHP {
 			}
 		}
 	}
-	function __toString() { return 'MainPHP'; }
+	function __toString() { return 'Test_PHP'; }
 }

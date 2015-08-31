@@ -1,4 +1,4 @@
-package data;
+package sirius.data;
 
 /**
  * @author Rafael Moreira

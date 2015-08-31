@@ -1,4 +1,4 @@
-package data;
+package sirius.data;
 import sirius.dom.IDisplay;
 import sirius.tools.Utils;
 import sirius.utils.Dice;

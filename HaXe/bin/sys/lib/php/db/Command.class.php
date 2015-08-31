@@ -43,7 +43,7 @@ class php_db_Command {
 		return $this;
 	}
 	public function queue($name) {
-		sirius_php_Sirius::$cache->add($name, $this->result);
+		sirius_Sirius::$cache->add($name, $this->result);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

@@ -1,9 +1,9 @@
 package sirius.data;
-import data.FormParam;
-import data.IFormData;
+import sirius.data.FormParam;
+import sirius.data.IFormData;
 import sirius.dom.IDisplay;
 import sirius.utils.Dice;
-import utils.IDice;
+import sirius.utils.IDice;
 
 /**
  * ...

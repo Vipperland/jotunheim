@@ -1,4 +1,4 @@
-package data;
+package sirius.data;
 import sirius.data.FormData;
 import sirius.dom.IDisplay;
 

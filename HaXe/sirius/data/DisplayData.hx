@@ -1,5 +1,5 @@
 package sirius.data;
-import data.IDataSet;
+import sirius.data.IDataSet;
 import sirius.data.DataSet;
 
 /**

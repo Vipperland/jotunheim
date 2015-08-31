@@ -1,13 +1,9 @@
 <?php
 
 class HList implements IteratorAggregate{
-	public function __construct() {
-		if(!php_Boot::$skip_constructor) {
-		$this->length = 0;
-	}}
+	public function __construct(){}
 	public $h;
 	public $q;
-	public $length;
 	public function iterator() {
 		return new _hx_list_iterator($this);
 	}

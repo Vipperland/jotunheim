@@ -74,7 +74,7 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 		$this->_onError = (new _hx_array(array()));
 	}
 	public function get($module, $data = null) {
-		return sirius_modules_ModLib::get($module, $data);
+		return sirius_php_Sirius::$resources->get($module, $data);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -110,7 +110,7 @@ function sirius_modules_Loader_1(&$_g, &$f, &$r, $e) {
 function sirius_modules_Loader_2(&$_g, &$f, &$r, $d) {
 	{
 		++$_g->totalLoaded;
-		sirius_modules_ModLib::register($f, $d);
+		sirius_php_Sirius::$resources->register($f, $d);
 		$_g->_loadNext();
 	}
 }

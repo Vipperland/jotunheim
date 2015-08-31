@@ -2,7 +2,7 @@ package sirius.transitions;
 import haxe.ds.StringMap;
 import sirius.dom.IDisplay;
 import sirius.utils.Dice;
-import transitions.ITween;
+import sirius.transitions.ITween;
 
 /**
  * ...

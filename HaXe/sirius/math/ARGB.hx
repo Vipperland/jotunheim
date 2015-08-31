@@ -1,6 +1,6 @@
 package sirius.math;
 import haxe.Log;
-import math.IARGB;
+import sirius.math.IARGB;
 
 /**
  * ...

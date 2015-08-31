@@ -1,8 +1,8 @@
 <?php
 
-class sirius_php_Sirius {
+class sirius_Sirius {
 	public function __construct(){}
-	static $_loglevel = 100;
+	static $_loglevel = 12;
 	static $_initialized = false;
 	static $resources;
 	static $header;
@@ -15,7 +15,7 @@ class sirius_php_Sirius {
 		if($level === null) {
 			$level = 10;
 		}
-		if(sirius_php_Sirius_0($level, $q, $type)) {
+		if(sirius_Sirius_0($level, $q, $type)) {
 			$t = null;
 			switch($type) {
 			case -1:{
@@ -33,32 +33,35 @@ class sirius_php_Sirius {
 			case 3:{
 				$t = "[!ERROR!] ";
 			}break;
+			case 4:{
+				$t = "[//TODO:] ";
+			}break;
 			default:{
 				$t = "";
 			}break;
 			}
-			haxe_Log::trace(_hx_string_or_null($t) . Std::string($q), _hx_anonymous(array("fileName" => "Sirius.hx", "lineNumber" => 53, "className" => "sirius.php.Sirius", "methodName" => "log")));
+			haxe_Log::trace(_hx_string_or_null($t) . Std::string($q), _hx_anonymous(array("fileName" => "Sirius.hx", "lineNumber" => 237, "className" => "sirius.Sirius", "methodName" => "log")));
 		}
 	}
 	static function logLevel($q) {
-		sirius_php_Sirius::$_loglevel = $q;
+		sirius_Sirius::$_loglevel = $q;
 	}
-	function __toString() { return 'sirius.php.Sirius'; }
+	function __toString() { return 'sirius.Sirius'; }
 }
-sirius_php_Sirius::$resources = new sirius_modules_ModLib();
-sirius_php_Sirius::$header = new sirius_php_utils_Header();
-sirius_php_Sirius::$database = new php_db_Gate();
-sirius_php_Sirius::$cache = new php_data_Cache();
-function sirius_php_Sirius_0(&$level, &$q, &$type) {
+sirius_Sirius::$resources = new sirius_modules_ModLib();
+sirius_Sirius::$header = new sirius_php_utils_Header();
+sirius_Sirius::$database = new php_db_Gate();
+sirius_Sirius::$cache = new php_data_Cache();
+function sirius_Sirius_0(&$level, &$q, &$type) {
 	{
-		$b = sirius_php_Sirius::$_loglevel;
+		$b = sirius_Sirius::$_loglevel;
 		{
 			$aNeg = $b < 0;
 			$bNeg = $level < 0;
 			if($aNeg !== $bNeg) {
 				return $aNeg;
 			} else {
-				return $b > $level;
+				return $b >= $level;
 			}
 			unset($bNeg,$aNeg);
 		}

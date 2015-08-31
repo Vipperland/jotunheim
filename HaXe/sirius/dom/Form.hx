@@ -1,5 +1,5 @@
 package sirius.dom;
-import data.IFormData;
+import sirius.data.IFormData;
 import haxe.Log;
 import js.Browser;
 import js.html.FormElement;

@@ -3,17 +3,16 @@ import haxe.Json;
 import haxe.Log;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
+import sirius.Sirius;
 
 #if js
 	import sirius.css.Automator;
 	import sirius.dom.IDisplay;
 	import sirius.dom.Display;
-	import sirius.Sirius;
 #elseif php
 	import php.Lib;
 	import sys.FileSystem;
 	import sys.io.File;
-	import sirius.php.Sirius;
 #end
 
 /**
@@ -24,12 +23,16 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
+	public function new() {
+		
+	}
+	
 	/**
 	 * Check if a plugins exists
 	 * @param	module
 	 * @return
 	 */
-	static public function exists(module:String):Bool {
+	public function exists(module:String):Bool {
 		return Reflect.hasField(CACHE, module);
 	}
 	
@@ -38,7 +41,7 @@ class ModLib {
 	 * @param	file
 	 * @param	content
 	 */
-	static public function register(file:String, content:String):Void {
+	public function register(file:String, content:String):Void {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");
@@ -96,9 +99,9 @@ class ModLib {
 	 * @param	data
 	 * @return
 	 */
-	static public function get(name:String, ?data:Dynamic):String {
+	public function get(name:String, ?data:Dynamic):String {
 		name = name.toLowerCase();
-		if (!ModLib.exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+		if (!exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		var content:String = Reflect.field(CACHE, name);
 		return (data != null) ? Filler.to(content, data) : content;
 
@@ -111,7 +114,7 @@ class ModLib {
 	 * @param	sufix
 	 * @return
 	 */
-	static public function fill(module:String, data:Dynamic, ?sufix:String = null):String {
+	public function fill(module:String, data:Dynamic, ?sufix:String = null):String {
 		return Filler.to(get(module), data, sufix);
 	}
 	
@@ -123,9 +126,9 @@ class ModLib {
 		 * @param	file
 		 * @return
 		 */
-		static public function prepare(file:String):Bool {
+		public function prepare(file:String):Bool {
 			if (file != null && FileSystem.exists(file)) {
-				ModLib.register(file, File.getContent(file));
+				register(file, File.getContent(file));
 				return true;
 			}
 			return false;
@@ -138,7 +141,7 @@ class ModLib {
 		 * @param	repeat
 		 * @param	sufix
 		 */
-		static public function print(name:String, ?data:Dynamic, ?repeat:Bool, ?sufix:String = null):Void {
+		public function print(name:String, ?data:Dynamic, ?repeat:Bool, ?sufix:String = null):Void {
 			if (repeat) {
 				var module:String = get(name);
 				Dice.Values(data, function(v:Dynamic) {
@@ -158,7 +161,7 @@ class ModLib {
 		 * @param	data
 		 * @return
 		 */
-		static public function build(module:String, ?data:Dynamic):IDisplay {
+		public function build(module:String, ?data:Dynamic):IDisplay {
 			return new Display().build(get(module, data));
 		}
 		
