@@ -1,6 +1,6 @@
 package sirius.modules;
 import haxe.Http;
-import modules.Request;
+import sirius.modules.Request;
 import sirius.modules.ModLib;
 import sirius.Sirius;
 import sirius.utils.Dice;

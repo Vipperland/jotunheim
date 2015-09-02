@@ -596,23 +596,6 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
-var modules_IRequest = function() { };
-modules_IRequest.__name__ = ["modules","IRequest"];
-modules_IRequest.prototype = {
-	__class__: modules_IRequest
-};
-var modules_Request = function(success,data) {
-	this.data = data;
-	this.success = success;
-};
-modules_Request.__name__ = ["modules","Request"];
-modules_Request.__interfaces__ = [modules_IRequest];
-modules_Request.prototype = {
-	json: function() {
-		if(this.data != null) return JSON.parse(this.data); else return null;
-	}
-	,__class__: modules_Request
-};
 var sirius_net_Domain = function() {
 	this._parseURI();
 	this.data = new sirius_data_DataCache("__sru__",2592000,"http://" + this.host + "/");
@@ -780,10 +763,10 @@ sirius_modules_Loader.prototype = {
 		r.async = true;
 		if(data != null) sirius_utils_Dice.All(data,$bind(r,r.setParameter));
 		r.onData = function(d) {
-			if(handler != null) handler(new modules_Request(true,d));
+			if(handler != null) handler(new sirius_modules_Request(true,d));
 		};
 		r.onError = function(d1) {
-			if(handler != null) handler(new modules_Request(false,d1));
+			if(handler != null) handler(new sirius_modules_Request(false,d1));
 		};
 		r.request(method != null && method.toLowerCase() == "post");
 	}
@@ -3732,6 +3715,23 @@ var sirius_modules_IMod = function() { };
 sirius_modules_IMod.__name__ = ["sirius","modules","IMod"];
 sirius_modules_IMod.prototype = {
 	__class__: sirius_modules_IMod
+};
+var sirius_modules_IRequest = function() { };
+sirius_modules_IRequest.__name__ = ["sirius","modules","IRequest"];
+sirius_modules_IRequest.prototype = {
+	__class__: sirius_modules_IRequest
+};
+var sirius_modules_Request = function(success,data) {
+	this.data = data;
+	this.success = success;
+};
+sirius_modules_Request.__name__ = ["sirius","modules","Request"];
+sirius_modules_Request.__interfaces__ = [sirius_modules_IRequest];
+sirius_modules_Request.prototype = {
+	json: function() {
+		if(this.data != null) return JSON.parse(this.data); else return null;
+	}
+	,__class__: sirius_modules_Request
 };
 var sirius_seo_SEO = function(type) {
 	this.data = { };

@@ -1,4 +1,4 @@
-package modules;
+package sirius.modules;
 import haxe.Json;
 
 /**

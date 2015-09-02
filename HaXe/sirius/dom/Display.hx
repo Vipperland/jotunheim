@@ -328,7 +328,7 @@ class Display implements IDisplay {
 		if (element.parentElement != null && _parent == null) {
 			_parent = Utils.displayFrom(element.parentElement);
 		}
-		return this;
+		return _parent;
 	}
 	
 	public function activate(handler:Dynamic):IDisplay {

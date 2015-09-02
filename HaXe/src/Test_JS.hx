@@ -1,6 +1,6 @@
 package;
 import haxe.Log;
-import modules.IRequest;
+import sirius.modules.IRequest;
 import sirius.Sirius;
 
 /**

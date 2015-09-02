@@ -1,6 +1,7 @@
 package sirius.dom;
 import haxe.Log;
 import js.Browser;
+import js.html.FileList;
 import js.html.InputElement;
 import js.RegExp;
 import sirius.events.IEvent;
@@ -102,6 +103,10 @@ class Input extends Display {
 	
 	public function isValid():Bool {
 		return object.value.length > 0;
+	}
+	
+	public function files():FileList {
+		return cast attribute("files");
 	}
 	
 }

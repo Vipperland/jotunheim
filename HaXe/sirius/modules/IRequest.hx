@@ -1,4 +1,4 @@
-package modules;
+package sirius.modules;
 
 /**
  * @author Rafael Moreira

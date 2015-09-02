@@ -123,7 +123,8 @@ class Utils{
 			return screenOrientation() + "(" + viewportWidth() + "x" + viewportHeight() + ")";
 		}
 		
-		static public var typeOf:Dynamic = { 
+		/** @private */
+		static private var _typeOf:Dynamic = { 
 			a:A,applet:Applet,area:Area,audio:Audio,
 			b:B,base:Base,body:Body,br:BR,
 			button:Button,canvas:Canvas,caption:Caption,col:Col,content:Content,
@@ -143,10 +144,15 @@ class Utils{
 			video:Video
 		};
 		
+		/**
+		 * Convert an element to Sirius Display object
+		 * @param	t
+		 * @return
+		 */
 		static public function displayFrom(t:Element):IDisplay {
 			if (t.nodeType != 1) 
 				return new Display(t);
-			var OC:Dynamic = Reflect.field(typeOf, (t.hasAttribute('sru-dom') ? t.getAttribute('sru-dom') : t.tagName).toLowerCase());
+			var OC:Dynamic = Reflect.field(_typeOf, (t.hasAttribute('sru-dom') ? t.getAttribute('sru-dom') : t.tagName).toLowerCase());
 			return OC == null ? new Display(t) : untyped __js__('new OC(t)');
 		}
 	
@@ -171,11 +177,21 @@ class Utils{
 	}
 	
 	
-	
+	/**
+	 * Convert a value to String or Json string
+	 * @param	o
+	 * @param	json
+	 * @return
+	 */
 	static public function toString(o:Dynamic, ?json:Bool):String {
 		return json == true ? Json.stringify(o) : Std.string(o);
 	}
 	
+	/**
+	 * Check if a value is !null or/and length>0 if a string
+	 * @param	o
+	 * @return
+	 */
 	static public function isValid(o:Dynamic):Bool {
 		if (o != null && untyped __js__("o != undefined")) {
 			if (Std.is(o, String)) {
@@ -187,6 +203,11 @@ class Utils{
 		return false;
 	}
 	
+	/**
+	 * Class name of the object
+	 * @param	o
+	 * @return
+	 */
 	static public function getClassName(o:Dynamic):String {
 		return o != null ? Type.getClassName(Type.getClass(o)) : "null";
 	}
