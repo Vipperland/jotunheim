@@ -1,5 +1,4 @@
 package sirius.php.db;
-import haxe.Log;
 import php.Lib;
 import php.NativeArray;
 import sirius.php.db.pdo.Statement;
@@ -10,7 +9,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class Command {
+class Command implements ICommand {
 	
 	// PDO::FETCH_ASSOC = 2
 	// PDO::FETCH_OBJ = 5
@@ -26,7 +25,7 @@ class Command {
 		if (arguments != null) bind(arguments);
 	}
 	
-	public function bind(arguments:Dynamic):Command {
+	public function bind(arguments:Dynamic):ICommand {
 		var isArray:Bool = Std.is(arguments, Array);
 		Dice.All(arguments, function(p:Dynamic, v:Dynamic) {
 			if (isArray) {
@@ -38,7 +37,7 @@ class Command {
 		return this;
 	}
 	
-	public function execute(?handler:Dynamic, ?type:Int = 2, ?queue:String = null, ?parameters:Array<Dynamic>):Command {
+	public function execute(?handler:Dynamic, ?type:Int = 2, ?queue:String = null, ?parameters:Array<Dynamic>):ICommand {
 		var p:NativeArray = null;
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
 		success = statement.execute(p);
@@ -48,7 +47,7 @@ class Command {
 		return this;
 	}
 	
-	public function fetch(handler:Dynamic):Command {
+	public function fetch(handler:Dynamic):ICommand {
 		Dice.Values(result, function(v:Dynamic) { handler(v); } );
 		return this;
 	}

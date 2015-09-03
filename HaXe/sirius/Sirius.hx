@@ -25,6 +25,7 @@ import sirius.modules.ModLib;
 #elseif php
 	import sirius.php.data.Cache;
 	import sirius.php.db.Gate;
+	import sirius.php.db.IGate;
 	import sirius.php.utils.Header;
 #end
 
@@ -210,15 +211,11 @@ class Sirius {
 		
 		public static var header:Header = new Header();
 		
-		public static var database:Gate = new Gate();
+		public static var gate:IGate = new Gate();
 		
 		static public var cache:Cache = new Cache();
 		
-		
-		
 	#end
-	
-	
 	
 	/**
 	 * Level controlled log

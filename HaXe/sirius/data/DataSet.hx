@@ -42,4 +42,16 @@ class DataSet implements IDataSet {
 		return r;
 	}
 	
+	public function index():Array<String> {
+		var r:Array<String> = [];
+		Dice.Params(this, function(p:String) { r[r.length] = p; } );
+		return r;
+	}
+	
+	public function values():Array<String> {
+		var r:Array<String> = [];
+		Dice.Values(this, function(v:String) { r[r.length] = v; } );
+		return r;
+	}
+	
 }

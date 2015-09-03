@@ -1,6 +1,6 @@
 <?php
 
-class sirius_php_db_Command {
+class sirius_php_db_Command implements sirius_php_db_ICommand{
 	public function __construct($statement, $arguments = null) {
 		if(!php_Boot::$skip_constructor) {
 		$this->statement = $statement;

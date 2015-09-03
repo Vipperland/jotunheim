@@ -5,6 +5,9 @@ class php_Lib {
 	static function hprint($v) {
 		echo(Std::string($v));
 	}
+	static function dump($v) {
+		var_dump($v);
+	}
 	static function toPhpArray($a) {
 		return $a->a;
 	}
