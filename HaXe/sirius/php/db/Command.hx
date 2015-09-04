@@ -1,6 +1,8 @@
 package sirius.php.db;
 import php.Lib;
 import php.NativeArray;
+import sirius.data.DataSet;
+import sirius.errors.Error;
 import sirius.php.db.pdo.Statement;
 import sirius.Sirius;
 import sirius.utils.Dice;
@@ -11,6 +13,9 @@ import sirius.utils.Dice;
  */
 class Command implements ICommand {
 	
+	private var _query:String;
+	private var _parameters:Dynamic;
+	
 	// PDO::FETCH_ASSOC = 2
 	// PDO::FETCH_OBJ = 5
 	
@@ -19,20 +24,23 @@ class Command implements ICommand {
 	public var statement:Statement;
 	
 	public var result:Array<Dynamic>;
+	
+	public var errors:Array<Error>;
 
-	public function new(statement:Statement, ?arguments:Dynamic) {
+	public function new(statement:Statement, query:String, ?parameters:Dynamic) {
+		errors = [];
+		_parameters = { };
+		_query = query;
 		this.statement = statement;
-		if (arguments != null) bind(arguments);
+		if (parameters != null) bind(parameters);
 	}
 	
-	public function bind(arguments:Dynamic):ICommand {
-		var isArray:Bool = Std.is(arguments, Array);
-		Dice.All(arguments, function(p:Dynamic, v:Dynamic) {
-			if (isArray) {
-				statement.setAttribute(p, v);
-			}else {
-				statement.bindValue(p, v);
-			}
+	public function bind(parameters:Dynamic):ICommand {
+		var isArray:Bool = Std.is(parameters, Array);
+		Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
+			if (isArray)	statement.setAttribute(p, v);
+			else 			statement.bindValue(p, v);
+			Reflect.setField(_parameters, p, v);
 		});
 		return this;
 	}
@@ -40,20 +48,31 @@ class Command implements ICommand {
 	public function execute(?handler:Dynamic, ?type:Int = 2, ?queue:String = null, ?parameters:Array<Dynamic>):ICommand {
 		var p:NativeArray = null;
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
-		success = statement.execute(p);
-		result = Lib.toHaxeArray(statement.fetchAll(type));
-		if (handler != null) fetch(handler);
-		if (queue != null) this.queue(queue);
+		try {
+			success = statement.execute(p);
+			result = Lib.toHaxeArray(statement.fetchAll(type));
+			if (handler != null) fetch(handler);
+			if (queue != null) this.queue(queue);
+		}catch (e:Dynamic) {
+			errors[errors.length] = new Error(e.getCode(), e.getMessage());
+		}
+		
 		return this;
 	}
 	
 	public function fetch(handler:Dynamic):ICommand {
-		Dice.Values(result, function(v:Dynamic) { handler(v); } );
+		Dice.Values(result, function(v:Dynamic) { handler(new DataSet(v)); } );
 		return this;
 	}
 	
 	public function queue(name:String):Void {
 		Sirius.cache.add(name, result);
+	}
+	
+	public function log():String {
+		var q:String = _query;
+		Dice.All(_parameters, function(p:String, v:Dynamic) { q = StringTools.replace(q, ":" + p, v); });
+		return q;
 	}
 	
 }

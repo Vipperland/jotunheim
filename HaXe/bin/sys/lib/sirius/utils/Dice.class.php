@@ -32,7 +32,7 @@ class sirius_utils_Dice {
 				}
 			}
 		}
-		$r = _hx_anonymous(array("param" => $p, "value" => $v, "completed" => $i));
+		$r = _hx_anonymous(array("param" => $p, "value" => $v, "completed" => $i, "object" => $q));
 		if($c) {
 			call_user_func_array($complete, array($r));
 		}
@@ -75,7 +75,7 @@ class sirius_utils_Dice {
 		if(Std::is($from, _hx_qtype("Array"))) {
 			sirius_utils_Dice::Values($from, array(new _hx_lambda(array(&$alt, &$from), "sirius_utils_Dice_5"), 'execute'), null);
 		}
-		return _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt)));
+		return _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt), "object" => $from));
 	}
 	static function Match($table, $values) {
 		if(!Std::is($values, _hx_qtype("Array"))) {

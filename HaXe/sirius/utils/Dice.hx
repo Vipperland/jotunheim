@@ -51,7 +51,7 @@ class Dice {
 			}
 			
 		}
-		var r:IDice = cast { param:p, value:v, completed:i };
+		var r:IDice = cast { param:p, value:v, completed:i, object:q };
 		if (c) complete(r);
 		return r;
 		
@@ -134,7 +134,7 @@ class Dice {
 				return from == null;
 			});
 		}
-		return cast { value:Utils.isValid(from) ? from : alt };
+		return cast { value:Utils.isValid(from) ? from : alt, object:from };
 	}
 	
 	/**

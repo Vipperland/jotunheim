@@ -1,8 +1,8 @@
 package sirius.php;
 
 import haxe.Log;
-import php.data.Cache;
-import php.db.Gate;
+import sirius.php.data.Cache;
+import sirius.php.db.Gate;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
 import sirius.modules.ModLib;
@@ -21,23 +21,17 @@ class Sirius {
 	static public var resources:ModLib = new ModLib();
 	
 	#if php
-	
+		
 		public static var header:Header = new Header();
 		
 		public static var database:Gate = new Gate();
 		
 		static public var cache:Cache = new Cache();
 		
-		//static function main() {
-			//var t:Array<Dynamic> = [ { name:"Goddamn ", nick:"Foobar", extra:{message:"- Now with Sweet Potatos!"} }, { name:"Hello", nick:"World", extra:{message:null} } ];
-			//ModLib.prepare("modules/filler-test.html");
-			//ModLib.print("modules/filler-test.html", t, true);
-		//}
-	
 	#elseif js
-	
+		
 		static public var resources:ILoader = new Loader();
-	
+		
 	#end
 	
 	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {

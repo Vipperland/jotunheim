@@ -132,17 +132,30 @@ class Loader implements ILoader {
 			}
 			r.request(false);
 		}
+	
+	#elseif php
 		
-		public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
-			var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
-			r.async = true;
-			if (data != null) Dice.All(data, r.setParameter);
-			r.onData = function(d) { if (handler != null) handler(new Request(true, d)); }
-			r.onError = function(d) { if (handler != null) handler(new Request(false, d)); }
-			r.request(method != null && method.toLowerCase() == 'post');
+		public function async(file:String, ?data:Dynamic, ?handler:Dynamic):Void {
+			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
+			r.onData = function(d) {
+				Sirius.resources.register(file, d);
+				if (handler != null) handler(file, d);
+			}
+			r.request(false);
 		}
 		
 	#end
+	
+	public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+		var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
+		#if js
+			r.async = true;
+		#end
+		if (data != null) Dice.All(data, r.setParameter);
+		r.onData = function(d) { if (handler != null) handler(new Request(true, d)); }
+		r.onError = function(d) { if (handler != null) handler(new Request(false, d)); }
+		r.request(method != null && method.toLowerCase() == 'post');
+	}
 	
 	public function get(module:String, ?data:Dynamic):String {
 		return Sirius.resources.get(module, data);

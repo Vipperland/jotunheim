@@ -1,7 +1,10 @@
 package sirius;
 
 import haxe.Log;
+import php.Lib;
 import sirius.modules.ModLib;
+import sirius.modules.ILoader;
+import sirius.modules.Loader;
 
 #if js
 	import js.Browser;
@@ -13,8 +16,6 @@ import sirius.modules.ModLib;
 	import sirius.dom.Display;
 	import sirius.dom.Document;
 	import sirius.dom.IDisplay;
-	import sirius.modules.ILoader;
-	import sirius.modules.Loader;
 	import sirius.net.Domain;
 	import sirius.seo.SEOTool;
 	import sirius.tools.IAgent;
@@ -190,23 +191,6 @@ class Sirius {
 			return agent;
 		}
 		
-		/**
-		 * Load and fill a external content
-		 * @param	file
-		 * @param	target
-		 * @param	content
-		 * @param	handler
-		 */
-		static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
-			var f:Dynamic = (_initialized ? onLoad : init);
-			f(function() { loader.async(file, target, content, handler); });
-		}
-		
-		static public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
-			var f:Dynamic = (_initialized ? onLoad : init);
-			f(function() { loader.request(url, data, handler, method); } );
-		}
-		
 	#elseif php
 		
 		public static var header:Header = new Header();
@@ -215,7 +199,34 @@ class Sirius {
 		
 		static public var cache:Cache = new Cache();
 		
+		static public var loader:ILoader = new Loader();
+		
 	#end
+	
+	/**
+	 * Load and fill a external content
+	 * @param	file
+	 * @param	target
+	 * @param	content
+	 * @param	handler
+	 */
+	static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
+		#if js
+			var f:Dynamic = (_initialized ? onLoad : init);
+			f(function() { loader.async(file, target, content, handler); } );
+		#elseif php
+			loader.async(file, content, handler);
+		#end
+	}
+	
+	static public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+		#if js
+			var f:Dynamic = (_initialized ? onLoad : init);
+			f(function() { loader.request(url, data, handler, method); } );
+		#elseif php
+			loader.request(url, data, handler, method);
+		#end
+	}
 	
 	/**
 	 * Level controlled log
@@ -234,7 +245,12 @@ class Sirius {
 				case 4 : "[//TODO:] ";
 				default : "";
 			}
-			Log.trace(t + q);
+			#if js
+				Log.trace(t + q);
+			#elseif php
+				Lib.dump(q);
+			#end
+			
 		}
 	}
 	

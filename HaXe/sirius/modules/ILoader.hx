@@ -54,7 +54,18 @@ interface ILoader {
 		 * @param	handler
 		 */
 		public function async(file:String, ?target:String, ?data:Dynamic, ?handler:Dynamic):Void;
-	
+		
+	#elseif php
+		
+		/**
+		 * Load a module not in queue
+		 * @param	file
+		 * @param	target
+		 * @param	data
+		 * @param	handler
+		 */
+		public function async(file:String, ?data:Dynamic, ?handler:Dynamic):Void;
+		
 	#end
 	
 	/**

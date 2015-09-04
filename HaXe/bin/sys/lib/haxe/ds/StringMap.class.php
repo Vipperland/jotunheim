@@ -1,8 +1,14 @@
 <?php
 
 class haxe_ds_StringMap implements haxe_IMap, IteratorAggregate{
-	public function __construct(){}
+	public function __construct() {
+		if(!php_Boot::$skip_constructor) {
+		$this->h = array();
+	}}
 	public $h;
+	public function set($key, $value) {
+		$this->h[$key] = $value;
+	}
 	public function get($key) {
 		if(array_key_exists($key, $this->h)) {
 			return $this->h[$key];

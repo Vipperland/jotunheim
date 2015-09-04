@@ -6,6 +6,8 @@ package sirius.utils;
 
 interface IDice {
 	// Last param
+	public var object:Dynamic;
+	// Last param
 	public var param:Dynamic;
 	// Last Value
 	public var value:Dynamic;

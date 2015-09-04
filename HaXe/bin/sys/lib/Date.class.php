@@ -1,8 +1,14 @@
 <?php
 
 class Date {
-	public function __construct(){}
+	public function __construct($year, $month, $day, $hour, $min, $sec) {
+		if(!php_Boot::$skip_constructor) {
+		$this->__t = mktime($hour, $min, $sec, $month + 1, $day, $year);
+	}}
 	public $__t;
+	public function getTime() {
+		return $this->__t * 1000;
+	}
 	public function toString() {
 		return date("Y-m-d H:i:s", $this->__t);
 	}
@@ -15,6 +21,14 @@ class Date {
 			return $this->__toString();
 		else
 			throw new HException('Unable to call <'.$m.'>');
+	}
+	static function now() {
+		return Date::fromPhpTime(round(microtime(true), 3));
+	}
+	static function fromPhpTime($t) {
+		$d = new Date(2000, 1, 1, 0, 0, 0);
+		$d->__t = $t;
+		return $d;
 	}
 	function __toString() { return $this->toString(); }
 }

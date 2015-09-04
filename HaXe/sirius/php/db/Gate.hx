@@ -1,8 +1,9 @@
 package sirius.php.db;
-import haxe.Log;
 import php.Lib;
 import sirius.data.DataSet;
-import sirius.data.DataSet;
+import sirius.data.IDataSet;
+import sirius.errors.Error;
+import sirius.php.db.Command;
 import sirius.php.db.IGate;
 import sirius.php.db.pdo.Bridge;
 import sirius.php.db.pdo.Connection;
@@ -20,16 +21,27 @@ class Gate implements IGate {
 	
 	public var command:ICommand;
 	
+	private var _token:Token;
+	
+	public var errors:Array<Error>;
+	
 	public function new() {
+		errors = [];
 	}
 	
 	public function isOpen():Bool {
-		return _db != null;
+		return _db != null && errors.length == 0;
 	}
 	
 	public function open(token:Token):IGate {
 		if (!isOpen()) {
-			_db = Bridge.open(token.host, token.user, token.pass, token.options);
+			_token = token;
+			try {
+				_db = Bridge.open(token.host, token.user, token.pass, token.options);
+			}catch (e:Dynamic) {
+				Lib.dump(e);
+				errors[errors.length] = new Error(e.getCode(), e.getMessage());
+			}
 			command = null;
 		}
 		return this;
@@ -39,20 +51,29 @@ class Gate implements IGate {
 		command = null;
 		if (isOpen()) {
 			var pdo:Statement = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-			command = new Command(pdo, parameters);
+			command = new Command(pdo, query, parameters);
 		}
 		return command;
 	}
 	
-	public function fields(table:Dynamic):DataSet {
-		if (!Std.is(table, Array)) table = [table];
-		var r:DataSet = new DataSet();
-		Dice.Values(table, function(v:String) {
-			var c:ICommand = prepare("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table", { table:v } ).execute();
-			var s:Array<String> = [];
-			Dice.Values(c.result, function(v:Dynamic) {	s[s.length] = v.COLUMN_NAME; } );
-			r.set(v, s);
-		});
+	public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand {
+		var ps:Array<String> = [];
+		Dice.All(parameters, ps.push);
+		return prepare("INSERT INTO " + table + " (" + ps.join(",") + ") VALUES (:" + ps.join(",:") + ")", parameters, options);
+	}
+	
+	public function schemaOf(?table:Dynamic):IDataSet {
+		var r:IDataSet = null;
+		if(isOpen()){
+			if (!Std.is(table, Array)) table = [table];
+			r = new DataSet();
+			Dice.Values(table, function(v:String) {
+				var c:ICommand = prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table", { schema:_token.db, table:v } ).execute();
+				var s:IDataSet = new DataSet();
+				Dice.All(c.result, s.set);
+				r.set(v, s);
+			});
+		}
 		return r;
 	}
 	

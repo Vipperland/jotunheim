@@ -1,5 +1,6 @@
 package sirius.php.db;
-import sirius.data.DataSet;
+import sirius.data.IDataSet;
+import sirius.errors.Error;
 import sirius.php.db.ICommand;
 import sirius.php.db.Token;
 
@@ -13,6 +14,11 @@ interface IGate {
 	 * Last created command
 	 */
 	public var command : ICommand;
+	
+	/**
+	 * Connection and Execution Errors
+	 */
+	public var errors:Array<Error>;
 	
 	/**
 	 * If the connection is available
@@ -41,6 +47,15 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function fields (table:Dynamic) : DataSet;
+	public function schemaOf (?table:Dynamic) : IDataSet;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	parameters
+	 * @return
+	 */
+	public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand;
+	
 	
 }

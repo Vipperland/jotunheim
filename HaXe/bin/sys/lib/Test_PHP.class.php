@@ -3,10 +3,16 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
-		sirius_Sirius::$header->content(sirius_php_utils_Header::$JSON);
 		$g = sirius_Sirius::$gate->open(new sirius_php_db_Token("localhost", 3306, "root", "", "apto.vc", null));
 		if($g->isOpen()) {
-			php_Lib::dump(_hx_array_get($g->fields((new _hx_array(array("types_states", "types_cities", "types_neighboorhoods"))))->get("types_states"), 0));
+			$c = $g->prepare("SELECT id,name,abbreviation FROM types_states", null, null)->execute(null, null, null, null);
+			if($c->success) {
+				$c->queue("states");
+				sirius_Sirius::$header->setJSON();
+				sirius_Sirius::$cache->json(true, null);
+			}
+		} else {
+			sirius_Sirius::log($g->errors, null, null);
 		}
 	}
 	function __toString() { return 'Test_PHP'; }

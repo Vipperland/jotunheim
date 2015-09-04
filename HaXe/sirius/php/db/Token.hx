@@ -13,6 +13,7 @@ class Token {
 	public var host:String;
 
 	public function new(host:String, port:UInt, user:String, pass:String, db:String, ?options:Array<UInt>) {
+		this.db = db;
 		this.options = options;
 		this.pass = pass;
 		this.user = user;

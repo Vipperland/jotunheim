@@ -3,6 +3,7 @@
 class sirius_php_db_Token {
 	public function __construct($host, $port, $user, $pass, $db, $options = null) {
 		if(!php_Boot::$skip_constructor) {
+		$this->db = $db;
 		$this->options = $options;
 		$this->pass = $pass;
 		$this->user = $user;

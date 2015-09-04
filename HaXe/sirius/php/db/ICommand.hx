@@ -52,4 +52,9 @@ interface ICommand {
 	 */
 	public function queue (name:String) : Void;
 	
+	/**
+	 * Dump the final query
+	 */
+	public function log():String;
+	
 }

@@ -8,6 +8,16 @@ class sirius_Sirius {
 	static $header;
 	static $gate;
 	static $cache;
+	static $loader;
+	static function module($file, $target = null, $content = null, $handler = null) {
+		sirius_Sirius::$loader->async($file, $content, $handler);
+	}
+	static function request($url, $data = null, $handler = null, $method = null) {
+		if($method === null) {
+			$method = "post";
+		}
+		sirius_Sirius::$loader->request($url, $data, $handler, $method);
+	}
 	static function log($q, $level = null, $type = null) {
 		if($type === null) {
 			$type = -1;
@@ -40,7 +50,7 @@ class sirius_Sirius {
 				$t = "";
 			}break;
 			}
-			haxe_Log::trace(_hx_string_or_null($t) . Std::string($q), _hx_anonymous(array("fileName" => "Sirius.hx", "lineNumber" => 237, "className" => "sirius.Sirius", "methodName" => "log")));
+			php_Lib::dump($q);
 		}
 	}
 	static function logLevel($q) {
@@ -52,6 +62,7 @@ sirius_Sirius::$resources = new sirius_modules_ModLib();
 sirius_Sirius::$header = new sirius_php_utils_Header();
 sirius_Sirius::$gate = new sirius_php_db_Gate();
 sirius_Sirius::$cache = new sirius_php_data_Cache();
+sirius_Sirius::$loader = new sirius_modules_Loader(null);
 function sirius_Sirius_0(&$level, &$q, &$type) {
 	{
 		$b = sirius_Sirius::$_loglevel;
