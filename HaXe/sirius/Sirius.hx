@@ -1,7 +1,6 @@
 package sirius;
 
 import haxe.Log;
-import php.Lib;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
@@ -24,6 +23,7 @@ import sirius.modules.Loader;
 	import sirius.utils.ITable;
 	import sirius.utils.Table;
 #elseif php
+	import php.Lib;
 	import sirius.php.data.Cache;
 	import sirius.php.db.Gate;
 	import sirius.php.db.IGate;

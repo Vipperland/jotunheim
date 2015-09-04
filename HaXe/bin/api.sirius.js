@@ -974,7 +974,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 240, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 249, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1147,34 +1147,58 @@ sirius_data_IDataSet.__name__ = ["sirius","data","IDataSet"];
 sirius_data_IDataSet.prototype = {
 	__class__: sirius_data_IDataSet
 };
-var sirius_data_DataSet = function() {
+var sirius_data_DataSet = function(q) {
+	if(q != null) this._content = q; else this._content = { };
 };
 sirius_data_DataSet.__name__ = ["sirius","data","DataSet"];
 sirius_data_DataSet.__interfaces__ = [sirius_data_IDataSet];
 sirius_data_DataSet.prototype = {
 	get: function(p) {
-		return Reflect.field(this,p);
+		return Reflect.field(this._content,p);
 	}
 	,set: function(p,v) {
-		this[p] = v;
+		this._content[p] = v;
 		return this;
 	}
 	,exists: function(p) {
-		return Object.prototype.hasOwnProperty.call(this,p);
+		return Object.prototype.hasOwnProperty.call(this._content,p);
 	}
 	,clear: function() {
-		var _g = this;
-		sirius_utils_Dice.Params(this,function(p) {
-			Reflect.deleteField(_g,p);
-		});
+		this._content = { };
 		return this;
 	}
 	,find: function(v) {
 		var r = [];
-		sirius_utils_Dice.All(this,function(p,x) {
+		sirius_utils_Dice.All(this._content,function(p,x) {
 			if(x != null && x.indexOf(v) != -1) r[r.length] = p;
 		});
 		return r;
+	}
+	,index: function() {
+		var r = [];
+		sirius_utils_Dice.Params(this._content,$arrayPushClosure(r));
+		return r;
+	}
+	,values: function() {
+		var r = [];
+		sirius_utils_Dice.Values(this._content,$arrayPushClosure(r));
+		return r;
+	}
+	,filter: function(p,handler) {
+		var r = new sirius_data_DataSet();
+		var h = handler != null;
+		sirius_utils_Dice.All(this._content,function(p2,v) {
+			if(js_Boot.__instanceof(v,sirius_data_IDataSet)) {
+				if(v.exists(p)) r.set(p2,h?handler(v):v.get(p));
+			} else if(Object.prototype.hasOwnProperty.call(v,p)) r.set(p2,h?handler(v):Reflect.field(v,p));
+		});
+		return r;
+	}
+	,each: function(handler) {
+		sirius_utils_Dice.All(this._content,handler);
+	}
+	,structure: function() {
+		return this._content;
 	}
 	,__class__: sirius_data_DataSet
 };
@@ -1413,7 +1437,7 @@ sirius_dom_Display.prototype = {
 	}
 	,parent: function() {
 		if(this.element.parentElement != null && this._parent == null) this._parent = sirius_tools_Utils.displayFrom(this.element.parentElement);
-		return this;
+		return this._parent;
 	}
 	,activate: function(handler) {
 		sirius_tools_Ticker.add(handler);
@@ -2327,6 +2351,9 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	,isValid: function() {
 		return this.object.value.length > 0;
 	}
+	,files: function() {
+		return this.attribute("files");
+	}
 	,__class__: sirius_dom_Input
 });
 var sirius_dom_Label = $hx_exports.sru.dom.Label = function(q,d) {
@@ -2950,7 +2977,7 @@ sirius_tools_Utils.screenInfo = function() {
 };
 sirius_tools_Utils.displayFrom = function(t) {
 	if(t.nodeType != 1) return new sirius_dom_Display(t);
-	var OC = Reflect.field(sirius_tools_Utils.typeOf,(t.hasAttribute("sru-dom")?t.getAttribute("sru-dom"):t.tagName).toLowerCase());
+	var OC = Reflect.field(sirius_tools_Utils._typeOf,(t.hasAttribute("sru-dom")?t.getAttribute("sru-dom"):t.tagName).toLowerCase());
 	if(OC == null) return new sirius_dom_Display(t); else {
 		return new OC(t);
 	}
@@ -4174,7 +4201,7 @@ sirius_utils_Dice.All = function(q,each,complete) {
 			}
 		}
 	}
-	var r = { param : p, value : v, completed : i};
+	var r = { param : p, value : v, completed : i, object : q};
 	if(c) complete(r);
 	return r;
 };
@@ -4210,7 +4237,7 @@ sirius_utils_Dice.One = function(from,alt) {
 		from = v;
 		return from == null;
 	});
-	return { value : sirius_tools_Utils.isValid(from)?from:alt};
+	return { value : sirius_tools_Utils.isValid(from)?from:alt, object : from};
 };
 sirius_utils_Dice.Match = function(table,values) {
 	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
@@ -4571,6 +4598,7 @@ sirius_utils_Table.prototype = {
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
+function $arrayPushClosure(a) { return function(x) { a.push(x); }; }
 if(Array.prototype.indexOf) HxOverrides.indexOf = function(a,o,i) {
 	return Array.prototype.indexOf.call(a,o,i);
 };
@@ -4614,7 +4642,7 @@ sirius_css_CSSGroup.MEDIA_LG = sirius_css_CSSGroup.SOF + "(min-width:1170px){ ";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
-sirius_tools_Utils.typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
+sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#";
