@@ -1,4 +1,5 @@
 package sirius.seo;
+import seo.Search;
 import sirius.seo.Organization;
 import sirius.seo.Person;
 import sirius.tools.BitIO;
@@ -21,6 +22,8 @@ class SEOTool{
 	
 	static public var PERSON:UInt = 1 << 4;
 	
+	static public var SEARCH:UInt = 1 << 5;
+	
 	public var website:WebSite;
 	
 	public var product:Product;
@@ -30,6 +33,8 @@ class SEOTool{
 	public var organization:Organization;
 	
 	public var person:Person;
+	
+	public var search:Search;
 	
 	private var _publish:Array<SEO>;
 	
@@ -51,6 +56,7 @@ class SEOTool{
 		if (BitIO.Test(types, PRODUCT)) _create('product', Product);
 		if (BitIO.Test(types, ORGANIZATION)) _create('organization', Organization);
 		if (BitIO.Test(types, PERSON)) _create('person', Person);
+		if (BitIO.Test(types, SEARCH)) _create('search', Search);
 		return this;
 	}
 	

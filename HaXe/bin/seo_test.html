@@ -7,12 +7,12 @@
 </head>
 <body>
 	
-	<script src="seo.sirius.min.js"></script>
+	<script src="api.sirius.js"></script>
 	<script>
 		// ============================================================ SEO ================================================
 		var seo = Sirius.seo;
-		// Habilita SEO schemes para WEBSITE, BREADCRUMBS e/ou PRODUCT, pode usar um ou mais, apenas tags definidas serão publicadas.
-		seo.init(SEO.WEBSITE | SEO.BREADCRUMBS | SEO.PRODUCT);
+		// Habilita SEO schemes para WEBSITE, BREADCRUMBS, PRODUCT e/ou SEARCH, pode usar um ou mais, apenas RichSnippets definidos serão publicadas no formato ld/json.
+		seo.init(SEO.WEBSITE | SEO.BREADCRUMBS | SEO.PRODUCT | SEO.SEARCH);
 		// Define propriedades para WEBSITE .build(nome,url,nome_alternativo*)
 		seo.website.build('Teste SEO','http://testseo.com','Framework SEO');
 		// Define propriedades para BREADCRUMBS .add(nome,url_do_produto)
@@ -22,7 +22,11 @@
 		seo.product.build('Ferramenta para SEO','seotool.jpg','Apenas um teste para ferramentas de SEO','teste_id');
 		seo.product.brand('Sirius','sirius.jpg','gateofsirius.com');
 		seo.product.offer('BRL','InStock',100.00,200.00); 
-		// Publicar os dados de SEO
+		// Define a ação da barra de busca na pagina de resultados .search(url,nome_da_variavel)
+		seo.search.build('http://testseo.com','http://testseo.com/q={test_prop}','test_prop');
+		// ORGANIZATION e PERSON também são RichSnippets disponiveis
+		
+		// Publicar os dados definidos de SEO
 		seo.publish();
 		// =========================================================== /SEO/ ===============================================
 		

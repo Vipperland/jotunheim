@@ -596,6 +596,52 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
+var seo_ISearchBox = function() { };
+seo_ISearchBox.__name__ = ["seo","ISearchBox"];
+seo_ISearchBox.prototype = {
+	__class__: seo_ISearchBox
+};
+var sirius_seo_SEO = function(type) {
+	this.data = { };
+	this.data["@context"] = "http://schema.org/";
+	this.data["@type"] = type;
+	var _this = window.document;
+	this.object = _this.createElement("script");
+	this.object.type = "application/ld+json";
+};
+sirius_seo_SEO.__name__ = ["sirius","seo","SEO"];
+sirius_seo_SEO.prototype = {
+	publish: function() {
+		this.object.innerHTML = JSON.stringify(this.data);
+		if(this.object.parentElement == null) window.document.head.appendChild(this.object);
+	}
+	,typeOf: function() {
+		return Reflect.field(this.data,"@type");
+	}
+	,__class__: sirius_seo_SEO
+};
+var seo_Search = function() {
+	sirius_seo_SEO.call(this,"WebSite");
+	this._d = this.data;
+};
+seo_Search.__name__ = ["seo","Search"];
+seo_Search.__super__ = sirius_seo_SEO;
+seo_Search.prototype = $extend(sirius_seo_SEO.prototype,{
+	url: function(q) {
+		if(q != null) this._d.url = q;
+		return this._d.url;
+	}
+	,action: function(target,prop) {
+		if(this._d != null) this._d.potentialAction = { '@type' : "SearchAction", target : target, 'query-input' : "required name=" + prop};
+		return this._d;
+	}
+	,build: function(q,target,prop) {
+		this.url(q);
+		this.action(target,prop);
+		return this;
+	}
+	,__class__: seo_Search
+});
 var sirius_net_Domain = function() {
 	this._parseURI();
 	this.data = new sirius_data_DataCache("__sru__",2592000,"http://" + this.host + "/");
@@ -856,6 +902,7 @@ sirius_seo_SEOTool.prototype = {
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
+		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",seo_Search);
 		return this;
 	}
 	,publish: function() {
@@ -3760,25 +3807,6 @@ sirius_modules_Request.prototype = {
 	}
 	,__class__: sirius_modules_Request
 };
-var sirius_seo_SEO = function(type) {
-	this.data = { };
-	this.data["@context"] = "http://schema.org/";
-	this.data["@type"] = type;
-	var _this = window.document;
-	this.object = _this.createElement("script");
-	this.object.type = "application/ld+json";
-};
-sirius_seo_SEO.__name__ = ["sirius","seo","SEO"];
-sirius_seo_SEO.prototype = {
-	publish: function() {
-		this.object.innerHTML = JSON.stringify(this.data);
-		if(this.object.parentElement == null) window.document.head.appendChild(this.object);
-	}
-	,typeOf: function() {
-		return Reflect.field(this.data,"@type");
-	}
-	,__class__: sirius_seo_SEO
-};
 var sirius_seo_Breadcrumbs = function() {
 	sirius_seo_SEO.call(this,"BreadcrumbList");
 	this._setup();
@@ -3910,10 +3938,10 @@ sirius_seo_Product.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,review: function(value,reviews) {
 		if(this.reviewOf == null) {
-			this.reviewOf = { '@type' : "AggregateRating", ratingValue : 0, reviewCount : 0};
+			this.reviewOf = { '@type' : "AggregateRating", ratingValue : "0,0", reviewCount : 0};
 			this.data.aggregateRating = this.reviewOf;
 		}
-		if(value != null) if(value == null) this.reviewOf.ratingValue = "null"; else this.reviewOf.ratingValue = "" + value;
+		if(value != null) this.reviewOf.ratingValue = value.toFixed(1).split('.').join(',');
 		if(reviews != null) if(reviews == null) this.reviewOf.reviewCount = "null"; else this.reviewOf.reviewCount = "" + reviews;
 		return this.reviewOf;
 	}
@@ -4627,6 +4655,7 @@ sirius_seo_SEOTool.BREADCRUMBS = 2;
 sirius_seo_SEOTool.PRODUCT = 4;
 sirius_seo_SEOTool.ORGANIZATION = 8;
 sirius_seo_SEOTool.PERSON = 16;
+sirius_seo_SEOTool.SEARCH = 32;
 sirius_Sirius._loglevel = 12;
 sirius_Sirius._initialized = false;
 sirius_Sirius.resources = new sirius_modules_ModLib();
