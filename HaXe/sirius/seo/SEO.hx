@@ -9,6 +9,12 @@ import js.html.ScriptElement;
  */
 class SEO {
 	
+	public static function sign(o:Dynamic,type:String, ?context:Bool = true):Dynamic {
+		if(context) Reflect.setField(o,"@context", "http://schema.org");
+		Reflect.setField(o, "@type", type);
+		return o;
+	}
+	
 	public var object:ScriptElement;
 	
 	public var data:Dynamic;

@@ -1,16 +1,17 @@
 package sirius;
 
 import haxe.Log;
+import sirius.data.DataCache;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
+import sirius.tools.Utils;
 
 #if js
 	import js.Browser;
 	import js.html.Element;
 	import js.JQuery;
 	import sirius.css.Automator;
-	import sirius.data.DataCache;
 	import sirius.dom.Body;
 	import sirius.dom.Display;
 	import sirius.dom.Document;
@@ -18,7 +19,6 @@ import sirius.modules.Loader;
 	import sirius.net.Domain;
 	import sirius.seo.SEOTool;
 	import sirius.tools.IAgent;
-	import sirius.tools.Utils;
 	import sirius.transitions.Animator;
 	import sirius.utils.ITable;
 	import sirius.utils.Table;

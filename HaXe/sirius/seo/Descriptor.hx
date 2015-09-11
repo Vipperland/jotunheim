@@ -1,4 +1,5 @@
 package sirius.seo;
+import sirius.seo.IAddress;
 import sirius.utils.Dice;
 
 /**
@@ -27,6 +28,21 @@ class Descriptor extends SEO {
 	public function logo(?q:String):String {
 		if (q != null) _d.logo = q;
 		return _d.logo;
+	}
+	
+	public function email(?v:String):String {
+		if (v != null) _d.email = v;
+		return _d.email;
+	}
+	
+	public function address(?country:String, ?state:String, ?city:String, ?street:String, ?code:String):IAddress {
+		if (_d.address == null) _d.address = SEO.sign({},"PostalAddress",false);
+		if (country != null) _d.address.addressCountry = country;
+		if (state != null) _d.address.addressRegion = state;
+		if (city != null) _d.address.addressLocality = city;
+		if (street != null) _d.address.streetAddress = street;
+		if (code != null) _d.address.postalCode = code;
+		return _d.address;
 	}
 	
 	public function social(?q:Array<String>):Array<String> {

@@ -596,6 +596,22 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
+var seo_IContact = function() { };
+seo_IContact.__name__ = ["seo","IContact"];
+seo_IContact.prototype = {
+	__class__: seo_IContact
+};
+var sirius_seo_IDescriptor = function() { };
+sirius_seo_IDescriptor.__name__ = ["sirius","seo","IDescriptor"];
+sirius_seo_IDescriptor.prototype = {
+	__class__: sirius_seo_IDescriptor
+};
+var seo_IOrgDescriptor = function() { };
+seo_IOrgDescriptor.__name__ = ["seo","IOrgDescriptor"];
+seo_IOrgDescriptor.__interfaces__ = [sirius_seo_IDescriptor];
+seo_IOrgDescriptor.prototype = {
+	__class__: seo_IOrgDescriptor
+};
 var seo_ISearchBox = function() { };
 seo_ISearchBox.__name__ = ["seo","ISearchBox"];
 seo_ISearchBox.prototype = {
@@ -610,6 +626,12 @@ var sirius_seo_SEO = function(type) {
 	this.object.type = "application/ld+json";
 };
 sirius_seo_SEO.__name__ = ["sirius","seo","SEO"];
+sirius_seo_SEO.sign = function(o,type,context) {
+	if(context == null) context = true;
+	if(context) o["@context"] = "http://schema.org";
+	o["@type"] = type;
+	return o;
+};
 sirius_seo_SEO.prototype = {
 	publish: function() {
 		this.object.innerHTML = JSON.stringify(this.data);
@@ -2844,9 +2866,9 @@ var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q,d) {
 	if(d == null) d = "w-100pc h-100pc center pos-abs";
 	sirius_dom_Display3D.call(this,null,d);
 	this.setPerspective("1000px");
-	this.content = new sirius_dom_Display3D();
+	this.content = new sirius_dom_Display3D(q);
 	this.content.preserve3d().update();
-	this.addChild(this.content);
+	if(this.content.parent() == null) this.addChild(this.content);
 	this.update();
 };
 sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
@@ -3846,6 +3868,19 @@ sirius_seo_Descriptor.prototype = $extend(sirius_seo_SEO.prototype,{
 		if(q != null) this._d.logo = q;
 		return this._d.logo;
 	}
+	,email: function(v) {
+		if(v != null) this._d.email = v;
+		return this._d.email;
+	}
+	,address: function(country,state,city,street,code) {
+		if(this._d.address == null) this._d.address = sirius_seo_SEO.sign({ },"PostalAddress",false);
+		if(country != null) this._d.address.addressCountry = country;
+		if(state != null) this._d.address.addressRegion = state;
+		if(city != null) this._d.address.addressLocality = city;
+		if(street != null) this._d.address.streetAddress = street;
+		if(code != null) this._d.address.postalCode = code;
+		return this._d.address;
+	}
 	,social: function(q) {
 		var _g = this;
 		if(q != null) {
@@ -3858,15 +3893,15 @@ sirius_seo_Descriptor.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,__class__: sirius_seo_Descriptor
 });
+var sirius_seo_IAddress = function() { };
+sirius_seo_IAddress.__name__ = ["sirius","seo","IAddress"];
+sirius_seo_IAddress.prototype = {
+	__class__: sirius_seo_IAddress
+};
 var sirius_seo_IBrand = function() { };
 sirius_seo_IBrand.__name__ = ["sirius","seo","IBrand"];
 sirius_seo_IBrand.prototype = {
 	__class__: sirius_seo_IBrand
-};
-var sirius_seo_IDescriptor = function() { };
-sirius_seo_IDescriptor.__name__ = ["sirius","seo","IDescriptor"];
-sirius_seo_IDescriptor.prototype = {
-	__class__: sirius_seo_IDescriptor
 };
 var sirius_seo_IItem = function() { };
 sirius_seo_IItem.__name__ = ["sirius","seo","IItem"];
@@ -3890,15 +3925,28 @@ sirius_seo_IWebSite.prototype = {
 };
 var sirius_seo_Organization = function() {
 	sirius_seo_Descriptor.call(this,"Organization");
+	this._e = this.data;
 };
 sirius_seo_Organization.__name__ = ["sirius","seo","Organization"];
 sirius_seo_Organization.__super__ = sirius_seo_Descriptor;
 sirius_seo_Organization.prototype = $extend(sirius_seo_Descriptor.prototype,{
-	build: function(name,url,logo,social) {
+	build: function(name,url,logo,email,social) {
 		this.name(name);
 		this.url(url);
 		this.logo(logo);
+		this.email(email);
 		this.social(social);
+	}
+	,contact: function(phone,type,area,language,options) {
+		if(this._e.contactPoint == null) this._e.contactPoint = [];
+		var c = sirius_seo_SEO.sign({ },"ContactPoint",false);
+		if(phone != null) c.telephone = phone;
+		if(type != null) c.contactType = type;
+		if(area != null) c.areaServed = area;
+		if(language != null) c.availableLanguage = language;
+		if(options != null) c.contactOption = options;
+		this._e.contactPoint[this._e.contactPoint.length] = c;
+		return this;
 	}
 	,__class__: sirius_seo_Organization
 });

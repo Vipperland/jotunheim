@@ -1,7 +1,11 @@
 package sirius.data;
 import haxe.Json;
 import haxe.Log;
-import js.Cookie;
+#if js
+	import js.Cookie;
+#elseif php
+	import php.Session;
+#end
 import sirius.Sirius;
 
 /**
@@ -27,7 +31,11 @@ class DataCache{
 	
 	public function clear():DataCache {
 		_DB = { };
-		Cookie.remove(name, path);
+		#if js
+			Cookie.remove(name, path);
+		#elseif php
+			
+		#end
 		return this;
 	}
 	
@@ -46,15 +54,23 @@ class DataCache{
 	}
 	
 	public function save(?expire:Int):DataCache {
-		Cookie.set(name, Json.stringify(_DB), expire != null ? expire : this.expire, path);
+		#if js
+			Cookie.set(name, Json.stringify(_DB), expire != null ? expire : this.expire, path);
+		#elseif php
+			
+		#end
 		return this;
 	}
 	
 	public function load():DataCache {
-		if (Cookie.exists(name)) {
-			var s:String = Cookie.get(name);
-			_DB = (s != null && s.length > 1) ? Json.parse(s) : {};
-		}
+		#if js
+			if (Cookie.exists(name)) {
+				var s:String = Cookie.get(name);
+				_DB = (s != null && s.length > 1) ? Json.parse(s) : {};
+			}
+		#elseif php
+			
+		#end
 		return this;
 	}
 	
