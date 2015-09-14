@@ -1,11 +1,15 @@
 package sirius;
 
 import haxe.Log;
+import js.html.Event;
+import sirius.css.CSSGroup;
 import sirius.data.DataCache;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
 import sirius.tools.Utils;
+import sirius.utils.Dice;
+import tools.Agent;
 
 #if js
 	import js.Browser;
@@ -63,10 +67,32 @@ class Sirius {
 		static public var domain:Domain = new Domain();
 		
 		/// Browser information
-		static public var agent(get, null):IAgent;
+		static public var agent:IAgent = new Agent();
 		
 		/// SEO Tools
 		static public var seo:SEOTool = new SEOTool();
+		
+		/** @private */
+		static private var _loadPool:Array<Dynamic>;
+		
+		/** @private */
+		static private function _loadController(e:Event):Void {
+			agent.update();
+			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
+			Browser.document.removeEventListener("DOMContentLoaded", _loadController);
+			_loadPool = null;
+		}
+		
+		/** @private */
+		static private function _onLoaded():Void {
+			if (loader.totalFiles > 0) {
+				log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
+			}
+			if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+			body = new Body(Browser.document.body);
+			document = new Document();
+			loader.start();
+		}
 		
 		/**
 		 * QuerySelector a single display
@@ -102,20 +128,26 @@ class Sirius {
 		 * @param	q
 		 * @return
 		 */
-		static public function jQuery(?q:Dynamic = "*"):JQuery {
+		static public function j(?q:Dynamic = "*"):JQuery {
 			return untyped __js__("$(q);");
 		}
 		
 		/**
-		 * On Framework ready
+		 * Run method only if framework is Ready and DOM is loaded
 		 * @param	handler
 		 */
-		static public function onLoad(handler:Dynamic):Void {
-			if(handler != null){
+		static public function run(handler:Dynamic):Void {
+			if (!_initialized) {
+				init(handler);
+			}else if(handler != null){
 				if (Browser.document.readyState == "complete") {
 					handler();
 				}else {
-					Browser.document.addEventListener("DOMContentLoaded", handler);
+					if (_loadPool == null) {
+						_loadPool = [];
+						Browser.document.addEventListener("DOMContentLoaded", _loadController);
+					}
+					_loadPool[_loadPool.length] = handler;
 				}
 			}
 		}
@@ -126,25 +158,15 @@ class Sirius {
 		 * @param	files
 		 */
 		static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
-			loader.add(files, handler, _fileError);
 			if (!_initialized) {
 				_initialized = true;
+				loader.add(files, handler, _fileError);
 				log("Sirius->Core.init[ LOADING... ]", 10, 1);
-				onLoad(_onLoaded);
+				run(_onLoaded);
 			}else{
 				log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
+				if (handler != null) run(handler);
 			}
-		}
-		
-		/** @private */
-		static private function _onLoaded():Void {
-			if (loader.totalFiles > 0) {
-				log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
-			}
-			if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
-			body = new Body(Browser.document.body);
-			document = new Document();
-			loader.start();
 		}
 		
 		/**
@@ -157,38 +179,6 @@ class Sirius {
 		/** @private */
 		static private function _fileError(error:String) {
 			log("Sirius->Resources::status[ " + error + " ]", 10, 3);
-		}
-		
-		/** @private */
-		static private function get_agent():IAgent {
-			if (agent == null) {
-				var ua:String = Browser.navigator.userAgent;
-				// Dectect version of IE (8 to 12);
-				var ie:Int = ~/MSIE/i.match(ua) ? 8 : 0;
-					ie= ~/MSIE 9/i.match(ua) ? 9 : ie;
-					ie = ~/MSIE 10/i.match(ua) ? 10 : ie;
-					ie = ~/rv:11./i.match(ua) ? 11 : ie;
-					ie = ~/Edge/i.match(ua) ? 12 : ie;
-				// Detect version of each browser for more accurate result
-				var opera:Bool = ~/OPR/i.match(ua);
-				var safari:Bool = ~/Safari/i.match(ua);
-				var firefox:Bool = ~/Firefox/i.match(ua);
-				var chrome:Bool = ~/Chrome/i.match(ua);
-				var chromium:Bool = ~/Chromium/i.match(ua);
-				// Check all other versions, including mobile version
-				agent = cast {
-					ie: untyped (ie < 12 ? ie : false), 
-					edge: ie >=12,
-					opera: opera, 
-					firefox: firefox, 
-					safari: ~/Safari/i.match(ua) && !chrome && !chromium, 
-					chrome: ~/Chrome/i.match(ua) && !chromium && !opera,
-					mobile: ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua),
-					jQuery: Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery"),
-					animator: Animator.available
-				};
-			}
-			return agent;
 		}
 		
 	#elseif php
@@ -212,7 +202,7 @@ class Sirius {
 	 */
 	static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
 		#if js
-			var f:Dynamic = (_initialized ? onLoad : init);
+			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.async(file, target, content, handler); } );
 		#elseif php
 			loader.async(file, content, handler);
@@ -221,7 +211,7 @@ class Sirius {
 	
 	static public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
 		#if js
-			var f:Dynamic = (_initialized ? onLoad : init);
+			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.request(url, data, handler, method); } );
 		#elseif php
 			loader.request(url, data, handler, method);

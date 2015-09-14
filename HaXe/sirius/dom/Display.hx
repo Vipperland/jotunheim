@@ -379,8 +379,8 @@ class Display implements IDisplay {
 		return element == null || element.hidden;
 	}
 	
-	public function jQuery():JQuery {
-		return Sirius.jQuery(element);
+	public function j():JQuery {
+		return Sirius.j(element);
 	}
 	
 	public function typeOf():String {

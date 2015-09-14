@@ -6,6 +6,7 @@ $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
+;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -596,74 +597,48 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
-var seo_IContact = function() { };
-seo_IContact.__name__ = ["seo","IContact"];
-seo_IContact.prototype = {
-	__class__: seo_IContact
+var sirius_tools_IAgent = function() { };
+sirius_tools_IAgent.__name__ = ["sirius","tools","IAgent"];
+sirius_tools_IAgent.prototype = {
+	__class__: sirius_tools_IAgent
 };
-var sirius_seo_IDescriptor = function() { };
-sirius_seo_IDescriptor.__name__ = ["sirius","seo","IDescriptor"];
-sirius_seo_IDescriptor.prototype = {
-	__class__: sirius_seo_IDescriptor
+var tools_Agent = function() {
 };
-var seo_IOrgDescriptor = function() { };
-seo_IOrgDescriptor.__name__ = ["seo","IOrgDescriptor"];
-seo_IOrgDescriptor.__interfaces__ = [sirius_seo_IDescriptor];
-seo_IOrgDescriptor.prototype = {
-	__class__: seo_IOrgDescriptor
-};
-var seo_ISearchBox = function() { };
-seo_ISearchBox.__name__ = ["seo","ISearchBox"];
-seo_ISearchBox.prototype = {
-	__class__: seo_ISearchBox
-};
-var sirius_seo_SEO = function(type) {
-	this.data = { };
-	this.data["@context"] = "http://schema.org/";
-	this.data["@type"] = type;
-	var _this = window.document;
-	this.object = _this.createElement("script");
-	this.object.type = "application/ld+json";
-};
-sirius_seo_SEO.__name__ = ["sirius","seo","SEO"];
-sirius_seo_SEO.sign = function(o,type,context) {
-	if(context == null) context = true;
-	if(context) o["@context"] = "http://schema.org";
-	o["@type"] = type;
-	return o;
-};
-sirius_seo_SEO.prototype = {
-	publish: function() {
-		this.object.innerHTML = JSON.stringify(this.data);
-		if(this.object.parentElement == null) window.document.head.appendChild(this.object);
-	}
-	,typeOf: function() {
-		return Reflect.field(this.data,"@type");
-	}
-	,__class__: sirius_seo_SEO
-};
-var seo_Search = function() {
-	sirius_seo_SEO.call(this,"WebSite");
-	this._d = this.data;
-};
-seo_Search.__name__ = ["seo","Search"];
-seo_Search.__super__ = sirius_seo_SEO;
-seo_Search.prototype = $extend(sirius_seo_SEO.prototype,{
-	url: function(q) {
-		if(q != null) this._d.url = q;
-		return this._d.url;
-	}
-	,action: function(target,prop) {
-		if(this._d != null) this._d.potentialAction = { '@type' : "SearchAction", target : target, 'query-input' : "required name=" + prop};
-		return this._d;
-	}
-	,build: function(q,target,prop) {
-		this.url(q);
-		this.action(target,prop);
+tools_Agent.__name__ = ["tools","Agent"];
+tools_Agent.__interfaces__ = [sirius_tools_IAgent];
+tools_Agent.prototype = {
+	update: function(handler) {
+		var ua = window.navigator.userAgent;
+		var ie;
+		if(new EReg("MSIE","i").match(ua)) ie = 8; else ie = 0;
+		if(new EReg("MSIE 9","i").match(ua)) ie = 9; else ie = ie;
+		if(new EReg("MSIE 10","i").match(ua)) ie = 10; else ie = ie;
+		if(new EReg("rv:11.","i").match(ua)) ie = 11; else ie = ie;
+		if(new EReg("Edge","i").match(ua)) ie = 12; else ie = ie;
+		var opera = new EReg("OPR","i").match(ua);
+		var safari = new EReg("Safari","i").match(ua);
+		var firefox = new EReg("Firefox","i").match(ua);
+		var chrome = new EReg("Chrome","i").match(ua);
+		var chromium = new EReg("Chromium","i").match(ua);
+		if(ie < 12) this.ie = ie; else this.ie = 0;
+		this.edge = ie >= 12;
+		this.opera = opera;
+		this.firefox = firefox;
+		this.safari = safari && !chrome && !chromium;
+		this.chrome = chrome && !chromium && !opera;
+		this.mobile = new EReg("Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini","i").match(ua);
+		this.xs = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_XS);
+		this.sm = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_SM);
+		this.md = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_MD);
+		this.lg = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_LG);
+		this.jQuery = Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery");
+		if(sirius_transitions_Animator.available) this.animator = sirius_transitions_Animator.getName(); else this.animator = null;
+		this.display = sirius_tools_Utils.screenOrientation();
+		if(handler != null) handler(this);
 		return this;
 	}
-	,__class__: seo_Search
-});
+	,__class__: tools_Agent
+};
 var sirius_net_Domain = function() {
 	this._parseURI();
 	this.data = new sirius_data_DataCache("__sru__",2592000,"http://" + this.host + "/");
@@ -924,7 +899,7 @@ sirius_seo_SEOTool.prototype = {
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
 		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",seo_Search);
+		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",sirius_seo_Search);
 		return this;
 	}
 	,publish: function() {
@@ -936,7 +911,21 @@ sirius_seo_SEOTool.prototype = {
 };
 var sirius_Sirius = $hx_exports.Sirius = function() { };
 sirius_Sirius.__name__ = ["sirius","Sirius"];
-sirius_Sirius.__properties__ = {get_agent:"get_agent"}
+sirius_Sirius._loadController = function(e) {
+	sirius_Sirius.agent.update();
+	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
+		if(sirius_tools_Utils.isValid(v)) v();
+	});
+	window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
+	sirius_Sirius._loadPool = null;
+};
+sirius_Sirius._onLoaded = function() {
+	if(sirius_Sirius.loader.totalFiles > 0) sirius_Sirius.log("Sirius->Resources::status [ MODULES (" + sirius_Sirius.loader.totalLoaded + "/" + sirius_Sirius.loader.totalFiles + ") ]",10,1);
+	if(sirius_Sirius.document == null) sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
+	sirius_Sirius.body = new sirius_dom_Body(window.document.body);
+	sirius_Sirius.document = new sirius_dom_Document();
+	sirius_Sirius.loader.start();
+};
 sirius_Sirius.one = function(q,t,h) {
 	if(q == null) q = "*";
 	t = (t == null?window.document:t).querySelector(q);
@@ -953,57 +942,41 @@ sirius_Sirius.all = function(q,t) {
 	if(q == null) q = "*";
 	return new sirius_utils_Table(q,t);
 };
-sirius_Sirius.jQuery = function(q) {
+sirius_Sirius.j = function(q) {
 	if(q == null) q = "*";
 	return $(q);;
 };
-sirius_Sirius.onLoad = function(handler) {
-	if(handler != null) {
-		if(window.document.readyState == "complete") handler(); else window.document.addEventListener("DOMContentLoaded",handler);
+sirius_Sirius.run = function(handler) {
+	if(!sirius_Sirius._initialized) sirius_Sirius.init(handler); else if(handler != null) {
+		if(window.document.readyState == "complete") handler(); else {
+			if(sirius_Sirius._loadPool == null) {
+				sirius_Sirius._loadPool = [];
+				window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
+			}
+			sirius_Sirius._loadPool[sirius_Sirius._loadPool.length] = handler;
+		}
 	}
 };
 sirius_Sirius.init = function(handler,files) {
-	sirius_Sirius.loader.add(files,handler,sirius_Sirius._fileError);
 	if(!sirius_Sirius._initialized) {
 		sirius_Sirius._initialized = true;
+		sirius_Sirius.loader.add(files,handler,sirius_Sirius._fileError);
 		sirius_Sirius.log("Sirius->Core.init[ LOADING... ]",10,1);
-		sirius_Sirius.onLoad(sirius_Sirius._onLoaded);
-	} else sirius_Sirius.log("Sirius->Core.init[ " + (sirius_Sirius.body == null?"Waiting for DOM Loading Event...":"READY") + " ]",10,2);
-};
-sirius_Sirius._onLoaded = function() {
-	if(sirius_Sirius.loader.totalFiles > 0) sirius_Sirius.log("Sirius->Resources::status [ MODULES (" + sirius_Sirius.loader.totalLoaded + "/" + sirius_Sirius.loader.totalFiles + ") ]",10,1);
-	if(sirius_Sirius.document == null) sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
-	sirius_Sirius.body = new sirius_dom_Body(window.document.body);
-	sirius_Sirius.document = new sirius_dom_Document();
-	sirius_Sirius.loader.start();
+		sirius_Sirius.run(sirius_Sirius._onLoaded);
+	} else {
+		sirius_Sirius.log("Sirius->Core.init[ " + (sirius_Sirius.body == null?"Waiting for DOM Loading Event...":"READY") + " ]",10,2);
+		if(handler != null) sirius_Sirius.run(handler);
+	}
 };
 sirius_Sirius.status = function() {
-	sirius_Sirius.log("Sirius->Core::status[ " + (sirius_Sirius._initialized?"READY ":"") + sirius_tools_Utils.toString(sirius_Sirius.get_agent(),true) + " ] ",10,1);
+	sirius_Sirius.log("Sirius->Core::status[ " + (sirius_Sirius._initialized?"READY ":"") + sirius_tools_Utils.toString(sirius_Sirius.agent,true) + " ] ",10,1);
 };
 sirius_Sirius._fileError = function(error) {
 	sirius_Sirius.log("Sirius->Resources::status[ " + error + " ]",10,3);
 };
-sirius_Sirius.get_agent = function() {
-	if(sirius_Sirius.agent == null) {
-		var ua = window.navigator.userAgent;
-		var ie;
-		if(new EReg("MSIE","i").match(ua)) ie = 8; else ie = 0;
-		if(new EReg("MSIE 9","i").match(ua)) ie = 9; else ie = ie;
-		if(new EReg("MSIE 10","i").match(ua)) ie = 10; else ie = ie;
-		if(new EReg("rv:11.","i").match(ua)) ie = 11; else ie = ie;
-		if(new EReg("Edge","i").match(ua)) ie = 12; else ie = ie;
-		var opera = new EReg("OPR","i").match(ua);
-		var safari = new EReg("Safari","i").match(ua);
-		var firefox = new EReg("Firefox","i").match(ua);
-		var chrome = new EReg("Chrome","i").match(ua);
-		var chromium = new EReg("Chromium","i").match(ua);
-		sirius_Sirius.agent = { ie : ie < 12?ie:false, edge : ie >= 12, opera : opera, firefox : firefox, safari : new EReg("Safari","i").match(ua) && !chrome && !chromium, chrome : new EReg("Chrome","i").match(ua) && !chromium && !opera, mobile : new EReg("Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini","i").match(ua), jQuery : Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery"), animator : sirius_transitions_Animator.available};
-	}
-	return sirius_Sirius.agent;
-};
 sirius_Sirius.module = function(file,target,content,handler) {
 	var f;
-	if(sirius_Sirius._initialized) f = sirius_Sirius.onLoad; else f = sirius_Sirius.init;
+	if(sirius_Sirius._initialized) f = sirius_Sirius.run; else f = sirius_Sirius.init;
 	f(function() {
 		sirius_Sirius.loader.async(file,target,content,handler);
 	});
@@ -1011,7 +984,7 @@ sirius_Sirius.module = function(file,target,content,handler) {
 sirius_Sirius.request = function(url,data,handler,method) {
 	if(method == null) method = "post";
 	var f;
-	if(sirius_Sirius._initialized) f = sirius_Sirius.onLoad; else f = sirius_Sirius.init;
+	if(sirius_Sirius._initialized) f = sirius_Sirius.run; else f = sirius_Sirius.init;
 	f(function() {
 		sirius_Sirius.loader.request(url,data,handler,method);
 	});
@@ -1043,7 +1016,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 249, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 239, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1127,7 +1100,7 @@ sirius_math_ARGB.prototype = {
 	}
 	,__class__: sirius_math_ARGB
 };
-var sirius_css_CSSGroup = function() {
+var sirius_css_CSSGroup = $hx_exports.sru.css.CSSGroup = function() {
 	this.reset();
 	if(this.container == null) {
 		this.container = new sirius_dom_Style();
@@ -1195,10 +1168,10 @@ sirius_css_CSSGroup.prototype = {
 	}
 	,build: function() {
 		this._write(this.CM,this.style,"");
-		this._write(this.XS,this.styleXS,sirius_css_CSSGroup.MEDIA_XS);
-		this._write(this.SM,this.styleSM,sirius_css_CSSGroup.MEDIA_SM);
-		this._write(this.MD,this.styleMD,sirius_css_CSSGroup.MEDIA_MD);
-		this._write(this.LG,this.styleLG,sirius_css_CSSGroup.MEDIA_LG);
+		this._write(this.XS,this.styleXS,sirius_css_CSSGroup.SOF + sirius_css_CSSGroup.MEDIA_XS + "{");
+		this._write(this.SM,this.styleSM,sirius_css_CSSGroup.SOF + sirius_css_CSSGroup.MEDIA_SM + "{");
+		this._write(this.MD,this.styleMD,sirius_css_CSSGroup.SOF + sirius_css_CSSGroup.MEDIA_MD + "{");
+		this._write(this.LG,this.styleLG,sirius_css_CSSGroup.SOF + sirius_css_CSSGroup.MEDIA_LG + "{");
 		this.reset();
 	}
 	,reset: function() {
@@ -1544,8 +1517,8 @@ sirius_dom_Display.prototype = {
 	,isHidden: function() {
 		return this.element == null || this.element.hidden;
 	}
-	,jQuery: function() {
-		return sirius_Sirius.jQuery(this.element);
+	,j: function() {
+		return sirius_Sirius.j(this.element);
 	}
 	,typeOf: function() {
 		return "[" + sirius_tools_Utils.getClassName(this) + "{element:" + this.element.tagName + ", length:" + this.length() + "}]";
@@ -2769,7 +2742,7 @@ sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
 		var _g = this;
 		this.content.src = url;
 		if(handler != null) {
-			if(sirius_Sirius.get_agent().ie < 12) this.events.readyState(function(e) {
+			if(_$UInt_UInt_$Impl_$.gt(12,sirius_Sirius.agent.ie)) this.events.readyState(function(e) {
 				var st = e.target.attribute("readyState");
 				if(st == "loaded" || st == "complete") {
 					handler(e);
@@ -3829,6 +3802,31 @@ sirius_modules_Request.prototype = {
 	}
 	,__class__: sirius_modules_Request
 };
+var sirius_seo_SEO = function(type) {
+	this.data = { };
+	this.data["@context"] = "http://schema.org/";
+	this.data["@type"] = type;
+	var _this = window.document;
+	this.object = _this.createElement("script");
+	this.object.type = "application/ld+json";
+};
+sirius_seo_SEO.__name__ = ["sirius","seo","SEO"];
+sirius_seo_SEO.sign = function(o,type,context) {
+	if(context == null) context = true;
+	if(context) o["@context"] = "http://schema.org";
+	o["@type"] = type;
+	return o;
+};
+sirius_seo_SEO.prototype = {
+	publish: function() {
+		this.object.innerHTML = JSON.stringify(this.data);
+		if(this.object.parentElement == null) window.document.head.appendChild(this.object);
+	}
+	,typeOf: function() {
+		return Reflect.field(this.data,"@type");
+	}
+	,__class__: sirius_seo_SEO
+};
 var sirius_seo_Breadcrumbs = function() {
 	sirius_seo_SEO.call(this,"BreadcrumbList");
 	this._setup();
@@ -3903,6 +3901,16 @@ sirius_seo_IBrand.__name__ = ["sirius","seo","IBrand"];
 sirius_seo_IBrand.prototype = {
 	__class__: sirius_seo_IBrand
 };
+var sirius_seo_IContact = function() { };
+sirius_seo_IContact.__name__ = ["sirius","seo","IContact"];
+sirius_seo_IContact.prototype = {
+	__class__: sirius_seo_IContact
+};
+var sirius_seo_IDescriptor = function() { };
+sirius_seo_IDescriptor.__name__ = ["sirius","seo","IDescriptor"];
+sirius_seo_IDescriptor.prototype = {
+	__class__: sirius_seo_IDescriptor
+};
 var sirius_seo_IItem = function() { };
 sirius_seo_IItem.__name__ = ["sirius","seo","IItem"];
 sirius_seo_IItem.prototype = {
@@ -3913,10 +3921,21 @@ sirius_seo_IOffer.__name__ = ["sirius","seo","IOffer"];
 sirius_seo_IOffer.prototype = {
 	__class__: sirius_seo_IOffer
 };
+var sirius_seo_IOrgDescriptor = function() { };
+sirius_seo_IOrgDescriptor.__name__ = ["sirius","seo","IOrgDescriptor"];
+sirius_seo_IOrgDescriptor.__interfaces__ = [sirius_seo_IDescriptor];
+sirius_seo_IOrgDescriptor.prototype = {
+	__class__: sirius_seo_IOrgDescriptor
+};
 var sirius_seo_IReview = function() { };
 sirius_seo_IReview.__name__ = ["sirius","seo","IReview"];
 sirius_seo_IReview.prototype = {
 	__class__: sirius_seo_IReview
+};
+var sirius_seo_ISearchBox = function() { };
+sirius_seo_ISearchBox.__name__ = ["sirius","seo","ISearchBox"];
+sirius_seo_ISearchBox.prototype = {
+	__class__: sirius_seo_ISearchBox
 };
 var sirius_seo_IWebSite = function() { };
 sirius_seo_IWebSite.__name__ = ["sirius","seo","IWebSite"];
@@ -4027,6 +4046,28 @@ sirius_seo_Product.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,__class__: sirius_seo_Product
 });
+var sirius_seo_Search = function() {
+	sirius_seo_SEO.call(this,"WebSite");
+	this._d = this.data;
+};
+sirius_seo_Search.__name__ = ["sirius","seo","Search"];
+sirius_seo_Search.__super__ = sirius_seo_SEO;
+sirius_seo_Search.prototype = $extend(sirius_seo_SEO.prototype,{
+	url: function(q) {
+		if(q != null) this._d.url = q;
+		return this._d.url;
+	}
+	,action: function(target,prop) {
+		if(this._d != null) this._d.potentialAction = { '@type' : "SearchAction", target : target, 'query-input' : "required name=" + prop};
+		return this._d;
+	}
+	,build: function(q,target,prop) {
+		this.url(q);
+		this.action(target,prop);
+		return this;
+	}
+	,__class__: sirius_seo_Search
+});
 var sirius_seo_WebSite = function() {
 	sirius_seo_SEO.call(this,"WebSite");
 	this._d = this.data;
@@ -4133,11 +4174,6 @@ sirius_tools_Delayer.prototype = {
 	}
 	,__class__: sirius_tools_Delayer
 };
-var sirius_tools_IAgent = function() { };
-sirius_tools_IAgent.__name__ = ["sirius","tools","IAgent"];
-sirius_tools_IAgent.prototype = {
-	__class__: sirius_tools_IAgent
-};
 var sirius_tools_Ticker = $hx_exports.Ticker = function() { };
 sirius_tools_Ticker.__name__ = ["sirius","tools","Ticker"];
 sirius_tools_Ticker._tickAll = function() {
@@ -4178,6 +4214,9 @@ sirius_tools_Ticker.delay = function(handler,time,args) {
 };
 var sirius_transitions_Animator = $hx_exports.Animator = function() { };
 sirius_transitions_Animator.__name__ = ["sirius","transitions","Animator"];
+sirius_transitions_Animator.getName = function() {
+	return sirius_tools_Utils.getClassName(sirius_transitions_Animator.tweenObject);
+};
 sirius_transitions_Animator.get = function(o) {
 	if(o != null && js_Boot.__instanceof(o,sirius_dom_IDisplay)) return o.element; else return o;
 };
@@ -4709,13 +4748,14 @@ sirius_Sirius._initialized = false;
 sirius_Sirius.resources = new sirius_modules_ModLib();
 sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.domain = new sirius_net_Domain();
+sirius_Sirius.agent = new tools_Agent();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_css_CSSGroup.SOF = "/*SOF*/@media";
 sirius_css_CSSGroup.EOF = "}/*EOF*/";
-sirius_css_CSSGroup.MEDIA_XS = sirius_css_CSSGroup.SOF + "(min-width:1px) and (max-width:767px){ ";
-sirius_css_CSSGroup.MEDIA_SM = sirius_css_CSSGroup.SOF + "(min-width:768px) and (max-width:1000px){ ";
-sirius_css_CSSGroup.MEDIA_MD = sirius_css_CSSGroup.SOF + "(min-width:1001px) and (max-width:1169px){ ";
-sirius_css_CSSGroup.MEDIA_LG = sirius_css_CSSGroup.SOF + "(min-width:1170px){ ";
+sirius_css_CSSGroup.MEDIA_XS = "(min-width:1px) and (max-width:767px)";
+sirius_css_CSSGroup.MEDIA_SM = "(min-width:768px) and (max-width:1000px)";
+sirius_css_CSSGroup.MEDIA_MD = "(min-width:1001px) and (max-width:1169px)";
+sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};

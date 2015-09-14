@@ -1,6 +1,6 @@
 package sirius.seo;
-import seo.IContact;
-import seo.IOrgDescriptor;
+import sirius.seo.IContact;
+import sirius.seo.IOrgDescriptor;
 import sirius.seo.Descriptor;
 import sirius.utils.Dice;
 

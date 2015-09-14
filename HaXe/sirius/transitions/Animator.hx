@@ -1,6 +1,7 @@
 package sirius.transitions;
 import haxe.ds.StringMap;
 import sirius.dom.IDisplay;
+import sirius.tools.Utils;
 import sirius.utils.Dice;
 import sirius.transitions.ITween;
 
@@ -20,6 +21,13 @@ class Animator {
 	 * Default Tween engine
 	 */
 	public static var tweenObject:Dynamic = untyped __js__("window.Tween || window.TweenMax || window.TweenLite");
+	
+	/**
+	 * Current ClassName of active animation engine
+	 */
+	public static function getName():String {
+		return Utils.getClassName(tweenObject);
+	}
 	
 	/** @private */
 	private static function get(o:Dynamic):Dynamic {

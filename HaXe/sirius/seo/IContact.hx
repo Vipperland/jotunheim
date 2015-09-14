@@ -1,4 +1,4 @@
-package seo;
+package sirius.seo;
 
 /**
  * @author Rafael Moreira

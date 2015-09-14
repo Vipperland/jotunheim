@@ -8,25 +8,16 @@
 	
 <body>
 	
-	<link rel="stylesheet" href="3rd/css/bootstrap.css">
+	<link rel="stylesheet" href="extended/3rd/css/bootstrap.css">
 	
-	<script src="api.sirius.js"></script>
+	<script src="extended/api.sirius.js"></script>
 	
 	<div class="w-100pc h-50 container"></div>
 	
 	<script>
 		
-		Automator.build("marg-b-1 bord-blue bord-t-2 bord-solid", "div[id*=state_]");
-		
-		Sirius.request("http://192.168.0.100:8500/sys/", {}, function(d) {
-			if (d.success) {
-				Sirius.module(
-					'mod/content.html', //load file
-					'.container', // draw in target selector
-					d.json().states.a, // result data from request
-					Automator.scan // Build CSS after data filler
-				);
-			}
+		Sirius.run(function(){
+			Sirius.log(Sirius.agent);
 		});
 		
 	</script>

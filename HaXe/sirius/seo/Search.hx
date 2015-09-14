@@ -1,4 +1,5 @@
-package seo;
+package sirius.seo;
+import sirius.seo.ISearchBox;
 import sirius.seo.SEO;
 import sirius.tools.Utils;
 

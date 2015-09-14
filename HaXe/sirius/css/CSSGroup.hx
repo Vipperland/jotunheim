@@ -10,6 +10,7 @@ import sirius.dom.Style;
  * ...
  * @author Rafael Moreira
  */
+@:expose("sru.css.CSSGroup")
 class CSSGroup{
 
 	public var CM:StyleElement;
@@ -102,10 +103,11 @@ class CSSGroup{
 	
 	private static var SOF:String = "/*SOF*/@media";
 	private static var EOF:String = "}/*EOF*/";
-	private static var MEDIA_XS:String = SOF+"(min-width:1px) and (max-width:767px){ ";
-	private static var MEDIA_SM:String = SOF+"(min-width:768px) and (max-width:1000px){ ";
-	private static var MEDIA_MD:String = SOF+"(min-width:1001px) and (max-width:1169px){ ";
-	private static var MEDIA_LG:String = SOF+"(min-width:1170px){ ";
+	
+	public static var MEDIA_XS:String = "(min-width:1px) and (max-width:767px)";
+	public static var MEDIA_SM:String = "(min-width:768px) and (max-width:1000px)";
+	public static var MEDIA_MD:String = "(min-width:1001px) and (max-width:1169px)";
+	public static var MEDIA_LG:String = "(min-width:1170px)";
 	
 	private function _write(e:StyleElement, v:String, h:String):Void {
 		if (v.length > 0) {
@@ -116,10 +118,10 @@ class CSSGroup{
 	
 	public function build() {
 		_write(CM, style, '');
-		_write(XS, styleXS, MEDIA_XS);
-		_write(SM, styleSM, MEDIA_SM);
-		_write(MD, styleMD, MEDIA_MD);
-		_write(LG, styleLG, MEDIA_LG);
+		_write(XS, styleXS, SOF + MEDIA_XS + "{");
+		_write(SM, styleSM, SOF + MEDIA_SM + "{");
+		_write(MD, styleMD, SOF + MEDIA_MD + "{");
+		_write(LG, styleLG, SOF + MEDIA_LG + "{");
 		reset();
 	}
 	

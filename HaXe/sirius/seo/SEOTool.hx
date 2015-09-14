@@ -1,5 +1,5 @@
 package sirius.seo;
-import seo.Search;
+import sirius.seo.Search;
 import sirius.seo.Organization;
 import sirius.seo.Person;
 import sirius.tools.BitIO;

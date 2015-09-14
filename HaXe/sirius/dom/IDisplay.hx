@@ -342,7 +342,7 @@ interface IDisplay {
 	 * Return Element as JQuery object structure
 	 * @return
 	 */
-	public function jQuery():JQuery;
+	public function j():JQuery;
 	
 	/**
 	 * Type of element
