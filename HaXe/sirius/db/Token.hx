@@ -1,4 +1,4 @@
-package sirius.php.db;
+package sirius.db;
 
 /**
  * ...

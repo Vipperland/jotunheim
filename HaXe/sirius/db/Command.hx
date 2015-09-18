@@ -1,9 +1,9 @@
-package sirius.php.db;
+package sirius.db;
 import php.Lib;
 import php.NativeArray;
 import sirius.data.DataSet;
 import sirius.errors.Error;
-import sirius.php.db.pdo.Statement;
+import sirius.db.pdo.Statement;
 import sirius.Sirius;
 import sirius.utils.Dice;
 

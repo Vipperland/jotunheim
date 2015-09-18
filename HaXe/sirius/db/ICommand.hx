@@ -1,5 +1,5 @@
-package sirius.php.db;
-import sirius.php.db.pdo.Statement;
+package sirius.db;
+import sirius.db.pdo.Statement;
 
 /**
  * @author Rafael Moreira

@@ -1,4 +1,4 @@
-package sirius.php.db.pdo;
+package sirius.db.pdo;
 import php.NativeArray;
 
 /**

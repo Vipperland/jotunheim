@@ -1,36 +1,37 @@
 package sirius;
 
 import haxe.Log;
-import js.html.Event;
-import sirius.css.CSSGroup;
 import sirius.data.DataCache;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
+import sirius.net.Domain;
+import sirius.net.IDomain;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
-import tools.Agent;
 
 #if js
 	import js.Browser;
-	import js.html.Element;
 	import js.JQuery;
+	import js.html.Element;
+	import js.html.Event;
 	import sirius.css.Automator;
+	import sirius.css.CSSGroup;
 	import sirius.dom.Body;
 	import sirius.dom.Display;
 	import sirius.dom.Document;
 	import sirius.dom.IDisplay;
-	import sirius.net.Domain;
 	import sirius.seo.SEOTool;
 	import sirius.tools.IAgent;
+	import sirius.tools.Agent;
 	import sirius.transitions.Animator;
 	import sirius.utils.ITable;
 	import sirius.utils.Table;
 #elseif php
 	import php.Lib;
+	import sirius.db.Gate;
+	import sirius.db.IGate;
 	import sirius.php.data.Cache;
-	import sirius.php.db.Gate;
-	import sirius.php.db.IGate;
 	import sirius.php.utils.Header;
 #end
 
@@ -52,8 +53,11 @@ class Sirius {
 	/// Global resource loader
 	static public var resources:ModLib = new ModLib();
 	
-	#if js
+	/// Domain information
+	static public var domain:IDomain = new Domain();
 	
+	#if js
+		
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();
 		
@@ -62,9 +66,6 @@ class Sirius {
 		
 		/// Main body (if available)
 		static public var body:Body;
-		
-		/// Domain information
-		static public var domain:Domain = new Domain();
 		
 		/// Browser information
 		static public var agent:IAgent = new Agent();

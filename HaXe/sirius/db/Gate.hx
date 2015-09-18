@@ -1,14 +1,14 @@
-package sirius.php.db;
+package sirius.db;
 import php.Lib;
 import sirius.data.DataSet;
 import sirius.data.IDataSet;
 import sirius.errors.Error;
-import sirius.php.db.Command;
-import sirius.php.db.IGate;
-import sirius.php.db.pdo.Bridge;
-import sirius.php.db.pdo.Connection;
-import sirius.php.db.pdo.Statement;
-import sirius.php.db.Token;
+import sirius.db.Command;
+import sirius.db.IGate;
+import sirius.db.pdo.Bridge;
+import sirius.db.pdo.Connection;
+import sirius.db.pdo.Statement;
+import sirius.db.Token;
 import sirius.utils.Dice;
 
 /**

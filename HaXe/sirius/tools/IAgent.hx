@@ -22,7 +22,7 @@ interface IAgent {
 	// Is JQuery available?
 	public var jQuery:Bool;
 	// Is any tween framework (GSAP like) active?
-	public var animator:String;
+	public var animator:Bool;
 	// Display info
 	public var display:String;
 	// Is eXtra Small resolution

@@ -193,7 +193,7 @@ class Utils{
 	 * @return
 	 */
 	static public function isValid(o:Dynamic):Bool {
-		if (o != null && untyped __js__("o != undefined")) {
+		if (o != null) {
 			if (Std.is(o, String)) {
 				return o.length > 0;
 			}else {

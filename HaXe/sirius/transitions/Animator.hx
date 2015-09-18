@@ -22,13 +22,6 @@ class Animator {
 	 */
 	public static var tweenObject:Dynamic = untyped __js__("window.Tween || window.TweenMax || window.TweenLite");
 	
-	/**
-	 * Current ClassName of active animation engine
-	 */
-	public static function getName():String {
-		return Utils.getClassName(tweenObject);
-	}
-	
 	/** @private */
 	private static function get(o:Dynamic):Dynamic {
 		return o != null && Std.is(o, IDisplay) ? o.element : o;

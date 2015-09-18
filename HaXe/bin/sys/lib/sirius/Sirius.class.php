@@ -5,6 +5,7 @@ class sirius_Sirius {
 	static $_loglevel = 12;
 	static $_initialized = false;
 	static $resources;
+	static $domain;
 	static $header;
 	static $gate;
 	static $cache;
@@ -59,8 +60,9 @@ class sirius_Sirius {
 	function __toString() { return 'sirius.Sirius'; }
 }
 sirius_Sirius::$resources = new sirius_modules_ModLib();
+sirius_Sirius::$domain = new sirius_net_Domain();
 sirius_Sirius::$header = new sirius_php_utils_Header();
-sirius_Sirius::$gate = new sirius_php_db_Gate();
+sirius_Sirius::$gate = new sirius_db_Gate();
 sirius_Sirius::$cache = new sirius_php_data_Cache();
 sirius_Sirius::$loader = new sirius_modules_Loader(null);
 function sirius_Sirius_0(&$level, &$q, &$type) {

@@ -8,6 +8,7 @@ $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
 ;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
+var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -210,6 +211,9 @@ StringTools.ltrim = function(s) {
 	while(r < l && StringTools.isSpace(s,r)) r++;
 	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
 };
+StringTools.fastCodeAt = function(s,index) {
+	return s.charCodeAt(index);
+};
 var Test_$JS = function() { };
 Test_$JS.__name__ = ["Test_JS"];
 Test_$JS.main = function() {
@@ -356,10 +360,185 @@ haxe_Http.prototype = {
 	}
 	,__class__: haxe_Http
 };
+var haxe__$Int64__$_$_$Int64 = function(high,low) {
+	this.high = high;
+	this.low = low;
+};
+haxe__$Int64__$_$_$Int64.__name__ = ["haxe","_Int64","___Int64"];
+haxe__$Int64__$_$_$Int64.prototype = {
+	__class__: haxe__$Int64__$_$_$Int64
+};
 var haxe_Log = function() { };
 haxe_Log.__name__ = ["haxe","Log"];
 haxe_Log.trace = function(v,infos) {
 	js_Boot.__trace(v,infos);
+};
+var haxe_io_Bytes = function(data) {
+	this.length = data.byteLength;
+	this.b = new Uint8Array(data);
+	this.b.bufferValue = data;
+	data.hxBytes = this;
+	data.bytes = this.b;
+};
+haxe_io_Bytes.__name__ = ["haxe","io","Bytes"];
+haxe_io_Bytes.alloc = function(length) {
+	return new haxe_io_Bytes(new ArrayBuffer(length));
+};
+haxe_io_Bytes.ofString = function(s) {
+	var a = [];
+	var i = 0;
+	while(i < s.length) {
+		var c = StringTools.fastCodeAt(s,i++);
+		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
+		if(c <= 127) a.push(c); else if(c <= 2047) {
+			a.push(192 | c >> 6);
+			a.push(128 | c & 63);
+		} else if(c <= 65535) {
+			a.push(224 | c >> 12);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		} else {
+			a.push(240 | c >> 18);
+			a.push(128 | c >> 12 & 63);
+			a.push(128 | c >> 6 & 63);
+			a.push(128 | c & 63);
+		}
+	}
+	return new haxe_io_Bytes(new Uint8Array(a).buffer);
+};
+haxe_io_Bytes.prototype = {
+	get: function(pos) {
+		return this.b[pos];
+	}
+	,set: function(pos,v) {
+		this.b[pos] = v & 255;
+	}
+	,getString: function(pos,len) {
+		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		var s = "";
+		var b = this.b;
+		var fcc = String.fromCharCode;
+		var i = pos;
+		var max = pos + len;
+		while(i < max) {
+			var c = b[i++];
+			if(c < 128) {
+				if(c == 0) break;
+				s += fcc(c);
+			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
+				var c2 = b[i++];
+				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
+			} else {
+				var c21 = b[i++];
+				var c3 = b[i++];
+				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
+				s += fcc((u >> 10) + 55232);
+				s += fcc(u & 1023 | 56320);
+			}
+		}
+		return s;
+	}
+	,toString: function() {
+		return this.getString(0,this.length);
+	}
+	,__class__: haxe_io_Bytes
+};
+var haxe_crypto_Base64 = function() { };
+haxe_crypto_Base64.__name__ = ["haxe","crypto","Base64"];
+haxe_crypto_Base64.encode = function(bytes,complement) {
+	if(complement == null) complement = true;
+	var str = new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).encodeBytes(bytes).toString();
+	if(complement) {
+		var _g = bytes.length % 3;
+		switch(_g) {
+		case 1:
+			str += "==";
+			break;
+		case 2:
+			str += "=";
+			break;
+		default:
+		}
+	}
+	return str;
+};
+haxe_crypto_Base64.decode = function(str,complement) {
+	if(complement == null) complement = true;
+	if(complement) while(HxOverrides.cca(str,str.length - 1) == 61) str = HxOverrides.substr(str,0,-1);
+	return new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).decodeBytes(haxe_io_Bytes.ofString(str));
+};
+var haxe_crypto_BaseCode = function(base) {
+	var len = base.length;
+	var nbits = 1;
+	while(len > 1 << nbits) nbits++;
+	if(nbits > 8 || len != 1 << nbits) throw new js__$Boot_HaxeError("BaseCode : base length must be a power of two.");
+	this.base = base;
+	this.nbits = nbits;
+};
+haxe_crypto_BaseCode.__name__ = ["haxe","crypto","BaseCode"];
+haxe_crypto_BaseCode.prototype = {
+	encodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		var size = b.length * 8 / nbits | 0;
+		var out = haxe_io_Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
+		var buf = 0;
+		var curbits = 0;
+		var mask = (1 << nbits) - 1;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < nbits) {
+				curbits += 8;
+				buf <<= 8;
+				buf |= b.get(pin++);
+			}
+			curbits -= nbits;
+			out.set(pout++,base.b[buf >> curbits & mask]);
+		}
+		if(curbits > 0) out.set(pout++,base.b[buf << nbits - curbits & mask]);
+		return out;
+	}
+	,initTable: function() {
+		var tbl = [];
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			tbl[i] = -1;
+		}
+		var _g1 = 0;
+		var _g2 = this.base.length;
+		while(_g1 < _g2) {
+			var i1 = _g1++;
+			tbl[this.base.b[i1]] = i1;
+		}
+		this.tbl = tbl;
+	}
+	,decodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		if(this.tbl == null) this.initTable();
+		var tbl = this.tbl;
+		var size = b.length * nbits >> 3;
+		var out = haxe_io_Bytes.alloc(size);
+		var buf = 0;
+		var curbits = 0;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < 8) {
+				curbits += nbits;
+				buf <<= nbits;
+				var i = tbl[b.get(pin++)];
+				if(i == -1) throw new js__$Boot_HaxeError("BaseCode : invalid encoded char");
+				buf |= i;
+			}
+			curbits -= 8;
+			out.set(pout++,buf >> curbits & 255);
+		}
+		return out;
+	}
+	,__class__: haxe_crypto_BaseCode
 };
 var haxe_ds_StringMap = function() {
 	this.h = { };
@@ -390,6 +569,61 @@ haxe_ds_StringMap.prototype = {
 		return this.rh.hasOwnProperty("$" + key);
 	}
 	,__class__: haxe_ds_StringMap
+};
+var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
+haxe_io_Error.Blocked = ["Blocked",0];
+haxe_io_Error.Blocked.toString = $estr;
+haxe_io_Error.Blocked.__enum__ = haxe_io_Error;
+haxe_io_Error.Overflow = ["Overflow",1];
+haxe_io_Error.Overflow.toString = $estr;
+haxe_io_Error.Overflow.__enum__ = haxe_io_Error;
+haxe_io_Error.OutsideBounds = ["OutsideBounds",2];
+haxe_io_Error.OutsideBounds.toString = $estr;
+haxe_io_Error.OutsideBounds.__enum__ = haxe_io_Error;
+haxe_io_Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe_io_Error; $x.toString = $estr; return $x; };
+var haxe_io_FPHelper = function() { };
+haxe_io_FPHelper.__name__ = ["haxe","io","FPHelper"];
+haxe_io_FPHelper.i32ToFloat = function(i) {
+	var sign = 1 - (i >>> 31 << 1);
+	var exp = i >>> 23 & 255;
+	var sig = i & 8388607;
+	if(sig == 0 && exp == 0) return 0.0;
+	return sign * (1 + Math.pow(2,-23) * sig) * Math.pow(2,exp - 127);
+};
+haxe_io_FPHelper.floatToI32 = function(f) {
+	if(f == 0) return 0;
+	var af;
+	if(f < 0) af = -f; else af = f;
+	var exp = Math.floor(Math.log(af) / 0.6931471805599453);
+	if(exp < -127) exp = -127; else if(exp > 128) exp = 128;
+	var sig = Math.round((af / Math.pow(2,exp) - 1) * 8388608) & 8388607;
+	return (f < 0?-2147483648:0) | exp + 127 << 23 | sig;
+};
+haxe_io_FPHelper.i64ToDouble = function(low,high) {
+	var sign = 1 - (high >>> 31 << 1);
+	var exp = (high >> 20 & 2047) - 1023;
+	var sig = (high & 1048575) * 4294967296. + (low >>> 31) * 2147483648. + (low & 2147483647);
+	if(sig == 0 && exp == -1023) return 0.0;
+	return sign * (1.0 + Math.pow(2,-52) * sig) * Math.pow(2,exp);
+};
+haxe_io_FPHelper.doubleToI64 = function(v) {
+	var i64 = haxe_io_FPHelper.i64tmp;
+	if(v == 0) {
+		i64.low = 0;
+		i64.high = 0;
+	} else {
+		var av;
+		if(v < 0) av = -v; else av = v;
+		var exp = Math.floor(Math.log(av) / 0.6931471805599453);
+		var sig;
+		var v1 = (av / Math.pow(2,exp) - 1) * 4503599627370496.;
+		sig = Math.round(v1);
+		var sig_l = sig | 0;
+		var sig_h = sig / 4294967296.0 | 0;
+		i64.low = sig_l;
+		i64.high = (v < 0?-2147483648:0) | exp + 1023 << 20 | sig_h;
+	}
+	return i64;
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -597,16 +831,198 @@ js_Cookie.exists = function(name) {
 js_Cookie.remove = function(name,path,domain) {
 	js_Cookie.set(name,"",-10,path,domain);
 };
+var js_html_compat_ArrayBuffer = function(a) {
+	if((a instanceof Array) && a.__enum__ == null) {
+		this.a = a;
+		this.byteLength = a.length;
+	} else {
+		var len = a;
+		this.a = [];
+		var _g = 0;
+		while(_g < len) {
+			var i = _g++;
+			this.a[i] = 0;
+		}
+		this.byteLength = len;
+	}
+};
+js_html_compat_ArrayBuffer.__name__ = ["js","html","compat","ArrayBuffer"];
+js_html_compat_ArrayBuffer.sliceImpl = function(begin,end) {
+	var u = new Uint8Array(this,begin,end == null?null:end - begin);
+	var result = new ArrayBuffer(u.byteLength);
+	var resultArray = new Uint8Array(result);
+	resultArray.set(u);
+	return result;
+};
+js_html_compat_ArrayBuffer.prototype = {
+	slice: function(begin,end) {
+		return new js_html_compat_ArrayBuffer(this.a.slice(begin,end));
+	}
+	,__class__: js_html_compat_ArrayBuffer
+};
+var js_html_compat_DataView = function(buffer,byteOffset,byteLength) {
+	this.buf = buffer;
+	if(byteOffset == null) this.offset = 0; else this.offset = byteOffset;
+	if(byteLength == null) this.length = buffer.byteLength - this.offset; else this.length = byteLength;
+	if(this.offset < 0 || this.length < 0 || this.offset + this.length > buffer.byteLength) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+};
+js_html_compat_DataView.__name__ = ["js","html","compat","DataView"];
+js_html_compat_DataView.prototype = {
+	getInt8: function(byteOffset) {
+		var v = this.buf.a[this.offset + byteOffset];
+		if(v >= 128) return v - 256; else return v;
+	}
+	,getUint8: function(byteOffset) {
+		return this.buf.a[this.offset + byteOffset];
+	}
+	,getInt16: function(byteOffset,littleEndian) {
+		var v = this.getUint16(byteOffset,littleEndian);
+		if(v >= 32768) return v - 65536; else return v;
+	}
+	,getUint16: function(byteOffset,littleEndian) {
+		if(littleEndian) return this.buf.a[this.offset + byteOffset] | this.buf.a[this.offset + byteOffset + 1] << 8; else return this.buf.a[this.offset + byteOffset] << 8 | this.buf.a[this.offset + byteOffset + 1];
+	}
+	,getInt32: function(byteOffset,littleEndian) {
+		var p = this.offset + byteOffset;
+		var a = this.buf.a[p++];
+		var b = this.buf.a[p++];
+		var c = this.buf.a[p++];
+		var d = this.buf.a[p++];
+		if(littleEndian) return a | b << 8 | c << 16 | d << 24; else return d | c << 8 | b << 16 | a << 24;
+	}
+	,getUint32: function(byteOffset,littleEndian) {
+		var v = this.getInt32(byteOffset,littleEndian);
+		if(v < 0) return v + 4294967296.; else return v;
+	}
+	,getFloat32: function(byteOffset,littleEndian) {
+		return haxe_io_FPHelper.i32ToFloat(this.getInt32(byteOffset,littleEndian));
+	}
+	,getFloat64: function(byteOffset,littleEndian) {
+		var a = this.getInt32(byteOffset,littleEndian);
+		var b = this.getInt32(byteOffset + 4,littleEndian);
+		return haxe_io_FPHelper.i64ToDouble(littleEndian?a:b,littleEndian?b:a);
+	}
+	,setInt8: function(byteOffset,value) {
+		if(value < 0) this.buf.a[byteOffset + this.offset] = value + 128 & 255; else this.buf.a[byteOffset + this.offset] = value & 255;
+	}
+	,setUint8: function(byteOffset,value) {
+		this.buf.a[byteOffset + this.offset] = value & 255;
+	}
+	,setInt16: function(byteOffset,value,littleEndian) {
+		this.setUint16(byteOffset,value < 0?value + 65536:value,littleEndian);
+	}
+	,setUint16: function(byteOffset,value,littleEndian) {
+		var p = byteOffset + this.offset;
+		if(littleEndian) {
+			this.buf.a[p] = value & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+		} else {
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p] = value & 255;
+		}
+	}
+	,setInt32: function(byteOffset,value,littleEndian) {
+		this.setUint32(byteOffset,value,littleEndian);
+	}
+	,setUint32: function(byteOffset,value,littleEndian) {
+		var p = byteOffset + this.offset;
+		if(littleEndian) {
+			this.buf.a[p++] = value & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p++] = value >> 16 & 255;
+			this.buf.a[p++] = value >>> 24;
+		} else {
+			this.buf.a[p++] = value >>> 24;
+			this.buf.a[p++] = value >> 16 & 255;
+			this.buf.a[p++] = value >> 8 & 255;
+			this.buf.a[p++] = value & 255;
+		}
+	}
+	,setFloat32: function(byteOffset,value,littleEndian) {
+		this.setUint32(byteOffset,haxe_io_FPHelper.floatToI32(value),littleEndian);
+	}
+	,setFloat64: function(byteOffset,value,littleEndian) {
+		var i64 = haxe_io_FPHelper.doubleToI64(value);
+		if(littleEndian) {
+			this.setUint32(byteOffset,i64.low);
+			this.setUint32(byteOffset,i64.high);
+		} else {
+			this.setUint32(byteOffset,i64.high);
+			this.setUint32(byteOffset,i64.low);
+		}
+	}
+	,__class__: js_html_compat_DataView
+};
+var js_html_compat_Uint8Array = function() { };
+js_html_compat_Uint8Array.__name__ = ["js","html","compat","Uint8Array"];
+js_html_compat_Uint8Array._new = function(arg1,offset,length) {
+	var arr;
+	if(typeof(arg1) == "number") {
+		arr = [];
+		var _g = 0;
+		while(_g < arg1) {
+			var i = _g++;
+			arr[i] = 0;
+		}
+		arr.byteLength = arr.length;
+		arr.byteOffset = 0;
+		arr.buffer = new js_html_compat_ArrayBuffer(arr);
+	} else if(js_Boot.__instanceof(arg1,js_html_compat_ArrayBuffer)) {
+		var buffer = arg1;
+		if(offset == null) offset = 0;
+		if(length == null) length = buffer.byteLength - offset;
+		if(offset == 0) arr = buffer.a; else arr = buffer.a.slice(offset,offset + length);
+		arr.byteLength = arr.length;
+		arr.byteOffset = offset;
+		arr.buffer = buffer;
+	} else if((arg1 instanceof Array) && arg1.__enum__ == null) {
+		arr = arg1.slice();
+		arr.byteLength = arr.length;
+		arr.byteOffset = 0;
+		arr.buffer = new js_html_compat_ArrayBuffer(arr);
+	} else throw new js__$Boot_HaxeError("TODO " + Std.string(arg1));
+	arr.subarray = js_html_compat_Uint8Array._subarray;
+	arr.set = js_html_compat_Uint8Array._set;
+	return arr;
+};
+js_html_compat_Uint8Array._set = function(arg,offset) {
+	var t = this;
+	if(js_Boot.__instanceof(arg.buffer,js_html_compat_ArrayBuffer)) {
+		var a = arg;
+		if(arg.byteLength + offset > t.byteLength) throw new js__$Boot_HaxeError("set() outside of range");
+		var _g1 = 0;
+		var _g = arg.byteLength;
+		while(_g1 < _g) {
+			var i = _g1++;
+			t[i + offset] = a[i];
+		}
+	} else if((arg instanceof Array) && arg.__enum__ == null) {
+		var a1 = arg;
+		if(a1.length + offset > t.byteLength) throw new js__$Boot_HaxeError("set() outside of range");
+		var _g11 = 0;
+		var _g2 = a1.length;
+		while(_g11 < _g2) {
+			var i1 = _g11++;
+			t[i1 + offset] = a1[i1];
+		}
+	} else throw new js__$Boot_HaxeError("TODO");
+};
+js_html_compat_Uint8Array._subarray = function(start,end) {
+	var t = this;
+	var a = js_html_compat_Uint8Array._new(t.slice(start,end));
+	a.byteOffset = start;
+	return a;
+};
 var sirius_tools_IAgent = function() { };
 sirius_tools_IAgent.__name__ = ["sirius","tools","IAgent"];
 sirius_tools_IAgent.prototype = {
 	__class__: sirius_tools_IAgent
 };
-var tools_Agent = function() {
+var sirius_tools_Agent = function() {
 };
-tools_Agent.__name__ = ["tools","Agent"];
-tools_Agent.__interfaces__ = [sirius_tools_IAgent];
-tools_Agent.prototype = {
+sirius_tools_Agent.__name__ = ["sirius","tools","Agent"];
+sirius_tools_Agent.__interfaces__ = [sirius_tools_IAgent];
+sirius_tools_Agent.prototype = {
 	update: function(handler) {
 		var ua = window.navigator.userAgent;
 		var ie;
@@ -632,18 +1048,23 @@ tools_Agent.prototype = {
 		this.md = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_MD);
 		this.lg = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_LG);
 		this.jQuery = Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery");
-		if(sirius_transitions_Animator.available) this.animator = sirius_transitions_Animator.getName(); else this.animator = null;
+		this.animator = sirius_transitions_Animator.available;
 		this.display = sirius_tools_Utils.screenOrientation();
 		if(handler != null) handler(this);
 		return this;
 	}
-	,__class__: tools_Agent
+	,__class__: sirius_tools_Agent
+};
+var sirius_net_IDomain = function() { };
+sirius_net_IDomain.__name__ = ["sirius","net","IDomain"];
+sirius_net_IDomain.prototype = {
+	__class__: sirius_net_IDomain
 };
 var sirius_net_Domain = function() {
 	this._parseURI();
-	this.data = new sirius_data_DataCache("__sru__",2592000,"http://" + this.host + "/");
 };
 sirius_net_Domain.__name__ = ["sirius","net","Domain"];
+sirius_net_Domain.__interfaces__ = [sirius_net_IDomain];
 sirius_net_Domain.prototype = {
 	_parseURI: function() {
 		var l = window.location;
@@ -663,45 +1084,6 @@ sirius_net_Domain.prototype = {
 		window.location.reload(force);
 	}
 	,__class__: sirius_net_Domain
-};
-var sirius_data_DataCache = function(name,expire,path) {
-	this.name = name;
-	this.expire = expire;
-	this.path = path;
-	this.clear();
-};
-sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
-sirius_data_DataCache.prototype = {
-	clear: function() {
-		this._DB = { };
-		js_Cookie.remove(this.name,this.path);
-		return this;
-	}
-	,set: function(p,v) {
-		this._DB[p] = v;
-		return this;
-	}
-	,get: function(id) {
-		var d;
-		if(id != null) d = Reflect.field(this._DB,id); else d = null;
-		if(d == null) {
-			d = { };
-			this.set(id,d);
-		}
-		return d;
-	}
-	,save: function(expire) {
-		js_Cookie.set(this.name,JSON.stringify(this._DB),expire != null?expire:this.expire,this.path);
-		return this;
-	}
-	,load: function() {
-		if(js_Cookie.exists(this.name)) {
-			var s = js_Cookie.get(this.name);
-			if(s != null && s.length > 1) this._DB = JSON.parse(s); else this._DB = { };
-		}
-		return this;
-	}
-	,__class__: sirius_data_DataCache
 };
 var sirius_modules_ILoader = function() { };
 sirius_modules_ILoader.__name__ = ["sirius","modules","ILoader"];
@@ -1016,7 +1398,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 239, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 240, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -3035,7 +3417,7 @@ sirius_tools_Utils.toString = function(o,json) {
 	if(json == true) return JSON.stringify(o); else return Std.string(o);
 };
 sirius_tools_Utils.isValid = function(o) {
-	if(o != null && o != undefined) {
+	if(o != null) {
 		if(typeof(o) == "string") return o.length > 0; else return true;
 	}
 	return false;
@@ -3596,6 +3978,83 @@ sirius_css_XCSS.prototype = {
 		return this;
 	}
 	,__class__: sirius_css_XCSS
+};
+var sirius_data_IDataCache = function() { };
+sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
+sirius_data_IDataCache.prototype = {
+	__class__: sirius_data_IDataCache
+};
+var sirius_data_DataCache = function(name,path,expire) {
+	this._name = name;
+	this._expire = expire;
+	this._path = path;
+	this.clear();
+};
+sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
+sirius_data_DataCache.__interfaces__ = [sirius_data_IDataCache];
+sirius_data_DataCache.prototype = {
+	_now: function() {
+		return new Date().getTime();
+	}
+	,json: function() {
+		return JSON.stringify(this._DB);
+	}
+	,clear: function(p) {
+		if(p != null) Reflect.deleteField(this._DB,p); else if(p != "__time__") {
+			this._DB = { '__time__' : this._now()};
+			js_Cookie.remove(this._name,this._path);
+		}
+		return this;
+	}
+	,set: function(p,v) {
+		if((v instanceof Array) && v.__enum__ == null && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
+			var t = this.get(p);
+			if((t instanceof Array) && t.__enum__ == null) {
+				Reflect.setField(this._DB,p,t.concat(v));
+				return this;
+			}
+		}
+		this._DB[p] = v;
+		return this;
+	}
+	,get: function(id) {
+		var d;
+		if(id != null) d = Reflect.field(this._DB,id); else d = null;
+		if(d == null) {
+			d = { };
+			this.set(id,d);
+		}
+		return d;
+	}
+	,exists: function(name) {
+		return Object.prototype.hasOwnProperty.call(this._DB,this._name);
+	}
+	,save: function() {
+		js_Cookie.set(this._name,this.base64(),0,this._path);
+		return this;
+	}
+	,load: function() {
+		if(js_Cookie.exists(this._name)) {
+			var s = js_Cookie.get(this._name);
+			if(s != null && s.length > 1) this._DB = JSON.parse(haxe_crypto_Base64.decode(s).toString()); else this._DB = null;
+		}
+		if(this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire) this._DB = { __time__ : this._now(), __exists__ : false};
+		return this;
+	}
+	,refresh: function() {
+		if(this._DB.__exists__) this._DB.__time__ = this._now();
+		return this;
+	}
+	,getData: function() {
+		return this._DB;
+	}
+	,base64: function() {
+		return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(this.json()));
+	}
+	,isExpired: function() {
+		return this._DB != null && this._DB.__exists__ == true;
+	}
+	,__class__: sirius_data_DataCache
 };
 var sirius_data_IFormData = function() { };
 sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
@@ -4214,9 +4673,6 @@ sirius_tools_Ticker.delay = function(handler,time,args) {
 };
 var sirius_transitions_Animator = $hx_exports.Animator = function() { };
 sirius_transitions_Animator.__name__ = ["sirius","transitions","Animator"];
-sirius_transitions_Animator.getName = function() {
-	return sirius_tools_Utils.getClassName(sirius_transitions_Animator.tweenObject);
-};
 sirius_transitions_Animator.get = function(o) {
 	if(o != null && js_Boot.__instanceof(o,sirius_dom_IDisplay)) return o.element; else return o;
 };
@@ -4734,7 +5190,20 @@ var __map_reserved = {}
 var q = window.jQuery;
 var js = js || {}
 js.JQuery = q;
+var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuffer : null"))() || js_html_compat_ArrayBuffer;
+if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
+var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
+var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
+haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
+haxe_io_FPHelper.i64tmp = (function($this) {
+	var $r;
+	var x = new haxe__$Int64__$_$_$Int64(0,0);
+	$r = x;
+	return $r;
+}(this));
 js_Boot.__toStr = {}.toString;
+js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
 sirius_modules_Loader.FILES = { };
 sirius_modules_ModLib.CACHE = { };
 sirius_seo_SEOTool.WEBSITE = 1;
@@ -4748,7 +5217,7 @@ sirius_Sirius._initialized = false;
 sirius_Sirius.resources = new sirius_modules_ModLib();
 sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.domain = new sirius_net_Domain();
-sirius_Sirius.agent = new tools_Agent();
+sirius_Sirius.agent = new sirius_tools_Agent();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_css_CSSGroup.SOF = "/*SOF*/@media";
 sirius_css_CSSGroup.EOF = "}/*EOF*/";

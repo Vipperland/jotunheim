@@ -15,7 +15,7 @@ class sirius_tools_Utils {
 		}
 	}
 	static function isValid($o) {
-		if($o !== null && call_user_func_array($__js__, array("o != undefined"))) {
+		if($o !== null) {
 			if(Std::is($o, _hx_qtype("String"))) {
 				return _hx_len($o) > 0;
 			} else {

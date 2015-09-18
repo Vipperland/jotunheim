@@ -1,8 +1,8 @@
-package sirius.php.db;
+package sirius.db;
 import sirius.data.IDataSet;
 import sirius.errors.Error;
-import sirius.php.db.ICommand;
-import sirius.php.db.Token;
+import sirius.db.ICommand;
+import sirius.db.Token;
 
 /**
  * @author Rafael Moreira

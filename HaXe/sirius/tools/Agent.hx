@@ -1,4 +1,4 @@
-package tools;
+package sirius.tools;
 import js.Browser;
 import sirius.css.CSSGroup;
 import sirius.tools.IAgent;
@@ -37,7 +37,7 @@ class Agent implements IAgent {
 	
 	public var display:String;
 	
-	public var animator:String;
+	public var animator:Bool;
 
 	public function new() {
 		
@@ -70,7 +70,7 @@ class Agent implements IAgent {
 		this.md = Utils.matchMedia(CSSGroup.MEDIA_MD);
 		this.lg = Utils.matchMedia(CSSGroup.MEDIA_LG);
 		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
-		this.animator = Animator.available ? Animator.getName() : null;
+		this.animator = Animator.available;
 		this.display = Utils.screenOrientation();
 		if (handler != null) handler(this);
 		return this;
