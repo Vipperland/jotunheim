@@ -45,14 +45,13 @@ class Command implements ICommand {
 		return this;
 	}
 	
-	public function execute(?handler:Dynamic, ?type:Int = 2, ?queue:String = null, ?parameters:Array<Dynamic>):ICommand {
+	public function execute(?handler:Dynamic, ?type:Int = 2, ?parameters:Array<Dynamic>):ICommand {
 		var p:NativeArray = null;
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
 		try {
 			success = statement.execute(p);
 			result = Lib.toHaxeArray(statement.fetchAll(type));
 			if (handler != null) fetch(handler);
-			if (queue != null) this.queue(queue);
 		}catch (e:Dynamic) {
 			errors[errors.length] = new Error(e.getCode(), e.getMessage());
 		}
@@ -63,10 +62,6 @@ class Command implements ICommand {
 	public function fetch(handler:Dynamic):ICommand {
 		Dice.Values(result, function(v:Dynamic) { handler(new DataSet(v)); } );
 		return this;
-	}
-	
-	public function queue(name:String):Void {
-		Sirius.cache.add(name, result);
 	}
 	
 	public function log():String {

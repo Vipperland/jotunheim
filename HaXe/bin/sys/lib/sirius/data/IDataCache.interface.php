@@ -6,10 +6,9 @@ interface sirius_data_IDataCache {
 	function clear($p = null);
 	function set($p, $v);
 	function get($id = null);
-	function exists($name);
+	function exists($name = null);
 	function save();
 	function load();
 	function getData();
 	function base64();
-	function isExpired();
 }

@@ -23,7 +23,7 @@ class sirius_db_Command implements sirius_db_ICommand{
 		sirius_utils_Dice::All($parameters, array(new _hx_lambda(array(&$_g, &$isArray, &$parameters), "sirius_db_Command_0"), 'execute'), null);
 		return $this;
 	}
-	public function execute($handler = null, $type = null, $queue = null, $parameters = null) {
+	public function execute($handler = null, $type = null, $parameters = null) {
 		if($type === null) {
 			$type = 2;
 		}
@@ -40,9 +40,6 @@ class sirius_db_Command implements sirius_db_ICommand{
 			if($handler !== null) {
 				$this->fetch($handler);
 			}
-			if($queue !== null) {
-				$this->queue($queue);
-			}
 		}catch(Exception $__hx__e) {
 			$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 			$e = $_ex_;
@@ -55,9 +52,6 @@ class sirius_db_Command implements sirius_db_ICommand{
 	public function fetch($handler) {
 		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$handler), "sirius_db_Command_1"), 'execute'), null);
 		return $this;
-	}
-	public function queue($name) {
-		sirius_Sirius::$cache->add($name, $this->result);
 	}
 	public function log() {
 		$q = $this->_query;

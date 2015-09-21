@@ -1068,13 +1068,18 @@ sirius_net_Domain.__interfaces__ = [sirius_net_IDomain];
 sirius_net_Domain.prototype = {
 	_parseURI: function() {
 		var l = window.location;
+		var p = l.pathname;
 		this.host = l.hostname;
 		this.port = l.port;
-		this.fragments = sirius_tools_Utils.clearArray(l.pathname.split("/"));
+		this.hash = HxOverrides.substr(l.hash,1,null);
+		this.fragments = sirius_tools_Utils.clearArray(p.split("/"));
 		this.firstFragment = this.fragment(0,"");
 		this.lastFragment = this.fragment(this.fragments.length - 1,this.firstFragment);
-		this.extension = this.lastFragment.split(".").pop();
-		this.hash = HxOverrides.substr(l.hash,1,null);
+		if(this.lastFragment.indexOf(".") != -1) {
+			this.file = this.lastFragment;
+			this.fragments.pop();
+			this.lastFragment = this.fragment(this.fragments.length - 1,this.firstFragment);
+		}
 	}
 	,fragment: function(i,a) {
 		if(i >= 0 && i < this.fragments.length) return this.fragments[i]; else return a;
@@ -1398,7 +1403,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 240, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 238, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1627,7 +1632,7 @@ sirius_data_DataSet.prototype = {
 	,__class__: sirius_data_DataSet
 };
 var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t,d) {
-	if(typeof(q) == "string") q = sirius_Sirius.one(q,t);
+	if(typeof(q) == "string") q = sirius_Sirius.one(q,t); else if(js_Boot.__instanceof(q,sirius_dom_IDisplay)) q = q.element;
 	if(q == null) {
 		var _this = window.document;
 		q = _this.createElement("div");
@@ -3406,10 +3411,10 @@ sirius_tools_Utils.displayFrom = function(t) {
 		return new OC(t);
 	}
 };
-sirius_tools_Utils.clearArray = function(path) {
+sirius_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
 	sirius_utils_Dice.Values(path,function(v) {
-		if(v != null && v != "") copy[copy.length] = v;
+		if(v != null && v != "" && (filter == null || filter(v))) copy[copy.length] = v;
 	});
 	return copy;
 };
@@ -3985,9 +3990,10 @@ sirius_data_IDataCache.prototype = {
 	__class__: sirius_data_IDataCache
 };
 var sirius_data_DataCache = function(name,path,expire) {
+	if(expire == null) expire = 0;
 	this._name = name;
-	this._expire = expire;
 	this._path = path;
+	this._expire = expire;
 	this.clear();
 };
 sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
@@ -4007,12 +4013,13 @@ sirius_data_DataCache.prototype = {
 		return this;
 	}
 	,set: function(p,v) {
+		this._DB[p] = v;
+		return this;
+	}
+	,merge: function(p,v) {
 		if((v instanceof Array) && v.__enum__ == null && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
 			var t = this.get(p);
-			if((t instanceof Array) && t.__enum__ == null) {
-				Reflect.setField(this._DB,p,t.concat(v));
-				return this;
-			}
+			if((t instanceof Array) && t.__enum__ == null) return this.set(p,t.concat(v));
 		}
 		this._DB[p] = v;
 		return this;
@@ -4027,22 +4034,35 @@ sirius_data_DataCache.prototype = {
 		return d;
 	}
 	,exists: function(name) {
-		return Object.prototype.hasOwnProperty.call(this._DB,this._name);
+		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,this._name); else return this._loaded;
 	}
 	,save: function() {
 		js_Cookie.set(this._name,this.base64(),0,this._path);
 		return this;
 	}
-	,load: function() {
-		if(js_Cookie.exists(this._name)) {
-			var s = js_Cookie.get(this._name);
-			if(s != null && s.length > 1) this._DB = JSON.parse(haxe_crypto_Base64.decode(s).toString()); else this._DB = null;
+	,_sign: function(add) {
+		if(add) this._DB.__time__ = this._now(); else {
+			this.__time__ = this._DB.__time__;
+			Reflect.deleteField(this._DB,"__time__");
 		}
-		if(this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire) this._DB = { __time__ : this._now(), __exists__ : false};
+	}
+	,load: function() {
+		this._DB = null;
+		if(js_Cookie.exists(this._name)) {
+			var s = haxe_crypto_Base64.decode(js_Cookie.get(this._name)).toString();
+			if(s != null && s.length > 1) this._DB = JSON.parse(s);
+		}
+		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
+			this._DB = { };
+			this._loaded = false;
+		} else {
+			this._sign(false);
+			this._loaded = true;
+		}
 		return this;
 	}
 	,refresh: function() {
-		if(this._DB.__exists__) this._DB.__time__ = this._now();
+		this.__time__ = this._now();
 		return this;
 	}
 	,getData: function() {
@@ -4050,9 +4070,6 @@ sirius_data_DataCache.prototype = {
 	}
 	,base64: function() {
 		return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(this.json()));
-	}
-	,isExpired: function() {
-		return this._DB != null && this._DB.__exists__ == true;
 	}
 	,__class__: sirius_data_DataCache
 };
@@ -4260,6 +4277,11 @@ sirius_modules_Request.prototype = {
 		if(this.data != null) return JSON.parse(this.data); else return null;
 	}
 	,__class__: sirius_modules_Request
+};
+var sirius_net_IDomainData = function() { };
+sirius_net_IDomainData.__name__ = ["sirius","net","IDomainData"];
+sirius_net_IDomainData.prototype = {
+	__class__: sirius_net_IDomainData
 };
 var sirius_seo_SEO = function(type) {
 	this.data = { };
@@ -4749,7 +4771,7 @@ sirius_transitions_ITween.__name__ = ["sirius","transitions","ITween"];
 sirius_transitions_ITween.prototype = {
 	__class__: sirius_transitions_ITween
 };
-var sirius_utils_Dice = $hx_exports.sru.utils.Dice = function() { };
+var sirius_utils_Dice = $hx_exports.Dice = function() { };
 sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
 sirius_utils_Dice.All = function(q,each,complete) {
 	var v = null;
@@ -4913,6 +4935,18 @@ sirius_utils_Table.prototype = {
 	}
 	,css: function(styles) {
 		sirius_utils_Dice.Call(this.content,"css",[styles]);
+		return this;
+	}
+	,attribute: function(name,value) {
+		this.each(function(v) {
+			v.attribute(name,value);
+		});
+		return this;
+	}
+	,attributes: function(values) {
+		this.each(function(v) {
+			v.attributes(values);
+		});
 		return this;
 	}
 	,length: function() {
@@ -5215,8 +5249,8 @@ sirius_seo_SEOTool.SEARCH = 32;
 sirius_Sirius._loglevel = 12;
 sirius_Sirius._initialized = false;
 sirius_Sirius.resources = new sirius_modules_ModLib();
-sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.domain = new sirius_net_Domain();
+sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.agent = new sirius_tools_Agent();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_css_CSSGroup.SOF = "/*SOF*/@media";

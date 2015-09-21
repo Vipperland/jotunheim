@@ -1,21 +1,23 @@
 <?php
 
 class sirius_data_DataCache implements sirius_data_IDataCache{
-	public function __construct($name, $path, $expire = null) {
+	public function __construct($name = null, $path = null, $expire = null) {
 		if(!php_Boot::$skip_constructor) {
 		if($expire === null) {
 			$expire = 0;
 		}
 		$this->_validated = false;
 		$this->_name = $name;
-		$this->_expire = $expire;
 		$this->_path = $path;
+		$this->_expire = $expire;
 		$this->clear(null);
 	}}
 	public $_DB;
 	public $_path;
 	public $_name;
 	public $_expire;
+	public $_loaded;
+	public $__time__;
 	public function _now() {
 		return Date::now()->getTime();
 	}
@@ -27,9 +29,10 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			sirius_utils_Dice::Values($p, array(new _hx_lambda(array(&$p, &$t), "sirius_data_DataCache_0"), 'execute'), null);
 		}
 		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name) . ".cache";
+		$this->_validated = true;
 	}
 	public function json($print = null) {
-		$result = json_encode($this,256);
+		$result = json_encode($this->_DB,256);
 		if($print) {
 			php_Lib::hprint($result);
 		}
@@ -47,14 +50,14 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		return $this;
 	}
 	public function set($p, $v) {
+		$this->_DB->{$p} = $v;
+		return $this;
+	}
+	public function merge($p, $v) {
 		if(Std::is($v, _hx_qtype("Array")) && _hx_has_field($this->_DB, $this->_name)) {
 			$t = $this->get($p);
 			if(Std::is($t, _hx_qtype("Array"))) {
-				{
-					$value = $t->concat($v);
-					$this->_DB->{$p} = $value;
-				}
-				return $this;
+				return $this->set($p, $t->concat($v));
 			}
 		}
 		$this->_DB->{$p} = $v;
@@ -73,18 +76,32 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		}
 		return $d;
 	}
-	public function exists($name) {
-		return _hx_has_field($this->_DB, $this->_name);
+	public function exists($name = null) {
+		if($name !== null) {
+			return _hx_has_field($this->_DB, $this->_name);
+		} else {
+			return $this->_loaded;
+		}
 	}
 	public function save() {
 		if(!$this->_validated) {
 			$this->_checkPath();
 		}
-		$this->_DB->__exists__ = true;
+		$this->_sign(true);
 		sys_io_File::saveContent($this->_name, $this->base64());
+		$this->_sign(false);
 		return $this;
 	}
+	public function _sign($add) {
+		if($add) {
+			$this->_DB->__time__ = $this->_now();
+		} else {
+			$this->__time__ = $this->_DB->__time__;
+			Reflect::deleteField($this->_DB, "__time__");
+		}
+	}
 	public function load() {
+		$this->_DB = null;
 		if(!$this->_validated) {
 			$this->_checkPath();
 		}
@@ -97,15 +114,17 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 				$this->_DB = haxe_Json::phpJsonDecode($c);
 			}
 		}
-		if(_hx_field($this->_DB, "__time__") === null || $this->_now() - $this->_DB->__time__ >= $this->_expire) {
-			$this->_DB = _hx_anonymous(array("__time__" => $this->_now(), "__exists__" => false));
+		if(_hx_field($this, "_DB") === null || $this->_expire !== 0 && (_hx_field($this->_DB, "__time__") === null || $this->_now() - $this->_DB->__time__ >= $this->_expire)) {
+			$this->_DB = _hx_anonymous(array());
+			$this->_loaded = false;
+		} else {
+			$this->_sign(false);
+			$this->_loaded = true;
 		}
 		return $this;
 	}
 	public function refresh() {
-		if($this->_DB->__exists__) {
-			$this->_DB->__time__ = $this->_now();
-		}
+		$this->__time__ = $this->_now();
 		return $this;
 	}
 	public function getData() {
@@ -113,9 +132,6 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	}
 	public function base64() {
 		return haxe_crypto_Base64::encode(haxe_io_Bytes::ofString($this->json(null)), null);
-	}
-	public function isExpired() {
-		return _hx_field($this, "_DB") !== null && _hx_equal($this->_DB->__exists__, true);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

@@ -20,7 +20,7 @@ interface IDataCache {
 
 	public function get (?id:String) : Dynamic;
 
-	public function exists (name:String) : Bool;
+	public function exists (?name:String) : Bool;
 
 	public function save () : IDataCache;
 
@@ -29,7 +29,5 @@ interface IDataCache {
 	public function getData () : Dynamic;
 
 	public function base64 () : String;
-
-	public function isExpired () : Bool;
 	
 }

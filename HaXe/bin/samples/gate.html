@@ -10,7 +10,7 @@
 	
 	<link rel="stylesheet" href="extended/3rd/css/bootstrap.css">
 	
-	<script src="extended/api.sirius.js"></script>
+	<script src="/extended/api.sirius.js"></script>
 	
 	<div class="w-100pc h-50 container"></div>
 	
@@ -21,7 +21,7 @@
 		Sirius.request("http://192.168.0.100:8500/sys/", {}, function(d) {
 			if (d.success) {
 				Sirius.module(
-					'mod/content.html', //load file
+					'/samples/gate-content.html', //load file
 					'.container', // draw in target selector
 					d.json().states.a, // result data from request
 					Automator.scan // Build CSS after data filler

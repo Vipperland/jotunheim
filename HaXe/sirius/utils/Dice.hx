@@ -14,7 +14,7 @@ import sirius.utils.IDice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("sru.utils.Dice")
+@:expose("Dice")
 class Dice {
 	
 	/**

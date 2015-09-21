@@ -1,4 +1,5 @@
 package sirius.net;
+import sirius.net.IDomainData;
 import sirius.data.IDataCache;
 
 /**
@@ -19,6 +20,8 @@ interface IDomain {
 		
 	#elseif php
 		
+		public var data:IDomainData;
+		
 		public var server:String;
 		
 		public var client:String;
@@ -29,9 +32,7 @@ interface IDomain {
 	
 	public var lastFragment : String;
 	
-	public var directory : String;
-	
-	public var extension : String;
+	public var file:String;
 	
 	public var params:Dynamic;
 

@@ -188,8 +188,6 @@ class Sirius {
 		
 		public static var gate:IGate = new Gate();
 		
-		static public var cache:Cache = new Cache();
-		
 		static public var loader:ILoader = new Loader();
 		
 	#end

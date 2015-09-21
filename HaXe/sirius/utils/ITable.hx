@@ -60,6 +60,22 @@ interface ITable {
 	public function css(styles:String):ITable;
 	
 	/**
+	 * Set the attribute value to all children
+	 * @param	name
+	 * @param	value
+	 * @return
+	 */
+	public function attribute(name:String, value:String):ITable;
+	
+	/**
+	 * Set attributes values to all children
+	 * @param	name
+	 * @param	value
+	 * @return
+	 */
+	public function attributes(value:Dynamic):ITable;
+	
+	/**
 	 * Run a method to each element Dice.Values(h)
 	 * @param	handler
 	 * @return

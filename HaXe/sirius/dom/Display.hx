@@ -58,6 +58,7 @@ class Display implements IDisplay {
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
 		
 		if (Std.is(q, String)) q = Sirius.one(q, t);
+		else if (Std.is(q, IDisplay)) q = q.element;
 		if (q == null) {
 			q = Browser.document.createDivElement();
 		}

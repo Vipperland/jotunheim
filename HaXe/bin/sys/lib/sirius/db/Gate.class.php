@@ -68,7 +68,7 @@ class sirius_db_Gate implements sirius_db_IGate{
 }
 function sirius_db_Gate_0(&$_g, &$r, &$table, $v) {
 	{
-		$c = $_g->prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table", _hx_anonymous(array("schema" => $_g->_token->db, "table" => $v)), null)->execute(null, null, null, null);
+		$c = $_g->prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table", _hx_anonymous(array("schema" => $_g->_token->db, "table" => $v)), null)->execute(null, null, null);
 		$s = new sirius_data_DataSet(null);
 		sirius_utils_Dice::All($c->result, (isset($s->set) ? $s->set: array($s, "set")), null);
 		$r->set($v, $s);

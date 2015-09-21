@@ -84,6 +84,16 @@ class Table implements ITable {
 		return this;
 	}
 	
+	public function attribute(name:String, value:String):ITable {
+		each(function(v:IDisplay) {	v.attribute(name, value); } );
+		return this;
+	}
+	
+	public function attributes(values:Dynamic):ITable {
+		each(function(v:IDisplay) {	v.attributes(values); });
+		return this;
+	}
+	
 	public function length():Int {
 		return content.length;
 	}

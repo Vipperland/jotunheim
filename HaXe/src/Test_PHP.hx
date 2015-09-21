@@ -9,6 +9,7 @@ import sirius.db.ICommand;
 import sirius.db.IGate;
 import sirius.db.Token;
 import sirius.Sirius;
+import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 /**
@@ -18,14 +19,22 @@ import sirius.utils.Dice;
 class Test_PHP {
 
 	static public function main() {
-		//Sirius.header.content(Header.JSON);
+		
+		Sirius.header.setJSON();
+		
+		var data:DataCache = new DataCache('test', 'domain', 1000);
+		if (data.load().exists()) {
+			data.json(true);
+			return;
+		}
+		
 		var g:IGate = Sirius.gate.open(new Token('localhost', 3306, 'root', '', 'apto.vc'));
 		if (g.isOpen()) {
 			var c:ICommand = g.prepare('SELECT id,name,abbreviation FROM types_states').execute();
 			if (c.success) {
-				c.queue('states');
-				//Sirius.header.setJSON();
-				//Sirius.cache.json(true);
+				data.set('states', c.result);
+				data.json(true);
+				data.save();
 			}
 			//Dice.Values(g.schemaOf('types_states').structure(), function(v:IDataSet) {
 				//Sirius.log(v.filter('COLUMN_NAME'));
@@ -35,9 +44,6 @@ class Test_PHP {
 			//c.set('name', "Rafael");
 			//c.save();
 			//Lib.dump(c.load().getData());
-			Lib.dump(untyped __php__("$_SERVER"));
-			Lib.dump(Sirius.domain);
-			
 		}else {
 			Sirius.log(g.errors);
 		}

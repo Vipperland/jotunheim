@@ -28,18 +28,22 @@ class DataCache implements IDataCache {
 	
 	private var _expire:Int;
 	
+	private var _loaded:Bool;
+	
+	private var __time__:Float;
+	
 	private function _now():Float {
 		return Date.now().getTime();
 	}
 	
+	public function new(?name:String, ?path:String, ?expire:Int = 0) {
+		_name = name;
+		_path = path;
+		_expire = expire;
+		clear();
+	} 
+	
 	#if js
-		
-		public function new(?name:String, ?path:String, ?expire:Int) {
-			_name = name;
-			_expire = expire;
-			_path = path;
-			clear();
-		} 
 		
 		public function json():String {
 			return Json.stringify(_DB);
@@ -64,17 +68,11 @@ class DataCache implements IDataCache {
 				});
 			}
 			_name = _path + "/" + _name + ".cache";
-		}
-		
-		public function new(name:String, path:String, ?expire:Int = 0) {
-			_name = name;
-			_expire = expire;
-			_path = path;
-			clear();
+			_validated = true;
 		}
 		
 		public function json(?print:Bool):String {
-			var result:String = untyped __php__("json_encode($this,256)");
+			var result:String = untyped __php__("json_encode($this->_DB,256)");
 			if (print) Lib.print(result);
 			return result;
 		}
@@ -96,11 +94,15 @@ class DataCache implements IDataCache {
 	}
 	
 	public function set(p:String, v:Dynamic):IDataCache {
+		Reflect.setField(_DB, p, v);
+		return this;
+	}
+	
+	public function merge(p:String, v:Dynamic):IDataCache {
 		if (Std.is(v, Array) && Reflect.hasField(_DB, _name)) {
-			var t:Dynamic = get(p);
+			var t:Array<Dynamic> = get(p);
 			if (Std.is(t, Array)) {
-				Reflect.setField(_DB, p, t.concat(v));
-				return this;
+				return set(p, t.concat(v));
 			}
 		}
 		Reflect.setField(_DB, p, v);
@@ -116,8 +118,12 @@ class DataCache implements IDataCache {
 		return d;
 	}
 	
-	public function exists(name:String):Bool {
-		return Reflect.hasField(_DB, _name);
+	public function exists(?name:String):Bool {
+		if (name != null) {
+			return Reflect.hasField(_DB, _name);
+		}else {
+			return _loaded;
+		}
 	}
 	
 	public function save():DataCache {
@@ -125,18 +131,28 @@ class DataCache implements IDataCache {
 			Cookie.set(_name, base64(), 0, _path);
 		#elseif php
 			if (!_validated) _checkPath();
-			_DB.__exists__ = true;
+			_sign(true);
 			File.saveContent(_name, base64());
+			_sign(false);
 		#end
 		return this;
 	}
 	
+	private function _sign(add:Bool) {
+		if (add) {
+			_DB.__time__ = _now();
+		}else {
+			__time__ = _DB.__time__;
+			Reflect.deleteField(_DB, '__time__');
+		}
+	}
+	
 	public function load():IDataCache {
+		_DB = null;
 		#if js
 			if (Cookie.exists(_name)) {
-				var s:String = Cookie.get(_name);
-				_DB = (s != null && s.length > 1) ? Json.parse(Base64.decode(s).toString()) : null;
-				
+				var s:String = Base64.decode(Cookie.get(_name)).toString();
+				if (s != null && s.length > 1) _DB = Json.parse(s);
 			}
 		#elseif php
 			if (!_validated) _checkPath();
@@ -146,12 +162,18 @@ class DataCache implements IDataCache {
 				if (c != null && c.length > 1) _DB = Json.parse(c);
 			}
 		#end
-		if (_DB.__time__ == null || _now() - _DB.__time__ >= _expire) _DB = { __time__ : _now(), __exists__:false };
+		if (_DB == null || (_expire != 0 && (_DB.__time__ == null || _now() - _DB.__time__ >= _expire))) {
+			_DB = { };
+			_loaded = false;
+		}else {
+			_sign(false);
+			_loaded = true;
+		}
 		return this;
 	}
 	
 	public function refresh():DataCache {
-		if(_DB.__exists__) _DB.__time__ = _now();
+		__time__ = _now();
 		return this;
 	}
 	
@@ -161,10 +183,6 @@ class DataCache implements IDataCache {
 	
 	public function base64():String {
 		return Base64.encode(Bytes.ofString(json()));
-	}
-	
-	public function isExpired():Bool {
-		return _DB != null && _DB.__exists__ == true;
 	}
 	
 }

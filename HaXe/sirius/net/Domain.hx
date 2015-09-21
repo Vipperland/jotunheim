@@ -8,6 +8,7 @@ package sirius.net;
 	import php.Lib;
 	import php.NativeArray;
 	import php.Web;
+	import sirius.net.IDomainData;
 #end
 import sirius.data.DataCache;
 import sirius.data.IDataCache;
@@ -32,21 +33,19 @@ class Domain implements IDomain {
 		
 	#elseif php
 		
+		public var data:IDomainData;
+		
 		public var server:String;
 		
 		public var client:String;
 		
 	#end
 	
+	public var file:String;
+	
 	public var firstFragment:String;
 	
 	public var lastFragment:String;
-	
-	public var directory:String;
-	
-	public var file:String;
-	
-	public var extension:String;
 	
 	public var params:Dynamic;
 	
@@ -63,6 +62,7 @@ class Domain implements IDomain {
 			port = l.port;
 			hash = l.hash.substr(1);
 		#elseif php
+			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
 			server = Web.getCwd();
 			host = Web.getHostName();
 			client = Web.getClientIP();
@@ -74,10 +74,12 @@ class Domain implements IDomain {
 		fragments = Utils.clearArray(p.split("/"));
 		firstFragment = fragment(0, "");
 		lastFragment = fragment(fragments.length - 1, firstFragment);
-		var fn:Array<String> = lastFragment.split(".");
-		file = fn[0];
-		extension = lastFragment.indexOf(".") != -1 ? fn.pop() : "";
-		directory = fragments.length > 0 ? (extension == '' ? lastFragment : fragments[fragments.length-2]) : '';
+		
+		if (lastFragment.indexOf(".") != -1) {
+			file = lastFragment;
+			fragments.pop();
+			lastFragment = fragment(fragments.length - 1, firstFragment);
+		}
 		
 	}
 	

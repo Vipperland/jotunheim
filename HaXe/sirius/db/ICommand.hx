@@ -33,11 +33,10 @@ interface ICommand {
 	 * Execute the command
 	 * @param	handler
 	 * @param	type
-	 * @param	queue
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:Dynamic, ?type:Int=2, ?queue:String=null, ?parameters:Array<Dynamic>) : ICommand;
+	public function execute (?handler:Dynamic, ?type:Int=2, ?parameters:Array<Dynamic>) : ICommand;
 	
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)
@@ -45,12 +44,6 @@ interface ICommand {
 	 * @return
 	 */
 	public function fetch (handler:Dynamic) : ICommand;
-	
-	/**
-	 * Send fetched data to main result pool (Sirius.cache)
-	 * @param	name
-	 */
-	public function queue (name:String) : Void;
 	
 	/**
 	 * Dump the final query
