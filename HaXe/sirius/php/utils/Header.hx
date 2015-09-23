@@ -8,9 +8,13 @@ import php.Web;
  */
 class Header{
 	
-	static public var TEXT:String = 'text/plain; charset=utf-8';
+	static public var HTML:String = 'text/html;charset=utf-8';
 	
-	static public var JSON:String = 'text/plain; charset=utf-8';
+	static public var TEXT:String = 'text/plain;charset=utf-8';
+	
+	static public var JSON:String = 'application/json;charset=utf-8';
+	
+	static public var JSONP:String = 'application/javascript;charset=utf-8';
 	
 	public function new() {
 		

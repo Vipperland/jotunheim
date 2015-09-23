@@ -1,7 +1,7 @@
 package sirius.utils;
 import haxe.Log;
 import sirius.tools.Utils;
-import sirius.utils.IDice;
+import sirius.utils.IDiceRoll;
 
 #if php
 	import php.Lib;
@@ -24,13 +24,12 @@ class Dice {
 	 * @param	complete	On propagation stop handler, call it with fail param and value
 	 * @return	Last value
 	 */
-	public static function All(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
+	public static function All(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
 		var v:Dynamic = null;
 		var p:Dynamic = null;
-		var c:Bool = complete != null;
 		var i:Bool = true;
+		var k:UInt = 0;
 		if (q != null) {
-			
 			#if php
 				// ==== Workaround with PHP Arrays
 				if(Std.is(q, Array)) q = Lib.objectOfAssociativeArray(q);
@@ -38,21 +37,21 @@ class Dice {
 			for (p in Reflect.fields(q)) {
 				v = Reflect.field(q, p);
 				#if php
-					// ==== Skip object methods on PHP object
+					// ==== Skip object methods in PHP object
 					if (Reflect.isFunction(v)) continue;
 				#end
 				if (each(p, v) == true) {
 					i = false;
 					break;
 				}else {
+					++k;
 					p = null;
 					v = null;
 				}
 			}
-			
 		}
-		var r:IDice = cast { param:p, value:v, completed:i, object:q };
-		if (c) complete(r);
+		var r:IDiceRoll = cast { param:p, value:v, completed:i, object:q, keys:k };
+		if (complete != null) complete(r);
 		return r;
 		
 	}
@@ -63,7 +62,7 @@ class Dice {
 	 * @param	each		Parameter handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail parameter
 	 */
-	public static function Params(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
+	public static function Params(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(p); }, 
 			complete
@@ -76,7 +75,7 @@ class Dice {
 	 * @param	each		Value handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail value
 	 */
-	public static function Values(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
+	public static function Values(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(v); }, 
 			complete
@@ -89,7 +88,7 @@ class Dice {
 	 * @param	method	Function name
 	 * @param	args		Function arguments
 	 */
-	public static function Call(q:Dynamic, method:String, ?args:Array<Dynamic>):IDice {
+	public static function Call(q:Dynamic, method:String, ?args:Array<Dynamic>):IDiceRoll {
 		if (args == null) args = [];
 		return All(q,
 			function(p:Dynamic, v:Dynamic) {
@@ -106,7 +105,7 @@ class Dice {
 	 * @param	each
 	 * @param	complete
 	 */
-	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:Dynamic = null, ?increment:UInt = 1):IDice {
+	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:Dynamic = null, ?increment:UInt = 1):IDiceRoll {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
 		if (increment == null || increment < 1) {
@@ -116,7 +115,7 @@ class Dice {
 			if (each(a,b,(a+=increment)==b) == true) break;
 		}
 		var c:Bool = a == b;
-		var r:IDice = cast { from:from, to:b, completed:c, value:a };
+		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a };
 		if (complete != null) complete(r);
 		return r;
 	}
@@ -127,7 +126,7 @@ class Dice {
 	 * @param	alt
 	 * @return
 	 */
-	public static function One(from:Dynamic, ?alt:Dynamic):IDice {
+	public static function One(from:Dynamic, ?alt:Dynamic):IDiceRoll {
 		if (Std.is(from, Array)) {
 			Values(from, function(v:Dynamic) {
 				from = v;
@@ -159,8 +158,8 @@ class Dice {
 		 * @param	each			h(e:Element|Node)
 		 * @param	complete		c(LastIndex_INT)
 		 */
-		public static function Children(of:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDice {
-			var r:IDice = cast { children:[] };
+		public static function Children(of:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
+			var r:IDiceRoll = cast { children:[] };
 			var l:Int = 0;
 			var c:Element;
 			if (of != null) {

@@ -1,5 +1,7 @@
 package sirius.modules;
 import haxe.Http;
+import haxe.Log;
+import sirius.errors.Error;
 import sirius.modules.Request;
 import sirius.modules.ModLib;
 import sirius.Sirius;
@@ -113,20 +115,29 @@ class Loader implements ILoader {
 	
 	#if js
 	
-		public function build(module:String, ?data:Dynamic):IDisplay {
-			return Sirius.resources.build(module, data);
+		public function build(module:String, ?data:Dynamic, ?each:Dynamic = null):IDisplay {
+			return Sirius.resources.build(module, data, each);
 		}
 		
-		public function async(file:String, ?target:String, ?data:Dynamic, ?handler:Dynamic):Void {
+		public function async(file:String, ?target:Dynamic, ?data:Dynamic, ?handler:Dynamic):Void {
 			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
 			r.async = true;
 			r.onData = function(d) {
 				Sirius.resources.register(file, d);
 				if (target != null) {
-					var d:IDisplay = Sirius.one(target, null, function(t:IDisplay) {
-						if (!Std.is(data, Array)) data = [data];
-						t.addChild(build(file, data));
-					});
+					if(Std.is(target, String)) {
+						var d:IDisplay = Sirius.one(target, null);
+						if (d != null) {
+							if (!Std.is(data, Array)) data = [data];
+							d.addChild(build(file, data));
+						}
+					}else {
+						try {
+							build(file, data, target);
+						}catch (e:Dynamic) {
+							Sirius.log(e, 10, 3);
+						}
+					}
 				}
 				if (handler != null) handler(file, d);
 			}
@@ -152,8 +163,8 @@ class Loader implements ILoader {
 			r.async = true;
 		#end
 		if (data != null) Dice.All(data, r.setParameter);
-		r.onData = function(d) { if (handler != null) handler(new Request(true, d)); }
-		r.onError = function(d) { if (handler != null) handler(new Request(false, d)); }
+		r.onData = function(d) { if (handler != null) handler(new Request(true, d, null)); }
+		r.onError = function(d) { if (handler != null) handler(new Request(false, null, new Error(-1, d))); }
 		r.request(method != null && method.toLowerCase() == 'post');
 	}
 	

@@ -20,6 +20,7 @@ class Test_PHP {
 
 	static public function main() {
 		
+		Sirius.header.access("*");
 		Sirius.header.setJSON();
 		
 		var data:DataCache = new DataCache('test', 'domain', 1000);
@@ -40,10 +41,6 @@ class Test_PHP {
 				//Sirius.log(v.filter('COLUMN_NAME'));
 			//});
 			
-			//var c:IDataCache = new DataCache("test", "domain", 60);
-			//c.set('name', "Rafael");
-			//c.save();
-			//Lib.dump(c.load().getData());
 		}else {
 			Sirius.log(g.errors);
 		}

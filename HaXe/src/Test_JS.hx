@@ -1,6 +1,9 @@
 package;
 import haxe.Log;
+import sirius.css.Automator;
+import sirius.dom.Div;
 import sirius.modules.IRequest;
+import sirius.modules.Request;
 import sirius.Sirius;
 
 /**

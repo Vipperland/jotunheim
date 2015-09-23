@@ -3,6 +3,7 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
+		sirius_Sirius::$header->access("*", null, null, null);
 		sirius_Sirius::$header->setJSON();
 		$data = new sirius_data_DataCache("test", "domain", 1000);
 		if($data->load()->exists(null)) {

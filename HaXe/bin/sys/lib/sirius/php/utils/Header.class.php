@@ -29,7 +29,9 @@ class sirius_php_utils_Header {
 	public function setTEXT() {
 		$this->content(sirius_php_utils_Header::$TEXT);
 	}
-	static $TEXT = "text/plain; charset=utf-8";
-	static $JSON = "text/plain; charset=utf-8";
+	static $HTML = "text/html;charset=utf-8";
+	static $TEXT = "text/plain;charset=utf-8";
+	static $JSON = "application/json;charset=utf-8";
+	static $JSONP = "application/javascript;charset=utf-8";
 	function __toString() { return 'sirius.php.utils.Header'; }
 }

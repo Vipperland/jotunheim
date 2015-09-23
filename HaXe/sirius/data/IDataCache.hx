@@ -6,11 +6,7 @@ package sirius.data;
 
 interface IDataCache {
 	
-	#if js
-		public function json () : String;
-	#elseif php
-		public function json (?print:Bool) : String;
-	#end
+	public function json (?print:Bool) : String;
 	
 	public function refresh () : IDataCache;
 
@@ -27,7 +23,5 @@ interface IDataCache {
 	public function load () : IDataCache;
 
 	public function getData () : Dynamic;
-
-	public function base64 () : String;
 	
 }

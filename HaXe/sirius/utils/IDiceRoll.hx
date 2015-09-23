@@ -4,7 +4,7 @@ package sirius.utils;
  * @author Rafael Moreira
  */
 
-interface IDice {
+interface IDiceRoll {
 	// Last param
 	public var object:Dynamic;
 	// Last param
@@ -13,6 +13,8 @@ interface IDice {
 	public var value:Dynamic;
 	// Loop Completed
 	public var completed:Bool;
+	// Looping count
+	public var keys:Int;
 	// Count start
 	public var from:Int;
 	// Count target

@@ -13,13 +13,8 @@ class Ticker {
 	private static var _pool:Array<Dynamic> = [];
 	
 	private static function _tickAll():Void {
-		var order:Int = 0;
 		Dice.All(_pool, function(p:Int, v:Dynamic) {
-			if (v != null) {
-				v();
-				if (order < p) _pool[order] = v;
-				++order;
-			}
+			if (v != null) v();
 		});
 	}
 	
@@ -43,7 +38,7 @@ class Ticker {
 	public static function remove(handler:Dynamic):Void {
 		if (handler == null) return;
 		var iof:Int = _pool.indexOf(handler);
-		if (iof != -1) _pool[iof] = null;
+		if (iof != -1) _pool.splice(iof, 1);
 	}
 	
 	public static function delay(handler:Dynamic, time:Float, ?args:Array<Dynamic>):Delayer {

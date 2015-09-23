@@ -26,6 +26,7 @@ import sirius.utils.Dice;
 	import sirius.tools.Agent;
 	import sirius.transitions.Animator;
 	import sirius.utils.ITable;
+	import sirius.utils.SearchTag;
 	import sirius.utils.Table;
 #elseif php
 	import php.Lib;
@@ -129,7 +130,7 @@ class Sirius {
 		 * @param	q
 		 * @return
 		 */
-		static public function j(?q:Dynamic = "*"):JQuery {
+		static public function jQuery(?q:Dynamic = "*"):JQuery {
 			return untyped __js__("$(q);");
 		}
 		
@@ -140,8 +141,8 @@ class Sirius {
 		static public function run(handler:Dynamic):Void {
 			if (!_initialized) {
 				init(handler);
-			}else if(handler != null){
-				if (Browser.document.readyState == "complete") {
+			}else if (handler != null) {
+				if (body != null || document != null) {
 					handler();
 				}else {
 					if (_loadPool == null) {
@@ -152,6 +153,7 @@ class Sirius {
 				}
 			}
 		}
+
 		
 		/**
 		 * Init Sirius Framework
@@ -195,11 +197,11 @@ class Sirius {
 	/**
 	 * Load and fill a external content
 	 * @param	file
-	 * @param	target
+	 * @param	target *js onlye
 	 * @param	content
 	 * @param	handler
 	 */
-	static public function module(file:String, ?target:String, ?content:Dynamic, ?handler:Dynamic):Void {
+	static public function module(file:String, #if js ?target:Dynamic #end, ?content:Dynamic, ?handler:Dynamic):Void {
 		#if js
 			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.async(file, target, content, handler); } );

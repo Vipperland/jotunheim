@@ -23,7 +23,7 @@ class Command implements ICommand {
 	
 	public var statement:Statement;
 	
-	public var result:Array<Dynamic>;
+	public var result:NativeArray;
 	
 	public var errors:Array<Error>;
 
@@ -50,12 +50,17 @@ class Command implements ICommand {
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
 		try {
 			success = statement.execute(p);
-			result = Lib.toHaxeArray(statement.fetchAll(type));
+			result = statement.fetchAll(type);
 			if (handler != null) fetch(handler);
 		}catch (e:Dynamic) {
 			errors[errors.length] = new Error(e.getCode(), e.getMessage());
 		}
 		
+		return this;
+	}
+	
+	public function dataSet(handler:Dynamic):ICommand {
+		Dice.Values(result, function(v:Dynamic) { handler(new DataSet(v)); } );
 		return this;
 	}
 	

@@ -14,9 +14,8 @@ class Sprite extends Div {
 	
 	public function new(?q:Dynamic, ?d:String = "sprite") {
 		super(q, d);
-		if(q == null){
-			Automator.build("w-100pc h-100pc disp-table pos-abs", ".sprite");
-			Automator.build("disp-table-cell vert-m txt-c", ".sprite>div");
+		if (q == null) {
+			Automator.common();
 			attribute('sru-dom', 'sprite');
 		}
 		content = cast one('div');

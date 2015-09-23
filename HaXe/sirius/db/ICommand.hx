@@ -1,4 +1,5 @@
 package sirius.db;
+import php.NativeArray;
 import sirius.db.pdo.Statement;
 
 /**
@@ -20,7 +21,7 @@ interface ICommand {
 	/**
 	 * An Array of all returned data
 	 */
-	public var result : Array<Dynamic>;
+	public var result : NativeArray;
 	
 	/**
 	 * Flush arguments to query

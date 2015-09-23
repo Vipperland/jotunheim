@@ -28,15 +28,18 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$t = (new _hx_array(array()));
 			sirius_utils_Dice::Values($p, array(new _hx_lambda(array(&$p, &$t), "sirius_data_DataCache_0"), 'execute'), null);
 		}
-		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name) . ".cache";
+		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name) . ".sru.cache";
 		$this->_validated = true;
 	}
-	public function json($print = null) {
-		$result = json_encode($this->_DB,256);
-		if($print) {
-			php_Lib::hprint($result);
-		}
-		return $result;
+	public function _fixData() {
+		$data = _hx_anonymous(array());
+		$this->_fixParams($this->_DB, $data);
+		php_Lib::dump($data);
+		return $data;
+	}
+	public function _fixParams($from, $data) {
+		$i = null;
+		sirius_utils_Dice::All($from, array(new _hx_lambda(array(&$data, &$from, &$i), "sirius_data_DataCache_1"), 'execute'), null);
 	}
 	public function clear($p = null) {
 		if($p !== null) {
@@ -88,7 +91,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$this->_checkPath();
 		}
 		$this->_sign(true);
-		sys_io_File::saveContent($this->_name, $this->base64());
+		sys_io_File::saveContent($this->_name, utils_Criptog::encodeBase64($this->_DB));
 		$this->_sign(false);
 		return $this;
 	}
@@ -107,12 +110,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		}
 		if(file_exists($this->_name)) {
 			$c = sys_io_File::getContent($this->_name);
-			if(strlen($c) > 0) {
-				$c = haxe_crypto_Base64::decode($c, null)->toString();
-			}
-			if($c !== null && strlen($c) > 1) {
-				$this->_DB = haxe_Json::phpJsonDecode($c);
-			}
+			$this->_DB = utils_Criptog::decodeBase64($c, true);
 		}
 		if(_hx_field($this, "_DB") === null || $this->_expire !== 0 && (_hx_field($this->_DB, "__time__") === null || $this->_now() - $this->_DB->__time__ >= $this->_expire)) {
 			$this->_DB = _hx_anonymous(array());
@@ -130,8 +128,12 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	public function getData() {
 		return $this->_DB;
 	}
-	public function base64() {
-		return haxe_crypto_Base64::encode(haxe_io_Bytes::ofString($this->json(null)), null);
+	public function json($print = null) {
+		$result = haxe_Json::phpJsonEncode($this->_DB, null, null);
+		if($print) {
+			php_Lib::hprint($result);
+		}
+		return $result;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -173,5 +175,25 @@ function sirius_data_DataCache_0(&$p, &$t, $v) {
 			return false;
 		}
 		return true;
+	}
+}
+function sirius_data_DataCache_1(&$data, &$from, &$i, $p, $v) {
+	{
+		if(Std::is($v, _hx_qtype("Float")) || Std::is($v, _hx_qtype("Bool")) || Std::is($v, _hx_qtype("String")) || Std::is($v, _hx_qtype("Int"))) {
+			$field = $p;
+			$data->{$field} = $v;
+		} else {
+			if(Std::is($v, _hx_qtype("Array"))) {
+				$v = php_Lib::toPhpArray($v);
+			} else {
+				if(Std::is($v, _hx_qtype("Dynamic"))) {
+					$v = php_Lib::associativeArrayOfObject($v);
+				}
+			}
+		}
+		{
+			$field1 = $p;
+			$data->{$field1} = $v;
+		}
 	}
 }

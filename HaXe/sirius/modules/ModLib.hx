@@ -1,6 +1,7 @@
 package sirius.modules;
 import haxe.Json;
 import haxe.Log;
+import sirius.dom.Div;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 import sirius.Sirius;
@@ -165,8 +166,18 @@ class ModLib {
 		 * @param	data
 		 * @return
 		 */
-		public function build(module:String, ?data:Dynamic):IDisplay {
-			return new Display().build(get(module, data));
+		public function build(module:String, ?data:Dynamic, ?each:Dynamic = null):IDisplay {
+			if (each != null && Std.is(data, Array)) {
+				var d:IDisplay = new Div();
+				Dice.Values(data, function(v:Dynamic) {
+					v = new Display().build(get(module, v));
+					v = each(v);
+					if(v != null) d.addChild(v);
+				});
+				return d;
+			}else {
+				return new Display().build(get(module, data));
+			}
 		}
 		
 		// ***

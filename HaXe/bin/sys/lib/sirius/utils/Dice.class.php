@@ -5,8 +5,8 @@ class sirius_utils_Dice {
 	static function All($q, $each, $complete = null) {
 		$v = null;
 		$p = null;
-		$c = $complete !== null;
 		$i = true;
+		$k = 0;
 		if($q !== null) {
 			if(Std::is($q, _hx_qtype("Array"))) {
 				$q = php_Lib::objectOfAssociativeArray($q);
@@ -25,6 +25,7 @@ class sirius_utils_Dice {
 						$i = false;
 						break;
 					} else {
+						++$k;
 						$p1 = null;
 						$v = null;
 					}
@@ -32,8 +33,8 @@ class sirius_utils_Dice {
 				}
 			}
 		}
-		$r = _hx_anonymous(array("param" => $p, "value" => $v, "completed" => $i, "object" => $q));
-		if($c) {
+		$r = _hx_anonymous(array("param" => $p, "value" => $v, "completed" => $i, "object" => $q, "keys" => $k));
+		if($complete !== null) {
 			call_user_func_array($complete, array($r));
 		}
 		return $r;

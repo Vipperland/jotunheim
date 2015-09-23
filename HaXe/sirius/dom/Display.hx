@@ -16,6 +16,7 @@ import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
 import sirius.math.ARGB;
+import sirius.math.IARGB;
 import sirius.Sirius;
 import sirius.tools.Key;
 import sirius.tools.Ticker;
@@ -220,17 +221,17 @@ class Display implements IDisplay {
 	}
 	
 	public function hasAttribute(name:String):Bool {
-		return Reflect.getProperty(element, name) != null || (element.getAttribute != null && element.getAttribute(name) != null);
+		return (element.hasAttribute != null && element.hasAttribute(name)) || Reflect.getProperty(element, name) != null;
 	}
 	
 	public function attribute(name:String, ?value:String):String {
-		if (Reflect.getProperty(element, name) != null) {
-			if (value != null) Reflect.setProperty(element, name, value);
-			return Reflect.getProperty(element, name);
-		}
-		if(element.setAttribute != null){
-			if (value != null) element.setAttribute(name, value);
-			return element.getAttribute(name);
+		if(name != null){
+			if (value != null) {
+				if (element.setAttribute != null) 	element.setAttribute(name, value);
+				else								Reflect.setProperty(element, name, value);
+			}
+			if (element.getAttribute != null) 		return element.getAttribute(name);
+			else 									Reflect.getProperty(element, name);
 		}
 		return null;
 	}
@@ -250,14 +251,14 @@ class Display implements IDisplay {
 		if (p != null) {
 			if (Std.is(p, String)) {
 				if (v != null) {
-					Reflect.setField(element.style, p, Std.string(v));
+					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
 				}
 				v = Reflect.field(element.style, p);
 				if (p.toLowerCase().indexOf("color") > 0) v = new ARGB(v);
 				return v;
 			}else {
-				Dice.All(p, function(p:String, v:String) {
-					Reflect.setField(element.style, p, Std.string(v));
+				Dice.All(p, function(p:String, v:Dynamic) {
+					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
 				});
 			}
 		}
@@ -325,11 +326,10 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function parent():IDisplay {
-		if (element.parentElement != null && _parent == null) {
-			_parent = Utils.displayFrom(element.parentElement);
-		}
-		return _parent;
+	public function parent(levels:UInt=0):IDisplay {
+		if (element.parentElement != null && _parent == null) _parent = Utils.displayFrom(element.parentElement);
+		if (levels > 0 && _parent != null)	return _parent.parent(--levels);
+		else 								return _parent;
 	}
 	
 	public function activate(handler:Dynamic):IDisplay {
@@ -380,8 +380,8 @@ class Display implements IDisplay {
 		return element == null || element.hidden;
 	}
 	
-	public function j():JQuery {
-		return Sirius.j(element);
+	public function jQuery():JQuery {
+		return Sirius.jQuery(element);
 	}
 	
 	public function typeOf():String {

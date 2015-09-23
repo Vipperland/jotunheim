@@ -6,7 +6,7 @@ import sirius.data.DataSet;
  * ...
  * @author Rafael Moreira
  */
-class DisplayData extends DataSet {
+class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 	
 	public var __data__:IDataSet;
 	

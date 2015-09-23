@@ -1,15 +1,17 @@
 <?php
 
 class sirius_modules_Request implements sirius_modules_IRequest{
-	public function __construct($success, $data) {
+	public function __construct($success, $data, $error = null) {
 		if(!php_Boot::$skip_constructor) {
+		$this->error = $error;
 		$this->data = $data;
 		$this->success = $success;
 	}}
 	public $data;
 	public $success;
+	public $error;
 	public function json() {
-		if($this->data !== null) {
+		if($this->data !== null && strlen($this->data) > 1) {
 			return haxe_Json::phpJsonDecode($this->data);
 		} else {
 			return null;

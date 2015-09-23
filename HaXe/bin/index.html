@@ -12,12 +12,25 @@
 	
 	<script src="extended/api.sirius.js"></script>
 	
-	<div class="w-100pc h-50 container"></div>
-	
 	<script>
 		
-		Sirius.run(function(){
-			Sirius.log(Sirius.agent);
+		Automator.build("marg-b-10 bord-blue bord-solid bg-x0066CC shadow-x0066CC bord-rad-2 h-250 w-250pc", "div[id*=state_]");
+		
+		Sirius.init(function(){
+			
+			Sirius.body.addChild(new sru.dom.Sprite());
+			
+			Sirius.request("http://192.168.0.100:8500/sys/", { }, function(request) {
+				if (request.success) {
+					Sirius.module(
+						'/samples/gate-module.html', //load file
+						'[sru-dom=sprite]', // draw in target selector
+						request.json().states, // result data from request
+						Automator.scan // On completion, Scan for CSS definitions
+					);
+				}
+			});
+			
 		});
 		
 	</script>

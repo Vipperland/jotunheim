@@ -44,16 +44,16 @@ interface ILoader {
 		 * @param	data
 		 * @return
 		 */
-		public function build (module:String, ?data:Dynamic = null) : IDisplay;
+		public function build (module:String, ?data:Dynamic = null, ?each:Dynamic = null) : IDisplay;
 		
 		/**
 		 * Load a module not in queue
 		 * @param	file
-		 * @param	target
+		 * @param	target *js only
 		 * @param	data
 		 * @param	handler
 		 */
-		public function async(file:String, ?target:String, ?data:Dynamic, ?handler:Dynamic):Void;
+		public function async(file:String, #if js ?target:Dynamic #end, ?data:Dynamic, ?handler:Dynamic):Void;
 		
 	#elseif php
 		

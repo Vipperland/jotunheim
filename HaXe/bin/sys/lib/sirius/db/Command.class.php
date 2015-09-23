@@ -33,10 +33,7 @@ class sirius_db_Command implements sirius_db_ICommand{
 		}
 		try {
 			$this->success = $this->statement->execute($p);
-			{
-				$a = $this->statement->fetchAll($type);
-				$this->result = new _hx_array($a);
-			}
+			$this->result = $this->statement->fetchAll($type);
 			if($handler !== null) {
 				$this->fetch($handler);
 			}
@@ -49,13 +46,17 @@ class sirius_db_Command implements sirius_db_ICommand{
 		}
 		return $this;
 	}
-	public function fetch($handler) {
+	public function dataSet($handler) {
 		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$handler), "sirius_db_Command_1"), 'execute'), null);
+		return $this;
+	}
+	public function fetch($handler) {
+		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$handler), "sirius_db_Command_2"), 'execute'), null);
 		return $this;
 	}
 	public function log() {
 		$q = $this->_query;
-		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$q), "sirius_db_Command_2"), 'execute'), null);
+		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$q), "sirius_db_Command_3"), 'execute'), null);
 		return $q;
 	}
 	public function __call($m, $a) {
@@ -88,7 +89,12 @@ function sirius_db_Command_1(&$handler, $v) {
 		call_user_func_array($handler, array(new sirius_data_DataSet($v)));
 	}
 }
-function sirius_db_Command_2(&$q, $p, $v) {
+function sirius_db_Command_2(&$handler, $v) {
+	{
+		call_user_func_array($handler, array(new sirius_data_DataSet($v)));
+	}
+}
+function sirius_db_Command_3(&$q, $p, $v) {
 	{
 		$sub = ":" . _hx_string_or_null($p);
 		$by = $v;

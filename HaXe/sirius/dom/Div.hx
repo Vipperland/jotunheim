@@ -34,7 +34,7 @@ class Div extends Display implements IDiv {
 	}
 	
 	public function background(?value:String, ?repeat:String, ?position:String, ?attachment:String):String {
-		if(value != null){
+		if (value != null) {
 			var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
 			var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
 			var p:String = position != null && repeat.length > 0 ? position : "no-repeat";

@@ -120,10 +120,11 @@ interface IDisplay {
 	public function remove():IDisplay;
 	
 	/**
-	 * Parent container
+	 * Parent container, can go up to any available level until reach document element
+	 * @param	levels
 	 * @return
 	 */
-	public function parent():IDisplay;
+	public function parent(levels:UInt=0):IDisplay;
 	
 	/**
 	 * Get child by index
@@ -342,7 +343,7 @@ interface IDisplay {
 	 * Return Element as JQuery object structure
 	 * @return
 	 */
-	public function j():JQuery;
+	public function jQuery():JQuery;
 	
 	/**
 	 * Type of element

@@ -3,7 +3,7 @@ import sirius.data.FormParam;
 import sirius.data.IFormData;
 import sirius.dom.IDisplay;
 import sirius.utils.Dice;
-import sirius.utils.IDice;
+import sirius.utils.IDiceRoll;
 
 /**
  * ...
@@ -42,7 +42,7 @@ class FormData implements IFormData {
 	}
 	
 	public function valueOf(p:String):FormParam {
-		var res:IDice = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; } );
+		var res:IDiceRoll = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; } );
 		return cast res.value; 
 	}
 	
@@ -53,7 +53,7 @@ class FormData implements IFormData {
 	}
 	
 	public function getParam(p:String):FormParam {
-		var res:IDice = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; });
+		var res:IDiceRoll = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; });
 		return cast res.value;
 	}
 	

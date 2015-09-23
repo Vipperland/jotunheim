@@ -86,6 +86,8 @@ import haxe.Log;
 	import sirius.dom.UL;
 	import sirius.dom.Video;
 	
+	import sirius.plugins.Anchor;
+	
 #end
 
 import sirius.utils.Dice;

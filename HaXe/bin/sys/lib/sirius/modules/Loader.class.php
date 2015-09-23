@@ -170,14 +170,14 @@ function sirius_modules_Loader_7(&$__hx__this, &$data, &$handler, &$method, &$ur
 function sirius_modules_Loader_8(&$data, &$handler, &$method, &$r, &$url, $d) {
 	{
 		if($handler !== null) {
-			call_user_func_array($handler, array(new sirius_modules_Request(true, $d)));
+			call_user_func_array($handler, array(new sirius_modules_Request(true, $d, null)));
 		}
 	}
 }
 function sirius_modules_Loader_9(&$data, &$handler, &$method, &$r, &$url, $d1) {
 	{
 		if($handler !== null) {
-			call_user_func_array($handler, array(new sirius_modules_Request(false, $d1)));
+			call_user_func_array($handler, array(new sirius_modules_Request(false, null, new sirius_errors_Error(404, $d1))));
 		}
 	}
 }

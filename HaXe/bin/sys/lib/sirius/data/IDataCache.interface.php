@@ -10,5 +10,4 @@ interface sirius_data_IDataCache {
 	function save();
 	function load();
 	function getData();
-	function base64();
 }
