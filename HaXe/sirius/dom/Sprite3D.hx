@@ -1,4 +1,5 @@
 package sirius.dom;
+import sirius.css.Automator;
 
 /**
  * ...
@@ -7,16 +8,16 @@ package sirius.dom;
 @:expose("sru.dom.Sprite3D")
 class Sprite3D extends Display3D {
 
-	public var content:Display3D;
+	public var content:IDisplay3D;
 	
-	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc center pos-abs") {
+	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc sprite") {
 		super(null, d);
 		setPerspective("1000px");
 		content = new Display3D(q);
 		content.preserve3d().update();
-		if (content.parent() == null) {
-			addChild(content);
-		}
+		//content.setPerspective(null, '50% 50% 50%');
+		if (content.parent() == null) addChild(content);
+		Automator.common();
 		update();
 	}
 	

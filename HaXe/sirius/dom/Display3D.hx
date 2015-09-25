@@ -51,10 +51,10 @@ class Display3D extends Div implements IDisplay3D {
 		return this;
 	}
 	
-	public function rotateAll(x:Float, y:Float, z:Float, ?add:Bool):IDisplay3D {
+	public function rotateAll(x:Float, y:Float, ?z:Float, ?add:Bool):IDisplay3D {
 		rotationX(x, add);
 		rotationY(y, add);
-		rotationZ(z, add);
+		if(z != null) rotationZ(z, add);
 		return this;
 	}
 	
@@ -85,10 +85,10 @@ class Display3D extends Div implements IDisplay3D {
 		return rotation.z;
 	}
 	
-	public function moveTo(x:Float, y:Float, z:Float, ?add:Bool):IDisplay3D {
+	public function moveTo(x:Float, y:Float, ?z:Float, ?add:Bool):IDisplay3D {
 		locationX(x,add);
-		locationY(y,add);
-		locationZ(z,add);
+		locationY(y, add);
+		if(z != null) locationZ(z,add);
 		return this;
 	}
 	
@@ -107,14 +107,18 @@ class Display3D extends Div implements IDisplay3D {
 		return location.z;
 	}
 	
-	public function scaleAll(x:Float, y:Float, z:Float, ?add:Bool):IDisplay3D {
+	public function scaleAll(x:Float, y:Float, ?z:Float, ?add:Bool):IDisplay3D {
 		scaleX(x,add);
 		scaleY(y,add);
-		scaleZ(z,add);
+		if(z != null) scaleZ(z,add);
 		return this;
 	}
 	
-	public function transform(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay {
+	public function transform(x:Float, y:Float, x1:Float, y1:Float, w:Float, h:Float):IDisplay {
+		return moveTo(x, y, null).rotateAll(x1, y1, null).scaleAll(w, h, null);
+	}
+	
+	public function transform3D(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay {
 		return moveTo(x, y, z).rotateAll(x1, y1, z1).scaleAll(w, h, d);
 	}
 	

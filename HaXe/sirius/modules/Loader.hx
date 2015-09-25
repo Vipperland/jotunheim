@@ -1,4 +1,5 @@
 package sirius.modules;
+import errors.IError;
 import haxe.Http;
 import haxe.Log;
 import sirius.errors.Error;
@@ -30,7 +31,7 @@ class Loader implements ILoader {
 	
 	public var totalLoaded:Int;
 	
-	public var lastError:Dynamic;
+	public var lastError:IError;
 	
 	public function new(?noCache:Bool = false){
 		_noCache = noCache;
@@ -44,7 +45,7 @@ class Loader implements ILoader {
 		return totalLoaded / totalFiles;
 	}
 	
-	public function listen(?complete:Dynamic, ?error:Dynamic):ILoader {
+	public function listen(?complete:ILoader->Void, ?error:IError->Void):ILoader {
 		if (error != null && Lambda.indexOf(_onError, error) == -1) {
 			_onError[_onError.length] = error;
 		}
@@ -54,7 +55,7 @@ class Loader implements ILoader {
 		return this;
 	}
 	
-	public function add(files:Array<String>, ?complete:Dynamic, ?error:Dynamic):ILoader {
+	public function add(files:Array<String>, ?complete:ILoader->Void, ?error:IError->Void):ILoader {
 		listen(complete, error);
 		if (files != null && files.length > 0) {
 			_toload = _toload.concat(files);
@@ -63,7 +64,7 @@ class Loader implements ILoader {
 		return this;
 	}
 	
-	public function start(?complete:Dynamic, ?error:Dynamic):ILoader {
+	public function start(?complete:ILoader->Void, ?error:IError->Void):ILoader {
 		if (!_isBusy) {
 			listen(complete, error);
 			_isBusy = true;
@@ -81,9 +82,7 @@ class Loader implements ILoader {
 			#end
 			r.onError = function(e) {
 				++totalLoaded;
-				if (_error != null) {
-					_error(e);
-				}
+				if (_error != null) _error(e);
 				_loadNext();
 			}
 			r.onData = function(d) {
@@ -99,14 +98,14 @@ class Loader implements ILoader {
 	}
 	
 	private function _error(e:Dynamic):Void {
-		lastError = e;
-		Dice.Values(_onError, function(v:Dynamic) {
-			if (v != null) v(this);
+		lastError = Std.is(e, String) ? new Error( -1, e, this) : new Error( -1, "Unknow", { content:e, loader:this } );
+		Dice.Values(_onError, function(v:IError->Void) {
+			if (v != null) v(lastError);
 		});
 	}
 	
 	private function _complete():Void {
-		Dice.Values(_onComplete, function(v:Dynamic) {
+		Dice.Values(_onComplete, function(v:ILoader->Void) {
 			if (v != null) v(this);
 		});
 		_onComplete = [];
@@ -115,21 +114,26 @@ class Loader implements ILoader {
 	
 	#if js
 	
-		public function build(module:String, ?data:Dynamic, ?each:Dynamic = null):IDisplay {
+		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
 			return Sirius.resources.build(module, data, each);
 		}
-		
-		public function async(file:String, ?target:Dynamic, ?data:Dynamic, ?handler:Dynamic):Void {
-			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
-			r.async = true;
-			r.onData = function(d) {
-				Sirius.resources.register(file, d);
+	
+	#end
+	
+	public function async(file:String, #if js ?target:Dynamic #end, ?data:Dynamic, ?handler:String->String->Void):Void {
+		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
+		var r:Http = new Http(h[0] + (_noCache ? "" : "?t=" + Date.now().getTime()));
+		r.async = true;
+		r.onData = function(d) {
+			Sirius.resources.register(file, d);
+			file = h.length == 2 ? h[1] : file;
+			#if js
 				if (target != null) {
 					if(Std.is(target, String)) {
-						var d:IDisplay = Sirius.one(target, null);
-						if (d != null) {
+						var e:IDisplay = Sirius.one(target, null);
+						if (e != null) {
 							if (!Std.is(data, Array)) data = [data];
-							d.addChild(build(file, data));
+							e.addChild(build(file, data));
 						}
 					}else {
 						try {
@@ -139,25 +143,13 @@ class Loader implements ILoader {
 						}
 					}
 				}
-				if (handler != null) handler(file, d);
-			}
-			r.request(false);
+			#end
+			if (handler != null) handler(file, d);
 		}
+		r.request(false);
+	}
 	
-	#elseif php
-		
-		public function async(file:String, ?data:Dynamic, ?handler:Dynamic):Void {
-			var r:Http = new Http(file + (_noCache ? "" : "?t=" + Date.now().getTime()));
-			r.onData = function(d) {
-				Sirius.resources.register(file, d);
-				if (handler != null) handler(file, d);
-			}
-			r.request(false);
-		}
-		
-	#end
-	
-	public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
 		var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
 		#if js
 			r.async = true;

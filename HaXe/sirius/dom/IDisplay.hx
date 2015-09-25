@@ -25,11 +25,6 @@ interface IDisplay {
 	public var element : Element;
 	
 	/**
-	 * Document Body
-	 */
-	public var body:Body;
-	
-	/**
 	 * Custom Event Dispatcher
 	 */
 	public var events : IDispatcher;
@@ -72,7 +67,7 @@ interface IDisplay {
 	 * @param	styles
 	 * @return
 	 */
-	public function css(styles:String):IDisplay;
+	public function css(?styles:String):String;
 	
 	/**
 	 * Current child index or -1 if not added
@@ -161,6 +156,11 @@ interface IDisplay {
 	 * Set position style to relative
 	 */
 	public function attach():Void;
+	
+	/**
+	 * Set position style to fixed
+	 */
+	public function pin():Void;
 	
 	/**
 	 * Add hidden attribute to element
@@ -358,6 +358,36 @@ interface IDisplay {
 	 */
 	public function is(tag:String):Bool;
 	
+	/**
+	 * Add this to a target element
+	 * @param	target
+	 * @return
+	 */
+	public function addTo(?target:IDisplay):IDisplay;
 	
+	/**
+	 * Align center
+	 */
+	public function alignCenter():Void;
+	
+	/**
+	 * Float left
+	 */
+	public function alignLeft():Void;
+	
+	/**
+	 * Float right
+	 */
+	public function alignRight():Void;
+	
+	/**
+	 * Change display backgroud
+	 * @param	value
+	 * @param	repeat
+	 * @param	position
+	 * @param	attachment
+	 * @return
+	 */
+	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String;
 	
 }

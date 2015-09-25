@@ -88,7 +88,7 @@ class Dispatcher implements IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function auto(type:String, ?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function auto(type:String, ?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		var ie:IEventGroup = event(type);
 		return switch(mode) {
 			case 1, true , "capture" : ie.add(handler, true);
@@ -99,451 +99,451 @@ class Dispatcher implements IDispatcher {
 	}
 	
 	/** Event */
-	public function wheel(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function wheel(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("wheel", handler, mode);
 	}
 
 
 	/** Event */
-	public function copy(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function copy(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("copy", handler, mode);
 	}
 
 
 	/** Event */
-	public function cut(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function cut(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("cut", handler, mode);
 	}
 
 
 	/** Event */
-	public function paste(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function paste(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("paste", handler, mode);
 	}
 
 
 	/** Event */
-	public function abort(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function abort(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("abort", handler, mode);
 	}
 
 
 	/** Event */
-	public function blur(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function blur(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("blur", handler, mode);
 	}
 
 
 	/** Event */
-	public function focusIn(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function focusIn(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("focusin", handler, mode);
 	}
 
 
 	/** Event */
-	public function focusOut(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function focusOut(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("focusout", handler, mode);
 	}
 
 
 	/** Event */
-	public function canPlay(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function canPlay(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("canplay", handler, mode);
 	}
 
 
 	/** Event */
-	public function canPlayThrough(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function canPlayThrough(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("canplaythrough", handler, mode);
 	}
 
 
 	/** Event */
-	public function change(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function change(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("change", handler, mode);
 	}
 
 
 	/** Event */
-	public function click(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function click(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("click", handler, mode);
 	}
 
 
 	/** Event */
-	public function contextMenu(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function contextMenu(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("contextmenu", handler, mode);
 	}
 
 
 	/** Event */
-	public function dblClick(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dblClick(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dblclick", handler, mode);
 	}
 
 
 	/** Event */
-	public function drag(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function drag(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("drag", handler, mode);
 	}
 
 
 	/** Event */
-	public function dragEnd(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dragEnd(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dragend", handler, mode);
 	}
 
 
 	/** Event */
-	public function dragEnter(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dragEnter(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dragenter", handler, mode);
 	}
 
 
 	/** Event */
-	public function dragLeave(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dragLeave(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dragleave", handler, mode);
 	}
 
 
 	/** Event */
-	public function dragOver(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dragOver(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dragover", handler, mode);
 	}
 
 
 	/** Event */
-	public function dragStart(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function dragStart(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("dragstart", handler, mode);
 	}
 
 
 	/** Event */
-	public function drop(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function drop(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("drop", handler, mode);
 	}
 
 
 	/** Event */
-	public function durationChange(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function durationChange(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("durationchange", handler, mode);
 	}
 
 
 	/** Event */
-	public function emptied(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function emptied(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("emptied", handler, mode);
 	}
 
 
 	/** Event */
-	public function ended(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function ended(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("ended", handler, mode);
 	}
 
 
 	/** Event */
-	public function input(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function input(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("input", handler, mode);
 	}
 
 
 	/** Event */
-	public function invalid(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function invalid(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("invalid", handler, mode);
 	}
 
 
 	/** Event */
-	public function keyDown(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function keyDown(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("keydown", handler, mode);
 	}
 
 
 	/** Event */
-	public function keyPress(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function keyPress(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("keypress", handler, mode);
 	}
 
 
 	/** Event */
-	public function keyUp(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function keyUp(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("keyup", handler, mode);
 	}
 
 
 	/** Event */
-	public function load(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function load(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("load", handler, mode);
 	}
 
 
 	/** Event */
-	public function loadedData(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function loadedData(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("loadeddata", handler, mode);
 	}
 
 
 	/** Event */
-	public function loadedMetadata(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function loadedMetadata(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("loadedmetadata", handler, mode);
 	}
 
 
 	/** Event */
-	public function loadStart(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function loadStart(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("loadstart", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseDown(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseDown(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mousedown", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseEnter(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseEnter(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mouseenter", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseLeave(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseLeave(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mouseleave", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseMove(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseMove(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mousemove", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseOut(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseOut(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mouseout", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseOver(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseOver(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mouseover", handler, mode);
 	}
 
 
 	/** Event */
-	public function mouseUp(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function mouseUp(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("mouseup", handler, mode);
 	}
 
 
 	/** Event */
-	public function pause(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pause(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pause", handler, mode);
 	}
 
 
 	/** Event */
-	public function play(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function play(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("play", handler, mode);
 	}
 
 
 	/** Event */
-	public function playing(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function playing(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("playing", handler, mode);
 	}
 
 
 	/** Event */
-	public function progress(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function progress(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("progress", handler, mode);
 	}
 
 
 	/** Event */
-	public function rateChange(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function rateChange(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("ratechange", handler, mode);
 	}
 
 
 	/** Event */
-	public function reset(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function reset(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("reset", handler, mode);
 	}
 
 
 	/** Event */
-	public function scroll(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function scroll(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("scroll", handler, mode);
 	}
 
 
 	/** Event */
-	public function seeked(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function seeked(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("seeked", handler, mode);
 	}
 
 
 	/** Event */
-	public function seeking(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function seeking(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("seeking", handler, mode);
 	}
 
 
 	/** Event */
-	public function select(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function select(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("select", handler, mode);
 	}
 
 
 	/** Event */
-	public function show(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function show(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("show", handler, mode);
 	}
 
 
 	/** Event */
-	public function stalled(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function stalled(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("stalled", handler, mode);
 	}
 
 
 	/** Event */
-	public function submit(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function submit(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("submit", handler, mode);
 	}
 
 
 	/** Event */
-	public function suspEnd(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function suspEnd(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("suspend", handler, mode);
 	}
 
 
 	/** Event */
-	public function timeUpdate(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function timeUpdate(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("timeupdate", handler, mode);
 	}
 
 
 	/** Event */
-	public function volumeChange(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function volumeChange(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("volumechange", handler, mode);
 	}
 
 
 	/** Event */
-	public function waiting(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function waiting(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("waiting", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerCancel(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerCancel(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointercancel", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerDown(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerDown(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerdown", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerUp(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerUp(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerup", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerMove(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerMove(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointermove", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerOut(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerOut(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerout", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerOver(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerOver(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerover", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerEnter(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerEnter(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerenter", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerLeave(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerLeave(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerleave", handler, mode);
 	}
 
 
 	/** Event */
-	public function gotPointerCapture(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function gotPointerCapture(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("gotpointercapture", handler, mode);
 	}
 
 
 	/** Event */
-	public function lostPointerCapture(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function lostPointerCapture(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("lostpointercapture", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerLockChange(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerLockChange(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerlockchange", handler, mode);
 	}
 
 
 	/** Event */
-	public function pointerLockError(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function pointerLockError(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("pointerlockerror", handler, mode);
 	}
 
 
 	/** Event */
-	public function error(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function error(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("error", handler, mode);
 	}
 
 
 	/** Event */
-	public function touchStart(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function touchStart(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("touchstart", handler, mode);
 	}
 
 
 	/** Event */
-	public function touchEnd(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function touchEnd(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("touchend", handler, mode);
 	}
 
 
 	/** Event */
-	public function touchMove(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function touchMove(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("touchmove", handler, mode);
 	}
 
 
 	/** Event */
-	public function touchCancel(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function touchCancel(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("touchcancel", handler, mode);
 	}
 	
 	
 	/** Event */
-	public function readyState(?handler:Dynamic, ?mode:Dynamic):IEventGroup {
+	public function readyState(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return auto("readystatechange", handler, mode);
 	}
 	

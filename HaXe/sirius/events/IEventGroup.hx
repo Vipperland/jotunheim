@@ -17,9 +17,9 @@ interface IEventGroup {
 	
 	public var propagation : Bool;
 	
-	public function add (handler:Dynamic, ?capture:Bool) : IEventGroup;
+	public function add (handler:IEvent->Void, ?capture:Bool) : IEventGroup;
 	
-	public function remove (handler:Dynamic) : IEventGroup;
+	public function remove (handler:IEvent->Void) : IEventGroup;
 	
 	public function prepare (t:IDisplay) : IEventGroup;
 	

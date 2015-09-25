@@ -1,7 +1,9 @@
 package sirius;
 
+import errors.IError;
 import haxe.Log;
 import sirius.data.DataCache;
+import sirius.modules.IRequest;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;
 import sirius.modules.Loader;
@@ -65,9 +67,6 @@ class Sirius {
 		/// Main document (if available)
 		static public var document:Document;
 		
-		/// Main body (if available)
-		static public var body:Body;
-		
 		/// Browser information
 		static public var agent:IAgent = new Agent();
 		
@@ -91,7 +90,6 @@ class Sirius {
 				log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
 			}
 			if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
-			body = new Body(Browser.document.body);
 			document = new Document();
 			loader.start();
 		}
@@ -142,7 +140,7 @@ class Sirius {
 			if (!_initialized) {
 				init(handler);
 			}else if (handler != null) {
-				if (body != null || document != null) {
+				if (document != null && document.body != null) {
 					handler();
 				}else {
 					if (_loadPool == null) {
@@ -160,14 +158,14 @@ class Sirius {
 		 * @param	handler
 		 * @param	files
 		 */
-		static public function init(?handler:Dynamic, ?files:Array<String> = null):Void {
+		static public function init(?handler:ILoader->Void, ?files:Array<String> = null):Void {
 			if (!_initialized) {
 				_initialized = true;
 				loader.add(files, handler, _fileError);
 				log("Sirius->Core.init[ LOADING... ]", 10, 1);
 				run(_onLoaded);
 			}else{
-				log("Sirius->Core.init[ " + (body == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
+				log("Sirius->Core.init[ " + (document == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
 				if (handler != null) run(handler);
 			}
 		}
@@ -180,8 +178,8 @@ class Sirius {
 		}
 		
 		/** @private */
-		static private function _fileError(error:String) {
-			log("Sirius->Resources::status[ " + error + " ]", 10, 3);
+		static private function _fileError(e:IError) {
+			log("Sirius->Resources::status[ " + e.message + " ]", 10, 3);
 		}
 		
 	#elseif php
@@ -201,7 +199,7 @@ class Sirius {
 	 * @param	content
 	 * @param	handler
 	 */
-	static public function module(file:String, #if js ?target:Dynamic #end, ?content:Dynamic, ?handler:Dynamic):Void {
+	static public function module(file:String, #if js ?target:Dynamic #end, ?content:Dynamic, ?handler:String->String->Void):Void {
 		#if js
 			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.async(file, target, content, handler); } );
@@ -210,7 +208,7 @@ class Sirius {
 		#end
 	}
 	
-	static public function request(url:String, ?data:Dynamic, ?handler:Dynamic, method:String = 'post'):Void {
+	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
 		#if js
 			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.request(url, data, handler, method); } );

@@ -23,7 +23,7 @@ interface IDisplay3D extends IDisplay {
 	
 	public function setPerspective(value:String, ?origin:String) : IDisplay3D;
 
-	public function rotateAll (x:Float, y:Float, z:Float, ?add:Bool) : IDisplay3D;
+	public function rotateAll (x:Float, y:Float, ?z:Float, ?add:Bool) : IDisplay3D;
 
 	public function rotationX (?value:Float, ?add:Bool) : Float;
 
@@ -31,7 +31,7 @@ interface IDisplay3D extends IDisplay {
 
 	public function rotationZ (?value:Float, ?add:Bool) : Float;
 
-	public function moveTo (x:Float, y:Float, z:Float, ?add:Bool) : IDisplay3D;
+	public function moveTo (x:Float, y:Float, ?z:Float, ?add:Bool) : IDisplay3D;
 
 	public function locationX (?value:Float, ?add:Bool) : Float;
 
@@ -39,7 +39,7 @@ interface IDisplay3D extends IDisplay {
 
 	public function locationZ (?value:Float, ?add:Bool) : Float;
 
-	public function scaleAll (x:Float, y:Float, z:Float, ?add:Bool) : IDisplay3D;
+	public function scaleAll (x:Float, y:Float, ?z:Float, ?add:Bool) : IDisplay3D;
 
 	public function scaleX (?value:Float, ?add:Bool) : Float;
 
@@ -47,7 +47,9 @@ interface IDisplay3D extends IDisplay {
 
 	public function scaleZ (?value:Float, ?add:Bool) : Float;
 	
-	public function transform(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay;
+	public function transform(x:Float, y:Float, x1:Float, y1:Float, w:Float, h:Float):IDisplay;
+	
+	public function transform3D(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay;
 
 	public function update () : IDisplay;
 	

@@ -4,8 +4,8 @@ $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
 ;$hx_exports.sru.plugins = $hx_exports.sru.plugins || {};
-;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
+;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
 ;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
@@ -247,6 +247,11 @@ _$UInt_UInt_$Impl_$.gte = function(a,b) {
 _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
+};
+var errors_IError = function() { };
+errors_IError.__name__ = ["errors","IError"];
+errors_IError.prototype = {
+	__class__: errors_IError
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = ["haxe","IMap"];
@@ -1047,10 +1052,19 @@ sirius_tools_Agent.prototype = {
 		this.safari = safari && !chrome && !chromium;
 		this.chrome = chrome && !chromium && !opera;
 		this.mobile = new EReg("Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini","i").match(ua);
-		this.xs = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_XS);
-		this.sm = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_SM);
-		this.md = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_MD);
-		this.lg = sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_LG);
+		if(sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_XS)) {
+			this.xs = true;
+			this.screen = 1;
+		} else if(sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_SM)) {
+			this.sm = true;
+			this.screen = 2;
+		} else if(sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_MD)) {
+			this.md = true;
+			this.screen = 3;
+		} else if(sirius_tools_Utils.matchMedia(sirius_css_CSSGroup.MEDIA_LG)) {
+			this.lg = true;
+			this.screen = 4;
+		} else this.screen = 0;
 		this.jQuery = Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery");
 		this.animator = sirius_transitions_Animator.available;
 		this.display = sirius_tools_Utils.screenOrientation();
@@ -1159,9 +1173,9 @@ sirius_modules_Loader.prototype = {
 	}
 	,_error: function(e) {
 		var _g = this;
-		this.lastError = e;
+		if(typeof(e) == "string") this.lastError = new sirius_errors_Error(-1,e,this); else this.lastError = new sirius_errors_Error(-1,"Unknow",{ content : e, loader : this});
 		sirius_utils_Dice.Values(this._onError,function(v) {
-			if(v != null) v(_g);
+			if(v != null) v(_g.lastError);
 		});
 	}
 	,_complete: function() {
@@ -1177,22 +1191,25 @@ sirius_modules_Loader.prototype = {
 	}
 	,async: function(file,target,data,handler) {
 		var _g = this;
-		var r = new haxe_Http(file + (this._noCache?"":"?t=" + new Date().getTime()));
+		var h;
+		if(file.indexOf("#") != -1) h = file.split("#"); else h = [file];
+		var r = new haxe_Http(h[0] + (this._noCache?"":"?t=" + new Date().getTime()));
 		r.async = true;
 		r.onData = function(d) {
 			sirius_Sirius.resources.register(file,d);
+			if(h.length == 2) file = h[1]; else file = file;
 			if(target != null) {
 				if(typeof(target) == "string") {
-					var d1 = sirius_Sirius.one(target,null);
-					if(d1 != null) {
+					var e = sirius_Sirius.one(target,null);
+					if(e != null) {
 						if(!((data instanceof Array) && data.__enum__ == null)) data = [data];
-						d1.addChild(_g.build(file,data));
+						e.addChild(_g.build(file,data));
 					}
 				} else try {
 					_g.build(file,data,target);
-				} catch( e ) {
-					if (e instanceof js__$Boot_HaxeError) e = e.val;
-					sirius_Sirius.log(e,10,3);
+				} catch( e1 ) {
+					if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+					sirius_Sirius.log(e1,10,3);
 				}
 			}
 			if(handler != null) handler(file,d);
@@ -1281,7 +1298,7 @@ sirius_modules_ModLib.prototype = {
 			sirius_utils_Dice.Values(data,function(v) {
 				v = new sirius_dom_Display().build(_g.get(module,v));
 				v = each(v);
-				if(v != null) d.addChild(v);
+				if(v != null && js_Boot.__instanceof(v,sirius_dom_IDisplay)) d.addChild(v);
 			});
 			return d;
 		} else return new sirius_dom_Display().build(this.get(module,data));
@@ -1330,7 +1347,6 @@ sirius_Sirius._loadController = function(e) {
 sirius_Sirius._onLoaded = function() {
 	if(sirius_Sirius.loader.totalFiles > 0) sirius_Sirius.log("Sirius->Resources::status [ MODULES (" + sirius_Sirius.loader.totalLoaded + "/" + sirius_Sirius.loader.totalFiles + ") ]",10,1);
 	if(sirius_Sirius.document == null) sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
-	sirius_Sirius.body = new sirius_dom_Body(window.document.body);
 	sirius_Sirius.document = new sirius_dom_Document();
 	sirius_Sirius.loader.start();
 };
@@ -1356,7 +1372,7 @@ sirius_Sirius.jQuery = function(q) {
 };
 sirius_Sirius.run = function(handler) {
 	if(!sirius_Sirius._initialized) sirius_Sirius.init(handler); else if(handler != null) {
-		if(sirius_Sirius.body != null || sirius_Sirius.document != null) handler(); else {
+		if(sirius_Sirius.document != null && sirius_Sirius.document.body != null) handler(); else {
 			if(sirius_Sirius._loadPool == null) {
 				sirius_Sirius._loadPool = [];
 				window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
@@ -1372,15 +1388,15 @@ sirius_Sirius.init = function(handler,files) {
 		sirius_Sirius.log("Sirius->Core.init[ LOADING... ]",10,1);
 		sirius_Sirius.run(sirius_Sirius._onLoaded);
 	} else {
-		sirius_Sirius.log("Sirius->Core.init[ " + (sirius_Sirius.body == null?"Waiting for DOM Loading Event...":"READY") + " ]",10,2);
+		sirius_Sirius.log("Sirius->Core.init[ " + (sirius_Sirius.document == null?"Waiting for DOM Loading Event...":"READY") + " ]",10,2);
 		if(handler != null) sirius_Sirius.run(handler);
 	}
 };
 sirius_Sirius.status = function() {
 	sirius_Sirius.log("Sirius->Core::status[ " + (sirius_Sirius._initialized?"READY ":"") + sirius_tools_Utils.toString(sirius_Sirius.agent,true) + " ] ",10,1);
 };
-sirius_Sirius._fileError = function(error) {
-	sirius_Sirius.log("Sirius->Resources::status[ " + error + " ]",10,3);
+sirius_Sirius._fileError = function(e) {
+	sirius_Sirius.log("Sirius->Resources::status[ " + e.message + " ]",10,3);
 };
 sirius_Sirius.module = function(file,target,content,handler) {
 	var f;
@@ -1424,7 +1440,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 240, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 238, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1583,7 +1599,6 @@ var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t,d) {
 	this.element = q;
 	this.events = new sirius_events_Dispatcher(this);
 	if(d != null) this.css(d);
-	this.body = sirius_Sirius.body;
 	if(this.element != window.document) {
 		if(this.hasAttribute("sru-id")) this._uid = this.attribute("sru-id"); else this._uid = this.attribute("sru-id",sirius_tools_Key.GEN());
 		if(!sirius_dom_Display._DATA.exists(this._uid)) sirius_dom_Display._DATA.set(this._uid,new sirius_data_DisplayData());
@@ -1611,6 +1626,30 @@ sirius_dom_Display.prototype = {
 			new o(d, c);
 		});
 		return this;
+	}
+	,alignCenter: function() {
+		sirius_css_Automator.build("marg-a vert-m",".centered");
+		this.css("centered /float-l /float-r");
+	}
+	,alignLeft: function() {
+		this.css("/centered float-l /float-r");
+	}
+	,alignRight: function() {
+		this.css("/centered /float-l float-r");
+	}
+	,background: function(value,repeat,position,attachment) {
+		if(value != null) {
+			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.hex();
+			var c;
+			if(value.indexOf("#") == 0) c = value; else c = "url(" + Std.string(value) + ")";
+			var r;
+			if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
+			var p;
+			if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
+			this.element.style.background = c + " " + r + " " + p;
+			if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
+		}
+		return this.element.style.background;
 	}
 	,all: function(q) {
 		return sirius_Sirius.all(q,this.element);
@@ -1646,8 +1685,8 @@ sirius_dom_Display.prototype = {
 		var r = -1;
 		sirius_utils_Dice.Children(this.element,function(c,i) {
 			return c == q.element;
-		},function(i1,f) {
-			if(f) r = i1; else r = -1;
+		},function(o) {
+			if(o.completed) r = o.value; else r = -1;
 		});
 		return r;
 	}
@@ -1681,17 +1720,19 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,css: function(styles) {
-		var s = styles.split(" ");
-		var cl = this.element.classList;
-		sirius_utils_Dice.Values(s,function(v) {
-			if(v != null && v.length > 0) {
-				if(HxOverrides.substr(v,0,1) == "/") {
-					v = HxOverrides.substr(v,1,v.length - 1);
-					if(cl.contains(v)) cl.remove(v);
-				} else if(!cl.contains(v)) cl.add(v);
-			}
-		});
-		return this;
+		if(styles != null) {
+			var s = styles.split(" ");
+			var cl = this.element.classList;
+			sirius_utils_Dice.Values(s,function(v) {
+				if(v != null && v.length > 0) {
+					if(HxOverrides.substr(v,0,1) == "/") {
+						v = HxOverrides.substr(v,1,v.length - 1);
+						if(cl.contains(v)) cl.remove(v);
+					} else if(!cl.contains(v)) cl.add(v);
+				}
+			});
+		}
+		return this.element.className;
 	}
 	,cursor: function(value) {
 		if(value != null) this.element.style.cursor = value;
@@ -1706,7 +1747,7 @@ sirius_dom_Display.prototype = {
 		this.css("/pos-abs pos-rel /pos-fix");
 	}
 	,pin: function() {
-		sirius_css_Automator.build("pos-abs");
+		sirius_css_Automator.build("pos-fix");
 		this.css("/pos-abs /pos-rel pos-fix");
 	}
 	,show: function() {
@@ -1858,6 +1899,10 @@ sirius_dom_Display.prototype = {
 		if(tag.indexOf(".") == -1) segment = segment.split(".").pop();
 		return tag == segment || tag == this.element.tagName;
 	}
+	,addTo: function(target) {
+		if(target != null) target.addChild(this); else if(sirius_Sirius.document != null) sirius_Sirius.document.body.addChild(this);
+		return this;
+	}
 	,__class__: sirius_dom_Display
 };
 var sirius_dom_Style = $hx_exports.sru.dom.Style = function(q,d) {
@@ -1973,6 +2018,7 @@ var sirius_dom_Body = $hx_exports.sru.dom.Body = function(q,d) {
 		q = _this.createElement("body");
 	}
 	sirius_dom_Display.call(this,q,null,d);
+	this._body = this.element;
 };
 sirius_dom_Body.__name__ = ["sirius","dom","Body"];
 sirius_dom_Body.get = function(q,h) {
@@ -1984,6 +2030,12 @@ sirius_dom_Body.prototype = $extend(sirius_dom_Display.prototype,{
 		if(scroll == null) scroll = "over-hid";
 		this.css("w-100pc h-100pc" + (scroll != null?" " + scroll:"") + " padd-0 marg-0 pos-abs");
 		return this;
+	}
+	,maxScrollX: function() {
+		return this._body.scrollWidth - sirius_tools_Utils.viewportWidth();
+	}
+	,maxScrollY: function() {
+		return this._body.scrollHeight - sirius_tools_Utils.viewportHeight();
 	}
 	,__class__: sirius_dom_Body
 });
@@ -2002,12 +2054,6 @@ sirius_dom_BR.__super__ = sirius_dom_Display;
 sirius_dom_BR.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_BR
 });
-var sirius_dom_IDiv = function() { };
-sirius_dom_IDiv.__name__ = ["sirius","dom","IDiv"];
-sirius_dom_IDiv.__interfaces__ = [sirius_dom_IDisplay];
-sirius_dom_IDiv.prototype = {
-	__class__: sirius_dom_IDiv
-};
 var sirius_dom_Div = $hx_exports.sru.dom.Div = function(q,d) {
 	if(q == null) {
 		var _this = window.document;
@@ -2016,36 +2062,12 @@ var sirius_dom_Div = $hx_exports.sru.dom.Div = function(q,d) {
 	sirius_dom_Display.call(this,q,null,d);
 };
 sirius_dom_Div.__name__ = ["sirius","dom","Div"];
-sirius_dom_Div.__interfaces__ = [sirius_dom_IDiv];
 sirius_dom_Div.get = function(q,h) {
 	return sirius_Sirius.one(q,null,h);
 };
 sirius_dom_Div.__super__ = sirius_dom_Display;
 sirius_dom_Div.prototype = $extend(sirius_dom_Display.prototype,{
-	alignCenter: function() {
-		sirius_css_Automator.build("marg-a vert-m",".centered");
-		this.css("centered /float-l /float-r");
-	}
-	,alignLeft: function() {
-		this.css("/centered float-l /float-r");
-	}
-	,alignRight: function() {
-		this.css("/centered /float-l float-r");
-	}
-	,background: function(value,repeat,position,attachment) {
-		if(value != null) {
-			var c;
-			if(value.indexOf("#") == 0) c = value; else c = "url(" + value + ")";
-			var r;
-			if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
-			var p;
-			if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
-			this.element.style.background = c + " " + r + " " + p;
-			if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
-		}
-		return this.element.style.background;
-	}
-	,__class__: sirius_dom_Div
+	__class__: sirius_dom_Div
 });
 var sirius_dom_Button = function(q,d) {
 	sirius_dom_Div.call(this,q,d);
@@ -2181,7 +2203,7 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	,rotateAll: function(x,y,z,add) {
 		this.rotationX(x,add);
 		this.rotationY(y,add);
-		this.rotationZ(z,add);
+		if(z != null) this.rotationZ(z,add);
 		return this;
 	}
 	,rotationX: function(value,add) {
@@ -2208,7 +2230,7 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	,moveTo: function(x,y,z,add) {
 		this.locationX(x,add);
 		this.locationY(y,add);
-		this.locationZ(z,add);
+		if(z != null) this.locationZ(z,add);
 		return this;
 	}
 	,locationX: function(value,add) {
@@ -2232,10 +2254,13 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	,scaleAll: function(x,y,z,add) {
 		this.scaleX(x,add);
 		this.scaleY(y,add);
-		this.scaleZ(z,add);
+		if(z != null) this.scaleZ(z,add);
 		return this;
 	}
-	,transform: function(x,y,z,x1,y1,z1,w,h,d) {
+	,transform: function(x,y,x1,y1,w,h) {
+		return this.moveTo(x,y,null).rotateAll(x1,y1,null).scaleAll(w,h,null);
+	}
+	,transform3D: function(x,y,z,x1,y1,z1,w,h,d) {
 		return this.moveTo(x,y,z).rotateAll(x1,y1,z1).scaleAll(w,h,d);
 	}
 	,scaleX: function(value,add) {
@@ -2298,6 +2323,7 @@ var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
 	sirius_dom_Display.call(this,window.document);
 	this.element = window.document.documentElement;
 	this.events.wheel($bind(this,this.stopScroll),true);
+	this.body = new sirius_dom_Body(window.document.body);
 	this.prepare();
 };
 sirius_dom_Document.__name__ = ["sirius","dom","Document"];
@@ -2309,14 +2335,27 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 	scroll: function(x,y) {
 		window.scroll(x,y);
 	}
+	,getScrollRange: function(o,pct) {
+		if(pct == null) pct = false;
+		var current = this.getScroll(o);
+		if(this.body != null) {
+			current.x /= this.body.maxScrollX();
+			current.y /= this.body.maxScrollY();
+			if(pct) {
+				current.x *= 100;
+				current.y *= 100;
+			}
+		} else current.reset();
+		return current;
+	}
 	,getScroll: function(o) {
-		if(o == null) o = { x : 0, y : 0};
+		if(o == null) o = new sirius_math_Point(0,0);
 		if(window.pageXOffset != null) {
 			o.x = window.pageXOffset;
 			o.y = window.pageYOffset;
-		} else if(sirius_Sirius.body.element.scrollTop != 0) {
-			o.x = sirius_Sirius.body.element.scrollLeft;
-			o.y = sirius_Sirius.body.element.scrollTop;
+		} else if(this.body != null) {
+			o.x = this.body.element.scrollLeft;
+			o.y = this.body.element.scrollTop;
 		} else {
 			o.x = this.element.scrollLeft;
 			o.y = this.element.scrollTop;
@@ -2329,7 +2368,7 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		this.getScroll(sirius_dom_Document.__scroll__);
 		sirius_transitions_Animator.to(sirius_dom_Document.__scroll__,time,{ x : x, y : y, ease : ease, onUpdate : sirius_dom_Document._applyScroll});
 	}
-	,stopScroll: function() {
+	,stopScroll: function(e) {
 		sirius_transitions_Animator.stop(sirius_dom_Document.__scroll__);
 	}
 	,scrollTo: function(target,time,ease,offX,offY) {
@@ -3164,12 +3203,13 @@ sirius_dom_Sprite.prototype = $extend(sirius_dom_Div.prototype,{
 	__class__: sirius_dom_Sprite
 });
 var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q,d) {
-	if(d == null) d = "w-100pc h-100pc center pos-abs";
+	if(d == null) d = "w-100pc h-100pc sprite";
 	sirius_dom_Display3D.call(this,null,d);
 	this.setPerspective("1000px");
 	this.content = new sirius_dom_Display3D(q);
 	this.content.preserve3d().update();
 	if(this.content.parent() == null) this.addChild(this.content);
+	sirius_css_Automator.common();
 	this.update();
 };
 sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
@@ -3325,7 +3365,7 @@ sirius_dom_Video.__super__ = sirius_dom_Display;
 sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Video
 });
-var sirius_tools_Utils = $hx_exports.sru.tools.Utils = function() { };
+var sirius_tools_Utils = $hx_exports.Utils = function() { };
 sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];
 sirius_tools_Utils.matchMedia = function(value) {
 	return window.matchMedia(value).matches;
@@ -3696,7 +3736,7 @@ sirius_css_Automator.scan = function(dev,force) {
 	if(dev == null) dev = false;
 	sirius_Sirius.log("Sirius->Automator.scan[ " + (dev == true?"ACTIVE_MODE":"SILENT_MODE") + " ]",10,1);
 	sirius_css_Automator._dev = dev == true;
-	if(force) sirius_css_Automator._scanBody(); else sirius_Sirius.init(function() {
+	if(force) sirius_css_Automator._scanBody(); else sirius_Sirius.init(function(l) {
 		sirius_Sirius.log("Sirius->Automator::status[ SCANNING... ]",10,1);
 		if(!sirius_css_Automator._dev) sirius_css_Automator._scanBody(); else sirius_css_Automator._activate();
 		sirius_Sirius.log("Sirius->Automator.scanner[ DONE! ]",10,1);
@@ -3762,8 +3802,8 @@ sirius_css_Automator.build = function(query,group,silent) {
 	}
 };
 sirius_css_Automator.common = function() {
-	sirius_css_Automator.build("w-100pc h-100pc disp-table pos-abs",".sprite");
-	sirius_css_Automator.build("disp-table-cell vert-m txt-c",".sprite>div");
+	sirius_css_Automator.build("w-100pc h-100pc disp-table",".sprite");
+	sirius_css_Automator.build("disp-table-cell vert-m txt-c",".sprite>div[sru-id]");
 	sirius_css_Automator.build("disp-table",".label");
 	sirius_css_Automator.build("disp-table-cell vert-m txt-c",".label>span");
 	sirius_css_Automator.build("marg-l-auto marg-r-auto",".centered");
@@ -4199,11 +4239,13 @@ sirius_data_FormParam.prototype = {
 	}
 	,__class__: sirius_data_FormParam
 };
-var sirius_errors_Error = function(code,message) {
+var sirius_errors_Error = function(code,message,object) {
+	this.object = object;
 	this.message = message;
 	this.code = code;
 };
 sirius_errors_Error.__name__ = ["sirius","errors","Error"];
+sirius_errors_Error.__interfaces__ = [errors_IError];
 sirius_errors_Error.prototype = {
 	__class__: sirius_errors_Error
 };
@@ -4291,9 +4333,23 @@ sirius_math_IPoint.prototype = {
 };
 var sirius_math_IPoint3D = function() { };
 sirius_math_IPoint3D.__name__ = ["sirius","math","IPoint3D"];
-sirius_math_IPoint3D.__interfaces__ = [sirius_math_IPoint];
 sirius_math_IPoint3D.prototype = {
 	__class__: sirius_math_IPoint3D
+};
+var sirius_math_Point = function(x,y) {
+	this.x = x;
+	this.y = y;
+};
+sirius_math_Point.__name__ = ["sirius","math","Point"];
+sirius_math_Point.__interfaces__ = [sirius_math_IPoint];
+sirius_math_Point.prototype = {
+	reset: function() {
+		this.x = this.y = 0;
+	}
+	,match: function(o,round) {
+		if(round) return Math.round(o.x) == Math.round(this.x) && Math.round(o.y) == Math.round(this.y); else return o.x == this.x && o.y == this.y;
+	}
+	,__class__: sirius_math_Point
 };
 var sirius_math_Point3D = function(x,y,z) {
 	this.x = x;
@@ -4303,7 +4359,13 @@ var sirius_math_Point3D = function(x,y,z) {
 sirius_math_Point3D.__name__ = ["sirius","math","Point3D"];
 sirius_math_Point3D.__interfaces__ = [sirius_math_IPoint3D];
 sirius_math_Point3D.prototype = {
-	__class__: sirius_math_Point3D
+	reset: function() {
+		this.x = this.y = this.z = 0;
+	}
+	,match: function(o,round) {
+		if(round) return Math.round(o.x) == Math.round(this.x) && Math.round(o.y) == Math.round(this.y) && Math.round(o.z) == Math.round(this.z); else return o.x == this.x && o.y == this.y && o.z == this.z;
+	}
+	,__class__: sirius_math_Point3D
 };
 var sirius_modules_IMod = function() { };
 sirius_modules_IMod.__name__ = ["sirius","modules","IMod"];
@@ -4949,7 +5011,7 @@ sirius_utils_Dice.Children = function(of,each,complete) {
 	var c;
 	if(of != null) {
 		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
-		sirius_utils_Dice.Count(0,of.childNodes.length,function(i) {
+		sirius_utils_Dice.Count(0,of.childNodes.length,function(i,j,k) {
 			c = of.childNodes.item(i);
 			r.children[l] = c;
 			return each(c,i);
@@ -5073,10 +5135,11 @@ var sirius_utils_Table = $hx_exports.sru.utils.Table = function(q,t) {
 			if(t == null) t = window.document;
 			var result = t.querySelectorAll(q);
 			var element = null;
-			if(result.length > 0) sirius_utils_Dice.Count(0,result.length,function(i) {
+			if(result.length > 0) sirius_utils_Dice.Count(0,result.length,function(i,j,k) {
 				element = result.item(i);
 				_g.content[_g.content.length] = sirius_tools_Utils.displayFrom(element);
 				_g.elements[_g.elements.length] = element;
+				return null;
 			}); else sirius_Sirius.log("TABLE(" + q + ") : NO RESULT",10,2);
 		} else sirius_Sirius.log("TABLE(QUERY,TARGET) : NULL QUERY_SELECTOR",10,3);
 	}

@@ -166,13 +166,13 @@ class ModLib {
 		 * @param	data
 		 * @return
 		 */
-		public function build(module:String, ?data:Dynamic, ?each:Dynamic = null):IDisplay {
+		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
 			if (each != null && Std.is(data, Array)) {
 				var d:IDisplay = new Div();
 				Dice.Values(data, function(v:Dynamic) {
 					v = new Display().build(get(module, v));
 					v = each(v);
-					if(v != null) d.addChild(v);
+					if(v != null && Std.is(v, IDisplay)) d.addChild(v);
 				});
 				return d;
 			}else {

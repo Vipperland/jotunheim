@@ -96,7 +96,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("sru.tools.Utils")
+@:expose("Utils")
 class Utils{
 
 	#if js

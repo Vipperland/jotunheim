@@ -31,13 +31,13 @@ class EventGroup implements IEventGroup {
 		this.events = [];
 	}
 	
-	public function add(handler:Dynamic, ?capture:Bool):IEventGroup {
+	public function add(handler:IEvent->Void, ?capture:Bool):IEventGroup {
 		if (capture != null)	this.capture = capture;
 		if(handler != null)		this.events.push(handler);
 		return this;
 	}
 	
-	public function remove(handler:Dynamic):IEventGroup {
+	public function remove(handler:IEvent->Void):IEventGroup {
 		var iof:Int = Lambda.indexOf(this.events, handler);
 		if (iof != -1) this.events.splice(iof, 1);
 		return this;

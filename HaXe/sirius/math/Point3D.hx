@@ -19,4 +19,15 @@ class Point3D implements IPoint3D {
 		this.z = z;
 	}
 	
+	public function reset():Void {
+		x = y = z = 0;
+	}
+	
+	
+	public function match(o:IPoint3D, ?round:Bool):Bool {
+		return round 
+				? Math.round(o.x) == Math.round(x) && Math.round(o.y) == Math.round(y) && Math.round(o.z) == Math.round(z) 
+				:  o.x == x && o.y == y && o.z == z;
+	}
+	
 }

@@ -1,5 +1,6 @@
 package sirius.utils;
 import haxe.Log;
+import js.html.Node;
 import sirius.tools.Utils;
 import sirius.utils.IDiceRoll;
 
@@ -24,7 +25,7 @@ class Dice {
 	 * @param	complete	On propagation stop handler, call it with fail param and value
 	 * @return	Last value
 	 */
-	public static function All(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
+	public static function All(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
 		var v:Dynamic = null;
 		var p:Dynamic = null;
 		var i:Bool = true;
@@ -62,7 +63,7 @@ class Dice {
 	 * @param	each		Parameter handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail parameter
 	 */
-	public static function Params(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
+	public static function Params(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(p); }, 
 			complete
@@ -75,7 +76,7 @@ class Dice {
 	 * @param	each		Value handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail value
 	 */
-	public static function Values(q:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
+	public static function Values(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) { return each(v); }, 
 			complete
@@ -105,14 +106,14 @@ class Dice {
 	 * @param	each
 	 * @param	complete
 	 */
-	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:Dynamic = null, ?increment:UInt = 1):IDiceRoll {
+	public static function Count(from:Dynamic, to:Dynamic, each:Int->Int->Bool->Null<Bool>, ?complete:IDiceRoll->Void = null, ?increment:UInt = 1):IDiceRoll {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
 		if (increment == null || increment < 1) {
 			increment = 1;
 		}
 		while (a < b) {
-			if (each(a,b,(a+=increment)==b) == true) break;
+			if (each(cast a,cast b,(a+=increment)==b) == true) break;
 		}
 		var c:Bool = a == b;
 		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a };
@@ -158,13 +159,13 @@ class Dice {
 		 * @param	each			h(e:Element|Node)
 		 * @param	complete		c(LastIndex_INT)
 		 */
-		public static function Children(of:Dynamic, each:Dynamic, ?complete:Dynamic = null):IDiceRoll {
+		public static function Children(of:Dynamic, each:Node->Int->Null<Bool>, ?complete:IDiceRoll->Void = null):IDiceRoll {
 			var r:IDiceRoll = cast { children:[] };
 			var l:Int = 0;
 			var c:Element;
 			if (of != null) {
 				if (Std.is(of, IDisplay)) of = of.element;
-				Count(0, of.childNodes.length, function(i:Int) {
+				Count(0, of.childNodes.length, function(i:Int,j:Int,k:Bool) {
 					c = cast of.childNodes.item(i);
 					r.children[l] = c;
 					return each(c, i);

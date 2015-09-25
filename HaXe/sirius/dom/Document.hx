@@ -3,6 +3,8 @@ import js.Browser;
 import js.html.Element;
 import js.html.MouseEvent;
 import sirius.events.IEvent;
+import sirius.math.IPoint;
+import sirius.math.Point;
 import sirius.transitions.Animator;
 
 /**
@@ -20,10 +22,13 @@ class Document extends Display {
 		Browser.window.scroll(__scroll__.x, __scroll__.y);
 	}
 	
+	public var body:Body;
+	
 	public function new() {
 		super(cast Browser.document);
 		element = Browser.document.documentElement;
 		events.wheel(stopScroll, true);
+		body = new Body(Browser.document.body);
 		prepare();
 	}
 	
@@ -31,14 +36,29 @@ class Document extends Display {
 		Browser.window.scroll(x, y);
 	}
 	
-	override public function getScroll(?o:Dynamic=null):Dynamic {
-		if (o == null) o = { x:0, y:0 };
+	public function getScrollRange(?o:IPoint = null, ?pct:Bool = false):IPoint {
+		var current:IPoint = getScroll(o);
+		if (body != null) {
+			current.x /= body.maxScrollX();
+			current.y /= body.maxScrollY();
+			if (pct) {
+				current.x *= 100;
+				current.y *= 100;
+			}
+		}else {
+			current.reset();
+		}
+		return current;
+	}
+	
+	override public function getScroll(?o:IPoint = null):IPoint {
+		if (o == null) o = new Point(0, 0);
 		if (Browser.window.pageXOffset != null) {
 			o.x = Browser.window.pageXOffset;
 			o.y = Browser.window.pageYOffset;
-		}else if(Sirius.body.element.scrollTop != 0){
-			o.x = Sirius.body.element.scrollLeft;
-			o.y = Sirius.body.element.scrollTop;
+		}else if(body != null){
+			o.x = body.element.scrollLeft;
+			o.y = body.element.scrollTop;
 		}else {
 			o.x = element.scrollLeft;
 			o.y = element.scrollTop;	
@@ -52,7 +72,7 @@ class Document extends Display {
 		Animator.to(__scroll__, time, { x:x, y:y, ease:ease, onUpdate:_applyScroll } );
 	}
 	
-	public function stopScroll() {
+	public function stopScroll(?e:IEvent) {
 		Animator.stop(__scroll__);
 	}
 	

@@ -33,6 +33,8 @@ interface IAgent {
 	public var md:Bool;
 	// Is LarGe resolution
 	public var lg:Bool;
+	// Screen size level (0 to 4)
+	public var screen:Int;
 	// Update all definitions
 	public function update(?handler:Dynamic):IAgent;
 	

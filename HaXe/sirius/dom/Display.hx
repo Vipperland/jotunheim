@@ -1,6 +1,5 @@
 package sirius.dom;
 
-import sirius.data.IDataSet;
 import haxe.Log;
 import js.Browser;
 import js.html.DOMRect;
@@ -9,9 +8,9 @@ import js.html.Element;
 import js.html.Node;
 import js.JQuery;
 import sirius.css.Automator;
-import sirius.data.DataCache;
 import sirius.data.DataSet;
 import sirius.data.DisplayData;
+import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
@@ -23,6 +22,7 @@ import sirius.tools.Ticker;
 import sirius.tools.Utils;
 import sirius.transitions.Animator;
 import sirius.utils.Dice;
+import sirius.utils.IDiceRoll;
 import sirius.utils.ITable;
 
 /**
@@ -52,8 +52,6 @@ class Display implements IDisplay {
 	
 	private var _parent:IDisplay;
 	
-	public var body:Body;
-	
 	private var _children:ITable;
 	
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
@@ -66,7 +64,6 @@ class Display implements IDisplay {
 		element = q;
 		events = new Dispatcher(this);
 		if (d != null) css(d);
-		body = Sirius.body;
 		
 		if (element != cast Browser.document) {
 			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
@@ -89,6 +86,31 @@ class Display implements IDisplay {
 			untyped __js__("new o(d, c)");
 		});
 		return this;
+	}
+	
+	public function alignCenter():Void {
+		Automator.build('marg-a vert-m', ".centered");
+		css("centered /float-l /float-r");
+	}
+	
+	public function alignLeft():Void {
+		css("/centered float-l /float-r");
+	}
+	
+	public function alignRight():Void {
+		css("/centered /float-l float-r");
+	}
+	
+	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String {
+		if (value != null) {
+			if (Std.is(value, IARGB)) value = value.hex();
+			var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
+			var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
+			var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
+			element.style.background = c + " " + r + " " + p;
+			if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
+		}
+		return element.style.background;
 	}
 	
 	
@@ -135,8 +157,8 @@ class Display implements IDisplay {
 		var r:Int = -1;
 		Dice.Children(element, function(c:Node, i:Int) {
 			return c == q.element;
-		}, function(i:Int, f:Bool) {
-			r = f ? i : -1;
+		}, function(o:IDiceRoll) {
+			r = o.completed ? o.value : -1;
 		});
 		return r;
 	}
@@ -155,7 +177,7 @@ class Display implements IDisplay {
 	}
 	
 	public function addChildren(q:ITable):IDisplay {
-		q.each(addChild);
+		q.each(cast addChild);
 		_children = null;
 		return this;
 	}
@@ -176,20 +198,22 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function css(styles:String):IDisplay {
-		var s:Array<String> = styles.split(" ");
-		var cl:DOMTokenList = element.classList;
-		Dice.Values(s, function(v:String) {
-			if (v != null && v.length > 0) {
-				if (v.substr(0, 1) == "/") {
-					v = v.substr(1, v.length - 1);
-					if (cl.contains(v)) cl.remove(v);
-				}else {
-					if (!cl.contains(v)) cl.add(v);
+	public function css(?styles:String):String {
+		if(styles != null){
+			var s:Array<String> = styles.split(" ");
+			var cl:DOMTokenList = element.classList;
+			Dice.Values(s, function(v:String) {
+				if (v != null && v.length > 0) {
+					if (v.substr(0, 1) == "/") {
+						v = v.substr(1, v.length - 1);
+						if (cl.contains(v)) cl.remove(v);
+					}else {
+						if (!cl.contains(v)) cl.add(v);
+					}
 				}
-			}
-		});
-		return this;
+			});
+		}
+		return element.className;
 	}
 	
 	public function cursor(?value:String):String {
@@ -208,7 +232,7 @@ class Display implements IDisplay {
 	}
 	
 	public function pin():Void {
-		Automator.build('pos-abs');
+		Automator.build('pos-fix');
 		css('/pos-abs /pos-rel pos-fix');
 	}
 	
@@ -272,7 +296,7 @@ class Display implements IDisplay {
 	
 	public function write(q:String):IDisplay {
 		var i:IDisplay = new Display().build(q,false);
-		i.children().each(addChild);
+		i.children().each(cast addChild);
 		return this;
 	}
 	
@@ -393,6 +417,12 @@ class Display implements IDisplay {
 		var segment:String = Utils.getClassName(this).toLowerCase();
 		if (tag.indexOf(".") == -1) segment = segment.split(".").pop();
 		return tag == segment || tag == element.tagName;
+	}
+	
+	public function addTo(?target:IDisplay):IDisplay {
+		if (target != null) target.addChild(this);
+		else if (Sirius.document != null) Sirius.document.body.addChild(this);
+		return this;
 	}
 	
 }

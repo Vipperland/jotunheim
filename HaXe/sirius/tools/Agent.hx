@@ -33,6 +33,8 @@ class Agent implements IAgent {
 	
 	public var lg:Bool;
 	
+	public var screen:Int;
+	
 	public var jQuery:Bool;
 	
 	public var display:String;
@@ -65,10 +67,11 @@ class Agent implements IAgent {
 		this.safari = safari && !chrome && !chromium; 
 		this.chrome = chrome && !chromium && !opera;
 		this.mobile = ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua);
-		this.xs = Utils.matchMedia(CSSGroup.MEDIA_XS);
-		this.sm = Utils.matchMedia(CSSGroup.MEDIA_SM);
-		this.md = Utils.matchMedia(CSSGroup.MEDIA_MD);
-		this.lg = Utils.matchMedia(CSSGroup.MEDIA_LG);
+		if (Utils.matchMedia(CSSGroup.MEDIA_XS)) { 		this.xs = true; this.screen = 1; }
+		else if (Utils.matchMedia(CSSGroup.MEDIA_SM)) { this.sm = true; this.screen = 2; }
+		else if (Utils.matchMedia(CSSGroup.MEDIA_MD)) { this.md = true; this.screen = 3; }
+		else if (Utils.matchMedia(CSSGroup.MEDIA_LG)) { this.lg = true; this.screen = 4; }
+		else {															this.screen = 0; }
 		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
 		this.animator = Animator.available;
 		this.display = Utils.screenOrientation();

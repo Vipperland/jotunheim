@@ -6,6 +6,7 @@ import js.html.Element;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
 import sirius.math.ARGB;
+import sirius.modules.ILoader;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;
@@ -38,7 +39,7 @@ class Automator {
 		if (force) {
 			_scanBody();
 		}else {
-			Sirius.init(function() {
+			Sirius.init(function(l:ILoader) {
 				Sirius.log("Sirius->Automator::status[ SCANNING... ]", 10, 1);
 				if (!_dev) 	_scanBody();
 				else		_activate();
@@ -133,8 +134,8 @@ class Automator {
 	}
 	
 	static public function common() {
-		build("w-100pc h-100pc disp-table pos-abs", ".sprite");
-		build("disp-table-cell vert-m txt-c", ".sprite>div");
+		build("w-100pc h-100pc disp-table", ".sprite");
+		build("disp-table-cell vert-m txt-c", ".sprite>div[sru-id]");
 		build("disp-table", ".label");
 		build("disp-table-cell vert-m txt-c", ".label>span");
 		build("marg-l-auto marg-r-auto", ".centered");

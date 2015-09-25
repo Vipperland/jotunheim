@@ -1,5 +1,5 @@
 package sirius.math;
-import math.IPoint;
+import sirius.math.IPoint;
 
 /**
  * ...
@@ -14,6 +14,16 @@ class Point implements IPoint {
 	public function new(x:Float,y:Float) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public function reset():Void {
+		x = y = 0;
+	}
+	
+	public function match(o:IPoint, ?round:Bool):Bool {
+		return round 
+				? Math.round(o.x) == Math.round(x) && Math.round(o.y) == Math.round(y) 
+				: o.x == x && o.y == y;
 	}
 	
 }

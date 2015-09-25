@@ -1,10 +1,21 @@
 package;
 import haxe.Log;
 import sirius.css.Automator;
+import sirius.css.XCSS;
+import sirius.dom.Body;
+import sirius.dom.Display3D;
 import sirius.dom.Div;
+import sirius.dom.IDisplay3D;
+import sirius.dom.Sprite3D;
+import sirius.events.IEvent;
+import sirius.math.ARGB;
+import sirius.modules.ILoader;
 import sirius.modules.IRequest;
 import sirius.modules.Request;
 import sirius.Sirius;
+import sirius.tools.Ticker;
+import sirius.tools.Utils;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -13,6 +24,90 @@ import sirius.Sirius;
 class Test_JS{
 
 	static public function main() {
+		
+		//XCSS.enabled = true;
+		//
+		//Sirius.init(function(l:ILoader) {
+			//
+			//if (Sirius.agent.screen < 3) return;
+			//
+			//var body:Body = Sirius.document.body;
+			//body.style( { 'overflow-x':'hidden' } );
+			//
+			//var cont:Sprite3D = new Sprite3D();
+			//cont.content.fit(100, 100, true);
+			//cont.overflow('hidden');
+			//cont.pin();
+			//
+			//var head:IDisplay3D = cast new Display3D().addTo(cont.content);
+			//var middle:IDisplay3D = cast new Display3D().addTo(cont.content);
+			//var bottom:IDisplay3D = cast new Display3D().addTo(cont.content);
+			//
+			//head.background('#006699');
+			//middle.background('#996600');
+			//bottom.background('#009900');
+			//
+			//cont.width(100, true);
+			//cont.content.height(100, true);
+			//cont.addTo();
+			//
+			//var rest:Div = new Div();
+			//rest.width(100, true);
+			//rest.height(1600);
+			//rest.background('#CCCCCC');
+			//rest.addTo();
+			//
+			//cont.setPerspective(null, '50% 50%');
+			//cont.update();
+			//
+			//cont.content.height(100, true);
+			//cont.content.update();
+			//
+			//Dice.All([head, middle, bottom], function(p:Int, e:IDisplay3D) {
+				//e.doubleSided(false);
+				//e.detach();
+				//e.style({y:0,top:0});
+				//e.width(100, true);
+				//e.data.set('rotation', p * -90);
+				//e.setPerspective(null, '50% 50%');
+				//e.update();
+			//});
+			//
+			//Ticker.add(function() {
+				//
+				//var h:Int = Utils.viewportHeight();
+				//var h2:Float = h / 2;
+				//
+				//cont.fit(Utils.viewportWidth(), h);
+				//
+				//var y:Float = Sirius.document.getScroll().y;
+				//var sy:Float = y / (h * 2);
+				//sy = sy * 180;
+				//
+				//if (sy > 180) {
+					//sy = 180;
+					//cont.style({y:0, top:-(y-Math.floor(h * 2)) + 'px'});
+				//}else {
+					//cont.style({y:0, top:0});
+				//}
+				//
+				//Dice.All([head, middle, bottom], function(p:Int, e:IDisplay3D) {
+					//e.height(h);
+					//e.locationZ(h*.5);
+					//e.rotationX(e.data.get('rotation') + sy);
+					//e.update();
+					//rest.style( { 'margin-top':((h*3)>>0) + 'px' } );
+				//});
+				//
+				//cont.content.locationZ( -h * .5);
+				//cont.content.update();
+				//
+				//
+			//});
+			//
+			//Ticker.init();
+			//
+		//});
 	}
 	
 } 
