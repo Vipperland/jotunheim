@@ -1,11 +1,14 @@
 package sirius.dom;
+import haxe.Log;
 import js.Browser;
+import js.Error;
 import js.html.Element;
 import js.html.MouseEvent;
 import sirius.events.IEvent;
 import sirius.math.IPoint;
 import sirius.math.Point;
 import sirius.transitions.Animator;
+import sirius.utils.ITable;
 
 /**
  * ...
@@ -29,7 +32,6 @@ class Document extends Display {
 		element = Browser.document.documentElement;
 		events.wheel(stopScroll, true);
 		body = new Body(Browser.document.body);
-		prepare();
 	}
 	
 	public function scroll(x:Float, y:Float):Void {
@@ -104,6 +106,40 @@ class Document extends Display {
 	
 	public function cursorY():Int {
 		return __cursor__.y;
+	}
+	
+	public function print(selector:String, ?exclude:String = "button, img, .no-print"):Bool {
+		var i:ITable = body.children();
+		var success:Bool = false;
+		if (i.length() > 0) {
+			i.hide();
+			var content:String = "";
+			i.each(function(d:IDisplay) {
+				if (!d.is('script') && !d.is('style')) {
+					content += d.element.outerHTML;
+					d.hide();
+				}
+			});
+			if (content.length > 0) {
+				var r:IDisplay = new Div();
+				r.build(content);
+				r.all(exclude).remove();
+				r.children().each(function(v:IDisplay) {
+					Log.trace(v.trueStyle());
+				});
+				body.addChild(r);
+				try {
+					Browser.window.print();
+					success = true;
+				}catch (e:Error) {
+					success = false;
+				}
+				body.removeChild(r);
+				
+			}
+			i.show();
+		}
+		return success;
 	}
 	
 }

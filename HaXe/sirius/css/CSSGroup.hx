@@ -23,6 +23,8 @@ class CSSGroup{
 	
 	public var LG:StyleElement;
 	
+	public var PR:StyleElement;
+	
 	public var style:String;
 	
 	public var styleXS:String;
@@ -32,6 +34,8 @@ class CSSGroup{
 	public var styleMD:String;
 	
 	public var styleLG:String;
+	
+	public var stylePR:String;
 	
 	public var container:Style;
 	
@@ -52,6 +56,7 @@ class CSSGroup{
 			SM = _style('sm');
 			MD = _style('md');
 			LG = _style('lg');
+			PR = _style('pt');
 			Browser.document.head.appendChild(cast container.element);
 		}
 	}
@@ -64,6 +69,7 @@ class CSSGroup{
 			if (k == 'sm') return (SM.innerHTML + styleSM).indexOf(id) != -1;
 			if (k == 'md') return (MD.innerHTML + styleMD).indexOf(id) != -1;
 			if (k == 'lg') return (LG.innerHTML + styleLG).indexOf(id) != -1;
+			if (k == 'pr') return (PR.innerHTML + stylePR).indexOf(id) != -1;
 		}
 		return (CM.innerHTML + style).indexOf(id) != -1;
 	}
@@ -75,6 +81,7 @@ class CSSGroup{
 			if (mode == 'sm') return SM;
 			if (mode == 'md') return MD;
 			if (mode == 'lg') return LG;
+			if (mode == 'pr') return PR;
 		}
 		return CM;
 	}
@@ -104,6 +111,7 @@ class CSSGroup{
 	private static var SOF:String = "/*SOF*/@media";
 	private static var EOF:String = "}/*EOF*/";
 	
+	public static var MEDIA_PR:String = "print";
 	public static var MEDIA_XS:String = "(min-width:1px) and (max-width:767px)";
 	public static var MEDIA_SM:String = "(min-width:768px) and (max-width:1000px)";
 	public static var MEDIA_MD:String = "(min-width:1001px) and (max-width:1169px)";
@@ -122,11 +130,12 @@ class CSSGroup{
 		_write(SM, styleSM, SOF + MEDIA_SM + "{");
 		_write(MD, styleMD, SOF + MEDIA_MD + "{");
 		_write(LG, styleLG, SOF + MEDIA_LG + "{");
+		_write(PR, stylePR, SOF + MEDIA_PR + "{");
 		reset();
 	}
 	
 	public function reset() {
-		style = styleXS = styleSM = styleMD = styleLG = "";
+		style = styleXS = styleSM = styleMD = styleLG = stylePR = "";
 	}
 	
 	

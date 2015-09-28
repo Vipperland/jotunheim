@@ -1,6 +1,7 @@
 package sirius.dom;
 
 import haxe.Constraints.Function;
+import js.html.CSSStyleDeclaration;
 import js.html.Element;
 import js.JQuery;
 import sirius.data.DisplayData;
@@ -163,12 +164,12 @@ interface IDisplay {
 	public function pin():Void;
 	
 	/**
-	 * Add hidden attribute to element
+	 * Remove hidden attribute from element
 	 */
 	public function show():Void;
 	
 	/**
-	 * Remove hidden attribute from element
+	 * Add hidden attribute to element
 	 */
 	public function hide():Void;
 	
@@ -203,17 +204,18 @@ interface IDisplay {
 	public function build(q:String, ?plainText:Bool = false):IDisplay;
 	
 	/**
-	 * Write properties in element style
-	 * @param	write
-	 * @return
+	 * Write or get style of the element
+	 * @param	p
+	 * @param	v	Can accept ARGB
+	 * @return	Return IARGB if is a color property
 	 */
 	public function style(?p:Dynamic, ?v:Dynamic):Dynamic;
 	
 	/**
-	 * Apply all dispatcher events
+	 * Get computed style
 	 * @return
 	 */
-	public function prepare():IDisplay;
+	public function trueStyle():CSSStyleDeclaration;
 	
 	/**
 	 * Append a value to innerHTML value
@@ -359,11 +361,17 @@ interface IDisplay {
 	public function is(tag:String):Bool;
 	
 	/**
-	 * Add this to a target element
+	 * Add this to a target element or Body if target is null
 	 * @param	target
 	 * @return
 	 */
 	public function addTo(?target:IDisplay):IDisplay;
+	
+	/**
+	 * Add this to Body element
+	 * @return
+	 */
+	public function addToBody():IDisplay;
 	
 	/**
 	 * Align center

@@ -28,6 +28,7 @@ import sirius.utils.Dice;
 	import sirius.tools.Agent;
 	import sirius.transitions.Animator;
 	import sirius.utils.ITable;
+	import sirius.utils.Pixel;
 	import sirius.utils.SearchTag;
 	import sirius.utils.Table;
 #elseif php

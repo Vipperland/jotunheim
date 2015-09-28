@@ -2,6 +2,7 @@ package sirius.dom;
 
 import haxe.Log;
 import js.Browser;
+import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
 import js.html.DOMTokenList;
 import js.html.Element;
@@ -274,10 +275,8 @@ class Display implements IDisplay {
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
 			if (Std.is(p, String)) {
-				if (v != null) {
-					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
-				}
-				v = Reflect.field(element.style, p);
+				if (v != null) Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+				v = Reflect.field(trueStyle(), p);
 				if (p.toLowerCase().indexOf("color") > 0) v = new ARGB(v);
 				return v;
 			}else {
@@ -286,12 +285,12 @@ class Display implements IDisplay {
 				});
 			}
 		}
-		return this;
+		return trueStyle();
 	}
 	
-	public function prepare():IDisplay {
-		this.events.apply();
-		return this;
+	public function trueStyle():CSSStyleDeclaration {
+		if (element.ownerDocument.defaultView.opener) 	return element.ownerDocument.defaultView.getComputedStyle(element);
+		else											return Browser.window.getComputedStyle(element);
 	}
 	
 	public function write(q:String):IDisplay {
@@ -422,6 +421,11 @@ class Display implements IDisplay {
 	public function addTo(?target:IDisplay):IDisplay {
 		if (target != null) target.addChild(this);
 		else if (Sirius.document != null) Sirius.document.body.addChild(this);
+		return this;
+	}
+	
+	public function addToBody():IDisplay {
+		if (Sirius.document != null) Sirius.document.body.addChild(this);
 		return this;
 	}
 	

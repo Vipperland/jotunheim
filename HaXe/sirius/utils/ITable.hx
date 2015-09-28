@@ -24,7 +24,7 @@ interface ITable {
 	 * @param	q
 	 * @return
 	 */
-	public function contains(q:String):ITable;
+	public function contains(q:String) : ITable;
 	
 	/**
 	 * Run a method on each element with Dice.Values(h,c)
@@ -32,33 +32,33 @@ interface ITable {
 	 * @param	c
 	 * @return
 	 */
-	public function flush(handler:IDisplay->Void, ?complete:IDiceRoll->Void):ITable;
+	public function flush(handler:IDisplay->Void, ?complete:IDiceRoll->Void) : ITable;
 	
 	/**
 	 * Get the first element
 	 * @return
 	 */
-	public function first():IDisplay;
+	public function first() : IDisplay;
 	
 	/**
 	 * Get the last element
 	 * @return
 	 */
-	public function last():IDisplay;
+	public function last() : IDisplay;
 	
 	/**
 	 * Get an element by index
 	 * @param	i
 	 * @return
 	 */
-	public function obj(i:Int):IDisplay;
+	public function obj(i:Int) : IDisplay;
 	
 	/**
 	 * Add a selector to each element
 	 * @param	styles
 	 * @return
 	 */
-	public function css(styles:String):ITable;
+	public function css(styles:String) : ITable;
 	
 	/**
 	 * Set the attribute value to all children
@@ -66,7 +66,7 @@ interface ITable {
 	 * @param	value
 	 * @return
 	 */
-	public function attribute(name:String, value:String):ITable;
+	public function attribute(name:String, value:String) : ITable;
 	
 	/**
 	 * Set attributes values to all children
@@ -74,20 +74,83 @@ interface ITable {
 	 * @param	value
 	 * @return
 	 */
-	public function attributes(value:Dynamic):ITable;
+	public function attributes(value:Dynamic) : ITable;
+	
+	/**
+	 * Set hidden attribute to false in all elements
+	 * @return
+	 */
+	public function show () : ITable;
+	
+	/**
+	 * Set hidden attribute to true in all elements
+	 * @return
+	 */
+	public function hide () : ITable;
+	
+	/**
+	 * Remove all elements from parent element
+	 * @return
+	 */
+	public function remove () : ITable;
+
+	/**
+	 * Set the cursor of all elements
+	 * @param	value
+	 * @return
+	 */
+	public function cursor (value:String) : ITable;
+	
+	/**
+	 * Set position to relative in all elements
+	 * @return
+	 */
+	public function detach () : ITable;
+
+	/**
+	 * Set position to absolute in all elements
+	 * @return
+	 */
+	public function attach () : ITable;
+	
+	/**
+	 * Set position to fixed in all elements
+	 * @return
+	 */
+	public function pin () : ITable;
+
+	/**
+	 * Remove all children from all elements in table
+	 * @param	fast
+	 * @return
+	 */
+	public function clear (?fast:Bool) : ITable;
+
+	/**
+	 * Append elements to a target
+	 * @param	target
+	 * @return
+	 */
+	public function addTo (?target:IDisplay) : ITable;
+	
+	/**
+	 * Append all elements to body
+	 * @return
+	 */
+	public function addToBody () : ITable;
 	
 	/**
 	 * Run a method to each element Dice.Values(h)
 	 * @param	handler
 	 * @return
 	 */
-	public function each(handler:IDisplay->Void):ITable;
+	public function each(handler:IDisplay->Void) : ITable;
 	
 	/**
 	 * Current content count
 	 * @return
 	 */
-	public function length ():Int;
+	public function length () : Int;
 	
 	/**
 	 * Call a method in each content element
@@ -95,7 +158,7 @@ interface ITable {
 	 * @param	args
 	 * @return
 	 */
-	public function call(method:String, ?args:Array<Dynamic>):ITable;
+	public function call(method:String, ?args:Array<Dynamic>) : ITable;
 	
 	/**
 	 * Add event to all table elements
@@ -104,14 +167,14 @@ interface ITable {
 	 * @param	capture
 	 * @return
 	 */
-	public function on(name:String, handler:IEvent->Void, ?mode:String):ITable;
+	public function on(name:String, handler:IEvent->Void, ?mode:String) : ITable;
 	
 	/**
 	 * Join one or more Tables in one or clone current Table
 	 * @param	tables
 	 * @return
 	 */
-	public function merge(?tables:Array<Table>):Table;
+	public function merge (?tables:Array<Table>) : ITable;
 	
 	/// Event
 	public function onWheel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;

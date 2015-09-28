@@ -10,18 +10,19 @@
 	
 	<link rel="stylesheet" href="extended/3rd/css/bootstrap.css">
 	
+	<script src="extended/3rd/js/pixel-creator.js"></script>
+	<script src="extended/3rd/js/jquery-2.1.4.min.js"></script>
 	<script src="extended/api.sirius.js"></script>
-	<script src="extended/home-3d.js"></script>
 	
 	<script>
 		
-		/*
 		
-		Automator.build("marg-b-10 bord-blue bord-solid bg-x0066CC shadow-x0066CC bord-rad-2 h-50 w-400", "div[id*=state_]");
+		
+		Automator.build("marg-b-10 bord-blue bord-solid bg-x0066CC shadow-x0066CC bord-rad-2 h-50 w-100pc", "div[id*=state_]");
 		
 		Sirius.init(function(){
 			
-			Sirius.body.addChild(new sru.dom.Sprite());
+			new sru.dom.Sprite().addTo();
 			
 			Sirius.request("http://192.168.0.100:8500/sys/", { }, function(request) {
 				if (request.success) {
@@ -36,7 +37,7 @@
 			
 		});
 		
-		*/
+		
 		
 	</script>
 	

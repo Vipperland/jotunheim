@@ -43,7 +43,7 @@ class Table implements ITable {
 						return null;
 					});
 				}else {
-					Sirius.log("TABLE(" + q + ") : NO RESULT", 10, 2);
+					Sirius.log("TABLE(" + q + ") : NO RESULT", 12, 2);
 				}
 			}else {
 				Sirius.log("TABLE(QUERY,TARGET) : NULL QUERY_SELECTOR", 10, 3);
@@ -96,6 +96,46 @@ class Table implements ITable {
 		return this;
 	}
 	
+	public function show():ITable {
+		return each(function(v:IDisplay) { v.show(); } );
+	}
+	
+	public function hide():ITable {
+		return each(function(v:IDisplay) { v.hide(); } );
+	}
+	
+	public function remove():ITable {
+		return each(function(v:IDisplay) { v.remove(); } );
+	}
+	
+	public function cursor(value:String):ITable {
+		return each(function(v:IDisplay) { v.cursor(value); } );
+	}
+	
+	public function detach():ITable {
+		return each(function(v:IDisplay) { v.detach(); } );
+	}
+	
+	public function attach():ITable {
+		return each(function(v:IDisplay) { v.attach(); } );
+	}
+	
+	public function pin():ITable {
+		return each(function(v:IDisplay) { v.pin(); } );
+	}
+	
+	public function clear(?fast:Bool):ITable {
+		return each(function(v:IDisplay) { v.clear(fast); } );
+	}
+	
+	public function addTo(?target:IDisplay):ITable {
+		return each(function(v:IDisplay) { v.addTo(target); } );
+	}
+	
+	public function addToBody():ITable {
+		return each(function(v:IDisplay) { v.addToBody(); } );
+	}
+	
 	public function length():Int {
 		return content.length;
 	}
@@ -117,7 +157,7 @@ class Table implements ITable {
 		return this;
 	}
 	
-	public function merge(?tables:Array<Table>):Table {
+	public function merge(?tables:Array<Table>):ITable {
 		var t:Table = Table.empty();
 		if (tables == null) tables = [];
 		tables[tables.length] = this;
