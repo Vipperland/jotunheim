@@ -5679,5 +5679,3 @@ sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","
 sirius_utils_SearchTag._R = false;
 Test_$JS.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map
