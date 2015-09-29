@@ -159,6 +159,10 @@
 			} while ((i+= 3) < l);
 			return r;
 		}
+		
+		this.setPixel = function(x,y,r,g,b,a){
+			this.buffer[this.pixel(x,y)] = this.color(r,g,b,a);
+		}
 
 		// output a PNG string
 		this.getDump = function() {
