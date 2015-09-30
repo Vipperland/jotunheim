@@ -196,4 +196,10 @@ class DataCache implements IDataCache {
 		return result;
 	}
 	
+	public function base64(?print:Bool):String {
+		var result:String = Criptog.encodeBase64(_DB);
+		if (print) #if php Lib.print(result); #elseif js if (print) Log.trace(result); #end
+		return result;
+	}
+	
 }

@@ -145,11 +145,13 @@ class Dice {
 	 * @param	values
 	 * @return
 	 */
-	public static function Match(table:Array<Dynamic>, values:Dynamic):Int {
+	public static function Match(table:Array<Dynamic>, values:Dynamic, ?limit:UInt = 0):Int {
 		if (!Std.is(values, Array)) values = [values];
 		var r:Int = 0;
 		Dice.Values(values, function(v:Dynamic) {
 			if (Lambda.indexOf(table, v) != -1) ++r;
+			if (limit > 0) return --limit == 0;
+			return false;
 		});
 		return r;
 	}

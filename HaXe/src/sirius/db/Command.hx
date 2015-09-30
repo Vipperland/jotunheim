@@ -1,10 +1,14 @@
 package sirius.db;
+import haxe.Json;
 import php.Lib;
 import php.NativeArray;
 import sirius.data.DataSet;
+import sirius.data.IDataSet;
 import sirius.errors.Error;
 import sirius.db.pdo.Statement;
+import sirius.errors.IError;
 import sirius.Sirius;
+import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 /**
@@ -25,7 +29,7 @@ class Command implements ICommand {
 	
 	public var result:Array<Dynamic>;
 	
-	public var errors:Array<Error>;
+	public var errors:Array<IError>;
 
 	public function new(statement:Statement, query:String, ?parameters:Dynamic) {
 		errors = [];
@@ -45,28 +49,44 @@ class Command implements ICommand {
 		return this;
 	}
 	
-	public function execute(?handler:Dynamic, ?type:Int = 2, ?parameters:Array<Dynamic>):ICommand {
+	public function execute(?handler:IDataSet->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
+		if (type == null) type = untyped __php__("\\PDO::FETCH_OBJ");
 		var p:NativeArray = null;
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
 		try {
 			success = statement.execute(p);
-			result = Lib.toHaxeArray(statement.fetchAll(type));
-			if (handler != null) fetch(handler);
+			if (success) {
+				result = Lib.toHaxeArray(statement.fetchAll(type));
+				if (handler != null) fetch(handler);
+			}else {
+				errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
+			}
 		}catch (e:Dynamic) {
-			errors[errors.length] = new Error(e.getCode(), e.getMessage());
+			if (Std.is(e, String)) {
+				errors[errors.length] = new Error(0, e);
+			}else {
+				errors[errors.length] = new Error(e.getCode(), e.getMessage());
+			}
 		}
 		
 		return this;
 	}
 	
-	public function dataSet(handler:Dynamic):ICommand {
-		Dice.Values(result, function(v:Dynamic) { handler(new DataSet(v)); } );
+	public function fetch(handler:IDataSet->Bool):ICommand {
+		Dice.Values(result, function(v:Dynamic) { return handler(new DataSet(v)); } );
 		return this;
 	}
 	
-	public function fetch(handler:Dynamic):ICommand {
-		Dice.Values(result, function(v:Dynamic) { handler(new DataSet(v)); } );
-		return this;
+	public function find(param:String, values:Array<Dynamic>, ?limit:UInt = 0):Array<Dynamic> {
+		var filter:Array<Dynamic> = [];
+		Dice.Values(result, function(v:Dynamic) {
+			if (Dice.Match([Reflect.field(v, param)], values, 1) > 0) {
+				filter[filter.length] = v;
+				return limit > 0 && --limit == 0;
+			}
+			return false;
+		});
+		return filter;
 	}
 	
 	public function log():String {
@@ -74,5 +94,7 @@ class Command implements ICommand {
 		Dice.All(_parameters, function(p:String, v:Dynamic) { q = StringTools.replace(q, ":" + p, v); });
 		return q;
 	}
+	
+	
 	
 }

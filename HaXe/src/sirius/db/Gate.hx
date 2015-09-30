@@ -77,4 +77,8 @@ class Gate implements IGate {
 		return r;
 	}
 	
+	public function insertedId():UInt {
+		return Std.parseInt(_db.lastInsertId());
+	}
+	
 }

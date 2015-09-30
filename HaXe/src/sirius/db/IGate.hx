@@ -57,5 +57,10 @@ interface IGate {
 	 */
 	public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand;
 	
+	/**
+	 * Last row affected
+	 * @return
+	 */
+	public function insertedId():UInt;
 	
 }

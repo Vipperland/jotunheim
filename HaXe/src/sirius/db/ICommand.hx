@@ -1,6 +1,9 @@
 package sirius.db;
 import php.NativeArray;
+import sirius.data.DataSet;
+import sirius.data.IDataSet;
 import sirius.db.pdo.Statement;
+import sirius.errors.IError;
 
 /**
  * @author Rafael Moreira
@@ -24,6 +27,11 @@ interface ICommand {
 	public var result : Array<Dynamic>;
 	
 	/**
+	 * Running error on query
+	 */
+	public var errors:Array<IError>;
+	
+	/**
 	 * Flush arguments to query
 	 * @param	arguments
 	 * @return
@@ -37,18 +45,27 @@ interface ICommand {
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:Dynamic, ?type:Int=2, ?parameters:Array<Dynamic>) : ICommand;
+	public function execute (?handler:IDataSet->Bool, ?type:Int=2, ?parameters:Array<Dynamic>) : ICommand;
 	
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)
 	 * @param	handler
 	 * @return
 	 */
-	public function fetch (handler:Dynamic) : ICommand;
+	public function fetch (handler:IDataSet->Bool) : ICommand;
 	
 	/**
 	 * Dump the final query
 	 */
 	public function log():String;
+	
+	/**
+	 * Find params equal one or more value
+	 * @param	params
+	 * @param	values
+	 * @param	limit
+	 * @return
+	 */
+	public function find(param:String, values:Array<Dynamic>, ?limit:UInt = 0):Array<Dynamic>;
 	
 }

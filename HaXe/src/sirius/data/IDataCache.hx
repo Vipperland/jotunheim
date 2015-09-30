@@ -8,6 +8,8 @@ interface IDataCache {
 	
 	public function json (?print:Bool) : String;
 	
+	public function base64 (?print:Bool) : String;
+	
 	public function refresh () : IDataCache;
 
 	public function clear (?p:String) : IDataCache;

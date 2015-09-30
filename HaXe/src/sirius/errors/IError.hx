@@ -10,6 +10,6 @@ interface IError {
 	
 	public var message:String;
 	
-	public var code:UInt;
+	public var code:Dynamic;
 	
 }

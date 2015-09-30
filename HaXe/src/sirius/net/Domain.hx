@@ -99,10 +99,10 @@ class Domain implements IDomain {
 		
 		public function require(params:Array<String>):Bool {
 			
-			var r:Bool;
+			var r:Bool = true;
 			
 			Dice.Values(params, function(v:String) {
-				r = !Reflect.hasField(this.params, v);
+				r = Reflect.hasField(this.params, v);
 				return !r;
 			});
 			
