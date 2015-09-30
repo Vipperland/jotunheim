@@ -56,7 +56,7 @@ class CSSGroup{
 			SM = _style('sm');
 			MD = _style('md');
 			LG = _style('lg');
-			PR = _style('pt');
+			PR = _style('pr');
 			Browser.document.head.appendChild(cast container.element);
 		}
 	}
@@ -88,11 +88,12 @@ class CSSGroup{
 	
 	public function setSelector(id:String, style:String, mode:String):Void {
 		if(!hasSelector(id, mode)){
-			if (mode == 'xs') this.styleXS += _add(id, style);
-			else if (mode == 'sm') this.styleSM += _add(id, style);
-			else if (mode == 'md') this.styleMD += _add(id, style);
-			else if (mode == 'lg') this.styleLG += _add(id, style);
-			else this.style += _add(id, style);
+			if (mode == 'xs') 		this.styleXS += _add(id, style);
+			else if (mode == 'sm') 	this.styleSM += _add(id, style);
+			else if (mode == 'md') 	this.styleMD += _add(id, style);
+			else if (mode == 'lg') 	this.styleLG += _add(id, style);
+			else if (mode == 'pr') 	this.stylePR += _add(id, style);
+			else 					this.style += _add(id, style);
 		}
 	}
 	
@@ -101,7 +102,8 @@ class CSSGroup{
 		setSelector(id + "-sm", style, 'sm');
 		setSelector(id + "-md", style, 'md');
 		setSelector(id + "-lg", style, 'lg');
-		setSelector(id, style,null);
+		setSelector(id + "-pr", style, 'pr');
+		setSelector(id, 		style,	null);
 	}
 	
 	private function _add(id:String, style:String):String {

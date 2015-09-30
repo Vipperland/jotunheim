@@ -1,7 +1,5 @@
 package sirius.modules;
 import haxe.Json;
-import haxe.Log;
-import sirius.dom.Div;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 import sirius.Sirius;
@@ -10,6 +8,7 @@ import sirius.Sirius;
 	import sirius.css.Automator;
 	import sirius.dom.IDisplay;
 	import sirius.dom.Display;
+	import sirius.dom.Div;
 #elseif php
 	import php.Lib;
 	import sys.FileSystem;

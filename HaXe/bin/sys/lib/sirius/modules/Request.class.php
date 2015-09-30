@@ -10,7 +10,7 @@ class sirius_modules_Request implements sirius_modules_IRequest{
 	public $data;
 	public $success;
 	public $error;
-	public function json() {
+	public function object() {
 		if($this->data !== null && strlen($this->data) > 1) {
 			return haxe_Json::phpJsonDecode($this->data);
 		} else {

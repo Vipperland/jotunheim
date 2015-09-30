@@ -1,8 +1,8 @@
 package sirius.modules;
-import errors.IError;
 import haxe.Http;
 import haxe.Log;
 import sirius.errors.Error;
+import sirius.errors.IError;
 import sirius.modules.Request;
 import sirius.modules.ModLib;
 import sirius.Sirius;
@@ -120,10 +120,12 @@ class Loader implements ILoader {
 	
 	#end
 	
-	public function async(file:String, #if js ?target:Dynamic #end, ?data:Dynamic, ?handler:String->String->Void):Void {
+	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:String->String->Void):Void {
 		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
 		var r:Http = new Http(h[0] + (_noCache ? "" : "?t=" + Date.now().getTime()));
-		r.async = true;
+		#if js 
+			r.async = true; 
+		#end
 		r.onData = function(d) {
 			Sirius.resources.register(file, d);
 			file = h.length == 2 ? h[1] : file;

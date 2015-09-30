@@ -42,6 +42,10 @@ interface IDomain {
 		
 		public function reload (?force:Bool = false) : Void;
 		
+	#elseif php
+		
+		public function require(params:Array<String>) : Bool;
+		
 	#end
 	
 }

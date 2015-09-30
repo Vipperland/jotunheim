@@ -22,7 +22,7 @@ class sirius_db_Gate implements sirius_db_IGate{
 				$e = $_ex_;
 				{
 					php_Lib::dump($e);
-					$this->errors[$this->errors->length] = new sirius_errors_Error($e->getCode(), $e->getMessage());
+					$this->errors[$this->errors->length] = new sirius_errors_Error($e->getCode(), $e->getMessage(), null);
 				}
 			}
 			$this->command = null;

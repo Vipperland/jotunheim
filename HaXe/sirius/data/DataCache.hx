@@ -13,7 +13,7 @@ import haxe.Json;
 import haxe.Log;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
-import utils.Criptog;
+import sirius.utils.Criptog;
 
 
 /**

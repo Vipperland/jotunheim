@@ -155,10 +155,9 @@ class AutomatorRules{
 				if (n.color != null) return 'color:';
 				if (n.measure != null) return 'font-size:';
 			}
-			return 'text-align:';
-		}else {
-			return 'text-';
+			if(n.entry.value != 'decoration') return 'text-align:';
 		}
+		return 'text-';
 	}
 	
 	
@@ -331,6 +330,7 @@ class AutomatorRules{
 		"inline":{value:'inline', verifier:appendKey},
 		bg:{value:'background',verifier:numericKey},
 		txt: { value:'', verifier:textKey },
+		decor: { value:'', verifier:valueKey },
 		sub:{value:'sub',verifier:commonKey},
 		sup:{value:'super',verifier:commonKey},
 		pos:{value:'position',verifier:valueKey},

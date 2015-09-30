@@ -21,7 +21,7 @@ interface ICommand {
 	/**
 	 * An Array of all returned data
 	 */
-	public var result : NativeArray;
+	public var result : Array<Dynamic>;
 	
 	/**
 	 * Flush arguments to query

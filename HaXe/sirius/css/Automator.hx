@@ -19,7 +19,7 @@ import sirius.utils.Dice;
 @:expose('Automator')
 class Automator {
 	
-	static private var _scx:String = "#xs#sm#md#lg#";
+	static private var _scx:String = "#xs#sm#md#lg#pr#";
 	
 	static private var css:CSSGroup = new CSSGroup();
 	
@@ -92,6 +92,15 @@ class Automator {
 		
 	}
 	
+	static public function build4All(query:String, ?group:String, ?silent:Bool):Void {
+		build(query, group + '-xs'	, silent);
+		build(query, group + '-sm'	, silent);
+		build(query, group + '-md'	, silent);
+		build(query, group + '-lg'	, silent);
+		build(query, group + '-pr'	, silent);
+		build(query, group 			, silent);
+	}
+	
 	/**
 	 * Create selectors from string
 	 * @param	query
@@ -133,12 +142,31 @@ class Automator {
 		}
 	}
 	
+	static public function bootstrap() {
+		build("txt-decor-none", "a, a:link, a:visited, a:active, a:hover");
+		build("padd-r-15 padd-l-15 marg-r-a marg-l-a", ".container");
+	}
+	
 	static public function common() {
+		
 		build("w-100pc h-100pc disp-table", ".sprite");
 		build("disp-table-cell vert-m txt-c", ".sprite>div[sru-id]");
 		build("disp-table", ".label");
 		build("disp-table-cell vert-m txt-c", ".label>span");
 		build("marg-l-auto marg-r-auto", ".centered");
+		
+		Dice.Count(0, 12, function(a:Int, b:Int, c:Bool) {
+			++a;
+			var s:String = untyped __js__("(a/b*100).toFixed(2)").split(".").join("d") + "pc"; // 00d00pc
+			var n:String = '.cel-' + a;	// .cel-XX
+			build4All('w-' + s + ' padd-r-15 padd-l-15', n); // w-00d00pc padd-r-15 padd-l-15
+			if (a < 12) {
+				build4All('float-l', n); // 
+				build4All('marg-l' + s, n);
+			}
+			return null;
+		});
+		
 	}
 	
 	/**

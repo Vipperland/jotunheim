@@ -93,7 +93,22 @@ class Domain implements IDomain {
 			Browser.window.location.reload(force);
 		}
 		
+		/* INTERFACE sirius.net.IDomain */
+		
 	#elseif php
+		
+		public function require(params:Array<String>):Bool {
+			
+			var r:Bool;
+			
+			Dice.Values(params, function(v:String) {
+				r = !Reflect.hasField(this.params, v);
+				return !r;
+			});
+			
+			return r;
+			
+		}
 		
 		private function _getParams():Dynamic {
 			#if force_std_separator

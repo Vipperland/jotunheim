@@ -1,11 +1,13 @@
 <?php
 
-class sirius_errors_Error {
-	public function __construct($code, $message) {
+class sirius_errors_Error implements errors_IError{
+	public function __construct($code, $message, $object = null) {
 		if(!php_Boot::$skip_constructor) {
+		$this->object = $object;
 		$this->message = $message;
 		$this->code = $code;
 	}}
+	public $object;
 	public $message;
 	public $code;
 	public function __call($m, $a) {

@@ -1,4 +1,4 @@
-package utils;
+package sirius.utils;
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
 import haxe.Json;

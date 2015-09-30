@@ -22,7 +22,7 @@ class Request implements IRequest {
 	
 	/* INTERFACE modules.IRequest */
 	
-	public function json():Dynamic {
+	public function object():Dynamic {
 		return data != null && data.length > 1 ? Json.parse(data) : null;
 	}
 	

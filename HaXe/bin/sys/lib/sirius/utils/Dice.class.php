@@ -8,7 +8,7 @@ class sirius_utils_Dice {
 		$i = true;
 		$k = 0;
 		if($q !== null) {
-			if(Std::is($q, _hx_qtype("Array"))) {
+			if(Std::is($q, _hx_qtype("php.NativeArray")) || Std::is($q, _hx_qtype("Array"))) {
 				$q = php_Lib::objectOfAssociativeArray($q);
 			}
 			{
@@ -61,7 +61,7 @@ class sirius_utils_Dice {
 			$increment = 1;
 		}
 		while($a < $b) {
-			if(_hx_equal(call_user_func_array($each, array($a, $b, ($a = sirius_utils_Dice_4($a, $b, $complete, $each, $from, $increment, $to) + $a) === $b)), true)) {
+			if(call_user_func_array($each, array($a, $b, ($a = sirius_utils_Dice_4($a, $b, $complete, $each, $from, $increment, $to) + $a) === $b)) === true) {
 				break;
 			}
 		}

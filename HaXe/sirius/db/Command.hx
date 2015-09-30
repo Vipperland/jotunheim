@@ -23,7 +23,7 @@ class Command implements ICommand {
 	
 	public var statement:Statement;
 	
-	public var result:NativeArray;
+	public var result:Array<Dynamic>;
 	
 	public var errors:Array<Error>;
 
@@ -50,7 +50,7 @@ class Command implements ICommand {
 		if (parameters != null)	p = Lib.toPhpArray(parameters);
 		try {
 			success = statement.execute(p);
-			result = statement.fetchAll(type);
+			result = Lib.toHaxeArray(statement.fetchAll(type));
 			if (handler != null) fetch(handler);
 		}catch (e:Dynamic) {
 			errors[errors.length] = new Error(e.getCode(), e.getMessage());

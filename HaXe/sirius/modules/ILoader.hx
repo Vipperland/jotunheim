@@ -1,5 +1,5 @@
 package sirius.modules;
-import errors.IError;
+import sirius.errors.IError;
 import sirius.errors.Error;
 
 #if js
@@ -57,7 +57,7 @@ interface ILoader {
 	 * @param	data
 	 * @param	handler
 	 */
-	public function async(file:String, #if js ?target:Dynamic #end, ?data:Dynamic, ?handler:String->String->Void):Void;
+	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:String->String->Void):Void;
 	
 	/**
 	 * Load a list of files

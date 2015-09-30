@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head class="marg-0">
 	<meta charset="utf-8"/>
 	<title>Sirius</title>
@@ -10,32 +10,18 @@
 	
 	<link rel="stylesheet" href="extended/3rd/css/bootstrap.css">
 	
-	<script src="extended/3rd/js/pixel-creator.js"></script>
-	<script src="extended/3rd/js/jquery-2.1.4.min.js"></script>
 	<script src="extended/api.sirius.js"></script>
 	
 	<script>
 		
-		
-		
-		Automator.build("marg-b-10 bord-blue bord-solid bg-x0066CC shadow-x0066CC bord-rad-2 h-50 w-100pc", "div[id*=state_]");
+		var Display =  sru.dom.Display;
 		
 		Sirius.init(function(){
+			var top = new Display();
 			
-			new sru.dom.Sprite().addTo();
-			
-			Sirius.request("http://192.168.0.100:8500/sys/", { }, function(request) {
-				if (request.success) {
-					Sirius.module(
-						'/samples/gate-module.html', //load file
-						'[sru-dom=sprite]', // draw in target selector
-						request.json().states, // result data from request
-						Automator.scan // On completion, Scan for CSS definitions
-					);
-				}
-			});
-			
+			top.addToBody();
 		});
+		
 		
 		
 		

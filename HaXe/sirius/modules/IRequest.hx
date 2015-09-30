@@ -9,5 +9,5 @@ interface IRequest {
 	public var data:String;
 	public var success:Bool;
 	public var error:Error;
-	public function json():Dynamic;
+	public function object():Dynamic;
 }

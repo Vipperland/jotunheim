@@ -33,7 +33,10 @@ class sirius_db_Command implements sirius_db_ICommand{
 		}
 		try {
 			$this->success = $this->statement->execute($p);
-			$this->result = $this->statement->fetchAll($type);
+			{
+				$a = $this->statement->fetchAll($type);
+				$this->result = new _hx_array($a);
+			}
 			if($handler !== null) {
 				$this->fetch($handler);
 			}
@@ -41,7 +44,7 @@ class sirius_db_Command implements sirius_db_ICommand{
 			$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 			$e = $_ex_;
 			{
-				$this->errors[$this->errors->length] = new sirius_errors_Error($e->getCode(), $e->getMessage());
+				$this->errors[$this->errors->length] = new sirius_errors_Error($e->getCode(), $e->getMessage(), null);
 			}
 		}
 		return $this;

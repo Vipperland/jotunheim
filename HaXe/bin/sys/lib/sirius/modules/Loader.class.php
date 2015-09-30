@@ -64,7 +64,11 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 	}
 	public function _error($e) {
 		$_g = $this;
-		$this->lastError = $e;
+		if(Std::is($e, _hx_qtype("String"))) {
+			$this->lastError = new sirius_errors_Error(-1, $e, $this);
+		} else {
+			$this->lastError = new sirius_errors_Error(-1, "Unknow", _hx_anonymous(array("content" => $e, "loader" => $this)));
+		}
 		sirius_utils_Dice::Values($this->_onError, array(new _hx_lambda(array(&$_g, &$e), "sirius_modules_Loader_3"), 'execute'), null);
 	}
 	public function _complete() {
@@ -74,8 +78,14 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 		$this->_onError = (new _hx_array(array()));
 	}
 	public function async($file, $data = null, $handler = null) {
-		$r = new haxe_Http(_hx_string_or_null($file) . _hx_string_or_null((sirius_modules_Loader_5($this, $data, $file, $handler))));
-		$r->onData = array(new _hx_lambda(array(&$data, &$file, &$handler, &$r), "sirius_modules_Loader_6"), 'execute');
+		$h = null;
+		if(_hx_index_of($file, "#", null) !== -1) {
+			$h = _hx_explode("#", $file);
+		} else {
+			$h = (new _hx_array(array($file)));
+		}
+		$r = new haxe_Http(_hx_string_or_null($h[0]) . _hx_string_or_null((sirius_modules_Loader_5($this, $data, $file, $h, $handler))));
+		$r->onData = array(new _hx_lambda(array(&$data, &$file, &$h, &$handler, &$r), "sirius_modules_Loader_6"), 'execute');
 		$r->request(false);
 	}
 	public function request($url, $data = null, $handler = null, $method = null) {
@@ -134,7 +144,7 @@ function sirius_modules_Loader_2(&$_g, &$f, &$r, $d) {
 function sirius_modules_Loader_3(&$_g, &$e, $v) {
 	{
 		if($v !== null) {
-			call_user_func_array($v, array($_g));
+			call_user_func_array($v, array($_g->lastError));
 		}
 	}
 }
@@ -145,16 +155,21 @@ function sirius_modules_Loader_4(&$_g, $v) {
 		}
 	}
 }
-function sirius_modules_Loader_5(&$__hx__this, &$data, &$file, &$handler) {
+function sirius_modules_Loader_5(&$__hx__this, &$data, &$file, &$h, &$handler) {
 	if($__hx__this->_noCache) {
 		return "";
 	} else {
 		return "?t=" . _hx_string_rec(Date::now()->getTime(), "");
 	}
 }
-function sirius_modules_Loader_6(&$data, &$file, &$handler, &$r, $d) {
+function sirius_modules_Loader_6(&$data, &$file, &$h, &$handler, &$r, $d) {
 	{
 		sirius_Sirius::$resources->register($file, $d);
+		if($h->length === 2) {
+			$file = $h[1];
+		} else {
+			$file = $file;
+		}
 		if($handler !== null) {
 			call_user_func_array($handler, array($file, $d));
 		}
@@ -177,7 +192,7 @@ function sirius_modules_Loader_8(&$data, &$handler, &$method, &$r, &$url, $d) {
 function sirius_modules_Loader_9(&$data, &$handler, &$method, &$r, &$url, $d1) {
 	{
 		if($handler !== null) {
-			call_user_func_array($handler, array(new sirius_modules_Request(false, null, new sirius_errors_Error(404, $d1))));
+			call_user_func_array($handler, array(new sirius_modules_Request(false, null, new sirius_errors_Error(-1, $d1, null))));
 		}
 	}
 }

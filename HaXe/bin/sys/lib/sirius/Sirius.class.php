@@ -9,7 +9,7 @@ class sirius_Sirius {
 	static $header;
 	static $gate;
 	static $loader;
-	static function module($file, $target = null, $content = null, $handler = null) {
+	static function module($file, $content = null, $handler = null) {
 		sirius_Sirius::$loader->async($file, $content, $handler);
 	}
 	static function request($url, $data = null, $handler = null, $method = null) {

@@ -4,7 +4,9 @@ package sirius.tools;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+#if js
 @:expose("sru.bit.BitIO")
+#end
 class BitIO {
 
 	static public var P01:UInt = 1 << 0;
@@ -102,7 +104,7 @@ class BitIO {
 		this.value = value;
 	}
 	
-	public function toggle(bit:UInt):Void {
+	public function reverse(bit:UInt):Void {
 		value = Toggle(value, bit);
 	}
 	

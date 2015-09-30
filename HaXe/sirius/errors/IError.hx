@@ -1,4 +1,4 @@
-package errors;
+package sirius.errors;
 
 /**
  * @author Rafael Moreira

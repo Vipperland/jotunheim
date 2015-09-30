@@ -1,13 +1,14 @@
 package sirius.utils;
 import haxe.Log;
-import js.html.Node;
 import sirius.tools.Utils;
 import sirius.utils.IDiceRoll;
 
 #if php
 	import php.Lib;
+	import php.NativeArray;
 #elseif js
 	import js.html.Element;
+	import js.html.Node;
 	import sirius.dom.IDisplay;
 #end
 
@@ -33,7 +34,8 @@ class Dice {
 		if (q != null) {
 			#if php
 				// ==== Workaround with PHP Arrays
-				if(Std.is(q, Array)) q = Lib.objectOfAssociativeArray(q);
+				if (Std.is(q, NativeArray) || Std.is(q, Array)) q = Lib.objectOfAssociativeArray(q);
+				//Lib.dump(q);
 			#end
 			for (p in Reflect.fields(q)) {
 				v = Reflect.field(q, p);

@@ -1,5 +1,5 @@
 package sirius.errors;
-import errors.IError;
+import sirius.errors.IError;
 
 /**
  * ...

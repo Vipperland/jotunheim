@@ -1,6 +1,5 @@
 package sirius;
 
-import errors.IError;
 import haxe.Log;
 import sirius.data.DataCache;
 import sirius.modules.IRequest;
@@ -200,7 +199,7 @@ class Sirius {
 	 * @param	content
 	 * @param	handler
 	 */
-	static public function module(file:String, #if js ?target:Dynamic #end, ?content:Dynamic, ?handler:String->String->Void):Void {
+	static public function module(file:String, #if js ?target:Dynamic, #end ?content:Dynamic, ?handler:String->String->Void):Void {
 		#if js
 			var f:Dynamic = (_initialized ? run : init);
 			f(function() { loader.async(file, target, content, handler); } );
