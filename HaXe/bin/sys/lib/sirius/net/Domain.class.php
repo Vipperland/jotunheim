@@ -39,6 +39,12 @@ class sirius_net_Domain implements sirius_net_IDomain{
 			return $a;
 		}
 	}
+	public function hrequire($params) {
+		$_g = $this;
+		$r = null;
+		sirius_utils_Dice::Values($params, array(new _hx_lambda(array(&$_g, &$params, &$r), "sirius_net_Domain_0"), 'execute'), null);
+		return $r;
+	}
 	public function _getParams() {
 		$a = array_merge($_GET, $_POST);
 		if(get_magic_quotes_gpc()) {
@@ -57,4 +63,10 @@ class sirius_net_Domain implements sirius_net_IDomain{
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	function __toString() { return 'sirius.net.Domain'; }
+}
+function sirius_net_Domain_0(&$_g, &$params, &$r, $v) {
+	{
+		$r = !_hx_has_field($_g->params, $v);
+		return !$r;
+	}
 }

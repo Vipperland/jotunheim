@@ -1,6 +1,6 @@
 <?php
 
-class sirius_errors_Error implements errors_IError{
+class sirius_errors_Error implements sirius_errors_IError{
 	public function __construct($code, $message, $object = null) {
 		if(!php_Boot::$skip_constructor) {
 		$this->object = $object;

@@ -16,7 +16,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="sirius" />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -47,8 +46,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Webserver" />
-    <option testMovieCommand="bin/index.html" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="http://sirius.192.168.0.100.xip.io" />
   </options>
   <!-- Plugin storage -->
   <storage />

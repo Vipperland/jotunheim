@@ -2,6 +2,7 @@ package sirius;
 
 import haxe.Log;
 import sirius.data.DataCache;
+import sirius.errors.IError;
 import sirius.modules.IRequest;
 import sirius.modules.ModLib;
 import sirius.modules.ILoader;

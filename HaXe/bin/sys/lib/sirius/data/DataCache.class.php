@@ -91,7 +91,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$this->_checkPath();
 		}
 		$this->_sign(true);
-		sys_io_File::saveContent($this->_name, utils_Criptog::encodeBase64($this->_DB));
+		sys_io_File::saveContent($this->_name, sirius_utils_Criptog::encodeBase64($this->_DB));
 		$this->_sign(false);
 		return $this;
 	}
@@ -110,7 +110,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		}
 		if(file_exists($this->_name)) {
 			$c = sys_io_File::getContent($this->_name);
-			$this->_DB = utils_Criptog::decodeBase64($c, true);
+			$this->_DB = sirius_utils_Criptog::decodeBase64($c, true);
 		}
 		if(_hx_field($this, "_DB") === null || $this->_expire !== 0 && (_hx_field($this->_DB, "__time__") === null || $this->_now() - $this->_DB->__time__ >= $this->_expire)) {
 			$this->_DB = _hx_anonymous(array());

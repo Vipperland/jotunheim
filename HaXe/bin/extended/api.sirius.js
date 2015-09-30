@@ -249,11 +249,6 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
 };
-var errors_IError = function() { };
-errors_IError.__name__ = ["errors","IError"];
-errors_IError.prototype = {
-	__class__: errors_IError
-};
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = ["haxe","IMap"];
 var haxe_Http = function(url) {
@@ -4185,7 +4180,7 @@ sirius_data_DataCache.prototype = {
 		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,this._name); else return this._loaded;
 	}
 	,save: function() {
-		js_Cookie.set(this._name,utils_Criptog.encodeBase64(this._DB),0,this._path);
+		js_Cookie.set(this._name,sirius_utils_Criptog.encodeBase64(this._DB),0,this._path);
 		return this;
 	}
 	,_sign: function(add) {
@@ -4196,7 +4191,7 @@ sirius_data_DataCache.prototype = {
 	}
 	,load: function() {
 		this._DB = null;
-		if(js_Cookie.exists(this._name)) this._DB = utils_Criptog.decodeBase64(js_Cookie.get(this._name),true);
+		if(js_Cookie.exists(this._name)) this._DB = sirius_utils_Criptog.decodeBase64(js_Cookie.get(this._name),true);
 		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
 			this._DB = { };
 			this._loaded = false;
@@ -4307,13 +4302,18 @@ sirius_data_FormParam.prototype = {
 	}
 	,__class__: sirius_data_FormParam
 };
+var sirius_errors_IError = function() { };
+sirius_errors_IError.__name__ = ["sirius","errors","IError"];
+sirius_errors_IError.prototype = {
+	__class__: sirius_errors_IError
+};
 var sirius_errors_Error = function(code,message,object) {
 	this.object = object;
 	this.message = message;
 	this.code = code;
 };
 sirius_errors_Error.__name__ = ["sirius","errors","Error"];
-sirius_errors_Error.__interfaces__ = [errors_IError];
+sirius_errors_Error.__interfaces__ = [sirius_errors_IError];
 sirius_errors_Error.prototype = {
 	__class__: sirius_errors_Error
 };
@@ -4814,7 +4814,7 @@ sirius_tools_BitIO.Value = function(hash,size) {
 	return v;
 };
 sirius_tools_BitIO.prototype = {
-	toggle: function(bit) {
+	reverse: function(bit) {
 		this.value = sirius_tools_BitIO.Toggle(this.value,bit);
 	}
 	,set: function(bit) {
@@ -5002,6 +5002,16 @@ var sirius_transitions_ITween = function() { };
 sirius_transitions_ITween.__name__ = ["sirius","transitions","ITween"];
 sirius_transitions_ITween.prototype = {
 	__class__: sirius_transitions_ITween
+};
+var sirius_utils_Criptog = function() { };
+sirius_utils_Criptog.__name__ = ["sirius","utils","Criptog"];
+sirius_utils_Criptog.encodeBase64 = function(q) {
+	if(!(typeof(q) == "string")) q = JSON.stringify(q);
+	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
+};
+sirius_utils_Criptog.decodeBase64 = function(q,json) {
+	var r = haxe_crypto_Base64.decode(q).toString();
+	if(json && r.length > 1) return JSON.parse(r); else return r;
 };
 var sirius_utils_Dice = $hx_exports.Dice = function() { };
 sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
@@ -5574,16 +5584,6 @@ sirius_utils_Table.prototype = {
 	}
 	,__class__: sirius_utils_Table
 };
-var utils_Criptog = function() { };
-utils_Criptog.__name__ = ["utils","Criptog"];
-utils_Criptog.encodeBase64 = function(q) {
-	if(!(typeof(q) == "string")) q = JSON.stringify(q);
-	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
-};
-utils_Criptog.decodeBase64 = function(q,json) {
-	var r = haxe_crypto_Base64.decode(q).toString();
-	if(json && r.length > 1) return JSON.parse(r); else return r;
-};
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
@@ -5704,5 +5704,3 @@ sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","
 sirius_utils_SearchTag._R = false;
 Test_$JS.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map
