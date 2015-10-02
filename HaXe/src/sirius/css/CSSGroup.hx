@@ -61,17 +61,31 @@ class CSSGroup{
 		}
 	}
 	
-	public function hasSelector(id:String, ?mode:String):Bool {
+	private function _checkSelector(value:String, content:String, current:String):Bool {
+		var iof:Int = content.indexOf(value);
+		var r:Bool = false;
+		if (iof != -1) {
+			r = true;
+			if(current != null){
+				var eof:Int = content.indexOf("}", iof);
+				content = content.substring(iof, eof);
+				r = current == content;
+			}
+		}
+		return r;
+	}
+	
+	public function hasSelector(id:String, ?content:String, ?mode:String):Bool {
 		var k:String = mode != null ? mode : id.substr( -2, 2);
 		id = (id.substr(0,1) == "." ? "" : ".") + id + "{";
 		if(k != null && k != ''){
-			if (k == 'xs') return (XS.innerHTML + styleXS).indexOf(id) != -1;
-			if (k == 'sm') return (SM.innerHTML + styleSM).indexOf(id) != -1;
-			if (k == 'md') return (MD.innerHTML + styleMD).indexOf(id) != -1;
-			if (k == 'lg') return (LG.innerHTML + styleLG).indexOf(id) != -1;
-			if (k == 'pr') return (PR.innerHTML + stylePR).indexOf(id) != -1;
+			if (k == 'xs') return _checkSelector(id, XS.innerHTML + styleXS, content);
+			if (k == 'sm') return _checkSelector(id, SM.innerHTML + styleSM, content);
+			if (k == 'md') return _checkSelector(id, MD.innerHTML + styleMD, content);
+			if (k == 'lg') return _checkSelector(id, LG.innerHTML + styleLG, content);
+			if (k == 'pr') return _checkSelector(id, PR.innerHTML + stylePR, content);
 		}
-		return (CM.innerHTML + style).indexOf(id) != -1;
+		return _checkSelector(id, CM.innerHTML + style, content);
 	}
 	
 	public function getByMedia(mode:String):StyleElement {
@@ -87,7 +101,7 @@ class CSSGroup{
 	}
 	
 	public function setSelector(id:String, style:String, mode:String):Void {
-		if(!hasSelector(id, mode)){
+		if(!hasSelector(id, style, mode)){
 			if (mode == 'xs') 		this.styleXS += _add(id, style);
 			else if (mode == 'sm') 	this.styleSM += _add(id, style);
 			else if (mode == 'md') 	this.styleMD += _add(id, style);
@@ -107,7 +121,7 @@ class CSSGroup{
 	}
 	
 	private function _add(id:String, style:String):String {
-		return (id + "{" + style + "}");
+		return (id + "{" + (style != null ? style : "/*<NULL>*/") + "}");
 	}
 	
 	private static var SOF:String = "/*SOF*/@media";

@@ -54,6 +54,9 @@ class Sirius {
 	/** @private */
 	static private var _initialized:Bool = false;
 	
+	/** @private */
+	static private var _loaded:Bool = false;
+	
 	/// Global resource loader
 	static public var resources:ModLib = new ModLib();
 	
@@ -61,6 +64,8 @@ class Sirius {
 	static public var domain:IDomain = new Domain();
 	
 	#if js
+		
+		static public function main() { _preInit(); }
 		
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();
@@ -80,19 +85,18 @@ class Sirius {
 		/** @private */
 		static private function _loadController(e:Event):Void {
 			agent.update();
+			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
 			Browser.document.removeEventListener("DOMContentLoaded", _loadController);
+			_loaded = true;
 			_loadPool = null;
+			loader.start(_onLoaded);
 		}
 		
 		/** @private */
-		static private function _onLoaded():Void {
-			if (loader.totalFiles > 0) {
-				log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
-			}
-			if(document == null) log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
-			document = new Document();
-			loader.start();
+		static private function _onLoaded(e:ILoader):Void {
+			if (loader.totalFiles > 0) 
+					log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
 		}
 		
 		/**
@@ -138,18 +142,9 @@ class Sirius {
 		 * @param	handler
 		 */
 		static public function run(handler:Dynamic):Void {
-			if (!_initialized) {
-				init(handler);
-			}else if (handler != null) {
-				if (document != null && document.body != null) {
-					handler();
-				}else {
-					if (_loadPool == null) {
-						_loadPool = [];
-						Browser.document.addEventListener("DOMContentLoaded", _loadController);
-					}
-					_loadPool[_loadPool.length] = handler;
-				}
+			if (handler != null) {
+				if (!_loaded) 	_loadPool[_loadPool.length] = handler;
+				else 			handler();
 			}
 		}
 
@@ -159,15 +154,19 @@ class Sirius {
 		 * @param	handler
 		 * @param	files
 		 */
-		static public function init(?handler:ILoader->Void, ?files:Array<String> = null):Void {
+		static public function onInit(handler:ILoader->Void, ?files:Array<String> = null):Void {
+			if (_loaded == false && files != null && files.length > 0) loader.add(files, null, _fileError);
+			else run(handler);
+		}
+		
+		static private function _preInit():Void {
 			if (!_initialized) {
 				_initialized = true;
-				loader.add(files, handler, _fileError);
-				log("Sirius->Core.init[ LOADING... ]", 10, 1);
-				run(_onLoaded);
-			}else{
-				log("Sirius->Core.init[ " + (document == null ? "Waiting for DOM Loading Event..." : "READY") + " ]", 10, 2);
-				if (handler != null) run(handler);
+				_loadPool = [];
+				Browser.document.addEventListener("DOMContentLoaded", _loadController);
+				document = new Document();
+				log("Sirius->Core.init[ Waiting for DOM Loading Event... ]", 10, 2);
+				Automator.common();
 			}
 		}
 		
@@ -202,8 +201,7 @@ class Sirius {
 	 */
 	static public function module(file:String, #if js ?target:Dynamic, #end ?content:Dynamic, ?handler:String->String->Void):Void {
 		#if js
-			var f:Dynamic = (_initialized ? run : init);
-			f(function() { loader.async(file, target, content, handler); } );
+			run(function() { loader.async(file, target, content, handler); } );
 		#elseif php
 			loader.async(file, content, handler);
 		#end
@@ -211,8 +209,7 @@ class Sirius {
 	
 	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
 		#if js
-			var f:Dynamic = (_initialized ? run : init);
-			f(function() { loader.request(url, data, handler, method); } );
+			run(function() { loader.request(url, data, handler, method); } );
 		#elseif php
 			loader.request(url, data, handler, method);
 		#end

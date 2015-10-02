@@ -17,4 +17,8 @@ class A extends Display{
 		super(q,null,d);
 	}
 	
+	public function href(url:String):String {
+		return attribute('href', url);
+	}
+	
 }

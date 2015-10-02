@@ -60,7 +60,7 @@ class AutomatorRules{
 	 * @return
 	 */
 	static public function commonKey(d:Entry, k:IKey, n:IKey):String {
-		return k.entry.value;
+		return k.entry.value + (n != null ? ":" : "");
 	}
 	
 	/**
@@ -150,12 +150,12 @@ class AutomatorRules{
 	 * @return
 	 */
 	static public function textKey(d:Entry, k:IKey, n:IKey):String {
-		if(k.index == 0){
+		if (k.index == 0) {
 			if (n != null && !n.position) {
 				if (n.color != null) return 'color:';
 				if (n.measure != null) return 'font-size:';
 			}
-			if(n.entry.value != 'decoration') return 'text-align:';
+			if(n.key != 'decoration') return 'text-align:';
 		}
 		return 'text-';
 	}
@@ -165,6 +165,7 @@ class AutomatorRules{
 	 * A DICTIONARY OF RULES FOR EACH UNIQUE KEYWORD
 	 */
 	static private var _KEYS:Dynamic = {
+		void:{value:'""',verifier:commonKey},
 		aliceblue:{value:'#f0f8ff',verifier:commonKey},
 		antiquewhite:{value:'#faebd7',verifier:commonKey},
 		aqua:{value:'#00ffff',verifier:commonKey},
@@ -306,7 +307,7 @@ class AutomatorRules{
 		whitesmoke:{value:'#f5f5f5',verifier:commonKey},
 		yellow:{value:'#ffff00',verifier:commonKey},
 		yellowgreen:{value:'#9acd32',verifier:commonKey},
-		transparent:{value:'bg-color:transparent',verifier:commonKey},
+		transparent:{value:'background-color:transparent',verifier:commonKey},
 		t:{value:'top', verifier:numericKey},
 		b:{value:'bottom', verifier:numericKey},
 		l:{value:'left', verifier:numericKey},
@@ -381,7 +382,14 @@ class AutomatorRules{
 	}
 	
 	static public function get(name:String):IEntry {
-		return Reflect.getProperty(_KEYS, name);
+		var e:IEntry = Reflect.field(_KEYS, name);
+		return e;
+	}
+	
+	static public function blank(name:String):IEntry {
+		var e:IEntry = cast { value:name, verifier:commonKey };
+		Reflect.setField(_KEYS, name, e);
+		return e;
 	}
 	
 	static public function keys():Dynamic {

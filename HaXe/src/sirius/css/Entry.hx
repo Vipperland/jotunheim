@@ -31,24 +31,25 @@ class Entry {
 		if (head != null) {
 			r = "";
 			var c:Int = 0;
+			var t:Int = keys.length;
 			Dice.Values(keys, function(v:IKey) {
 				next = keys[++c];
-				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v);
+				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v, t, c);
 				return canceled;
 			});
 		}
 		// If all keys if missing, return NULL
-		return missing == keys.length ? null : r;
+		return r;
 	}
 	
 	public function cancel():Void {
 		canceled = true;
 	}
 	
-	private function _valueOf(v:IKey):String {
+	private function _valueOf(v:IKey, t:Int, c:Int):String {
 		if (v.color != null) return v.color;
 		if (v.measure != null) return v.measure;
 		++missing;
-		return v.key;
+		return v.key + (t==c ? "" : t-1==c ? ":" : "-");
 	}
 }

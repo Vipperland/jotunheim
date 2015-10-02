@@ -8,24 +8,33 @@
 	
 <body>
 	
-	<link rel="stylesheet" href="extended/3rd/css/bootstrap.css">
-	
 	<script src="extended/api.sirius.js"></script>
+	
+	<div class="grid" id="container">
+	</div>
 	
 	<script>
 		
-		var Display =  sru.dom.Display;
+		var Div =  sru.dom.Div;
 		
-		Sirius.init(function(){
-			var top = new Display();
-			
-			top.addToBody();
+		var container = Sirius.one('#container');
+		
+		Sirius.onInit(function(){
+			for(i=0; i<4; i++){
+				var d = new Div();
+				d.css('cel-3 h-100 bg-blue');
+				d.addTo(container);
+			}
+			Automator.scan();
+			Sirius.onInit(function(){
+				console.log(2);
+			});
 		});
 		
 		
-		
-		
 	</script>
+	
+	
 	
 </body>
 </html>

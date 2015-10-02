@@ -34,17 +34,13 @@ class Automator {
 	}
 	
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
-		Sirius.log("Sirius->Automator.scan[ " + (dev == true ? "ACTIVE_MODE" : "SILENT_MODE") + " ]", 10, 1);
+		Sirius.log("Sirius->Automator.scanner[ " + (dev == true ? "Infinity" : "1x") + " ]", 10, 1);
 		_dev = dev == true;
 		if (force) {
 			_scanBody();
 		}else {
-			Sirius.init(function(l:ILoader) {
-				Sirius.log("Sirius->Automator::status[ SCANNING... ]", 10, 1);
-				if (!_dev) 	_scanBody();
-				else		_activate();
-				Sirius.log("Sirius->Automator.scanner[ DONE! ]",10,1);
-			});
+			if (!_dev) 	_scanBody();
+			else		_activate();
 		}
 	}
 	
@@ -113,47 +109,58 @@ class Automator {
 		var g:Bool = group != null && group.length > 0;	// Is a valid group?
 		var r:String = ''; // Group value, if available
 		if (g) m = _screen(group.split("-")); // Remove MediaQuery rule from group name
-		if (!g || !css.hasSelector(group, m)) {	
-			Dice.Values(c, function(v:String) {
-				if (v.length > 1) {
-					v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
-					c = v.split("-"); // Split class name sections
-					if (g) { // Rule for groups
-						_screen(c); // Remove @media signature
-						s = _parse(c).build(); // Create class for selector
+		
+		Dice.Values(c, function(v:String) {
+			if (v.length > 1) {
+				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
+				c = v.split("-"); // Split class name sections
+				if (g) { // Rule for groups
+					_screen(c); // Remove @media signature
+					var en:Entry = _parse(c);
+					s = en.build(); // Create class for selector
+					if (s != null) {
 						r += s + ";";
-					}else { // Rule for single class name
-						m = _screen(c); // Target @media
-						if (!css.hasSelector(v, m)) { // Check if selector exists
-							s = _parse(c).build(); // Create class for selector
-							if (Utils.isValid(s)) { // Check if value is valid
-								if (_dev == true) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
-								css.setSelector("." + v, s, m); // Add selector to correspondent @media group
-							}
+					}else {
+						Sirius.log("Sirius->Automator.build::error( [" + en + "] )");
+					}
+				}else { // Rule for single class name
+					m = _screen(c); // Target @media
+					if (!css.hasSelector(v, m)) { // Check if selector exists
+						s = _parse(c).build(); // Create class for selector
+						if (Utils.isValid(s)) { // Check if value is valid
+							if (_dev == true) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
+							css.setSelector("." + v, s, m); // Add selector to correspondent @media group
 						}
 					}
 				}
-			});
-			if (g) { // If is a group, register all classes to correspondent group and @media value
-				if (_dev == true) Sirius.log("Sirius->Automator.build[ " + group + " {" + r + "} ]", 10, 1);
-				css.setSelector(group, r, m);
 			}
-			if (silent == null) css.build();
+		});
+		if (g) { // If is a group, register all classes to correspondent group and @media value
+			if (_dev == true) Sirius.log("Sirius->Automator.build[ " + group + " {" + r + "} ]", 10, 1);
+			css.setSelector(group, r, m);
 		}
-	}
-	
-	static public function bootstrap() {
-		build("txt-decor-none", "a, a:link, a:visited, a:active, a:hover");
-		build("padd-r-15 padd-l-15 marg-r-a marg-l-a", ".container");
+		if (silent == null) css.build();
+		
 	}
 	
 	static public function common() {
 		
 		build("w-100pc h-100pc disp-table", ".sprite");
-		build("disp-table-cell vert-m txt-c", ".sprite>div[sru-id]");
+		build("disp-table-cell vert-m", ".sprite>div[sru-id]");
 		build("disp-table", ".label");
 		build("disp-table-cell vert-m txt-c", ".label>span");
 		build("marg-l-auto marg-r-auto", ".centered");
+		build("marg-0 padd-0 bord-0 outline-0 txt-100pc font-inherit vert-baseline transparent", "html,body,div,span,applet,container,grid,column,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video");
+		build("disp-block", "article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,grid,column,label");
+		build("line-h-1 arial txt-12", "body");
+		build("txt-decoration-none", "a,a:link,a:visited,a:active,a:hover");
+		build("marg-r-15 marg-l-15", ".grid");
+		build("border-collapse-collapse border-spacing-0", "table");
+		build("disp-table content-void", ".grid:before,.grid:after");
+		build("clear-both", ".grid:after");
+		build("list-style-none", "ol,ul,dl");
+		build("txt-c");
+		css.setSelector("*,*:before,*:after", "webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;","");
 		
 		Dice.Count(0, 12, function(a:Int, b:Int, c:Bool) {
 			++a;
@@ -161,8 +168,8 @@ class Automator {
 			var n:String = '.cel-' + a;	// .cel-XX
 			build4All('w-' + s + ' padd-r-15 padd-l-15', n); // w-00d00pc padd-r-15 padd-l-15
 			if (a < 12) {
-				build4All('float-l', n); // 
-				build4All('marg-l' + s, n);
+				build4All('pull-l', n); // 
+				//build4All('marg-l-' + s, n);
 			}
 			return null;
 		});
@@ -239,7 +246,7 @@ class Automator {
 			var l:Int = x.length;
 			if (x.substr(l - 2, 2) == "pc") {
 				r = x.split("d").join(".").split("pc").join("%");
-			}else if (x.substr(l - 1, 1) == "n") {
+			}else if (x.substr(l - 1, 1) == "n" && Std.parseInt(x.substr(0, 2)) != null) {
 				r = "-" + x.split("n").join("") + "px";
 			}else {
 				var n:Int = Std.parseInt(x);

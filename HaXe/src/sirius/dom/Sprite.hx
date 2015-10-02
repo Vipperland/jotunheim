@@ -22,6 +22,8 @@ class Sprite extends Div {
 		if (content == null) {
 			content = new Div();
 			addChild(content);
+		}else {
+			content.css('txt-c');
 		}
 	}
 	
