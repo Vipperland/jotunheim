@@ -10,25 +10,46 @@
 	
 	<script src="extended/api.sirius.js"></script>
 	
-	<div class="grid" id="container">
-	</div>
+	<div class="grid mosaic-5"></div>
+	<div class="grid mosaic-12"></div>
+	<div class="grid mosaic-15"></div>
+	<div class="grid mosaic-30"></div>
 	
 	<script>
 		
 		var Div =  sru.dom.Div;
 		
-		var container = Sirius.one('#container');
+		var grid5 = Sirius.one('.mosaic-5');
+		var grid12 = Sirius.one('.mosaic-12');
+		var grid15 = Sirius.one('.mosaic-15');
+		var grid30 = Sirius.one('.mosaic-30');
+		
+		var bgs = ['darkblue','blue','darkgreen','green','darkred','red','darkgray','gray'];
 		
 		Sirius.onInit(function(){
+			var d;
+			for(i=0; i<5; i++){
+				d = new Div();
+				d.css('cel-1x5 h-200 bg-' + bgs[(i%2)+0]);
+				d.addTo(grid5);
+			}
 			for(i=0; i<4; i++){
-				var d = new Div();
-				d.css('cel-3 h-100 bg-blue');
-				d.addTo(container);
+				d = new Div();
+				d.css('cel-3x12 h-200 bg-' + bgs[(i%2)+2]);
+				d.addTo(grid12);
+			}
+			for(i=0; i<3; i++){
+				d = new Div();
+				d.css('cel-5x15 h-200 bg-' + bgs[(i%2)+4]);
+				d.addTo(grid15);
+			}
+			for(i=0; i<15; i++){
+				d = new Div();
+				d.css('cel-2x30 h-200 bg-' + bgs[(i%2)+6]);
+				d.addTo(grid30);
 			}
 			Automator.scan();
-			Sirius.onInit(function(){
-				console.log(2);
-			});
+			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 		});
 		
 		

@@ -23,6 +23,7 @@ import sirius.utils.Dice;
 	import sirius.dom.Display;
 	import sirius.dom.Document;
 	import sirius.dom.IDisplay;
+	import sirius.dom.Script;
 	import sirius.seo.SEOTool;
 	import sirius.tools.IAgent;
 	import sirius.tools.Agent;
@@ -86,9 +87,9 @@ class Sirius {
 		static private function _loadController(e:Event):Void {
 			agent.update();
 			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+			_loaded = true;
 			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
 			Browser.document.removeEventListener("DOMContentLoaded", _loadController);
-			_loaded = true;
 			_loadPool = null;
 			loader.start(_onLoaded);
 		}
@@ -143,8 +144,8 @@ class Sirius {
 		 */
 		static public function run(handler:Dynamic):Void {
 			if (handler != null) {
-				if (!_loaded) 	_loadPool[_loadPool.length] = handler;
-				else 			handler();
+				if (!_loaded && _loadPool != null) 	_loadPool[_loadPool.length] = handler;
+				else 								handler();
 			}
 		}
 
@@ -159,6 +160,11 @@ class Sirius {
 			else run(handler);
 		}
 		
+		static public function addScript(url:Dynamic, ?handler:Null<Void>->Void):Void {
+			if (!Std.is(url, Array)) url = [url];
+			Script.require(url, handler);
+		}
+		
 		static private function _preInit():Void {
 			if (!_initialized) {
 				_initialized = true;
@@ -166,7 +172,7 @@ class Sirius {
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				document = new Document();
 				log("Sirius->Core.init[ Waiting for DOM Loading Event... ]", 10, 2);
-				Automator.common();
+				Automator._init();
 			}
 		}
 		

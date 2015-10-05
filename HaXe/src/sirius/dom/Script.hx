@@ -17,27 +17,35 @@ class Script extends Display{
 		
 	}
 	
+	/**
+	 * Load a list of Script elements and append its to document.head
+	 * @param	url
+	 * @param	handler
+	 */
+	static public function require(url:Array<String>, ?handler:Null<Void>->Void) {
+		if (url.length > 0) {
+			var file:String = url.shift();
+			if (file != null) {
+				var s:Script = new Script();
+				Sirius.document.head.addChild(s);
+				s.load(file, function(e:IEvent) {
+					Script.require(url, handler);
+				});
+			}
+		}else if(handler != null){
+			handler(null);
+		}
+	}
+	
 	public function new(?q:Dynamic, ?d:String = null) {
 		if (q == null) q = Browser.document.createScriptElement();
 		super(q, null, d);
 		content = cast element;
 	}
 	
-	public function load(url:String, ?handler:Dynamic):Void {
+	public function load(url:String, ?handler:IEvent->Void):Void {
 		content.src = url;
-		if (handler != null) {
-			if (Sirius.agent.ie < 12) {
-				events.readyState(function(e:IEvent) {
-					var st:String = e.target.attribute('readyState');
-					if (st == 'loaded' || st == 'complete') {
-						handler(e);
-						events.readyState(handler, -1);
-					}
-				}, 1);
-			}else {
-				events.load(handler, 1);
-			}
-		}
+		if (handler != null) events.load(handler, 1);
 	}
 	
 	public function async():Void {

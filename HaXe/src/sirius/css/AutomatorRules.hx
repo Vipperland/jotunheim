@@ -42,6 +42,23 @@ class AutomatorRules{
 	}
 	
 	/**
+	 * Create a grid value
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function mosaicKey(d:Entry, k:IKey, n:IKey):String {
+		if (d.head == k) {
+			if (n != null)	Automator.addGrid(Std.parseInt(n.key));
+			else 			Automator.addGrid(12);
+			d.cancel();
+			return null;
+		}
+		return k.entry.value;
+	}
+	
+	/**
 	 * Miscelaneous keys, append '-' to start of the key value
 	 * @param	d
 	 * @param	k
@@ -83,6 +100,25 @@ class AutomatorRules{
 	 */
 	static public function valueKey(d:Entry, k:IKey, n:IKey):String {
 		return k.entry.value + ":";
+	}
+	
+	/**
+	 * Return rate (0~1) of numeric range (0~100)
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function alphaKey(d:Entry, k:IKey, n:IKey):String {
+		if (d.head == k) {
+			d.cancel();
+			var o:Int = Std.parseInt(n.key);
+			if (o > 100) o = 100;
+			else if (o < 0) o = 0;
+			return k.entry.value + ":" + (o/100);
+		}else {
+			return valueKey(d, k, n);
+		}
 	}
 	
 	/**
@@ -370,10 +406,11 @@ class AutomatorRules{
 		dashed:{value:'dashed',verifier:commonKey},
 		double:{value:'double',verifier:commonKey},
 		dotted:{value:'dotted',verifier:commonKey},
-		alpha:{value:'opacity',verifier:valueKey},
+		alpha:{value:'opacity',verifier:alphaKey},
 		hidden:{value:'',verifier:displayKey},
 		visible:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
+		mosaic:{value:'',verifier:mosaicKey},
 	};
 	
 	static public function set(rule:Dynamic, ?value:IEntry):Void {

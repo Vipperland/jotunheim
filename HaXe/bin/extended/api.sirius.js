@@ -1058,7 +1058,7 @@ sirius_tools_Agent.prototype = {
 			this.screen = 4;
 		} else this.screen = 0;
 		this.jQuery = Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery");
-		this.animator = sirius_transitions_Animator.available;
+		this.animator = sirius_transitions_Animator.available();
 		this.display = sirius_tools_Utils.screenOrientation();
 		if(handler != null) handler(this);
 		return this;
@@ -1334,11 +1334,11 @@ sirius_Sirius.main = function() {
 sirius_Sirius._loadController = function(e) {
 	sirius_Sirius.agent.update();
 	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
+	sirius_Sirius._loaded = true;
 	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
 		if(sirius_tools_Utils.isValid(v)) v();
 	});
 	window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
-	sirius_Sirius._loaded = true;
 	sirius_Sirius._loadPool = null;
 	sirius_Sirius.loader.start(sirius_Sirius._onLoaded);
 };
@@ -1367,11 +1367,15 @@ sirius_Sirius.jQuery = function(q) {
 };
 sirius_Sirius.run = function(handler) {
 	if(handler != null) {
-		if(!sirius_Sirius._loaded) sirius_Sirius._loadPool[sirius_Sirius._loadPool.length] = handler; else handler();
+		if(!sirius_Sirius._loaded && sirius_Sirius._loadPool != null) sirius_Sirius._loadPool[sirius_Sirius._loadPool.length] = handler; else handler();
 	}
 };
 sirius_Sirius.onInit = function(handler,files) {
 	if(sirius_Sirius._loaded == false && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError); else sirius_Sirius.run(handler);
+};
+sirius_Sirius.addScript = function(url,handler) {
+	if(!((url instanceof Array) && url.__enum__ == null)) url = [url];
+	sirius_dom_Script.require(url,handler);
 };
 sirius_Sirius._preInit = function() {
 	if(!sirius_Sirius._initialized) {
@@ -1380,7 +1384,7 @@ sirius_Sirius._preInit = function() {
 		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 		sirius_Sirius.document = new sirius_dom_Document();
 		sirius_Sirius.log("Sirius->Core.init[ Waiting for DOM Loading Event... ]",10,2);
-		sirius_css_Automator.common();
+		sirius_css_Automator._init();
 	}
 };
 sirius_Sirius.status = function() {
@@ -1427,7 +1431,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 236, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 242, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1633,14 +1637,13 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,alignCenter: function() {
-		sirius_css_Automator.build("marg-a vert-m",".centered");
-		this.css("centered /float-l /float-r");
+		this.css("marg-a vert-m /float-l /float-r");
 	}
 	,alignLeft: function() {
-		this.css("/centered float-l /float-r");
+		this.css("/marg-a /vert-m float-l /float-r");
 	}
 	,alignRight: function() {
-		this.css("/centered /float-l float-r");
+		this.css("/marg-a /vert-m /float-l float-r");
 	}
 	,background: function(value,repeat,position,attachment) {
 		if(value != null) {
@@ -2335,6 +2338,7 @@ var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
 	this.element = window.document.documentElement;
 	this.events.wheel($bind(this,this.stopScroll),true);
 	this.body = new sirius_dom_Body(window.document.body);
+	this.head = new sirius_dom_Head(window.document.head);
 };
 sirius_dom_Document.__name__ = ["sirius","dom","Document"];
 sirius_dom_Document._applyScroll = function() {
@@ -2421,9 +2425,6 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 				var r = new sirius_dom_Div();
 				r.build(content);
 				r.all(exclude).remove();
-				r.children().each(function(v) {
-					haxe_Log.trace(v.trueStyle(),{ fileName : "Document.hx", lineNumber : 128, className : "sirius.dom.Document", methodName : "print"});
-				});
 				this.body.addChild(r);
 				try {
 					window.print();
@@ -2560,6 +2561,35 @@ sirius_dom_FrameSet.get = function(q,h) {
 sirius_dom_FrameSet.__super__ = sirius_dom_Display;
 sirius_dom_FrameSet.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_FrameSet
+});
+var sirius_dom_FormInput = $hx_exports.sru.dom.FormInput = function(q,d) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("div");
+	}
+	sirius_dom_Div.call(this,q,d);
+	this.name = this.one("div");
+	this.input = this.one("input");
+	if(this.name == null) {
+		this.name = new sirius_dom_Div();
+		this.addChild(this.name);
+	}
+	if(this.input == null) {
+		this.input = new sirius_dom_Input();
+		this.addChild(this.input);
+	}
+};
+sirius_dom_FormInput.__name__ = ["sirius","dom","FormInput"];
+sirius_dom_FormInput.__super__ = sirius_dom_Div;
+sirius_dom_FormInput.prototype = $extend(sirius_dom_Div.prototype,{
+	label: function(q) {
+		if(q != null) {
+			this.name.clear(true);
+			this.name.build(q);
+		}
+		return this.name.element.innerHTML;
+	}
+	,__class__: sirius_dom_FormInput
 });
 var sirius_dom_H1 = $hx_exports.sru.dom.H1 = function(q,d) {
 	if(q == null) q = window.document.createElement("h1");
@@ -3157,20 +3187,23 @@ sirius_dom_Script.__name__ = ["sirius","dom","Script"];
 sirius_dom_Script.get = function(q,h) {
 	return sirius_Sirius.one(q,null,h);
 };
+sirius_dom_Script.require = function(url,handler) {
+	if(url.length > 0) {
+		var file = url.shift();
+		if(file != null) {
+			var s = new sirius_dom_Script();
+			sirius_Sirius.document.head.addChild(s);
+			s.load(file,function(e) {
+				sirius_dom_Script.require(url,handler);
+			});
+		}
+	} else if(handler != null) handler(null);
+};
 sirius_dom_Script.__super__ = sirius_dom_Display;
 sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
 	load: function(url,handler) {
-		var _g = this;
 		this.content.src = url;
-		if(handler != null) {
-			if(_$UInt_UInt_$Impl_$.gt(12,sirius_Sirius.agent.ie)) this.events.readyState(function(e) {
-				var st = e.target.attribute("readyState");
-				if(st == "loaded" || st == "complete") {
-					handler(e);
-					_g.events.readyState(handler,-1);
-				}
-			},1); else this.events.load(handler,1);
-		}
+		if(handler != null) this.events.load(handler,1);
 	}
 	,async: function() {
 		this.content.async = true;
@@ -3238,17 +3271,15 @@ sirius_dom_Span.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Span
 });
 var sirius_dom_Sprite = $hx_exports.sru.dom.Sprite = function(q,d) {
-	if(d == null) d = "sprite";
+	if(d == null) d = "w-100pc h-100pc disp-table";
 	sirius_dom_Div.call(this,q,d);
-	if(q == null) {
-		sirius_css_Automator.common();
-		this.attribute("sru-dom","sprite");
-	}
+	if(q == null) this.attribute("sru-dom","sprite");
 	this.content = this.one("div");
 	if(this.content == null) {
 		this.content = new sirius_dom_Div();
 		this.addChild(this.content);
-	} else this.content.css("txt-c");
+	}
+	this.content.css("txt-c disp-table-cell vert-m");
 };
 sirius_dom_Sprite.__name__ = ["sirius","dom","Sprite"];
 sirius_dom_Sprite.__super__ = sirius_dom_Div;
@@ -3256,13 +3287,13 @@ sirius_dom_Sprite.prototype = $extend(sirius_dom_Div.prototype,{
 	__class__: sirius_dom_Sprite
 });
 var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q,d) {
-	if(d == null) d = "w-100pc h-100pc sprite";
+	if(d == null) d = "w-100pc h-100pc";
 	sirius_dom_Display3D.call(this,null,d);
 	this.setPerspective("1000px");
 	this.content = new sirius_dom_Display3D(q);
 	this.content.preserve3d().update();
 	if(this.content.parent() == null) this.addChild(this.content);
-	sirius_css_Automator.common();
+	this.content.css("disp-table-cell vert-m txt-c");
 	this.update();
 };
 sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
@@ -3857,31 +3888,38 @@ sirius_css_Automator.build = function(query,group,silent) {
 	}
 	if(silent == null) sirius_css_Automator.css.build();
 };
-sirius_css_Automator.common = function() {
-	sirius_css_Automator.build("w-100pc h-100pc disp-table",".sprite");
-	sirius_css_Automator.build("disp-table-cell vert-m",".sprite>div[sru-id]");
-	sirius_css_Automator.build("disp-table",".label");
-	sirius_css_Automator.build("disp-table-cell vert-m txt-c",".label>span");
-	sirius_css_Automator.build("marg-l-auto marg-r-auto",".centered");
+sirius_css_Automator.addGrid = function(size) {
+	if(!((size instanceof Array) && size.__enum__ == null)) size = [size];
+	sirius_utils_Dice.Values(size,function(v) {
+		sirius_css_Automator._createGridCol(v);
+	});
+};
+sirius_css_Automator._createGridCol = function(size) {
+	var n = ".mosaic-" + size;
+	if(!sirius_css_Automator.css.hasSelector(n,null,"")) sirius_utils_Dice.Count(0,size,function(a,b,c) {
+		++a;
+		var s = (a/b*100).toFixed(9).split(".").join("d") + "pc";
+		var n1 = ".cel-" + a + "x" + b;
+		sirius_css_Automator.build4All("w-" + s + " padd-r-15 padd-l-15",n1);
+		if(a < b - 1) {
+			sirius_css_Automator.build4All("pull-l",n1);
+			sirius_css_Automator.build4All("marg-l-" + s,n1 + "-r");
+		}
+		return null;
+	});
+};
+sirius_css_Automator._init = function() {
 	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 txt-100pc font-inherit vert-baseline transparent","html,body,div,span,applet,container,grid,column,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video");
 	sirius_css_Automator.build("disp-block","article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,grid,column,label");
 	sirius_css_Automator.build("line-h-1 arial txt-12","body");
 	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover");
-	sirius_css_Automator.build("marg-r-15 marg-l-15",".grid");
 	sirius_css_Automator.build("border-collapse-collapse border-spacing-0","table");
 	sirius_css_Automator.build("disp-table content-void",".grid:before,.grid:after");
 	sirius_css_Automator.build("clear-both",".grid:after");
 	sirius_css_Automator.build("list-style-none","ol,ul,dl");
 	sirius_css_Automator.build("txt-c");
 	sirius_css_Automator.css.setSelector("*,*:before,*:after","webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;","");
-	sirius_utils_Dice.Count(0,12,function(a,b,c) {
-		++a;
-		var s = (a/b*100).toFixed(2).split(".").join("d") + "pc";
-		var n = ".cel-" + a;
-		sirius_css_Automator.build4All("w-" + s + " padd-r-15 padd-l-15",n);
-		if(a < 12) sirius_css_Automator.build4All("pull-l",n);
-		return null;
-	});
+	Reflect.deleteField(sirius_css_Automator,"_init");
 };
 sirius_css_Automator._screen = function(args) {
 	if(sirius_css_Automator._scx.indexOf("#" + args[args.length - 1] + "#") != -1) return args.pop(); else return null;
@@ -3993,6 +4031,131 @@ sirius_math_ARGB.prototype = {
 	}
 	,__class__: sirius_math_ARGB
 };
+var sirius_utils_Dice = $hx_exports.Dice = function() { };
+sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
+sirius_utils_Dice.All = function(q,each,complete) {
+	var v = null;
+	var p = null;
+	var i = true;
+	var k = 0;
+	if(q != null) {
+		var _g = 0;
+		var _g1 = Reflect.fields(q);
+		while(_g < _g1.length) {
+			var p1 = _g1[_g];
+			++_g;
+			v = Reflect.field(q,p1);
+			if(each(p1,v) == true) {
+				i = false;
+				break;
+			} else {
+				++k;
+				p1 = null;
+				v = null;
+			}
+		}
+	}
+	var r = { param : p, value : v, completed : i, object : q, keys : k};
+	if(complete != null) complete(r);
+	return r;
+};
+sirius_utils_Dice.Params = function(q,each,complete) {
+	return sirius_utils_Dice.All(q,function(p,v) {
+		return each(p);
+	},complete);
+};
+sirius_utils_Dice.Values = function(q,each,complete) {
+	return sirius_utils_Dice.All(q,function(p,v) {
+		return each(v);
+	},complete);
+};
+sirius_utils_Dice.Call = function(q,method,args) {
+	if(args == null) args = [];
+	return sirius_utils_Dice.All(q,function(p,v) {
+		Reflect.callMethod(v,Reflect.field(v,method),args);
+	},null);
+};
+sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
+	if(increment == null) increment = 1;
+	var a = Math.min(from,to);
+	var b = Math.max(from,to);
+	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
+	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
+	var c = a == b;
+	var r = { from : from, to : b, completed : c, value : a};
+	if(complete != null) complete(r);
+	return r;
+};
+sirius_utils_Dice.One = function(from,alt) {
+	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
+		from = v;
+		return from == null;
+	});
+	return { value : sirius_tools_Utils.isValid(from)?from:alt, object : from};
+};
+sirius_utils_Dice.Match = function(table,values,limit) {
+	if(limit == null) limit = 0;
+	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
+	var r = 0;
+	sirius_utils_Dice.Values(values,function(v) {
+		if(Lambda.indexOf(table,v) != -1) ++r;
+		if(_$UInt_UInt_$Impl_$.gt(limit,0)) {
+			var a = --limit;
+			return a == 0;
+		}
+		return false;
+	});
+	return r;
+};
+sirius_utils_Dice.Children = function(of,each,complete) {
+	var r = { children : []};
+	var l = 0;
+	var c;
+	if(of != null) {
+		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
+		sirius_utils_Dice.Count(0,of.childNodes.length,function(i,j,k) {
+			c = of.childNodes.item(i);
+			r.children[l] = c;
+			return each(c,i);
+		},complete);
+	}
+	return r;
+};
+var sirius_css_Entry = function(keys,dict) {
+	this.keys = keys;
+	this.head = keys[0];
+	this.tail = keys[keys.length - 1];
+	this.missing = 0;
+	this.canceled = false;
+};
+sirius_css_Entry.__name__ = ["sirius","css","Entry"];
+sirius_css_Entry.prototype = {
+	build: function() {
+		var _g = this;
+		var r = null;
+		if(this.head != null) {
+			r = "";
+			var c = 0;
+			var t = this.keys.length;
+			sirius_utils_Dice.Values(this.keys,function(v) {
+				_g.next = _g.keys[++c];
+				if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
+				return _g.canceled;
+			});
+		}
+		return r;
+	}
+	,cancel: function() {
+		this.canceled = true;
+	}
+	,_valueOf: function(v,t,c) {
+		if(v.color != null) return v.color;
+		if(v.measure != null) return v.measure;
+		++this.missing;
+		return v.key + (t == c?"":t - 1 == c?":":"-");
+	}
+	,__class__: sirius_css_Entry
+};
 var sirius_css_AutomatorRules = function() { };
 sirius_css_AutomatorRules.__name__ = ["sirius","css","AutomatorRules"];
 sirius_css_AutomatorRules.numericKey = function(d,k,n) {
@@ -4009,6 +4172,14 @@ sirius_css_AutomatorRules.borderFix = function(v,d,k,n) {
 	if(n.measure != null) return v + "-width:";
 	return v + (d.keys[1].key == "rad"?"-":"-style:");
 };
+sirius_css_AutomatorRules.mosaicKey = function(d,k,n) {
+	if(d.head == k) {
+		if(n != null) sirius_css_Automator.addGrid(Std.parseInt(n.key)); else sirius_css_Automator.addGrid(12);
+		d.cancel();
+		return null;
+	}
+	return k.entry.value;
+};
 sirius_css_AutomatorRules.shiftKey = function(d,k,n) {
 	return "-" + k.entry.value;
 };
@@ -4020,6 +4191,14 @@ sirius_css_AutomatorRules.pushKey = function(d,k,n) {
 };
 sirius_css_AutomatorRules.valueKey = function(d,k,n) {
 	return k.entry.value + ":";
+};
+sirius_css_AutomatorRules.alphaKey = function(d,k,n) {
+	if(d.head == k) {
+		d.cancel();
+		var o = Std.parseInt(n.key);
+		if(o > 100) o = 100; else if(o < 0) o = 0;
+		return k.entry.value + ":" + o / 100;
+	} else return sirius_css_AutomatorRules.valueKey(d,k,n);
 };
 sirius_css_AutomatorRules.appendKey = function(d,k,n) {
 	return k.entry.value + (n != null?"-":"");
@@ -4072,41 +4251,6 @@ sirius_css_AutomatorRules.blank = function(name) {
 };
 sirius_css_AutomatorRules.keys = function() {
 	return sirius_css_AutomatorRules._KEYS;
-};
-var sirius_css_Entry = function(keys,dict) {
-	this.keys = keys;
-	this.head = keys[0];
-	this.tail = keys[keys.length - 1];
-	this.missing = 0;
-	this.canceled = false;
-};
-sirius_css_Entry.__name__ = ["sirius","css","Entry"];
-sirius_css_Entry.prototype = {
-	build: function() {
-		var _g = this;
-		var r = null;
-		if(this.head != null) {
-			r = "";
-			var c = 0;
-			var t = this.keys.length;
-			sirius_utils_Dice.Values(this.keys,function(v) {
-				_g.next = _g.keys[++c];
-				if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
-				return _g.canceled;
-			});
-		}
-		return r;
-	}
-	,cancel: function() {
-		this.canceled = true;
-	}
-	,_valueOf: function(v,t,c) {
-		if(v.color != null) return v.color;
-		if(v.measure != null) return v.measure;
-		++this.missing;
-		return v.key + (t == c?"":t - 1 == c?":":"-");
-	}
-	,__class__: sirius_css_Entry
 };
 var sirius_css_IEntry = function() { };
 sirius_css_IEntry.__name__ = ["sirius","css","IEntry"];
@@ -4932,17 +5076,21 @@ sirius_tools_Ticker.delay = function(handler,time,args) {
 };
 var sirius_transitions_Animator = $hx_exports.Animator = function() { };
 sirius_transitions_Animator.__name__ = ["sirius","transitions","Animator"];
+sirius_transitions_Animator.available = function() {
+	if(sirius_transitions_Animator.tweenObject == null && window.Tween != null || window.TweenMax != null || window.TweenLite != null) sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
+	return sirius_transitions_Animator.tweenObject != null;
+};
 sirius_transitions_Animator.get = function(o) {
 	if(o != null && js_Boot.__instanceof(o,sirius_dom_IDisplay)) return o.element; else return o;
 };
 sirius_transitions_Animator.call = function(time,handler,params,scope,frame) {
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.delayedCall(time,handler,params,scope,frame); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.delayedCall(time,handler,params,scope,frame); else return null;
 };
 sirius_transitions_Animator.all = function(o,act) {
 	if(act == null) act = false;
 	if(o == null) o = true;
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) {
+	if(sirius_transitions_Animator.available()) {
 		if(o == true) return sirius_transitions_Animator.tweenObject.getAllTweens(act); else if(o != null) return sirius_transitions_Animator.tweenObject.getTweensOf(o,act); else return [];
 	} else return [];
 };
@@ -4950,58 +5098,58 @@ sirius_transitions_Animator.stop = function(o,child) {
 	if(child == null) child = false;
 	if(o == null) o = true;
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) {
+	if(sirius_transitions_Animator.available()) {
 		if(o == true) return sirius_transitions_Animator.tweenObject.killAll(); else if(o != null) {
 			if(child) return sirius_transitions_Animator.tweenObject.killChildTweensOf(o); else return sirius_transitions_Animator.tweenObject.killTweensOf(o);
 		} else return null;
 	} else return null;
 };
 sirius_transitions_Animator.pause = function() {
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.pauseAll(); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.pauseAll(); else return null;
 };
 sirius_transitions_Animator.resume = function() {
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.resumeAll(); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.resumeAll(); else return null;
 };
 sirius_transitions_Animator.isActive = function(o) {
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.isTweening(o); else return false;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.isTweening(o); else return false;
 };
 sirius_transitions_Animator.to = function(o,time,transform) {
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.to(o,time,transform); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.to(o,time,transform); else return null;
 };
 sirius_transitions_Animator.from = function(o,time,transform) {
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.from(o,time,transform); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.from(o,time,transform); else return null;
 };
 sirius_transitions_Animator.fromTo = function(o,time,transformFrom,transformTo) {
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.from(o,time,transformFrom,transformTo); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.from(o,time,transformFrom,transformTo); else return null;
 };
 sirius_transitions_Animator.stagTo = function(o,time,transform,stagger,complete,args,scope) {
 	sirius_utils_Dice.All(o,function(p,v) {
 		o[p] = sirius_transitions_Animator.get(v);
 	});
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.staggerTo(o,time,transform,stagger,complete,args,scope); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.staggerTo(o,time,transform,stagger,complete,args,scope); else return null;
 };
 sirius_transitions_Animator.stagFrom = function(o,time,transform,stagger,complete,args,scope) {
 	sirius_utils_Dice.All(o,function(p,v) {
 		o[p] = sirius_transitions_Animator.get(v);
 	});
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.staggerFrom(o,time,transform,stagger,complete,args,scope); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.staggerFrom(o,time,transform,stagger,complete,args,scope); else return null;
 };
 sirius_transitions_Animator.stagFromTo = function(o,time,transformFrom,transformTo,stagger,complete,args,scope) {
 	sirius_utils_Dice.All(o,function(p,v) {
 		o[p] = sirius_transitions_Animator.get(v);
 	});
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.staggerFromTo(o,time,transformFrom,transformTo,stagger,complete,args,scope); else return null;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.staggerFromTo(o,time,transformFrom,transformTo,stagger,complete,args,scope); else return null;
 };
 sirius_transitions_Animator.timeScale = function(o) {
-	if(sirius_transitions_Animator.available) return sirius_transitions_Animator.tweenObject.globalTimeScale(o); else return 0;
+	if(sirius_transitions_Animator.available()) return sirius_transitions_Animator.tweenObject.globalTimeScale(o); else return 0;
 };
 sirius_transitions_Animator.set = function(o,transform) {
 	o = sirius_transitions_Animator.get(o);
-	if(sirius_transitions_Animator.available && o != null) return sirius_transitions_Animator.tweenObject.set(o,transform); else return null;
+	if(sirius_transitions_Animator.available() && o != null) return sirius_transitions_Animator.tweenObject.set(o,transform); else return null;
 };
 var sirius_transitions_Ease = $hx_exports.Ease = function() { };
 sirius_transitions_Ease.__name__ = ["sirius","transitions","Ease"];
@@ -5039,96 +5187,6 @@ sirius_utils_Criptog.encodeBase64 = function(q) {
 sirius_utils_Criptog.decodeBase64 = function(q,json) {
 	var r = haxe_crypto_Base64.decode(q).toString();
 	if(json && r.length > 1) return JSON.parse(r); else return r;
-};
-var sirius_utils_Dice = $hx_exports.Dice = function() { };
-sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
-sirius_utils_Dice.All = function(q,each,complete) {
-	var v = null;
-	var p = null;
-	var i = true;
-	var k = 0;
-	if(q != null) {
-		var _g = 0;
-		var _g1 = Reflect.fields(q);
-		while(_g < _g1.length) {
-			var p1 = _g1[_g];
-			++_g;
-			v = Reflect.field(q,p1);
-			if(each(p1,v) == true) {
-				i = false;
-				break;
-			} else {
-				++k;
-				p1 = null;
-				v = null;
-			}
-		}
-	}
-	var r = { param : p, value : v, completed : i, object : q, keys : k};
-	if(complete != null) complete(r);
-	return r;
-};
-sirius_utils_Dice.Params = function(q,each,complete) {
-	return sirius_utils_Dice.All(q,function(p,v) {
-		return each(p);
-	},complete);
-};
-sirius_utils_Dice.Values = function(q,each,complete) {
-	return sirius_utils_Dice.All(q,function(p,v) {
-		return each(v);
-	},complete);
-};
-sirius_utils_Dice.Call = function(q,method,args) {
-	if(args == null) args = [];
-	return sirius_utils_Dice.All(q,function(p,v) {
-		Reflect.callMethod(v,Reflect.field(v,method),args);
-	},null);
-};
-sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
-	if(increment == null) increment = 1;
-	var a = Math.min(from,to);
-	var b = Math.max(from,to);
-	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
-	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
-	var c = a == b;
-	var r = { from : from, to : b, completed : c, value : a};
-	if(complete != null) complete(r);
-	return r;
-};
-sirius_utils_Dice.One = function(from,alt) {
-	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
-		from = v;
-		return from == null;
-	});
-	return { value : sirius_tools_Utils.isValid(from)?from:alt, object : from};
-};
-sirius_utils_Dice.Match = function(table,values,limit) {
-	if(limit == null) limit = 0;
-	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
-	var r = 0;
-	sirius_utils_Dice.Values(values,function(v) {
-		if(Lambda.indexOf(table,v) != -1) ++r;
-		if(_$UInt_UInt_$Impl_$.gt(limit,0)) {
-			var a = --limit;
-			return a == 0;
-		}
-		return false;
-	});
-	return r;
-};
-sirius_utils_Dice.Children = function(of,each,complete) {
-	var r = { children : []};
-	var l = 0;
-	var c;
-	if(of != null) {
-		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
-		sirius_utils_Dice.Count(0,of.childNodes.length,function(i,j,k) {
-			c = of.childNodes.item(i);
-			r.children[l] = c;
-			return each(c,i);
-		},complete);
-	}
-	return r;
 };
 var sirius_utils_Filler = $hx_exports.sru.utils.Filler = function() { };
 sirius_utils_Filler.__name__ = ["sirius","utils","Filler"];
@@ -5681,12 +5739,12 @@ sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
-sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
+sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, formInput : sirius_dom_FormInput, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, aliceblue : { value : "#f0f8ff", verifier : sirius_css_AutomatorRules.commonKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_AutomatorRules.commonKey}, aqua : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_AutomatorRules.commonKey}, azure : { value : "#f0ffff", verifier : sirius_css_AutomatorRules.commonKey}, beige : { value : "#f5f5dc", verifier : sirius_css_AutomatorRules.commonKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_AutomatorRules.commonKey}, black : { value : "#000000", verifier : sirius_css_AutomatorRules.commonKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_AutomatorRules.commonKey}, blue : { value : "#0000ff", verifier : sirius_css_AutomatorRules.commonKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_AutomatorRules.commonKey}, brown : { value : "#a52a2a", verifier : sirius_css_AutomatorRules.commonKey}, burlywood : { value : "#deb887", verifier : sirius_css_AutomatorRules.commonKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_AutomatorRules.commonKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_AutomatorRules.commonKey}, chocolate : { value : "#d2691e", verifier : sirius_css_AutomatorRules.commonKey}, coral : { value : "#ff7f50", verifier : sirius_css_AutomatorRules.commonKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_AutomatorRules.commonKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_AutomatorRules.commonKey}, crimson : { value : "#dc143c", verifier : sirius_css_AutomatorRules.commonKey}, cyan : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, darkblue : { value : "#00008b", verifier : sirius_css_AutomatorRules.commonKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_AutomatorRules.commonKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_AutomatorRules.commonKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_AutomatorRules.commonKey}, darkgreen : { value : "#006400", verifier : sirius_css_AutomatorRules.commonKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_AutomatorRules.commonKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_AutomatorRules.commonKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_AutomatorRules.commonKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_AutomatorRules.commonKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_AutomatorRules.commonKey}, darkred : { value : "#8b0000", verifier : sirius_css_AutomatorRules.commonKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_AutomatorRules.commonKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_AutomatorRules.commonKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_AutomatorRules.commonKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_AutomatorRules.commonKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_AutomatorRules.commonKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_AutomatorRules.commonKey}, deeppink : { value : "#ff1493", verifier : sirius_css_AutomatorRules.commonKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_AutomatorRules.commonKey}, dimgray : { value : "#696969", verifier : sirius_css_AutomatorRules.commonKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_AutomatorRules.commonKey}, firebrick : { value : "#b22222", verifier : sirius_css_AutomatorRules.commonKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_AutomatorRules.commonKey}, forestgreen : { value : "#228b22", verifier : sirius_css_AutomatorRules.commonKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_AutomatorRules.commonKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_AutomatorRules.commonKey}, gold : { value : "#ffd700", verifier : sirius_css_AutomatorRules.commonKey}, goldenrod : { value : "#daa520", verifier : sirius_css_AutomatorRules.commonKey}, gray : { value : "#808080", verifier : sirius_css_AutomatorRules.commonKey}, green : { value : "#008000", verifier : sirius_css_AutomatorRules.commonKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_AutomatorRules.commonKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_AutomatorRules.commonKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_AutomatorRules.commonKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_AutomatorRules.commonKey}, indigo : { value : "#4b0082", verifier : sirius_css_AutomatorRules.commonKey}, ivory : { value : "#fffff0", verifier : sirius_css_AutomatorRules.commonKey}, khaki : { value : "#f0e68c", verifier : sirius_css_AutomatorRules.commonKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_AutomatorRules.commonKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_AutomatorRules.commonKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_AutomatorRules.commonKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_AutomatorRules.commonKey}, lightblue : { value : "#add8e6", verifier : sirius_css_AutomatorRules.commonKey}, lightcoral : { value : "#f08080", verifier : sirius_css_AutomatorRules.commonKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_AutomatorRules.commonKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_AutomatorRules.commonKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_AutomatorRules.commonKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_AutomatorRules.commonKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_AutomatorRules.commonKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_AutomatorRules.commonKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_AutomatorRules.commonKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_AutomatorRules.commonKey}, lightslategray : { value : "#778899", verifier : sirius_css_AutomatorRules.commonKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_AutomatorRules.commonKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_AutomatorRules.commonKey}, lime : { value : "#00ff00", verifier : sirius_css_AutomatorRules.commonKey}, limegreen : { value : "#32cd32", verifier : sirius_css_AutomatorRules.commonKey}, linen : { value : "#faf0e6", verifier : sirius_css_AutomatorRules.commonKey}, magenta : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, maroon : { value : "#800000", verifier : sirius_css_AutomatorRules.commonKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_AutomatorRules.commonKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_AutomatorRules.commonKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_AutomatorRules.commonKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_AutomatorRules.commonKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_AutomatorRules.commonKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_AutomatorRules.commonKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_AutomatorRules.commonKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_AutomatorRules.commonKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_AutomatorRules.commonKey}, midnightblue : { value : "#191970", verifier : sirius_css_AutomatorRules.commonKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_AutomatorRules.commonKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_AutomatorRules.commonKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_AutomatorRules.commonKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_AutomatorRules.commonKey}, navy : { value : "#000080", verifier : sirius_css_AutomatorRules.commonKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_AutomatorRules.commonKey}, olive : { value : "#808000", verifier : sirius_css_AutomatorRules.commonKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_AutomatorRules.commonKey}, orange : { value : "#ffa500", verifier : sirius_css_AutomatorRules.commonKey}, orangered : { value : "#ff4500", verifier : sirius_css_AutomatorRules.commonKey}, orchid : { value : "#da70d6", verifier : sirius_css_AutomatorRules.commonKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_AutomatorRules.commonKey}, palegreen : { value : "#98fb98", verifier : sirius_css_AutomatorRules.commonKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_AutomatorRules.commonKey}, palevioletred : { value : "#db7093", verifier : sirius_css_AutomatorRules.commonKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_AutomatorRules.commonKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_AutomatorRules.commonKey}, peru : { value : "#cd853f", verifier : sirius_css_AutomatorRules.commonKey}, pink : { value : "#ffc0cb", verifier : sirius_css_AutomatorRules.commonKey}, plum : { value : "#dda0dd", verifier : sirius_css_AutomatorRules.commonKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_AutomatorRules.commonKey}, purple : { value : "#800080", verifier : sirius_css_AutomatorRules.commonKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_AutomatorRules.commonKey}, red : { value : "#ff0000", verifier : sirius_css_AutomatorRules.commonKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_AutomatorRules.commonKey}, royalblue : { value : "#4169e1", verifier : sirius_css_AutomatorRules.commonKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_AutomatorRules.commonKey}, salmon : { value : "#fa8072", verifier : sirius_css_AutomatorRules.commonKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_AutomatorRules.commonKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_AutomatorRules.commonKey}, seashell : { value : "#fff5ee", verifier : sirius_css_AutomatorRules.commonKey}, sienna : { value : "#a0522d", verifier : sirius_css_AutomatorRules.commonKey}, silver : { value : "#c0c0c0", verifier : sirius_css_AutomatorRules.commonKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_AutomatorRules.commonKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_AutomatorRules.commonKey}, slategray : { value : "#708090", verifier : sirius_css_AutomatorRules.commonKey}, snow : { value : "#fffafa", verifier : sirius_css_AutomatorRules.commonKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_AutomatorRules.commonKey}, steelblue : { value : "#4682b4", verifier : sirius_css_AutomatorRules.commonKey}, tan : { value : "#d2b48c", verifier : sirius_css_AutomatorRules.commonKey}, teal : { value : "#008080", verifier : sirius_css_AutomatorRules.commonKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_AutomatorRules.commonKey}, tomato : { value : "#ff6347", verifier : sirius_css_AutomatorRules.commonKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_AutomatorRules.commonKey}, violet : { value : "#ee82ee", verifier : sirius_css_AutomatorRules.commonKey}, wheat : { value : "#f5deb3", verifier : sirius_css_AutomatorRules.commonKey}, white : { value : "#ffffff", verifier : sirius_css_AutomatorRules.commonKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_AutomatorRules.commonKey}, yellow : { value : "#ffff00", verifier : sirius_css_AutomatorRules.commonKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_AutomatorRules.commonKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.commonKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.valueKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, pointer : { value : "pointer", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.valueKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, aliceblue : { value : "#f0f8ff", verifier : sirius_css_AutomatorRules.commonKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_AutomatorRules.commonKey}, aqua : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_AutomatorRules.commonKey}, azure : { value : "#f0ffff", verifier : sirius_css_AutomatorRules.commonKey}, beige : { value : "#f5f5dc", verifier : sirius_css_AutomatorRules.commonKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_AutomatorRules.commonKey}, black : { value : "#000000", verifier : sirius_css_AutomatorRules.commonKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_AutomatorRules.commonKey}, blue : { value : "#0000ff", verifier : sirius_css_AutomatorRules.commonKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_AutomatorRules.commonKey}, brown : { value : "#a52a2a", verifier : sirius_css_AutomatorRules.commonKey}, burlywood : { value : "#deb887", verifier : sirius_css_AutomatorRules.commonKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_AutomatorRules.commonKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_AutomatorRules.commonKey}, chocolate : { value : "#d2691e", verifier : sirius_css_AutomatorRules.commonKey}, coral : { value : "#ff7f50", verifier : sirius_css_AutomatorRules.commonKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_AutomatorRules.commonKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_AutomatorRules.commonKey}, crimson : { value : "#dc143c", verifier : sirius_css_AutomatorRules.commonKey}, cyan : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, darkblue : { value : "#00008b", verifier : sirius_css_AutomatorRules.commonKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_AutomatorRules.commonKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_AutomatorRules.commonKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_AutomatorRules.commonKey}, darkgreen : { value : "#006400", verifier : sirius_css_AutomatorRules.commonKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_AutomatorRules.commonKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_AutomatorRules.commonKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_AutomatorRules.commonKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_AutomatorRules.commonKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_AutomatorRules.commonKey}, darkred : { value : "#8b0000", verifier : sirius_css_AutomatorRules.commonKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_AutomatorRules.commonKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_AutomatorRules.commonKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_AutomatorRules.commonKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_AutomatorRules.commonKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_AutomatorRules.commonKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_AutomatorRules.commonKey}, deeppink : { value : "#ff1493", verifier : sirius_css_AutomatorRules.commonKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_AutomatorRules.commonKey}, dimgray : { value : "#696969", verifier : sirius_css_AutomatorRules.commonKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_AutomatorRules.commonKey}, firebrick : { value : "#b22222", verifier : sirius_css_AutomatorRules.commonKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_AutomatorRules.commonKey}, forestgreen : { value : "#228b22", verifier : sirius_css_AutomatorRules.commonKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_AutomatorRules.commonKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_AutomatorRules.commonKey}, gold : { value : "#ffd700", verifier : sirius_css_AutomatorRules.commonKey}, goldenrod : { value : "#daa520", verifier : sirius_css_AutomatorRules.commonKey}, gray : { value : "#808080", verifier : sirius_css_AutomatorRules.commonKey}, green : { value : "#008000", verifier : sirius_css_AutomatorRules.commonKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_AutomatorRules.commonKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_AutomatorRules.commonKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_AutomatorRules.commonKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_AutomatorRules.commonKey}, indigo : { value : "#4b0082", verifier : sirius_css_AutomatorRules.commonKey}, ivory : { value : "#fffff0", verifier : sirius_css_AutomatorRules.commonKey}, khaki : { value : "#f0e68c", verifier : sirius_css_AutomatorRules.commonKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_AutomatorRules.commonKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_AutomatorRules.commonKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_AutomatorRules.commonKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_AutomatorRules.commonKey}, lightblue : { value : "#add8e6", verifier : sirius_css_AutomatorRules.commonKey}, lightcoral : { value : "#f08080", verifier : sirius_css_AutomatorRules.commonKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_AutomatorRules.commonKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_AutomatorRules.commonKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_AutomatorRules.commonKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_AutomatorRules.commonKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_AutomatorRules.commonKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_AutomatorRules.commonKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_AutomatorRules.commonKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_AutomatorRules.commonKey}, lightslategray : { value : "#778899", verifier : sirius_css_AutomatorRules.commonKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_AutomatorRules.commonKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_AutomatorRules.commonKey}, lime : { value : "#00ff00", verifier : sirius_css_AutomatorRules.commonKey}, limegreen : { value : "#32cd32", verifier : sirius_css_AutomatorRules.commonKey}, linen : { value : "#faf0e6", verifier : sirius_css_AutomatorRules.commonKey}, magenta : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, maroon : { value : "#800000", verifier : sirius_css_AutomatorRules.commonKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_AutomatorRules.commonKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_AutomatorRules.commonKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_AutomatorRules.commonKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_AutomatorRules.commonKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_AutomatorRules.commonKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_AutomatorRules.commonKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_AutomatorRules.commonKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_AutomatorRules.commonKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_AutomatorRules.commonKey}, midnightblue : { value : "#191970", verifier : sirius_css_AutomatorRules.commonKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_AutomatorRules.commonKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_AutomatorRules.commonKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_AutomatorRules.commonKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_AutomatorRules.commonKey}, navy : { value : "#000080", verifier : sirius_css_AutomatorRules.commonKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_AutomatorRules.commonKey}, olive : { value : "#808000", verifier : sirius_css_AutomatorRules.commonKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_AutomatorRules.commonKey}, orange : { value : "#ffa500", verifier : sirius_css_AutomatorRules.commonKey}, orangered : { value : "#ff4500", verifier : sirius_css_AutomatorRules.commonKey}, orchid : { value : "#da70d6", verifier : sirius_css_AutomatorRules.commonKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_AutomatorRules.commonKey}, palegreen : { value : "#98fb98", verifier : sirius_css_AutomatorRules.commonKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_AutomatorRules.commonKey}, palevioletred : { value : "#db7093", verifier : sirius_css_AutomatorRules.commonKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_AutomatorRules.commonKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_AutomatorRules.commonKey}, peru : { value : "#cd853f", verifier : sirius_css_AutomatorRules.commonKey}, pink : { value : "#ffc0cb", verifier : sirius_css_AutomatorRules.commonKey}, plum : { value : "#dda0dd", verifier : sirius_css_AutomatorRules.commonKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_AutomatorRules.commonKey}, purple : { value : "#800080", verifier : sirius_css_AutomatorRules.commonKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_AutomatorRules.commonKey}, red : { value : "#ff0000", verifier : sirius_css_AutomatorRules.commonKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_AutomatorRules.commonKey}, royalblue : { value : "#4169e1", verifier : sirius_css_AutomatorRules.commonKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_AutomatorRules.commonKey}, salmon : { value : "#fa8072", verifier : sirius_css_AutomatorRules.commonKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_AutomatorRules.commonKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_AutomatorRules.commonKey}, seashell : { value : "#fff5ee", verifier : sirius_css_AutomatorRules.commonKey}, sienna : { value : "#a0522d", verifier : sirius_css_AutomatorRules.commonKey}, silver : { value : "#c0c0c0", verifier : sirius_css_AutomatorRules.commonKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_AutomatorRules.commonKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_AutomatorRules.commonKey}, slategray : { value : "#708090", verifier : sirius_css_AutomatorRules.commonKey}, snow : { value : "#fffafa", verifier : sirius_css_AutomatorRules.commonKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_AutomatorRules.commonKey}, steelblue : { value : "#4682b4", verifier : sirius_css_AutomatorRules.commonKey}, tan : { value : "#d2b48c", verifier : sirius_css_AutomatorRules.commonKey}, teal : { value : "#008080", verifier : sirius_css_AutomatorRules.commonKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_AutomatorRules.commonKey}, tomato : { value : "#ff6347", verifier : sirius_css_AutomatorRules.commonKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_AutomatorRules.commonKey}, violet : { value : "#ee82ee", verifier : sirius_css_AutomatorRules.commonKey}, wheat : { value : "#f5deb3", verifier : sirius_css_AutomatorRules.commonKey}, white : { value : "#ffffff", verifier : sirius_css_AutomatorRules.commonKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_AutomatorRules.commonKey}, yellow : { value : "#ffff00", verifier : sirius_css_AutomatorRules.commonKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_AutomatorRules.commonKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.commonKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.valueKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, pointer : { value : "pointer", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}};
 sirius_css_XCSS.enabled = false;
 sirius_tools_BitIO.P01 = 1;
 sirius_tools_BitIO.P02 = 2;
@@ -5723,8 +5781,6 @@ sirius_tools_BitIO.P32 = -2147483648;
 sirius_tools_BitIO.X = [sirius_tools_BitIO.Unwrite,sirius_tools_BitIO.Write,sirius_tools_BitIO.Toggle];
 sirius_tools_Delayer._tks = { };
 sirius_tools_Ticker._pool = [];
-sirius_transitions_Animator.available = window.Tween != null || window.TweenMax != null || window.TweenLite != null;
-sirius_transitions_Animator.tweenObject = window.Tween || window.TweenMax || window.TweenLite;
 sirius_transitions_Ease.LINEAR = sirius_transitions_Ease._F("Linear");
 sirius_transitions_Ease.CIRC = sirius_transitions_Ease._F("Circ");
 sirius_transitions_Ease.CUBIC = sirius_transitions_Ease._F("Cubic");

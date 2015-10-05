@@ -12,19 +12,17 @@ class Sprite extends Div {
 	
 	public var content:Div;
 	
-	public function new(?q:Dynamic, ?d:String = "sprite") {
+	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc disp-table") {
 		super(q, d);
 		if (q == null) {
-			Automator.common();
 			attribute('sru-dom', 'sprite');
 		}
 		content = cast one('div');
 		if (content == null) {
 			content = new Div();
 			addChild(content);
-		}else {
-			content.css('txt-c');
 		}
+		content.css('txt-c disp-table-cell vert-m');
 	}
 	
 }

@@ -17,8 +17,7 @@ blockquote, q { quotes: none; }
 blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
 @-ms-viewport {width: device-width;}
 *, *:before, *:after {-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
-.c-l-sm{}
-.c-r-sm{}
+
 
 /*--- BS3 ---*/
 .visible-xs,.visible-sm,.visible-md,.visible-lg {display: none !important;}
@@ -205,3 +204,20 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 .container-left .row .col-lg-offset-5, .container-right .row .col-lg-offset-5{margin-left:83.33332%;}
 /*-----*/
 }
+
+col-12
+
+col-100
+
+col-12x
+
+dividir-row-em-XX-colunas{}
+
+col-1x7
+col-8x65
+
+.row {}
+.col-9x9 {}
+.col-[9]x[15]
+
+

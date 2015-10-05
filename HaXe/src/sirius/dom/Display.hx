@@ -90,16 +90,15 @@ class Display implements IDisplay {
 	}
 	
 	public function alignCenter():Void {
-		Automator.build('marg-a vert-m', ".centered");
-		css("centered /float-l /float-r");
+		css("marg-a vert-m /float-l /float-r");
 	}
 	
 	public function alignLeft():Void {
-		css("/centered float-l /float-r");
+		css("/marg-a /vert-m float-l /float-r");
 	}
 	
 	public function alignRight():Void {
-		css("/centered /float-l float-r");
+		css("/marg-a /vert-m /float-l float-r");
 	}
 	
 	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String {

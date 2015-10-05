@@ -27,11 +27,14 @@ class Document extends Display {
 	
 	public var body:Body;
 	
+	public var head:Head;
+	
 	public function new() {
 		super(cast Browser.document);
 		element = Browser.document.documentElement;
 		events.wheel(stopScroll, true);
 		body = new Body(Browser.document.body);
+		head = new Head(Browser.document.head);
 	}
 	
 	public function scroll(x:Float, y:Float):Void {
@@ -124,9 +127,9 @@ class Document extends Display {
 				var r:IDisplay = new Div();
 				r.build(content);
 				r.all(exclude).remove();
-				r.children().each(function(v:IDisplay) {
-					Log.trace(v.trueStyle());
-				});
+				//r.children().each(function(v:IDisplay) {
+					//Log.trace(v.trueStyle());
+				//});
 				body.addChild(r);
 				try {
 					Browser.window.print();
