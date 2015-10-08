@@ -1,5 +1,6 @@
 package sirius.net;
 import haxe.Json;
+import haxe.Utf8;
 import php.Boot;
 import php.Lib;
 import sirius.utils.Criptog;
@@ -41,18 +42,18 @@ class Mailer {
 		this.text = text;
 	}
 	
-	public function send():Bool {
+	public function send(?alt:String):Bool {
 		var head:Array<String> = [];
 		head.push('MIME-Version: 1.0');
-		head.push('Content-type: text/html; charset=utf8');
-		head.push('To: ' + to.join(', '));
-		head.push('From: ' + from);
+		head.push('Content-type: text/html;charset=utf8');
+		head.push('To: ' + to.join(','));
+		head.push('From: ' + (alt != null ? alt : from));
 		head.push('Reply-To: ' + from);
 		head.push('Subject: ' + subject);
 		head.push('X-Mailer: PHP/' + untyped __php__('phpversion()'));
-		if(cc != null && cc.length > 0) head.push('Cc: ' + cc.join(', '));
-		if (bbc != null && bbc.length > 0) head.push('Bcc: ' + bbc.join(', '));
-		return Lib.mail(to.join(','), subject, text, head.join("\r\n"));
+		if(cc != null && cc.length > 0) head.push('Cc: ' + cc.join(','));
+		if (bbc != null && bbc.length > 0) head.push('Bcc: ' + bbc.join(','));
+		return Lib.mail(to.join(','), subject, Utf8.encode(text), head.join("\r\n"));
 	}
 	
 	public function json():String {

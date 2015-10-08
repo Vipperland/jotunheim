@@ -155,10 +155,10 @@ class Automator {
 				++a;
 				var s:String = untyped __js__("(a/b*100).toFixed(9)").split(".").join("d") + "pc"; // 00d00pc
 				var n:String = '.cel-' + a + 'x' + b;	// .cel-AxB
-				build4All('w-' + s + ' padd-r-15 padd-l-15', n); // w-00d00pc padd-r-15 padd-l-15
+				build4All('w-' + s + ' padd-10', n); // w-00d00pc padd-r-15 padd-l-15
 				if (a < b-1) {
 					build4All('pull-l', n); // 
-					build4All('marg-l-' + s, n + '-r');
+					build4All('marg-l-' + s, 'skip-' + n);
 				}
 				return null;
 			});
@@ -166,17 +166,26 @@ class Automator {
 	}
 	
 	static public function _init() {
-		build("marg-0 padd-0 bord-0 outline-0 txt-100pc font-inherit vert-baseline transparent", "html,body,div,span,applet,container,grid,column,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video");
-		build("disp-block", "article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,grid,column,label");
-		build("line-h-1 arial txt-12", "body");
-		build("txt-decoration-none", "a,a:link,a:visited,a:active,a:hover");
-		//build("marg-r-15n marg-l-15n", ".grid");
-		build("border-collapse-collapse border-spacing-0", "table");
-		build("disp-table content-void", ".grid:before,.grid:after");
-		build("clear-both", ".grid:after");
-		build("list-style-none", "ol,ul,dl");
-		build("txt-c");
-		css.setSelector("*,*:before,*:after", "webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;", "");
+		build('marg-0 padd-0 bord-0 outline-0 font-inherit vert-baseline transparent','*');
+		build('arial txt-12', 'body');
+		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
+		build('list-style-none', 'ol,ul,dl');
+		//build('disp-block', 'grid');
+		build('padd-5', 'hr');
+		// Bootstrap reset (ERIC MEYER)
+		//build('marg-0 padd-0 bord-0 outline-0 txt-100pc font-inherit vert-baseline transparent', 'html,body,div,span,applet,container,grid,column,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video');
+		//build('disp-block', 'article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,grid,column,label');
+		//build('border-collapse-collapse border-spacing-0', 'table');
+		//build('disp-table content-void', '.grid:before,.grid:after');
+		//build('border-collapse-collapse border-spacing-0', 'table');
+		//build('clear-both', '.grid:after');
+		//build('marg-r-15n marg-l-15n', '.grid');
+		//build('quotes-none','blockquote,q');
+		//build('content-null content-none', 'blockquote:before,blockquote:after,q:before,q:after');
+		//css.setSelector(':focus', 'outline: 0;');
+		css.setSelector('@-ms-viewport', 'width:device-width;');
+		css.setSelector('*,*:before,*:after', '-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;');
+		build('marg-a vert-m float-l float-r txt-c');
 		Reflect.deleteField(Automator, '_init');
 	}
 	

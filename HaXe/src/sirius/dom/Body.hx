@@ -2,6 +2,7 @@ package sirius.dom;
 import js.Browser;
 import js.html.BodyElement;
 import js.html.Element;
+import js.html.Event;
 import sirius.tools.Utils;
 
 /**
@@ -21,6 +22,11 @@ class Body extends Display {
 		if (q == null) q = Browser.document.createBodyElement();
 		super(q, null, d);
 		_body = cast this.element;
+		Browser.window.addEventListener('resize', _wResize);
+	}
+	
+	private function _wResize(e:Event):Void {
+		events.resize().call();
 	}
 	
 	public function enlarge(?scroll:String = "over-hid"):Body {

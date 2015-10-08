@@ -1,7 +1,9 @@
 package sirius.dom;
+import haxe.Json;
 import haxe.Log;
 import js.Browser;
 import js.Error;
+import js.html.DOMRect;
 import js.html.Element;
 import js.html.MouseEvent;
 import sirius.events.IEvent;
@@ -82,13 +84,14 @@ class Document extends Display {
 	}
 	
 	public function scrollTo(target:Dynamic, time:Float = 1, ease:Dynamic = null, offX:Int = 0, offY:Int = 0):Void {
-		if (Std.is(target, String)) {
-			target = Sirius.one(target);
+		if (Std.is(target, String)) 	target = Sirius.one(target).element;
+		if (Std.is(target, IDisplay)) 	target = target.element;
+		var pos:IPoint = Display.getPosition(target);
+		if (Animator.available()) {
+			easeScroll(pos.x - offX, pos.y - offY, time, ease);
+		}else {
+			scroll(pos.x - offX, pos.y - offY);
 		}
-		if (Reflect.hasField(target, "element")) {
-			target = target.Self;
-		}
-		easeScroll(target.offsetLeft - offX, target.offsetTop - offY, time, ease);
 	}
 	
 	public function trackCursor():Void {

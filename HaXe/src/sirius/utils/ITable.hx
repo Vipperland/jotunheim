@@ -398,4 +398,7 @@ interface ITable {
 	/// Event
 	public function onTouchCancel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 	
+	/// Event
+	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable;
+	
 }

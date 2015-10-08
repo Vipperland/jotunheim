@@ -7,6 +7,7 @@ import js.JQuery;
 import sirius.data.DisplayData;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
+import sirius.math.IPoint;
 import sirius.utils.ITable;
 
 /**
@@ -204,6 +205,11 @@ interface IDisplay {
 	public function build(q:String, ?plainText:Bool = false):IDisplay;
 	
 	/**
+	 * Fit element in current viewport width and height
+	 */
+	public function goFullSize():Void;
+	
+	/**
 	 * Write or get style of the element
 	 * @param	p
 	 * @param	v	Can accept ARGB
@@ -333,13 +339,7 @@ interface IDisplay {
 	 * Check if element is partially visible into viewport
 	 * @return
 	 */
-	public function isVisible():Bool;
-	
-	/**
-	 * Hidden attribute value
-	 * @return
-	 */
-	public function isHidden():Bool;
+	public function checkVisibility(?view:Bool, ?offsetY:Int = 0, ?offsetX:Int = 0):UInt;
 	
 	/**
 	 * Return Element as JQuery object structure
@@ -387,6 +387,12 @@ interface IDisplay {
 	 * Float right
 	 */
 	public function alignRight():Void;
+	
+	/**
+	 * True position in DOM
+	 * @return
+	 */
+	public function position():IPoint;
 	
 	/**
 	 * Change display backgroud

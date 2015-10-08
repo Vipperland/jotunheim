@@ -135,6 +135,13 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		}
 		return $result;
 	}
+	public function base64($print = null) {
+		$result = sirius_utils_Criptog::encodeBase64($this->_DB);
+		if($print) {
+			php_Lib::hprint($result);
+		}
+		return $result;
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

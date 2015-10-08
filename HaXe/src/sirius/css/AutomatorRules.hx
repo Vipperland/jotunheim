@@ -154,7 +154,12 @@ class AutomatorRules{
 		var v:String = k.entry.value;
 		if (d.head.key == 'scroll') {
 			if (k.index == 0) return '';
-			return "overflow-" + v + ":scroll;overflow-" + (v == 'x'?'y':'x') + ":hidden";
+			var scroll:String = 'scroll';
+			if (v == 'none') {
+				v = 'x';
+				scroll = 'none';
+			}
+			return "overflow-" + v + ":" + scroll + ";overflow-" + (v == 'x'?'y':'x') + ":hidden";
 		}
 		return commonKey(d, k, n);
 	}

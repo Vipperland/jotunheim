@@ -547,4 +547,16 @@ class Dispatcher implements IDispatcher {
 		return auto("readystatechange", handler, mode);
 	}
 	
+	
+	/** Event */
+	public function visibility(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
+		return auto("visibility", handler, mode);
+	}
+	
+	
+	/** Event */
+	public function resize(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
+		return auto("resize", handler, mode);
+	}
+	
 }

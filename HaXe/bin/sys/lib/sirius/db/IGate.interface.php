@@ -8,4 +8,5 @@ interface sirius_db_IGate {
 	function prepare($query, $parameters = null, $options = null);
 	function schemaOf($table = null);
 	function insert($table, $parameters, $options = null);
+	function insertedId();
 }

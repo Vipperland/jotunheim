@@ -1,6 +1,7 @@
 package sirius.dom;
 import js.Browser;
 import js.html.Element;
+import sirius.tools.Utils;
 
 /**
  * ...

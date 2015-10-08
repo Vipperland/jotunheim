@@ -1,29 +1,18 @@
 package;
-import haxe.Log;
 import sirius.css.Automator;
-import sirius.css.XCSS;
-import sirius.dom.Body;
-import sirius.dom.Display3D;
-import sirius.dom.Div;
-import sirius.dom.IDisplay3D;
-import sirius.dom.Sprite3D;
-import sirius.events.IEvent;
-import sirius.math.ARGB;
 import sirius.modules.ILoader;
-import sirius.modules.IRequest;
-import sirius.modules.Request;
 import sirius.Sirius;
 import sirius.tools.Ticker;
-import sirius.tools.Utils;
-import sirius.utils.Dice;
+import sirius.ui.Alert;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 class Test_JS{
-
+	
 	static public function main() {
+		
 	}
 	
 } 

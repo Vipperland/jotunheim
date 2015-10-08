@@ -10,29 +10,11 @@
 	
 	<script src="extended/api.sirius.js"></script>
 	
-	<div class="grid mosaic-12"></div>
-	
 	<script>
-		
-		var Div =  sru.dom.Div;
-		var FormInput =  sru.dom.FormInput;
-		
-		var grid12 = Sirius.one('.mosaic-12');
-		
-		var bgs = ['darkblue','blue','darkgreen','green','darkred','red','darkgray','gray'];
 		
 		Sirius.onInit(function(){
 			//Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 			
-			var box1 = new Div();
-			box1.css('bg-skyblue padd-10');
-			box1.fit(250, 250);
-			box1.addTo(grid12);
-			
-			var input1 = new FormInput();
-			input1.addTo(box1);
-			
-			Automator.scan();
 		});
 		
 		

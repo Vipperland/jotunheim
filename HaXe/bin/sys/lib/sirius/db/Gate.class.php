@@ -54,6 +54,9 @@ class sirius_db_Gate implements sirius_db_IGate{
 		}
 		return $r;
 	}
+	public function insertedId() {
+		return Std::parseInt($this->_db->lastInsertId(null));
+	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
 			return call_user_func_array($this->$m, $a);

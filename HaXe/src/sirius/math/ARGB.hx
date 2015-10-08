@@ -8,6 +8,10 @@ import sirius.math.IARGB;
  */
 class ARGB implements IARGB {
 	
+	public static function from(q:Dynamic, ?g:Int, ?b:Int, ?a:Int):IARGB {
+		return new ARGB(q, g, b, a);
+	}
+	
 	public var a:Int;
 	public var r:Int;
 	public var g:Int;
@@ -21,7 +25,7 @@ class ARGB implements IARGB {
 		// rgb(R,G,B[,A])
 		if (s && q.substr(0, 3) == "rgb") {
 			s = false;
-			q = q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
+			q = q.split("rgba").join("").q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
 			q = q.split(",");
 			if (q.length == 4) a = Std.parseInt(q[3]);
 			b = Std.parseInt(q[2]);
@@ -120,7 +124,11 @@ class ARGB implements IARGB {
 	 * @return
 	 */
 	public function css():String {
-		return "rgb(" + r + "," + g + "," + b + "," + (cast a/255).toFixed() + ")";
+		if (a == 255) {
+			return "rgb(" + r + "," + g + "," + b + ")";
+		}else {
+			return "rgba(" + r + "," + g + "," + b + "," + (cast a/255).toFixed(2) + ")";
+		}
 	}
 	
 }

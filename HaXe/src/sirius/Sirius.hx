@@ -10,7 +10,9 @@ import sirius.modules.Loader;
 import sirius.net.Domain;
 import sirius.net.IDomain;
 import sirius.tools.Utils;
+import sirius.transitions.Ease;
 import sirius.utils.Dice;
+import sirius.utils.Filler;
 
 #if js
 	import js.Browser;
@@ -86,6 +88,7 @@ class Sirius {
 		/** @private */
 		static private function _loadController(e:Event):Void {
 			agent.update();
+			Ease.update();
 			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 			_loaded = true;
 			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
@@ -143,12 +146,13 @@ class Sirius {
 		 * @param	handler
 		 */
 		static public function run(handler:Dynamic):Void {
+			if (!_initialized) _preInit();
 			if (handler != null) {
 				if (!_loaded && _loadPool != null) 	_loadPool[_loadPool.length] = handler;
 				else 								handler();
 			}
 		}
-
+		
 		
 		/**
 		 * Init Sirius Framework
@@ -156,7 +160,8 @@ class Sirius {
 		 * @param	files
 		 */
 		static public function onInit(handler:ILoader->Void, ?files:Array<String> = null):Void {
-			if (_loaded == false && files != null && files.length > 0) loader.add(files, null, _fileError);
+			if (!_initialized) _preInit();
+			if (!_loaded && files != null && files.length > 0) loader.add(files, null, _fileError);
 			else run(handler);
 		}
 		
@@ -169,10 +174,11 @@ class Sirius {
 			if (!_initialized) {
 				_initialized = true;
 				_loadPool = [];
-				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				document = new Document();
+				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				log("Sirius->Core.init[ Waiting for DOM Loading Event... ]", 10, 2);
 				Automator._init();
+				Reflect.deleteField(Sirius, '_preInit');
 			}
 		}
 		
@@ -258,6 +264,11 @@ class Sirius {
 	
 }
 
+interface User {
+	var id:UInt;
+	var name:String;
+	var city:Array<Dynamic>;
+}
 	/*
 	 * 	=================== SELECTORS =============================================================================================================
 	 *  .class					.intro					Selects all elements with class="intro"

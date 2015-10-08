@@ -41,7 +41,7 @@ class sirius_net_Domain implements sirius_net_IDomain{
 	}
 	public function hrequire($params) {
 		$_g = $this;
-		$r = null;
+		$r = true;
 		sirius_utils_Dice::Values($params, array(new _hx_lambda(array(&$_g, &$params, &$r), "sirius_net_Domain_0"), 'execute'), null);
 		return $r;
 	}
@@ -66,7 +66,7 @@ class sirius_net_Domain implements sirius_net_IDomain{
 }
 function sirius_net_Domain_0(&$_g, &$params, &$r, $v) {
 	{
-		$r = !_hx_has_field($_g->params, $v);
+		$r = _hx_has_field($_g->params, $v);
 		return !$r;
 	}
 }

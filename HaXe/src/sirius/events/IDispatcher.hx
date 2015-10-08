@@ -1,5 +1,6 @@
 package sirius.events;
 import sirius.dom.IDisplay;
+import sirius.events.IEventGroup;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -265,5 +266,12 @@ interface IDispatcher {
 	
 	/// Event
 	public function readyState(?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	
+	/// Event
+	public function visibility(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup;
+	
+	/// Event
+	public function resize(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup;
+	
 	
 }

@@ -1,5 +1,6 @@
 package sirius.tools;
 import haxe.Log;
+import haxe.Timer;
 import sirius.tools.Key;
 
 /**
@@ -9,6 +10,9 @@ import sirius.tools.Key;
 @:expose("sru.tools.Delayer")
 class Delayer {
 	
+	static private var CALL:Dynamic = untyped __js__('setTimeout');
+	static private var CLEAR:Dynamic = untyped __js__('clearTimeout');
+	
 	static private var _tks:Dynamic = { };
 	
 	public static function create(handler:Dynamic, time:Float, ?args:Array<Dynamic>, ?thisObj:Dynamic):Delayer {
@@ -16,7 +20,7 @@ class Delayer {
 	}
 	
 	private var _id:String;
-	private var _tid:Int;
+	private var _tid:Timer;
 	private var _rpt:Int;
 	private var _cnt:Int;
 	private var _handler:Dynamic;
@@ -41,26 +45,29 @@ class Delayer {
 			_id = "t" + Key.COUNTER();
 			Reflect.setField(_tks, Std.string(_id), this);
 		}
-		_tid = untyped __js__("setTimeout(this._tick,this._time,this);");
+		_tid = Timer.delay(_tick, _time);
+		_tid.run();
 		return this;
 	}
 	
 	public function cancel():Delayer {
 		_cnt = 0;
-		if (Reflect.hasField(_tks, _id)) {
-			untyped __js__("clearTimeout(this._tid);");
-			Reflect.deleteField(_tks, _id);
+		if (_tid != null) {
+			_tid.stop();
+			_tid = null;
 		}
 		return this;
 	}
 	
-	private function _tick(d:Delayer):Void {
-		if (d._handler != null) {
-			untyped __js__ ("d._handler.call(d._thisObj, d._args)");
-			if (d._rpt == 0 || (++d._cnt < d._rpt)) {
-				d.call();
+	private function _tick():Void {
+		if (_handler != null) {
+			_tid = null;
+			Reflect.callMethod(_this, _handler, _args);
+			//untyped __js__ ("d._handler.call(d._thisObj, d._args)");
+			if (_rpt == 0 || (++_cnt < _rpt)) {
+				call();
 			}else {
-				d._cnt = 0;
+				_cnt = 0;
 			}
 		}
 	}

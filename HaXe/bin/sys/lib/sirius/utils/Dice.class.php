@@ -78,12 +78,15 @@ class sirius_utils_Dice {
 		}
 		return _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt), "object" => $from));
 	}
-	static function Match($table, $values) {
+	static function Match($table, $values, $limit = null) {
+		if($limit === null) {
+			$limit = 0;
+		}
 		if(!Std::is($values, _hx_qtype("Array"))) {
 			$values = (new _hx_array(array($values)));
 		}
 		$r = 0;
-		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$r, &$table, &$values), "sirius_utils_Dice_6"), 'execute'), null);
+		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_6"), 'execute'), null);
 		return $r;
 	}
 	function __toString() { return 'sirius.utils.Dice'; }
@@ -132,10 +135,27 @@ function sirius_utils_Dice_5(&$alt, &$from, $v) {
 		return $from === null;
 	}
 }
-function sirius_utils_Dice_6(&$r, &$table, &$values, $v) {
+function sirius_utils_Dice_6(&$limit, &$r, &$table, &$values, $v) {
 	{
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
+		if(sirius_utils_Dice_7($limit, $r, $table, $v, $values)) {
+			$a = --$limit;
+			return $a === 0;
+		}
+		return false;
+	}
+}
+function sirius_utils_Dice_7(&$limit, &$r, &$table, &$v, &$values) {
+	{
+		$aNeg = $limit < 0;
+		$bNeg = 0 < 0;
+		if($aNeg !== $bNeg) {
+			return $aNeg;
+		} else {
+			return $limit > 0;
+		}
+		unset($bNeg,$aNeg);
 	}
 }

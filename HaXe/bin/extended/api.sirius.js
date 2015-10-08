@@ -4,7 +4,6 @@ $hx_exports.sru = $hx_exports.sru || {};
 $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
-;$hx_exports.sru.plugins = $hx_exports.sru.plugins || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
@@ -198,9 +197,6 @@ Std.parseInt = function(x) {
 	if(isNaN(v)) return null;
 	return v;
 };
-Std.parseFloat = function(x) {
-	return parseFloat(x);
-};
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
 };
@@ -374,6 +370,31 @@ haxe_Log.__name__ = ["haxe","Log"];
 haxe_Log.trace = function(v,infos) {
 	js_Boot.__trace(v,infos);
 };
+var haxe_Timer = function(time_ms) {
+	var me = this;
+	this.id = setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe_Timer.__name__ = ["haxe","Timer"];
+haxe_Timer.delay = function(f,time_ms) {
+	var t = new haxe_Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+};
+haxe_Timer.prototype = {
+	stop: function() {
+		if(this.id == null) return;
+		clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe_Timer
+};
 var haxe_io_Bytes = function(data) {
 	this.length = data.byteLength;
 	this.b = new Uint8Array(data);
@@ -541,6 +562,9 @@ haxe_crypto_BaseCode.prototype = {
 	}
 	,__class__: haxe_crypto_BaseCode
 };
+var haxe_ds_Either = { __ename__ : true, __constructs__ : ["Left","Right"] };
+haxe_ds_Either.Left = function(v) { var $x = ["Left",0,v]; $x.__enum__ = haxe_ds_Either; $x.toString = $estr; return $x; };
+haxe_ds_Either.Right = function(v) { var $x = ["Right",1,v]; $x.__enum__ = haxe_ds_Either; $x.toString = $estr; return $x; };
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
@@ -1333,6 +1357,7 @@ sirius_Sirius.main = function() {
 };
 sirius_Sirius._loadController = function(e) {
 	sirius_Sirius.agent.update();
+	sirius_transitions_Ease.update();
 	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
 	sirius_Sirius._loaded = true;
 	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
@@ -1366,12 +1391,14 @@ sirius_Sirius.jQuery = function(q) {
 	return $(q);;
 };
 sirius_Sirius.run = function(handler) {
+	if(!sirius_Sirius._initialized) sirius_Sirius._preInit();
 	if(handler != null) {
 		if(!sirius_Sirius._loaded && sirius_Sirius._loadPool != null) sirius_Sirius._loadPool[sirius_Sirius._loadPool.length] = handler; else handler();
 	}
 };
 sirius_Sirius.onInit = function(handler,files) {
-	if(sirius_Sirius._loaded == false && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError); else sirius_Sirius.run(handler);
+	if(!sirius_Sirius._initialized) sirius_Sirius._preInit();
+	if(!sirius_Sirius._loaded && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError); else sirius_Sirius.run(handler);
 };
 sirius_Sirius.addScript = function(url,handler) {
 	if(!((url instanceof Array) && url.__enum__ == null)) url = [url];
@@ -1381,10 +1408,11 @@ sirius_Sirius._preInit = function() {
 	if(!sirius_Sirius._initialized) {
 		sirius_Sirius._initialized = true;
 		sirius_Sirius._loadPool = [];
-		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 		sirius_Sirius.document = new sirius_dom_Document();
+		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 		sirius_Sirius.log("Sirius->Core.init[ Waiting for DOM Loading Event... ]",10,2);
 		sirius_css_Automator._init();
+		Reflect.deleteField(sirius_Sirius,"_preInit");
 	}
 };
 sirius_Sirius.status = function() {
@@ -1431,11 +1459,16 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 242, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 248, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
 	sirius_Sirius._loglevel = q;
+};
+var sirius_User = function() { };
+sirius_User.__name__ = ["sirius","User"];
+sirius_User.prototype = {
+	__class__: sirius_User
 };
 var sirius_css_CSSGroup = $hx_exports.sru.css.CSSGroup = function() {
 	this.reset();
@@ -1622,6 +1655,15 @@ sirius_dom_Display.ofKind = function(q) {
 sirius_dom_Display.create = function(q) {
 	return new sirius_dom_Display(q);
 };
+sirius_dom_Display.getPosition = function(target) {
+	var p = new sirius_math_Point(0,0);
+	while(target != null && target != sirius_Sirius.document.element) {
+		p.x += target.offsetLeft + Std.parseInt(target.style.paddingLeft);
+		p.y += target.offsetTop + Std.parseInt(target.style.paddingTop);
+		target = target.offsetParent;
+	}
+	return p;
+};
 sirius_dom_Display.prototype = {
 	exists: function(q) {
 		return this.element != null && this.element.querySelector(q) != null;
@@ -1637,25 +1679,28 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,alignCenter: function() {
-		this.css("marg-a vert-m /float-l /float-r");
+		this.css("marg-a vert-m /float-l /float-r txt-c");
 	}
 	,alignLeft: function() {
-		this.css("/marg-a /vert-m float-l /float-r");
+		this.css("/marg-a /vert-m float-l /float-r /txt-c");
 	}
 	,alignRight: function() {
-		this.css("/marg-a /vert-m /float-l float-r");
+		this.css("/marg-a /vert-m /float-l float-r /txt-c");
 	}
-	,background: function(value,repeat,position,attachment) {
-		if(value != null) {
-			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.hex();
-			var c;
-			if(value.indexOf("#") == 0) c = value; else c = "url(" + Std.string(value) + ")";
-			var r;
-			if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
-			var p;
-			if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
-			this.element.style.background = c + " " + r + " " + p;
-			if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
+	,background: function(data,repeat,position,attachment) {
+		if(data != null) {
+			var value = data;
+			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
+			if(value.indexOf("#") == 0) this.element.style.background = value; else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else {
+				var c;
+				if(value.indexOf("#") == 0) c = value; else c = "url(" + Std.string(value) + ")";
+				var r;
+				if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
+				var p;
+				if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
+				this.element.style.background = c + " " + r + " " + p;
+				if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
+			}
 		}
 		return this.element.style.background;
 	}
@@ -1884,15 +1929,25 @@ sirius_dom_Display.prototype = {
 		return this.element.style.overflow;
 	}
 	,isFullyVisible: function() {
-		var rect = this.element.getBoundingClientRect();
-		return rect.top >= 0 && rect.left >= 0 && rect.bottom <= sirius_tools_Utils.viewportHeight() && rect.right <= sirius_tools_Utils.viewportWidth();
+		return this._visibility == 2;
 	}
 	,isVisible: function() {
-		var rect = this.element.getBoundingClientRect();
-		return rect.bottom >= 0 && rect.right >= 0 && rect.top <= sirius_tools_Utils.viewportHeight() && rect.left <= sirius_tools_Utils.viewportWidth();
+		return this._visibility > 0;
 	}
-	,isHidden: function() {
-		return this.element == null || this.element.hidden;
+	,checkVisibility: function(view,offsetY,offsetX) {
+		if(offsetX == null) offsetX = 0;
+		if(offsetY == null) offsetY = 0;
+		var rect = this.element.getBoundingClientRect();
+		var current = 0;
+		if(rect.top + offsetY >= 0 && rect.left + offsetX >= 0 && rect.bottom - offsetY <= sirius_tools_Utils.viewportHeight() && rect.right - offsetX <= sirius_tools_Utils.viewportWidth()) current = 2; else if(rect.bottom >= 0 && rect.right >= 0 && rect.top <= sirius_tools_Utils.viewportHeight() && rect.left <= sirius_tools_Utils.viewportWidth()) current = 1;
+		if(current != this._visibility) {
+			this._visibility = current;
+			this.events.visibility().call();
+		}
+		return this._visibility;
+	}
+	,getBounds: function() {
+		return this.element.getBoundingClientRect();
 	}
 	,jQuery: function() {
 		return sirius_Sirius.jQuery(this.element);
@@ -1913,6 +1968,12 @@ sirius_dom_Display.prototype = {
 	,addToBody: function() {
 		if(sirius_Sirius.document != null) sirius_Sirius.document.body.addChild(this);
 		return this;
+	}
+	,goFullSize: function() {
+		this.style({ width : sirius_tools_Utils.viewportWidth() + "px", height : sirius_tools_Utils.viewportHeight() + "px"});
+	}
+	,position: function() {
+		return sirius_dom_Display.getPosition(this.element);
 	}
 	,__class__: sirius_dom_Display
 };
@@ -2033,6 +2094,7 @@ var sirius_dom_Body = $hx_exports.sru.dom.Body = function(q,d) {
 	}
 	sirius_dom_Display.call(this,q,null,d);
 	this._body = this.element;
+	window.addEventListener("resize",$bind(this,this._wResize));
 };
 sirius_dom_Body.__name__ = ["sirius","dom","Body"];
 sirius_dom_Body.get = function(q,h) {
@@ -2040,7 +2102,10 @@ sirius_dom_Body.get = function(q,h) {
 };
 sirius_dom_Body.__super__ = sirius_dom_Display;
 sirius_dom_Body.prototype = $extend(sirius_dom_Display.prototype,{
-	enlarge: function(scroll) {
+	_wResize: function(e) {
+		this.events.resize().call();
+	}
+	,enlarge: function(scroll) {
 		if(scroll == null) scroll = "over-hid";
 		this.css("w-100pc h-100pc" + (scroll != null?" " + scroll:"") + " padd-0 marg-0 pos-abs");
 		return this;
@@ -2389,9 +2454,10 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		if(offY == null) offY = 0;
 		if(offX == null) offX = 0;
 		if(time == null) time = 1;
-		if(typeof(target) == "string") target = sirius_Sirius.one(target);
-		if(Object.prototype.hasOwnProperty.call(target,"element")) target = target.Self;
-		this.easeScroll(target.offsetLeft - offX,target.offsetTop - offY,time,ease);
+		if(typeof(target) == "string") target = sirius_Sirius.one(target).element;
+		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) target = target.element;
+		var pos = sirius_dom_Display.getPosition(target);
+		if(sirius_transitions_Animator.available()) this.easeScroll(pos.x - offX,pos.y - offY,time,ease); else this.scroll(pos.x - offX,pos.y - offY);
 	}
 	,trackCursor: function() {
 		if(sirius_dom_Document.__cursor__.enabled) return;
@@ -2561,35 +2627,6 @@ sirius_dom_FrameSet.get = function(q,h) {
 sirius_dom_FrameSet.__super__ = sirius_dom_Display;
 sirius_dom_FrameSet.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_FrameSet
-});
-var sirius_dom_FormInput = $hx_exports.sru.dom.FormInput = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("div");
-	}
-	sirius_dom_Div.call(this,q,d);
-	this.name = this.one("div");
-	this.input = this.one("input");
-	if(this.name == null) {
-		this.name = new sirius_dom_Div();
-		this.addChild(this.name);
-	}
-	if(this.input == null) {
-		this.input = new sirius_dom_Input();
-		this.addChild(this.input);
-	}
-};
-sirius_dom_FormInput.__name__ = ["sirius","dom","FormInput"];
-sirius_dom_FormInput.__super__ = sirius_dom_Div;
-sirius_dom_FormInput.prototype = $extend(sirius_dom_Div.prototype,{
-	label: function(q) {
-		if(q != null) {
-			this.name.clear(true);
-			this.name.build(q);
-		}
-		return this.name.element.innerHTML;
-	}
-	,__class__: sirius_dom_FormInput
 });
 var sirius_dom_H1 = $hx_exports.sru.dom.H1 = function(q,d) {
 	if(q == null) q = window.document.createElement("h1");
@@ -3279,7 +3316,7 @@ var sirius_dom_Sprite = $hx_exports.sru.dom.Sprite = function(q,d) {
 		this.content = new sirius_dom_Div();
 		this.addChild(this.content);
 	}
-	this.content.css("txt-c disp-table-cell vert-m");
+	this.content.css("disp-table-cell vert-m");
 };
 sirius_dom_Sprite.__name__ = ["sirius","dom","Sprite"];
 sirius_dom_Sprite.__super__ = sirius_dom_Div;
@@ -3768,6 +3805,12 @@ sirius_events_Dispatcher.prototype = {
 	,readyState: function(handler,mode) {
 		return this.auto("readystatechange",handler,mode);
 	}
+	,visibility: function(handler,mode) {
+		return this.auto("visibility",handler,mode);
+	}
+	,resize: function(handler,mode) {
+		return this.auto("resize",handler,mode);
+	}
 	,__class__: sirius_events_Dispatcher
 };
 var sirius_tools_Key = $hx_exports.sru.tools.Key = function() { };
@@ -3900,25 +3943,23 @@ sirius_css_Automator._createGridCol = function(size) {
 		++a;
 		var s = (a/b*100).toFixed(9).split(".").join("d") + "pc";
 		var n1 = ".cel-" + a + "x" + b;
-		sirius_css_Automator.build4All("w-" + s + " padd-r-15 padd-l-15",n1);
+		sirius_css_Automator.build4All("w-" + s + " padd-10",n1);
 		if(a < b - 1) {
 			sirius_css_Automator.build4All("pull-l",n1);
-			sirius_css_Automator.build4All("marg-l-" + s,n1 + "-r");
+			sirius_css_Automator.build4All("marg-l-" + s,"skip-" + n1);
 		}
 		return null;
 	});
 };
 sirius_css_Automator._init = function() {
-	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 txt-100pc font-inherit vert-baseline transparent","html,body,div,span,applet,container,grid,column,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video");
-	sirius_css_Automator.build("disp-block","article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,grid,column,label");
-	sirius_css_Automator.build("line-h-1 arial txt-12","body");
+	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 font-inherit vert-baseline transparent","*");
+	sirius_css_Automator.build("arial txt-12","body");
 	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover");
-	sirius_css_Automator.build("border-collapse-collapse border-spacing-0","table");
-	sirius_css_Automator.build("disp-table content-void",".grid:before,.grid:after");
-	sirius_css_Automator.build("clear-both",".grid:after");
 	sirius_css_Automator.build("list-style-none","ol,ul,dl");
-	sirius_css_Automator.build("txt-c");
-	sirius_css_Automator.css.setSelector("*,*:before,*:after","webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;","");
+	sirius_css_Automator.build("padd-5","hr");
+	sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
+	sirius_css_Automator.css.setSelector("*,*:before,*:after","-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;");
+	sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c");
 	Reflect.deleteField(sirius_css_Automator,"_init");
 };
 sirius_css_Automator._screen = function(args) {
@@ -3962,7 +4003,7 @@ var sirius_math_ARGB = function(q,g,b,a) {
 	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
 	if(s && q.substr(0,3) == "rgb") {
 		s = false;
-		q = q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
+		q = q.split("rgba").join("").q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
 		q = q.split(",");
 		if(q.length == 4) a = Std.parseInt(q[3]);
 		b = Std.parseInt(q[2]);
@@ -3994,6 +4035,9 @@ var sirius_math_ARGB = function(q,g,b,a) {
 };
 sirius_math_ARGB.__name__ = ["sirius","math","ARGB"];
 sirius_math_ARGB.__interfaces__ = [sirius_math_IARGB];
+sirius_math_ARGB.from = function(q,g,b,a) {
+	return new sirius_math_ARGB(q,g,b,a);
+};
 sirius_math_ARGB.prototype = {
 	value32: function() {
 		return this.a << 24 | this.r << 16 | this.g << 8 | this.b;
@@ -4027,7 +4071,7 @@ sirius_math_ARGB.prototype = {
 		return "#" + r;
 	}
 	,css: function() {
-		return "rgb(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed() + ")";
+		if(this.a == 255) return "rgb(" + this.r + "," + this.g + "," + this.b + ")"; else return "rgba(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed(2) + ")";
 	}
 	,__class__: sirius_math_ARGB
 };
@@ -4210,7 +4254,12 @@ sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
 	var v = k.entry.value;
 	if(d.head.key == "scroll") {
 		if(k.index == 0) return "";
-		return "overflow-" + v + ":scroll;overflow-" + (v == "x"?"y":"x") + ":hidden";
+		var scroll = "scroll";
+		if(v == "none") {
+			v = "x";
+			scroll = "none";
+		}
+		return "overflow-" + v + ":" + scroll + ";overflow-" + (v == "x"?"y":"x") + ":hidden";
 	}
 	return sirius_css_AutomatorRules.commonKey(d,k,n);
 };
@@ -4634,41 +4683,6 @@ sirius_net_IDomainData.__name__ = ["sirius","net","IDomainData"];
 sirius_net_IDomainData.prototype = {
 	__class__: sirius_net_IDomainData
 };
-var sirius_plugins_Anchor = $hx_exports.sru.plugins.Anchor = function(active,inactive) {
-	this._inactive = inactive;
-	this._active = active;
-	sirius_Sirius.all("[plugin~=anchor]").onClick($bind(this,this._scroll));
-};
-sirius_plugins_Anchor.__name__ = ["sirius","plugins","Anchor"];
-sirius_plugins_Anchor.init = function(active,inactive) {
-	return new sirius_plugins_Anchor(active,inactive);
-};
-sirius_plugins_Anchor.prototype = {
-	_scroll: function(e) {
-		var _g = this;
-		var d = e.target.attribute("anchor-to");
-		if(d != null) {
-			var time = Std.parseFloat(sirius_utils_Dice.One(e.target.attribute("anchor-time"),1).value);
-			var obj = sirius_Sirius.one(d);
-			var x = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("anchor-x"),0).value);
-			var y = Std.parseInt(sirius_utils_Dice.One(e.target.attribute("anchor-y"),100).value);
-			if(obj != null) {
-				var ease = sirius_transitions_Ease.fromString(sirius_utils_Dice.One(e.target.attribute("anchor-ease"),"LINEAR.X").value);
-				sirius_Sirius.document.scrollTo(obj,time,ease,x,y);
-			} else sirius_Sirius.log("Anchor: Missing anchor-to='id:?' for Anchor plugin.",10,3);
-			sirius_Sirius.all("[anchor-if]").each(function(e1) {
-				if(e1.attribute("anchor-if") == d) {
-					if(_g._active != null) e1.css(_g._active);
-					if(_g._inactive != null) e1.css("/" + _g._inactive);
-				} else {
-					if(_g._active != null) e1.css("/" + _g._active);
-					if(_g._inactive != null) e1.css(_g._inactive);
-				}
-			});
-		}
-	}
-	,__class__: sirius_plugins_Anchor
-};
 var sirius_seo_SEO = function(type) {
 	this.data = { };
 	this.data["@context"] = "http://schema.org/";
@@ -5022,21 +5036,23 @@ sirius_tools_Delayer.prototype = {
 			this._id = "t" + sirius_tools_Key.COUNTER();
 			sirius_tools_Delayer._tks[Std.string(this._id)] = this;
 		}
-		this._tid = setTimeout(this._tick,this._time,this);;
+		this._tid = haxe_Timer.delay($bind(this,this._tick),this._time);
+		this._tid.run();
 		return this;
 	}
 	,cancel: function() {
 		this._cnt = 0;
-		if(Object.prototype.hasOwnProperty.call(sirius_tools_Delayer._tks,this._id)) {
-			clearTimeout(this._tid);;
-			Reflect.deleteField(sirius_tools_Delayer._tks,this._id);
+		if(this._tid != null) {
+			this._tid.stop();
+			this._tid = null;
 		}
 		return this;
 	}
-	,_tick: function(d) {
-		if(d._handler != null) {
-			d._handler.call(d._thisObj, d._args);
-			if(d._rpt == 0 || ++d._cnt < d._rpt) d.call(); else d._cnt = 0;
+	,_tick: function() {
+		if(this._handler != null) {
+			this._tid = null;
+			Reflect.callMethod(this._this,this._handler,this._args);
+			if(this._rpt == 0 || ++this._cnt < this._rpt) this.call(); else this._cnt = 0;
 		}
 	}
 	,__class__: sirius_tools_Delayer
@@ -5156,6 +5172,17 @@ sirius_transitions_Ease.__name__ = ["sirius","transitions","Ease"];
 sirius_transitions_Ease._F = function(n) {
 	n = window[n];;
 	return n != null?{ x : n.easeNone, I : n.easeIn, O : n.easeOut, IO : n.easeInOut, OI : n.easeOutIn}:{ };
+};
+sirius_transitions_Ease.update = function() {
+	sirius_transitions_Ease.LINEAR = sirius_transitions_Ease._F("Linear");
+	sirius_transitions_Ease.CIRC = sirius_transitions_Ease._F("Circ");
+	sirius_transitions_Ease.CUBIC = sirius_transitions_Ease._F("Cubic");
+	sirius_transitions_Ease.QUAD = sirius_transitions_Ease._F("Quad");
+	sirius_transitions_Ease.EXPO = sirius_transitions_Ease._F("Expo");
+	sirius_transitions_Ease.BACK = sirius_transitions_Ease._F("Back");
+	sirius_transitions_Ease.ELASTIC = sirius_transitions_Ease._F("Elastic");
+	sirius_transitions_Ease.QUART = sirius_transitions_Ease._F("Quart");
+	sirius_transitions_Ease.QUINT = sirius_transitions_Ease._F("Quint");
 };
 sirius_transitions_Ease.fromString = function(q) {
 	var q1 = [];
@@ -5673,6 +5700,9 @@ sirius_utils_Table.prototype = {
 	,onTouchCancel: function(handler,mode) {
 		return this.on("touchcancel",handler,mode);
 	}
+	,onVisibility: function(handler,mode) {
+		return this.on("visibility",handler,mode);
+	}
 	,__class__: sirius_utils_Table
 };
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
@@ -5739,7 +5769,7 @@ sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
-sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, formInput : sirius_dom_FormInput, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
+sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
@@ -5779,18 +5809,13 @@ sirius_tools_BitIO.P30 = 536870912;
 sirius_tools_BitIO.P31 = 1073741824;
 sirius_tools_BitIO.P32 = -2147483648;
 sirius_tools_BitIO.X = [sirius_tools_BitIO.Unwrite,sirius_tools_BitIO.Write,sirius_tools_BitIO.Toggle];
+sirius_tools_Delayer.CALL = setTimeout;
+sirius_tools_Delayer.CLEAR = clearTimeout;
 sirius_tools_Delayer._tks = { };
 sirius_tools_Ticker._pool = [];
-sirius_transitions_Ease.LINEAR = sirius_transitions_Ease._F("Linear");
-sirius_transitions_Ease.CIRC = sirius_transitions_Ease._F("Circ");
-sirius_transitions_Ease.CUBIC = sirius_transitions_Ease._F("Cubic");
-sirius_transitions_Ease.QUAD = sirius_transitions_Ease._F("Quad");
-sirius_transitions_Ease.EXPO = sirius_transitions_Ease._F("Expo");
-sirius_transitions_Ease.BACK = sirius_transitions_Ease._F("Back");
-sirius_transitions_Ease.ELASTIC = sirius_transitions_Ease._F("Elastic");
-sirius_transitions_Ease.QUART = sirius_transitions_Ease._F("Quart");
-sirius_transitions_Ease.QUINT = sirius_transitions_Ease._F("Quint");
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._R = false;
 sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
+
+//# sourceMappingURL=api.sirius.js.map

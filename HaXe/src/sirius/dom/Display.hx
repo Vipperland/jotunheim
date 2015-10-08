@@ -1,5 +1,6 @@
 package sirius.dom;
 
+import haxe.ds.Either;
 import haxe.Log;
 import js.Browser;
 import js.html.CSSStyleDeclaration;
@@ -17,6 +18,8 @@ import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
 import sirius.math.ARGB;
 import sirius.math.IARGB;
+import sirius.math.IPoint;
+import sirius.math.Point;
 import sirius.Sirius;
 import sirius.tools.Key;
 import sirius.tools.Ticker;
@@ -43,6 +46,18 @@ class Display implements IDisplay {
 		return new Display(q);
 	}
 	
+	static public function getPosition(target:Element):IPoint {
+		//var isNotFirefox = (navigator.userAgent.toLowerCase().indexOf('firefox') == -1);
+		var x:Int = 0;
+		var y:Int = 0;
+		while (target != null) {
+			x += target.offsetLeft - target.scrollLeft + target.clientLeft;
+			y += target.offsetTop - target.scrollTop + target.clientTop;
+			target = target.offsetParent;
+		}
+		return new Point(x + window.scrollX, y + window.scrollY);
+	}
+	
 	private var _uid:String;
 	
 	public var data:DisplayData;
@@ -54,6 +69,8 @@ class Display implements IDisplay {
 	private var _parent:IDisplay;
 	
 	private var _children:ITable;
+	
+	private var _visibility:Int;
 	
 	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
 		
@@ -90,25 +107,33 @@ class Display implements IDisplay {
 	}
 	
 	public function alignCenter():Void {
-		css("marg-a vert-m /float-l /float-r");
+		css("marg-a vert-m /float-l /float-r txt-c");
 	}
 	
 	public function alignLeft():Void {
-		css("/marg-a /vert-m float-l /float-r");
+		css("/marg-a /vert-m float-l /float-r /txt-c");
 	}
 	
 	public function alignRight():Void {
-		css("/marg-a /vert-m /float-l float-r");
+		css("/marg-a /vert-m /float-l float-r /txt-c");
 	}
 	
-	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String {
-		if (value != null) {
-			if (Std.is(value, IARGB)) value = value.hex();
-			var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
-			var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
-			var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
-			element.style.background = c + " " + r + " " + p;
-			if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
+	public function background(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String):String {
+		
+		if (data != null) {
+			var value:Dynamic = cast data;
+			if (Std.is(value, IARGB)) value = value.css();
+			if (value.indexOf("#") == 0) {
+				element.style.background = value;
+			}else if (value.indexOf("rgb") == 0) {
+				element.style.backgroundColor = value;
+			}else{
+				var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
+				var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
+				var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
+				element.style.background = c + " " + r + " " + p;
+				if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
+			}
 		}
 		return element.style.background;
 	}
@@ -389,17 +414,32 @@ class Display implements IDisplay {
 	}
 	
 	public function isFullyVisible():Bool {
-		var rect:DOMRect = this.element.getBoundingClientRect();
-		return rect.top >= 0 && rect.left >= 0 && rect.bottom <= Utils.viewportHeight() && rect.right <= Utils.viewportWidth();
+		return _visibility == 2;
 	}
 	
 	public function isVisible():Bool {
-		var rect:DOMRect = this.element.getBoundingClientRect();
-		return rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth();
+		return _visibility > 0;
 	}
 	
-	public function isHidden():Bool {
-		return element == null || element.hidden;
+	public function checkVisibility(?view:Bool, ?offsetY:Int = 0, ?offsetX:Int = 0):UInt {
+		
+		var rect:DOMRect = this.element.getBoundingClientRect();
+		var current:Int = 0;
+		// IS FULLY VISIBLE
+		if (rect.top + offsetY >= 0 && rect.left + offsetX >= 0 && rect.bottom - offsetY <= Utils.viewportHeight() && rect.right - offsetX <= Utils.viewportWidth()) current = 2;
+		// IS VISIBLE
+		else if (rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth()) current = 1;
+		
+		if (current != _visibility) {
+			_visibility = current;
+			events.visibility().call();
+		}
+		
+		return _visibility;
+	}
+	
+	public function getBounds():DOMRect {
+		return this.element.getBoundingClientRect();
 	}
 	
 	public function jQuery():JQuery {
@@ -426,6 +466,17 @@ class Display implements IDisplay {
 	public function addToBody():IDisplay {
 		if (Sirius.document != null) Sirius.document.body.addChild(this);
 		return this;
+	}
+	
+	public function goFullSize():Void {
+		style( {
+			width:Utils.viewportWidth() + 'px',
+			height:Utils.viewportHeight() + 'px',
+		});
+	}
+	
+	public function position():IPoint {
+		return getPosition(element);
 	}
 	
 }

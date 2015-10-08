@@ -30,7 +30,6 @@ import haxe.Log;
 	import sirius.dom.FieldSet;
 	import sirius.dom.Font;
 	import sirius.dom.Form;
-	import sirius.dom.FormInput;
 	import sirius.dom.Frame;
 	import sirius.dom.FrameSet;
 	import sirius.dom.H1;
@@ -87,8 +86,6 @@ import haxe.Log;
 	import sirius.dom.UL;
 	import sirius.dom.Video;
 	
-	import sirius.plugins.Anchor;
-	
 #end
 
 import sirius.utils.Dice;
@@ -133,7 +130,7 @@ class Utils{
 			button:Button,canvas:Canvas,caption:Caption,col:Col,content:Content,
 			datalist:DataList,dir:Dir,div:Div,display:Display,display3d:Display3D,dl:DL,document:Document,
 			embed:Embed,
-			fieldset:FieldSet,font:Font,form:Form,frame:Frame,frameset:FrameSet,formInput:FormInput,
+			fieldset:FieldSet,font:Font,form:Form,frame:Frame,frameset:FrameSet,
 			h1:H1,h2:H2,h3:H3,h4:H4,h5:H5,h6:H6,head:Head,hr:HR,html:Html,
 			i:I, iframe:IFrame, img:Img, input:Input,
 			label:Label,legend:Legend,li:LI,link:Link,

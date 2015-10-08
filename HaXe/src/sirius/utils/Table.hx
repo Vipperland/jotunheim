@@ -317,5 +317,7 @@ class Table implements ITable {
 	public function onTouchMove(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("touchmove", handler, mode); }
 
 	public function onTouchCancel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("touchcancel", handler, mode); }
+	
+	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("visibility", handler, mode); }
 
 }

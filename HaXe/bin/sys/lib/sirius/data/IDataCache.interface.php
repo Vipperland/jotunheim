@@ -2,6 +2,7 @@
 
 interface sirius_data_IDataCache {
 	function json($print = null);
+	function base64($print = null);
 	function refresh();
 	function clear($p = null);
 	function set($p, $v);

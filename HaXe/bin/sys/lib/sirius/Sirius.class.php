@@ -4,6 +4,7 @@ class sirius_Sirius {
 	public function __construct(){}
 	static $_loglevel = 12;
 	static $_initialized = false;
+	static $_loaded = false;
 	static $resources;
 	static $domain;
 	static $header;

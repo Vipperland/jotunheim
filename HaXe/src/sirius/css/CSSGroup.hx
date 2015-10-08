@@ -100,7 +100,7 @@ class CSSGroup{
 		return CM;
 	}
 	
-	public function setSelector(id:String, style:String, mode:String):Void {
+	public function setSelector(id:String, style:String, ?mode:String):Void {
 		if(!hasSelector(id, style, mode)){
 			if (mode == 'xs') 		this.styleXS += _add(id, style);
 			else if (mode == 'sm') 	this.styleSM += _add(id, style);
