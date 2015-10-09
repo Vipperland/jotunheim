@@ -313,7 +313,9 @@ class Display implements IDisplay {
 	
 	public function write(q:String):IDisplay {
 		var i:IDisplay = new Display().build(q,false);
-		i.children().each(cast addChild);
+		i.children().each(function(v:IDisplay) {
+			addChild(v);
+		});
 		return this;
 	}
 	

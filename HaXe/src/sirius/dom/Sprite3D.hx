@@ -10,14 +10,14 @@ class Sprite3D extends Display3D {
 
 	public var content:IDisplay3D;
 	
-	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc") {
+	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc disp-table") {
 		super(null, d);
 		setPerspective("1000px");
 		content = new Display3D(q);
 		content.preserve3d().update();
 		//content.setPerspective(null, '50% 50% 50%');
 		if (content.parent() == null) addChild(content);
-		content.css("disp-table-cell vert-m txt-c");
+		content.css('disp-table-cell vert-m');
 		update();
 	}
 	

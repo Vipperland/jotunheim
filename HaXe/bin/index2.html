@@ -8,15 +8,31 @@
 	
 <body>
 	
-	<script src="extended/api.sirius.js"></script>
+	<script src="extended/plugins/carousel3d.min.js"></script>
+	<script src="extended/api.sirius.min.js"></script>
+	
+	<div class="panel h-100pc bg-red w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-orange w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-yellow w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-green w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-dodgerblue w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-blue w-100pc">		
+	</div>
+	<div class="panel h-100pc bg-darkviolet w-100pc">		
+	</div>
 	
 	<script>
 		
 		Sirius.onInit(function(){
-			//Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
-			
+			Sirius.plugins.Carousel3D('.panel');
 		});
 		
+		Automator.scan();
 		
 	</script>
 	

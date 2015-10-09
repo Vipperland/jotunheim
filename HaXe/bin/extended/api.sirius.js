@@ -1849,8 +1849,11 @@ sirius_dom_Display.prototype = {
 		if(this.element.ownerDocument.defaultView.opener) return this.element.ownerDocument.defaultView.getComputedStyle(this.element); else return window.getComputedStyle(this.element);
 	}
 	,write: function(q) {
+		var _g = this;
 		var i = new sirius_dom_Display().build(q,false);
-		i.children().each($bind(this,this.addChild));
+		i.children().each(function(v) {
+			_g.addChild(v);
+		});
 		return this;
 	}
 	,clear: function(fast) {
@@ -3325,13 +3328,13 @@ sirius_dom_Sprite.prototype = $extend(sirius_dom_Div.prototype,{
 	__class__: sirius_dom_Sprite
 });
 var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q,d) {
-	if(d == null) d = "w-100pc h-100pc";
+	if(d == null) d = "w-100pc h-100pc disp-table";
 	sirius_dom_Display3D.call(this,null,d);
 	this.setPerspective("1000px");
 	this.content = new sirius_dom_Display3D(q);
 	this.content.preserve3d().update();
 	if(this.content.parent() == null) this.addChild(this.content);
-	this.content.css("disp-table-cell vert-m txt-c");
+	this.content.css("disp-table-cell vert-m");
 	this.update();
 };
 sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
