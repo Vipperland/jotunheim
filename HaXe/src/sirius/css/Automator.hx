@@ -1,12 +1,8 @@
 package sirius.css;
-import sirius.css.CSSGroup;
-import haxe.Constraints.Function;
-import haxe.Log;
 import js.html.Element;
+import sirius.css.CSSGroup;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
-import sirius.math.ARGB;
-import sirius.modules.ILoader;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;

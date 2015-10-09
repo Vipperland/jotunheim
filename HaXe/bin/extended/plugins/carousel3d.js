@@ -174,5 +174,7 @@
 		getPoints();
 		Ticker.init();
 		
+		return cont;
+		
 	}
 })(typeof window != "undefined" ? window : exports);

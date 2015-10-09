@@ -1694,12 +1694,14 @@ sirius_dom_Display.prototype = {
 			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
 			if(value.indexOf("#") == 0) this.element.style.background = value; else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else {
 				var c;
-				if(value.indexOf("#") == 0) c = value; else c = "url(" + Std.string(value) + ")";
+				if(value.indexOf("#") == 0) c = value; else c = "url('" + Std.string(value) + "')";
 				var r;
-				if(repeat != null && repeat.length > 0) r = repeat; else r = "center center";
+				if(repeat != null && repeat.length > 0) r = repeat; else r = "no-repeat";
 				var p;
-				if(position != null && repeat.length > 0) p = position; else p = "no-repeat";
-				this.element.style.background = c + " " + r + " " + p;
+				if(position != null && position.length > 0) p = position; else p = "center center";
+				this.element.style.backgroundImage = c;
+				this.element.style.backgroundRepeat = r;
+				this.element.style.backgroundOrigin = p;
 				if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
 			}
 		}

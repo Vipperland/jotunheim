@@ -136,6 +136,7 @@
 	<script>
 		
 		var Div = sru.dom.Div;
+		var Display3D = sru.dom.Display3D;
 		
 		var grid1 = Sirius.one('.mosaic-1');
 		var grid2 = Sirius.one('.mosaic-2');
@@ -150,10 +151,14 @@
 		
 		function aDiv(i,t,s,x){
 			var b = bgs[i];
-			var d = new Div();
+			var d = new Display3D();
+			d.locationZ(50);
+			d.update();
 			d.css(s);
 			d.addTo(t);
-			var c = new Div();
+			var c = new Display3D();
+			c.locationZ(50);
+			c.update();
 			c.css('txt-j marg-1 padd-10 h-100pc bg-' + b + ' shadow-' + b);
 			c.build(x);
 			c.addTo(d);
@@ -187,9 +192,13 @@
 			
 			Automator.build('txt-white','*');
 			Automator.build('bord-rad-3','.grid div');
-			Automator.scan();
+			
 			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
-			Sirius.plugins.Carousel3D('.panel', 60, .1, 500, false);
+			
+			var container = Sirius.plugins.Carousel3D('.panel', 60, .1, 500, false);
+			
+			//Sirius.document.body.background('assets/img/pattern-common.jpg','reapeat');
+			Automator.scan();
 			
 		});
 		

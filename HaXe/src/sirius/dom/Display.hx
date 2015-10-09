@@ -122,10 +122,12 @@ class Display implements IDisplay {
 			}else if (value.indexOf("rgb") == 0) {
 				element.style.backgroundColor = value;
 			}else{
-				var c:String = (value.indexOf("#") == 0) ? value : "url(" + value + ")";
-				var r:String = repeat != null && repeat.length > 0 ? repeat : "center center";
-				var p:String = position != null && repeat.length > 0 ? position : "no-repeat";
-				element.style.background = c + " " + r + " " + p;
+				var c:String = (value.indexOf("#") == 0) ? value : "url('" + value + "')";
+				var r:String = repeat != null && repeat.length > 0 ? repeat : "no-repeat";
+				var p:String = position != null && position.length > 0 ? position : "center center";
+				element.style.backgroundImage = c;
+				element.style.backgroundRepeat = r;
+				element.style.backgroundOrigin = p;
 				if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
 			}
 		}
