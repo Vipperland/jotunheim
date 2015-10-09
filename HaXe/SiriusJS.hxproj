@@ -47,7 +47,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="http://sirius.192.168.0.100.xip.io" />
+    <option testMovieCommand="tools\run.bat" />
   </options>
   <!-- Plugin storage -->
   <storage />

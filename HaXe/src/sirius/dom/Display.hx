@@ -46,16 +46,10 @@ class Display implements IDisplay {
 		return new Display(q);
 	}
 	
-	static public function getPosition(target:Element):IPoint {
-		//var isNotFirefox = (navigator.userAgent.toLowerCase().indexOf('firefox') == -1);
-		var x:Int = 0;
-		var y:Int = 0;
-		while (target != null) {
-			x += target.offsetLeft - target.scrollLeft + target.clientLeft;
-			y += target.offsetTop - target.scrollTop + target.clientTop;
-			target = target.offsetParent;
-		}
-		return new Point(x + window.scrollX, y + window.scrollY);
+	static public function getPosition(target:Element) {
+		var a:DOMRect = Sirius.document.body.getBounds();
+		var b:DOMRect = target.getBoundingClientRect();
+		return new Point(b.left - a.left, b.top - a.top);
 	}
 	
 	private var _uid:String;

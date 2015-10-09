@@ -26,4 +26,10 @@ class Point implements IPoint {
 				: o.x == x && o.y == y;
 	}
 	
+	public function add(q:IPoint):IPoint {
+		x += q.x;
+		y += q.y;
+		return this;
+	}
+	
 }

@@ -82,6 +82,9 @@ class Sirius {
 		/// SEO Tools
 		static public var seo:SEOTool = new SEOTool();
 		
+		/// External Plugins
+		static public var plugins:Dynamic = { };
+		
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;
 		
@@ -89,6 +92,11 @@ class Sirius {
 		static private function _loadController(e:Event):Void {
 			agent.update();
 			Ease.update();
+			var plist:Dynamic = untyped __js__("window.sru ? window.sru.plugins : null");
+			Dice.All(plist, function(p:String, v:Dynamic) {
+				Reflect.setField(plugins, p, v);
+				log("Sirius->Plugins::status[ " + p + "() ADDED]", 10, 1);
+			});
 			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 			_loaded = true;
 			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });

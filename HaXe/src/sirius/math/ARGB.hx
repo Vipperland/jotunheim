@@ -6,6 +6,7 @@ import sirius.math.IARGB;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+@:expose('ARGB')
 class ARGB implements IARGB {
 	
 	public static function from(q:Dynamic, ?g:Int, ?b:Int, ?a:Int):IARGB {

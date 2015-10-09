@@ -10,8 +10,8 @@
 	
 	<script src="extended/3rd/js/jquery-2.1.4.min.js"></script>
 	<script src="extended/3rd/js/tween.min.js"></script>
-	<script src="extended/api.sirius.js"></script>
-	<script src="extended/plugins/anchor.js"></script>
+	<script src="extended/api.sirius.min.js"></script>
+	<script src="extended/plugins/anchor.min.js"></script>
 	
 	<div class="grid txt-white txt-30 txt-c pos-fix t-0 w-100pc bg-white shadow-white">
 		<div class="cel-7x7 txt-c txt-24 txt-black h-30 padd-5n">
@@ -29,8 +29,8 @@
 		<div class="cel-1x7 shadow-txt-green" plugin="anchor" a-target=".mosaic-4">
 			<div class="bg-green shadow-green">GREEN</div>
 		</div>
-		<div class="cel-1x7 shadow-txt-mediumblue" plugin="anchor" a-target=".mosaic-5">
-			<div class="bg-mediumblue shadow-mediumblue">BLUE</div>
+		<div class="cel-1x7 shadow-txt-dodgerblue" plugin="anchor" a-target=".mosaic-5">
+			<div class="bg-dodgerblue shadow-dodgerblue">BLUE</div>
 		</div>
 		<div class="cel-1x7 shadow-txt-blue" plugin="anchor" a-target=".mosaic-6">
 			<div class="bg-blue shadow-blue">INDIGO</div>
@@ -40,7 +40,7 @@
 		</div>
 	</div>
 	
-	<div class="h-50"></div>
+	<div class="grid h-100"></div>
 	
 	<div class="grid mosaic-1"></div>
 	<div class="grid mosaic-2"></div>
@@ -64,7 +64,7 @@
 		var grid7 = Sirius.one('.mosaic-7');
 		
 		var txt = '<span>Aliquam vitae est erat. Suspendisse odio sapien, congue quis tempus eget, ornare eget est. Sed sollicitudin dolor risus, nec suscipit eros vehicula eu. Praesent sit amet urna est. Cras eu posuere urna. Sed ipsum magna, tincidunt quis fermentum at, porttitor non nisl. Quisque turpis turpis, molestie at diam at, fermentum fermentum arcu. Nulla convallis, arcu eu venenatis laoreet, nibh est cursus eros, eget eleifend nulla lorem eu tellus. Nulla mollis cursus rutrum. Nam purus magna, ullamcorper eu urna sed, elementum posuere metus.</br>Etiam sagittis dui tristique dolor scelerisque, et dignissim leo auctor. Fusce volutpat placerat purus eget iaculis. Etiam dapibus erat et nibh lobortis, ut scelerisque lacus malesuada. Donec id tristique enim. Aliquam tempor tortor et imperdiet porta. Vivamus in purus ac nisi bibendum tempor. Nullam metus risus, mollis at eros ut, vestibulum condimentum nibh. Aliquam molestie arcu eget malesuada tempor. Curabitur feugiat aliquam felis quis cursus. Morbi aliquam scelerisque ligula ut interdum. Praesent vel felis vel justo vulputate sagittis non in neque. Sed ut purus at turpis suscipit hendrerit in nec lectus. Donec pharetra tristique dui, sed molestie metus viverra vitae. Curabitur ornare turpis vitae leo aliquet tempor.</span>';
-		var bgs = ['darkred','red','darkorange','orange','gold','yellow','darkgreen','green','cornflowerblue','dodgerblue','mediumblue','blue','darkviolet','violet'];
+		var bgs = ['darkred','red','darkorange','orange','gold','yellow','darkgreen','green','deepskyblue','dodgerblue','blue','darkblue','darkviolet','violet'];
 		
 		function aDiv(i,t,s){
 			var b = bgs[i];
@@ -105,6 +105,7 @@
 			Automator.build('bord-rad-3','.grid div');
 			Automator.scan();
 			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
+			Sirius.plugins.Anchor();
 		});
 		
 	</script>

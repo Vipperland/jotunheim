@@ -1358,10 +1358,15 @@ sirius_Sirius.main = function() {
 sirius_Sirius._loadController = function(e) {
 	sirius_Sirius.agent.update();
 	sirius_transitions_Ease.update();
+	var plist = window.sru ? window.sru.plugins : null;
+	sirius_utils_Dice.All(plist,function(p,v) {
+		sirius_Sirius.plugins[p] = v;
+		sirius_Sirius.log("Sirius->Plugins::status[ " + p + "() ADDED]",10,1);
+	});
 	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
 	sirius_Sirius._loaded = true;
-	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
-		if(sirius_tools_Utils.isValid(v)) v();
+	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v1) {
+		if(sirius_tools_Utils.isValid(v1)) v1();
 	});
 	window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 	sirius_Sirius._loadPool = null;
@@ -1459,7 +1464,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 248, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 256, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1656,13 +1661,9 @@ sirius_dom_Display.create = function(q) {
 	return new sirius_dom_Display(q);
 };
 sirius_dom_Display.getPosition = function(target) {
-	var p = new sirius_math_Point(0,0);
-	while(target != null && target != sirius_Sirius.document.element) {
-		p.x += target.offsetLeft + Std.parseInt(target.style.paddingLeft);
-		p.y += target.offsetTop + Std.parseInt(target.style.paddingTop);
-		target = target.offsetParent;
-	}
-	return p;
+	var a = sirius_Sirius.document.body.getBounds();
+	var b = target.getBoundingClientRect();
+	return new sirius_math_Point(b.left - a.left,b.top - a.top);
 };
 sirius_dom_Display.prototype = {
 	exists: function(q) {
@@ -3957,6 +3958,8 @@ sirius_css_Automator._init = function() {
 	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover");
 	sirius_css_Automator.build("list-style-none","ol,ul,dl");
 	sirius_css_Automator.build("padd-5","hr");
+	sirius_css_Automator.build("disp-table content-void",".grid:before,.grid:after");
+	sirius_css_Automator.build("clear-both",".grid:after");
 	sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
 	sirius_css_Automator.css.setSelector("*,*:before,*:after","-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;");
 	sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c");
@@ -3999,7 +4002,7 @@ sirius_math_IARGB.__name__ = ["sirius","math","IARGB"];
 sirius_math_IARGB.prototype = {
 	__class__: sirius_math_IARGB
 };
-var sirius_math_ARGB = function(q,g,b,a) {
+var sirius_math_ARGB = $hx_exports.ARGB = function(q,g,b,a) {
 	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
 	if(s && q.substr(0,3) == "rgb") {
 		s = false;
@@ -4636,6 +4639,11 @@ sirius_math_Point.prototype = {
 	}
 	,match: function(o,round) {
 		if(round) return Math.round(o.x) == Math.round(this.x) && Math.round(o.y) == Math.round(this.y); else return o.x == this.x && o.y == this.y;
+	}
+	,add: function(q) {
+		this.x += q.x;
+		this.y += q.y;
+		return this;
 	}
 	,__class__: sirius_math_Point
 };
@@ -5759,6 +5767,7 @@ sirius_Sirius.domain = new sirius_net_Domain();
 sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.agent = new sirius_tools_Agent();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
+sirius_Sirius.plugins = { };
 sirius_css_CSSGroup.SOF = "/*SOF*/@media";
 sirius_css_CSSGroup.EOF = "}/*EOF*/";
 sirius_css_CSSGroup.MEDIA_PR = "print";
