@@ -1,6 +1,7 @@
 package sirius.dom;
 
 import haxe.Constraints.Function;
+import haxe.ds.Either;
 import js.html.CSSStyleDeclaration;
 import js.html.Element;
 import js.JQuery;
@@ -358,7 +359,7 @@ interface IDisplay {
 	 * @param	tag
 	 * @return
 	 */
-	public function is(tag:String):Bool;
+	public function is(tag:Either<String,Array<String>>):Bool;
 	
 	/**
 	 * Add this to a target element or Body if target is null

@@ -448,11 +448,16 @@ class Display implements IDisplay {
 		return "[" + Utils.getClassName(this) + "{element:" + element.tagName + ", length:" + length() + "}]";
 	}
 	
-	public function is(tag:String):Bool {
-		tag = tag.toLowerCase();
-		var segment:String = Utils.getClassName(this).toLowerCase();
-		if (tag.indexOf(".") == -1) segment = segment.split(".").pop();
-		return tag == segment || tag == element.tagName;
+	public function is(tag:Either<String,Array<String>>):Bool {
+		var name:String = Utils.getClassName(this).toLowerCase();
+		var pre:String = name.split(".").pop();
+		if (Std.is(tag, String)) tag = cast [tag];
+		var r:IDiceRoll = Dice.Values(tag, function(v:String) {
+			v = v.toLowerCase();
+			var c:String = (v.indexOf(".") == -1) ? pre : name;
+			return v == c || v == element.tagName;
+		});
+		return !r.completed;
 	}
 	
 	public function addTo(?target:IDisplay):IDisplay {

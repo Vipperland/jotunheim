@@ -10,8 +10,8 @@
 	
 	<script src="extended/3rd/js/jquery-2.1.4.min.js"></script>
 	<script src="extended/3rd/js/tween.min.js"></script>
-	<script src="extended/api.sirius.min.js"></script>
-	<script src="extended/plugins/carousel3d.min.js"></script>
+	<script src="extended/api.sirius.js"></script>
+	<script src="extended/plugins/carousel3d.js"></script>
 	
 	<div class="panel h-100pc bg-red w-100pc">	
 		<div class="grid mosaic-1 padd-10">
@@ -152,13 +152,9 @@
 		function aDiv(i,t,s,x){
 			var b = bgs[i];
 			var d = new Display3D();
-			d.locationZ(50);
-			d.update();
 			d.css(s);
 			d.addTo(t);
 			var c = new Display3D();
-			c.locationZ(50);
-			c.update();
 			c.css('txt-j marg-1 padd-10 h-100pc bg-' + b + ' shadow-' + b);
 			c.build(x);
 			c.addTo(d);
@@ -195,7 +191,27 @@
 			
 			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 			
-			var container = Sirius.plugins.Carousel3D('.panel', 60, .1, 500, false);
+			var container = Sirius.plugins.Carousel3D('.panel', 60, 500, false);
+			
+			Sirius.document.events.keyDown(function(e){
+				switch(e.event.keyCode){
+					case 90 : {
+						container.toggleAxys();
+					}
+					case 107 : {}
+					case 187 : {
+						container.aperture -= 10;
+						container.update();
+						break
+					}
+					case 109 : {}
+					case 189 : {
+						container.aperture += 10;
+						container.update();
+						break;
+					}
+				}
+			});
 			
 			//Sirius.document.body.background('assets/img/pattern-common.jpg','reapeat');
 			Automator.scan();

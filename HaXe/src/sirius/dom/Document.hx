@@ -9,6 +9,7 @@ import js.html.MouseEvent;
 import sirius.events.IEvent;
 import sirius.math.IPoint;
 import sirius.math.Point;
+import sirius.tools.Utils;
 import sirius.transitions.Animator;
 import sirius.utils.ITable;
 
@@ -41,6 +42,11 @@ class Document extends Display {
 	
 	public function scroll(x:Float, y:Float):Void {
 		Browser.window.scroll(x, y);
+	}
+	
+	public function addScroll(x:Float, y:Float):Void {
+		var current:IPoint = getScroll();
+		Browser.window.scroll(current.x + x, current.y + y);
 	}
 	
 	public function getScrollRange(?o:IPoint = null, ?pct:Bool = false):IPoint {
@@ -114,6 +120,11 @@ class Document extends Display {
 		return __cursor__.y;
 	}
 	
+	public function focus(?target:IDisplay):IDisplay {
+		if (target != null) target.element.focus();
+		return Utils.displayFrom(Browser.document.activeElement);
+	}
+	
 	public function print(selector:String, ?exclude:String = "button, img, .no-print"):Bool {
 		var i:ITable = body.children();
 		var success:Bool = false;
@@ -121,7 +132,7 @@ class Document extends Display {
 			i.hide();
 			var content:String = "";
 			i.each(function(d:IDisplay) {
-				if (!d.is('script') && !d.is('style')) {
+				if (!d.is(cast ['script','style'])) {
 					content += d.element.outerHTML;
 					d.hide();
 				}

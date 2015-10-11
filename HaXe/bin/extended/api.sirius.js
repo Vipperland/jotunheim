@@ -1962,10 +1962,17 @@ sirius_dom_Display.prototype = {
 		return "[" + sirius_tools_Utils.getClassName(this) + "{element:" + this.element.tagName + ", length:" + this.length() + "}]";
 	}
 	,'is': function(tag) {
-		tag = tag.toLowerCase();
-		var segment = sirius_tools_Utils.getClassName(this).toLowerCase();
-		if(tag.indexOf(".") == -1) segment = segment.split(".").pop();
-		return tag == segment || tag == this.element.tagName;
+		var _g = this;
+		var name = sirius_tools_Utils.getClassName(this).toLowerCase();
+		var pre = name.split(".").pop();
+		if(typeof(tag) == "string") tag = [tag];
+		var r = sirius_utils_Dice.Values(tag,function(v) {
+			v = v.toLowerCase();
+			var c;
+			if(v.indexOf(".") == -1) c = pre; else c = name;
+			return v == c || v == _g.element.tagName;
+		});
+		return !r.completed;
 	}
 	,addTo: function(target) {
 		if(target != null) target.addChild(this); else if(sirius_Sirius.document != null) sirius_Sirius.document.body.addChild(this);
@@ -2420,6 +2427,10 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 	scroll: function(x,y) {
 		window.scroll(x,y);
 	}
+	,addScroll: function(x,y) {
+		var current = this.getScroll();
+		window.scroll(current.x + x,current.y + y);
+	}
 	,getScrollRange: function(o,pct) {
 		if(pct == null) pct = false;
 		var current = this.getScroll(o);
@@ -2480,6 +2491,10 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 	,cursorY: function() {
 		return sirius_dom_Document.__cursor__.y;
 	}
+	,focus: function(target) {
+		if(target != null) target.element.focus();
+		return sirius_tools_Utils.displayFrom(window.document.activeElement);
+	}
 	,print: function(selector,exclude) {
 		if(exclude == null) exclude = "button, img, .no-print";
 		var i = this.body.children();
@@ -2488,7 +2503,7 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 			i.hide();
 			var content = "";
 			i.each(function(d) {
-				if(!d["is"]("script") && !d["is"]("style")) {
+				if(!d["is"](["script","style"])) {
 					content += d.element.outerHTML;
 					d.hide();
 				}
@@ -5831,5 +5846,3 @@ sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","
 sirius_utils_SearchTag._R = false;
 sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map
