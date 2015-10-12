@@ -396,6 +396,13 @@ interface IDisplay {
 	public function position():IPoint;
 	
 	/**
+	 * Enable or Disable pointer interaction
+	 * @param	value
+	 * @return
+	 */
+	public function mouseEnabled(?value:Bool):Bool;
+	
+	/**
 	 * Change display backgroud
 	 * @param	value
 	 * @param	repeat

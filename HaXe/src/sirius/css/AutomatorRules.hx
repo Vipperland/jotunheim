@@ -415,6 +415,7 @@ class AutomatorRules{
 		visible:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
 		mosaic:{value:'',verifier:mosaicKey},
+		mouse:{value:'pointer-events',verifier:commonKey},
 	};
 	
 	static public function set(rule:Dynamic, ?value:IEntry):Void {

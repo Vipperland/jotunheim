@@ -11,28 +11,30 @@
 	<script src="extended/api.sirius.min.js"></script>
 	<script src="extended/plugins/carousel3d.min.js"></script>
 	
-	<div class="panel h-100pc bg-red w-100pc scroll-none">	
-		<div class="grid mosaic-1 padd-10">
+	<div class="panel h-100pc bg-red w-100pc scroll-none" style="backface-visibility:hidden">	
+		<div class="w-100pc txt-c t-0 l-0 scroll-none">
+			<video class="w-100pc" autoplay="true" controls="false">
+			  <source src="assets/media/music.mp4" type="video/mp4">
+			</video>
+		</div>
+		<div class="w-100pc h-100pc mouse-none" >
+			<div class="bord-solid bord-red bord-20 pos-abs w-100pc h-100pc t-0" style="backface-visibility:hidden">
+			</div>
+		</div>
+		<div class="grid mosaic-1 padd-10 pos-abs w-100pc t-5" sru-dom="display3d">
 			<div class="cel-1x1 shadow-txt-darkred shadow-darkred marg-1 padd-10 bg-darkred">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
-		<div class="marg-l-a marg-r-a txt-c">
-			<iframe class="shadow-darkred bord-rad-20" src="https://player.vimeo.com/video/96571020?title=0&byline=0&portrait=0" width="1000" height="562" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-		</div>
 	</div>
 	<div class="panel h-100pc bg-orange w-100pc">
-		<div class="grid mosaic-2 padd-10">
+		<div class="grid mosaic-2 padd-10" sru-dom="display3d">
 			<div class="cel-2x2 shadow-txt-darkorange shadow-darkorange marg-1 padd-10 bg-darkorange">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -49,7 +51,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-yellow w-100pc">
-		<div class="grid mosaic-3 padd-10">
+		<div class="grid mosaic-3 padd-10" sru-dom="display3d">
 			<div class="cel-3x3 shadow-txt-gold shadow-gold marg-1 padd-10 bg-gold">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -66,7 +68,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-green w-100pc">
-		<div class="grid mosaic-4 padd-10">
+		<div class="grid mosaic-4 padd-10" sru-dom="display3d">
 			<div class="cel-4x4 shadow-txt-darkgreen shadow-darkgreen marg-1 padd-10 bg-darkgreen">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -83,7 +85,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-dodgerblue w-100pc">
-		<div class="grid mosaic-5 padd-10">
+		<div class="grid mosaic-5 padd-10" sru-dom="display3d">
 			<div class="cel-5x5 shadow-txt-deepskyblue shadow-deepskyblue marg-1 padd-10 bg-deepskyblue">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -100,7 +102,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-blue w-100pc">
-		<div class="grid mosaic-6 padd-10">
+		<div class="grid mosaic-6 padd-10" sru-dom="display3d">
 			<div class="cel-6x6 shadow-txt-darkblue shadow-darkblue marg-1 padd-10 bg-darkblue">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -117,7 +119,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-darkviolet w-100pc">
-		<div class="grid mosaic-7 padd-10">
+		<div class="grid mosaic-7 padd-10" sru-dom="display3d">
 			<div class="cel-7x7 shadow-txt-darkviolet shadow-darkviolet marg-1 padd-10 bg-darkviolet">
 				<div class="txt-30">
 					Sirius.plugins.<span class="bold">Carousel3D</span> :)
@@ -148,6 +150,8 @@
 		var grid6 = Sirius.one('.mosaic-6');
 		var grid7 = Sirius.one('.mosaic-7');
 		
+		var allGrid = [grid1,grid2,grid3,grid4,grid5,grid6,grid7];
+		
 		var txt = '<span>Aliquam vitae est erat. Suspendisse odio sapien, congue quis tempus eget, ornare eget est. Sed sollicitudin dolor risus, nec suscipit eros vehicula eu. Praesent sit amet urna est. Cras eu posuere urna. Sed ipsum magna, tincidunt quis fermentum at, porttitor non nisl. Quisque turpis turpis, molestie at diam at, fermentum fermentum arcu. Nulla convallis, arcu eu venenatis laoreet, nibh est cursus eros, eget eleifend nulla lorem eu tellus. Nulla mollis cursus rutrum. Nam purus magna, ullamcorper eu urna sed, elementum posuere metus.</br>Etiam sagittis dui tristique dolor scelerisque, et dignissim leo auctor. Fusce volutpat placerat purus eget iaculis. Etiam dapibus erat et nibh lobortis, ut scelerisque lacus malesuada. Donec id tristique enim. Aliquam tempor tortor et imperdiet porta. Vivamus in purus ac nisi bibendum tempor. Nullam metus risus, mollis at eros ut, vestibulum condimentum nibh. Aliquam molestie arcu eget malesuada tempor. Curabitur feugiat aliquam felis quis cursus. Morbi aliquam scelerisque ligula ut interdum. Praesent vel felis vel justo vulputate sagittis non in neque. Sed ut purus at turpis suscipit hendrerit in nec lectus. Donec pharetra tristique dui, sed molestie metus viverra vitae. Curabitur ornare turpis vitae leo aliquet tempor.</span>';
 		var bgs = ['darkred','red','darkorange','orange','gold','yellow','darkgreen','green','deepskyblue','dodgerblue','blue','darkblue','darkviolet','violet'];
 		
@@ -166,9 +170,9 @@
 			
 			var d;
 			var b;
-			for(i=0; i<1; i++){
-				aDiv(i%2+0, grid1, 'cel-1x1',txt);
-			}
+			//for(i=0; i<1; i++){
+			//	aDiv(i%2+0, grid1, 'cel-1x1',txt);
+			//}
 			for(i=0; i<2; i++){
 				aDiv(i%2+2, grid2, 'cel-2x4',txt);
 			}
@@ -195,68 +199,70 @@
 			
 			var container = Sirius.plugins.Carousel3D('.panel', 60, 500, false);
 			
-			Sirius.document.events.keyDown(function(e){
-				switch(e.event.keyCode){
-					case 90 : {
-						container.toggleAxys();
+			if(container != null){
+			
+				Sirius.document.events.keyDown(function(e){
+					switch(e.event.keyCode){
+						case 90 : {
+							container.toggleAxys();
+						}
+						case 107 : {}
+						case 187 : {
+							container.aperture -= 10;
+							container.update();
+							break
+						}
+						case 109 : {}
+						case 189 : {
+							container.aperture += 10;
+							container.update();
+							break;
+						}
 					}
-					case 107 : {}
-					case 187 : {
-						container.aperture -= 10;
-						container.update();
-						break
-					}
-					case 109 : {}
-					case 189 : {
-						container.aperture += 10;
-						container.update();
-						break;
-					}
-				}
-			});
-			
-			function onFocusIn(e){
-				e.target.data.index.fit(2,4);
-				e.target.data.index.style({opacity:.6});
-			}
-			
-			function onFocusOut(e){
-				e.target.data.index.fit(2,2);
-				e.target.data.index.style({opacity:.3});
-			}
-			
-			function onPinIn(e){
-				e.target.data.index.fit(2,8);
-				e.target.data.index.style({opacity:1});
-			}
-			
-			function onPinOut(e){
-				if(e.target.data.control.focus){
+				});
+				
+				function onFocusIn(e){
 					e.target.data.index.fit(2,4);
 					e.target.data.index.style({opacity:.6});
 				}
+				
+				function onFocusOut(e){
+					e.target.data.index.fit(2,2);
+					e.target.data.index.style({opacity:.3});
+				}
+				
+				function onPinIn(e){
+					e.target.data.index.fit(2,8);
+					e.target.data.index.style({opacity:1});
+				}
+				
+				function onPinOut(e){
+					e.target.data.index.fit(2,4);
+					e.target.data.index.style({opacity:.6});
+				}
+				
+				
+				var index = new Sprite();
+				index.pin();
+				index.css('z-100 t-0 h-100pc padd-10 mouse-none');
+				index.addToBody();
+				
+				Dice.All(container.panels, function(p, v){
+					var panel = new Div();
+					panel.fit(2, 2);
+					var c = bgs[(p*1)*2];
+					panel.css('padd-t-2 marg-t-5 marg-b-5');
+					panel.background('#ffffff');
+					panel.style({opacity:.3});
+					index.content.addChild(panel);
+					v.data.index = panel;
+					v.data.parent = allGrid[p];
+					v.events.auto('carouselFocusIn', onFocusIn);
+					v.events.auto('carouselFocusOut', onFocusOut);
+					v.events.auto('carouselPinIn', onPinIn);
+					v.events.auto('carouselPinOut', onPinOut);
+				});
 			}
-			
-			
-			var index = new Sprite();
-			index.pin();
-			index.css('z-100 t-0 h-100pc padd-10 w-15');
-			index.addToBody();
-			
-			Dice.All(container.panels, function(p, v){
-				var panel = new Div();
-				panel.fit(2, 2);
-				var c = bgs[(p*1)*2];
-				panel.css('padd-t-2 marg-t-5 marg-b-5');
-				panel.background('#ffffff');
-				panel.style({opacity:.3});
-				index.content.addChild(panel);
-				v.data.index = panel;
-				v.events.auto('carouselFocusIn', onFocusIn);
-				v.events.auto('carouselFocusOut', onFocusOut);
-				v.events.auto('carouselPinIn', onPinIn);
-				v.events.auto('carouselPinOut', onPinOut);
-			});
 			
 			
 			Sirius.document.body.background('assets/img/pattern-common.jpg','reapeat');

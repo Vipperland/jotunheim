@@ -483,4 +483,12 @@ class Display implements IDisplay {
 		return getPosition(element);
 	}
 	
+	public function mouseEnabled(?value:Bool):Bool {
+		if (value != null) {
+			if (value)	css('mouse-none');
+			else 		css('/mouse-none');
+		}
+		return element.classList.contains('mouse-none');
+	}
+	
 }

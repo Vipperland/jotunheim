@@ -38,9 +38,11 @@
 			axys : 'y',
 			index : 0,
 			enabled : true,
+			focused : false,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
 				panel.addChild(p);
+				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;
 			},
 			update : function(){
@@ -49,7 +51,7 @@
 				o.maxAperture = o.aperture * o.panels.length;
 				o.maxPanels = 360/o.aperture;
 				o.points.splice(0, o.points.length);
-				var ap = o.aperture*1.5;
+				var ap = o.aperture*1.25;
 				var hp = o.aperture*.5;
 				while(o.points.length < o.panels.length){
 					var i = o.points.length * o.aperture;
@@ -104,6 +106,10 @@
 					if(sy > k.f && sy < k.g){
 						if(k.focus == false){
 							k.focus = true;
+							if(k.pin == true) {
+								k.pin = false;
+								k.panel.events.auto('carouselPinOut').call();
+							}
 							k.panel.events.auto('carouselFocusIn').call();
 						}
 					}else{
@@ -112,18 +118,29 @@
 							k.panel.events.auto('carouselFocusOut').call();
 						}
 					}
-					if(k.focus && sy > k.a && sy < k.b){
-						sy = k.c;
-						o.offsetZ = 0;
-						if(k.pin == false) {
-							k.pin = true;
-							k.panel.events.auto('carouselPinIn').call();
+					if(k.focus){
+						if(sy > k.a && sy < k.b){
+							sy = k.c;
+							o.offsetZ = 0;
+							if(k.pin == false) {
+								k.pin = true;
+								k.panel.events.auto('carouselPinIn').call();
+							}
+						}else{
+							if(k.pin == true) {
+								k.pin = false;
+								k.panel.events.auto('carouselPinOut').call();
+							}
 						}
-					}else{
-						if(k.pin == true) {
-							k.pin = false;
-							k.panel.events.auto('carouselPinOut').call();
-						}
+					}
+				}
+				if(o.zoom != 0){
+					if(!o.focused && o.offsetZ == 0){
+						o.focused = true;
+						o.carousel.events.auto('carouselZoomIn').call();
+					}else if(o.focused && o.offsetZ == o.zoom){
+						o.focused = false;
+						o.carousel.events.auto('carouselZoomOut').call();
 					}
 				}
 				o.offsetZFlex += (o.offsetZ - o.offsetZFlex) * .1;
