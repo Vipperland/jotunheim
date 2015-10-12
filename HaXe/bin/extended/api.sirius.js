@@ -3506,6 +3506,7 @@ var sirius_dom_Video = $hx_exports.sru.dom.Video = function(q,d) {
 		q = _this.createElement("video");
 	}
 	sirius_dom_Display.call(this,q,null,d);
+	this.object = this.element;
 };
 sirius_dom_Video.__name__ = ["sirius","dom","Video"];
 sirius_dom_Video.get = function(q,h) {
@@ -3513,7 +3514,16 @@ sirius_dom_Video.get = function(q,h) {
 };
 sirius_dom_Video.__super__ = sirius_dom_Display;
 sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Video
+	play: function() {
+		this.object.play();
+	}
+	,pause: function() {
+		this.object.pause();
+	}
+	,togglePause: function() {
+		if(this.object.paused) this.play(); else this.pause();
+	}
+	,__class__: sirius_dom_Video
 });
 var sirius_tools_Utils = $hx_exports.Utils = function() { };
 sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];

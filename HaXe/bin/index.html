@@ -13,7 +13,7 @@
 	
 	<div class="panel h-100pc bg-red w-100pc scroll-none" style="backface-visibility:hidden">	
 		<div class="w-100pc txt-c t-0 l-0 scroll-none">
-			<video class="w-100pc" autoplay="true" controls="false">
+			<video class="w-100pc h-100pc b-0" autoplay>
 			  <source src="assets/media/music.mp4" type="video/mp4">
 			</video>
 		</div>
@@ -41,11 +41,7 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
@@ -58,11 +54,7 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
@@ -75,11 +67,7 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
@@ -92,11 +80,7 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
@@ -109,11 +93,7 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
@@ -126,71 +106,20 @@
 				</div>
 				<br/>
 				<div class="txt-20">
-					Press [+] or [-] to change aperture between panels
-					</br>
-					Press [z] to change axys
-					<br/>
-					<span class="txt-16">Sirius.plugins.Carousel3D(selector);</span>
+					Press <span class="bold">[+]</span> or <span class="bold">[-]</span> to change aperture between panels or <span class="bold">[z]</span> to change axys
 				</div>
 			</div>
 		</div>
 	</div>
 	
+	
 	<script>
 		
 		var Div = sru.dom.Div;
-		var Display3D = sru.dom.Display3D;
 		var Sprite = sru.dom.Sprite;
-		
-		var grid1 = Sirius.one('.mosaic-1');
-		var grid2 = Sirius.one('.mosaic-2');
-		var grid3 = Sirius.one('.mosaic-3');
-		var grid4 = Sirius.one('.mosaic-4');
-		var grid5 = Sirius.one('.mosaic-5');
-		var grid6 = Sirius.one('.mosaic-6');
-		var grid7 = Sirius.one('.mosaic-7');
-		
-		var allGrid = [grid1,grid2,grid3,grid4,grid5,grid6,grid7];
-		
-		var txt = '<span>Aliquam vitae est erat. Suspendisse odio sapien, congue quis tempus eget, ornare eget est. Sed sollicitudin dolor risus, nec suscipit eros vehicula eu. Praesent sit amet urna est. Cras eu posuere urna. Sed ipsum magna, tincidunt quis fermentum at, porttitor non nisl. Quisque turpis turpis, molestie at diam at, fermentum fermentum arcu. Nulla convallis, arcu eu venenatis laoreet, nibh est cursus eros, eget eleifend nulla lorem eu tellus. Nulla mollis cursus rutrum. Nam purus magna, ullamcorper eu urna sed, elementum posuere metus.</br>Etiam sagittis dui tristique dolor scelerisque, et dignissim leo auctor. Fusce volutpat placerat purus eget iaculis. Etiam dapibus erat et nibh lobortis, ut scelerisque lacus malesuada. Donec id tristique enim. Aliquam tempor tortor et imperdiet porta. Vivamus in purus ac nisi bibendum tempor. Nullam metus risus, mollis at eros ut, vestibulum condimentum nibh. Aliquam molestie arcu eget malesuada tempor. Curabitur feugiat aliquam felis quis cursus. Morbi aliquam scelerisque ligula ut interdum. Praesent vel felis vel justo vulputate sagittis non in neque. Sed ut purus at turpis suscipit hendrerit in nec lectus. Donec pharetra tristique dui, sed molestie metus viverra vitae. Curabitur ornare turpis vitae leo aliquet tempor.</span>';
-		var bgs = ['darkred','red','darkorange','orange','gold','yellow','darkgreen','green','deepskyblue','dodgerblue','blue','darkblue','darkviolet','violet'];
-		
-		function aDiv(i,t,s,x){
-			var b = bgs[i];
-			var d = new Display3D();
-			d.css(s);
-			d.addTo(t);
-			var c = new Display3D();
-			c.css('txt-j marg-1 padd-10 h-100pc bg-' + b + ' shadow-' + b);
-			c.build(x);
-			c.addTo(d);
-		}
 		
 		Sirius.onInit(function(){
 			
-			var d;
-			var b;
-			//for(i=0; i<1; i++){
-			//	aDiv(i%2+0, grid1, 'cel-1x1',txt);
-			//}
-			for(i=0; i<2; i++){
-				aDiv(i%2+2, grid2, 'cel-2x4',txt);
-			}
-			for(i=0; i<3; i++){
-				aDiv(i%2+4, grid3, 'cel-1x3 txt-black-i',txt);
-			}
-			for(i=0; i<4; i++){
-				aDiv(i%2+6, grid4, 'cel-1x4',txt);
-			}
-			for(i=0; i<5; i++){
-				aDiv(i%2+8, grid5, 'cel-1x5',txt);
-			}
-			for(i=0; i<6; i++){
-				aDiv(i%2+10, grid6, 'cel-1x6',txt);
-			}
-			for(i=0; i<7; i++){
-				aDiv(i%2+12, grid7, 'cel-1x7',txt);
-			}
 			
 			Automator.build('txt-white','*');
 			Automator.build('bord-rad-3','.grid div');
@@ -250,13 +179,11 @@
 				Dice.All(container.panels, function(p, v){
 					var panel = new Div();
 					panel.fit(2, 2);
-					var c = bgs[(p*1)*2];
 					panel.css('padd-t-2 marg-t-5 marg-b-5');
 					panel.background('#ffffff');
 					panel.style({opacity:.3});
 					index.content.addChild(panel);
 					v.data.index = panel;
-					v.data.parent = allGrid[p];
 					v.events.auto('carouselFocusIn', onFocusIn);
 					v.events.auto('carouselFocusOut', onFocusOut);
 					v.events.auto('carouselPinIn', onPinIn);
@@ -264,6 +191,9 @@
 				});
 			}
 			
+			var vid = Sirius.one('video');
+			vid.play();
+			vid.events.click(function(v){ v.target.togglePause(); });
 			
 			Sirius.document.body.background('assets/img/pattern-common.jpg','reapeat');
 			Automator.scan();
