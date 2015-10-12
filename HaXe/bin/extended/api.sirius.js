@@ -1767,6 +1767,7 @@ sirius_dom_Display.prototype = {
 		return this;
 	}
 	,removeChild: function(q) {
+		this._children = null;
 		q.remove();
 		return this;
 	}
@@ -2272,11 +2273,12 @@ sirius_dom_IDisplay3D.prototype = {
 };
 var sirius_dom_Display3D = $hx_exports.sru.dom.Display3D = function(q,d) {
 	sirius_dom_Div.call(this,q,d);
+	this.attribute("sru-dom","display3d");
 	this.rotation = new sirius_math_Point3D(0,0,0);
 	this.location = new sirius_math_Point3D(0,0,0);
 	this.scale = new sirius_math_Point3D(1,1,1);
 	this.xcss = new sirius_css_XCSS();
-	this.backFace = "visible";
+	this.backFace = "hidden";
 	this.preserve3d().update();
 };
 sirius_dom_Display3D.__name__ = ["sirius","dom","Display3D"];
@@ -3529,7 +3531,10 @@ sirius_tools_Utils.screenInfo = function() {
 };
 sirius_tools_Utils.displayFrom = function(t) {
 	if(t.nodeType != 1) return new sirius_dom_Display(t);
-	var OC = Reflect.field(sirius_tools_Utils._typeOf,(t.hasAttribute("sru-dom")?t.getAttribute("sru-dom"):t.tagName).toLowerCase());
+	var type;
+	if(t.hasAttribute("sru-dom")) type = t.getAttribute("sru-dom"); else type = t.tagName;
+	var OC = Reflect.field(sirius_tools_Utils._typeOf,type.toLowerCase());
+	t.setAttribute("sru-dom",type);
 	if(OC == null) return new sirius_dom_Display(t); else {
 		return new OC(t);
 	}
@@ -4276,13 +4281,12 @@ sirius_css_AutomatorRules.displayKey = function(d,k,n) {
 sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
 	var v = k.entry.value;
 	if(d.head.key == "scroll") {
-		if(k.index == 0) return "";
-		var scroll = "scroll";
-		if(v == "none") {
-			v = "x";
-			scroll = "none";
+		if(n.key == "none") {
+			d.cancel();
+			return "overflow:hidden";
 		}
-		return "overflow-" + v + ":" + scroll + ";overflow-" + (v == "x"?"y":"x") + ":hidden";
+		if(k.index == 0) return "";
+		return "overflow" + (v == "x"?"-x":"-y") + ":scroll;overflow-" + (v == "x"?"-y":"-x") + ":hidden";
 	}
 	return sirius_css_AutomatorRules.commonKey(d,k,n);
 };
@@ -5370,12 +5374,13 @@ var sirius_utils_Table = $hx_exports.sru.utils.Table = function(q,t) {
 	this.elements = [];
 	if(q != "NULL_TABLE") {
 		if(q != null) {
-			if(t == null) t = window.document;
+			var is3D = false;
+			if(t == null) t = window.document; else is3D = js_Boot.__instanceof(t,sirius_dom_IDisplay3D);
 			var result = t.querySelectorAll(q);
 			var element = null;
 			if(result.length > 0) sirius_utils_Dice.Count(0,result.length,function(i,j,k) {
 				element = result.item(i);
-				_g.content[_g.content.length] = sirius_tools_Utils.displayFrom(element);
+				if(is3D) _g.content[_g.content.length] = new sirius_dom_Display3D(element); else _g.content[_g.content.length] = sirius_tools_Utils.displayFrom(element);
 				_g.elements[_g.elements.length] = element;
 				return null;
 			}); else sirius_Sirius.log("TABLE(" + q + ") : NO RESULT",12,2);

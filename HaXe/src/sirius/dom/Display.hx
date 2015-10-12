@@ -209,6 +209,7 @@ class Display implements IDisplay {
 	}
 	
 	public function removeChild(q:IDisplay):IDisplay {
+		_children = null;
 		q.remove();
 		return this;
 	}

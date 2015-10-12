@@ -153,13 +153,12 @@ class AutomatorRules{
 	static public function scrollKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
 		if (d.head.key == 'scroll') {
-			if (k.index == 0) return '';
-			var scroll:String = 'scroll';
-			if (v == 'none') {
-				v = 'x';
-				scroll = 'none';
+			if (n.key == 'none') {
+				d.cancel();
+				return "overflow:hidden";
 			}
-			return "overflow-" + v + ":" + scroll + ";overflow-" + (v == 'x'?'y':'x') + ":hidden";
+			if (k.index == 0) return '';
+			return "overflow" + (v == 'x'?'-x':'-y') + ":scroll;overflow-" + (v == 'x'?'-y':'-x') + ":hidden";
 		}
 		return commonKey(d, k, n);
 	}

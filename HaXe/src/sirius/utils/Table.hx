@@ -5,7 +5,9 @@ import js.Browser;
 import js.html.Element;
 import js.html.NodeList;
 import sirius.dom.Display;
+import sirius.dom.Display3D;
 import sirius.dom.IDisplay;
+import sirius.dom.IDisplay3D;
 import sirius.events.IEvent;
 import sirius.tools.Utils;
 import sirius.utils.ITable;
@@ -31,14 +33,19 @@ class Table implements ITable {
 		content = [];
 		elements = [];
 		if (q != "NULL_TABLE") {
-			if(q != null){
-				if (t == null) t = cast Browser.document;
+			if (q != null) {
+				var is3D:Bool = false;
+				if (t == null) {
+					t = cast Browser.document;
+				}else {
+					is3D = Std.is(t, IDisplay3D);
+				}
 				var result:NodeList = t.querySelectorAll(q);
 				var element:Element = null;
 				if(result.length > 0){
 					Dice.Count(0, result.length, function(i:Int,j:Int,k:Bool) {
 						element = cast result.item(i);
-						content[content.length] = Utils.displayFrom(element);
+						content[content.length] = is3D ? new Display3D(element) : Utils.displayFrom(element);
 						elements[elements.length] = element;
 						return null;
 					});

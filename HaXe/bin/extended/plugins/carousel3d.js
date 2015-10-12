@@ -60,8 +60,11 @@
 						c:i,
 						d:i-ap,
 						e:i+ap,
+						f:i-hp,
+						g:i+hp,
 						panel:cp,
-						focus:false
+						focus:false,
+						pin:false
 					};
 					cp.doubleSided(false);
 					cp.detach();
@@ -98,10 +101,8 @@
 				o.offsetZ = o.zoom;
 				for(j in o.points){
 					var k = o.points[j];
-					if(sy > k.a && sy < k.b){
-						sy = k.c;
-						o.offsetZ = 0;
-						if(k.focus == false) {
+					if(sy > k.f && sy < k.g){
+						if(k.focus == false){
 							k.focus = true;
 							k.panel.events.auto('carouselFocusIn').call();
 						}
@@ -109,6 +110,19 @@
 						if(k.focus == true){
 							k.focus = false;
 							k.panel.events.auto('carouselFocusOut').call();
+						}
+					}
+					if(k.focus && sy > k.a && sy < k.b){
+						sy = k.c;
+						o.offsetZ = 0;
+						if(k.pin == false) {
+							k.pin = true;
+							k.panel.events.auto('carouselPinIn').call();
+						}
+					}else{
+						if(k.pin == true) {
+							k.pin = false;
+							k.panel.events.auto('carouselPinOut').call();
 						}
 					}
 				}

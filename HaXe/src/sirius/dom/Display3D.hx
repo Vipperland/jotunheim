@@ -32,11 +32,12 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public function new(?q:Dynamic, ?d:String) {
 		super(q, d);
+		attribute('sru-dom', 'display3d');
 		rotation = new Point3D(0, 0, 0);
 		location = new Point3D(0, 0, 0);
 		scale = new Point3D(1, 1, 1);
 		xcss = new XCSS();
-		this.backFace = "visible";
+		this.backFace = "hidden";
 		preserve3d().update();
 	}
 	
