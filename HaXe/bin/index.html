@@ -13,13 +13,13 @@
 	
 	<div class="panel h-100pc bg-red w-100pc scroll-none" style="backface-visibility:hidden">
 		<div class="w-100pc txt-c t-0 l-0 scroll-none pos-abs">
-			<video class="min-width-100pc b-50pc r-50pc z-0" autoplay>
-			  <source src="assets/media/music.mp4" type="video/mp4">
+			<video class="min-width-100pc b-50pc r-50pc z-0" autoplay loop>
+			  <source src="assets/media/colors.mp4" type="video/mp4">
 			</video>
 		</div>
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs" hidden>
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
+				<div class="disp-table-cell vert-m txt-c w-100pc h-100pc bg-black alpha-30">
 					<img src="assets/img/sirius.png" />
 					<br/>
 					<span class="txt-150 txt-white">sirius</span>
@@ -107,7 +107,7 @@
 			
 			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 			
-			container = Sirius.plugins.Carousel3D('.panel', 20, 500, false);
+			container = Sirius.plugins.Carousel3D('.panel', 160, 500, false);
 			
 			if(container != null){
 			
@@ -134,6 +134,7 @@
 				function onFocusIn(e){
 					e.target.data.index.fit(1,4);
 					e.target.data.index.style({opacity:.6});
+					tg = (e.target.data.control.id == 0) ? 160 : 20;
 				}
 				
 				function onFocusOut(e){
@@ -171,11 +172,25 @@
 					v.events.auto('carouselPinOut', onPinOut);
 				});
 				
+				var tg = 160;
+				var ap = 160;
+				
+				Ticker.add(function(){
+					if(ap != tg){
+						ap += (tg-ap) * .1;
+						container.setAperture(ap);
+					}
+				});
+				
 			}
 			
 			var vid = Sirius.one('video');
-			vid.play();
 			vid.events.click(function(v){ v.target.togglePause(); });
+			
+			
+			Sirius.all('video').each(function(v){
+				v.play();
+			});
 			
 			function fitVideo(e){
 				vid.style({

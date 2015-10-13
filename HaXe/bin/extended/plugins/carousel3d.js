@@ -37,6 +37,7 @@
 			scroll : 0,
 			axys : 'y',
 			index : 0,
+			focus : 0,
 			enabled : true,
 			focused : false,
 			spacing : 0,
@@ -70,7 +71,8 @@
 						g:i+hp,
 						panel:cp,
 						focus:false,
-						pin:false
+						pin:false,
+						id:o.points.length
 					};
 					cp.doubleSided(false);
 					cp.detach();
@@ -118,6 +120,7 @@
 								k.pin = false;
 								k.panel.events.auto('carouselPinOut').call();
 							}
+							o.focus = j * 1;
 							k.panel.events.auto('carouselFocusIn').call();
 						}
 					}else{
@@ -133,6 +136,7 @@
 							if(k.pin == false) {
 								k.pin = true;
 								k.panel.events.auto('carouselPinIn').call();
+								o.index = j * 1;
 							}
 						}else{
 							if(k.pin == true) {
@@ -160,7 +164,6 @@
 					o.carousel.style({y:0, top:0});
 					o.scroll += (sy - o.scroll) * o.easing;
 				}
-				o.index = Math.round((o.scroll/o.maxAperture)*o.panels.length);
 				Dice.All(o.panels, function(p, e) {
 					ctr = e.data.control;
 					if(o.scroll < ctr.d || o.scroll > ctr.e){
@@ -189,7 +192,10 @@
 			scrollEvent : function(e){
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;
 				if(e.event.type == 'wheel')	{
-					Sirius.document.addScroll(0, -e.event.wheelDelta);
+					var delta = 0;
+					if(Sirius.agent.firefox) 	delta = e.event.deltaY * -40;
+					else						delta = e.event.wheelDelta
+					Sirius.document.addScroll(0, -delta);
 				}else{
 					switch(e.event.keyCode){
 						case 38 : {}
