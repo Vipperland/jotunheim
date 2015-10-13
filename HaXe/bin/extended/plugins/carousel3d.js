@@ -14,8 +14,6 @@
 		var Sprite3D = sru.dom.Sprite3D;
 		var Div = sru.dom.Div;
 		
-		if (Sirius.agent.screen < 3 || (Sirius.agent.ie > 0 && Sirius.agent.ie < 12)) return;
-		
         var body = Sirius.document.body;
 		body.style( { 'overflow-x':'hidden' } );
 		
@@ -41,6 +39,7 @@
 			focused : false,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
+				panel.css('scroll-none');
 				panel.addChild(p);
 				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;

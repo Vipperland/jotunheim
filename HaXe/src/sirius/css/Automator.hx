@@ -162,7 +162,7 @@ class Automator {
 	}
 	
 	static public function _init() {
-		build('marg-0 padd-0 bord-0 outline-0 font-inherit vert-baseline transparent','*');
+		build('marg-0 padd-0 bord-0 outline-0 color-inherit font-inherit vert-baseline transparent','*');
 		build('arial txt-12', 'body');
 		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
 		build('list-style-none', 'ol,ul,dl');

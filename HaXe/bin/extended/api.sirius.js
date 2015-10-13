@@ -3994,7 +3994,7 @@ sirius_css_Automator._createGridCol = function(size) {
 	});
 };
 sirius_css_Automator._init = function() {
-	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 font-inherit vert-baseline transparent","*");
+	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 color-inherit font-inherit vert-baseline transparent","*");
 	sirius_css_Automator.build("arial txt-12","body");
 	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover");
 	sirius_css_Automator.build("list-style-none","ol,ul,dl");
