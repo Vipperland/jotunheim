@@ -61,19 +61,14 @@
 				while(o.points.length < o.panels.length){
 					var i = o.points.length * o.aperture;
 					var cp = o.panels[o.points.length];
-					var ctr = {
-						a:i-o.snapping,
-						b:i+o.snapping,
-						c:i,
-						d:i-ap,
-						e:i+ap,
-						f:i-hp,
-						g:i+hp,
-						panel:cp,
-						focus:false,
-						pin:false,
-						id:o.points.length
-					};
+					var ctr = cp.data.control || {panel:cp,focus:false,pin:false,id:o.points.length};
+					ctr.a = i-o.snapping;
+					ctr.b = i+o.snapping;
+					ctr.c = i;
+					ctr.d = i-ap;
+					ctr.e = i+ap;
+					ctr.f = i-hp;
+					ctr.g = i+hp;
 					cp.doubleSided(false);
 					cp.detach();
 					cp.style({y:0,top:0});
@@ -120,8 +115,8 @@
 								k.pin = false;
 								k.panel.events.auto('carouselPinOut').call();
 							}
-							o.focus = j * 1;
 							k.panel.events.auto('carouselFocusIn').call();
+							o.focus = j * 1;
 						}
 					}else{
 						if(k.focus == true){

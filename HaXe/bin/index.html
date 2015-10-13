@@ -13,7 +13,7 @@
 	
 	<div class="panel h-100pc bg-red w-100pc scroll-none" style="backface-visibility:hidden">
 		<div class="w-100pc txt-c t-0 l-0 scroll-none pos-abs">
-			<video class="min-width-100pc b-50pc r-50pc z-0" autoplay loop>
+			<video class="min-width-100pc b-50pc r-50pc z-0" loop>
 			  <source src="assets/media/colors.mp4" type="video/mp4">
 			</video>
 		</div>
@@ -32,8 +32,8 @@
 	<div class="panel h-100pc bg-red w-100pc" style="background-image:url('assets/img/red.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we love to play</span>
+				<div class="disp-table-cell vert-m txt-c" value="we love to play">
+					
 				</div>
 			</div>
 		</div>
@@ -41,8 +41,7 @@
 	<div class="panel h-100pc bg-orange w-100pc" style="background-image:url('assets/img/orange.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we love to create</span>
+				<div class="disp-table-cell vert-m txt-c" value="we love to create">
 				</div>
 			</div>
 		</div>
@@ -50,8 +49,7 @@
 	<div class="panel h-100pc bg-yellow w-100pc" style="background-image:url('assets/img/yellow.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we love to share</span>
+				<div class="disp-table-cell vert-m txt-c" value="we love to share">
 				</div>
 			</div>
 		</div>
@@ -59,8 +57,7 @@
 	<div class="panel h-100pc bg-yellowgreen w-100pc" style="background-image:url('assets/img/green.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we love the challenges</span>
+				<div class="disp-table-cell vert-m txt-c" value="we love the challenges">
 				</div>
 			</div>
 		</div>
@@ -68,8 +65,7 @@
 	<div class="panel h-100pc bg-blue w-100pc" style="background-image:url('assets/img/blue.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we love the road</span>
+				<div class="disp-table-cell vert-m txt-c" value="we love the road">
 				</div>
 			</div>
 		</div>
@@ -77,8 +73,7 @@
 	<div class="panel h-100pc bg-blue w-100pc" style="background-image:url('assets/img/indigo.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">we all work together</span>
+				<div class="disp-table-cell vert-m txt-c" value="we all work together">
 				</div>
 			</div>
 		</div>
@@ -86,8 +81,7 @@
 	<div class="panel h-100pc bg-darkviolet w-100pc" style="background-image:url('assets/img/violet.jpg'); background-size: cover;">
 		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c">
-					<span class="txt-100 txt-white shadow-txt-white">why you don't join us?</span>
+				<div class="disp-table-cell vert-m txt-c" value="why you don't join us?">
 				</div>
 			</div>
 		</div>
@@ -107,7 +101,7 @@
 			
 			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 			
-			container = Sirius.plugins.Carousel3D('.panel', 160, 500, false);
+			container = Sirius.plugins.Carousel3D('.panel', 160, 1000, false);
 			
 			if(container != null){
 			
@@ -135,6 +129,14 @@
 					e.target.data.index.fit(1,4);
 					e.target.data.index.style({opacity:.6});
 					tg = (e.target.data.control.id == 0) ? 160 : 20;
+					var text = e.target.one('[value]');
+					if(text){
+						var str = text.attribute('value');
+						if(str.length > 0){
+							text.write('<span class="txt-white shadow-txt-white" style="font-size:100px">' + str + ' </span>');
+							text.attribute('value','');
+						}
+					}
 				}
 				
 				function onFocusOut(e){
