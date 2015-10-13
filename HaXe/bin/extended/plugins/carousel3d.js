@@ -29,7 +29,7 @@
 			aperture : aperture || 45,
 			zoom : zoom || 0,
 			easing : .3,
-			snapping : 5,
+			snapping : aperture * .1,
 			snapEasing : .9,
 			zoomEasing : .1,
 			scroll : 0,
@@ -171,9 +171,11 @@
 					}
 					e.update();
 				});
-				o.extra.style( { 'margin-top':((h*o.panels.length)>>0) + 'px' } );
+				var th = (h*o.panels.length)>>0;
+				o.extra.style( { 'margin-top':th + 'px' } );
 				o.carousel.content.locationZ( -tz - o.offsetZFlex);
 				o.carousel.content.update();
+				o.carousel.height(h);
 			},
 			scrollEvent : function(e){
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;

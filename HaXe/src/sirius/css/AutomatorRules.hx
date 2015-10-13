@@ -144,6 +144,21 @@ class AutomatorRules{
 	}
 	
 	/**
+	 * Z index value fix
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function indexKey(d:Entry, k:IKey, n:IKey):String {
+		if (d.head == k) {
+			d.cancel();
+			return "z-index:" + n.key;
+		}
+		return k.key;
+	}
+	
+	/**
 	 * Controls OVERFLOW
 	 * @param	d
 	 * @param	k
@@ -385,7 +400,7 @@ class AutomatorRules{
 		scroll:{value:'scroll',verifier:scrollKey},
 		x:{value:'x',verifier:scrollKey},
 		y:{value:'y',verifier:scrollKey},
-		z:{value:'z-index',verifier:valueKey},
+		z:{value:'z-index',verifier:indexKey},
 		bold:{value:'font-weight:bold',verifier:commonKey},
 		regular:{value:'font-weight:regular',verifier:commonKey},
 		underline:{value:'font-weight:underline',verifier:commonKey},
