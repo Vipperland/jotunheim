@@ -26,10 +26,12 @@
 			maxPanels : 0,
 			offsetZ : 0,
 			offsetZFlex : 0,
-			aperture : aperture || 45,
+			aperture : 180 - ((aperture) || 90),
 			zoom : zoom || 0,
 			easing : .3,
-			snapping : aperture * .1,
+			snapping : 0,
+			minSnapping : 2,
+			maxSnapping : 16,
 			snapEasing : .9,
 			zoomEasing : .1,
 			scroll : 0,
@@ -37,6 +39,7 @@
 			index : 0,
 			enabled : true,
 			focused : false,
+			spacing : 0,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
 				panel.css('scroll-none');
@@ -50,6 +53,8 @@
 				o.maxAperture = o.aperture * o.panels.length;
 				o.maxPanels = 360/o.aperture;
 				o.points.splice(0, o.points.length);
+				o.snapping = (o.aperture/180) * o.maxSnapping + o.minSnapping;
+				if(o.snapping > o.maxSnapping) o.snapping = o.maxSnapping;
 				var ap = o.aperture*1.25;
 				var hp = o.aperture*.5;
 				while(o.points.length < o.panels.length){
@@ -78,6 +83,10 @@
 					o.points[o.points.length] = ctr;
 				}
 			},
+			setAperture : function(x){
+				o.aperture = 180-x;
+				o.update();
+			},
 			toggleAxys : function(x){
 				if(x != null) 	o.axys = x;
 				else 			o.axys = o.axys == 'x' ? 'y' : 'x';
@@ -95,7 +104,7 @@
 				if(!o.enabled) return;
 				var h = Utils.viewportHeight();
 				var h2 = (o.axys == 'x' ? Utils.viewportWidth() : h) / 2;
-				var tz = h2/Math.tan(Math.PI/o.maxPanels);
+				var tz = h2/Math.tan(Math.PI/o.maxPanels) + o.spacing;
 				var y = Sirius.document.getScroll().y;
 				var sy = y / (h * o.panels.length);
 				sy = sy * o.maxAperture;
