@@ -1,5 +1,4 @@
 package sirius.dom;
-import sirius.css.Automator;
 
 /**
  * ...
@@ -7,7 +6,7 @@ import sirius.css.Automator;
  */
 @:expose("sru.dom.Sprite3D")
 class Sprite3D extends Display3D {
-
+	
 	public var content:IDisplay3D;
 	
 	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc disp-table") {

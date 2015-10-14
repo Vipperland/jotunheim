@@ -8,29 +8,22 @@
 	
 <body style="background: #000000">
 	
-	<script src="extended/api.sirius.min.js"></script>
-	<script src="extended/plugins/carousel3d.min.js"></script>
+	<script src="extended/api.sirius.js"></script>
+	<script src="extended/plugins/carousel3d.js"></script>
 	
-	<div class="panel h-100pc bg-red w-100pc scroll-none" style="backface-visibility:hidden">
-		<div class="w-100pc txt-c t-0 l-0 scroll-none pos-abs">
+	<div class="panel h-100pc bg-red w-100pc" style="backface-visibility:hidden">
+		<div class="w-100pc max-height-100pc txt-c scroll-none pos-abs">
 			<video class="min-width-100pc b-50pc r-50pc z-0" loop>
 			  <source src="assets/media/colors.mp4" type="video/mp4">
 			</video>
 		</div>
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs" hidden>
-			<div class="disp-table w-100pc h-100pc">
-				<div class="disp-table-cell vert-m txt-c w-100pc h-100pc bg-black alpha-30">
-					<img src="assets/img/sirius.png" />
-					<br/>
-					<span class="txt-150 txt-white">sirius</span>
-					<br/>
-					<span class="txt-50 txt-white">dream makers</span>
-				</div>
+		<div class="disp-table w-100pc h-100pc mouse-none">
+			<div class="disp-table-cell vert-m txt-c" value="skip">
 			</div>
 		</div>
 	</div>
 	<div class="panel h-100pc bg-red w-100pc" style="background-image:url('assets/img/red.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we love to play">
 					
@@ -39,7 +32,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-orange w-100pc" style="background-image:url('assets/img/orange.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we love to create">
 				</div>
@@ -47,7 +40,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-yellow w-100pc" style="background-image:url('assets/img/yellow.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we love to share">
 				</div>
@@ -55,7 +48,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-yellowgreen w-100pc" style="background-image:url('assets/img/green.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we love the challenges">
 				</div>
@@ -63,7 +56,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-blue w-100pc" style="background-image:url('assets/img/blue.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we love the road">
 				</div>
@@ -71,7 +64,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-blue w-100pc" style="background-image:url('assets/img/indigo.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="we all work together">
 				</div>
@@ -79,7 +72,7 @@
 		</div>
 	</div>
 	<div class="panel h-100pc bg-darkviolet w-100pc" style="background-image:url('assets/img/violet.jpg'); background-size: cover;">
-		<div class="grid padd-10 txt-white scroll-none txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+		<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
 			<div class="disp-table w-100pc h-100pc">
 				<div class="disp-table-cell vert-m txt-c" value="why you don't join us?">
 				</div>
@@ -92,14 +85,13 @@
 		var Div = sru.dom.Div;
 		var Sprite = sru.dom.Sprite;
 		var Sprite3D = sru.dom.Sprite3D;
+		var Display3D = sru.dom.Display3D;
 		var container = null;
 		
 		Sirius.onInit(function(){
 			
 			
 			Automator.build('txt-white','*');
-			
-			Sirius.addScript(['extended/3rd/js/jquery-2.1.4.min.js','extended/3rd/js/tween.min.js']);
 			
 			container = Sirius.plugins.Carousel3D('.panel', 160, 1000, false);
 			
@@ -133,8 +125,12 @@
 					if(text){
 						var str = text.attribute('value');
 						if(str.length > 0){
-							text.write('<span class="txt-white shadow-txt-white" style="font-size:100px">' + str + ' </span>');
-							text.attribute('value','');
+							var sp = new Display3D(text);
+							if(str != 'skip') 	sp.write('<span class="txt-white shadow-txt-white" style="font-size:100px">' + str + ' </span>');
+							else 				sp.write('<img src="assets/img/sirius.png" /><br/><span class="txt-100 txt-white">sirius</span><br/><span class="txt-30 txt-white">dream makers</span>')
+							sp.attribute('value','');
+							sp.locationZ(30);
+							sp.update();
 						}
 					}
 				}

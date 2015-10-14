@@ -1,4 +1,5 @@
 package sirius.dom;
+import sirius.math.ITransform3D;
 import sirius.math.Point3D;
 
 /**
@@ -7,17 +8,7 @@ import sirius.math.Point3D;
 
 interface IDisplay3D extends IDisplay {
   
-	public var rotation : Point3D;
-	
-	public var location : Point3D;
-	
-	public var scale : Point3D;
-	
-	public var perspective : String;
-	
-	public var transformOrigin : String;
-	
-	public var transformStyle : String;
+	public var transform : ITransform3D;
 	
 	public function preserve3d() : IDisplay3D;
 	
@@ -47,7 +38,7 @@ interface IDisplay3D extends IDisplay {
 
 	public function scaleZ (?value:Float, ?add:Bool) : Float;
 	
-	public function transform(x:Float, y:Float, x1:Float, y1:Float, w:Float, h:Float):IDisplay;
+	public function transform2D(x:Float, y:Float, x1:Float, y1:Float, w:Float, h:Float):IDisplay;
 	
 	public function transform3D(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay;
 

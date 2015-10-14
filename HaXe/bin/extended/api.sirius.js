@@ -2280,24 +2280,32 @@ sirius_dom_IDisplay3D.prototype = {
 var sirius_dom_Display3D = $hx_exports.sru.dom.Display3D = function(q,d) {
 	sirius_dom_Div.call(this,q,d);
 	this.attribute("sru-dom","display3d");
-	this.rotation = new sirius_math_Point3D(0,0,0);
-	this.location = new sirius_math_Point3D(0,0,0);
-	this.scale = new sirius_math_Point3D(1,1,1);
-	this.xcss = new sirius_css_XCSS();
-	this.backFace = "hidden";
-	this.preserve3d().update();
+	if(!this.data.__data__.exists("transform")) {
+		this.data.__data__.set("xcss",new sirius_css_XCSS());
+		this.data.__data__.set("transform",new sirius_math_Transform3D());
+		sirius_dom_Display3D._backface_fix();
+	}
+	this.xcss = this.data.__data__.get("xcss");
+	this.transform = this.data.__data__.get("transform");
+	this.update();
 };
 sirius_dom_Display3D.__name__ = ["sirius","dom","Display3D"];
 sirius_dom_Display3D.__interfaces__ = [sirius_dom_IDisplay3D];
+sirius_dom_Display3D._backface_fix = function() {
+	if(!sirius_dom_Display3D._fixed) {
+		sirius_dom_Display3D._fixed = true;
+		sirius_css_Automator.build("backface-visibility-inherit transform-style-inherit","*");
+	}
+};
 sirius_dom_Display3D.__super__ = sirius_dom_Div;
 sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	preserve3d: function() {
-		this.transformStyle = "preserve-3d";
+		this.transform.transformStyle = "preserve-3d";
 		return this;
 	}
 	,setPerspective: function(value,origin) {
-		if(value != null) this.perspective = value;
-		if(origin != null) this.transformOrigin = origin;
+		if(value != null) this.transform.perspective = value;
+		if(origin != null) this.transform.transformOrigin = origin;
 		return this;
 	}
 	,rotateAll: function(x,y,z,add) {
@@ -2308,24 +2316,24 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	}
 	,rotationX: function(value,add) {
 		if(value != null) {
-			if(add) this.rotation.x += value; else this.rotation.x = value;
-			if(this.rotation.x < -180) this.rotation.x += 360; else if(this.rotation.x > 180) this.rotation.x -= 360;
+			if(add) this.transform.rotation.x += value; else this.transform.rotation.x = value;
+			if(this.transform.rotation.x < -180) this.transform.rotation.x += 360; else if(this.transform.rotation.x > 180) this.transform.rotation.x -= 360;
 		}
-		return this.rotation.x;
+		return this.transform.rotation.x;
 	}
 	,rotationY: function(value,add) {
 		if(value != null) {
-			if(add) this.rotation.y += value; else this.rotation.y = value;
-			if(this.rotation.y < -180) this.rotation.y += 360; else if(this.rotation.y > 180) this.rotation.y -= 360;
+			if(add) this.transform.rotation.y += value; else this.transform.rotation.y = value;
+			if(this.transform.rotation.y < -180) this.transform.rotation.y += 360; else if(this.transform.rotation.y > 180) this.transform.rotation.y -= 360;
 		}
-		return this.rotation.y;
+		return this.transform.rotation.y;
 	}
 	,rotationZ: function(value,add) {
 		if(value != null) {
-			if(add) this.rotation.z += value; else this.rotation.z = value;
-			if(this.rotation.z < -180) this.rotation.z += 360; else if(this.rotation.z > 180) this.rotation.z -= 360;
+			if(add) this.transform.rotation.z += value; else this.transform.rotation.z = value;
+			if(this.transform.rotation.z < -180) this.transform.rotation.z += 360; else if(this.transform.rotation.z > 180) this.transform.rotation.z -= 360;
 		}
-		return this.rotation.z;
+		return this.transform.rotation.z;
 	}
 	,moveTo: function(x,y,z,add) {
 		this.locationX(x,add);
@@ -2335,21 +2343,21 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	}
 	,locationX: function(value,add) {
 		if(value != null) {
-			if(add) this.location.x += value; else this.location.x = value;
+			if(add) this.transform.location.x += value; else this.transform.location.x = value;
 		}
-		return this.location.x;
+		return this.transform.location.x;
 	}
 	,locationY: function(value,add) {
 		if(value != null) {
-			if(add) this.location.y += value; else this.location.y = value;
+			if(add) this.transform.location.y += value; else this.transform.location.y = value;
 		}
-		return this.location.y;
+		return this.transform.location.y;
 	}
 	,locationZ: function(value,add) {
 		if(value != null) {
-			if(add) this.location.z += value; else this.location.z = value;
+			if(add) this.transform.location.z += value; else this.transform.location.z = value;
 		}
-		return this.location.z;
+		return this.transform.location.z;
 	}
 	,scaleAll: function(x,y,z,add) {
 		this.scaleX(x,add);
@@ -2357,7 +2365,7 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 		if(z != null) this.scaleZ(z,add);
 		return this;
 	}
-	,transform: function(x,y,x1,y1,w,h) {
+	,transform2D: function(x,y,x1,y1,w,h) {
 		return this.moveTo(x,y,null).rotateAll(x1,y1,null).scaleAll(w,h,null);
 	}
 	,transform3D: function(x,y,z,x1,y1,z1,w,h,d) {
@@ -2365,33 +2373,33 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 	}
 	,scaleX: function(value,add) {
 		if(value != null) {
-			if(add) this.scale.x += value; else this.scale.x = value;
+			if(add) this.transform.scale.x += value; else this.transform.scale.x = value;
 		}
-		return this.scale.x;
+		return this.transform.scale.x;
 	}
 	,scaleY: function(value,add) {
 		if(value != null) {
-			if(add) this.scale.y += value; else this.scale.y = value;
+			if(add) this.transform.scale.y += value; else this.transform.scale.y = value;
 		}
-		return this.scale.y;
+		return this.transform.scale.y;
 	}
 	,scaleZ: function(value,add) {
 		if(value != null) {
-			if(add) this.scale.z += value; else this.scale.z = value;
+			if(add) this.transform.scale.z += value; else this.transform.scale.z = value;
 		}
-		return this.scale.z;
+		return this.transform.scale.z;
 	}
 	,update: function() {
-		if(this.perspective != null) this.xcss.write("perspective",this.perspective);
-		if(this.transformOrigin != null) this.xcss.write("transformOrigin",this.transformOrigin);
-		if(this.transformStyle != null) this.xcss.write("transformStyle",this.transformStyle);
-		if(this.backFace != null) this.xcss.write("backfaceVisibility",this.backFace);
-		this.xcss.write("transform","rotateX(" + this.rotation.x + "deg) rotateY(" + this.rotation.y + "deg) rotateZ(" + this.rotation.z + "deg) translate3d(" + this.location.x + "px," + this.location.y + "px," + this.location.z + "px) scale3d(" + this.scale.x + "," + this.scale.y + "," + this.scale.z + ")");
+		if(this.transform.perspective != null) this.xcss.write("perspective",this.transform.perspective);
+		if(this.transform.transformOrigin != null) this.xcss.write("transformOrigin",this.transform.transformOrigin);
+		if(this.transform.transformStyle != null) this.xcss.write("transformStyle",this.transform.transformStyle);
+		if(this.transform.backFace != null) this.xcss.write("backfaceVisibility",this.transform.backFace);
+		this.xcss.write("transform","rotateX(" + this.transform.rotation.x + "deg) rotateY(" + this.transform.rotation.y + "deg) rotateZ(" + this.transform.rotation.z + "deg) translate3d(" + this.transform.location.x + "px," + this.transform.location.y + "px," + this.transform.location.z + "px) scale3d(" + this.transform.scale.x + "," + this.transform.scale.y + "," + this.transform.scale.z + ")");
 		this.xcss.apply(this);
 		return this;
 	}
 	,doubleSided: function(value) {
-		if(value) this.backFace = "visible"; else this.backFace = "hidden";
+		if(value) this.transform.backFace = "visible"; else this.transform.backFace = "hidden";
 		return this;
 	}
 	,flipHorizontal: function() {
@@ -4674,6 +4682,11 @@ sirius_math_IPoint3D.__name__ = ["sirius","math","IPoint3D"];
 sirius_math_IPoint3D.prototype = {
 	__class__: sirius_math_IPoint3D
 };
+var sirius_math_ITransform3D = function() { };
+sirius_math_ITransform3D.__name__ = ["sirius","math","ITransform3D"];
+sirius_math_ITransform3D.prototype = {
+	__class__: sirius_math_ITransform3D
+};
 var sirius_math_Point = function(x,y) {
 	this.x = x;
 	this.y = y;
@@ -4709,6 +4722,20 @@ sirius_math_Point3D.prototype = {
 		if(round) return Math.round(o.x) == Math.round(this.x) && Math.round(o.y) == Math.round(this.y) && Math.round(o.z) == Math.round(this.z); else return o.x == this.x && o.y == this.y && o.z == this.z;
 	}
 	,__class__: sirius_math_Point3D
+};
+var sirius_math_Transform3D = function() {
+	this.rotation = new sirius_math_Point3D(0,0,0);
+	this.location = new sirius_math_Point3D(0,0,0);
+	this.scale = new sirius_math_Point3D(1,1,1);
+	this.transformStyle = "preserve-3d";
+	this.transformOrigin = "50% 50%";
+	this.backFace = "hidden";
+	this.perspective = "";
+};
+sirius_math_Transform3D.__name__ = ["sirius","math","Transform3D"];
+sirius_math_Transform3D.__interfaces__ = [sirius_math_ITransform3D];
+sirius_math_Transform3D.prototype = {
+	__class__: sirius_math_Transform3D
 };
 var sirius_modules_IMod = function() { };
 sirius_modules_IMod.__name__ = ["sirius","modules","IMod"];
@@ -5824,6 +5851,7 @@ sirius_css_CSSGroup.MEDIA_SM = "(min-width:768px) and (max-width:1000px)";
 sirius_css_CSSGroup.MEDIA_MD = "(min-width:1001px) and (max-width:1169px)";
 sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
+sirius_dom_Display3D._fixed = false;
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
 sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};

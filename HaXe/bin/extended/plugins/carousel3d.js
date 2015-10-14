@@ -43,7 +43,6 @@
 			spacing : 0,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
-				panel.css('scroll-none');
 				panel.addChild(p);
 				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;
