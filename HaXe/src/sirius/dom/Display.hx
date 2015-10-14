@@ -171,17 +171,17 @@ class Display implements IDisplay {
 	}
 	
 	public function index():Int {
-		return _parent != null ? _parent.indexOf(this) : -1;
+		return parent().indexOf(this);
 	}
 	
 	public function indexOf(q:IDisplay):Int {
-		var r:Int = -1;
-		Dice.Children(element, function(c:Node, i:Int) {
-			return c == q.element;
-		}, function(o:IDiceRoll) {
-			r = o.completed ? o.value : -1;
-		});
-		return r;
+		var i:Int = 0;
+		var c = element.children;
+		while (i < c.length) {
+			if (c.item(0) == q.element) return i;
+			++i;
+		}
+		return -1;
 	}
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
@@ -373,7 +373,7 @@ class Display implements IDisplay {
 	}
 	
 	public function parent(levels:UInt=0):IDisplay {
-		if (element.parentElement != null && _parent == null) _parent = Utils.displayFrom(element.parentElement);
+		if (levels == 0 && (_parent == null || element.parentElement != _parent.element)) _parent = Utils.displayFrom(element.parentElement);
 		if (levels > 0 && _parent != null)	return _parent.parent(--levels);
 		else 								return _parent;
 	}

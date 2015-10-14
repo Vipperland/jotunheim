@@ -1,0 +1,79 @@
+[Module:{
+	"version":1.0,
+	"type":"html",
+	"name":"sample"
+}]
+
+<div id="state_{{id}}" class="ref-sample txt-white txt-30 bg-dodgerblue padd-10 marg-10">
+	<span>{{name}}</span> <span class="bold">({{short}})</span>
+</div>
+
+/EOF;
+
+[Module:{
+	"version":1.0,
+	"type":"script"
+}]
+<script>
+	
+	var data = [
+		{ id:1,  short:"AC", name:"Acre" }, 
+		{ id:2,  short:"AL", name:"Alagoas" },
+		{ id:3,  short:"AM", name:"Amazonas" }, 
+		{ id:4,  short:"AP", name:"Amapá" }, 
+		{ id:5,  short:"BA", name:"Bahia" },
+		{ id:6,  short:"CE", name:"Ceará" }, 
+		{ id:7,  short:"DF", name:"Distrito Federal" }, 
+		{ id:8,  short:"ES", name:"Espírito Santo" }, 
+		{ id:9,  short:"GO", name:"Goiás" }, 
+		{ id:10, short:"MA", name:"Maranhão" }, 
+		{ id:11, short:"MG", name:"Minas Gerais" },
+		{ id:12, short:"MS", name:"Mato Grosso do Sul" }, 
+		{ id:13, short:"MT", name:"Mato Grosso" }, 
+		{ id:14, short:"PA", name:"Pará" }, 
+		{ id:15, short:"PB", name:"Paraíba" },
+		{ id:16, short:"PE", name:"Pernambuco" },
+		{ id:17, short:"PI", name:"Piauí" }, 
+		{ id:18, short:"PR", name:"Paraná" }, 
+		{ id:19, short:"RJ", name:"Rio de Janeiro" },
+		{ id:20, short:"RN", name:"Rio Grande do Norte" },
+		{ id:21, short:"RO", name:"Rondônia" }, 
+		{ id:22, short:"RR", name:"Roraima" }, 
+		{ id:23, short:"RS", name:"Rio Grande do Sul" }, 
+		{ id:24, short:"SC", name:"Santa Catarina" }, 
+		{ id:25, short:"SE", name:"Sergipe" }, 
+		{ id:26, short:"SP", name:"São Paulo" },
+		{ id:27, short:"TO", name:"Tocantins" }
+	]
+	
+	Sirius.onInit(function(){
+	
+		Sirius.document.body.build(Sirius.resources.fill("sample", data));
+		Automator.scan();
+		
+		var table = Sirius.all("[id]");
+		
+		var current = {};
+		
+		table.each(function(e){
+			e.attribute('draggable','true');
+		});
+		
+		table.onDragStart(function(e){
+			current.id = e.target;
+		});
+		
+		table.onDrop(function(e){
+			e.event.preventDefault();
+			console.log(e.target.index(), e.target.element.innerText);
+			//e.target.parent().addChild(current.id, e.target.index());
+		});
+		
+		table.onDragOver(function(e){
+			e.event.preventDefault();
+		});
+		
+	});
+	
+</script>
+/EOF;

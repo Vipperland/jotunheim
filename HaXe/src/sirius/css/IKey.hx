@@ -11,4 +11,5 @@ interface IKey {
 	var position:Bool;
 	var measure:String;
 	var color:String;
+	var skip:Bool;
 }

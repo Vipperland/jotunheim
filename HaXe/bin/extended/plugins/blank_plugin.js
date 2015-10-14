@@ -9,4 +9,5 @@
 	$exports.sru.plugins.PLUGIN_NAME = function(){
 		
 	}
+	if(Sirius != null) Sirius.updatePlugins();
 })(typeof window != "undefined" ? window : exports);

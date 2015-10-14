@@ -1,5 +1,6 @@
 package sirius.modules;
 import haxe.Json;
+import sirius.dom.Script;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 import sirius.Sirius;
@@ -54,7 +55,7 @@ class ModLib {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
 						Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]", 10, 1);
-						var end:Int = v.indexOf(";;;");
+						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
@@ -71,10 +72,18 @@ class ModLib {
 						}
 						#if js
 							// ============================= JS ONLY =============================
-							if (mod.types != null) {
-								var p:Array<String> = mod.types.split(" ").join("").split(";");
-								if (Dice.Match(p, 'css') > 0) {
+							if (mod.type != null) {
+								if (mod.type == 'cssx') {
 									Automator.build(content);
+									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]", 10, 1);
+									content = null;
+								}else if (mod.type == 'css') {
+									Sirius.document.head.addScript(content);
+									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]", 10, 1);
+									content = null;
+								}else if (mod.type == 'script' || mod.type == 'js') {
+									Sirius.document.head.addScript(content);
+									Sirius.log("Sirius->ModLib.build[ " + mod.name + " JS/SCRIPT ]", 10, 1);
 									content = null;
 								}
 							}

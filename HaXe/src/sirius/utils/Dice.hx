@@ -111,14 +111,12 @@ class Dice {
 	public static function Count(from:Dynamic, to:Dynamic, each:Int->Int->Bool->Null<Bool>, ?complete:IDiceRoll->Void = null, ?increment:UInt = 1):IDiceRoll {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
-		if (increment == null || increment < 1) {
-			increment = 1;
-		}
+		if (increment == null || increment < 1) increment = 1;
 		while (a < b) {
 			if (each(cast a,cast b,(a+=increment)==b) == true) break;
 		}
 		var c:Bool = a == b;
-		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a };
+		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a-increment };
 		if (complete != null) complete(r);
 		return r;
 	}

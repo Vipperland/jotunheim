@@ -33,8 +33,10 @@ class Entry {
 			var c:Int = 0;
 			var t:Int = keys.length;
 			Dice.Values(keys, function(v:IKey) {
-				next = keys[++c];
-				r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v, t, c);
+				if(!v.skip){
+					next = keys[++c];
+					r += v.entry != null ? v.entry.verifier(this, v, next) : _valueOf(v, t, c);
+				}
 				return canceled;
 			});
 		}

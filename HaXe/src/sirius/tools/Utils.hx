@@ -157,6 +157,12 @@ class Utils{
 			t.setAttribute('sru-dom', type);
 			return OC == null ? new Display(t) : untyped __js__('new OC(t)');
 		}
+		
+		static public function intToString(value:Dynamic, ?rad:Int):String {
+			if (Std.is(value, String)) value = Std.parseInt(value);
+			value = value >> 0;
+			return Reflect.callMethod(value, value.toString, rad != null ? [rad] : []);
+		}
 	
 	#elseif php
 	

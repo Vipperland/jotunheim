@@ -236,4 +236,5 @@
 		
 		return o;
 	}
+	if(Sirius != null) Sirius.updatePlugins();
 })(typeof window != "undefined" ? window : exports);

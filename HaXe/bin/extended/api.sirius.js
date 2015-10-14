@@ -1269,7 +1269,7 @@ sirius_modules_ModLib.prototype = {
 					var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
 					if(mod.name == null) mod.name = file;
 					sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]",10,1);
-					var end = v.indexOf(";;;");
+					var end = v.indexOf("/EOF;");
 					content = v.substring(i + 2,end == -1?v.length:end);
 					if(mod.require != null) {
 						var dependencies = mod.require.split(";");
@@ -1282,10 +1282,18 @@ sirius_modules_ModLib.prototype = {
 							}
 						});
 					}
-					if(mod.types != null) {
-						var p1 = mod.types.split(" ").join("").split(";");
-						if(sirius_utils_Dice.Match(p1,"css") > 0) {
+					if(mod.type != null) {
+						if(mod.type == "cssx") {
 							sirius_css_Automator.build(content);
+							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]",10,1);
+							content = null;
+						} else if(mod.type == "css") {
+							sirius_Sirius.document.head.addScript(content);
+							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]",10,1);
+							content = null;
+						} else if(mod.type == "script" || mod.type == "js") {
+							sirius_Sirius.document.head.addScript(content);
+							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " JS/SCRIPT ]",10,1);
 							content = null;
 						}
 					}
@@ -1358,19 +1366,25 @@ sirius_Sirius.main = function() {
 sirius_Sirius._loadController = function(e) {
 	sirius_Sirius.agent.update();
 	sirius_transitions_Ease.update();
-	var plist = window.sru ? window.sru.plugins : null;
-	sirius_utils_Dice.All(plist,function(p,v) {
-		sirius_Sirius.plugins[p] = v;
-		sirius_Sirius.log("Sirius->Plugins::status[ " + p + "() ADDED]",10,1);
-	});
-	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
+	sirius_Sirius.updatePlugins();
 	sirius_Sirius._loaded = true;
-	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v1) {
-		if(sirius_tools_Utils.isValid(v1)) v1();
+	sirius_Sirius.log("Sirius->Core::status[ INITIALIZED ] ",10,1);
+	sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
+		if(sirius_tools_Utils.isValid(v)) v();
 	});
 	window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 	sirius_Sirius._loadPool = null;
 	sirius_Sirius.loader.start(sirius_Sirius._onLoaded);
+};
+sirius_Sirius.updatePlugins = function() {
+	if(sirius_Sirius._loaded) {
+		var plist = window.sru ? window.sru.plugins : null;
+		sirius_utils_Dice.All(plist,function(p,v) {
+			sirius_Sirius.plugins[p] = v;
+			sirius_Sirius.log("Sirius->Plugins::status[ " + p + "() ADDED]",10,1);
+			Reflect.deleteField(plist,p);
+		});
+	}
 };
 sirius_Sirius._onLoaded = function(e) {
 	if(sirius_Sirius.loader.totalFiles > 0) sirius_Sirius.log("Sirius->Resources::status [ MODULES (" + sirius_Sirius.loader.totalLoaded + "/" + sirius_Sirius.loader.totalFiles + ") ]",10,1);
@@ -1464,7 +1478,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 256, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 263, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1735,16 +1749,16 @@ sirius_dom_Display.prototype = {
 		return this.element.children.length;
 	}
 	,index: function() {
-		if(this._parent != null) return this._parent.indexOf(this); else return -1;
+		return this.parent().indexOf(this);
 	}
 	,indexOf: function(q) {
-		var r = -1;
-		sirius_utils_Dice.Children(this.element,function(c,i) {
-			return c == q.element;
-		},function(o) {
-			if(o.completed) r = o.value; else r = -1;
-		});
-		return r;
+		var i = 0;
+		var c = this.element.children;
+		while(i < c.length) {
+			if(c.item(0) == q.element) return i;
+			++i;
+		}
+		return -1;
 	}
 	,addChild: function(q,at) {
 		if(at == null) at = -1;
@@ -1907,7 +1921,7 @@ sirius_dom_Display.prototype = {
 	}
 	,parent: function(levels) {
 		if(levels == null) levels = 0;
-		if(this.element.parentElement != null && this._parent == null) this._parent = sirius_tools_Utils.displayFrom(this.element.parentElement);
+		if(levels == 0 && (this._parent == null || this.element.parentElement != this._parent.element)) this._parent = sirius_tools_Utils.displayFrom(this.element.parentElement);
 		if(_$UInt_UInt_$Impl_$.gt(levels,0) && this._parent != null) return this._parent.parent(--levels); else return this._parent;
 	}
 	,activate: function(handler) {
@@ -2750,7 +2764,19 @@ sirius_dom_Head.get = function(q,h) {
 };
 sirius_dom_Head.__super__ = sirius_dom_Display;
 sirius_dom_Head.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Head
+	addScript: function(content) {
+		if(content != null) {
+			content = content.split("<script>").join("").split("</script>").join("");
+			if(content.length > 1) {
+				var s = new sirius_dom_Script();
+				s.build(content);
+				this.addChild(s);
+				return s;
+			}
+		}
+		return null;
+	}
+	,__class__: sirius_dom_Head
 });
 var sirius_dom_HR = $hx_exports.sru.dom.HR = function(q,d) {
 	if(q == null) {
@@ -3563,6 +3589,11 @@ sirius_tools_Utils.displayFrom = function(t) {
 		return new OC(t);
 	}
 };
+sirius_tools_Utils.intToString = function(value,rad) {
+	if(typeof(value) == "string") value = Std.parseInt(value);
+	value = value;
+	return Reflect.callMethod(value,value.toString,rad != null?[rad]:[]);
+};
 sirius_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
 	sirius_utils_Dice.Values(path,function(v) {
@@ -3958,18 +3989,21 @@ sirius_css_Automator.build = function(query,group,silent) {
 		if(v.length > 1) {
 			v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
 			c = v.split("-");
-			if(g) {
-				sirius_css_Automator._screen(c);
-				var en = sirius_css_Automator._parse(c);
-				s = en.build();
-				if(s != null) r += s + ";"; else sirius_Sirius.log("Sirius->Automator.build::error( [" + Std.string(en) + "] )");
-			} else {
-				m = sirius_css_Automator._screen(c);
-				if(!sirius_css_Automator.css.hasSelector(v,m)) {
-					s = sirius_css_Automator._parse(c).build();
-					if(sirius_tools_Utils.isValid(s)) {
-						if(sirius_css_Automator._dev == true) sirius_Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
-						sirius_css_Automator.css.setSelector("." + v,s,m);
+			if(c.length > 0) {
+				if(c[0] == "ref") return;
+				if(g) {
+					sirius_css_Automator._screen(c);
+					var en = sirius_css_Automator._parse(c);
+					s = en.build();
+					if(s != null) r += s + ";"; else sirius_Sirius.log("Sirius->Automator.build::error( [" + Std.string(en) + "] )");
+				} else {
+					m = sirius_css_Automator._screen(c);
+					if(!sirius_css_Automator.css.hasSelector(v,m)) {
+						s = sirius_css_Automator._parse(c).build();
+						if(sirius_tools_Utils.isValid(s)) {
+							if(sirius_css_Automator._dev == true) sirius_Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
+							sirius_css_Automator.css.setSelector("." + v,s,m);
+						}
 					}
 				}
 			}
@@ -4002,11 +4036,12 @@ sirius_css_Automator._createGridCol = function(size) {
 	});
 };
 sirius_css_Automator._init = function() {
-	sirius_css_Automator.build("marg-0 padd-0 bord-0 outline-0 color-inherit font-inherit vert-baseline transparent","*");
+	sirius_css_Automator.build("marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent","*");
 	sirius_css_Automator.build("arial txt-12","body");
 	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover");
 	sirius_css_Automator.build("list-style-none","ol,ul,dl");
 	sirius_css_Automator.build("padd-5","hr");
+	sirius_css_Automator.build("padd-10","input,textarea,select");
 	sirius_css_Automator.build("disp-table content-void",".grid:before,.grid:after");
 	sirius_css_Automator.build("clear-both",".grid:after");
 	sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
@@ -4033,7 +4068,11 @@ sirius_css_Automator._position = function(r,x) {
 	return "tblr".indexOf(x) != -1;
 };
 sirius_css_Automator._color = function(r,x) {
-	if(HxOverrides.substr(x,0,1) == "x" && (x.length == 4 || x.length == 7)) return "#" + x.substring(1,x.length); else if(sirius_tools_Utils.isValid(r) && HxOverrides.substr(r,0,1) == "#") return r;
+	var argb = x.length == 9;
+	if(HxOverrides.substr(x,0,1) == "x" && (x.length == 4 || x.length == 7 || argb)) {
+		x = "#" + x.substring(1,x.length);
+		if(argb) return new sirius_math_ARGB(x).css(); else return x;
+	} else if(sirius_tools_Utils.isValid(r) && HxOverrides.substr(r,0,1) == "#") return r;
 	return null;
 };
 sirius_css_Automator._measure = function(r,x) {
@@ -4178,7 +4217,7 @@ sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
 	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
 	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
 	var c = a == b;
-	var r = { from : from, to : b, completed : c, value : a};
+	var r = { from : from, to : b, completed : c, value : a - _$UInt_UInt_$Impl_$.toFloat(increment)};
 	if(complete != null) complete(r);
 	return r;
 };
@@ -4234,8 +4273,10 @@ sirius_css_Entry.prototype = {
 			var c = 0;
 			var t = this.keys.length;
 			sirius_utils_Dice.Values(this.keys,function(v) {
-				_g.next = _g.keys[++c];
-				if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
+				if(!v.skip) {
+					_g.next = _g.keys[++c];
+					if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
+				}
 				return _g.canceled;
 			});
 		}
@@ -4281,6 +4322,14 @@ sirius_css_AutomatorRules.shiftKey = function(d,k,n) {
 };
 sirius_css_AutomatorRules.commonKey = function(d,k,n) {
 	return k.entry.value + (n != null?":":"");
+};
+sirius_css_AutomatorRules.colorKey = function(d,k,n) {
+	if(n != null && n.measure != null) {
+		n.skip = true;
+		var v = Std.parseInt(n.measure) / 100 * 255;
+		return new sirius_math_ARGB("0x" + k.entry.value.split("#").join((v >> 0).toString(16))).css();
+	}
+	return k.entry.value;
 };
 sirius_css_AutomatorRules.pushKey = function(d,k,n) {
 	return k.entry.value + "-";
@@ -5311,9 +5360,9 @@ sirius_utils_Filler._apply = function(path,content,data) {
 sirius_utils_Filler.to = function(value,data,sufix) {
 	var r = "";
 	if((data instanceof Array) && data.__enum__ == null) sirius_utils_Dice.All(data,function(p,v) {
-		v["%i"] = p;
+		v["%0"] = p;
 		r += sirius_utils_Filler._apply(sufix,value,v);
-		Reflect.deleteField(v,"%i");
+		Reflect.deleteField(v,"%0");
 	}); else r = sirius_utils_Filler._apply(sufix,value,data);
 	return r;
 };
@@ -5859,7 +5908,7 @@ sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, aliceblue : { value : "#f0f8ff", verifier : sirius_css_AutomatorRules.commonKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_AutomatorRules.commonKey}, aqua : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_AutomatorRules.commonKey}, azure : { value : "#f0ffff", verifier : sirius_css_AutomatorRules.commonKey}, beige : { value : "#f5f5dc", verifier : sirius_css_AutomatorRules.commonKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_AutomatorRules.commonKey}, black : { value : "#000000", verifier : sirius_css_AutomatorRules.commonKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_AutomatorRules.commonKey}, blue : { value : "#0000ff", verifier : sirius_css_AutomatorRules.commonKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_AutomatorRules.commonKey}, brown : { value : "#a52a2a", verifier : sirius_css_AutomatorRules.commonKey}, burlywood : { value : "#deb887", verifier : sirius_css_AutomatorRules.commonKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_AutomatorRules.commonKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_AutomatorRules.commonKey}, chocolate : { value : "#d2691e", verifier : sirius_css_AutomatorRules.commonKey}, coral : { value : "#ff7f50", verifier : sirius_css_AutomatorRules.commonKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_AutomatorRules.commonKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_AutomatorRules.commonKey}, crimson : { value : "#dc143c", verifier : sirius_css_AutomatorRules.commonKey}, cyan : { value : "#00ffff", verifier : sirius_css_AutomatorRules.commonKey}, darkblue : { value : "#00008b", verifier : sirius_css_AutomatorRules.commonKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_AutomatorRules.commonKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_AutomatorRules.commonKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_AutomatorRules.commonKey}, darkgreen : { value : "#006400", verifier : sirius_css_AutomatorRules.commonKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_AutomatorRules.commonKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_AutomatorRules.commonKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_AutomatorRules.commonKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_AutomatorRules.commonKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_AutomatorRules.commonKey}, darkred : { value : "#8b0000", verifier : sirius_css_AutomatorRules.commonKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_AutomatorRules.commonKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_AutomatorRules.commonKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_AutomatorRules.commonKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_AutomatorRules.commonKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_AutomatorRules.commonKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_AutomatorRules.commonKey}, deeppink : { value : "#ff1493", verifier : sirius_css_AutomatorRules.commonKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_AutomatorRules.commonKey}, dimgray : { value : "#696969", verifier : sirius_css_AutomatorRules.commonKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_AutomatorRules.commonKey}, firebrick : { value : "#b22222", verifier : sirius_css_AutomatorRules.commonKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_AutomatorRules.commonKey}, forestgreen : { value : "#228b22", verifier : sirius_css_AutomatorRules.commonKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_AutomatorRules.commonKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_AutomatorRules.commonKey}, gold : { value : "#ffd700", verifier : sirius_css_AutomatorRules.commonKey}, goldenrod : { value : "#daa520", verifier : sirius_css_AutomatorRules.commonKey}, gray : { value : "#808080", verifier : sirius_css_AutomatorRules.commonKey}, green : { value : "#008000", verifier : sirius_css_AutomatorRules.commonKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_AutomatorRules.commonKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_AutomatorRules.commonKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_AutomatorRules.commonKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_AutomatorRules.commonKey}, indigo : { value : "#4b0082", verifier : sirius_css_AutomatorRules.commonKey}, ivory : { value : "#fffff0", verifier : sirius_css_AutomatorRules.commonKey}, khaki : { value : "#f0e68c", verifier : sirius_css_AutomatorRules.commonKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_AutomatorRules.commonKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_AutomatorRules.commonKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_AutomatorRules.commonKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_AutomatorRules.commonKey}, lightblue : { value : "#add8e6", verifier : sirius_css_AutomatorRules.commonKey}, lightcoral : { value : "#f08080", verifier : sirius_css_AutomatorRules.commonKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_AutomatorRules.commonKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_AutomatorRules.commonKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_AutomatorRules.commonKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_AutomatorRules.commonKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_AutomatorRules.commonKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_AutomatorRules.commonKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_AutomatorRules.commonKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_AutomatorRules.commonKey}, lightslategray : { value : "#778899", verifier : sirius_css_AutomatorRules.commonKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_AutomatorRules.commonKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_AutomatorRules.commonKey}, lime : { value : "#00ff00", verifier : sirius_css_AutomatorRules.commonKey}, limegreen : { value : "#32cd32", verifier : sirius_css_AutomatorRules.commonKey}, linen : { value : "#faf0e6", verifier : sirius_css_AutomatorRules.commonKey}, magenta : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.commonKey}, maroon : { value : "#800000", verifier : sirius_css_AutomatorRules.commonKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_AutomatorRules.commonKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_AutomatorRules.commonKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_AutomatorRules.commonKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_AutomatorRules.commonKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_AutomatorRules.commonKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_AutomatorRules.commonKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_AutomatorRules.commonKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_AutomatorRules.commonKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_AutomatorRules.commonKey}, midnightblue : { value : "#191970", verifier : sirius_css_AutomatorRules.commonKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_AutomatorRules.commonKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_AutomatorRules.commonKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_AutomatorRules.commonKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_AutomatorRules.commonKey}, navy : { value : "#000080", verifier : sirius_css_AutomatorRules.commonKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_AutomatorRules.commonKey}, olive : { value : "#808000", verifier : sirius_css_AutomatorRules.commonKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_AutomatorRules.commonKey}, orange : { value : "#ffa500", verifier : sirius_css_AutomatorRules.commonKey}, orangered : { value : "#ff4500", verifier : sirius_css_AutomatorRules.commonKey}, orchid : { value : "#da70d6", verifier : sirius_css_AutomatorRules.commonKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_AutomatorRules.commonKey}, palegreen : { value : "#98fb98", verifier : sirius_css_AutomatorRules.commonKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_AutomatorRules.commonKey}, palevioletred : { value : "#db7093", verifier : sirius_css_AutomatorRules.commonKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_AutomatorRules.commonKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_AutomatorRules.commonKey}, peru : { value : "#cd853f", verifier : sirius_css_AutomatorRules.commonKey}, pink : { value : "#ffc0cb", verifier : sirius_css_AutomatorRules.commonKey}, plum : { value : "#dda0dd", verifier : sirius_css_AutomatorRules.commonKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_AutomatorRules.commonKey}, purple : { value : "#800080", verifier : sirius_css_AutomatorRules.commonKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_AutomatorRules.commonKey}, red : { value : "#ff0000", verifier : sirius_css_AutomatorRules.commonKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_AutomatorRules.commonKey}, royalblue : { value : "#4169e1", verifier : sirius_css_AutomatorRules.commonKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_AutomatorRules.commonKey}, salmon : { value : "#fa8072", verifier : sirius_css_AutomatorRules.commonKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_AutomatorRules.commonKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_AutomatorRules.commonKey}, seashell : { value : "#fff5ee", verifier : sirius_css_AutomatorRules.commonKey}, sienna : { value : "#a0522d", verifier : sirius_css_AutomatorRules.commonKey}, silver : { value : "#c0c0c0", verifier : sirius_css_AutomatorRules.commonKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_AutomatorRules.commonKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_AutomatorRules.commonKey}, slategray : { value : "#708090", verifier : sirius_css_AutomatorRules.commonKey}, snow : { value : "#fffafa", verifier : sirius_css_AutomatorRules.commonKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_AutomatorRules.commonKey}, steelblue : { value : "#4682b4", verifier : sirius_css_AutomatorRules.commonKey}, tan : { value : "#d2b48c", verifier : sirius_css_AutomatorRules.commonKey}, teal : { value : "#008080", verifier : sirius_css_AutomatorRules.commonKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_AutomatorRules.commonKey}, tomato : { value : "#ff6347", verifier : sirius_css_AutomatorRules.commonKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_AutomatorRules.commonKey}, violet : { value : "#ee82ee", verifier : sirius_css_AutomatorRules.commonKey}, wheat : { value : "#f5deb3", verifier : sirius_css_AutomatorRules.commonKey}, white : { value : "#ffffff", verifier : sirius_css_AutomatorRules.commonKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_AutomatorRules.commonKey}, yellow : { value : "#ffff00", verifier : sirius_css_AutomatorRules.commonKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_AutomatorRules.commonKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.commonKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, pointer : { value : "pointer", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, aliceblue : { value : "#f0f8ff", verifier : sirius_css_AutomatorRules.colorKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_AutomatorRules.colorKey}, aqua : { value : "#00ffff", verifier : sirius_css_AutomatorRules.colorKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_AutomatorRules.colorKey}, azure : { value : "#f0ffff", verifier : sirius_css_AutomatorRules.colorKey}, beige : { value : "#f5f5dc", verifier : sirius_css_AutomatorRules.colorKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_AutomatorRules.colorKey}, black : { value : "#000000", verifier : sirius_css_AutomatorRules.colorKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_AutomatorRules.colorKey}, blue : { value : "#0000ff", verifier : sirius_css_AutomatorRules.colorKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_AutomatorRules.colorKey}, brown : { value : "#a52a2a", verifier : sirius_css_AutomatorRules.colorKey}, burlywood : { value : "#deb887", verifier : sirius_css_AutomatorRules.colorKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_AutomatorRules.colorKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_AutomatorRules.colorKey}, chocolate : { value : "#d2691e", verifier : sirius_css_AutomatorRules.colorKey}, coral : { value : "#ff7f50", verifier : sirius_css_AutomatorRules.colorKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_AutomatorRules.colorKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_AutomatorRules.colorKey}, crimson : { value : "#dc143c", verifier : sirius_css_AutomatorRules.colorKey}, cyan : { value : "#00ffff", verifier : sirius_css_AutomatorRules.colorKey}, darkblue : { value : "#00008b", verifier : sirius_css_AutomatorRules.colorKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_AutomatorRules.colorKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_AutomatorRules.colorKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_AutomatorRules.colorKey}, darkgreen : { value : "#006400", verifier : sirius_css_AutomatorRules.colorKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_AutomatorRules.colorKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_AutomatorRules.colorKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_AutomatorRules.colorKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_AutomatorRules.colorKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_AutomatorRules.colorKey}, darkred : { value : "#8b0000", verifier : sirius_css_AutomatorRules.colorKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_AutomatorRules.colorKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_AutomatorRules.colorKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_AutomatorRules.colorKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_AutomatorRules.colorKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_AutomatorRules.colorKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_AutomatorRules.colorKey}, deeppink : { value : "#ff1493", verifier : sirius_css_AutomatorRules.colorKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_AutomatorRules.colorKey}, dimgray : { value : "#696969", verifier : sirius_css_AutomatorRules.colorKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_AutomatorRules.colorKey}, firebrick : { value : "#b22222", verifier : sirius_css_AutomatorRules.colorKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_AutomatorRules.colorKey}, forestgreen : { value : "#228b22", verifier : sirius_css_AutomatorRules.colorKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.colorKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_AutomatorRules.colorKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_AutomatorRules.colorKey}, gold : { value : "#ffd700", verifier : sirius_css_AutomatorRules.colorKey}, goldenrod : { value : "#daa520", verifier : sirius_css_AutomatorRules.colorKey}, gray : { value : "#808080", verifier : sirius_css_AutomatorRules.colorKey}, green : { value : "#008000", verifier : sirius_css_AutomatorRules.colorKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_AutomatorRules.colorKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_AutomatorRules.colorKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_AutomatorRules.colorKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_AutomatorRules.colorKey}, indigo : { value : "#4b0082", verifier : sirius_css_AutomatorRules.colorKey}, ivory : { value : "#fffff0", verifier : sirius_css_AutomatorRules.colorKey}, khaki : { value : "#f0e68c", verifier : sirius_css_AutomatorRules.colorKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_AutomatorRules.colorKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_AutomatorRules.colorKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_AutomatorRules.colorKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_AutomatorRules.colorKey}, lightblue : { value : "#add8e6", verifier : sirius_css_AutomatorRules.colorKey}, lightcoral : { value : "#f08080", verifier : sirius_css_AutomatorRules.colorKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_AutomatorRules.colorKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_AutomatorRules.colorKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_AutomatorRules.colorKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_AutomatorRules.colorKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_AutomatorRules.colorKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_AutomatorRules.colorKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_AutomatorRules.colorKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_AutomatorRules.colorKey}, lightslategray : { value : "#778899", verifier : sirius_css_AutomatorRules.colorKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_AutomatorRules.colorKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_AutomatorRules.colorKey}, lime : { value : "#00ff00", verifier : sirius_css_AutomatorRules.colorKey}, limegreen : { value : "#32cd32", verifier : sirius_css_AutomatorRules.colorKey}, linen : { value : "#faf0e6", verifier : sirius_css_AutomatorRules.colorKey}, magenta : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.colorKey}, maroon : { value : "#800000", verifier : sirius_css_AutomatorRules.colorKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_AutomatorRules.colorKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_AutomatorRules.colorKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_AutomatorRules.colorKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_AutomatorRules.colorKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_AutomatorRules.colorKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_AutomatorRules.colorKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_AutomatorRules.colorKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_AutomatorRules.colorKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_AutomatorRules.colorKey}, midnightblue : { value : "#191970", verifier : sirius_css_AutomatorRules.colorKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_AutomatorRules.colorKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_AutomatorRules.colorKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_AutomatorRules.colorKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_AutomatorRules.colorKey}, navy : { value : "#000080", verifier : sirius_css_AutomatorRules.colorKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_AutomatorRules.colorKey}, olive : { value : "#808000", verifier : sirius_css_AutomatorRules.colorKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_AutomatorRules.colorKey}, orange : { value : "#ffa500", verifier : sirius_css_AutomatorRules.colorKey}, orangered : { value : "#ff4500", verifier : sirius_css_AutomatorRules.colorKey}, orchid : { value : "#da70d6", verifier : sirius_css_AutomatorRules.colorKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_AutomatorRules.colorKey}, palegreen : { value : "#98fb98", verifier : sirius_css_AutomatorRules.colorKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_AutomatorRules.colorKey}, palevioletred : { value : "#db7093", verifier : sirius_css_AutomatorRules.colorKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_AutomatorRules.colorKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_AutomatorRules.colorKey}, peru : { value : "#cd853f", verifier : sirius_css_AutomatorRules.colorKey}, pink : { value : "#ffc0cb", verifier : sirius_css_AutomatorRules.colorKey}, plum : { value : "#dda0dd", verifier : sirius_css_AutomatorRules.colorKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_AutomatorRules.colorKey}, purple : { value : "#800080", verifier : sirius_css_AutomatorRules.colorKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_AutomatorRules.colorKey}, red : { value : "#ff0000", verifier : sirius_css_AutomatorRules.colorKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_AutomatorRules.colorKey}, royalblue : { value : "#4169e1", verifier : sirius_css_AutomatorRules.colorKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_AutomatorRules.colorKey}, salmon : { value : "#fa8072", verifier : sirius_css_AutomatorRules.colorKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_AutomatorRules.colorKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_AutomatorRules.colorKey}, seashell : { value : "#fff5ee", verifier : sirius_css_AutomatorRules.colorKey}, sienna : { value : "#a0522d", verifier : sirius_css_AutomatorRules.colorKey}, silver : { value : "#c0c0c0", verifier : sirius_css_AutomatorRules.colorKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_AutomatorRules.colorKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_AutomatorRules.colorKey}, slategray : { value : "#708090", verifier : sirius_css_AutomatorRules.colorKey}, snow : { value : "#fffafa", verifier : sirius_css_AutomatorRules.colorKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_AutomatorRules.colorKey}, steelblue : { value : "#4682b4", verifier : sirius_css_AutomatorRules.colorKey}, tan : { value : "#d2b48c", verifier : sirius_css_AutomatorRules.colorKey}, teal : { value : "#008080", verifier : sirius_css_AutomatorRules.colorKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_AutomatorRules.colorKey}, tomato : { value : "#ff6347", verifier : sirius_css_AutomatorRules.colorKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_AutomatorRules.colorKey}, violet : { value : "#ee82ee", verifier : sirius_css_AutomatorRules.colorKey}, wheat : { value : "#f5deb3", verifier : sirius_css_AutomatorRules.colorKey}, white : { value : "#ffffff", verifier : sirius_css_AutomatorRules.colorKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_AutomatorRules.colorKey}, yellow : { value : "#ffff00", verifier : sirius_css_AutomatorRules.colorKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_AutomatorRules.colorKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, pointer : { value : "pointer", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
 sirius_css_XCSS.enabled = false;
 sirius_tools_BitIO.P01 = 1;
 sirius_tools_BitIO.P02 = 2;

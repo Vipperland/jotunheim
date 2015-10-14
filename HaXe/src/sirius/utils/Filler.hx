@@ -34,9 +34,9 @@ class Filler{
 		var r:String = "";
 		if (Std.is(data, Array)) {
 			Dice.All(data, function(p:Int, v:Dynamic) {
-				Reflect.setField(v, '%i', p);
+				Reflect.setField(v, '%0', p);
 				r += _apply(sufix, value, v);
-				Reflect.deleteField(v, '%i');
+				Reflect.deleteField(v, '%0');
 			});
 		}else {
 			r = _apply(sufix, value, data);

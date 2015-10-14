@@ -3,6 +3,7 @@ import js.html.Element;
 import sirius.css.CSSGroup;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
+import sirius.math.ARGB;
 import sirius.Sirius;
 import sirius.tools.Delayer;
 import sirius.tools.Utils;
@@ -110,22 +111,25 @@ class Automator {
 			if (v.length > 1) {
 				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
 				c = v.split("-"); // Split class name sections
-				if (g) { // Rule for groups
-					_screen(c); // Remove @media signature
-					var en:Entry = _parse(c);
-					s = en.build(); // Create class for selector
-					if (s != null) {
-						r += s + ";";
-					}else {
-						Sirius.log("Sirius->Automator.build::error( [" + en + "] )");
-					}
-				}else { // Rule for single class name
-					m = _screen(c); // Target @media
-					if (!css.hasSelector(v, m)) { // Check if selector exists
-						s = _parse(c).build(); // Create class for selector
-						if (Utils.isValid(s)) { // Check if value is valid
-							if (_dev == true) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
-							css.setSelector("." + v, s, m); // Add selector to correspondent @media group
+				if (c.length > 0) {
+					if (c[0] == 'ref') return;
+					if (g) { // Rule for groups
+						_screen(c); // Remove @media signature
+						var en:Entry = _parse(c);
+						s = en.build(); // Create class for selector
+						if (s != null) {
+							r += s + ";";
+						}else {
+							Sirius.log("Sirius->Automator.build::error( [" + en + "] )");
+						}
+					}else { // Rule for single class name
+						m = _screen(c); // Target @media
+						if (!css.hasSelector(v, m)) { // Check if selector exists
+							s = _parse(c).build(); // Create class for selector
+							if (Utils.isValid(s)) { // Check if value is valid
+								if (_dev == true) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
+								css.setSelector("." + v, s, m); // Add selector to correspondent @media group
+							}
 						}
 					}
 				}
@@ -162,11 +166,12 @@ class Automator {
 	}
 	
 	static public function _init() {
-		build('marg-0 padd-0 bord-0 outline-0 color-inherit font-inherit vert-baseline transparent','*');
+		build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
 		build('arial txt-12', 'body');
 		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
 		build('list-style-none', 'ol,ul,dl');
 		build('padd-5', 'hr');
+		build('padd-10','input,textarea,select');
 		//build('border-collapse-collapse border-spacing-0', 'table');
 		build('disp-table content-void', '.grid:before,.grid:after');
 		build('clear-both', '.grid:after');
@@ -229,8 +234,10 @@ class Automator {
 	 * @return
 	 */
 	static private function _color(r:String, x:String):String {
-		if (x.substr(0, 1) == "x" && (x.length == 4 || x.length == 7)) {
-			return "#" + x.substring(1, x.length);
+		var argb:Bool = x.length == 9;
+		if (x.substr(0, 1) == "x" && (x.length == 4 || x.length == 7 || argb)) {
+			x = "#" + x.substring(1, x.length);
+			return argb ? new ARGB(x).css() : x;
 		}else if (Utils.isValid(r) && r.substr(0, 1) == "#") {
 			return r;
 		}

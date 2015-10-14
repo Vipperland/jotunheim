@@ -92,17 +92,24 @@ class Sirius {
 		static private function _loadController(e:Event):Void {
 			agent.update();
 			Ease.update();
-			var plist:Dynamic = untyped __js__("window.sru ? window.sru.plugins : null");
-			Dice.All(plist, function(p:String, v:Dynamic) {
-				Reflect.setField(plugins, p, v);
-				log("Sirius->Plugins::status[ " + p + "() ADDED]", 10, 1);
-			});
-			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+			updatePlugins();
 			_loaded = true;
+			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
 			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
 			Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 			_loadPool = null;
 			loader.start(_onLoaded);
+		}
+		
+		static public function updatePlugins():Void {
+			if(_loaded){
+				var plist:Dynamic = untyped __js__("window.sru ? window.sru.plugins : null");
+				Dice.All(plist, function(p:String, v:Dynamic) {
+					Reflect.setField(plugins, p, v);
+					log("Sirius->Plugins::status[ " + p + "() ADDED]", 10, 1);
+					Reflect.deleteField(plist, p);
+				});
+			}
 		}
 		
 		/** @private */

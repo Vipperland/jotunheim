@@ -17,4 +17,17 @@ class Head extends Display{
 		super(q,null,d);
 	}
 	
+	public function addScript(content:String):Script {
+		if(content != null){
+			content = content.split("<script>").join("").split("</script>").join("");
+			if(content.length > 1){
+				var s:Script = new Script();
+				s.build(content);
+				addChild(s);
+				return s;
+			}
+		}
+		return null;
+	}
+	
 }
