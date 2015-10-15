@@ -1,6 +1,6 @@
 package sirius.net;
+import sirius.data.IFragments;
 import sirius.net.IDomainData;
-import sirius.data.IDataCache;
 
 /**
  * @author Rafael Moreira
@@ -12,11 +12,11 @@ interface IDomain {
 	
 	public var port : String;
 	
-	public var fragments : Array<String>;
+	public var url : IFragments;
 	
 	#if js
 		
-		public var hash:String;
+		public var hash : IFragments;
 		
 	#elseif php
 		
@@ -28,15 +28,9 @@ interface IDomain {
 		
 	#end
 	
-	public var firstFragment : String;
-	
-	public var lastFragment : String;
-	
 	public var file:String;
 	
 	public var params:Dynamic;
-
-	public function fragment (i:Int, ?a:String) : String;
 
 	#if js
 		

@@ -11,7 +11,9 @@ package sirius.net;
 	import sirius.net.IDomainData;
 #end
 import sirius.data.DataCache;
+import sirius.data.Fragments;
 import sirius.data.IDataCache;
+import sirius.data.IFragments;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 
@@ -25,11 +27,11 @@ class Domain implements IDomain {
 	
 	public var port:String;
 	
-	public var fragments:Array<String>;
+	public var url:IFragments;
 	
 	#if js
 		
-		public var hash:String;
+		public var hash:IFragments;
 		
 	#elseif php
 		
@@ -42,10 +44,6 @@ class Domain implements IDomain {
 	#end
 	
 	public var file:String;
-	
-	public var firstFragment:String;
-	
-	public var lastFragment:String;
 	
 	public var params:Dynamic;
 	
@@ -60,7 +58,7 @@ class Domain implements IDomain {
 			var p:String = l.pathname;
 			host = l.hostname;
 			port = l.port;
-			hash = l.hash.substr(1);
+			hash = new Fragments(l.hash.substr(1), "/");
 		#elseif php
 			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
 			server = Web.getCwd();
@@ -71,20 +69,8 @@ class Domain implements IDomain {
 			var p:String = untyped __php__("$_SERVER['SCRIPT_NAME']");
 		#end
 		
-		fragments = Utils.clearArray(p.split("/"));
-		firstFragment = fragment(0, "");
-		lastFragment = fragment(fragments.length - 1, firstFragment);
+		url = new Fragments(p, "/");
 		
-		if (lastFragment.indexOf(".") != -1) {
-			file = lastFragment;
-			fragments.pop();
-			lastFragment = fragment(fragments.length - 1, firstFragment);
-		}
-		
-	}
-	
-	public function fragment(i:Int, ?a:String):String {
-		return i >= 0 && i < fragments.length ? fragments[i] : a;
 	}
 	
 	#if js

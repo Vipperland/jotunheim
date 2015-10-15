@@ -4,19 +4,14 @@
  */
 
 (function($exports) {
-	
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
-	
 	$exports.sru.plugins.Carousel3D = function(selector, aperture, zoom){
-		
 		var Display3D = sru.dom.Display3D;
 		var Sprite3D = sru.dom.Sprite3D;
 		var Div = sru.dom.Div;
-		
         var body = Sirius.document.body;
 		body.style( { 'overflow-x':'hidden' } );
-		
 		var o = {
 			panels : [],
 			points : [],
@@ -41,6 +36,7 @@
 			enabled : true,
 			focused : false,
 			spacing : 0,
+			direction : 1,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
 				panel.addChild(p);
@@ -169,10 +165,10 @@
 					e.height(h);
 					e.locationZ(tz);
 					if(o.axys == 'x'){
-						e.rotationY(-(e.data.get('rotation') + o.scroll));
+						e.rotationY(-(e.data.get('rotation') + o.scroll) * o.direction);
 						e.rotationX(0);
 					}else{
-						e.rotationX(e.data.get('rotation') + o.scroll);
+						e.rotationX(e.data.get('rotation') + o.scroll * o.direction);
 						e.rotationY(0);
 					}
 					e.update();
@@ -226,14 +222,10 @@
         o.extra.addToBody();
         o.carousel.content.height(100, true);
         o.carousel.content.update();
-		
 		Sirius.all(selector).each(o.addPanel);
-		
 		o.update();
-		
 		Ticker.add(o.render);
 		Ticker.init();
-		
 		return o;
 	}
 	if(Sirius != null) Sirius.updatePlugins();

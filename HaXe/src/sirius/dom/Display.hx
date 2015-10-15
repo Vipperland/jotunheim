@@ -146,7 +146,7 @@ class Display implements IDisplay {
 	
 	
 	public function children():ITable {
-		if (_children == null) _children = Sirius.all("*", element);
+		if (_children == null) _children = Sirius.all(null, element);
 		return _children;
 	}
 	
@@ -167,7 +167,7 @@ class Display implements IDisplay {
 	}
 	
 	public function length():Int {
-		return element.children.length;
+		return element.childNodes.length;
 	}
 	
 	public function index():Int {
@@ -175,13 +175,14 @@ class Display implements IDisplay {
 	}
 	
 	public function indexOf(q:IDisplay):Int {
-		var i:Int = 0;
-		var c = element.children;
-		while (i < c.length) {
-			if (c.item(0) == q.element) return i;
-			++i;
+		var chd = element.childNodes;
+		var len = chd.length;
+		var cnt = 0;
+		while (cnt < len) {
+			if (cast chd.item(cnt) == q.element) break;
+			++cnt;
 		}
-		return -1;
+		return cnt == len ? -1 : cnt;
 	}
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
@@ -373,9 +374,9 @@ class Display implements IDisplay {
 	}
 	
 	public function parent(levels:UInt=0):IDisplay {
-		if (levels == 0 && (_parent == null || element.parentElement != _parent.element)) _parent = Utils.displayFrom(element.parentElement);
-		if (levels > 0 && _parent != null)	return _parent.parent(--levels);
-		else 								return _parent;
+		if (_parent == null && element.parentElement != null) _parent = Utils.displayFrom(element.parentElement);
+		if (levels > 0)		return _parent.parent(--levels);
+		else 				return _parent;
 	}
 	
 	public function activate(handler:Dynamic):IDisplay {

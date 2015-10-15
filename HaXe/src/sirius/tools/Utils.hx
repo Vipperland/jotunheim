@@ -150,8 +150,7 @@ class Utils{
 		 * @return
 		 */
 		static public function displayFrom(t:Element):IDisplay {
-			if (t.nodeType != 1) 
-				return new Display(t);
+			if (t.nodeType != 1) return new Display(t);
 			var type:String = (t.hasAttribute('sru-dom') ? t.getAttribute('sru-dom') : t.tagName);
 			var OC:Dynamic = Reflect.field(_typeOf, type.toLowerCase());
 			t.setAttribute('sru-dom', type);

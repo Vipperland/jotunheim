@@ -1,19 +1,17 @@
-[Module:{
-	"version":1.0,
-	"type":"html",
-	"name":"sample"
-}]
+[Module:{"version":1.0,"type":"html","name":"sample"}]
 
-<div id="state_{{id}}" class="ref-sample txt-white txt-30 bg-dodgerblue padd-10 marg-10">
-	<span>{{name}}</span> <span class="bold">({{short}})</span>
+<div id="state_{{id}}" class="ref-sample txt-white txt-30 bg-dodgerblue padd-10 marg-10 h-100">
+	<div class="pos-abs alpha-20 scroll-none padd-0 h-100 txt-r">
+		<span class="bold txt-100 txt-r t-0">{{short}}</span>
+	</div>
+	<div class="pos-abs">
+		<span>{{name}}</span>
+	</div>
 </div>
 
 /EOF;
 
-[Module:{
-	"version":1.0,
-	"type":"script"
-}]
+[Module:{"version":1.0,"type":"script"}]
 <script>
 	
 	var data = [
@@ -47,32 +45,11 @@
 	]
 	
 	Sirius.onInit(function(){
-	
-		Sirius.document.body.build(Sirius.resources.fill("sample", data));
+		var container = new sru.dom.Div();
+		container.build(Sirius.resources.fill("sample", data));
+		container.addToBody();
 		Automator.scan();
-		
-		var table = Sirius.all("[id]");
-		
-		var current = {};
-		
-		table.each(function(e){
-			e.attribute('draggable','true');
-		});
-		
-		table.onDragStart(function(e){
-			current.id = e.target;
-		});
-		
-		table.onDrop(function(e){
-			e.event.preventDefault();
-			console.log(e.target.index(), e.target.element.innerText);
-			//e.target.parent().addChild(current.id, e.target.index());
-		});
-		
-		table.onDragOver(function(e){
-			e.event.preventDefault();
-		});
-		
+		Sirius.addScript('extended/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });
 	});
 	
 </script>

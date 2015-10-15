@@ -90,15 +90,19 @@ class Sirius {
 		
 		/** @private */
 		static private function _loadController(e:Event):Void {
-			agent.update();
-			Ease.update();
-			updatePlugins();
-			_loaded = true;
-			log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
-			Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
-			Browser.document.removeEventListener("DOMContentLoaded", _loadController);
-			_loadPool = null;
-			loader.start(_onLoaded);
+			if(!_loaded){
+				_loaded = true;
+				agent.update();
+				Ease.update();
+				updatePlugins();
+				log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+				Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
+				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
+				_loadPool = null;
+				loader.start(_onLoaded);
+				Reflect.deleteField(Sirius, '_loadController');
+				Reflect.deleteField(Sirius, '_loadPool');
+			}
 		}
 		
 		static public function updatePlugins():Void {
@@ -191,7 +195,7 @@ class Sirius {
 				_loadPool = [];
 				document = new Document();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				log("Sirius->Core.init[ Waiting for DOM Loading Event... ]", 10, 2);
+				log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]", 10, 2);
 				Automator._init();
 				Reflect.deleteField(Sirius, '_preInit');
 			}
