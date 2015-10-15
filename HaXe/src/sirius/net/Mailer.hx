@@ -48,6 +48,7 @@ class Mailer {
 		head.push('Content-type: text/html;charset=utf8');
 		head.push('To: ' + to.join(','));
 		head.push('From: ' + (alt != null ? alt : from));
+		head.push('Return-Path: ' + (alt != null ? alt : from));
 		head.push('Reply-To: ' + from);
 		head.push('Subject: ' + subject);
 		head.push('X-Mailer: PHP/' + untyped __php__('phpversion()'));
