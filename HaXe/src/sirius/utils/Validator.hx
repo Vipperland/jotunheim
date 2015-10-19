@@ -4,6 +4,7 @@ package sirius.utils;
  * ...
  * @author Rafael Moreira
  */
+@:expose('Validator')
 class Validator{
 
 	public static function checkEmail(value:String):Bool {

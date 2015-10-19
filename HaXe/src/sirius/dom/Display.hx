@@ -272,13 +272,19 @@ class Display implements IDisplay {
 	}
 	
 	public function attribute(name:String, ?value:String):String {
-		if(name != null){
+		if (name != null) {
+			var t:String = Reflect.field(element, name);
+			if (t != null) {
+				if (value != null)					Reflect.setField(element, name, value);
+				value =	Reflect.field(element, name);
+				return value;
+			}
 			if (value != null) {
 				if (element.setAttribute != null) 	element.setAttribute(name, value);
 				else								Reflect.setProperty(element, name, value);
 			}
 			if (element.getAttribute != null) 		return element.getAttribute(name);
-			else 									Reflect.getProperty(element, name);
+			else 									return Reflect.getProperty(element, name);
 		}
 		return null;
 	}

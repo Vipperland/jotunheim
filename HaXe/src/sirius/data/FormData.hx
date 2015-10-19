@@ -9,6 +9,7 @@ import sirius.utils.IDiceRoll;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+@:expose('sru.data.FormData')
 class FormData implements IFormData {
 	
 	private var _form:IDisplay;
@@ -36,7 +37,7 @@ class FormData implements IFormData {
 	
 	public function scan(?target:IDisplay):IFormData {
 		reset();
-		_form = target == null ? Sirius.document : target;
+		_form = target == null ? Sirius.document.body : target;
 		target.all("[form-data]").each(function(el:IDisplay) { params[params.length] = new FormParam(el); });
 		return this;
 	}

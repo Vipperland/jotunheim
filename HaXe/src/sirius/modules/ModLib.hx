@@ -54,18 +54,18 @@ class ModLib {
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
-						Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]", 10, 1);
+						Sirius.log("Sirius->ModLib.load[ " + mod.name + " ]", 10, 1);
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
-							Sirius.log("	Sirius->ModLib::dependencies [ FOR " + mod.name + " ]", 10, 1);
+							Sirius.log("	Sirius->ModLib->dependency::check[ FOR " + mod.name + " ]", 10, 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v.toLowerCase());
 								if (set == null) {
-									Sirius.log("		Sirius->ModLib::dependency[ MISSING " + v + " ]", 10, 2);
+									Sirius.log("		Sirius->ModLib->dependency::status[ MISSING " + v + " ]", 10, 2);
 								}else {
-									Sirius.log("		Sirius->ModLib::dependency[ OK " + v + " ]", 10, 1);
+									Sirius.log("		Sirius->ModLib->dependency::status[ OK " + v + " ]", 10, 1);
 									content = content.split("<import " + v + "/>").join(set);
 								}
 							});

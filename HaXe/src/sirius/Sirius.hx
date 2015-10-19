@@ -34,6 +34,7 @@ import sirius.utils.Filler;
 	import sirius.utils.Pixel;
 	import sirius.utils.SearchTag;
 	import sirius.utils.Table;
+	import sirius.utils.Validator;
 #elseif php
 	import php.Lib;
 	import sirius.db.Gate;

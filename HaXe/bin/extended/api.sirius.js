@@ -4,6 +4,7 @@ $hx_exports.sru = $hx_exports.sru || {};
 $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
+;$hx_exports.sru.data = $hx_exports.sru.data || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
@@ -1258,16 +1259,16 @@ sirius_modules_ModLib.prototype = {
 				if(i != -1) {
 					var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
 					if(mod.name == null) mod.name = file;
-					sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " ]",10,1);
+					sirius_Sirius.log("Sirius->ModLib.load[ " + mod.name + " ]",10,1);
 					var end = v.indexOf("/EOF;");
 					content = v.substring(i + 2,end == -1?v.length:end);
 					if(mod.require != null) {
 						var dependencies = mod.require.split(";");
-						sirius_Sirius.log("\tSirius->ModLib::dependencies [ FOR " + mod.name + " ]",10,1);
+						sirius_Sirius.log("\tSirius->ModLib->dependency::check[ FOR " + mod.name + " ]",10,1);
 						sirius_utils_Dice.Values(dependencies,function(v1) {
 							var set = Reflect.field(sirius_modules_ModLib.CACHE,v1.toLowerCase());
-							if(set == null) sirius_Sirius.log("\t\tSirius->ModLib::dependency[ MISSING " + v1 + " ]",10,2); else {
-								sirius_Sirius.log("\t\tSirius->ModLib::dependency[ OK " + v1 + " ]",10,1);
+							if(set == null) sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ MISSING " + v1 + " ]",10,2); else {
+								sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ OK " + v1 + " ]",10,1);
 								content = content.split("<import " + v1 + "/>").join(set);
 							}
 						});
@@ -1472,7 +1473,7 @@ sirius_Sirius.log = function(q,level,type) {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 267, className : "sirius.Sirius", methodName : "log"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 268, className : "sirius.Sirius", methodName : "log"});
 	}
 };
 sirius_Sirius.logLevel = function(q) {
@@ -1827,10 +1828,16 @@ sirius_dom_Display.prototype = {
 	}
 	,attribute: function(name,value) {
 		if(name != null) {
+			var t = Reflect.field(this.element,name);
+			if(t != null) {
+				if(value != null) this.element[name] = value;
+				value = Reflect.field(this.element,name);
+				return value;
+			}
 			if(value != null) {
 				if(($_=this.element,$bind($_,$_.setAttribute)) != null) this.element.setAttribute(name,value); else Reflect.setProperty(this.element,name,value);
 			}
-			if(($_=this.element,$bind($_,$_.getAttribute)) != null) return this.element.getAttribute(name); else Reflect.getProperty(this.element,name);
+			if(($_=this.element,$bind($_,$_.getAttribute)) != null) return this.element.getAttribute(name); else return Reflect.getProperty(this.element,name);
 		}
 		return null;
 	}
@@ -4544,7 +4551,7 @@ sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
 sirius_data_IFormData.prototype = {
 	__class__: sirius_data_IFormData
 };
-var sirius_data_FormData = function(target) {
+var sirius_data_FormData = $hx_exports.sru.data.FormData = function(target) {
 	if(target != null) this.scan(target);
 };
 sirius_data_FormData.__name__ = ["sirius","data","FormData"];
@@ -4557,7 +4564,7 @@ sirius_data_FormData.prototype = {
 	,scan: function(target) {
 		var _g = this;
 		this.reset();
-		if(target == null) this._form = sirius_Sirius.document; else this._form = target;
+		if(target == null) this._form = sirius_Sirius.document.body; else this._form = target;
 		target.all("[form-data]").each(function(el) {
 			_g.params[_g.params.length] = new sirius_data_FormParam(el);
 		});
@@ -5875,6 +5882,11 @@ sirius_utils_Table.prototype = {
 		return this.on("visibility",handler,mode);
 	}
 	,__class__: sirius_utils_Table
+};
+var sirius_utils_Validator = $hx_exports.Validator = function() { };
+sirius_utils_Validator.__name__ = ["sirius","utils","Validator"];
+sirius_utils_Validator.checkEmail = function(value) {
+	return new EReg("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$","").match(value);
 };
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
