@@ -1278,7 +1278,7 @@ sirius_modules_ModLib.prototype = {
 							sirius_css_Automator.build(content);
 							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]",10,1);
 							content = null;
-						} else if(mod.type == "css") {
+						} else if(mod.type == "style" || mod.type == "css") {
 							sirius_Sirius.document.head.addScript(content);
 							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]",10,1);
 							content = null;

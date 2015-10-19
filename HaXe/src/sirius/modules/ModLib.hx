@@ -77,7 +77,7 @@ class ModLib {
 									Automator.build(content);
 									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]", 10, 1);
 									content = null;
-								}else if (mod.type == 'css') {
+								}else if (mod.type == 'style' || mod.type == 'css') {
 									Sirius.document.head.addScript(content);
 									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]", 10, 1);
 									content = null;
