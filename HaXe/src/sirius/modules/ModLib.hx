@@ -75,15 +75,11 @@ class ModLib {
 							if (mod.type != null) {
 								if (mod.type == 'cssx') {
 									Automator.build(content);
-									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]", 10, 1);
+									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSSX/AUTOMATOR ]", 10, 1);
 									content = null;
-								}else if (mod.type == 'style' || mod.type == 'css') {
-									Sirius.document.head.addScript(content);
-									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]", 10, 1);
-									content = null;
-								}else if (mod.type == 'script' || mod.type == 'js') {
-									Sirius.document.head.addScript(content);
-									Sirius.log("Sirius->ModLib.build[ " + mod.name + " JS/SCRIPT ]", 10, 1);
+								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
+									Sirius.document.head.bind(content, mod.type);
+									Sirius.log("Sirius->ModLib.build[ " + mod.name + " " + mod.type + " ]", 10, 1);
 									content = null;
 								}
 							}

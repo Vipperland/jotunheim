@@ -1276,15 +1276,11 @@ sirius_modules_ModLib.prototype = {
 					if(mod.type != null) {
 						if(mod.type == "cssx") {
 							sirius_css_Automator.build(content);
-							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSX/AUTOMATOR ]",10,1);
+							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSSX/AUTOMATOR ]",10,1);
 							content = null;
-						} else if(mod.type == "style" || mod.type == "css") {
-							sirius_Sirius.document.head.addScript(content);
-							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSS/SCRIPT ]",10,1);
-							content = null;
-						} else if(mod.type == "script" || mod.type == "js") {
-							sirius_Sirius.document.head.addScript(content);
-							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " JS/SCRIPT ]",10,1);
+						} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
+							sirius_Sirius.document.head.bind(content,mod.type);
+							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " " + mod.type + " ]",10,1);
 							content = null;
 						}
 					}
@@ -2766,14 +2762,27 @@ sirius_dom_Head.get = function(q,h) {
 };
 sirius_dom_Head.__super__ = sirius_dom_Display;
 sirius_dom_Head.prototype = $extend(sirius_dom_Display.prototype,{
-	addScript: function(content) {
+	bind: function(content,type) {
 		if(content != null) {
-			content = content.split("<script>").join("").split("</script>").join("");
+			var s;
 			if(content.length > 1) {
-				var s = new sirius_dom_Script();
-				s.build(content);
-				this.addChild(s);
-				return s;
+				switch(type) {
+				case "css":case "style":
+					s = new sirius_dom_Style();
+					content = content.split("<style>").join("").split("</style>").join("");
+					break;
+				case "javascript":case "script":
+					s = new sirius_dom_Script();
+					content = content.split("<script>").join("").split("</script>").join("");
+					break;
+				default:
+					s = null;
+				}
+				if(s != null) {
+					s.build(content);
+					this.addChild(s);
+					return s;
+				}
 			}
 		}
 		return null;

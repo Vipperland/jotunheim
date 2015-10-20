@@ -17,14 +17,28 @@ class Head extends Display{
 		super(q,null,d);
 	}
 	
-	public function addScript(content:String):Script {
+	public function bind(content:String, type:String):IDisplay {
 		if(content != null){
-			content = content.split("<script>").join("").split("</script>").join("");
-			if(content.length > 1){
-				var s:Script = new Script();
-				s.build(content);
-				addChild(s);
-				return s;
+			var s:IDisplay;
+			if (content.length > 1) {
+				switch(type) {
+					case 'css', 'style': { 
+						s = new Style(); 
+						content = content.split("<style>").join("").split("</style>").join("");
+					}
+					case 'javascript', 'script': { 
+						s = new Script(); 
+						content = content.split("<script>").join("").split("</script>").join("");
+					}
+					default : {
+						s = null;
+					}
+				}
+				if(s != null){
+					s.build(content);
+					addChild(s);
+					return s;
+				}
 			}
 		}
 		return null;
