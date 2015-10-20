@@ -412,4 +412,9 @@ interface IDisplay {
 	 */
 	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String;
 	
+	/**
+	 * Clear all object data
+	 */
+	public function dispose():Void;
+	
 }

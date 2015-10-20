@@ -47,14 +47,14 @@ class ModLib {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");
-		if(sur.length > 1){
+		if (sur.length > 1) {
+			Sirius.log("Sirius->ModLib.import[ " + file + " ]", 10, 1);
 			Dice.All(sur, function(p:Int, v:String) {
 				if(p > 0){
 					var i:Int = v.indexOf("}]");
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
-						Sirius.log("Sirius->ModLib.load[ " + mod.name + " ]", 10, 1);
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
@@ -75,11 +75,9 @@ class ModLib {
 							if (mod.type != null) {
 								if (mod.type == 'cssx') {
 									Automator.build(content);
-									Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSSX/AUTOMATOR ]", 10, 1);
 									content = null;
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
 									Sirius.document.head.bind(content, mod.type);
-									Sirius.log("Sirius->ModLib.build[ " + mod.name + " " + mod.type + " ]", 10, 1);
 									content = null;
 								}
 							}

@@ -23,6 +23,8 @@ interface IEventGroup {
 	
 	public function prepare (t:IDisplay) : IEventGroup;
 	
+	public function dispose(t:IDisplay):Void;
+	
 	public function cancel () : IEventGroup;
 	
 	public function preventDefault():Void;

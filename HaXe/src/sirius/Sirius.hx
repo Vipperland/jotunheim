@@ -2,6 +2,7 @@ package sirius;
 
 import haxe.Log;
 import sirius.data.DataCache;
+import sirius.data.Logger;
 import sirius.errors.IError;
 import sirius.modules.IRequest;
 import sirius.modules.ModLib;
@@ -53,9 +54,6 @@ import sirius.utils.Filler;
 class Sirius {
 	
 	/** @private */
-	static private var _loglevel:UInt = 12;
-	
-	/** @private */
 	static private var _initialized:Bool = false;
 	
 	/** @private */
@@ -66,6 +64,9 @@ class Sirius {
 	
 	/// Domain information
 	static public var domain:IDomain = new Domain();
+	
+	/// Debug tools
+	static public var logger:Logger = new Logger();
 	
 	#if js
 		
@@ -85,6 +86,9 @@ class Sirius {
 		
 		/// External Plugins
 		static public var plugins:Dynamic = { };
+		
+		/// Display a
+		static public var pushLog:Bool = false;
 		
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;
@@ -182,7 +186,7 @@ class Sirius {
 		static public function onInit(handler:ILoader->Void, ?files:Array<String> = null):Void {
 			if (!_initialized) _preInit();
 			if (!_loaded && files != null && files.length > 0) loader.add(files, null, _fileError);
-			else run(handler);
+			run(handler);
 		}
 		
 		static public function addScript(url:Dynamic, ?handler:Null<Void>->Void):Void {
@@ -196,8 +200,11 @@ class Sirius {
 				_loadPool = [];
 				document = new Document();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
+				if (domain.hash.find("debug")) {
+					logger.dev();
+					Automator._init();
+				}
 				log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]", 10, 2);
-				Automator._init();
 				Reflect.deleteField(Sirius, '_preInit');
 			}
 		}
@@ -254,41 +261,11 @@ class Sirius {
 	 * @param	type
 	 */
 	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {
-		if (level <= _loglevel) {
-			var t:String = switch(type) {
-				case -1 : "";
-				case 0 : "[MESSAGE] ";
-				case 1 : "[>SYSTEM] ";
-				case 2 : "[WARNING] ";
-				case 3 : "[!ERROR!] ";
-				case 4 : "[//TODO:] ";
-				default : "";
-			}
-			#if js
-				Log.trace(t + q);
-			#elseif php
-				Lib.dump(q);
-			#end
-			
-		}
+		logger.push(q, level, type);
 	}
-	
-	/**
-	 * Change log level
-	 * @param	q
-	 */
-	static public function logLevel(q:UInt):Void {
-		_loglevel = q;
-	}
-	
 	
 }
 
-interface User {
-	var id:UInt;
-	var name:String;
-	var city:Array<Dynamic>;
-}
 	/*
 	 * 	=================== SELECTORS =============================================================================================================
 	 *  .class					.intro					Selects all elements with class="intro"

@@ -249,6 +249,7 @@ var haxe_Http = function(url) {
 	this.headers = new List();
 	this.params = new List();
 	this.async = true;
+	this.withCredentials = false;
 };
 haxe_Http.__name__ = ["haxe","Http"];
 haxe_Http.prototype = {
@@ -263,6 +264,7 @@ haxe_Http.prototype = {
 		var me = this;
 		me.responseData = null;
 		var r = this.req = js_Browser.createXMLHttpRequest();
+		r.withCredentials = this.withCredentials;
 		var onreadystatechange = function(_) {
 			if(r.readyState != 4) return;
 			var s;
@@ -370,6 +372,9 @@ var haxe_Log = function() { };
 haxe_Log.__name__ = ["haxe","Log"];
 haxe_Log.trace = function(v,infos) {
 	js_Boot.__trace(v,infos);
+};
+haxe_Log.clear = function() {
+	js_Boot.__clear_trace();
 };
 var haxe_Timer = function(time_ms) {
 	var me = this;
@@ -682,6 +687,10 @@ js_Boot.__trace = function(v,i) {
 	}
 	var d;
 	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
+js_Boot.__clear_trace = function() {
+	var d = document.getElementById("haxe:trace");
+	if(d != null) d.innerHTML = "";
 };
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
@@ -1135,6 +1144,16 @@ sirius_modules_Loader.prototype = {
 	progress: function() {
 		return this.totalLoaded / this.totalFiles;
 	}
+	,unlisten: function(handler) {
+		var i = -1;
+		if(handler != null) {
+			i = Lambda.indexOf(this._onComplete,handler);
+			if(i != -1) this._onComplete.splice(i,1);
+			i = Lambda.indexOf(this._onError,handler);
+			if(i != -1) this._onError.splice(i,1);
+		}
+		return this;
+	}
 	,listen: function(complete,error) {
 		if(error != null && Lambda.indexOf(this._onError,error) == -1) this._onError[this._onError.length] = error;
 		if(complete != null && Lambda.indexOf(this._onComplete,complete) == -1) this._onComplete[this._onComplete.length] = complete;
@@ -1241,6 +1260,62 @@ sirius_modules_Loader.prototype = {
 	}
 	,__class__: sirius_modules_Loader
 };
+var sirius_data_Logger = function() {
+	this._toasts = null;
+	this._loglevel = 12;
+};
+sirius_data_Logger.__name__ = ["sirius","data","Logger"];
+sirius_data_Logger.prototype = {
+	dev: function() {
+		if(this._toasts == null) {
+			this._toasts = new sirius_dom_Div();
+			this._toasts.pin();
+			this._toasts.css("arial txt-12 txt-white padd-10 z-9999999 bg-black-80 max-height-100pc max-width-100pc scroll-y t-0");
+			this._toasts.addToBody();
+			this._toasts.build("Sirius::Logger");
+			this._bgs = ["txt-cccccc","txt-white","txt-limegreen","txt-yellow","txt-orange bold"];
+			sirius_css_Automator.build("arial txt-10 bg-black-80 padd-5 t-0 z-9999999 bg-black-70 padd-10 txt-black txt-white txt-green txt-yellow txt-orange bold");
+		}
+	}
+	,clear: function() {
+		if(this._toasts != null) this._toasts.clear(true);
+		haxe_Log.clear();
+	}
+	,push: function(q,level,type) {
+		if(_$UInt_UInt_$Impl_$.gte(this._loglevel,level)) {
+			var t;
+			switch(type) {
+			case -1:
+				t = "";
+				break;
+			case 0:
+				t = "[MESSAGE] ";
+				break;
+			case 1:
+				t = "[>SYSTEM] ";
+				break;
+			case 2:
+				t = "[WARNING] ";
+				break;
+			case 3:
+				t = "[!ERROR!] ";
+				break;
+			case 4:
+				t = "[//TODO:] ";
+				break;
+			default:
+				t = "";
+			}
+			if(this._toasts != null) {
+				var not = new sirius_dom_Div();
+				not.css(this._bgs[type + 1] + " arial");
+				not.build(t + Std.string(q));
+				not.addTo(this._toasts);
+			} else haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 60, className : "sirius.data.Logger", methodName : "push"});
+		}
+	}
+	,__class__: sirius_data_Logger
+};
 var sirius_modules_ModLib = $hx_exports.sru.modules.ModLib = function() {
 };
 sirius_modules_ModLib.__name__ = ["sirius","modules","ModLib"];
@@ -1253,45 +1328,45 @@ sirius_modules_ModLib.prototype = {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur = content.split("[!MOD!]");
-		if(sur.length > 1) sirius_utils_Dice.All(sur,function(p,v) {
-			if(p > 0) {
-				var i = v.indexOf("}]");
-				if(i != -1) {
-					var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
-					if(mod.name == null) mod.name = file;
-					sirius_Sirius.log("Sirius->ModLib.load[ " + mod.name + " ]",10,1);
-					var end = v.indexOf("/EOF;");
-					content = v.substring(i + 2,end == -1?v.length:end);
-					if(mod.require != null) {
-						var dependencies = mod.require.split(";");
-						sirius_Sirius.log("\tSirius->ModLib->dependency::check[ FOR " + mod.name + " ]",10,1);
-						sirius_utils_Dice.Values(dependencies,function(v1) {
-							var set = Reflect.field(sirius_modules_ModLib.CACHE,v1.toLowerCase());
-							if(set == null) sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ MISSING " + v1 + " ]",10,2); else {
-								sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ OK " + v1 + " ]",10,1);
-								content = content.split("<import " + v1 + "/>").join(set);
-							}
-						});
-					}
-					if(mod.type != null) {
-						if(mod.type == "cssx") {
-							sirius_css_Automator.build(content);
-							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " CSSX/AUTOMATOR ]",10,1);
-							content = null;
-						} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
-							sirius_Sirius.document.head.bind(content,mod.type);
-							sirius_Sirius.log("Sirius->ModLib.build[ " + mod.name + " " + mod.type + " ]",10,1);
-							content = null;
+		if(sur.length > 1) {
+			sirius_Sirius.log("Sirius->ModLib.import[ " + file + " ]",10,1);
+			sirius_utils_Dice.All(sur,function(p,v) {
+				if(p > 0) {
+					var i = v.indexOf("}]");
+					if(i != -1) {
+						var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
+						if(mod.name == null) mod.name = file;
+						var end = v.indexOf("/EOF;");
+						content = v.substring(i + 2,end == -1?v.length:end);
+						if(mod.require != null) {
+							var dependencies = mod.require.split(";");
+							sirius_Sirius.log("\tSirius->ModLib->dependency::check[ FOR " + mod.name + " ]",10,1);
+							sirius_utils_Dice.Values(dependencies,function(v1) {
+								var set = Reflect.field(sirius_modules_ModLib.CACHE,v1.toLowerCase());
+								if(set == null) sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ MISSING " + v1 + " ]",10,2); else {
+									sirius_Sirius.log("\t\tSirius->ModLib->dependency::status[ OK " + v1 + " ]",10,1);
+									content = content.split("<import " + v1 + "/>").join(set);
+								}
+							});
 						}
-					}
-					if(mod.target != null) {
-						var t = sirius_Sirius.one(mod.target);
-						if(t != null) t.addChild(_g.build(mod.name));
-					}
-					if(content != null) Reflect.setField(sirius_modules_ModLib.CACHE,mod.name.toLowerCase(),content);
-				} else sirius_Sirius.log("\tSirius->ModLib::status [ MISSING MODULE END IN " + file + "(" + HxOverrides.substr(v,0,15) + "...) ]",10,3);
-			}
-		}); else Reflect.setField(sirius_modules_ModLib.CACHE,file.toLowerCase(),content);
+						if(mod.type != null) {
+							if(mod.type == "cssx") {
+								sirius_css_Automator.build(content);
+								content = null;
+							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
+								sirius_Sirius.document.head.bind(content,mod.type);
+								content = null;
+							}
+						}
+						if(mod.target != null) {
+							var t = sirius_Sirius.one(mod.target);
+							if(t != null) t.addChild(_g.build(mod.name));
+						}
+						if(content != null) Reflect.setField(sirius_modules_ModLib.CACHE,mod.name.toLowerCase(),content);
+					} else sirius_Sirius.log("\tSirius->ModLib::status [ MISSING MODULE END IN " + file + "(" + HxOverrides.substr(v,0,15) + "...) ]",10,3);
+				}
+			});
+		} else Reflect.setField(sirius_modules_ModLib.CACHE,file.toLowerCase(),content);
 	}
 	,get: function(name,data) {
 		name = name.toLowerCase();
@@ -1408,7 +1483,8 @@ sirius_Sirius.run = function(handler) {
 };
 sirius_Sirius.onInit = function(handler,files) {
 	if(!sirius_Sirius._initialized) sirius_Sirius._preInit();
-	if(!sirius_Sirius._loaded && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError); else sirius_Sirius.run(handler);
+	if(!sirius_Sirius._loaded && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError);
+	sirius_Sirius.run(handler);
 };
 sirius_Sirius.addScript = function(url,handler) {
 	if(!((url instanceof Array) && url.__enum__ == null)) url = [url];
@@ -1420,8 +1496,11 @@ sirius_Sirius._preInit = function() {
 		sirius_Sirius._loadPool = [];
 		sirius_Sirius.document = new sirius_dom_Document();
 		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
+		if(sirius_Sirius.domain.hash.find("debug")) {
+			sirius_Sirius.logger.dev();
+			sirius_css_Automator._init();
+		}
 		sirius_Sirius.log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]",10,2);
-		sirius_css_Automator._init();
 		Reflect.deleteField(sirius_Sirius,"_preInit");
 	}
 };
@@ -1445,40 +1524,7 @@ sirius_Sirius.request = function(url,data,handler,method) {
 sirius_Sirius.log = function(q,level,type) {
 	if(type == null) type = -1;
 	if(level == null) level = 10;
-	if(_$UInt_UInt_$Impl_$.gte(sirius_Sirius._loglevel,level)) {
-		var t;
-		switch(type) {
-		case -1:
-			t = "";
-			break;
-		case 0:
-			t = "[MESSAGE] ";
-			break;
-		case 1:
-			t = "[>SYSTEM] ";
-			break;
-		case 2:
-			t = "[WARNING] ";
-			break;
-		case 3:
-			t = "[!ERROR!] ";
-			break;
-		case 4:
-			t = "[//TODO:] ";
-			break;
-		default:
-			t = "";
-		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Sirius.hx", lineNumber : 268, className : "sirius.Sirius", methodName : "log"});
-	}
-};
-sirius_Sirius.logLevel = function(q) {
-	sirius_Sirius._loglevel = q;
-};
-var sirius_User = function() { };
-sirius_User.__name__ = ["sirius","User"];
-sirius_User.prototype = {
-	__class__: sirius_User
+	sirius_Sirius.logger.push(q,level,type);
 };
 var sirius_css_CSSGroup = $hx_exports.sru.css.CSSGroup = function() {
 	this.reset();
@@ -1600,6 +1646,10 @@ sirius_data_DataSet.prototype = {
 		this._content[p] = v;
 		return this;
 	}
+	,unset: function(p) {
+		Reflect.deleteField(this._content,p);
+		return this;
+	}
 	,exists: function(p) {
 		return Object.prototype.hasOwnProperty.call(this._content,p);
 	}
@@ -1671,7 +1721,12 @@ sirius_dom_Display.getPosition = function(target) {
 	return new sirius_math_Point(b.left - a.left,b.top - a.top);
 };
 sirius_dom_Display.prototype = {
-	exists: function(q) {
+	dispose: function() {
+		sirius_dom_Display._DATA.unset(this._uid);
+		this.events.dispose();
+		this.remove();
+	}
+	,exists: function(q) {
 		return this.element != null && this.element.querySelector(q) != null;
 	}
 	,enable: function(q) {
@@ -3903,6 +3958,12 @@ sirius_events_Dispatcher.prototype = {
 	,resize: function(handler,mode) {
 		return this.auto("resize",handler,mode);
 	}
+	,dispose: function() {
+		var _g = this;
+		sirius_utils_Dice.Values(this._e,function(v) {
+			v.dispose(_g.target);
+		});
+	}
 	,__class__: sirius_events_Dispatcher
 };
 var sirius_tools_Key = $hx_exports.sru.tools.Key = function() { };
@@ -4372,7 +4433,7 @@ sirius_css_AutomatorRules.indexKey = function(d,k,n) {
 sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
 	var v = k.entry.value;
 	if(d.head.key == "scroll") {
-		if(n.key == "none") {
+		if(n != null && n.key == "none") {
 			d.cancel();
 			return "overflow:hidden";
 		}
@@ -4613,6 +4674,10 @@ sirius_data_FormData.prototype = {
 		});
 		return this;
 	}
+	,send: function(url,handler,method) {
+		if(method == null) method = "post";
+		sirius_Sirius.request(url,this.getData(),handler,method);
+	}
 	,__class__: sirius_data_FormData
 };
 var sirius_data_FormParam = function(e) {
@@ -4622,6 +4687,13 @@ sirius_data_FormParam.__name__ = ["sirius","data","FormParam"];
 sirius_data_FormParam.prototype = {
 	getName: function() {
 		return this._e.attribute("form-data");
+	}
+	,getValidator: function() {
+		return this._e.attribute("form-validate");
+	}
+	,validate: function() {
+		var hv = this.getValidator();
+		return !sirius_tools_Utils.isValid(hv) || (Reflect.field(sirius_utils_Validator,hv))(this.getValue());
 	}
 	,isRequired: function() {
 		return this._e.hasAttribute("form-required") && sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-required")) > 0;
@@ -4633,7 +4705,7 @@ sirius_data_FormParam.prototype = {
 		return this._e.attribute("value");
 	}
 	,isValid: function() {
-		return !this.isRequired() || sirius_tools_Utils.isValid(this.getValue());
+		return !this.isRequired() || sirius_tools_Utils.isValid(this.getValue()) && this.validate();
 	}
 	,clear: function() {
 		if(sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-persistent")) == 0) this._e.attribute("value","");
@@ -4647,17 +4719,21 @@ sirius_data_IFragments.prototype = {
 };
 var sirius_data_Fragments = function(value,separator) {
 	if(value == null) this.value = ""; else this.value = value;
-	if(separator != null && separator.length > 0) this.split(separator);
+	if(separator != null && separator.length > 0) this.split(separator); else this.clear();
 };
 sirius_data_Fragments.__name__ = ["sirius","data","Fragments"];
 sirius_data_Fragments.__interfaces__ = [sirius_data_IFragments];
 sirius_data_Fragments.prototype = {
 	split: function(separator) {
 		this.pieces = sirius_tools_Utils.clearArray(this.value.split(separator));
+		if(this.pieces.length == 0) this.pieces[0] = "";
 		this.first = this.pieces[0];
 		this.last = this.pieces[this.pieces.length - 1];
 		this.glue(this.value);
 		return this;
+	}
+	,find: function(value) {
+		return Lambda.indexOf(this.pieces,value) != -1;
 	}
 	,glue: function(value) {
 		this.value = this.pieces.join(value);
@@ -4746,6 +4822,9 @@ sirius_events_EventGroup.prototype = {
 		t.element.removeEventListener(this.name,$bind(this,this._runner),this.capture);
 		t.element.addEventListener(this.name,$bind(this,this._runner),this.capture);
 		return this;
+	}
+	,dispose: function(t) {
+		t.element.removeEventListener(this.name,$bind(this,this._runner),this.capture);
 	}
 	,cancel: function() {
 		this.propagation = false;
@@ -5943,15 +6022,16 @@ sirius_seo_SEOTool.PRODUCT = 4;
 sirius_seo_SEOTool.ORGANIZATION = 8;
 sirius_seo_SEOTool.PERSON = 16;
 sirius_seo_SEOTool.SEARCH = 32;
-sirius_Sirius._loglevel = 12;
 sirius_Sirius._initialized = false;
 sirius_Sirius._loaded = false;
 sirius_Sirius.resources = new sirius_modules_ModLib();
 sirius_Sirius.domain = new sirius_net_Domain();
+sirius_Sirius.logger = new sirius_data_Logger();
 sirius_Sirius.loader = new sirius_modules_Loader();
 sirius_Sirius.agent = new sirius_tools_Agent();
 sirius_Sirius.seo = new sirius_seo_SEOTool();
 sirius_Sirius.plugins = { };
+sirius_Sirius.pushLog = false;
 sirius_css_CSSGroup.SOF = "/*SOF*/@media";
 sirius_css_CSSGroup.EOF = "}/*EOF*/";
 sirius_css_CSSGroup.MEDIA_PR = "print";

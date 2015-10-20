@@ -1,6 +1,7 @@
 package sirius.data;
 import sirius.data.FormData;
 import sirius.dom.IDisplay;
+import sirius.modules.IRequest;
 
 /**
  * @author Rafael Moreira
@@ -25,5 +26,7 @@ interface IFormData {
 	public function getData():Dynamic;
 	
 	public function clear () : IFormData;
+	
+	public function send(url:String, ?handler:IRequest->Void, method:String = 'post'):Void;
 	
 }

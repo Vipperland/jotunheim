@@ -45,6 +45,17 @@ class Loader implements ILoader {
 		return totalLoaded / totalFiles;
 	}
 	
+	public function unlisten(?handler:Dynamic->Void):ILoader {
+		var i:Int = -1;
+		if(handler != null){
+			i = Lambda.indexOf(_onComplete, handler);
+			if (i != -1) _onComplete.splice(i, 1);
+			i = Lambda.indexOf(_onError, handler);
+			if (i != -1) _onError.splice(i, 1);
+		}
+		return this;
+	}
+	
 	public function listen(?complete:ILoader->Void, ?error:IError->Void):ILoader {
 		if (error != null && Lambda.indexOf(_onError, error) == -1) {
 			_onError[_onError.length] = error;

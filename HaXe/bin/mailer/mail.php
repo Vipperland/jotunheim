@@ -39,15 +39,11 @@
 					$mail->SMTPDebug  = isset($_REQUEST['debug']) && !empty($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
 					$mail->CharSet = 'UTF-8';
 					
-					//$mail->Port       = 25016;
-					//$mail->Username   = "smtp5058309d@smtp5058309d.xxx.zz";
-					//$mail->Password   = "2y97kw8cy6r7";
-					
 					$mail->SMTPSecure = "tls";
 					$mail->Host       = "smtp.gmail.com";
 					$mail->Port       = 587;
-					$mail->Username   = "coldzone@gmail.com";
-					$mail->Password   = "sectorfive5";
+					$mail->Username   = "";
+					$mail->Password   = "";
 					
 					$mail->From = "coldzone@gmail.com";
 					$mail->FromName = "Rafael Moreira";

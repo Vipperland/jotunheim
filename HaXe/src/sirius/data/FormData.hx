@@ -2,6 +2,7 @@ package sirius.data;
 import sirius.data.FormParam;
 import sirius.data.IFormData;
 import sirius.dom.IDisplay;
+import sirius.modules.IRequest;
 import sirius.utils.Dice;
 import sirius.utils.IDiceRoll;
 
@@ -65,10 +66,12 @@ class FormData implements IFormData {
 	}
 	
 	public function clear():IFormData {
-		Dice.Values(params, function(v:FormParam) {
-			v.clear();
-		});
+		Dice.Values(params, function(v:FormParam) {	v.clear(); });
 		return this;
+	}
+	
+	public function send(url:String, ?handler:IRequest->Void, method:String = 'post'):Void {
+		Sirius.request(url, getData(), handler, method);
 	}
 	
 }

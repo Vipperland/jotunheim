@@ -49,6 +49,10 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
+	public function dispose(t:IDisplay):Void {
+		t.element.removeEventListener(name, _runner, capture);
+	}
+	
 	public function cancel():IEventGroup {
 		propagation = false;
 		return this;

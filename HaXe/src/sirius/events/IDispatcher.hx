@@ -273,5 +273,8 @@ interface IDispatcher {
 	/// Event
 	public function resize(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup;
 	
+	/// Remove all events
+	public function dispose():Void;
+	
 	
 }

@@ -18,14 +18,20 @@ class Fragments implements IFragments {
 	public function new(value:String, ?separator:String) {
 		this.value = value == null ? "" : value;
 		if (separator != null && separator.length > 0) split(separator);
+		else clear();
 	}
 	
 	public function split(separator:String):IFragments {
 		pieces = Utils.clearArray(value.split(separator));
+		if (pieces.length == 0) pieces[0] = "";
 		first = pieces[0];
 		last = pieces[pieces.length-1];
 		glue(value);
 		return this;
+	}
+	
+	public function find(value:String):Bool {
+		return Lambda.indexOf(pieces, value) != -1;
 	}
 	
 	public function glue(value:String):IFragments {

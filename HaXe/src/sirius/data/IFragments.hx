@@ -20,6 +20,8 @@ interface IFragments {
 	public function addPiece (value:String, ?at:Int=-1) : IFragments;
 
 	public function get (i:Int) : String;
+	
+	public function find (value:String) : Bool;
 
 	public function clear () : IFragments;
 }

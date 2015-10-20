@@ -559,4 +559,11 @@ class Dispatcher implements IDispatcher {
 		return auto("resize", handler, mode);
 	}
 	
+	/**	Remove all events */
+	public function dispose():Void {
+		Dice.Values(_e, function(v:IEventGroup) {
+			v.dispose(target);
+		});
+	}
+	
 }

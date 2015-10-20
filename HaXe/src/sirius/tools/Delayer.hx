@@ -63,7 +63,6 @@ class Delayer {
 		if (_handler != null) {
 			_tid = null;
 			Reflect.callMethod(_this, _handler, _args);
-			//untyped __js__ ("d._handler.call(d._thisObj, d._args)");
 			if (_rpt == 0 || (++_cnt < _rpt)) {
 				call();
 			}else {

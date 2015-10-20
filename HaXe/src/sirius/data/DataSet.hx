@@ -25,6 +25,11 @@ class DataSet implements IDataSet {
 		return this;
 	}
 	
+	public function unset(p:String):IDataSet {
+		Reflect.deleteField(_content, p);
+		return this;
+	}
+	
 	public function exists(p:String):Bool {
 		return Reflect.hasField(_content, p);
 	}

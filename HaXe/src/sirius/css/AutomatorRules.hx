@@ -183,7 +183,7 @@ class AutomatorRules{
 	static public function scrollKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
 		if (d.head.key == 'scroll') {
-			if (n.key == 'none') {
+			if (n != null && n.key == 'none') {
 				d.cancel();
 				return "overflow:hidden";
 			}

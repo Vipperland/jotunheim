@@ -85,6 +85,12 @@ class Display implements IDisplay {
 		
 	}
 	
+	public function dispose():Void {
+		_DATA.unset(_uid);
+		events.dispose();
+		remove();
+	}
+	
 	public function exists(q:String):Bool {
 		return element != null && element.querySelector(q) != null;
 	}

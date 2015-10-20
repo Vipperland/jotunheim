@@ -1,0 +1,33 @@
+[Module:{"version":1.0,"type":"script"}]
+	<script>
+		
+		var events = {
+			onError : function(){ console.log('form error'); },
+			onSent : function(){ console.log('form sent'); },
+			onStart : function(){ console.log('form start'); }
+		};
+		
+		function _validate(e){
+			var data = e.target.trigger.data.fields;
+			var url = e.target.uri;
+			if(data.isValid()){
+				events.onStart(data);
+				data.send(url, function(r){ events.onSent(r.object()); });
+			}else{
+				events.onError(data);
+			}
+		}
+		
+		Sirius.all('[form-trigger]').each(function(trigger){
+			var params = Sirius.one(trigger.attribute('form-trigger'));
+			if(params){
+				trigger.data.uri = trigger.attribute('form-target');
+				trigger.data.fields = new sru.data.FormData().scan(params);
+				trigger.events.click(_validate);
+			}
+		});
+		
+		Sirius.plugins.formidable = events;
+		
+	</script>
+/EOF;

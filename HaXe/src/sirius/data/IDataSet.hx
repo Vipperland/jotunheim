@@ -11,6 +11,9 @@ interface IDataSet {
 
 	/** Set property */
 	public function set (p:String, v:Dynamic) : IDataSet;
+	
+	/** Delete property */
+	public function unset(p:String):IDataSet;
 
 	/** Check if property exists */
 	public function exists (p:String) : Bool;

@@ -83,6 +83,12 @@ interface ILoader {
 	public function listen (?complete:ILoader->Void, ?error:IError->Void) : ILoader;
 	
 	/**
+	 * Remove an event listener
+	 * @param	handler
+	 * @return
+	 */
+	public function unlisten(?handler:Dynamic->Void):ILoader;
+	/**
 	 * Call a url
 	 * @param	url
 	 * @param	data
