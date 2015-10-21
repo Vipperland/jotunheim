@@ -14,9 +14,9 @@ class Div extends Display {
 		return cast Sirius.one(q,null,h);
 	}
 	
-	public function new(?q:Element, ?d:String = null) {
+	public function new(?q:Element) {
 		if (q == null) q = Browser.document.createDivElement();
-		super(q, null, d);
+		super(q, null);
 	}
 	
 }

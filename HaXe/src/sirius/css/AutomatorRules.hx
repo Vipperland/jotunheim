@@ -50,8 +50,8 @@ class AutomatorRules{
 	 */
 	static public function mosaicKey(d:Entry, k:IKey, n:IKey):String {
 		if (d.head == k) {
-			if (n != null)	Automator.addGrid(Std.parseInt(n.key));
-			else 			Automator.addGrid(12);
+			if (n != null)	Automator.mosaic(Std.parseInt(n.key));
+			else 			Automator.mosaic(12);
 			d.cancel();
 			return null;
 		}

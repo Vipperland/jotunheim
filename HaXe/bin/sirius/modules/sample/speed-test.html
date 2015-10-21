@@ -1,0 +1,182 @@
+[Module:{"name":"speed_test","version":1.00,"type":"html"}]
+	<div id="el_{{id}}" class="class1 class2 class3 class4 class5 txt-white" data-test1="a" data-test-b="b">
+		<span class="class6 class7 class8">Test Element #{{id}}</span>
+		<input id="in_{{id}}" class="class9 padd-0" value="?"></input>
+	</div>
+/EOF;
+
+[Module:{"version":1.00,"type":"script"}]
+	<script>
+		
+		Automator.build('padd-0');
+		
+		var i = 0;
+		while(i < 100){
+			var o = Sirius.resources.build("speed_test", {id:i++});
+			o.addToBody();
+		}
+		
+		function time(){
+			return new Date().getTime();
+		}
+		
+		function _loaded(loader){
+			
+			var c = ['.class1','.class2','.class3','.class4','.class5','.class6','.class7','.class8'];
+			var idc = 0;
+			var m = 10000;
+			
+			var i = 0;
+			var t = 0;
+			var ci = 0;
+			
+			function reset(){
+				i = 0;
+				t = time();
+				ci = 0;
+				idc = 0;
+			}
+			
+			function select(){
+				var s = c[ci];
+				if(++ci == c.length) ci = 0;
+				return s;
+			}
+			
+			function select_in(){
+				return '.class9';
+			}
+			
+			function id(){
+				if(++idc == 100) idc = 0;
+				return '#el_' + idc;
+			}
+			
+			function id_in(){
+				if(++idc == 100) idc = 0;
+				return '#in_' + idc;
+			}
+			
+			function elapsed(){
+				var e = time() - t;
+				if(e > m * .25) return '<span style="color:#660000">' + e + '</span>';
+				if(e > m * .2) return '<span style="color:#FF0000">' + e + '</span>';
+				if(e > m * .15) return '<span style="color:#FF6600">' + e + '</span>';
+				if(e > m * .1) return '<span style="color:#FFFF00">' + e + '</span>';
+				if(e > m * .05) return '<span style="color:#66FF00">' + e + '</span>';
+				return '<span style="color:#00FF00">' + e + '</span>';
+			}
+			
+			// SELECT ELEMENT
+			function test1(h,n) {
+				
+				Sirius.log('--' + n);
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					Sirius.one(h());
+					++i;
+				}
+				Sirius.log('Sirius Selector: ' + elapsed() + 'ms');
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					$(h());
+					++i;
+				}
+				Sirius.log('Jquery Selector: ' + elapsed() + 'ms');
+				
+			}
+			
+			// GET ATTRIBUTE
+			function test2(h,n){
+				
+				Sirius.log('--' + n);
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					Sirius.one(h()).attribute('data-test1');
+					++i;
+				}
+				Sirius.log('Sirius get Attribute: ' + elapsed() + 'ms');
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					$(h()).data('test1');
+					++i;
+				}
+				Sirius.log('Jquery set Attribute: ' + elapsed() + 'ms');
+				
+			}
+			
+			// SET ATTRIBUTE
+			function test3(h, n){
+				
+				Sirius.log('--' + n);
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					Sirius.one(h()).attribute('data-test1', i);
+					++i;
+				}
+				Sirius.log('Sirius set Attribute: ' + elapsed() + 'ms');
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					$(h()).data('data-test1', i);
+					++i;
+				}
+				Sirius.log('Jquery set Attribute: ' + elapsed() + 'ms');
+			}
+			
+			// SET VALUE
+			function test4(h, n){
+				
+				Sirius.log('--' + n);
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					Sirius.one(h()).value("OK!");
+					++i;
+				}
+				Sirius.log('Sirius set Value: ' + elapsed() + 'ms');
+				
+				reset();
+				i=0;
+				
+				while(i < m){
+					$(h()).val("OK!");
+					++i;
+				}
+				Sirius.log('Jquery set Value: ' + elapsed() + 'ms');
+			}
+			
+			test1(id, 'BY #ID');
+			test1(select, 'BY .SELECTOR');
+			test2(id, 'BY #ID');
+			test2(select, 'BY .SELECTOR');
+			test3(id, 'BY #ID');
+			test3(select, 'BY .SELECTOR');
+			test4(id_in, 'BY #ID');
+			test4(select_in, 'BY .SELECTOR');
+			
+		}
+		
+		Sirius.addScript('sirius/3rd/js/jquery-2.1.4.min.js', _loaded);
+		
+	</script>
+/EOF;

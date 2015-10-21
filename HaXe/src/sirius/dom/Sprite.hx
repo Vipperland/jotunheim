@@ -12,8 +12,8 @@ class Sprite extends Div {
 	
 	public var content:Div;
 	
-	public function new(?q:Dynamic, ?d:String = "w-100pc h-100pc disp-table") {
-		super(q, d);
+	public function new(?q:Dynamic) {
+		super(q);
 		if (q == null) {
 			attribute('sru-dom', 'sprite');
 		}
@@ -22,6 +22,7 @@ class Sprite extends Div {
 			content = new Div();
 			addChild(content);
 		}
+		css('w-100pc h-100pc disp-table txt-c');
 		content.css('disp-table-cell vert-m');
 	}
 	

@@ -22,18 +22,6 @@ class Logger{
 		
 	}
 	
-	public function dev():Void {
-		if (_toasts == null) {
-			_toasts = new Div();
-			_toasts.pin();
-			_toasts.css('arial txt-12 txt-white padd-10 z-9999999 bg-black-80 max-height-100pc max-width-100pc scroll-y t-0');
-			_toasts.addToBody();
-			_toasts.build('Sirius::Logger');
-			_bgs = ['txt-cccccc','txt-white','txt-limegreen','txt-yellow','txt-orange bold'];
-			Automator.build('arial txt-10 bg-black-80 padd-5 t-0 z-9999999 bg-black-70 padd-10 txt-black txt-white txt-green txt-yellow txt-orange bold');
-		}
-	}
-	
 	public function clear():Void {
 		if (_toasts != null) _toasts.clear(true);
 		Log.clear();
@@ -55,7 +43,7 @@ class Logger{
 					var not:IDisplay = new Div();
 					not.css(_bgs[type+1] + ' arial');
 					not.build(t + q);
-					not.addTo(_toasts);
+					not.addTo(_toasts.children().first());
 				}else {
 					haxe.Log.trace(t + q);
 				}

@@ -15,9 +15,9 @@ class Style extends Display {
 	
 	public var object:StyleElement;
 	
-	public function new(?q:Dynamic, ?d:String = null) {
+	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createStyleElement();
-		super(q, null, d);
+		super(q, null);
 		object = cast element;
 		object.type = "text/css";
 	}

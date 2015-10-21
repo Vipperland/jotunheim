@@ -143,7 +143,7 @@ class Automator {
 		
 	}
 	
-	static public function addGrid(size:Dynamic):Void {
+	static public function mosaic(size:Dynamic):Void {
 		if (!Std.is(size, Array)) size = [size];
 		Dice.Values(size, function(v:Int) {	_createGridCol(v); });
 	}
@@ -172,14 +172,11 @@ class Automator {
 		build('list-style-none', 'ol,ul,dl');
 		build('padd-5', 'hr');
 		build('padd-10','input,textarea,select');
-		//build('border-collapse-collapse border-spacing-0', 'table');
 		build('disp-table content-void', '.grid:before,.grid:after');
 		build('clear-both', '.grid:after');
-		//build('border-collapse-collapse border-spacing-0', 'table');
-		//css.setSelector(':focus', 'outline: 0;');
+		build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
 		css.setSelector('@-ms-viewport', 'width:device-width;');
-		css.setSelector('*,*:before,*:after', '-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;');
-		build('marg-a vert-m float-l float-r txt-c');
+		css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
 		Reflect.deleteField(Automator, '_init');
 	}
 	

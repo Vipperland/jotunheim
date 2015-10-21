@@ -37,9 +37,9 @@ class Script extends Display{
 		}
 	}
 	
-	public function new(?q:Dynamic, ?d:String = null) {
+	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createScriptElement();
-		super(q, null, d);
+		super(q, null);
 		content = cast element;
 	}
 	

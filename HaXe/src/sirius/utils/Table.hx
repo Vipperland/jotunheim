@@ -38,7 +38,7 @@ class Table implements ITable {
 			if (q != null || t != null) {
 				var is3D:Bool = false;
 				if (t == null) {
-					t = cast Browser.document;
+					t = cast Browser.document.body;
 				}else {
 					is3D = Std.is(t, IDisplay3D);
 				}

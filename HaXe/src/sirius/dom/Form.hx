@@ -24,9 +24,9 @@ class Form extends Display {
 	
 	public var inputData:IFormData;
 	
-	public function new(?q:Dynamic, ?d:String = null) {
+	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createFormElement();
-		super(q, null, d);
+		super(q, null);
 		object = cast element;
 	}
 	

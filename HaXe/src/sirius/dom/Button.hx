@@ -11,8 +11,8 @@ class Button extends Div {
 		return cast Sirius.one(q,null,h);
 	}
 	
-	public function new(?q:Dynamic, ?d:String = null){
-		super(q,d);
+	public function new(?q:Dynamic){
+		super(q);
 		cursor("pointer");
 	}
 	

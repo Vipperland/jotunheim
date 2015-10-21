@@ -135,7 +135,7 @@ class Sirius {
 		 * @return
 		 */
 		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-			t = (t == null ? Browser.document : t).querySelector(q);
+			t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substr(1, q.length-1)) : (t == null ? Browser.document.body : t).querySelector(q);
 			if (t != null) {
 				t = Utils.displayFrom(t);
 				if (h != null) h(t);
@@ -200,12 +200,10 @@ class Sirius {
 				_loadPool = [];
 				document = new Document();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				if (domain.hash.find("debug")) {
-					logger.dev();
-					Automator._init();
-				}
+				Automator._init();
 				log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]", 10, 2);
 				Reflect.deleteField(Sirius, '_preInit');
+				if (Browser.document.readyState == 'complete') _loadController(null);
 			}
 		}
 		

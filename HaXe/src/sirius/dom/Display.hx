@@ -42,8 +42,14 @@ class Display implements IDisplay {
 		return new Display(Browser.document.createElement(q));
 	}
 	
-	public static function create(q:Dynamic):IDisplay {
-		return new Display(q);
+	static public function gc(?secure:Bool):Void {
+		if (secure) {
+			_DATA.clear();
+		}else{
+			Dice.All(_DATA.structure, function(p:String, v:DisplayData) {
+				if (Sirius.one('[sru-id=' + v.__id__ + ']') == null) _DATA.unset(p);
+			});
+		}
 	}
 	
 	static public function getPosition(target:Element) {
@@ -66,20 +72,16 @@ class Display implements IDisplay {
 	
 	private var _visibility:Int;
 	
-	public function new(?q:Dynamic = null, ?t:Element = null, ?d:String = null) {
+	public function new(?q:Dynamic = null, ?t:Element = null) {
 		
-		if (Std.is(q, String)) q = Sirius.one(q, t);
-		else if (Std.is(q, IDisplay)) q = q.element;
-		if (q == null) {
-			q = Browser.document.createDivElement();
-		}
+		if (q == null) 	q = Browser.document.createDivElement();
 		element = q;
+		
 		events = new Dispatcher(this);
-		if (d != null) css(d);
 		
 		if (element != cast Browser.document) {
 			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
-			if (!_DATA.exists(_uid)) _DATA.set(_uid, new DisplayData());
+			if (!_DATA.exists(_uid)) _DATA.set(_uid, new DisplayData(_uid));
 			data = _DATA.get(_uid);
 		}
 		
@@ -251,17 +253,14 @@ class Display implements IDisplay {
 	}
 	
 	public function detach():Void {
-		Automator.build('pos-abs');
 		css('pos-abs /pos-rel /pos-fix');
 	}
 	
 	public function attach():Void {
-		Automator.build('pos-rel');
 		css('/pos-abs pos-rel /pos-fix');
 	}
 	
 	public function pin():Void {
-		Automator.build('pos-fix');
 		css('/pos-abs /pos-rel pos-fix');
 	}
 	

@@ -1266,18 +1266,7 @@ var sirius_data_Logger = function() {
 };
 sirius_data_Logger.__name__ = ["sirius","data","Logger"];
 sirius_data_Logger.prototype = {
-	dev: function() {
-		if(this._toasts == null) {
-			this._toasts = new sirius_dom_Div();
-			this._toasts.pin();
-			this._toasts.css("arial txt-12 txt-white padd-10 z-9999999 bg-black-80 max-height-100pc max-width-100pc scroll-y t-0");
-			this._toasts.addToBody();
-			this._toasts.build("Sirius::Logger");
-			this._bgs = ["txt-cccccc","txt-white","txt-limegreen","txt-yellow","txt-orange bold"];
-			sirius_css_Automator.build("arial txt-10 bg-black-80 padd-5 t-0 z-9999999 bg-black-70 padd-10 txt-black txt-white txt-green txt-yellow txt-orange bold");
-		}
-	}
-	,clear: function() {
+	clear: function() {
 		if(this._toasts != null) this._toasts.clear(true);
 		haxe_Log.clear();
 	}
@@ -1310,8 +1299,8 @@ sirius_data_Logger.prototype = {
 				var not = new sirius_dom_Div();
 				not.css(this._bgs[type + 1] + " arial");
 				not.build(t + Std.string(q));
-				not.addTo(this._toasts);
-			} else haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 60, className : "sirius.data.Logger", methodName : "push"});
+				not.addTo(this._toasts.children().first());
+			} else haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 48, className : "sirius.data.Logger", methodName : "push"});
 		}
 	}
 	,__class__: sirius_data_Logger
@@ -1457,7 +1446,7 @@ sirius_Sirius._onLoaded = function(e) {
 };
 sirius_Sirius.one = function(q,t,h) {
 	if(q == null) q = "*";
-	t = (t == null?window.document:t).querySelector(q);
+	if(HxOverrides.substr(q,0,1) == "#") t = window.document.getElementById(HxOverrides.substr(q,1,q.length - 1)); else t = (t == null?window.document.body:t).querySelector(q);
 	if(t != null) {
 		t = sirius_tools_Utils.displayFrom(t);
 		if(h != null) h(t);
@@ -1496,12 +1485,10 @@ sirius_Sirius._preInit = function() {
 		sirius_Sirius._loadPool = [];
 		sirius_Sirius.document = new sirius_dom_Document();
 		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
-		if(sirius_Sirius.domain.hash.find("debug")) {
-			sirius_Sirius.logger.dev();
-			sirius_css_Automator._init();
-		}
+		sirius_css_Automator._init();
 		sirius_Sirius.log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]",10,2);
 		Reflect.deleteField(sirius_Sirius,"_preInit");
+		if(window.document.readyState == "complete") sirius_Sirius._loadController(null);
 	}
 };
 sirius_Sirius.status = function() {
@@ -1692,18 +1679,16 @@ sirius_data_DataSet.prototype = {
 	}
 	,__class__: sirius_data_DataSet
 };
-var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t,d) {
-	if(typeof(q) == "string") q = sirius_Sirius.one(q,t); else if(js_Boot.__instanceof(q,sirius_dom_IDisplay)) q = q.element;
+var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t) {
 	if(q == null) {
 		var _this = window.document;
 		q = _this.createElement("div");
 	}
 	this.element = q;
 	this.events = new sirius_events_Dispatcher(this);
-	if(d != null) this.css(d);
 	if(this.element != window.document) {
 		if(this.hasAttribute("sru-id")) this._uid = this.attribute("sru-id"); else this._uid = this.attribute("sru-id",sirius_tools_Key.GEN());
-		if(!sirius_dom_Display._DATA.exists(this._uid)) sirius_dom_Display._DATA.set(this._uid,new sirius_data_DisplayData());
+		if(!sirius_dom_Display._DATA.exists(this._uid)) sirius_dom_Display._DATA.set(this._uid,new sirius_data_DisplayData(this._uid));
 		this.data = sirius_dom_Display._DATA.get(this._uid);
 	}
 };
@@ -1712,8 +1697,10 @@ sirius_dom_Display.__interfaces__ = [sirius_dom_IDisplay];
 sirius_dom_Display.ofKind = function(q) {
 	return new sirius_dom_Display(window.document.createElement(q));
 };
-sirius_dom_Display.create = function(q) {
-	return new sirius_dom_Display(q);
+sirius_dom_Display.gc = function(secure) {
+	if(secure) sirius_dom_Display._DATA.clear(); else sirius_utils_Dice.All(($_=sirius_dom_Display._DATA,$bind($_,$_.structure)),function(p,v) {
+		if(sirius_Sirius.one("[sru-id=" + v.__id__ + "]") == null) sirius_dom_Display._DATA.unset(p);
+	});
 };
 sirius_dom_Display.getPosition = function(target) {
 	var a = sirius_Sirius.document.body.getBounds();
@@ -1857,15 +1844,12 @@ sirius_dom_Display.prototype = {
 		return this.element.style.cursor;
 	}
 	,detach: function() {
-		sirius_css_Automator.build("pos-abs");
 		this.css("pos-abs /pos-rel /pos-fix");
 	}
 	,attach: function() {
-		sirius_css_Automator.build("pos-rel");
 		this.css("/pos-abs pos-rel /pos-fix");
 	}
 	,pin: function() {
-		sirius_css_Automator.build("pos-fix");
 		this.css("/pos-abs /pos-rel pos-fix");
 	}
 	,show: function() {
@@ -2064,12 +2048,12 @@ sirius_dom_Display.prototype = {
 	}
 	,__class__: sirius_dom_Display
 };
-var sirius_dom_Style = $hx_exports.sru.dom.Style = function(q,d) {
+var sirius_dom_Style = $hx_exports.sru.dom.Style = function(q) {
 	if(q == null) {
 		var _this = window.document;
 		q = _this.createElement("style");
 	}
-	sirius_dom_Display.call(this,q,null,d);
+	sirius_dom_Display.call(this,q,null);
 	this.object = this.element;
 	this.object.type = "text/css";
 };
@@ -2084,1601 +2068,6 @@ sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,__class__: sirius_dom_Style
 });
-var sirius_dom_A = $hx_exports.sru.dom.A = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("a");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_A.__name__ = ["sirius","dom","A"];
-sirius_dom_A.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_A.__super__ = sirius_dom_Display;
-sirius_dom_A.prototype = $extend(sirius_dom_Display.prototype,{
-	href: function(url) {
-		return this.attribute("href",url);
-	}
-	,__class__: sirius_dom_A
-});
-var sirius_dom_Applet = $hx_exports.sru.dom.Applet = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("applet");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Applet.__name__ = ["sirius","dom","Applet"];
-sirius_dom_Applet.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Applet.__super__ = sirius_dom_Display;
-sirius_dom_Applet.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Applet
-});
-var sirius_dom_Area = $hx_exports.sru.dom.Area = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("area");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Area.__name__ = ["sirius","dom","Area"];
-sirius_dom_Area.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Area.__super__ = sirius_dom_Display;
-sirius_dom_Area.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Area
-});
-var sirius_dom_Audio = $hx_exports.sru.dom.Audio = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("audio");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Audio.__name__ = ["sirius","dom","Audio"];
-sirius_dom_Audio.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Audio.__super__ = sirius_dom_Display;
-sirius_dom_Audio.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Audio
-});
-var sirius_dom_B = $hx_exports.sru.dom.B = function(q,d) {
-	if(q == null) q = window.document.createElement("B");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_B.__name__ = ["sirius","dom","B"];
-sirius_dom_B.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_B.__super__ = sirius_dom_Display;
-sirius_dom_B.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_B
-});
-var sirius_dom_Base = $hx_exports.sru.dom.Base = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("base");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Base.__name__ = ["sirius","dom","Base"];
-sirius_dom_Base.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Base.__super__ = sirius_dom_Display;
-sirius_dom_Base.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Base
-});
-var sirius_dom_Body = $hx_exports.sru.dom.Body = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("body");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this._body = this.element;
-	window.addEventListener("resize",$bind(this,this._wResize));
-};
-sirius_dom_Body.__name__ = ["sirius","dom","Body"];
-sirius_dom_Body.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Body.__super__ = sirius_dom_Display;
-sirius_dom_Body.prototype = $extend(sirius_dom_Display.prototype,{
-	_wResize: function(e) {
-		this.events.resize().call();
-	}
-	,enlarge: function(scroll) {
-		if(scroll == null) scroll = "over-hid";
-		this.css("w-100pc h-100pc" + (scroll != null?" " + scroll:"") + " padd-0 marg-0 pos-abs");
-		return this;
-	}
-	,maxScrollX: function() {
-		return this._body.scrollWidth - sirius_tools_Utils.viewportWidth();
-	}
-	,maxScrollY: function() {
-		return this._body.scrollHeight - sirius_tools_Utils.viewportHeight();
-	}
-	,__class__: sirius_dom_Body
-});
-var sirius_dom_BR = $hx_exports.sru.dom.BR = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("br");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_BR.__name__ = ["sirius","dom","BR"];
-sirius_dom_BR.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_BR.__super__ = sirius_dom_Display;
-sirius_dom_BR.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_BR
-});
-var sirius_dom_Div = $hx_exports.sru.dom.Div = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("div");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Div.__name__ = ["sirius","dom","Div"];
-sirius_dom_Div.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Div.__super__ = sirius_dom_Display;
-sirius_dom_Div.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Div
-});
-var sirius_dom_Button = function(q,d) {
-	sirius_dom_Div.call(this,q,d);
-	this.cursor("pointer");
-};
-sirius_dom_Button.__name__ = ["sirius","dom","Button"];
-sirius_dom_Button.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Button.__super__ = sirius_dom_Div;
-sirius_dom_Button.prototype = $extend(sirius_dom_Div.prototype,{
-	__class__: sirius_dom_Button
-});
-var sirius_dom_Canvas = $hx_exports.sru.dom.Canvas = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("canvas");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.paper = this.element;
-};
-sirius_dom_Canvas.__name__ = ["sirius","dom","Canvas"];
-sirius_dom_Canvas.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Canvas.__super__ = sirius_dom_Display;
-sirius_dom_Canvas.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Canvas
-});
-var sirius_dom_Caption = $hx_exports.sru.dom.Caption = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("caption");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Caption.__name__ = ["sirius","dom","Caption"];
-sirius_dom_Caption.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Caption.__super__ = sirius_dom_Display;
-sirius_dom_Caption.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Caption
-});
-var sirius_dom_Col = $hx_exports.sru.dom.Col = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("col");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Col.__name__ = ["sirius","dom","Col"];
-sirius_dom_Col.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Col.__super__ = sirius_dom_Display;
-sirius_dom_Col.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Col
-});
-var sirius_dom_Content = $hx_exports.sru.dom.Content = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("content");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Content.__name__ = ["sirius","dom","Content"];
-sirius_dom_Content.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Content.__super__ = sirius_dom_Display;
-sirius_dom_Content.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Content
-});
-var sirius_dom_DataList = $hx_exports.sru.dom.DataList = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("datalist");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_DataList.__name__ = ["sirius","dom","DataList"];
-sirius_dom_DataList.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_DataList.__super__ = sirius_dom_Display;
-sirius_dom_DataList.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_DataList
-});
-var sirius_dom_Dir = $hx_exports.sru.dom.Dir = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("dir");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Dir.__name__ = ["sirius","dom","Dir"];
-sirius_dom_Dir.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Dir.__super__ = sirius_dom_Display;
-sirius_dom_Dir.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Dir
-});
-var sirius_dom_IDisplay3D = function() { };
-sirius_dom_IDisplay3D.__name__ = ["sirius","dom","IDisplay3D"];
-sirius_dom_IDisplay3D.__interfaces__ = [sirius_dom_IDisplay];
-sirius_dom_IDisplay3D.prototype = {
-	__class__: sirius_dom_IDisplay3D
-};
-var sirius_dom_Display3D = $hx_exports.sru.dom.Display3D = function(q,d) {
-	sirius_dom_Div.call(this,q,d);
-	this.attribute("sru-dom","display3d");
-	if(!this.data.__data__.exists("transform")) {
-		this.data.__data__.set("xcss",new sirius_css_XCSS());
-		this.data.__data__.set("transform",new sirius_math_Transform3D());
-		sirius_dom_Display3D._backface_fix();
-	}
-	this.xcss = this.data.__data__.get("xcss");
-	this.transform = this.data.__data__.get("transform");
-	this.update();
-};
-sirius_dom_Display3D.__name__ = ["sirius","dom","Display3D"];
-sirius_dom_Display3D.__interfaces__ = [sirius_dom_IDisplay3D];
-sirius_dom_Display3D._backface_fix = function() {
-	if(!sirius_dom_Display3D._fixed) {
-		sirius_dom_Display3D._fixed = true;
-		sirius_css_Automator.build("backface-visibility-inherit transform-style-inherit","*");
-	}
-};
-sirius_dom_Display3D.__super__ = sirius_dom_Div;
-sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
-	preserve3d: function() {
-		this.transform.transformStyle = "preserve-3d";
-		return this;
-	}
-	,setPerspective: function(value,origin) {
-		if(value != null) this.transform.perspective = value;
-		if(origin != null) this.transform.transformOrigin = origin;
-		return this;
-	}
-	,rotateAll: function(x,y,z,add) {
-		this.rotationX(x,add);
-		this.rotationY(y,add);
-		if(z != null) this.rotationZ(z,add);
-		return this;
-	}
-	,rotationX: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.rotation.x += value; else this.transform.rotation.x = value;
-			if(this.transform.rotation.x < -180) this.transform.rotation.x += 360; else if(this.transform.rotation.x > 180) this.transform.rotation.x -= 360;
-		}
-		return this.transform.rotation.x;
-	}
-	,rotationY: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.rotation.y += value; else this.transform.rotation.y = value;
-			if(this.transform.rotation.y < -180) this.transform.rotation.y += 360; else if(this.transform.rotation.y > 180) this.transform.rotation.y -= 360;
-		}
-		return this.transform.rotation.y;
-	}
-	,rotationZ: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.rotation.z += value; else this.transform.rotation.z = value;
-			if(this.transform.rotation.z < -180) this.transform.rotation.z += 360; else if(this.transform.rotation.z > 180) this.transform.rotation.z -= 360;
-		}
-		return this.transform.rotation.z;
-	}
-	,moveTo: function(x,y,z,add) {
-		this.locationX(x,add);
-		this.locationY(y,add);
-		if(z != null) this.locationZ(z,add);
-		return this;
-	}
-	,locationX: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.location.x += value; else this.transform.location.x = value;
-		}
-		return this.transform.location.x;
-	}
-	,locationY: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.location.y += value; else this.transform.location.y = value;
-		}
-		return this.transform.location.y;
-	}
-	,locationZ: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.location.z += value; else this.transform.location.z = value;
-		}
-		return this.transform.location.z;
-	}
-	,scaleAll: function(x,y,z,add) {
-		this.scaleX(x,add);
-		this.scaleY(y,add);
-		if(z != null) this.scaleZ(z,add);
-		return this;
-	}
-	,transform2D: function(x,y,x1,y1,w,h) {
-		return this.moveTo(x,y,null).rotateAll(x1,y1,null).scaleAll(w,h,null);
-	}
-	,transform3D: function(x,y,z,x1,y1,z1,w,h,d) {
-		return this.moveTo(x,y,z).rotateAll(x1,y1,z1).scaleAll(w,h,d);
-	}
-	,scaleX: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.scale.x += value; else this.transform.scale.x = value;
-		}
-		return this.transform.scale.x;
-	}
-	,scaleY: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.scale.y += value; else this.transform.scale.y = value;
-		}
-		return this.transform.scale.y;
-	}
-	,scaleZ: function(value,add) {
-		if(value != null) {
-			if(add) this.transform.scale.z += value; else this.transform.scale.z = value;
-		}
-		return this.transform.scale.z;
-	}
-	,update: function() {
-		if(this.transform.perspective != null) this.xcss.write("perspective",this.transform.perspective);
-		if(this.transform.transformOrigin != null) this.xcss.write("transformOrigin",this.transform.transformOrigin);
-		if(this.transform.transformStyle != null) this.xcss.write("transformStyle",this.transform.transformStyle);
-		if(this.transform.backFace != null) this.xcss.write("backfaceVisibility",this.transform.backFace);
-		this.xcss.write("transform","rotateX(" + this.transform.rotation.x + "deg) rotateY(" + this.transform.rotation.y + "deg) rotateZ(" + this.transform.rotation.z + "deg) translate3d(" + this.transform.location.x + "px," + this.transform.location.y + "px," + this.transform.location.z + "px) scale3d(" + this.transform.scale.x + "," + this.transform.scale.y + "," + this.transform.scale.z + ")");
-		this.xcss.apply(this);
-		return this;
-	}
-	,doubleSided: function(value) {
-		if(value) this.transform.backFace = "visible"; else this.transform.backFace = "hidden";
-		return this;
-	}
-	,flipHorizontal: function() {
-		this.rotationY(180,true);
-		return this;
-	}
-	,flipVertical: function() {
-		this.rotationX(180,true);
-		return this;
-	}
-	,__class__: sirius_dom_Display3D
-});
-var sirius_dom_DL = $hx_exports.sru.dom.DL = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("dl");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_DL.__name__ = ["sirius","dom","DL"];
-sirius_dom_DL.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_DL.__super__ = sirius_dom_Display;
-sirius_dom_DL.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_DL
-});
-var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
-	sirius_dom_Display.call(this,window.document);
-	this.element = window.document.documentElement;
-	this.events.wheel($bind(this,this.stopScroll),true);
-	this.body = new sirius_dom_Body(window.document.body);
-	this.head = new sirius_dom_Head(window.document.head);
-};
-sirius_dom_Document.__name__ = ["sirius","dom","Document"];
-sirius_dom_Document._applyScroll = function() {
-	window.scroll(sirius_dom_Document.__scroll__.x,sirius_dom_Document.__scroll__.y);
-};
-sirius_dom_Document.__super__ = sirius_dom_Display;
-sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
-	scroll: function(x,y) {
-		window.scroll(x,y);
-	}
-	,addScroll: function(x,y) {
-		var current = this.getScroll();
-		window.scroll(current.x + x,current.y + y);
-	}
-	,getScrollRange: function(o,pct) {
-		if(pct == null) pct = false;
-		var current = this.getScroll(o);
-		if(this.body != null) {
-			current.x /= this.body.maxScrollX();
-			current.y /= this.body.maxScrollY();
-			if(pct) {
-				current.x *= 100;
-				current.y *= 100;
-			}
-		} else current.reset();
-		return current;
-	}
-	,getScroll: function(o) {
-		if(o == null) o = new sirius_math_Point(0,0);
-		if(window.pageXOffset != null) {
-			o.x = window.pageXOffset;
-			o.y = window.pageYOffset;
-		} else if(this.body != null) {
-			o.x = this.body.element.scrollLeft;
-			o.y = this.body.element.scrollTop;
-		} else {
-			o.x = this.element.scrollLeft;
-			o.y = this.element.scrollTop;
-		}
-		return o;
-	}
-	,easeScroll: function(x,y,time,ease) {
-		if(time == null) time = 1;
-		this.stopScroll();
-		this.getScroll(sirius_dom_Document.__scroll__);
-		sirius_transitions_Animator.to(sirius_dom_Document.__scroll__,time,{ x : x, y : y, ease : ease, onUpdate : sirius_dom_Document._applyScroll});
-	}
-	,stopScroll: function(e) {
-		sirius_transitions_Animator.stop(sirius_dom_Document.__scroll__);
-	}
-	,scrollTo: function(target,time,ease,offX,offY) {
-		if(offY == null) offY = 0;
-		if(offX == null) offX = 0;
-		if(time == null) time = 1;
-		if(typeof(target) == "string") target = sirius_Sirius.one(target).element;
-		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) target = target.element;
-		var pos = sirius_dom_Display.getPosition(target);
-		if(sirius_transitions_Animator.available()) this.easeScroll(pos.x - offX,pos.y - offY,time,ease); else this.scroll(pos.x - offX,pos.y - offY);
-	}
-	,trackCursor: function() {
-		if(sirius_dom_Document.__cursor__.enabled) return;
-		sirius_dom_Document.__cursor__.enabled = true;
-		this.events.mouseMove(function(e) {
-			var me = e.event;
-			sirius_dom_Document.__cursor__.x = me.clientX;
-			sirius_dom_Document.__cursor__.y = me.clientY;
-		},true);
-	}
-	,cursorX: function() {
-		return sirius_dom_Document.__cursor__.x;
-	}
-	,cursorY: function() {
-		return sirius_dom_Document.__cursor__.y;
-	}
-	,focus: function(target) {
-		if(target != null) target.element.focus();
-		return sirius_tools_Utils.displayFrom(window.document.activeElement);
-	}
-	,print: function(selector,exclude) {
-		if(exclude == null) exclude = "button, img, .no-print";
-		var i = this.body.children();
-		var success = false;
-		if(i.length() > 0) {
-			i.hide();
-			var content = "";
-			i.each(function(d) {
-				if(!d["is"](["script","style"])) {
-					content += d.element.outerHTML;
-					d.hide();
-				}
-			});
-			if(content.length > 0) {
-				var r = new sirius_dom_Div();
-				r.build(content);
-				r.all(exclude).remove();
-				this.body.addChild(r);
-				try {
-					window.print();
-					success = true;
-				} catch( e ) {
-					if (e instanceof js__$Boot_HaxeError) e = e.val;
-					if( js_Boot.__instanceof(e,Error) ) {
-						success = false;
-					} else throw(e);
-				}
-				this.body.removeChild(r);
-			}
-			i.show();
-		}
-		return success;
-	}
-	,__class__: sirius_dom_Document
-});
-var sirius_dom_Embed = $hx_exports.sru.dom.Embed = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("embed");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Embed.__name__ = ["sirius","dom","Embed"];
-sirius_dom_Embed.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Embed.__super__ = sirius_dom_Display;
-sirius_dom_Embed.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Embed
-});
-var sirius_dom_FieldSet = $hx_exports.sru.dom.FieldSet = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("fieldset");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_FieldSet.__name__ = ["sirius","dom","FieldSet"];
-sirius_dom_FieldSet.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_FieldSet.__super__ = sirius_dom_Display;
-sirius_dom_FieldSet.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_FieldSet
-});
-var sirius_dom_Font = $hx_exports.sru.dom.Font = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("font");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Font.__name__ = ["sirius","dom","Font"];
-sirius_dom_Font.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Font.__super__ = sirius_dom_Display;
-sirius_dom_Font.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Font
-});
-var sirius_dom_Form = $hx_exports.sru.dom.Form = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("form");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.element;
-};
-sirius_dom_Form.__name__ = ["sirius","dom","Form"];
-sirius_dom_Form.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Form.__super__ = sirius_dom_Display;
-sirius_dom_Form.prototype = $extend(sirius_dom_Display.prototype,{
-	validate: function() {
-		this.checkSubmit().object.click();
-		return this.object.checkValidity();
-	}
-	,checkSubmit: function() {
-		if(this._submit == null) {
-			var i;
-			if(!this.exists("input[type=submit]")) {
-				i = new sirius_dom_Input();
-				i.type("submit");
-				i.hide();
-				this.addChild(i);
-			} else i = this.one("input[type=submit]");
-			this._submit = i;
-		}
-		return this._submit;
-	}
-	,submit: function() {
-		this.object.submit();
-	}
-	,formData: function() {
-		if(this.inputData == null) this.inputData = new sirius_data_FormData(this); else this.inputData.scan(this);
-		return this.inputData;
-	}
-	,getAsInput: function(i,update) {
-		if(this._children == null || update == true) this._children = this.children();
-		return this._children.obj(i);
-	}
-	,__class__: sirius_dom_Form
-});
-var sirius_dom_Frame = $hx_exports.sru.dom.Frame = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("frame");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Frame.__name__ = ["sirius","dom","Frame"];
-sirius_dom_Frame.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Frame.__super__ = sirius_dom_Display;
-sirius_dom_Frame.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Frame
-});
-var sirius_dom_FrameSet = $hx_exports.sru.dom.FrameSet = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("frameset");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_FrameSet.__name__ = ["sirius","dom","FrameSet"];
-sirius_dom_FrameSet.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_FrameSet.__super__ = sirius_dom_Display;
-sirius_dom_FrameSet.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_FrameSet
-});
-var sirius_dom_H1 = $hx_exports.sru.dom.H1 = function(q,d) {
-	if(q == null) q = window.document.createElement("h1");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H1.__name__ = ["sirius","dom","H1"];
-sirius_dom_H1.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H1.__super__ = sirius_dom_Display;
-sirius_dom_H1.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H1
-});
-var sirius_dom_H2 = $hx_exports.sru.dom.H2 = function(q,d) {
-	if(q == null) q = window.document.createElement("h2");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H2.__name__ = ["sirius","dom","H2"];
-sirius_dom_H2.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H2.__super__ = sirius_dom_Display;
-sirius_dom_H2.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H2
-});
-var sirius_dom_H3 = $hx_exports.sru.dom.H3 = function(q,d) {
-	if(q == null) q = window.document.createElement("h3");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H3.__name__ = ["sirius","dom","H3"];
-sirius_dom_H3.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H3.__super__ = sirius_dom_Display;
-sirius_dom_H3.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H3
-});
-var sirius_dom_H4 = $hx_exports.sru.dom.H4 = function(q,d) {
-	if(q == null) q = window.document.createElement("h4");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H4.__name__ = ["sirius","dom","H4"];
-sirius_dom_H4.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H4.__super__ = sirius_dom_Display;
-sirius_dom_H4.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H4
-});
-var sirius_dom_H5 = $hx_exports.sru.dom.H5 = function(q,d) {
-	if(q == null) q = window.document.createElement("h5");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H5.__name__ = ["sirius","dom","H5"];
-sirius_dom_H5.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H5.__super__ = sirius_dom_Display;
-sirius_dom_H5.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H5
-});
-var sirius_dom_H6 = $hx_exports.sru.dom.H6 = function(q,d) {
-	if(q == null) q = window.document.createElement("h6");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_H6.__name__ = ["sirius","dom","H6"];
-sirius_dom_H6.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_H6.__super__ = sirius_dom_Display;
-sirius_dom_H6.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_H6
-});
-var sirius_dom_Head = $hx_exports.sru.dom.Head = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("head");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Head.__name__ = ["sirius","dom","Head"];
-sirius_dom_Head.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Head.__super__ = sirius_dom_Display;
-sirius_dom_Head.prototype = $extend(sirius_dom_Display.prototype,{
-	bind: function(content,type) {
-		if(content != null) {
-			var s;
-			if(content.length > 1) {
-				switch(type) {
-				case "css":case "style":
-					s = new sirius_dom_Style();
-					content = content.split("<style>").join("").split("</style>").join("");
-					break;
-				case "javascript":case "script":
-					s = new sirius_dom_Script();
-					content = content.split("<script>").join("").split("</script>").join("");
-					break;
-				default:
-					s = null;
-				}
-				if(s != null) {
-					s.build(content);
-					this.addChild(s);
-					return s;
-				}
-			}
-		}
-		return null;
-	}
-	,__class__: sirius_dom_Head
-});
-var sirius_dom_HR = $hx_exports.sru.dom.HR = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("hr");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_HR.__name__ = ["sirius","dom","HR"];
-sirius_dom_HR.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_HR.__super__ = sirius_dom_Display;
-sirius_dom_HR.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_HR
-});
-var sirius_dom_Html = $hx_exports.sru.dom.Html = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("html");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Html.__name__ = ["sirius","dom","Html"];
-sirius_dom_Html.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Html.__super__ = sirius_dom_Display;
-sirius_dom_Html.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Html
-});
-var sirius_dom_I = $hx_exports.sru.dom.I = function(q,d) {
-	if(q == null) q = window.document.createElement("I");
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_I.__name__ = ["sirius","dom","I"];
-sirius_dom_I.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_I.__super__ = sirius_dom_Display;
-sirius_dom_I.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_I
-});
-var sirius_dom_IFrame = $hx_exports.sru.dom.IFrame = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("iframe");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.element;
-};
-sirius_dom_IFrame.__name__ = ["sirius","dom","IFrame"];
-sirius_dom_IFrame.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_IFrame.__super__ = sirius_dom_Display;
-sirius_dom_IFrame.prototype = $extend(sirius_dom_Display.prototype,{
-	src: function(url) {
-		this.object.src = url;
-	}
-	,noScroll: function() {
-		this.object.scrolling = "no";
-	}
-	,__class__: sirius_dom_IFrame
-});
-var sirius_dom_Img = $hx_exports.sru.dom.Img = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("img");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.element;
-};
-sirius_dom_Img.__name__ = ["sirius","dom","Img"];
-sirius_dom_Img.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Img.__super__ = sirius_dom_Display;
-sirius_dom_Img.prototype = $extend(sirius_dom_Display.prototype,{
-	src: function(value) {
-		var a;
-		if(value != null) this.object.src = value;
-		return this.object.src;
-	}
-	,alt: function(value) {
-		if(value != null) this.object.alt = value;
-		return this.object.alt;
-	}
-	,__class__: sirius_dom_Img
-});
-var sirius_dom_Input = $hx_exports.sru.dom.Input = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("input");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.element;
-};
-sirius_dom_Input.__name__ = ["sirius","dom","Input"];
-sirius_dom_Input.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Input.__super__ = sirius_dom_Display;
-sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
-	_update: function(e) {
-		if(this._rtc.match(this.object.value)) {
-			var s = this.object.selectionStart - 1;
-			this.object.value = this._rtc.replace(this.object.value,"");
-			this.object.setSelectionRange(s,s);
-		}
-	}
-	,type: function(q) {
-		if(q != null) this.object.type = q;
-		return this.object.type;
-	}
-	,required: function(q) {
-		if(q != null) this.object.required = q;
-		return this.object.required;
-	}
-	,pattern: function(q) {
-		if(q != null) this.object.pattern = q;
-		return this.object.pattern;
-	}
-	,placeholder: function(q) {
-		if(q != null) this.object.placeholder = q;
-		return this.object.placeholder;
-	}
-	,validateDate: function() {
-		this.pattern("\\d{1,2}/\\d{1,2}/\\d{4}");
-	}
-	,validateURL: function() {
-		this.pattern("https?://.+");
-	}
-	,validateIPv4: function() {
-		this.pattern("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-	}
-	,validateCurrency: function() {
-		this.pattern("\\d+(\\.\\d{2})?");
-	}
-	,validateEmail: function() {
-		this.pattern("/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/");
-	}
-	,restrict: function(q) {
-		if(this._rtc == null && q != null) {
-			this.events.keyDown($bind(this,this._update),0);
-			this.events.keyUp($bind(this,this._update),0);
-			this.events.focusOut($bind(this,this._update),0);
-		} else if(q == null) {
-			this.events.keyDown($bind(this,this._update),-1);
-			this.events.keyUp($bind(this,this._update),-1);
-			this.events.focusOut($bind(this,this._update),-1);
-		}
-		this._rtc = q;
-	}
-	,restrictNumbers: function() {
-		this.restrict(new EReg("[^0-9]","gi"));
-	}
-	,restrictLetters: function() {
-		this.restrict(new EReg("[^A-Za-z]","giu"));
-	}
-	,value: function(q) {
-		if(q != null) this.object.value = q;
-		return this.object.value;
-	}
-	,isValid: function() {
-		return this.object.value.length > 0;
-	}
-	,files: function() {
-		return this.attribute("files");
-	}
-	,__class__: sirius_dom_Input
-});
-var sirius_dom_Label = $hx_exports.sru.dom.Label = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("label");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Label.__name__ = ["sirius","dom","Label"];
-sirius_dom_Label.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Label.__super__ = sirius_dom_Display;
-sirius_dom_Label.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Label
-});
-var sirius_dom_Legend = $hx_exports.sru.dom.Legend = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("legend");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Legend.__name__ = ["sirius","dom","Legend"];
-sirius_dom_Legend.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Legend.__super__ = sirius_dom_Display;
-sirius_dom_Legend.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Legend
-});
-var sirius_dom_LI = $hx_exports.sru.dom.LI = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("li");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_LI.__name__ = ["sirius","dom","LI"];
-sirius_dom_LI.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_LI.__super__ = sirius_dom_Display;
-sirius_dom_LI.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_LI
-});
-var sirius_dom_Link = $hx_exports.sru.dom.Link = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("link");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Link.__name__ = ["sirius","dom","Link"];
-sirius_dom_Link.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Link.__super__ = sirius_dom_Display;
-sirius_dom_Link.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Link
-});
-var sirius_dom_Map = $hx_exports.sru.dom.Map = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("map");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Map.__name__ = ["sirius","dom","Map"];
-sirius_dom_Map.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Map.__super__ = sirius_dom_Display;
-sirius_dom_Map.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Map
-});
-var sirius_dom_Media = $hx_exports.sru.dom.Media = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("media");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Media.__name__ = ["sirius","dom","Media"];
-sirius_dom_Media.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Media.__super__ = sirius_dom_Display;
-sirius_dom_Media.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Media
-});
-var sirius_dom_Menu = $hx_exports.sru.dom.Menu = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("menu");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Menu.__name__ = ["sirius","dom","Menu"];
-sirius_dom_Menu.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Menu.__super__ = sirius_dom_Display;
-sirius_dom_Menu.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Menu
-});
-var sirius_dom_Meta = $hx_exports.sru.dom.Meta = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("meta");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Meta.__name__ = ["sirius","dom","Meta"];
-sirius_dom_Meta.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Meta.__super__ = sirius_dom_Display;
-sirius_dom_Meta.prototype = $extend(sirius_dom_Display.prototype,{
-	set: function(name,content) {
-		this.attribute("name",name);
-		this.attribute("content",content);
-	}
-	,charset: function(q,vr) {
-		if(vr == null) vr = 5;
-		if(vr >= 5) this.attribute("charset",q); else if(vr < 5) {
-			this.attribute("http-equiv","content-type");
-			this.attribute("charset","text/html; charset=UTF-8");
-		}
-	}
-	,__class__: sirius_dom_Meta
-});
-var sirius_dom_Meter = $hx_exports.sru.dom.Meter = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("meter");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Meter.__name__ = ["sirius","dom","Meter"];
-sirius_dom_Meter.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Meter.__super__ = sirius_dom_Display;
-sirius_dom_Meter.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Meter
-});
-var sirius_dom_Mod = $hx_exports.sru.dom.Mod = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("mod");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Mod.__name__ = ["sirius","dom","Mod"];
-sirius_dom_Mod.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Mod.__super__ = sirius_dom_Display;
-sirius_dom_Mod.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Mod
-});
-var sirius_dom_Object = $hx_exports.sru.dom.Object = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("object");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Object.__name__ = ["sirius","dom","Object"];
-sirius_dom_Object.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Object.__super__ = sirius_dom_Display;
-sirius_dom_Object.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Object
-});
-var sirius_dom_OL = $hx_exports.sru.dom.OL = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("ol");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_OL.__name__ = ["sirius","dom","OL"];
-sirius_dom_OL.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_OL.__super__ = sirius_dom_Display;
-sirius_dom_OL.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_OL
-});
-var sirius_dom_OptGroup = $hx_exports.sru.dom.OptGroup = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("optgroup");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_OptGroup.__name__ = ["sirius","dom","OptGroup"];
-sirius_dom_OptGroup.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_OptGroup.__super__ = sirius_dom_Display;
-sirius_dom_OptGroup.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_OptGroup
-});
-var sirius_dom_Option = $hx_exports.sru.dom.Option = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("option");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Option.__name__ = ["sirius","dom","Option"];
-sirius_dom_Option.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Option.__super__ = sirius_dom_Display;
-sirius_dom_Option.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Option
-});
-var sirius_dom_Output = $hx_exports.sru.dom.Output = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("output");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Output.__name__ = ["sirius","dom","Output"];
-sirius_dom_Output.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Output.__super__ = sirius_dom_Display;
-sirius_dom_Output.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Output
-});
-var sirius_dom_P = $hx_exports.sru.dom.P = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("p");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_P.__name__ = ["sirius","dom","P"];
-sirius_dom_P.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_P.__super__ = sirius_dom_Display;
-sirius_dom_P.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_P
-});
-var sirius_dom_Param = $hx_exports.sru.dom.Param = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("param");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Param.__name__ = ["sirius","dom","Param"];
-sirius_dom_Param.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Param.__super__ = sirius_dom_Display;
-sirius_dom_Param.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Param
-});
-var sirius_dom_Picture = $hx_exports.sru.dom.Picture = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("picture");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Picture.__name__ = ["sirius","dom","Picture"];
-sirius_dom_Picture.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Picture.__super__ = sirius_dom_Display;
-sirius_dom_Picture.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Picture
-});
-var sirius_dom_Pre = $hx_exports.sru.dom.Pre = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("pre");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Pre.__name__ = ["sirius","dom","Pre"];
-sirius_dom_Pre.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Pre.__super__ = sirius_dom_Display;
-sirius_dom_Pre.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Pre
-});
-var sirius_dom_Progress = $hx_exports.sru.dom.Progress = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("progress");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Progress.__name__ = ["sirius","dom","Progress"];
-sirius_dom_Progress.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Progress.__super__ = sirius_dom_Display;
-sirius_dom_Progress.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Progress
-});
-var sirius_dom_Quote = $hx_exports.sru.dom.Quote = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("quote");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Quote.__name__ = ["sirius","dom","Quote"];
-sirius_dom_Quote.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Quote.__super__ = sirius_dom_Display;
-sirius_dom_Quote.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Quote
-});
-var sirius_dom_Script = $hx_exports.sru.dom.Script = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("script");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.content = this.element;
-};
-sirius_dom_Script.__name__ = ["sirius","dom","Script"];
-sirius_dom_Script.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Script.require = function(url,handler) {
-	if(url.length > 0) {
-		var file = url.shift();
-		if(file != null) {
-			var s = new sirius_dom_Script();
-			sirius_Sirius.document.head.addChild(s);
-			s.load(file,function(e) {
-				sirius_dom_Script.require(url,handler);
-			});
-		}
-	} else if(handler != null) handler(null);
-};
-sirius_dom_Script.__super__ = sirius_dom_Display;
-sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
-	load: function(url,handler) {
-		this.content.src = url;
-		if(handler != null) this.events.load(handler,1);
-	}
-	,async: function() {
-		this.content.async = true;
-	}
-	,__class__: sirius_dom_Script
-});
-var sirius_dom_Select = $hx_exports.sru.dom.Select = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("select");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Select.__name__ = ["sirius","dom","Select"];
-sirius_dom_Select.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Select.__super__ = sirius_dom_Display;
-sirius_dom_Select.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Select
-});
-var sirius_dom_Shadow = $hx_exports.sru.dom.Shadow = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("shadow");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Shadow.__name__ = ["sirius","dom","Shadow"];
-sirius_dom_Shadow.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Shadow.__super__ = sirius_dom_Display;
-sirius_dom_Shadow.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Shadow
-});
-var sirius_dom_Source = $hx_exports.sru.dom.Source = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("source");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Source.__name__ = ["sirius","dom","Source"];
-sirius_dom_Source.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Source.__super__ = sirius_dom_Display;
-sirius_dom_Source.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Source
-});
-var sirius_dom_Span = $hx_exports.sru.dom.Span = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("span");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Span.__name__ = ["sirius","dom","Span"];
-sirius_dom_Span.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Span.__super__ = sirius_dom_Display;
-sirius_dom_Span.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Span
-});
-var sirius_dom_Sprite = $hx_exports.sru.dom.Sprite = function(q,d) {
-	if(d == null) d = "w-100pc h-100pc disp-table";
-	sirius_dom_Div.call(this,q,d);
-	if(q == null) this.attribute("sru-dom","sprite");
-	this.content = this.one("div");
-	if(this.content == null) {
-		this.content = new sirius_dom_Div();
-		this.addChild(this.content);
-	}
-	this.content.css("disp-table-cell vert-m");
-};
-sirius_dom_Sprite.__name__ = ["sirius","dom","Sprite"];
-sirius_dom_Sprite.__super__ = sirius_dom_Div;
-sirius_dom_Sprite.prototype = $extend(sirius_dom_Div.prototype,{
-	__class__: sirius_dom_Sprite
-});
-var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q,d) {
-	if(d == null) d = "w-100pc h-100pc disp-table";
-	sirius_dom_Display3D.call(this,null,d);
-	this.setPerspective("1000px");
-	this.content = new sirius_dom_Display3D(q);
-	this.content.preserve3d().update();
-	if(this.content.parent() == null) this.addChild(this.content);
-	this.content.css("disp-table-cell vert-m");
-	this.update();
-};
-sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
-sirius_dom_Sprite3D.__super__ = sirius_dom_Display3D;
-sirius_dom_Sprite3D.prototype = $extend(sirius_dom_Display3D.prototype,{
-	__class__: sirius_dom_Sprite3D
-});
-var sirius_dom_Table = $hx_exports.sru.dom.Table = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("table");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Table.__name__ = ["sirius","dom","Table"];
-sirius_dom_Table.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Table.__super__ = sirius_dom_Display;
-sirius_dom_Table.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Table
-});
-var sirius_dom_TD = $hx_exports.sru.dom.TD = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("td");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_TD.__name__ = ["sirius","dom","TD"];
-sirius_dom_TD.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_TD.__super__ = sirius_dom_Display;
-sirius_dom_TD.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_TD
-});
-var sirius_dom_Text = function(q,d) {
-	q = window.document.createTextNode(q);
-	sirius_dom_Display.call(this,q,null,d);
-	this.node = q;
-};
-sirius_dom_Text.__name__ = ["sirius","dom","Text"];
-sirius_dom_Text.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Text.__super__ = sirius_dom_Display;
-sirius_dom_Text.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Text
-});
-var sirius_dom_TextArea = $hx_exports.sru.dom.TextArea = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("textarea");
-	}
-	sirius_dom_Input.call(this,q,d);
-};
-sirius_dom_TextArea.__name__ = ["sirius","dom","TextArea"];
-sirius_dom_TextArea.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_TextArea.__super__ = sirius_dom_Input;
-sirius_dom_TextArea.prototype = $extend(sirius_dom_Input.prototype,{
-	__class__: sirius_dom_TextArea
-});
-var sirius_dom_Thead = $hx_exports.sru.dom.Thead = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("thead");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Thead.__name__ = ["sirius","dom","Thead"];
-sirius_dom_Thead.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Thead.__super__ = sirius_dom_Display;
-sirius_dom_Thead.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Thead
-});
-var sirius_dom_Title = $hx_exports.sru.dom.Title = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("title");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Title.__name__ = ["sirius","dom","Title"];
-sirius_dom_Title.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Title.__super__ = sirius_dom_Display;
-sirius_dom_Title.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Title
-});
-var sirius_dom_TR = $hx_exports.sru.dom.TR = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("tr");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_TR.__name__ = ["sirius","dom","TR"];
-sirius_dom_TR.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_TR.__super__ = sirius_dom_Display;
-sirius_dom_TR.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_TR
-});
-var sirius_dom_Track = $hx_exports.sru.dom.Track = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("track");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_Track.__name__ = ["sirius","dom","Track"];
-sirius_dom_Track.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Track.__super__ = sirius_dom_Display;
-sirius_dom_Track.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Track
-});
-var sirius_dom_UL = $hx_exports.sru.dom.UL = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("ul");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-};
-sirius_dom_UL.__name__ = ["sirius","dom","UL"];
-sirius_dom_UL.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_UL.__super__ = sirius_dom_Display;
-sirius_dom_UL.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_UL
-});
-var sirius_dom_Video = $hx_exports.sru.dom.Video = function(q,d) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("video");
-	}
-	sirius_dom_Display.call(this,q,null,d);
-	this.object = this.element;
-};
-sirius_dom_Video.__name__ = ["sirius","dom","Video"];
-sirius_dom_Video.get = function(q,h) {
-	return sirius_Sirius.one(q,null,h);
-};
-sirius_dom_Video.__super__ = sirius_dom_Display;
-sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
-	play: function() {
-		this.object.play();
-	}
-	,pause: function() {
-		this.object.pause();
-	}
-	,togglePause: function() {
-		if(this.object.paused) this.play(); else this.pause();
-	}
-	,__class__: sirius_dom_Video
-});
-var sirius_tools_Utils = $hx_exports.Utils = function() { };
-sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];
-sirius_tools_Utils.matchMedia = function(value) {
-	return window.matchMedia(value).matches;
-};
-sirius_tools_Utils.screenOrientation = function() {
-	if(sirius_tools_Utils.matchMedia("(orientation: portrait)")) return "portrait"; else return "landscape";
-};
-sirius_tools_Utils.viewportWidth = function() {
-	return window.innerWidth || document.documentElement.clientWidth;
-};
-sirius_tools_Utils.viewportHeight = function() {
-	return window.innerHeight || document.documentElement.clientHeight;
-};
-sirius_tools_Utils.mathLocation = function(uri) {
-	return window.location.href.indexOf(uri) != -1;
-};
-sirius_tools_Utils.screenInfo = function() {
-	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
-};
-sirius_tools_Utils.displayFrom = function(t) {
-	if(t.nodeType != 1) return new sirius_dom_Display(t);
-	var type;
-	if(t.hasAttribute("sru-dom")) type = t.getAttribute("sru-dom"); else type = t.tagName;
-	var OC = Reflect.field(sirius_tools_Utils._typeOf,type.toLowerCase());
-	t.setAttribute("sru-dom",type);
-	if(OC == null) return new sirius_dom_Display(t); else {
-		return new OC(t);
-	}
-};
-sirius_tools_Utils.intToString = function(value,rad) {
-	if(typeof(value) == "string") value = Std.parseInt(value);
-	value = value;
-	return Reflect.callMethod(value,value.toString,rad != null?[rad]:[]);
-};
-sirius_tools_Utils.clearArray = function(path,filter) {
-	var copy = [];
-	sirius_utils_Dice.Values(path,function(v) {
-		if(v != null && v != "" && (filter == null || filter(v))) copy[copy.length] = v;
-	});
-	return copy;
-};
-sirius_tools_Utils.toString = function(o,json) {
-	if(json == true) return JSON.stringify(o); else return Std.string(o);
-};
-sirius_tools_Utils.isValid = function(o) {
-	if(o != null) {
-		if(typeof(o) == "string") return o.length > 0; else return true;
-	}
-	return false;
-};
-sirius_tools_Utils.getClassName = function(o) {
-	if(o != null) return Type.getClassName(Type.getClass(o)); else return "null";
-};
 var sirius_events_IDispatcher = function() { };
 sirius_events_IDispatcher.__name__ = ["sirius","events","IDispatcher"];
 sirius_events_IDispatcher.prototype = {
@@ -3988,8 +2377,9 @@ sirius_tools_Key.GEN = function(size,table,mixCase) {
 	}
 	return s;
 };
-var sirius_data_DisplayData = function() {
+var sirius_data_DisplayData = function(id) {
 	this.__data__ = new sirius_data_DataSet();
+	this.__id__ = id;
 	sirius_data_DataSet.call(this);
 };
 sirius_data_DisplayData.__name__ = ["sirius","data","DisplayData"];
@@ -4087,7 +2477,7 @@ sirius_css_Automator.build = function(query,group,silent) {
 	}
 	if(silent == null) sirius_css_Automator.css.build();
 };
-sirius_css_Automator.addGrid = function(size) {
+sirius_css_Automator.mosaic = function(size) {
 	if(!((size instanceof Array) && size.__enum__ == null)) size = [size];
 	sirius_utils_Dice.Values(size,function(v) {
 		sirius_css_Automator._createGridCol(v);
@@ -4116,9 +2506,9 @@ sirius_css_Automator._init = function() {
 	sirius_css_Automator.build("padd-10","input,textarea,select");
 	sirius_css_Automator.build("disp-table content-void",".grid:before,.grid:after");
 	sirius_css_Automator.build("clear-both",".grid:after");
+	sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix");
 	sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
-	sirius_css_Automator.css.setSelector("*,*:before,*:after","-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;");
-	sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c");
+	sirius_css_Automator.css.setSelector("*,*:before,*:after","box-sizing:border-box;");
 	Reflect.deleteField(sirius_css_Automator,"_init");
 };
 sirius_css_Automator._screen = function(args) {
@@ -4328,6 +2718,1601 @@ sirius_utils_Dice.Children = function(of,each,complete) {
 	}
 	return r;
 };
+var sirius_dom_A = $hx_exports.sru.dom.A = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("a");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_A.__name__ = ["sirius","dom","A"];
+sirius_dom_A.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_A.__super__ = sirius_dom_Display;
+sirius_dom_A.prototype = $extend(sirius_dom_Display.prototype,{
+	href: function(url) {
+		return this.attribute("href",url);
+	}
+	,__class__: sirius_dom_A
+});
+var sirius_dom_Applet = $hx_exports.sru.dom.Applet = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("applet");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Applet.__name__ = ["sirius","dom","Applet"];
+sirius_dom_Applet.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Applet.__super__ = sirius_dom_Display;
+sirius_dom_Applet.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Applet
+});
+var sirius_dom_Area = $hx_exports.sru.dom.Area = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("area");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Area.__name__ = ["sirius","dom","Area"];
+sirius_dom_Area.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Area.__super__ = sirius_dom_Display;
+sirius_dom_Area.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Area
+});
+var sirius_dom_Audio = $hx_exports.sru.dom.Audio = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("audio");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Audio.__name__ = ["sirius","dom","Audio"];
+sirius_dom_Audio.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Audio.__super__ = sirius_dom_Display;
+sirius_dom_Audio.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Audio
+});
+var sirius_dom_B = $hx_exports.sru.dom.B = function(q) {
+	if(q == null) q = window.document.createElement("B");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_B.__name__ = ["sirius","dom","B"];
+sirius_dom_B.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_B.__super__ = sirius_dom_Display;
+sirius_dom_B.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_B
+});
+var sirius_dom_Base = $hx_exports.sru.dom.Base = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("base");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Base.__name__ = ["sirius","dom","Base"];
+sirius_dom_Base.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Base.__super__ = sirius_dom_Display;
+sirius_dom_Base.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Base
+});
+var sirius_dom_Body = $hx_exports.sru.dom.Body = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("body");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this._body = this.element;
+	window.addEventListener("resize",$bind(this,this._wResize));
+};
+sirius_dom_Body.__name__ = ["sirius","dom","Body"];
+sirius_dom_Body.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Body.__super__ = sirius_dom_Display;
+sirius_dom_Body.prototype = $extend(sirius_dom_Display.prototype,{
+	_wResize: function(e) {
+		this.events.resize().call();
+	}
+	,enlarge: function(scroll) {
+		if(scroll == null) scroll = "over-hid";
+		this.css("w-100pc h-100pc" + (scroll != null?" " + scroll:"") + " padd-0 marg-0 pos-abs");
+		return this;
+	}
+	,maxScrollX: function() {
+		return this._body.scrollWidth - sirius_tools_Utils.viewportWidth();
+	}
+	,maxScrollY: function() {
+		return this._body.scrollHeight - sirius_tools_Utils.viewportHeight();
+	}
+	,__class__: sirius_dom_Body
+});
+var sirius_dom_BR = $hx_exports.sru.dom.BR = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("br");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_BR.__name__ = ["sirius","dom","BR"];
+sirius_dom_BR.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_BR.__super__ = sirius_dom_Display;
+sirius_dom_BR.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_BR
+});
+var sirius_dom_Div = $hx_exports.sru.dom.Div = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("div");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Div.__name__ = ["sirius","dom","Div"];
+sirius_dom_Div.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Div.__super__ = sirius_dom_Display;
+sirius_dom_Div.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Div
+});
+var sirius_dom_Button = function(q) {
+	sirius_dom_Div.call(this,q);
+	this.cursor("pointer");
+};
+sirius_dom_Button.__name__ = ["sirius","dom","Button"];
+sirius_dom_Button.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Button.__super__ = sirius_dom_Div;
+sirius_dom_Button.prototype = $extend(sirius_dom_Div.prototype,{
+	__class__: sirius_dom_Button
+});
+var sirius_dom_Canvas = $hx_exports.sru.dom.Canvas = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("canvas");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.paper = this.element;
+};
+sirius_dom_Canvas.__name__ = ["sirius","dom","Canvas"];
+sirius_dom_Canvas.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Canvas.__super__ = sirius_dom_Display;
+sirius_dom_Canvas.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Canvas
+});
+var sirius_dom_Caption = $hx_exports.sru.dom.Caption = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("caption");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Caption.__name__ = ["sirius","dom","Caption"];
+sirius_dom_Caption.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Caption.__super__ = sirius_dom_Display;
+sirius_dom_Caption.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Caption
+});
+var sirius_dom_Col = $hx_exports.sru.dom.Col = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("col");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Col.__name__ = ["sirius","dom","Col"];
+sirius_dom_Col.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Col.__super__ = sirius_dom_Display;
+sirius_dom_Col.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Col
+});
+var sirius_dom_Content = $hx_exports.sru.dom.Content = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("content");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Content.__name__ = ["sirius","dom","Content"];
+sirius_dom_Content.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Content.__super__ = sirius_dom_Display;
+sirius_dom_Content.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Content
+});
+var sirius_dom_DataList = $hx_exports.sru.dom.DataList = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("datalist");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_DataList.__name__ = ["sirius","dom","DataList"];
+sirius_dom_DataList.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_DataList.__super__ = sirius_dom_Display;
+sirius_dom_DataList.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_DataList
+});
+var sirius_dom_Dir = $hx_exports.sru.dom.Dir = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("dir");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Dir.__name__ = ["sirius","dom","Dir"];
+sirius_dom_Dir.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Dir.__super__ = sirius_dom_Display;
+sirius_dom_Dir.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Dir
+});
+var sirius_dom_IDisplay3D = function() { };
+sirius_dom_IDisplay3D.__name__ = ["sirius","dom","IDisplay3D"];
+sirius_dom_IDisplay3D.__interfaces__ = [sirius_dom_IDisplay];
+sirius_dom_IDisplay3D.prototype = {
+	__class__: sirius_dom_IDisplay3D
+};
+var sirius_dom_Display3D = $hx_exports.sru.dom.Display3D = function(q) {
+	sirius_dom_Div.call(this,q);
+	this.attribute("sru-dom","display3d");
+	if(!this.data.__data__.exists("transform")) {
+		this.data.__data__.set("xcss",new sirius_css_XCSS());
+		this.data.__data__.set("transform",new sirius_math_Transform3D());
+		sirius_dom_Display3D._backface_fix();
+	}
+	this.xcss = this.data.__data__.get("xcss");
+	this.transform = this.data.__data__.get("transform");
+	this.update();
+};
+sirius_dom_Display3D.__name__ = ["sirius","dom","Display3D"];
+sirius_dom_Display3D.__interfaces__ = [sirius_dom_IDisplay3D];
+sirius_dom_Display3D._backface_fix = function() {
+	if(!sirius_dom_Display3D._fixed) {
+		sirius_dom_Display3D._fixed = true;
+		sirius_css_Automator.build("backface-visibility-inherit transform-style-inherit","*");
+	}
+};
+sirius_dom_Display3D.__super__ = sirius_dom_Div;
+sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
+	preserve3d: function() {
+		this.transform.transformStyle = "preserve-3d";
+		return this;
+	}
+	,setPerspective: function(value,origin) {
+		if(value != null) this.transform.perspective = value;
+		if(origin != null) this.transform.transformOrigin = origin;
+		return this;
+	}
+	,rotateAll: function(x,y,z,add) {
+		this.rotationX(x,add);
+		this.rotationY(y,add);
+		if(z != null) this.rotationZ(z,add);
+		return this;
+	}
+	,rotationX: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.rotation.x += value; else this.transform.rotation.x = value;
+			if(this.transform.rotation.x < -180) this.transform.rotation.x += 360; else if(this.transform.rotation.x > 180) this.transform.rotation.x -= 360;
+		}
+		return this.transform.rotation.x;
+	}
+	,rotationY: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.rotation.y += value; else this.transform.rotation.y = value;
+			if(this.transform.rotation.y < -180) this.transform.rotation.y += 360; else if(this.transform.rotation.y > 180) this.transform.rotation.y -= 360;
+		}
+		return this.transform.rotation.y;
+	}
+	,rotationZ: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.rotation.z += value; else this.transform.rotation.z = value;
+			if(this.transform.rotation.z < -180) this.transform.rotation.z += 360; else if(this.transform.rotation.z > 180) this.transform.rotation.z -= 360;
+		}
+		return this.transform.rotation.z;
+	}
+	,moveTo: function(x,y,z,add) {
+		this.locationX(x,add);
+		this.locationY(y,add);
+		if(z != null) this.locationZ(z,add);
+		return this;
+	}
+	,locationX: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.location.x += value; else this.transform.location.x = value;
+		}
+		return this.transform.location.x;
+	}
+	,locationY: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.location.y += value; else this.transform.location.y = value;
+		}
+		return this.transform.location.y;
+	}
+	,locationZ: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.location.z += value; else this.transform.location.z = value;
+		}
+		return this.transform.location.z;
+	}
+	,scaleAll: function(x,y,z,add) {
+		this.scaleX(x,add);
+		this.scaleY(y,add);
+		if(z != null) this.scaleZ(z,add);
+		return this;
+	}
+	,transform2D: function(x,y,x1,y1,w,h) {
+		return this.moveTo(x,y,null).rotateAll(x1,y1,null).scaleAll(w,h,null);
+	}
+	,transform3D: function(x,y,z,x1,y1,z1,w,h,d) {
+		return this.moveTo(x,y,z).rotateAll(x1,y1,z1).scaleAll(w,h,d);
+	}
+	,scaleX: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.scale.x += value; else this.transform.scale.x = value;
+		}
+		return this.transform.scale.x;
+	}
+	,scaleY: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.scale.y += value; else this.transform.scale.y = value;
+		}
+		return this.transform.scale.y;
+	}
+	,scaleZ: function(value,add) {
+		if(value != null) {
+			if(add) this.transform.scale.z += value; else this.transform.scale.z = value;
+		}
+		return this.transform.scale.z;
+	}
+	,update: function() {
+		if(this.transform.perspective != null) this.xcss.write("perspective",this.transform.perspective);
+		if(this.transform.transformOrigin != null) this.xcss.write("transformOrigin",this.transform.transformOrigin);
+		if(this.transform.transformStyle != null) this.xcss.write("transformStyle",this.transform.transformStyle);
+		if(this.transform.backFace != null) this.xcss.write("backfaceVisibility",this.transform.backFace);
+		this.xcss.write("transform","rotateX(" + this.transform.rotation.x + "deg) rotateY(" + this.transform.rotation.y + "deg) rotateZ(" + this.transform.rotation.z + "deg) translate3d(" + this.transform.location.x + "px," + this.transform.location.y + "px," + this.transform.location.z + "px) scale3d(" + this.transform.scale.x + "," + this.transform.scale.y + "," + this.transform.scale.z + ")");
+		this.xcss.apply(this);
+		return this;
+	}
+	,doubleSided: function(value) {
+		if(value) this.transform.backFace = "visible"; else this.transform.backFace = "hidden";
+		return this;
+	}
+	,flipHorizontal: function() {
+		this.rotationY(180,true);
+		return this;
+	}
+	,flipVertical: function() {
+		this.rotationX(180,true);
+		return this;
+	}
+	,__class__: sirius_dom_Display3D
+});
+var sirius_dom_DL = $hx_exports.sru.dom.DL = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("dl");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_DL.__name__ = ["sirius","dom","DL"];
+sirius_dom_DL.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_DL.__super__ = sirius_dom_Display;
+sirius_dom_DL.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_DL
+});
+var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
+	sirius_dom_Display.call(this,window.document);
+	this.element = window.document.documentElement;
+	this.events.wheel($bind(this,this.stopScroll),true);
+	this.body = new sirius_dom_Body(window.document.body);
+	this.head = new sirius_dom_Head(window.document.head);
+};
+sirius_dom_Document.__name__ = ["sirius","dom","Document"];
+sirius_dom_Document._applyScroll = function() {
+	window.scroll(sirius_dom_Document.__scroll__.x,sirius_dom_Document.__scroll__.y);
+};
+sirius_dom_Document.__super__ = sirius_dom_Display;
+sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
+	scroll: function(x,y) {
+		window.scroll(x,y);
+	}
+	,addScroll: function(x,y) {
+		var current = this.getScroll();
+		window.scroll(current.x + x,current.y + y);
+	}
+	,getScrollRange: function(o,pct) {
+		if(pct == null) pct = false;
+		var current = this.getScroll(o);
+		if(this.body != null) {
+			current.x /= this.body.maxScrollX();
+			current.y /= this.body.maxScrollY();
+			if(pct) {
+				current.x *= 100;
+				current.y *= 100;
+			}
+		} else current.reset();
+		return current;
+	}
+	,getScroll: function(o) {
+		if(o == null) o = new sirius_math_Point(0,0);
+		if(window.pageXOffset != null) {
+			o.x = window.pageXOffset;
+			o.y = window.pageYOffset;
+		} else if(this.body != null) {
+			o.x = this.body.element.scrollLeft;
+			o.y = this.body.element.scrollTop;
+		} else {
+			o.x = this.element.scrollLeft;
+			o.y = this.element.scrollTop;
+		}
+		return o;
+	}
+	,easeScroll: function(x,y,time,ease) {
+		if(time == null) time = 1;
+		this.stopScroll();
+		this.getScroll(sirius_dom_Document.__scroll__);
+		sirius_transitions_Animator.to(sirius_dom_Document.__scroll__,time,{ x : x, y : y, ease : ease, onUpdate : sirius_dom_Document._applyScroll});
+	}
+	,stopScroll: function(e) {
+		sirius_transitions_Animator.stop(sirius_dom_Document.__scroll__);
+	}
+	,scrollTo: function(target,time,ease,offX,offY) {
+		if(offY == null) offY = 0;
+		if(offX == null) offX = 0;
+		if(time == null) time = 1;
+		if(typeof(target) == "string") target = sirius_Sirius.one(target).element;
+		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) target = target.element;
+		var pos = sirius_dom_Display.getPosition(target);
+		if(sirius_transitions_Animator.available()) this.easeScroll(pos.x - offX,pos.y - offY,time,ease); else this.scroll(pos.x - offX,pos.y - offY);
+	}
+	,trackCursor: function() {
+		if(sirius_dom_Document.__cursor__.enabled) return;
+		sirius_dom_Document.__cursor__.enabled = true;
+		this.events.mouseMove(function(e) {
+			var me = e.event;
+			sirius_dom_Document.__cursor__.x = me.clientX;
+			sirius_dom_Document.__cursor__.y = me.clientY;
+		},true);
+	}
+	,cursorX: function() {
+		return sirius_dom_Document.__cursor__.x;
+	}
+	,cursorY: function() {
+		return sirius_dom_Document.__cursor__.y;
+	}
+	,focus: function(target) {
+		if(target != null) target.element.focus();
+		return sirius_tools_Utils.displayFrom(window.document.activeElement);
+	}
+	,print: function(selector,exclude) {
+		if(exclude == null) exclude = "button, img, .no-print";
+		var i = this.body.children();
+		var success = false;
+		if(i.length() > 0) {
+			i.hide();
+			var content = "";
+			i.each(function(d) {
+				if(!d["is"](["script","style"])) {
+					content += d.element.outerHTML;
+					d.hide();
+				}
+			});
+			if(content.length > 0) {
+				var r = new sirius_dom_Div();
+				r.build(content);
+				r.all(exclude).remove();
+				this.body.addChild(r);
+				try {
+					window.print();
+					success = true;
+				} catch( e ) {
+					if (e instanceof js__$Boot_HaxeError) e = e.val;
+					if( js_Boot.__instanceof(e,Error) ) {
+						success = false;
+					} else throw(e);
+				}
+				this.body.removeChild(r);
+			}
+			i.show();
+		}
+		return success;
+	}
+	,__class__: sirius_dom_Document
+});
+var sirius_dom_Embed = $hx_exports.sru.dom.Embed = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("embed");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Embed.__name__ = ["sirius","dom","Embed"];
+sirius_dom_Embed.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Embed.__super__ = sirius_dom_Display;
+sirius_dom_Embed.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Embed
+});
+var sirius_dom_FieldSet = $hx_exports.sru.dom.FieldSet = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("fieldset");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_FieldSet.__name__ = ["sirius","dom","FieldSet"];
+sirius_dom_FieldSet.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_FieldSet.__super__ = sirius_dom_Display;
+sirius_dom_FieldSet.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_FieldSet
+});
+var sirius_dom_Font = $hx_exports.sru.dom.Font = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("font");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Font.__name__ = ["sirius","dom","Font"];
+sirius_dom_Font.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Font.__super__ = sirius_dom_Display;
+sirius_dom_Font.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Font
+});
+var sirius_dom_Form = $hx_exports.sru.dom.Form = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("form");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+sirius_dom_Form.__name__ = ["sirius","dom","Form"];
+sirius_dom_Form.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Form.__super__ = sirius_dom_Display;
+sirius_dom_Form.prototype = $extend(sirius_dom_Display.prototype,{
+	validate: function() {
+		this.checkSubmit().object.click();
+		return this.object.checkValidity();
+	}
+	,checkSubmit: function() {
+		if(this._submit == null) {
+			var i;
+			if(!this.exists("input[type=submit]")) {
+				i = new sirius_dom_Input();
+				i.type("submit");
+				i.hide();
+				this.addChild(i);
+			} else i = this.one("input[type=submit]");
+			this._submit = i;
+		}
+		return this._submit;
+	}
+	,submit: function() {
+		this.object.submit();
+	}
+	,formData: function() {
+		if(this.inputData == null) this.inputData = new sirius_data_FormData(this); else this.inputData.scan(this);
+		return this.inputData;
+	}
+	,getAsInput: function(i,update) {
+		if(this._children == null || update == true) this._children = this.children();
+		return this._children.obj(i);
+	}
+	,__class__: sirius_dom_Form
+});
+var sirius_dom_Frame = $hx_exports.sru.dom.Frame = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("frame");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Frame.__name__ = ["sirius","dom","Frame"];
+sirius_dom_Frame.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Frame.__super__ = sirius_dom_Display;
+sirius_dom_Frame.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Frame
+});
+var sirius_dom_FrameSet = $hx_exports.sru.dom.FrameSet = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("frameset");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_FrameSet.__name__ = ["sirius","dom","FrameSet"];
+sirius_dom_FrameSet.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_FrameSet.__super__ = sirius_dom_Display;
+sirius_dom_FrameSet.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_FrameSet
+});
+var sirius_dom_H1 = $hx_exports.sru.dom.H1 = function(q) {
+	if(q == null) q = window.document.createElement("h1");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H1.__name__ = ["sirius","dom","H1"];
+sirius_dom_H1.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H1.__super__ = sirius_dom_Display;
+sirius_dom_H1.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H1
+});
+var sirius_dom_H2 = $hx_exports.sru.dom.H2 = function(q) {
+	if(q == null) q = window.document.createElement("h2");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H2.__name__ = ["sirius","dom","H2"];
+sirius_dom_H2.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H2.__super__ = sirius_dom_Display;
+sirius_dom_H2.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H2
+});
+var sirius_dom_H3 = $hx_exports.sru.dom.H3 = function(q) {
+	if(q == null) q = window.document.createElement("h3");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H3.__name__ = ["sirius","dom","H3"];
+sirius_dom_H3.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H3.__super__ = sirius_dom_Display;
+sirius_dom_H3.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H3
+});
+var sirius_dom_H4 = $hx_exports.sru.dom.H4 = function(q) {
+	if(q == null) q = window.document.createElement("h4");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H4.__name__ = ["sirius","dom","H4"];
+sirius_dom_H4.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H4.__super__ = sirius_dom_Display;
+sirius_dom_H4.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H4
+});
+var sirius_dom_H5 = $hx_exports.sru.dom.H5 = function(q) {
+	if(q == null) q = window.document.createElement("h5");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H5.__name__ = ["sirius","dom","H5"];
+sirius_dom_H5.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H5.__super__ = sirius_dom_Display;
+sirius_dom_H5.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H5
+});
+var sirius_dom_H6 = $hx_exports.sru.dom.H6 = function(q) {
+	if(q == null) q = window.document.createElement("h6");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_H6.__name__ = ["sirius","dom","H6"];
+sirius_dom_H6.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_H6.__super__ = sirius_dom_Display;
+sirius_dom_H6.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_H6
+});
+var sirius_dom_Head = $hx_exports.sru.dom.Head = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("head");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Head.__name__ = ["sirius","dom","Head"];
+sirius_dom_Head.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Head.__super__ = sirius_dom_Display;
+sirius_dom_Head.prototype = $extend(sirius_dom_Display.prototype,{
+	bind: function(content,type) {
+		if(content != null) {
+			var s;
+			if(content.length > 1) {
+				switch(type) {
+				case "css":case "style":
+					s = new sirius_dom_Style();
+					content = content.split("<style>").join("").split("</style>").join("");
+					break;
+				case "javascript":case "script":
+					s = new sirius_dom_Script();
+					content = content.split("<script>").join("").split("</script>").join("");
+					break;
+				default:
+					s = null;
+				}
+				if(s != null) {
+					s.build(content);
+					this.addChild(s);
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+	,__class__: sirius_dom_Head
+});
+var sirius_dom_HR = $hx_exports.sru.dom.HR = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("hr");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_HR.__name__ = ["sirius","dom","HR"];
+sirius_dom_HR.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_HR.__super__ = sirius_dom_Display;
+sirius_dom_HR.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_HR
+});
+var sirius_dom_Html = $hx_exports.sru.dom.Html = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("html");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Html.__name__ = ["sirius","dom","Html"];
+sirius_dom_Html.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Html.__super__ = sirius_dom_Display;
+sirius_dom_Html.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Html
+});
+var sirius_dom_I = $hx_exports.sru.dom.I = function(q) {
+	if(q == null) q = window.document.createElement("I");
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_I.__name__ = ["sirius","dom","I"];
+sirius_dom_I.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_I.__super__ = sirius_dom_Display;
+sirius_dom_I.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_I
+});
+var sirius_dom_IFrame = $hx_exports.sru.dom.IFrame = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("iframe");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+sirius_dom_IFrame.__name__ = ["sirius","dom","IFrame"];
+sirius_dom_IFrame.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_IFrame.__super__ = sirius_dom_Display;
+sirius_dom_IFrame.prototype = $extend(sirius_dom_Display.prototype,{
+	src: function(url) {
+		this.object.src = url;
+	}
+	,noScroll: function() {
+		this.object.scrolling = "no";
+	}
+	,__class__: sirius_dom_IFrame
+});
+var sirius_dom_Img = $hx_exports.sru.dom.Img = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("img");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+sirius_dom_Img.__name__ = ["sirius","dom","Img"];
+sirius_dom_Img.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Img.__super__ = sirius_dom_Display;
+sirius_dom_Img.prototype = $extend(sirius_dom_Display.prototype,{
+	src: function(value) {
+		var a;
+		if(value != null) this.object.src = value;
+		return this.object.src;
+	}
+	,alt: function(value) {
+		if(value != null) this.object.alt = value;
+		return this.object.alt;
+	}
+	,__class__: sirius_dom_Img
+});
+var sirius_dom_Input = $hx_exports.sru.dom.Input = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("input");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+sirius_dom_Input.__name__ = ["sirius","dom","Input"];
+sirius_dom_Input.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Input.__super__ = sirius_dom_Display;
+sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
+	_update: function(e) {
+		if(this._rtc.match(this.object.value)) {
+			var s = this.object.selectionStart - 1;
+			this.object.value = this._rtc.replace(this.object.value,"");
+			this.object.setSelectionRange(s,s);
+		}
+	}
+	,type: function(q) {
+		if(q != null) this.object.type = q;
+		return this.object.type;
+	}
+	,required: function(q) {
+		if(q != null) this.object.required = q;
+		return this.object.required;
+	}
+	,pattern: function(q) {
+		if(q != null) this.object.pattern = q;
+		return this.object.pattern;
+	}
+	,placeholder: function(q) {
+		if(q != null) this.object.placeholder = q;
+		return this.object.placeholder;
+	}
+	,validateDate: function() {
+		this.pattern("\\d{1,2}/\\d{1,2}/\\d{4}");
+	}
+	,validateURL: function() {
+		this.pattern("https?://.+");
+	}
+	,validateIPv4: function() {
+		this.pattern("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+	}
+	,validateCurrency: function() {
+		this.pattern("\\d+(\\.\\d{2})?");
+	}
+	,validateEmail: function() {
+		this.pattern("/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/");
+	}
+	,restrict: function(q) {
+		if(this._rtc == null && q != null) {
+			this.events.keyDown($bind(this,this._update),0);
+			this.events.keyUp($bind(this,this._update),0);
+			this.events.focusOut($bind(this,this._update),0);
+		} else if(q == null) {
+			this.events.keyDown($bind(this,this._update),-1);
+			this.events.keyUp($bind(this,this._update),-1);
+			this.events.focusOut($bind(this,this._update),-1);
+		}
+		this._rtc = q;
+	}
+	,restrictNumbers: function() {
+		this.restrict(new EReg("[^0-9]","gi"));
+	}
+	,restrictLetters: function() {
+		this.restrict(new EReg("[^A-Za-z]","giu"));
+	}
+	,value: function(q) {
+		if(q != null) this.object.value = q;
+		return this.object.value;
+	}
+	,isValid: function() {
+		return this.object.value.length > 0;
+	}
+	,files: function() {
+		return this.attribute("files");
+	}
+	,__class__: sirius_dom_Input
+});
+var sirius_dom_Label = $hx_exports.sru.dom.Label = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("label");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Label.__name__ = ["sirius","dom","Label"];
+sirius_dom_Label.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Label.__super__ = sirius_dom_Display;
+sirius_dom_Label.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Label
+});
+var sirius_dom_Legend = $hx_exports.sru.dom.Legend = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("legend");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Legend.__name__ = ["sirius","dom","Legend"];
+sirius_dom_Legend.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Legend.__super__ = sirius_dom_Display;
+sirius_dom_Legend.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Legend
+});
+var sirius_dom_LI = $hx_exports.sru.dom.LI = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("li");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_LI.__name__ = ["sirius","dom","LI"];
+sirius_dom_LI.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_LI.__super__ = sirius_dom_Display;
+sirius_dom_LI.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_LI
+});
+var sirius_dom_Link = $hx_exports.sru.dom.Link = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("link");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Link.__name__ = ["sirius","dom","Link"];
+sirius_dom_Link.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Link.__super__ = sirius_dom_Display;
+sirius_dom_Link.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Link
+});
+var sirius_dom_Map = $hx_exports.sru.dom.Map = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("map");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Map.__name__ = ["sirius","dom","Map"];
+sirius_dom_Map.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Map.__super__ = sirius_dom_Display;
+sirius_dom_Map.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Map
+});
+var sirius_dom_Media = $hx_exports.sru.dom.Media = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("media");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Media.__name__ = ["sirius","dom","Media"];
+sirius_dom_Media.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Media.__super__ = sirius_dom_Display;
+sirius_dom_Media.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Media
+});
+var sirius_dom_Menu = $hx_exports.sru.dom.Menu = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("menu");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Menu.__name__ = ["sirius","dom","Menu"];
+sirius_dom_Menu.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Menu.__super__ = sirius_dom_Display;
+sirius_dom_Menu.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Menu
+});
+var sirius_dom_Meta = $hx_exports.sru.dom.Meta = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("meta");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Meta.__name__ = ["sirius","dom","Meta"];
+sirius_dom_Meta.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Meta.__super__ = sirius_dom_Display;
+sirius_dom_Meta.prototype = $extend(sirius_dom_Display.prototype,{
+	set: function(name,content) {
+		this.attribute("name",name);
+		this.attribute("content",content);
+	}
+	,charset: function(q,vr) {
+		if(vr == null) vr = 5;
+		if(vr >= 5) this.attribute("charset",q); else if(vr < 5) {
+			this.attribute("http-equiv","content-type");
+			this.attribute("charset","text/html; charset=UTF-8");
+		}
+	}
+	,__class__: sirius_dom_Meta
+});
+var sirius_dom_Meter = $hx_exports.sru.dom.Meter = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("meter");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Meter.__name__ = ["sirius","dom","Meter"];
+sirius_dom_Meter.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Meter.__super__ = sirius_dom_Display;
+sirius_dom_Meter.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Meter
+});
+var sirius_dom_Mod = $hx_exports.sru.dom.Mod = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("mod");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Mod.__name__ = ["sirius","dom","Mod"];
+sirius_dom_Mod.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Mod.__super__ = sirius_dom_Display;
+sirius_dom_Mod.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Mod
+});
+var sirius_dom_Object = $hx_exports.sru.dom.Object = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("object");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Object.__name__ = ["sirius","dom","Object"];
+sirius_dom_Object.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Object.__super__ = sirius_dom_Display;
+sirius_dom_Object.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Object
+});
+var sirius_dom_OL = $hx_exports.sru.dom.OL = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("ol");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_OL.__name__ = ["sirius","dom","OL"];
+sirius_dom_OL.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_OL.__super__ = sirius_dom_Display;
+sirius_dom_OL.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_OL
+});
+var sirius_dom_OptGroup = $hx_exports.sru.dom.OptGroup = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("optgroup");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_OptGroup.__name__ = ["sirius","dom","OptGroup"];
+sirius_dom_OptGroup.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_OptGroup.__super__ = sirius_dom_Display;
+sirius_dom_OptGroup.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_OptGroup
+});
+var sirius_dom_Option = $hx_exports.sru.dom.Option = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("option");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Option.__name__ = ["sirius","dom","Option"];
+sirius_dom_Option.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Option.__super__ = sirius_dom_Display;
+sirius_dom_Option.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Option
+});
+var sirius_dom_Output = $hx_exports.sru.dom.Output = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("output");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Output.__name__ = ["sirius","dom","Output"];
+sirius_dom_Output.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Output.__super__ = sirius_dom_Display;
+sirius_dom_Output.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Output
+});
+var sirius_dom_P = $hx_exports.sru.dom.P = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("p");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_P.__name__ = ["sirius","dom","P"];
+sirius_dom_P.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_P.__super__ = sirius_dom_Display;
+sirius_dom_P.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_P
+});
+var sirius_dom_Param = $hx_exports.sru.dom.Param = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("param");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Param.__name__ = ["sirius","dom","Param"];
+sirius_dom_Param.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Param.__super__ = sirius_dom_Display;
+sirius_dom_Param.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Param
+});
+var sirius_dom_Picture = $hx_exports.sru.dom.Picture = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("picture");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Picture.__name__ = ["sirius","dom","Picture"];
+sirius_dom_Picture.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Picture.__super__ = sirius_dom_Display;
+sirius_dom_Picture.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Picture
+});
+var sirius_dom_Pre = $hx_exports.sru.dom.Pre = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("pre");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Pre.__name__ = ["sirius","dom","Pre"];
+sirius_dom_Pre.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Pre.__super__ = sirius_dom_Display;
+sirius_dom_Pre.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Pre
+});
+var sirius_dom_Progress = $hx_exports.sru.dom.Progress = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("progress");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Progress.__name__ = ["sirius","dom","Progress"];
+sirius_dom_Progress.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Progress.__super__ = sirius_dom_Display;
+sirius_dom_Progress.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Progress
+});
+var sirius_dom_Quote = $hx_exports.sru.dom.Quote = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("quote");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Quote.__name__ = ["sirius","dom","Quote"];
+sirius_dom_Quote.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Quote.__super__ = sirius_dom_Display;
+sirius_dom_Quote.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Quote
+});
+var sirius_dom_Script = $hx_exports.sru.dom.Script = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("script");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.content = this.element;
+};
+sirius_dom_Script.__name__ = ["sirius","dom","Script"];
+sirius_dom_Script.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Script.require = function(url,handler) {
+	if(url.length > 0) {
+		var file = url.shift();
+		if(file != null) {
+			var s = new sirius_dom_Script();
+			sirius_Sirius.document.head.addChild(s);
+			s.load(file,function(e) {
+				sirius_dom_Script.require(url,handler);
+			});
+		}
+	} else if(handler != null) handler(null);
+};
+sirius_dom_Script.__super__ = sirius_dom_Display;
+sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
+	load: function(url,handler) {
+		this.content.src = url;
+		if(handler != null) this.events.load(handler,1);
+	}
+	,async: function() {
+		this.content.async = true;
+	}
+	,__class__: sirius_dom_Script
+});
+var sirius_dom_Select = $hx_exports.sru.dom.Select = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("select");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Select.__name__ = ["sirius","dom","Select"];
+sirius_dom_Select.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Select.__super__ = sirius_dom_Display;
+sirius_dom_Select.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Select
+});
+var sirius_dom_Shadow = $hx_exports.sru.dom.Shadow = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("shadow");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Shadow.__name__ = ["sirius","dom","Shadow"];
+sirius_dom_Shadow.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Shadow.__super__ = sirius_dom_Display;
+sirius_dom_Shadow.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Shadow
+});
+var sirius_dom_Source = $hx_exports.sru.dom.Source = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("source");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Source.__name__ = ["sirius","dom","Source"];
+sirius_dom_Source.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Source.__super__ = sirius_dom_Display;
+sirius_dom_Source.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Source
+});
+var sirius_dom_Span = $hx_exports.sru.dom.Span = function(q,d) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("span");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Span.__name__ = ["sirius","dom","Span"];
+sirius_dom_Span.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Span.__super__ = sirius_dom_Display;
+sirius_dom_Span.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Span
+});
+var sirius_dom_Sprite = $hx_exports.sru.dom.Sprite = function(q) {
+	sirius_dom_Div.call(this,q);
+	if(q == null) this.attribute("sru-dom","sprite");
+	this.content = this.one("div");
+	if(this.content == null) {
+		this.content = new sirius_dom_Div();
+		this.addChild(this.content);
+	}
+	this.css("w-100pc h-100pc disp-table txt-c");
+	this.content.css("disp-table-cell vert-m");
+};
+sirius_dom_Sprite.__name__ = ["sirius","dom","Sprite"];
+sirius_dom_Sprite.__super__ = sirius_dom_Div;
+sirius_dom_Sprite.prototype = $extend(sirius_dom_Div.prototype,{
+	__class__: sirius_dom_Sprite
+});
+var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q) {
+	sirius_dom_Display3D.call(this,null);
+	this.setPerspective("1000px");
+	this.content = new sirius_dom_Display3D(q);
+	this.content.preserve3d().update();
+	if(this.content.parent() == null) this.addChild(this.content);
+	this.css("w-100pc h-100pc disp-table");
+	this.content.css("disp-table-cell vert-m");
+	this.update();
+};
+sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
+sirius_dom_Sprite3D.__super__ = sirius_dom_Display3D;
+sirius_dom_Sprite3D.prototype = $extend(sirius_dom_Display3D.prototype,{
+	__class__: sirius_dom_Sprite3D
+});
+var sirius_dom_Table = $hx_exports.sru.dom.Table = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("table");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Table.__name__ = ["sirius","dom","Table"];
+sirius_dom_Table.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Table.__super__ = sirius_dom_Display;
+sirius_dom_Table.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Table
+});
+var sirius_dom_TD = $hx_exports.sru.dom.TD = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("td");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_TD.__name__ = ["sirius","dom","TD"];
+sirius_dom_TD.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_TD.__super__ = sirius_dom_Display;
+sirius_dom_TD.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_TD
+});
+var sirius_dom_Text = function(q) {
+	q = window.document.createTextNode(q);
+	sirius_dom_Display.call(this,q,null);
+	this.node = q;
+};
+sirius_dom_Text.__name__ = ["sirius","dom","Text"];
+sirius_dom_Text.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Text.__super__ = sirius_dom_Display;
+sirius_dom_Text.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Text
+});
+var sirius_dom_TextArea = $hx_exports.sru.dom.TextArea = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("textarea");
+	}
+	sirius_dom_Input.call(this,q);
+};
+sirius_dom_TextArea.__name__ = ["sirius","dom","TextArea"];
+sirius_dom_TextArea.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_TextArea.__super__ = sirius_dom_Input;
+sirius_dom_TextArea.prototype = $extend(sirius_dom_Input.prototype,{
+	__class__: sirius_dom_TextArea
+});
+var sirius_dom_Thead = $hx_exports.sru.dom.Thead = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("thead");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Thead.__name__ = ["sirius","dom","Thead"];
+sirius_dom_Thead.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Thead.__super__ = sirius_dom_Display;
+sirius_dom_Thead.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Thead
+});
+var sirius_dom_Title = $hx_exports.sru.dom.Title = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("title");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Title.__name__ = ["sirius","dom","Title"];
+sirius_dom_Title.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Title.__super__ = sirius_dom_Display;
+sirius_dom_Title.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Title
+});
+var sirius_dom_TR = $hx_exports.sru.dom.TR = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("tr");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_TR.__name__ = ["sirius","dom","TR"];
+sirius_dom_TR.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_TR.__super__ = sirius_dom_Display;
+sirius_dom_TR.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_TR
+});
+var sirius_dom_Track = $hx_exports.sru.dom.Track = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("track");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Track.__name__ = ["sirius","dom","Track"];
+sirius_dom_Track.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Track.__super__ = sirius_dom_Display;
+sirius_dom_Track.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Track
+});
+var sirius_dom_UL = $hx_exports.sru.dom.UL = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("ul");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_UL.__name__ = ["sirius","dom","UL"];
+sirius_dom_UL.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_UL.__super__ = sirius_dom_Display;
+sirius_dom_UL.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_UL
+});
+var sirius_dom_Video = $hx_exports.sru.dom.Video = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("video");
+	}
+	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+sirius_dom_Video.__name__ = ["sirius","dom","Video"];
+sirius_dom_Video.get = function(q,h) {
+	return sirius_Sirius.one(q,null,h);
+};
+sirius_dom_Video.__super__ = sirius_dom_Display;
+sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
+	play: function() {
+		this.object.play();
+	}
+	,pause: function() {
+		this.object.pause();
+	}
+	,togglePause: function() {
+		if(this.object.paused) this.play(); else this.pause();
+	}
+	,__class__: sirius_dom_Video
+});
+var sirius_tools_Utils = $hx_exports.Utils = function() { };
+sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];
+sirius_tools_Utils.matchMedia = function(value) {
+	return window.matchMedia(value).matches;
+};
+sirius_tools_Utils.screenOrientation = function() {
+	if(sirius_tools_Utils.matchMedia("(orientation: portrait)")) return "portrait"; else return "landscape";
+};
+sirius_tools_Utils.viewportWidth = function() {
+	return window.innerWidth || document.documentElement.clientWidth;
+};
+sirius_tools_Utils.viewportHeight = function() {
+	return window.innerHeight || document.documentElement.clientHeight;
+};
+sirius_tools_Utils.mathLocation = function(uri) {
+	return window.location.href.indexOf(uri) != -1;
+};
+sirius_tools_Utils.screenInfo = function() {
+	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
+};
+sirius_tools_Utils.displayFrom = function(t) {
+	if(t.nodeType != 1) return new sirius_dom_Display(t);
+	var type;
+	if(t.hasAttribute("sru-dom")) type = t.getAttribute("sru-dom"); else type = t.tagName;
+	var OC = Reflect.field(sirius_tools_Utils._typeOf,type.toLowerCase());
+	t.setAttribute("sru-dom",type);
+	if(OC == null) return new sirius_dom_Display(t); else {
+		return new OC(t);
+	}
+};
+sirius_tools_Utils.intToString = function(value,rad) {
+	if(typeof(value) == "string") value = Std.parseInt(value);
+	value = value;
+	return Reflect.callMethod(value,value.toString,rad != null?[rad]:[]);
+};
+sirius_tools_Utils.clearArray = function(path,filter) {
+	var copy = [];
+	sirius_utils_Dice.Values(path,function(v) {
+		if(v != null && v != "" && (filter == null || filter(v))) copy[copy.length] = v;
+	});
+	return copy;
+};
+sirius_tools_Utils.toString = function(o,json) {
+	if(json == true) return JSON.stringify(o); else return Std.string(o);
+};
+sirius_tools_Utils.isValid = function(o) {
+	if(o != null) {
+		if(typeof(o) == "string") return o.length > 0; else return true;
+	}
+	return false;
+};
+sirius_tools_Utils.getClassName = function(o) {
+	if(o != null) return Type.getClassName(Type.getClass(o)); else return "null";
+};
 var sirius_css_Entry = function(keys,dict) {
 	this.keys = keys;
 	this.head = keys[0];
@@ -4383,7 +4368,7 @@ sirius_css_AutomatorRules.borderFix = function(v,d,k,n) {
 };
 sirius_css_AutomatorRules.mosaicKey = function(d,k,n) {
 	if(d.head == k) {
-		if(n != null) sirius_css_Automator.addGrid(Std.parseInt(n.key)); else sirius_css_Automator.addGrid(12);
+		if(n != null) sirius_css_Automator.mosaic(Std.parseInt(n.key)); else sirius_css_Automator.mosaic(12);
 		d.cancel();
 		return null;
 	}
@@ -5607,7 +5592,7 @@ var sirius_utils_Table = $hx_exports.sru.utils.Table = function(q,t) {
 	if(q != "NULL_TABLE") {
 		if(q != null || t != null) {
 			var is3D = false;
-			if(t == null) t = window.document; else is3D = js_Boot.__instanceof(t,sirius_dom_IDisplay3D);
+			if(t == null) t = window.document.body; else is3D = js_Boot.__instanceof(t,sirius_dom_IDisplay3D);
 			var result;
 			if(q != null) result = t.querySelectorAll(q); else result = t.childNodes;
 			var element = null;
@@ -6040,14 +6025,14 @@ sirius_css_CSSGroup.MEDIA_SM = "(min-width:768px) and (max-width:1000px)";
 sirius_css_CSSGroup.MEDIA_MD = "(min-width:1001px) and (max-width:1169px)";
 sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
 sirius_dom_Display._DATA = new sirius_data_DataSet();
-sirius_dom_Display3D._fixed = false;
-sirius_dom_Document.__scroll__ = { x : 0, y : 0};
-sirius_dom_Document.__cursor__ = { x : 0, y : 0};
-sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
+sirius_dom_Display3D._fixed = false;
+sirius_dom_Document.__scroll__ = { x : 0, y : 0};
+sirius_dom_Document.__cursor__ = { x : 0, y : 0};
+sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, aliceblue : { value : "#f0f8ff", verifier : sirius_css_AutomatorRules.colorKey}, antiquewhite : { value : "#faebd7", verifier : sirius_css_AutomatorRules.colorKey}, aqua : { value : "#00ffff", verifier : sirius_css_AutomatorRules.colorKey}, aquamarine : { value : "#7fffd4", verifier : sirius_css_AutomatorRules.colorKey}, azure : { value : "#f0ffff", verifier : sirius_css_AutomatorRules.colorKey}, beige : { value : "#f5f5dc", verifier : sirius_css_AutomatorRules.colorKey}, bisque : { value : "#ffe4c4", verifier : sirius_css_AutomatorRules.colorKey}, black : { value : "#000000", verifier : sirius_css_AutomatorRules.colorKey}, blanchedalmond : { value : "#ffebcd", verifier : sirius_css_AutomatorRules.colorKey}, blue : { value : "#0000ff", verifier : sirius_css_AutomatorRules.colorKey}, blueviolet : { value : "#8a2be2", verifier : sirius_css_AutomatorRules.colorKey}, brown : { value : "#a52a2a", verifier : sirius_css_AutomatorRules.colorKey}, burlywood : { value : "#deb887", verifier : sirius_css_AutomatorRules.colorKey}, cadetblue : { value : "#5f9ea0", verifier : sirius_css_AutomatorRules.colorKey}, chartreuse : { value : "#7fff00", verifier : sirius_css_AutomatorRules.colorKey}, chocolate : { value : "#d2691e", verifier : sirius_css_AutomatorRules.colorKey}, coral : { value : "#ff7f50", verifier : sirius_css_AutomatorRules.colorKey}, cornflowerblue : { value : "#6495ed", verifier : sirius_css_AutomatorRules.colorKey}, cornsilk : { value : "#fff8dc", verifier : sirius_css_AutomatorRules.colorKey}, crimson : { value : "#dc143c", verifier : sirius_css_AutomatorRules.colorKey}, cyan : { value : "#00ffff", verifier : sirius_css_AutomatorRules.colorKey}, darkblue : { value : "#00008b", verifier : sirius_css_AutomatorRules.colorKey}, darkcyan : { value : "#008b8b", verifier : sirius_css_AutomatorRules.colorKey}, darkgoldenrod : { value : "#b8860b", verifier : sirius_css_AutomatorRules.colorKey}, darkgray : { value : "#a9a9a9", verifier : sirius_css_AutomatorRules.colorKey}, darkgreen : { value : "#006400", verifier : sirius_css_AutomatorRules.colorKey}, darkkhaki : { value : "#bdb76b", verifier : sirius_css_AutomatorRules.colorKey}, darkmagenta : { value : "#8b008b", verifier : sirius_css_AutomatorRules.colorKey}, darkolivegreen : { value : "#556b2f", verifier : sirius_css_AutomatorRules.colorKey}, darkorange : { value : "#ff8c00", verifier : sirius_css_AutomatorRules.colorKey}, darkorchid : { value : "#9932cc", verifier : sirius_css_AutomatorRules.colorKey}, darkred : { value : "#8b0000", verifier : sirius_css_AutomatorRules.colorKey}, darksalmon : { value : "#e9967a", verifier : sirius_css_AutomatorRules.colorKey}, darkseagreen : { value : "#8fbc8f", verifier : sirius_css_AutomatorRules.colorKey}, darkslateblue : { value : "#483d8b", verifier : sirius_css_AutomatorRules.colorKey}, darkslategray : { value : "#2f4f4f", verifier : sirius_css_AutomatorRules.colorKey}, darkturquoise : { value : "#00ced1", verifier : sirius_css_AutomatorRules.colorKey}, darkviolet : { value : "#9400d3", verifier : sirius_css_AutomatorRules.colorKey}, deeppink : { value : "#ff1493", verifier : sirius_css_AutomatorRules.colorKey}, deepskyblue : { value : "#00bfff", verifier : sirius_css_AutomatorRules.colorKey}, dimgray : { value : "#696969", verifier : sirius_css_AutomatorRules.colorKey}, dodgerblue : { value : "#1e90ff", verifier : sirius_css_AutomatorRules.colorKey}, firebrick : { value : "#b22222", verifier : sirius_css_AutomatorRules.colorKey}, floralwhite : { value : "#fffaf0", verifier : sirius_css_AutomatorRules.colorKey}, forestgreen : { value : "#228b22", verifier : sirius_css_AutomatorRules.colorKey}, fuchsia : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.colorKey}, gainsboro : { value : "#dcdcdc", verifier : sirius_css_AutomatorRules.colorKey}, ghostwhite : { value : "#f8f8ff", verifier : sirius_css_AutomatorRules.colorKey}, gold : { value : "#ffd700", verifier : sirius_css_AutomatorRules.colorKey}, goldenrod : { value : "#daa520", verifier : sirius_css_AutomatorRules.colorKey}, gray : { value : "#808080", verifier : sirius_css_AutomatorRules.colorKey}, green : { value : "#008000", verifier : sirius_css_AutomatorRules.colorKey}, greenyellow : { value : "#adff2f", verifier : sirius_css_AutomatorRules.colorKey}, honeydew : { value : "#f0fff0", verifier : sirius_css_AutomatorRules.colorKey}, hotpink : { value : "#ff69b4", verifier : sirius_css_AutomatorRules.colorKey}, indianred : { value : "#cd5c5c", verifier : sirius_css_AutomatorRules.colorKey}, indigo : { value : "#4b0082", verifier : sirius_css_AutomatorRules.colorKey}, ivory : { value : "#fffff0", verifier : sirius_css_AutomatorRules.colorKey}, khaki : { value : "#f0e68c", verifier : sirius_css_AutomatorRules.colorKey}, lavender : { value : "#e6e6fa", verifier : sirius_css_AutomatorRules.colorKey}, lavenderblush : { value : "#fff0f5", verifier : sirius_css_AutomatorRules.colorKey}, lawngreen : { value : "#7cfc00", verifier : sirius_css_AutomatorRules.colorKey}, lemonchiffon : { value : "#fffacd", verifier : sirius_css_AutomatorRules.colorKey}, lightblue : { value : "#add8e6", verifier : sirius_css_AutomatorRules.colorKey}, lightcoral : { value : "#f08080", verifier : sirius_css_AutomatorRules.colorKey}, lightcyan : { value : "#e0ffff", verifier : sirius_css_AutomatorRules.colorKey}, lightgoldenrodyellow : { value : "#fafad2", verifier : sirius_css_AutomatorRules.colorKey}, lightgray : { value : "#d3d3d3", verifier : sirius_css_AutomatorRules.colorKey}, lightgreen : { value : "#90ee90", verifier : sirius_css_AutomatorRules.colorKey}, lightpink : { value : "#ffb6c1", verifier : sirius_css_AutomatorRules.colorKey}, lightsalmon : { value : "#ffa07a", verifier : sirius_css_AutomatorRules.colorKey}, lightseagreen : { value : "#20b2aa", verifier : sirius_css_AutomatorRules.colorKey}, lightskyblue : { value : "#87cefa", verifier : sirius_css_AutomatorRules.colorKey}, lightslategray : { value : "#778899", verifier : sirius_css_AutomatorRules.colorKey}, lightsteelblue : { value : "#b0c4de", verifier : sirius_css_AutomatorRules.colorKey}, lightyellow : { value : "#ffffe0", verifier : sirius_css_AutomatorRules.colorKey}, lime : { value : "#00ff00", verifier : sirius_css_AutomatorRules.colorKey}, limegreen : { value : "#32cd32", verifier : sirius_css_AutomatorRules.colorKey}, linen : { value : "#faf0e6", verifier : sirius_css_AutomatorRules.colorKey}, magenta : { value : "#ff00ff", verifier : sirius_css_AutomatorRules.colorKey}, maroon : { value : "#800000", verifier : sirius_css_AutomatorRules.colorKey}, mediumaquamarine : { value : "#66cdaa", verifier : sirius_css_AutomatorRules.colorKey}, mediumblue : { value : "#0000cd", verifier : sirius_css_AutomatorRules.colorKey}, mediumorchid : { value : "#ba55d3", verifier : sirius_css_AutomatorRules.colorKey}, mediumpurple : { value : "#9370db", verifier : sirius_css_AutomatorRules.colorKey}, mediumseagreen : { value : "#3cb371", verifier : sirius_css_AutomatorRules.colorKey}, mediumslateblue : { value : "#7b68ee", verifier : sirius_css_AutomatorRules.colorKey}, mediumspringgreen : { value : "#00fa9a", verifier : sirius_css_AutomatorRules.colorKey}, mediumturquoise : { value : "#48d1cc", verifier : sirius_css_AutomatorRules.colorKey}, mediumvioletred : { value : "#c71585", verifier : sirius_css_AutomatorRules.colorKey}, midnightblue : { value : "#191970", verifier : sirius_css_AutomatorRules.colorKey}, mintcream : { value : "#f5fffa", verifier : sirius_css_AutomatorRules.colorKey}, mistyrose : { value : "#ffe4e1", verifier : sirius_css_AutomatorRules.colorKey}, moccasin : { value : "#ffe4b5", verifier : sirius_css_AutomatorRules.colorKey}, navajowhite : { value : "#ffdead", verifier : sirius_css_AutomatorRules.colorKey}, navy : { value : "#000080", verifier : sirius_css_AutomatorRules.colorKey}, oldlace : { value : "#fdf5e6", verifier : sirius_css_AutomatorRules.colorKey}, olive : { value : "#808000", verifier : sirius_css_AutomatorRules.colorKey}, olivedrab : { value : "#6b8e23", verifier : sirius_css_AutomatorRules.colorKey}, orange : { value : "#ffa500", verifier : sirius_css_AutomatorRules.colorKey}, orangered : { value : "#ff4500", verifier : sirius_css_AutomatorRules.colorKey}, orchid : { value : "#da70d6", verifier : sirius_css_AutomatorRules.colorKey}, palegoldenrod : { value : "#eee8aa", verifier : sirius_css_AutomatorRules.colorKey}, palegreen : { value : "#98fb98", verifier : sirius_css_AutomatorRules.colorKey}, paleturquoise : { value : "#afeeee", verifier : sirius_css_AutomatorRules.colorKey}, palevioletred : { value : "#db7093", verifier : sirius_css_AutomatorRules.colorKey}, papayawhip : { value : "#ffefd5", verifier : sirius_css_AutomatorRules.colorKey}, peachpuff : { value : "#ffdab9", verifier : sirius_css_AutomatorRules.colorKey}, peru : { value : "#cd853f", verifier : sirius_css_AutomatorRules.colorKey}, pink : { value : "#ffc0cb", verifier : sirius_css_AutomatorRules.colorKey}, plum : { value : "#dda0dd", verifier : sirius_css_AutomatorRules.colorKey}, powderblue : { value : "#b0e0e6", verifier : sirius_css_AutomatorRules.colorKey}, purple : { value : "#800080", verifier : sirius_css_AutomatorRules.colorKey}, rebeccapurple : { value : "#663399", verifier : sirius_css_AutomatorRules.colorKey}, red : { value : "#ff0000", verifier : sirius_css_AutomatorRules.colorKey}, rosybrown : { value : "#bc8f8f", verifier : sirius_css_AutomatorRules.colorKey}, royalblue : { value : "#4169e1", verifier : sirius_css_AutomatorRules.colorKey}, saddlebrown : { value : "#8b4513", verifier : sirius_css_AutomatorRules.colorKey}, salmon : { value : "#fa8072", verifier : sirius_css_AutomatorRules.colorKey}, sandybrown : { value : "#f4a460", verifier : sirius_css_AutomatorRules.colorKey}, seagreen : { value : "#2e8b57", verifier : sirius_css_AutomatorRules.colorKey}, seashell : { value : "#fff5ee", verifier : sirius_css_AutomatorRules.colorKey}, sienna : { value : "#a0522d", verifier : sirius_css_AutomatorRules.colorKey}, silver : { value : "#c0c0c0", verifier : sirius_css_AutomatorRules.colorKey}, skyblue : { value : "#87ceeb", verifier : sirius_css_AutomatorRules.colorKey}, slateblue : { value : "#6a5acd", verifier : sirius_css_AutomatorRules.colorKey}, slategray : { value : "#708090", verifier : sirius_css_AutomatorRules.colorKey}, snow : { value : "#fffafa", verifier : sirius_css_AutomatorRules.colorKey}, springgreen : { value : "#00ff7f", verifier : sirius_css_AutomatorRules.colorKey}, steelblue : { value : "#4682b4", verifier : sirius_css_AutomatorRules.colorKey}, tan : { value : "#d2b48c", verifier : sirius_css_AutomatorRules.colorKey}, teal : { value : "#008080", verifier : sirius_css_AutomatorRules.colorKey}, thistle : { value : "#d8bfd8", verifier : sirius_css_AutomatorRules.colorKey}, tomato : { value : "#ff6347", verifier : sirius_css_AutomatorRules.colorKey}, turquoise : { value : "#40e0d0", verifier : sirius_css_AutomatorRules.colorKey}, violet : { value : "#ee82ee", verifier : sirius_css_AutomatorRules.colorKey}, wheat : { value : "#f5deb3", verifier : sirius_css_AutomatorRules.colorKey}, white : { value : "#ffffff", verifier : sirius_css_AutomatorRules.colorKey}, whitesmoke : { value : "#f5f5f5", verifier : sirius_css_AutomatorRules.colorKey}, yellow : { value : "#ffff00", verifier : sirius_css_AutomatorRules.colorKey}, yellowgreen : { value : "#9acd32", verifier : sirius_css_AutomatorRules.colorKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, pointer : { value : "pointer", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
 sirius_css_XCSS.enabled = false;
 sirius_tools_BitIO.P01 = 1;
@@ -6091,5 +6076,3 @@ sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","
 sirius_utils_SearchTag._R = false;
 sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
-
-//# sourceMappingURL=api.sirius.js.map

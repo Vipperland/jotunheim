@@ -13,9 +13,9 @@ class Text extends Display {
 		return cast Sirius.one(q,null,h);
 	}
 	
-	public function new(?q:Dynamic, ?d:String = null) {
+	public function new(?q:Dynamic) {
 		q = Browser.document.createTextNode(q);
-		super(q, null, d);
+		super(q, null);
 		node = q;
 	}
 	

@@ -12,9 +12,9 @@ class FrameSet extends Display{
 		return cast Sirius.one(q,null,h);
 	}
 	
-	public function new(?q:Dynamic, ?d:String = null) {
+	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createFrameSetElement();
-		super(q,null,d);
+		super(q,null);
 	}
 	
 }

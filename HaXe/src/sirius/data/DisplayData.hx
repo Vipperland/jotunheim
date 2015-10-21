@@ -10,8 +10,11 @@ class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 	
 	public var __data__:IDataSet;
 	
-	public function new() {
+	public var __id__:String;
+	
+	public function new(id:String) {
 		__data__ = new DataSet();
+		__id__ = id;
 		super();
 	}
 	

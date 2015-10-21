@@ -12,14 +12,17 @@
 	
 	<script>
 		Sirius.onInit(function(){
-			console.log(Sirius.domain.hash);
 			switch(Sirius.domain.hash.last){
 				case 'dragndrop' : {
-					Sirius.module('sirius/modules/samples/demo-dragndrop.html');
+					Sirius.module('sirius/modules/sample/demo-dragndrop.html');
+					break;
+				}
+				case 'carousel' : {
+					Sirius.module('sirius/modules/sample/demo-carousel.html');
 					break;
 				}
 				default : {
-					Sirius.module('sirius/modules/samples/demo-carousel.html');
+					Sirius.module('sirius/modules/sample/speed-test.html');
 				}
 			}
 		});

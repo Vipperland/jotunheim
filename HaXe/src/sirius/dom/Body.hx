@@ -18,9 +18,9 @@ class Body extends Display {
 		return cast Sirius.one(q,null,h);
 	}
 
-	public function new(?q:Element, ?d:String = null) {
+	public function new(?q:Element) {
 		if (q == null) q = Browser.document.createBodyElement();
-		super(q, null, d);
+		super(q, null);
 		_body = cast this.element;
 		Browser.window.addEventListener('resize', _wResize);
 	}

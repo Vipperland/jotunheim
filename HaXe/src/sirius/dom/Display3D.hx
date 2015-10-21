@@ -31,8 +31,8 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public var transform:ITransform3D;
 	
-	public function new(?q:Dynamic, ?d:String) {
-		super(q, d);
+	public function new(?q:Dynamic) {
+		super(q);
 		attribute('sru-dom', 'display3d');
 		if (!data.__data__.exists('transform')) {
 			data.__data__.set("xcss", new XCSS());
