@@ -48,24 +48,24 @@ class ModLib {
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");
 		if (sur.length > 1) {
-			Sirius.log("Sirius->ModLib.import[ " + file + " ]", 10, 1);
+			Sirius.log("ModLib => PARSING " + file, 1);
 			Dice.All(sur, function(p:Int, v:String) {
 				if(p > 0){
 					var i:Int = v.indexOf("}]");
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
+						else Sirius.log("		ModLib => NAME " + mod.name, 1);
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
-							Sirius.log("	Sirius->ModLib->dependency::check[ FOR " + mod.name + " ]", 10, 1);
+							Sirius.log("	ModLib => " + mod.name + " VERIFYING...", 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v.toLowerCase());
 								if (set == null) {
-									Sirius.log("		Sirius->ModLib->dependency::status[ MISSING " + v + " ]", 10, 2);
+									Sirius.log("		ModLib => REQUIRED " + v, 2);
 								}else {
-									Sirius.log("		Sirius->ModLib->dependency::status[ OK " + v + " ]", 10, 1);
 									content = content.split("<import " + v + "/>").join(set);
 								}
 							});
@@ -91,7 +91,7 @@ class ModLib {
 						#end
 						if (content != null) Reflect.setField(CACHE, mod.name.toLowerCase(), content);
 					}else {
-						Sirius.log("	Sirius->ModLib::status [ MISSING MODULE END IN " + file + "("  + v.substr(0, 15) + "...) ]", 10, 3);
+						Sirius.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15), 3) + "...)";
 					}
 			}
 			});
@@ -172,13 +172,13 @@ class ModLib {
 			if (each != null && Std.is(data, Array)) {
 				var d:IDisplay = new Div();
 				Dice.Values(data, function(v:Dynamic) {
-					v = new Display().build(get(module, v));
+					v = new Display().write(get(module, v));
 					v = each(v);
 					if(v != null && Std.is(v, IDisplay)) d.addChild(v);
 				});
 				return d;
 			}else {
-				return new Display().build(get(module, data));
+				return new Display().write(get(module, data));
 			}
 		}
 		

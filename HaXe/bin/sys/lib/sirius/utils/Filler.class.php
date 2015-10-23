@@ -37,8 +37,8 @@ function sirius_utils_Filler_0(&$content, &$data, &$path, $p, $v) {
 }
 function sirius_utils_Filler_1(&$data, &$r, &$sufix, &$value, $p, $v) {
 	{
-		$v->{"%i"} = $p;
+		$v->{"%0"} = $p;
 		$r .= _hx_string_or_null(sirius_utils_Filler::_apply($sufix, $value, $v));
-		Reflect::deleteField($v, "%i");
+		Reflect::deleteField($v, "%0");
 	}
 }

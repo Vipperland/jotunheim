@@ -139,7 +139,7 @@ class Document extends Display {
 			});
 			if (content.length > 0) {
 				var r:IDisplay = new Div();
-				r.build(content);
+				r.mount(content);
 				r.all(exclude).remove();
 				//r.children().each(function(v:IDisplay) {
 					//Log.trace(v.trueStyle());

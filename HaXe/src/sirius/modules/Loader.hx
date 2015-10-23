@@ -22,6 +22,7 @@ class Loader implements ILoader {
 	private static var FILES:Dynamic = { };
 	
 	private var _toload:Array<String> = [];
+	private var _onChange:Array<Http->String->String->String->Void>;
 	private var _onComplete:Array<Dynamic>;
 	private var _onError:Array<Dynamic>;
 	private var _isBusy:Bool;
@@ -37,6 +38,7 @@ class Loader implements ILoader {
 		_noCache = noCache;
 		_onComplete = [];
 		_onError = [];
+		_onChange = [];
 		totalLoaded = 0;
 		totalFiles = 0;
 	}
@@ -54,6 +56,10 @@ class Loader implements ILoader {
 			if (i != -1) _onError.splice(i, 1);
 		}
 		return this;
+	}
+	
+	public function onChange(handler:Http->String->String->String->Void):Void {
+		if (handler != null) _onChange[_onChange.length] = handler;
 	}
 	
 	public function listen(?complete:ILoader->Void, ?error:IError->Void):ILoader {
@@ -84,19 +90,28 @@ class Loader implements ILoader {
 		return this;
 	}
 	
+	private function _changed(req:Http, url:String, status:String, ?data:String):Void {
+		Dice.Values(_onChange, function(v:Http->String->String->String->Void) {
+			v(req, url, status, data);
+		});
+	}
+	
 	private function _loadNext():Void {
 		if (_toload.length > 0) {
 			var f:String = _toload.shift();
 			var r:Http = new Http(f + (_noCache ? "" : "?t=" + Date.now().getTime()));
+			_changed(r, f, 'started');
 			#if js
 				r.async = true;
 			#end
 			r.onError = function(e) {
+				_changed(r, f, 'error', e);
 				++totalLoaded;
 				if (_error != null) _error(e);
 				_loadNext();
 			}
 			r.onData = function(d) {
+				_changed(r, f, 'complete', d);
 				++totalLoaded;
 				Sirius.resources.register(f, d);
 				_loadNext();
@@ -137,7 +152,9 @@ class Loader implements ILoader {
 		#if js 
 			r.async = true; 
 		#end
+		_changed(r, file, 'started');
 		r.onData = function(d) {
+			_changed(r, file, 'complete', d);
 			Sirius.resources.register(file, d);
 			file = h.length == 2 ? h[1] : file;
 			#if js
@@ -152,25 +169,36 @@ class Loader implements ILoader {
 						try {
 							build(file, data, target);
 						}catch (e:Dynamic) {
-							Sirius.log(e, 10, 3);
+							Sirius.log(e, 3);
 						}
 					}
 				}
 			#end
 			if (handler != null) handler(file, d);
 		}
+		r.onError = function(d) {
+			_changed(r, file, 'error', d);
+			if (handler != null) handler(null, d);
+		}
 		r.request(false);
 	}
 	
 	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
 		var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
+		_changed(r, url, 'started');
 		#if js
 			r.async = true;
 		#end
 		if (data != null) Dice.All(data, r.setParameter);
-		r.onData = function(d) { if (handler != null) handler(new Request(true, d, null)); }
-		r.onError = function(d) { if (handler != null) handler(new Request(false, null, new Error(-1, d))); }
-		r.request(method != null && method.toLowerCase() == 'post');
+		r.onData = function(d) { 
+			_changed(r, url, 'complete', d);
+			if (handler != null) handler(new Request(true, d, null)); 
+		}
+		r.onError = function(d) { 
+			_changed(r, url, 'error', d);
+			if (handler != null) handler(new Request(false, null, new Error(-1, d))); 
+		}
+		r.request(method == null || method.toLowerCase() == 'post');
 	}
 	
 	public function get(module:String, ?data:Dynamic):String {

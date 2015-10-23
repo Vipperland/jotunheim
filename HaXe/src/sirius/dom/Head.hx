@@ -35,7 +35,7 @@ class Head extends Display{
 					}
 				}
 				if(s != null){
-					s.build(content);
+					s.write(content);
 					addChild(s);
 					return s;
 				}

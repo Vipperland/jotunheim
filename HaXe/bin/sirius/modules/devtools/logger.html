@@ -1,0 +1,138 @@
+[Module:{"version":1.0,"type":"script"}]
+	<script>
+		
+		Sirius.logger.silent();
+		var t = new sru.dom.Div();
+		var l = 0;
+		var c = false;
+		var mv = 0;
+		var cr = {x:0,y:0};
+		t.pin();
+		t.css('lucida txt-10 txt-white padd-5 z-9999999 bg-black-80 max-height-100pc max-w-600 t-0 scroll-none max-h-50pc');
+		t.addToBody();
+		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-white-10">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
+		var d = t.one('#sirius:dump');
+		_bgs = ['txt-xCCCCCC','txt-x00FF66','txt-xFFFF00','txt-xFF6600','txt-xFF99CC bold', 'txt-x0099CC'];
+		Automator.build('bg-black padd-5 bg-white-10 padd-t-5 padd-l-50 overflow-y-auto max-h-300');
+		Automator.css.setSelector('.nowrap','white-space: nowrap;overflow-x:hidden');
+		Automator.build(t.css());
+		Automator.build(_bgs.join(' '));
+		
+		function stringIfObject(o) {
+		  return o === Object(o) ? JSON.stringify(o) : o;
+		}
+		
+		function _push(data, type, id){
+			if(++type < 0) type = 0;
+			else if(type > 4) type = 4;
+			var s = (l++) + '';
+			while(s.length < 5) s = '·' + s;
+			d.mount('<div ' + (id !=null ? 'id="' + id + '" ' : '' ) + 'class="nowrap ' + _bgs[type] + '">[' + s + '] ' + stringIfObject(data) + '</div>');
+			return s;
+		}
+		
+		var xhr = {};
+		
+		function _expl(e){
+			var tip = e.target.data.tip;
+			if(tip.element.hidden) tip.show();
+			else tip.hide();
+		}
+		function _updateXHR(v){
+			var e = Sirius.one('#' + v.id).element;
+			var p = '';
+			while(p.length < 5) p = p + (v.ct == p.length ? '|' : '·');
+			e.innerHTML = e.innerHTML.split(e.innerHTML.substr(1, 5)).join(p);
+			if(++v.ct > 5) v.ct = 0;
+		}
+		
+		function xhr_render(){
+			Dice.Values(xhr, _updateXHR);
+		}
+		
+		function _listen(req,url,stat,data){
+			switch(stat){
+				case 'started' : {
+					req.id = 'xhr_' + sru.tools.Key.GEN();
+					req.time = new Date().getTime();
+					req.ct = 0;
+					req.bs = _push('Resource &lt;= ' + url + ' (LOADING...)', 1, req.id);
+					xhr[req.id] = req;
+					break;
+				}
+				case 'complete' : {
+					if(req.id != null) {
+						var e = Sirius.one('#' + req.id);
+						var v = e.element.innerHTML;
+						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="curs-pointer txt-white"></span>');
+						e.css('/txt-x00FF66 txt-x0099CC bg-black');
+						if(data != null){
+							var o = null;
+							try {
+								o = JSON.parse(data);
+							}catch(er){ /* NOT A JSON */ }
+							if(o != null){
+								var ac = new sru.dom.Div();
+								ac.css("padd-l-50 txt-white");
+								ac.write('<div class="sruobj" hidden>' + Utils.sruString(o).split('\r').join('<br/>').split(' ').join('&nbsp;') + '</div>');
+								e.addChild(ac);
+								var sp = e.one('span');
+								sp.data.tip = ac.one('.sruobj');
+								sp.write('[VIEW]');
+								sp.events.click(_expl, true);
+							}
+						}
+						delete xhr[req.id];
+					}
+					break;
+				}
+				case 'error' : {
+					if(req.id != null) {
+						var e = Sirius.one('#' + req.id);
+						e.css('/txt-x00FF66 txt-xFF6600');
+						var v = e.element.innerHTML;
+						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(ERROR!)');
+						delete xhr[req.id];
+					}
+					break;
+				}
+			}
+		}
+		function _toggle(e){
+			if(mv > 10) return;
+			c = !c;
+			if(c) d.hide();
+			else d.show();
+			t.style({
+				top:0+'px',
+				left:0+'px'
+			});
+		}
+		function _seek(e){
+			++mv;
+			var x = e.event.clientX-cr.x;
+			var y = e.event.clientY-cr.y;
+			t.style({
+				top:y+'px',
+				left:x+'px'
+			});
+		}
+		function _undrag(e){
+			Sirius.document.body.events.mouseMove(_seek,'remove');
+			Sirius.document.body.events.mouseUp(_undrag,'remove');
+		}
+		function _drag(e){
+			mv = 0;
+			var b = t.getBounds();
+			cr = {x:e.event.clientX-b.left,y:e.event.clientY-b.top}
+			Sirius.document.body.events.mouseMove(_seek);
+			Sirius.document.body.events.mouseUp(_undrag);
+		}
+		setInterval(xhr_render, 100);
+		Sirius.one('#sirius:log').events.click(_toggle);
+		Sirius.one('#sirius:log').events.mouseDown(_drag);
+		Sirius.loader.onChange(_listen);
+		Sirius.logger.listen(_push);
+		
+	</script>
+/EOF;

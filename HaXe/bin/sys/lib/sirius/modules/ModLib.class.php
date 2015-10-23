@@ -10,6 +10,7 @@ class sirius_modules_ModLib {
 		$content = _hx_explode("[Module:{", $content)->join("[!MOD!]");
 		$sur = _hx_explode("[!MOD!]", $content);
 		if($sur->length > 1) {
+			sirius_Sirius::log("ModLib => PARSING " . _hx_string_or_null($file), 1);
 			sirius_utils_Dice::All($sur, array(new _hx_lambda(array(&$content, &$file, &$sur), "sirius_modules_ModLib_0"), 'execute'), null);
 		} else {
 			$field1 = strtolower($file);
@@ -63,13 +64,14 @@ function sirius_modules_ModLib_0(&$content, &$file, &$sur, $p, $v) {
 				}
 				if($mod->name === null) {
 					$mod->name = $file;
+				} else {
+					sirius_Sirius::log("\x09\x09ModLib => NAME " . _hx_string_or_null($mod->name), 1);
 				}
-				sirius_Sirius::log("Sirius->ModLib.build[ " . _hx_string_or_null($mod->name) . " ]", 10, 1);
-				$end = _hx_index_of($v, ";;;", null);
+				$end = _hx_index_of($v, "/EOF;", null);
 				$content = _hx_substring($v, $i + 2, sirius_modules_ModLib_2($content, $end, $file, $i, $mod, $p, $sur, $v));
 				if($mod->{"require"} !== null) {
 					$dependencies = _hx_explode(";", $mod->{"require"});
-					sirius_Sirius::log("\x09Sirius->ModLib::dependencies [ FOR " . _hx_string_or_null($mod->name) . " ]", 10, 1);
+					sirius_Sirius::log("\x09ModLib => " . _hx_string_or_null($mod->name) . " VERIFYING...", 1);
 					sirius_utils_Dice::Values($dependencies, array(new _hx_lambda(array(&$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$sur, &$v), "sirius_modules_ModLib_3"), 'execute'), null);
 				}
 				if($content !== null) {
@@ -77,7 +79,7 @@ function sirius_modules_ModLib_0(&$content, &$file, &$sur, $p, $v) {
 					sirius_modules_ModLib::$CACHE->{$field} = $content;
 				}
 			} else {
-				sirius_Sirius::log("\x09Sirius->ModLib::status [ MISSING MODULE END IN " . _hx_string_or_null($file) . "(" . _hx_string_or_null(_hx_substr($v, 0, 15)) . "...) ]", 10, 3);
+				Std::string(sirius_Sirius::log("\x09ModLib => CONFIG ERROR " . _hx_string_or_null($file) . "(" . _hx_string_or_null(_hx_substr($v, 0, 15)), 3)) . "...)";
 			}
 		}
 	}
@@ -98,9 +100,8 @@ function sirius_modules_ModLib_3(&$content, &$dependencies, &$end, &$file, &$i, 
 	{
 		$set = Reflect::field(sirius_modules_ModLib::$CACHE, strtolower($v1));
 		if($set === null) {
-			sirius_Sirius::log("\x09\x09Sirius->ModLib::dependency[ MISSING " . _hx_string_or_null($v1) . " ]", 10, 2);
+			sirius_Sirius::log("\x09\x09ModLib => REQUIRED " . _hx_string_or_null($v1), 2);
 		} else {
-			sirius_Sirius::log("\x09\x09Sirius->ModLib::dependency[ OK " . _hx_string_or_null($v1) . " ]", 10, 1);
 			$content = _hx_explode("<import " . _hx_string_or_null($v1) . "/>", $content)->join($set);
 		}
 	}

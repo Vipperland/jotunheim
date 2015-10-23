@@ -7,13 +7,11 @@ class sirius_net_Domain implements sirius_net_IDomain{
 	}}
 	public $host;
 	public $port;
-	public $fragments;
+	public $url;
 	public $data;
 	public $server;
 	public $client;
 	public $file;
-	public $firstFragment;
-	public $lastFragment;
 	public $params;
 	public function _parseURI() {
 		$this->data = php_Lib::objectOfAssociativeArray($_SERVER);
@@ -23,21 +21,7 @@ class sirius_net_Domain implements sirius_net_IDomain{
 		$this->port = $_SERVER['SERVER_PORT'];
 		$this->params = $this->_getParams();
 		$p = $_SERVER['SCRIPT_NAME'];
-		$this->fragments = sirius_tools_Utils::clearArray(_hx_explode("/", $p), null);
-		$this->firstFragment = $this->fragment(0, "");
-		$this->lastFragment = $this->fragment($this->fragments->length - 1, $this->firstFragment);
-		if(_hx_index_of($this->lastFragment, ".", null) !== -1) {
-			$this->file = $this->lastFragment;
-			$this->fragments->pop();
-			$this->lastFragment = $this->fragment($this->fragments->length - 1, $this->firstFragment);
-		}
-	}
-	public function fragment($i, $a = null) {
-		if($i >= 0 && $i < $this->fragments->length) {
-			return $this->fragments[$i];
-		} else {
-			return $a;
-		}
+		$this->url = new sirius_data_Fragments($p, "/");
 	}
 	public function hrequire($params) {
 		$_g = $this;

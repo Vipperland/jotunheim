@@ -1,4 +1,5 @@
 package sirius.modules;
+import haxe.Http;
 import sirius.errors.IError;
 import sirius.errors.Error;
 
@@ -88,6 +89,14 @@ interface ILoader {
 	 * @return
 	 */
 	public function unlisten(?handler:Dynamic->Void):ILoader;
+	
+	/**
+	 * Any status change for all files
+	 * @param	handler
+	 * @return
+	 */
+	public function onChange(handler:Http->String->String->String->Void):Void;
+	
 	/**
 	 * Call a url
 	 * @param	url

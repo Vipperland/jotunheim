@@ -1,4 +1,5 @@
 package;
+
 import sirius.css.Automator;
 import sirius.modules.ILoader;
 import sirius.Sirius;

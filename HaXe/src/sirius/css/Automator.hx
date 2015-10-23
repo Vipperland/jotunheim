@@ -31,7 +31,7 @@ class Automator {
 	}
 	
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
-		Sirius.log("Sirius->Automator.scanner[ " + (dev == true ? "Infinity" : "1x") + " ]", 10, 1);
+		Sirius.log("Automator => SCAN " + (dev == true ? "ACTIVE" : "[x1]"), 1);
 		_dev = dev == true;
 		if (force) {
 			_scanBody();
@@ -120,14 +120,14 @@ class Automator {
 						if (s != null) {
 							r += s + ";";
 						}else {
-							Sirius.log("Sirius->Automator.build::error( [" + en + "] )");
+							Sirius.log("Automator => ERROR (" + en + ")");
 						}
 					}else { // Rule for single class name
 						m = _screen(c); // Target @media
 						if (!css.hasSelector(v, m)) { // Check if selector exists
 							s = _parse(c).build(); // Create class for selector
 							if (Utils.isValid(s)) { // Check if value is valid
-								if (_dev == true) Sirius.log("Sirius->Automator.build[ ." + v + " {" + s + ";} ]",10,1);
+								if (_dev == true) Sirius.log("Automator => ." + v + " {" + s + ";} ]", 1);
 								css.setSelector("." + v, s, m); // Add selector to correspondent @media group
 							}
 						}
@@ -136,7 +136,7 @@ class Automator {
 			}
 		});
 		if (g) { // If is a group, register all classes to correspondent group and @media value
-			if (_dev == true) Sirius.log("Sirius->Automator.build[ " + group + " {" + r + "} ]", 10, 1);
+			if (_dev == true) Sirius.log("Automator => " + group + " {" + r + "} ]", 1);
 			css.setSelector(group, r, m);
 		}
 		if (silent == null) css.build();
@@ -207,7 +207,7 @@ class Automator {
 				// position: css common direction values (top,left,bottom and right)
 				// measure: CSS position value (positive or negative, pixels or percent)
 				// color: css Color value in formar #RRGGBB
-				r[p] = cast { index:p, key:v, entry:val, position:_position(v2, v), measure:_measure(v2, v), color:_color(v2, v) };
+				r[p] = cast { index:p, key:v, entry:val, position:getPosition(v2, v), measure:getMeasure(v2, v), color:getColor(v2, v) };
 			}
 		});
 		// return all Entry structure
@@ -220,7 +220,7 @@ class Automator {
 	 * @param	x
 	 * @return
 	 */
-	static private function _position(r:String, x:String):Bool {
+	static public function getPosition(r:String, x:String):Bool {
 		return "tblr".indexOf(x) != -1;
 	}
 	
@@ -230,7 +230,7 @@ class Automator {
 	 * @param	x
 	 * @return
 	 */
-	static private function _color(r:String, x:String):String {
+	static public function getColor(r:String, x:String):String {
 		var argb:Bool = x.length == 9;
 		if (x.substr(0, 1) == "x" && (x.length == 4 || x.length == 7 || argb)) {
 			x = "#" + x.substring(1, x.length);
@@ -247,7 +247,7 @@ class Automator {
 	 * @param	x
 	 * @return
 	 */
-	static private function _measure(r:String, x:String):String {
+	static public function getMeasure(r:String, x:String):String {
 		if(r == null){
 			var l:Int = x.length;
 			if (x.substr(l - 2, 2) == "pc") {
@@ -257,7 +257,7 @@ class Automator {
 			}else {
 				var n:Int = Std.parseInt(x);
 				if (n != null) {
-					r = n + "px";
+					r = n + (n > 0 ? "px" : "");
 				}
 			}
 			return r;

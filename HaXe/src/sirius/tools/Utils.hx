@@ -195,6 +195,29 @@ class Utils{
 	}
 	
 	/**
+	 * data.split('{').join('').split('}').join('<br/>')
+	 * @param	o
+	 * @return
+	 */
+	static public function sruString(o:Dynamic):String {
+		return _sruFy(o, '', '');
+	}
+	
+	/** @private */
+	static public function _sruFy(o:Dynamic, i:String, b:String):String {
+		i = i + '  ';
+		Dice.All(o, function(p:String, v:Dynamic) {
+			if (v == null) 									b += i + p + " (null) = NULL\r";
+			else if (Std.is(v, String)) 					b += i + p + " (string) = " + v + "\r";
+			else if(Std.is(v, Bool)) 						b += i + p + " (bool) = " + v + "\r";
+			else if(Std.is(v, Int) || Std.is(v, Float)) 	b += i + p + " (number) = " + v + "\r";
+			else if (Std.is(v, Array))						b += i + p + " (array):{\r" + _sruFy(v, i, '') + i + "}\r";
+			else											b += i + p + " (object):{\r" + _sruFy(v, i, '') + i + "}\r";
+		});
+		return b;
+	}
+	
+	/**
 	 * Check if a value is !null or/and length>0 if a string
 	 * @param	o
 	 * @return

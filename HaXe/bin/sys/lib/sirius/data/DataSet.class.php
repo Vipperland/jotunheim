@@ -17,6 +17,10 @@ class sirius_data_DataSet implements sirius_data_IDataSet{
 		$this->_content->{$p} = $v;
 		return $this;
 	}
+	public function hunset($p) {
+		Reflect::deleteField($this->_content, $p);
+		return $this;
+	}
 	public function exists($p) {
 		return _hx_has_field($this->_content, $p);
 	}

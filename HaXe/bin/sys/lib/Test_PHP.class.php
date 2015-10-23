@@ -19,7 +19,7 @@ class Test_PHP {
 				$data->save();
 			}
 		} else {
-			sirius_Sirius::log($g->errors, null, null);
+			sirius_Sirius::log($g->errors, null);
 		}
 	}
 	function __toString() { return 'Test_PHP'; }

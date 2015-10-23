@@ -54,4 +54,14 @@ class Entry {
 		++missing;
 		return v.key + (t==c ? "" : t-1==c ? ":" : "-");
 	}
+	
+	public function compile(s:Int, ?e:Int):Array<String> {
+		var r:Array<String> = [];
+		if (e == null) e = keys.length;
+		Dice.Count(s, e, function(a:Int, b:Int, c:Bool) {
+			r[r.length] = keys[a].key;
+			return false;
+		});
+		return r;
+	}
 }

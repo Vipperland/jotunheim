@@ -66,7 +66,7 @@ class sirius_utils_Dice {
 			}
 		}
 		$c = $a === $b;
-		$r = _hx_anonymous(array("from" => $from, "to" => $b, "completed" => $c, "value" => $a));
+		$r = _hx_anonymous(array("from" => $from, "to" => $b, "completed" => $c, "value" => $a - sirius_utils_Dice_5($a, $b, $c, $complete, $each, $from, $increment, $to)));
 		if($complete !== null) {
 			call_user_func_array($complete, array($r));
 		}
@@ -74,7 +74,7 @@ class sirius_utils_Dice {
 	}
 	static function One($from, $alt = null) {
 		if(Std::is($from, _hx_qtype("Array"))) {
-			sirius_utils_Dice::Values($from, array(new _hx_lambda(array(&$alt, &$from), "sirius_utils_Dice_5"), 'execute'), null);
+			sirius_utils_Dice::Values($from, array(new _hx_lambda(array(&$alt, &$from), "sirius_utils_Dice_6"), 'execute'), null);
 		}
 		return _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt), "object" => $from));
 	}
@@ -86,7 +86,7 @@ class sirius_utils_Dice {
 			$values = (new _hx_array(array($values)));
 		}
 		$r = 0;
-		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_6"), 'execute'), null);
+		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_7"), 'execute'), null);
 		return $r;
 	}
 	function __toString() { return 'sirius.utils.Dice'; }
@@ -129,25 +129,36 @@ function sirius_utils_Dice_4(&$a, &$b, &$complete, &$each, &$from, &$increment, 
 		unset($int);
 	}
 }
-function sirius_utils_Dice_5(&$alt, &$from, $v) {
+function sirius_utils_Dice_5(&$a, &$b, &$c, &$complete, &$each, &$from, &$increment, &$to) {
+	{
+		$int1 = $increment;
+		if($int1 < 0) {
+			return 4294967296.0 + $int1;
+		} else {
+			return $int1 + 0.0;
+		}
+		unset($int1);
+	}
+}
+function sirius_utils_Dice_6(&$alt, &$from, $v) {
 	{
 		$from = $v;
 		return $from === null;
 	}
 }
-function sirius_utils_Dice_6(&$limit, &$r, &$table, &$values, $v) {
+function sirius_utils_Dice_7(&$limit, &$r, &$table, &$values, $v) {
 	{
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
-		if(sirius_utils_Dice_7($limit, $r, $table, $v, $values)) {
+		if(sirius_utils_Dice_8($limit, $r, $table, $v, $values)) {
 			$a = --$limit;
 			return $a === 0;
 		}
 		return false;
 	}
 }
-function sirius_utils_Dice_7(&$limit, &$r, &$table, &$v, &$values) {
+function sirius_utils_Dice_8(&$limit, &$r, &$table, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;

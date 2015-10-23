@@ -12,6 +12,7 @@
 	
 	<script>
 		Sirius.onInit(function(){
+			Sirius.module('sirius/modules/devtools/logger.html');
 			switch(Sirius.domain.hash.last){
 				case 'dragndrop' : {
 					Sirius.module('sirius/modules/sample/demo-dragndrop.html');

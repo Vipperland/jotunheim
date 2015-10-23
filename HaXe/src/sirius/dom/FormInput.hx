@@ -31,7 +31,7 @@ class FormInput extends Div {
 	public function label(?q:String):String {
 		if(q != null){
 			name.clear(true);
-			name.build(q);
+			name.write(q);
 		}
 		return name.element.innerHTML;
 	}

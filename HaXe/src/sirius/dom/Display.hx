@@ -299,9 +299,9 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function build(q:String, ?plainText:Bool = false):IDisplay {
-		if (plainText) element.innerText = q;
-		else element.innerHTML = q;
+	public function write(q:String, ?plainText:Bool = false):IDisplay {
+		if (plainText) element.innerText += q;
+		else element.innerHTML = element.innerHTML + q;
 		return this;
 	}
 	
@@ -326,8 +326,8 @@ class Display implements IDisplay {
 		else											return Browser.window.getComputedStyle(element);
 	}
 	
-	public function write(q:String):IDisplay {
-		var i:IDisplay = new Display().build(q,false);
+	public function mount(q:String):IDisplay {
+		var i:IDisplay = new Display().write(q,false);
 		i.children().each(function(v:IDisplay) {
 			addChild(v);
 		});

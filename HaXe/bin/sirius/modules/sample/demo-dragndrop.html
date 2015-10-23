@@ -46,7 +46,7 @@
 	
 	Sirius.onInit(function(){
 		var container = new sru.dom.Div();
-		container.build(Sirius.resources.fill("sample", data));
+		container.write(Sirius.resources.fill("sample", data));
 		container.addToBody();
 		Automator.scan();
 		Sirius.addScript('sirius/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });

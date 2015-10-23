@@ -42,7 +42,12 @@ class Table implements ITable {
 				}else {
 					is3D = Std.is(t, IDisplay3D);
 				}
-				var result:NodeList = q != null ? t.querySelectorAll(q) : t.childNodes;
+				var result:NodeList;
+				try {
+					result = q != null ? t.querySelectorAll(q) : t.childNodes;
+				}catch (e:Dynamic) {
+					result = cast [];
+				}
 				var element:Element = null;
 				if(result.length > 0){
 					Dice.Count(0, result.length, function(i:Int, j:Int, k:Bool) {
@@ -52,10 +57,10 @@ class Table implements ITable {
 						return null;
 					});
 				}else {
-					Sirius.log("TABLE(" + (q != null ? q : (t != null ? t.className : "UNKNOW")) + ") : NO RESULT", 12, 2);
+					Sirius.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
 				}
 			}else {
-				Sirius.log("TABLE(QUERY,TARGET) : NULL QUERY_SELECTOR", 10, 3);
+				Sirius.log("Table => (QUERY,TARGET) : NULL QUERY_SELECTOR", 3);
 			}
 		}
 	}

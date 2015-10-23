@@ -206,8 +206,31 @@ class AutomatorRules{
 			var i:Bool = d.tail.key == 'i';
 			var s:Bool = n.key == 'txt';
 			var t:ARGB = new ARGB(d.keys[s ? 2 : 1].color);
-			var r:String = "0 1px 0 " + t.range(.7).hex() + ",0 2px 0 " + t.range(.6).hex() + ",0 3px 0 " + t.range(.5).hex() + ",0 4px 0 " + t.range(.4).hex() + ",0 5px 0 " + t.range(.3).hex() + ",0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);";
-			return (s ? 'text-shadow' : 'box-shadow') + ':' + r + (i ? ' !important' : '');
+			var x:Array<String> = d.compile(s ? 3 : 2);
+			var y:Int = 0;
+			var z:Int = x[0] == null ? 5 : Std.parseInt(x[0]);
+			var a:Int = x[1] == null ? 90 : Std.parseInt(x[1]);
+			var c:Float = x[2] == null ? .1 : Std.parseFloat(x[2]);
+			var u:Int = x[3] == null ? 3 : Std.parseInt(x[3]);
+			var cos:Float = Math.cos(.017453 * a);
+			var sin:Float = Math.sin(.017453 * a);
+			var r:Array<String> = [];
+			var tx:Int = 0;
+			var ty:Int = 0;
+			while (y < z) {
+				++y;
+				tx = (cast cos * y);
+				ty = (cast sin * y);
+				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.range(.8 - (y/z*c)).hex();
+			}
+			y = 0;
+			while (y < u) {
+				++y;
+				tx = (cast cos * ((y*z)+u));
+				ty = (cast sin * ((y*z)+u));
+				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgba(0,0,0,.1)';
+			}
+			return (s ? 'text-shadow' : 'box-shadow') + ':' + r.join(',') + (i ? ' !important' : '');
 		}
 		return 'shadow';
 	}
@@ -424,12 +447,11 @@ class AutomatorRules{
 		upcase:{value:'font-transform:uppercase',verifier:commonKey},
 		locase:{value:'font-transform:lowercase',verifier:commonKey},
 		curs:{value:'cursor',verifier:valueKey},
-		pointer:{value:'pointer',verifier:valueKey},
 		loading:{value:'loading',verifier:valueKey},
 		arial:{value:'font-family:arial',verifier:commonKey},
 		verdana:{value:'font-family:verdana',verifier:commonKey},
 		tahoma:{value:'font-family:tahoma',verifier:commonKey},
-		lucida:{value:'font-family:lucida',verifier:commonKey},
+		lucida:{value:'font-family:lucida console',verifier:commonKey},
 		georgia:{value:'font-family:georgia',verifier:commonKey},
 		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
 		table:{value:'table',verifier:appendKey},

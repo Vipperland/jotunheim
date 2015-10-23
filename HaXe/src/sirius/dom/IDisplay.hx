@@ -203,7 +203,7 @@ interface IDisplay {
 	 * @param	q
 	 * @param	plainText
 	 */
-	public function build(q:String, ?plainText:Bool = false):IDisplay;
+	public function write(q:String, ?plainText:Bool = false):IDisplay;
 	
 	/**
 	 * Fit element in current viewport width and height
@@ -229,7 +229,7 @@ interface IDisplay {
 	 * @param	module
 	 * @return
 	 */
-	public function write(q:String):IDisplay;
+	public function mount(q:String):IDisplay;
 	
 	
 	/**

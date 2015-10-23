@@ -11,7 +11,6 @@ import sirius.modules.Loader;
 import sirius.net.Domain;
 import sirius.net.IDomain;
 import sirius.tools.Utils;
-import sirius.transitions.Ease;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 
@@ -31,6 +30,7 @@ import sirius.utils.Filler;
 	import sirius.tools.IAgent;
 	import sirius.tools.Agent;
 	import sirius.transitions.Animator;
+	import sirius.transitions.Ease;
 	import sirius.utils.ITable;
 	import sirius.utils.Pixel;
 	import sirius.utils.SearchTag;
@@ -87,9 +87,6 @@ class Sirius {
 		/// External Plugins
 		static public var plugins:Dynamic = { };
 		
-		/// Display a
-		static public var pushLog:Bool = false;
-		
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;
 		
@@ -100,7 +97,7 @@ class Sirius {
 				agent.update();
 				Ease.update();
 				updatePlugins();
-				log("Sirius->Core::status[ INITIALIZED ] ", 10, 1);
+				log("Sirius => INITIALIZED", 1);
 				Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				_loadPool = null;
@@ -115,7 +112,7 @@ class Sirius {
 				var plist:Dynamic = untyped __js__("window.sru ? window.sru.plugins : null");
 				Dice.All(plist, function(p:String, v:Dynamic) {
 					Reflect.setField(plugins, p, v);
-					log("Sirius->Plugins::status[ " + p + "() ADDED]", 10, 1);
+					log("Plugin => " + p + " ADDED", 1);
 					Reflect.deleteField(plist, p);
 				});
 			}
@@ -124,7 +121,7 @@ class Sirius {
 		/** @private */
 		static private function _onLoaded(e:ILoader):Void {
 			if (loader.totalFiles > 0) 
-					log("Sirius->Resources::status [ MODULES (" + loader.totalLoaded + "/" + loader.totalFiles + ") ]", 10, 1);
+				log("Resources <= Total " + loader.totalLoaded + " of " + loader.totalFiles + " loaded", 1);
 		}
 		
 		/**
@@ -135,15 +132,17 @@ class Sirius {
 		 * @return
 		 */
 		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-			t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substr(1, q.length-1)) : (t == null ? Browser.document.body : t).querySelector(q);
-			if (t != null) {
-				t = Utils.displayFrom(t);
-				if (h != null) h(t);
-				return t;
-			}else {
-				log("Sirius->Table::status[ EMPTY (" + q + ") ]", 20, 3);
-				return null;
+			try {
+				t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substr(1, q.length-1)) : (t == null ? Browser.document.body : t).querySelector(q);
+				if (t != null) {
+					t = Utils.displayFrom(t);
+					if (h != null) h(t);
+					return t;
+				}
+			}catch(e:Dynamic){
 			}
+			log("Table => EMPTY (" + q + ")", 3);
+			return null;
 		}
 		
 		/**
@@ -201,7 +200,7 @@ class Sirius {
 				document = new Document();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				Automator._init();
-				log("Sirius->Core::status[ LOADED, WAITING FOR DOM... ]", 10, 2);
+				log("Sirius => WAITING...", 2);
 				Reflect.deleteField(Sirius, '_preInit');
 				if (Browser.document.readyState == 'complete') _loadController(null);
 			}
@@ -211,12 +210,12 @@ class Sirius {
 		 * Runtime status
 		 */
 		static private function status():Void {
-			log("Sirius->Core::status[ " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true) + " ] ", 10, 1);
+			log("Sirius => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
 		}
 		
 		/** @private */
 		static private function _fileError(e:IError) {
-			log("Sirius->Resources::status[ " + e.message + " ]", 10, 3);
+			log("Resources <= " + e.message + " NOT LOADED", 3);
 		}
 		
 	#elseif php
@@ -258,8 +257,8 @@ class Sirius {
 	 * @param	level
 	 * @param	type
 	 */
-	static public function log(q:Dynamic, level:UInt = 10, type:UInt = -1):Void {
-		logger.push(q, level, type);
+	static public function log(q:Dynamic, type:UInt = -1):Void {
+		logger.push(q, type);
 	}
 	
 }
