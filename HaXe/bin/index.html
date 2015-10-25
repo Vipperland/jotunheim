@@ -6,13 +6,16 @@
 	<meta name="description" content=""/>
 </head>
 	
-<body style="background: #000000">
+<body>
 	
-	<script src="sirius/api.sirius.min.js"></script>
+	<script src="sirius/api.sirius.js"></script>
 	
 	<script>
+		var files = [
+			'sirius/modules/automator/reset.html',
+			'sirius/modules/devtools/logger.html'
+		];
 		Sirius.onInit(function(){
-			Sirius.module('sirius/modules/devtools/logger.html');
 			switch(Sirius.domain.hash.last){
 				case 'dragndrop' : {
 					Sirius.module('sirius/modules/sample/demo-dragndrop.html');
@@ -22,11 +25,14 @@
 					Sirius.module('sirius/modules/sample/demo-carousel.html');
 					break;
 				}
-				default : {
+				case 'test' : {
 					Sirius.module('sirius/modules/sample/speed-test.html');
 				}
+				default : {
+					Sirius.module('sirius/modules/sample/ui.html');
+				}
 			}
-		});
+		}, files);
 	</script>
 	
 </body>

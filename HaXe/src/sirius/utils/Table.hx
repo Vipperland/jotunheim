@@ -44,7 +44,7 @@ class Table implements ITable {
 				}
 				var result:NodeList;
 				try {
-					result = q != null ? t.querySelectorAll(q) : t.childNodes;
+					result = q != "*" ? t.querySelectorAll(q) : t.childNodes;
 				}catch (e:Dynamic) {
 					result = cast [];
 				}

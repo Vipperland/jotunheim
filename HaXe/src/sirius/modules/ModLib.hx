@@ -25,8 +25,23 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
+	private var _predata:Array<Dynamic->Dynamic>;
+	
+	private function _sanitize(data:Dynamic):Dynamic {
+		Dice.Values(_predata, function(v:Dynamic->Dynamic) { data = v(data); } );
+		return data;
+	}
+	
 	public function new() {
-		
+		_predata = [];
+	}
+	
+	/**
+	 * Pre filter input data
+	 * @param	handler
+	 */
+	public function onModuleRequest(handler:Dynamic->Dynamic):Void {
+		if(Lambda.indexOf(_predata, handler) == -1)	_predata[_predata.length] = handler;
 	}
 	
 	/**
@@ -56,8 +71,12 @@ class ModLib {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						if (mod.name == null) mod.name = file;
 						else Sirius.log("		ModLib => NAME " + mod.name, 1);
+						if (exists(mod.name)) {
+							Sirius.log("	ModLib => OVERRIDE " + mod.name, 2);
+						}
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
+						if(mod.type == 'null' || mod.type == "html") content = content.split('\r').join('').split('\n').join('');
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
 							Sirius.log("	ModLib => " + mod.name + " VERIFYING...", 1);
@@ -75,10 +94,10 @@ class ModLib {
 							if (mod.type != null) {
 								if (mod.type == 'cssx') {
 									Automator.build(content);
-									content = null;
+									content = '';
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
 									Sirius.document.head.bind(content, mod.type);
-									content = null;
+									content = '';
 								}
 							}
 							if (mod.target != null) {
@@ -89,7 +108,7 @@ class ModLib {
 							}
 							// ***
 						#end
-						if (content != null) Reflect.setField(CACHE, mod.name.toLowerCase(), content);
+						Reflect.setField(CACHE, mod.name.toLowerCase(), content);
 					}else {
 						Sirius.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15), 3) + "...)";
 					}
@@ -110,6 +129,7 @@ class ModLib {
 		name = name.toLowerCase();
 		if (!exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		var content:String = Reflect.field(CACHE, name);
+		data = _sanitize(data);
 		return (data != null) ? Filler.to(content, data) : content;
 
 	}
@@ -169,6 +189,7 @@ class ModLib {
 		 * @return
 		 */
 		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
+			
 			if (each != null && Std.is(data, Array)) {
 				var d:IDisplay = new Div();
 				Dice.Values(data, function(v:Dynamic) {

@@ -6,8 +6,18 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:export('AutomatorRules')
-class AutomatorRules{
+@:expose('AutomatorRules')
+class AutomatorRules {
+	
+	static public var SHADOW_DIST:Int = 5;
+	
+	static public var SHADOW_DIRECTION:Int = 90;
+	
+	static public var SHADOW_COLOR_FLEX:Float = .1;
+	
+	static public var SHADOW_DRAWS:Int = 1;
+	
+	static public var SHADOW_STRENGTH:Int = 3;
 	
 	
 	/**
@@ -208,26 +218,29 @@ class AutomatorRules{
 			var t:ARGB = new ARGB(d.keys[s ? 2 : 1].color);
 			var x:Array<String> = d.compile(s ? 3 : 2);
 			var y:Int = 0;
-			var z:Int = x[0] == null ? 5 : Std.parseInt(x[0]);
-			var a:Int = x[1] == null ? 90 : Std.parseInt(x[1]);
-			var c:Float = x[2] == null ? .1 : Std.parseFloat(x[2]);
-			var u:Int = x[3] == null ? 3 : Std.parseInt(x[3]);
+			var z:Int = 	x[0] == null ? SHADOW_DIST 			: Std.parseInt(x[0]);
+			var a:Int = 	x[1] == null ? SHADOW_DIRECTION 	: Std.parseInt(x[1]);
+			var c:Float = 	x[2] == null ? SHADOW_COLOR_FLEX 	: Std.parseFloat(x[2]);
+			var w:Int = 	x[3] == null ? SHADOW_DRAWS 		: Std.parseInt(x[3]);
+			var u:Int = 	x[4] == null ? SHADOW_STRENGTH 		: Std.parseInt(x[4]);
 			var cos:Float = Math.cos(.017453 * a);
 			var sin:Float = Math.sin(.017453 * a);
 			var r:Array<String> = [];
 			var tx:Int = 0;
 			var ty:Int = 0;
 			while (y < z) {
-				++y;
+				y += w;
+				if (y > z) y = z;
 				tx = (cast cos * y);
 				ty = (cast sin * y);
 				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.range(.8 - (y/z*c)).hex();
 			}
 			y = 0;
 			while (y < u) {
-				++y;
-				tx = (cast cos * ((y*z)+u));
-				ty = (cast sin * ((y*z)+u));
+				y += w;
+				if (y > u) y = u;
+				tx = (cast cos * (y+z));
+				ty = (cast sin * (y+z));
 				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgba(0,0,0,.1)';
 			}
 			return (s ? 'text-shadow' : 'box-shadow') + ':' + r.join(',') + (i ? ' !important' : '');

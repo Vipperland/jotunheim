@@ -165,20 +165,20 @@ class Automator {
 		}
 	}
 	
-	static public function _init() {
-		build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
-		build('arial txt-12', 'body');
-		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
-		build('list-style-none', 'ol,ul,dl');
-		build('padd-5', 'hr');
-		build('padd-10','input,textarea,select');
-		build('disp-table content-void', '.grid:before,.grid:after');
-		build('clear-both', '.grid:after');
-		build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
-		css.setSelector('@-ms-viewport', 'width:device-width;');
-		css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
-		Reflect.deleteField(Automator, '_init');
-	}
+	//static public function _init() {
+		//build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
+		//build('arial txt-12', 'body');
+		//build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
+		//build('list-style-none', 'ol,ul,dl');
+		//build('padd-5', 'hr');
+		//build('padd-10','input,textarea,select');
+		//build('disp-table content-void', '.grid:before,.grid:after');
+		//build('clear-both', '.grid:after');
+		//build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
+		//css.setSelector('@-ms-viewport', 'width:device-width;');
+		//css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
+		//Reflect.deleteField(Automator, '_init');
+	//}
 	
 	/**
 	 * If a screen related selector will be applied

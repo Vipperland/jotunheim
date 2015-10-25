@@ -1,0 +1,26 @@
+[Module:{"name":"ui_test","version":1.00,"type":"html"}]
+
+/EOF;
+
+[Module:{"version":1.00,"type":"script"}]
+	<script>
+		
+		function _init(){
+			
+			Automator.build('bg-seashell');
+			
+			var body = Sirius.document.body;
+			body.css('bg-seashell');
+			
+			var cont = new sru.dom.Div();
+			body.addChild(cont);
+			
+			var book = cont.mount('flat-book');
+			book.mount('flat-page',{width:30, bg:'skyblue'});
+			
+		}
+		
+		Sirius.module('sirius/modules/ui/ui-basic.html', null,null, _init);
+		
+	</script>
+/EOF;

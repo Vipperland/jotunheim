@@ -188,7 +188,7 @@ class Sirius {
 			run(handler);
 		}
 		
-		static public function addScript(url:Dynamic, ?handler:Null<Void>->Void):Void {
+		static public function inject(url:Dynamic, ?handler:Null<Void>->Void):Void {
 			if (!Std.is(url, Array)) url = [url];
 			Script.require(url, handler);
 		}
@@ -199,7 +199,7 @@ class Sirius {
 				_loadPool = [];
 				document = new Document();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				Automator._init();
+				//Automator._init();
 				log("Sirius => WAITING...", 2);
 				Reflect.deleteField(Sirius, '_preInit');
 				if (Browser.document.readyState == 'complete') _loadController(null);
@@ -321,6 +321,6 @@ class Sirius {
 	 * 
 	 * 
 	 * 		Sirius unique attributes:
-	 * 			sru-id				For unique or shared data, all elements with same sru-id shared the same data.
+	 * 			sru-id				For unique or shared data, all elements with same sru-id share the same data.
 	 * 			
 	 */

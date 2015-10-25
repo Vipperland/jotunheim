@@ -49,7 +49,7 @@
 		container.write(Sirius.resources.fill("sample", data));
 		container.addToBody();
 		Automator.scan();
-		Sirius.addScript('sirius/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });
+		Sirius.inject('sirius/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });
 	});
 	
 </script>

@@ -200,27 +200,29 @@ class Display implements IDisplay {
 			var sw:Node = element.childNodes.item(at);
 			element.insertBefore(q.element, sw);
 		}else {
-			element.appendChild(q.element);	
+			element.appendChild(q.element);
 		}
 		_children = null;
-		return this;
+		return q;
 	}
 	
 	public function addChildren(q:ITable):IDisplay {
+		var l:IDisplay = null;
 		q.each(cast addChild);
 		_children = null;
-		return this;
+		return q.last();
 	}
 	
 	public function addText(q:String):IDisplay {
-		addChild(new Text(q));
-		return this;
+		var t:IDisplay = new Text(q);
+		addChild(t);
+		return t;
 	}
 	
 	public function removeChild(q:IDisplay):IDisplay {
 		_children = null;
 		q.remove();
-		return this;
+		return q;
 	}
 	
 	public function remove():IDisplay {
@@ -326,12 +328,12 @@ class Display implements IDisplay {
 		else											return Browser.window.getComputedStyle(element);
 	}
 	
-	public function mount(q:String):IDisplay {
-		var i:IDisplay = new Display().write(q,false);
-		i.children().each(function(v:IDisplay) {
-			addChild(v);
-		});
-		return this;
+	public function mount(q:String, ?data:Dynamic):IDisplay {
+		if (Sirius.resources.exists(q)) {
+			return addChildren(Sirius.resources.build(q, data).children());
+		}else {
+			return addChildren(new Display().write(q,false).children());
+		}
 	}
 	
 	public function clear(?fast:Bool):IDisplay {

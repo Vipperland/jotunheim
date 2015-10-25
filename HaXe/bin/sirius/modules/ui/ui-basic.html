@@ -1,0 +1,68 @@
+[Module:{"name":"flat-book","version":1.00,"type":"html"}]
+	<div class="grid {{css}}"></div>
+/EOF;
+
+[Module:{"name":"flat-page","version":1.00,"type":"html"}]
+	<div class="cel-{{width}}x30 {{css}}"></div>
+/EOF;
+
+[Module:{"version":1.00,"type":"script","dependency":"automator_reset"}]
+	<script>
+		
+		AutomatorRules.SHADOW_DIRECTION = 80;
+		AutomatorRules.SHADOW_DRAWS = 5;
+		AutomatorRules.SHADOW_STRENGTH = 0;
+		
+		// FLAT COLORS
+		var colors = [
+			'red',
+			'pink',
+			'purple',
+			'deeppurple',
+			'indigo',
+			'skyblue',
+			'lightblue',
+			'cyan',
+			'teel',
+			'green',
+			'lightgreen',
+			'lime',
+			'yellow',
+			'amber',
+			'orange',
+			'deeporange',
+			'brow',
+			'grey',
+			'bluegrey',
+			'black',
+			'white'
+		];
+		// BUILD TARGETS
+		var target = [
+			'bg',
+			'txt',
+			'shadow'
+		];
+		
+		Dice.Values(target, function(v1){
+			Dice.Values(colors, function(v2){
+				Automator.build(v1 + '-' + v2);
+			});
+		});
+		
+		// DEFAULT GRID IS 30
+		Automator.mosaic([30]);
+		
+		// FIX CREATED ELEMENTS
+		function _sanitize(d){
+			if(d == null) d = {};
+			if(!d.css) d.css = "";
+			if(!d.width) d.width = "30";
+			d.bg = (d.bg != null) ? "bg-" + d.bg : "";
+			return d;
+		}
+		
+		Sirius.resources.onModuleRequest(_sanitize);
+		
+	</script>
+/EOF;

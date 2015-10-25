@@ -13,7 +13,7 @@ class Logger{
 	private var _events:Array<Dynamic->UInt->Void>;
 	
 	public function new() {
-		_events = [trace];
+		_events = [query];
 	}
 	
 	#if js
@@ -23,7 +23,8 @@ class Logger{
 	#end
 	
 	public function silent():Void {
-		if (Lambda.indexOf(_events, trace) != -1) _events.splice(0, 1);
+		query("Log => Disconnected", 2);
+		if (Lambda.indexOf(_events, query) != -1) _events.splice(0, 1);
 	}
 	
 	public function listen(handler:Dynamic->UInt->Void):Void {
@@ -34,7 +35,7 @@ class Logger{
 		Dice.Values(_events, function(v:Dynamic->UInt->Void) { v(q, type); });
 	}
 	
-	public function trace(q:Dynamic, type:UInt):Void {
+	public function query(q:Dynamic, type:UInt):Void {
 		var t:String = switch(type) {
 			case 0 : "[MESSAGE] ";
 			case 1 : "[>SYSTEM] ";

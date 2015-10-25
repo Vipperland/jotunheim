@@ -2,6 +2,7 @@
 	<script>
 		
 		Sirius.logger.silent();
+		
 		var t = new sru.dom.Div();
 		var l = 0;
 		var c = false;
@@ -11,8 +12,10 @@
 		t.css('lucida txt-10 txt-white padd-5 z-9999999 bg-black-80 max-height-100pc max-w-600 t-0 scroll-none max-h-50pc');
 		t.addToBody();
 		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-white-10">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
+		
 		var d = t.one('#sirius:dump');
 		_bgs = ['txt-xCCCCCC','txt-x00FF66','txt-xFFFF00','txt-xFF6600','txt-xFF99CC bold', 'txt-x0099CC'];
+		
 		Automator.build('bg-black padd-5 bg-white-10 padd-t-5 padd-l-50 overflow-y-auto max-h-300');
 		Automator.css.setSelector('.nowrap','white-space: nowrap;overflow-x:hidden');
 		Automator.build(t.css());

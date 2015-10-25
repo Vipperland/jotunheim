@@ -225,11 +225,11 @@ interface IDisplay {
 	public function trueStyle():CSSStyleDeclaration;
 	
 	/**
-	 * Append a value to innerHTML value
-	 * @param	module
+	 * Write a html content or a module
+	 * @param	q
 	 * @return
 	 */
-	public function mount(q:String):IDisplay;
+	public function mount(q:String, ?data:Dynamic):IDisplay;
 	
 	
 	/**

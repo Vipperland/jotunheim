@@ -113,7 +113,7 @@
 					$(h()).data('test1');
 					++i;
 				}
-				Sirius.log('Jquery set Attribute: ' + elapsed() + 'ms');
+				Sirius.log('Jquery get Attribute: ' + elapsed() + 'ms');
 				
 			}
 			
@@ -176,7 +176,7 @@
 			
 		}
 		
-		Sirius.addScript('sirius/3rd/js/jquery-2.1.4.min.js', _loaded);
+		Sirius.inject('sirius/3rd/js/jquery-2.1.4.min.js', _loaded);
 		
 	</script>
 /EOF;
