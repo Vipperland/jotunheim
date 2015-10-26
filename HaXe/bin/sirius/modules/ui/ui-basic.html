@@ -1,13 +1,13 @@
 [Module:{"name":"flat-book","version":1.00,"type":"html"}]
-	<div class="grid {{css}}"></div>
+	<div class="grid{{css}}"></div>
 /EOF;
 
 [Module:{"name":"flat-page","version":1.00,"type":"html"}]
-	<div class="cel-{{width}}x30 {{css}}"></div>
+	<div class="cel-{{width}}x30{{css}}"></div>
 /EOF;
 
-[Module:{"name":"flat-buttom","version":1.00,"type":"html"}]
-	<div class="cel-{{width}}x30 {{css}}">{{label}}</div>
+[Module:{"name":"flat-button","version":1.00,"type":"html"}]
+	<div class="cel-{{width}}x30{{css}}">{{label}}</div>
 /EOF;
 
 [Module:{"version":1.00,"type":"script","dependency":"automator_reset"}]
@@ -67,18 +67,18 @@
 			if(d.bg != null) 	d.bg =  "bg-" + d.bg + (d.shadow != false ? " shadow-" + d.bg : "");
 			else				d.bg = "";
 			switch(n){
-				case 'flat-buttom' : {
-					d.css = (d.css != null ? d.css : '') + ' txt-c';
+				case 'flat-button' : {
+					d.css = (d.css != null ? d.css : '') + ' curs-pointer txt-c';
 					break;
 				}
 			}
-			if(!d.css) d.css = d.bg;
-			else d.css = d.bg + ' ' + d.css;
+			if(!d.css) d.css = ' ' + d.bg;
+			else d.css = ' ' + d.bg + ' ' + d.css;
 			delete d.bg;
 			return d;
 		}
 		
-		Automator.build('txt-c txt-l txt-r vert-m');
+		Automator.build('txt-c txt-l txt-r vert-m curs-pointer');
 		
 		Sirius.resources.onModuleRequest(_sanitize);
 		
