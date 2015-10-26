@@ -229,6 +229,7 @@ class AutomatorRules {
 			var r:Array<String> = [];
 			var tx:Int = 0;
 			var ty:Int = 0;
+			if (a % 90 == 0) w = z;
 			while (y < z) {
 				y += w;
 				if (y > z) y = z;

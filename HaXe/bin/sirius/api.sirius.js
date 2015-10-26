@@ -4477,6 +4477,7 @@ sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
 		var r = [];
 		var tx = 0;
 		var ty = 0;
+		if(a % 90 == 0) w = z;
 		while(y < z) {
 			y += w;
 			if(y > z) y = z;
