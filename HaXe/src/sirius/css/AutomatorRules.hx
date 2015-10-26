@@ -89,6 +89,7 @@ class AutomatorRules {
 	static public function commonKey(d:Entry, k:IKey, n:IKey):String {
 		return k.entry.value + (n != null ? ":" : "");
 	}
+	
 	/**
 	 * Return color value with alpha
 	 * @param	d
