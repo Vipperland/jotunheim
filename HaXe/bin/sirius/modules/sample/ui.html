@@ -7,16 +7,18 @@
 		
 		function _init(){
 			
-			Automator.build('bg-seashell');
+			Automator.build('bg-seashell padd-10');
 			
 			var body = Sirius.document.body;
-			body.css('bg-seashell');
+			body.css('bg-seashell txt-white');
 			
 			var cont = new sru.dom.Div();
 			body.addChild(cont);
 			
-			var book = cont.mount('flat-book');
-			book.mount('flat-page',{width:30, bg:'skyblue'});
+			var book = cont.mount('flat-book',{bg:'blue'});
+			var page = book.mount('flat-page',{width:30});
+			var buttom = page.mount('flat-buttom',{width:5, bg:'indigo', label:'Test buttom'});
+			var spacer = page.mount('flat-page',{width:25});
 			
 		}
 		

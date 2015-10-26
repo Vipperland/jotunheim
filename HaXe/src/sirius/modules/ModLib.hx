@@ -25,10 +25,10 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
-	private var _predata:Array<Dynamic->Dynamic>;
+	private var _predata:Array<String->Dynamic->Dynamic>;
 	
-	private function _sanitize(data:Dynamic):Dynamic {
-		Dice.Values(_predata, function(v:Dynamic->Dynamic) { data = v(data); } );
+	private function _sanitize(name:String, data:Dynamic):Dynamic {
+		Dice.Values(_predata, function(v:String->Dynamic->Dynamic) { data = v(name, data); } );
 		return data;
 	}
 	
@@ -40,7 +40,7 @@ class ModLib {
 	 * Pre filter input data
 	 * @param	handler
 	 */
-	public function onModuleRequest(handler:Dynamic->Dynamic):Void {
+	public function onModuleRequest(handler:String->Dynamic->Dynamic):Void {
 		if(Lambda.indexOf(_predata, handler) == -1)	_predata[_predata.length] = handler;
 	}
 	
@@ -129,7 +129,7 @@ class ModLib {
 		name = name.toLowerCase();
 		if (!exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		var content:String = Reflect.field(CACHE, name);
-		data = _sanitize(data);
+		data = _sanitize(name, data);
 		return (data != null) ? Filler.to(content, data) : content;
 
 	}

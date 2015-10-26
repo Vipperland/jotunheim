@@ -153,13 +153,11 @@ class Automator {
 		if(!css.hasSelector(n,null,'')){
 			Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
 				++a;
-				var s:String = untyped __js__("(a/b*100).toFixed(9)").split(".").join("d") + "pc"; // 00d00pc
+				var s:String = untyped __js__("(a/b*100).toFixed(12)").split(".").join("d") + "pc"; // 00d00pc
 				var n:String = '.cel-' + a + 'x' + b;	// .cel-AxB
 				build4All('w-' + s + ' padd-10', n); // w-00d00pc padd-r-15 padd-l-15
-				if (a < b-1) {
-					build4All('pull-l', n); // 
-					build4All('marg-l-' + s, 'skip-' + n);
-				}
+				build4All('pull-l', n); 
+				if (a < b-1) build4All('marg-l-' + s, 'skip-' + n);
 				return null;
 			});
 		}

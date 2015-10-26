@@ -6,37 +6,43 @@
 	<div class="cel-{{width}}x30 {{css}}"></div>
 /EOF;
 
+[Module:{"name":"flat-buttom","version":1.00,"type":"html"}]
+	<div class="cel-{{width}}x30 {{css}}">{{label}}</div>
+/EOF;
+
 [Module:{"version":1.00,"type":"script","dependency":"automator_reset"}]
 	<script>
 		
-		AutomatorRules.SHADOW_DIRECTION = 80;
-		AutomatorRules.SHADOW_DRAWS = 5;
-		AutomatorRules.SHADOW_STRENGTH = 0;
+		AutomatorRules.SHADOW_DIRECTION = 90;
+		AutomatorRules.SHADOW_DIST = 3;
+		AutomatorRules.SHADOW_DRAWS = 3;
+		AutomatorRules.SHADOW_STRENGTH = 2;
 		
-		// FLAT COLORS
+		// FLAT COLORS OVERRIDE
 		var colors = [
-			'red',
-			'pink',
-			'purple',
-			'deeppurple',
-			'indigo',
-			'skyblue',
-			'lightblue',
-			'cyan',
-			'teel',
-			'green',
-			'lightgreen',
-			'lime',
-			'yellow',
-			'amber',
-			'orange',
-			'deeporange',
-			'brow',
-			'grey',
-			'bluegrey',
-			'black',
-			'white'
+			['red','F44336'],
+			['pink','E91E63'],
+			['purple','9C27B0'],
+			['deeppurple','673AB7'],
+			['indigo','3F51B5'],
+			['blue','2196F3'],
+			['lightblue','03A9F4'],
+			['cyan','00BCD4'],
+			['teel','009688'],
+			['green','4CAF50'],
+			['lightgreen','8BC34A'],
+			['lime','CDDC39'],
+			['yellow','FFEB3B'],
+			['amber','FFC107'],
+			['orange','FF9800'],
+			['deeporange','FF5722'],
+			['brow','795548'],
+			['grey','9E9E9E'],
+			['bluegrey','607D8B'],
+			['black','000000'],
+			['white','FFFFFF']
 		];
+		
 		// BUILD TARGETS
 		var target = [
 			'bg',
@@ -46,7 +52,8 @@
 		
 		Dice.Values(target, function(v1){
 			Dice.Values(colors, function(v2){
-				Automator.build(v1 + '-' + v2);
+				AutomatorRules.set(v2[0],{value:'#'+v2[1],verifier:AutomatorRules.colorKey});
+				Automator.build(v1 + '-' + v2[0]);
 			});
 		});
 		
@@ -54,13 +61,24 @@
 		Automator.mosaic([30]);
 		
 		// FIX CREATED ELEMENTS
-		function _sanitize(d){
+		function _sanitize(n,d){
 			if(d == null) d = {};
-			if(!d.css) d.css = "";
 			if(!d.width) d.width = "30";
-			d.bg = (d.bg != null) ? "bg-" + d.bg : "";
+			if(d.bg != null) 	d.bg =  "bg-" + d.bg + (d.shadow != false ? " shadow-" + d.bg : "");
+			else				d.bg = "";
+			switch(n){
+				case 'flat-buttom' : {
+					d.css = (d.css != null ? d.css : '') + ' txt-c';
+					break;
+				}
+			}
+			if(!d.css) d.css = d.bg;
+			else d.css = d.bg + ' ' + d.css;
+			delete d.bg;
 			return d;
 		}
+		
+		Automator.build('txt-c txt-l txt-r vert-m');
 		
 		Sirius.resources.onModuleRequest(_sanitize);
 		

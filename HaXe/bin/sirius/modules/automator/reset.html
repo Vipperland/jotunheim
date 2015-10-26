@@ -6,7 +6,6 @@
 				Sirius Automator create a unique style element with contains all dynamic created style
 		*/
 		Automator.build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
-		Automator.build('disp-block','article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,container,row,column,label');
 		Automator.build('arial txt-12', 'body');
 		Automator.build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
 		Automator.build('list-style-none', 'ol,ul,dl');
@@ -14,8 +13,8 @@
 		Automator.build('padd-10','input,textarea,select');
 		Automator.build('disp-table content-void', '.grid:before,.grid:after');
 		Automator.build('clear-both', '.grid:after');
-		Automator.build('marg-a vert-m float-l float-r txt-c');
+		Automator.build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
 		Automator.css.setSelector('@-ms-viewport', 'width:device-width;');
-		Automator.css.setSelector('*,*:before,*:after', '-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;');
+		Automator.css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
 	</script>
 /EOF;
