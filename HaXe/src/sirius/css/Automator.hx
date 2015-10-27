@@ -30,6 +30,10 @@ class Automator {
 		_dev = false;
 	}
 	
+	static public function shadowConfig(data:Dynamic):Void {
+		Dice.All(data, function(p:String, v:UInt) {	Reflect.setField(AutomatorRules.shadowConfig, p, v); } );
+	}
+	
 	static public function scan(?dev:Bool = false, ?force:Bool = false):Void {
 		Sirius.log("Automator => SCAN " + (dev == true ? "ACTIVE" : "[x1]"), 1);
 		_dev = dev == true;
@@ -153,11 +157,12 @@ class Automator {
 		if(!css.hasSelector(n,null,'')){
 			Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
 				++a;
-				var s:String = untyped __js__("(a/b*100).toFixed(12)").split(".").join("d") + "pc"; // 00d00pc
+				var t:Dynamic = a / b * 100 - .01;
+				var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
 				var n:String = '.cel-' + a + 'x' + b;	// .cel-AxB
-				build4All('w-' + s + ' padd-10', n); // w-00d00pc padd-r-15 padd-l-15
+				build4All('w-' + s + ' padd-' + (a==1 ? '1' : '10'), n); // w-00d00pc padd-10
 				build4All('pull-l', n); 
-				if (a < b-1) build4All('marg-l-' + s, 'skip-' + n);
+				if (a < b-1) build4All('marg-l-' + s, 'o-' + n);
 				return null;
 			});
 		}

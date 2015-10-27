@@ -23,7 +23,7 @@ interface IFormData {
 
 	public function getParam (p:String) : FormParam;
 
-	public function getData():Dynamic;
+	public function getData(?append:Dynamic):Dynamic;
 	
 	public function clear () : IFormData;
 	

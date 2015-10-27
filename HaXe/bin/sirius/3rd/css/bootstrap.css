@@ -205,19 +205,3 @@ blockquote:before, blockquote:after, q:before, q:after { content: ''; content: n
 /*-----*/
 }
 
-col-12
-
-col-100
-
-col-12x
-
-dividir-row-em-XX-colunas{}
-
-col-1x7
-col-8x65
-
-.row {}
-.col-9x9 {}
-.col-[9]x[15]
-
-

@@ -9,15 +9,15 @@
 		var mv = 0;
 		var cr = {x:0,y:0};
 		t.pin();
-		t.css('lucida txt-10 txt-white padd-5 z-9999999 bg-black-80 max-height-100pc max-w-600 t-0 scroll-none max-h-50pc');
+		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 max-height-100pc max-w-700 t-0 scroll-none max-h-50pc');
 		t.addToBody();
-		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-white-10">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
+		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-x10FFFFFF">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
 		
 		var d = t.one('#sirius:dump');
-		_bgs = ['txt-xCCCCCC','txt-x00FF66','txt-xFFFF00','txt-xFF6600','txt-xFF99CC bold', 'txt-x0099CC'];
+		_bgs = ['txt-xCCCCCC','txt-x00CCFF','txt-xFFFF00','txt-xFF0000','txt-xFF99CC bold', 'txt-x0099CC'];
 		
-		Automator.build('bg-black padd-5 bg-white-10 padd-t-5 padd-l-50 overflow-y-auto max-h-300');
-		Automator.css.setSelector('.nowrap','white-space: nowrap;overflow-x:hidden');
+		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 padd-l-50 overflow-y-auto max-h-300');
+		Automator.css.setSelector('.nowrap','xFFFFFF-space: nowrap;overflow-x:hidden');
 		Automator.build(t.css());
 		Automator.build(_bgs.join(' '));
 		
@@ -26,8 +26,8 @@
 		}
 		
 		function _push(data, type, id){
-			if(++type < 0) type = 0;
-			else if(type > 4) type = 4;
+			if(type < 0) type = 0;
+			else if(type > 4) type = 0;
 			var s = (l++) + '';
 			while(s.length < 5) s = '·' + s;
 			d.mount('<div ' + (id !=null ? 'id="' + id + '" ' : '' ) + 'class="nowrap ' + _bgs[type] + '">[' + s + '] ' + stringIfObject(data) + '</div>');
@@ -67,8 +67,8 @@
 					if(req.id != null) {
 						var e = Sirius.one('#' + req.id);
 						var v = e.element.innerHTML;
-						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="curs-pointer txt-white"></span>');
-						e.css('/txt-x00FF66 txt-x0099CC bg-black');
+						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="curs-pointer txt-xFFFFFF"></span>');
+						e.css('/txt-x00FF66 txt-x0099CC bg-x000000');
 						if(data != null){
 							var o = null;
 							try {
@@ -76,7 +76,7 @@
 							}catch(er){ /* NOT A JSON */ }
 							if(o != null){
 								var ac = new sru.dom.Div();
-								ac.css("padd-l-50 txt-white");
+								ac.css("padd-l-50 txt-xFFFFFF");
 								ac.write('<div class="sruobj" hidden>' + Utils.sruString(o).split('\r').join('<br/>').split(' ').join('&nbsp;') + '</div>');
 								e.addChild(ac);
 								var sp = e.one('span');

@@ -59,8 +59,8 @@ class FormData implements IFormData {
 		return cast res.value;
 	}
 	
-	public function getData():Dynamic {
-		var d:Dynamic = { };
+	public function getData(?append:Dynamic):Dynamic {
+		var d:Dynamic = append == null ? {} : append;
 		Dice.Values(params, function(v:FormParam) {	return Reflect.setField(d, v.getName(), v.getValue()); } );
 		return d;
 	}

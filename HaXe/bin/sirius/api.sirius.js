@@ -244,6 +244,7 @@ var haxe_Http = function(url) {
 	this.headers = new List();
 	this.params = new List();
 	this.async = true;
+	this.withCredentials = false;
 };
 haxe_Http.__name__ = ["haxe","Http"];
 haxe_Http.prototype = {
@@ -258,6 +259,7 @@ haxe_Http.prototype = {
 		var me = this;
 		me.responseData = null;
 		var r = this.req = js_Browser.createXMLHttpRequest();
+		r.withCredentials = this.withCredentials;
 		var onreadystatechange = function(_) {
 			if(r.readyState != 4) return;
 			var s;
@@ -1766,16 +1768,15 @@ sirius_dom_Display.prototype = {
 			var value = data;
 			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
 			if(value.indexOf("#") == 0) this.element.style.background = value; else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else {
-				var c;
-				if(value.indexOf("#") == 0) c = value; else c = "url('" + Std.string(value) + "')";
+				var c = "url('" + Std.string(value) + "')";
 				var r;
-				if(repeat != null && repeat.length > 0) r = repeat; else r = "no-repeat";
+				if(repeat != null) r = repeat; else r = "no-repeat";
 				var p;
-				if(position != null && position.length > 0) p = position; else p = "center center";
+				if(position != null) p = position; else p = "center center";
 				this.element.style.backgroundImage = c;
 				this.element.style.backgroundRepeat = r;
-				this.element.style.backgroundOrigin = p;
-				if(attachment != null && attachment.length > 0) this.element.style.backgroundAttachment = attachment;
+				this.element.style.backgroundPosition = p;
+				if(attachment != null) this.element.style.backgroundAttachment = attachment;
 			}
 		}
 		return this.element.style.background;
@@ -1787,7 +1788,7 @@ sirius_dom_Display.prototype = {
 		return sirius_Sirius.one(q,this.element);
 	}
 	,children: function() {
-		if(this._children == null) this._children = sirius_Sirius.all(null,this.element);
+		if(this._children == null) this._children = sirius_Sirius.all("*",this.element);
 		return this._children;
 	}
 	,getScroll: function(o) {
@@ -2424,6 +2425,11 @@ sirius_css_Automator.enableLogging = function() {
 sirius_css_Automator.disableLogging = function() {
 	sirius_css_Automator._dev = false;
 };
+sirius_css_Automator.shadowConfig = function(data) {
+	sirius_utils_Dice.All(data,function(p,v) {
+		sirius_css_AutomatorRules.shadowConfig[p] = v;
+	});
+};
 sirius_css_Automator.scan = function(dev,force) {
 	if(force == null) force = false;
 	if(dev == null) dev = false;
@@ -2510,11 +2516,12 @@ sirius_css_Automator._createGridCol = function(size) {
 	var n = ".mosaic-" + size;
 	if(!sirius_css_Automator.css.hasSelector(n,null,"")) sirius_utils_Dice.Count(0,size,function(a,b,c) {
 		++a;
-		var s = (a/b*100).toFixed(12).split(".").join("d") + "pc";
+		var t = a / b * 100 - .01;
+		var s = Std.string(t.toFixed(16).split(".").join("d")) + "pc";
 		var n1 = ".cel-" + a + "x" + b;
-		sirius_css_Automator.build4All("w-" + s + " padd-10",n1);
+		sirius_css_Automator.build4All("w-" + s + " padd-" + (a == 1?"1":"10"),n1);
 		sirius_css_Automator.build4All("pull-l",n1);
-		if(a < b - 1) sirius_css_Automator.build4All("marg-l-" + s,"skip-" + n1);
+		if(a < b - 1) sirius_css_Automator.build4All("marg-l-" + s,"o-" + n1);
 		return null;
 	});
 };
@@ -2563,7 +2570,7 @@ var sirius_math_ARGB = $hx_exports.ARGB = function(q,g,b,a) {
 	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
 	if(s && q.substr(0,3) == "rgb") {
 		s = false;
-		q = q.split("rgba").join("").q.split("rgb").join("").split("(").join("").split(")").join("").split(" ").join("");
+		q = q.split(q.substr(0,4) == "rgba"?"rgba":"rgb")[1].split("(").join("").split(")").join("").split(" ").join("");
 		q = q.split(",");
 		if(q.length == 4) a = Std.parseInt(q[3]);
 		b = Std.parseInt(q[2]);
@@ -2585,13 +2592,15 @@ var sirius_math_ARGB = $hx_exports.ARGB = function(q,g,b,a) {
 		} else this.b = 255;
 	} else {
 		var x;
-		if(s) x = Std.parseInt(q.split("#").join("0x")); else x = q;
+		if(s) {
+			x = Std.parseInt(q.split("#").join("0x"));
+			if(q.length < 8) x = x | -16777216;
+		} else x = q;
 		this.a = x >> 24 & 255;
 		this.r = x >> 16 & 255;
 		this.g = x >> 8 & 255;
 		this.b = x & 255;
 	}
-	if(a == null) a = 255;
 };
 sirius_math_ARGB.__name__ = ["sirius","math","ARGB"];
 sirius_math_ARGB.__interfaces__ = [sirius_math_IARGB];
@@ -2599,7 +2608,11 @@ sirius_math_ARGB.from = function(q,g,b,a) {
 	return new sirius_math_ARGB(q,g,b,a);
 };
 sirius_math_ARGB.prototype = {
-	value32: function() {
+	_v16: function(v) {
+		var a = v.toString(16);
+		if(a.length == 1) return "0" + a; else return a;
+	}
+	,value32: function() {
 		return this.a << 24 | this.r << 16 | this.g << 8 | this.b;
 	}
 	,value: function() {
@@ -2611,12 +2624,9 @@ sirius_math_ARGB.prototype = {
 	,range: function(rate,alpha) {
 		if(alpha == null) alpha = 0;
 		if(rate < .01) rate = .01;
-		var r2;
-		r2 = (this.r == 0?1:this.r) * rate | 0;
-		var g2;
-		g2 = (this.g == 0?1:this.g) * rate | 0;
-		var b2;
-		b2 = (this.b == 0?1:this.b) * rate | 0;
+		var r2 = this.r * rate | 0;
+		var g2 = this.g * rate | 0;
+		var b2 = this.b * rate | 0;
 		return new sirius_math_ARGB(r2 > 255?255:r2,g2 > 255?255:g2,b2 > 255?255:b2,alpha == 0?this.a:alpha * this.a | 0);
 	}
 	,change: function(ammount) {
@@ -2632,6 +2642,9 @@ sirius_math_ARGB.prototype = {
 	}
 	,css: function() {
 		if(this.a == 255) return "rgb(" + this.r + "," + this.g + "," + this.b + ")"; else return "rgba(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed(2) + ")";
+	}
+	,xcss: function() {
+		return "x" + this._v16(this.a) + this._v16(this.r) + this._v16(this.g) + this._v16(this.b);
 	}
 	,__class__: sirius_math_ARGB
 };
@@ -4459,25 +4472,27 @@ sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
 		d.cancel();
 		var i = d.tail.key == "i";
 		var s = n.key == "txt";
+		haxe_Log.trace(d.keys[s?2:1].color,{ fileName : "AutomatorRules.hx", lineNumber : 211, className : "sirius.css.AutomatorRules", methodName : "shadowKey"});
 		var t = new sirius_math_ARGB(d.keys[s?2:1].color);
 		var x = d.compile(s?3:2);
 		var y = 0;
 		var z;
-		if(x[0] == null) z = sirius_css_AutomatorRules.SHADOW_DIST; else z = Std.parseInt(x[0]);
+		if(x[0] == null) z = sirius_css_AutomatorRules.shadowConfig.distance; else z = Std.parseInt(x[0]);
 		var a;
-		if(x[1] == null) a = sirius_css_AutomatorRules.SHADOW_DIRECTION; else a = Std.parseInt(x[1]);
-		var c;
-		if(x[2] == null) c = sirius_css_AutomatorRules.SHADOW_COLOR_FLEX; else c = parseFloat(x[2]);
+		if(x[1] == null) a = sirius_css_AutomatorRules.shadowConfig.direction; else a = Std.parseInt(x[1]);
 		var w;
-		if(x[3] == null) w = sirius_css_AutomatorRules.SHADOW_DRAWS; else w = Std.parseInt(x[3]);
+		if(x[2] == null) w = sirius_css_AutomatorRules.shadowConfig.draws; else w = Std.parseInt(x[2]);
 		var u;
-		if(x[4] == null) u = sirius_css_AutomatorRules.SHADOW_STRENGTH; else u = Std.parseInt(x[4]);
+		if(x[3] == null) u = sirius_css_AutomatorRules.shadowConfig.strength; else u = Std.parseInt(x[3]);
+		var c = sirius_css_AutomatorRules.shadowConfig.flex;
 		var cos = Math.cos(.017453 * a);
 		var sin = Math.sin(.017453 * a);
 		var r = [];
 		var tx = 0;
 		var ty = 0;
 		if(a % 90 == 0) w = z;
+		w = Math.floor(z / w);
+		if(w <= 0) w = 1;
 		while(y < z) {
 			y += w;
 			if(y > z) y = z;
@@ -4486,11 +4501,12 @@ sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
 			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 " + t.range(.8 - y / z * c).hex();
 		}
 		y = 0;
+		var oX = cos * z;
+		var oY = sin * z;
 		while(y < u) {
-			y += w;
-			if(y > u) y = u;
-			tx = cos * (y + z);
-			ty = sin * (y + z);
+			++y;
+			tx = cos * y + oX;
+			ty = sin * y + oY;
 			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 rgba(0,0,0,.1)";
 		}
 		return (s?"text-shadow":"box-shadow") + ":" + r.join(",") + (i?" !important":"");
@@ -4704,8 +4720,9 @@ sirius_data_FormData.prototype = {
 		});
 		return res.value;
 	}
-	,getData: function() {
-		var d = { };
+	,getData: function(append) {
+		var d;
+		if(append == null) d = { }; else d = append;
 		sirius_utils_Dice.Values(this.params,function(v) {
 			Reflect.setField(d,v.getName(),v.getValue());
 			return;
@@ -6096,11 +6113,7 @@ sirius_dom_Display3D._fixed = false;
 sirius_dom_Document.__scroll__ = { x : 0, y : 0};
 sirius_dom_Document.__cursor__ = { x : 0, y : 0};
 sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
-sirius_css_AutomatorRules.SHADOW_DIST = 5;
-sirius_css_AutomatorRules.SHADOW_DIRECTION = 90;
-sirius_css_AutomatorRules.SHADOW_COLOR_FLEX = .1;
-sirius_css_AutomatorRules.SHADOW_DRAWS = 1;
-sirius_css_AutomatorRules.SHADOW_STRENGTH = 3;
+sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
 sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, pc : { value : "%", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, loading : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
 sirius_css_XCSS.enabled = false;
 sirius_tools_BitIO.P01 = 1;

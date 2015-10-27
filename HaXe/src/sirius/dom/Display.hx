@@ -130,13 +130,13 @@ class Display implements IDisplay {
 			}else if (value.indexOf("rgb") == 0) {
 				element.style.backgroundColor = value;
 			}else{
-				var c:String = (value.indexOf("#") == 0) ? value : "url('" + value + "')";
-				var r:String = repeat != null && repeat.length > 0 ? repeat : "no-repeat";
-				var p:String = position != null && position.length > 0 ? position : "center center";
+				var c:String = "url('" + value + "')";
+				var r:String = repeat != null ? repeat : "no-repeat";
+				var p:String = position != null ? position : "center center";
 				element.style.backgroundImage = c;
 				element.style.backgroundRepeat = r;
-				element.style.backgroundOrigin = p;
-				if (attachment != null && attachment.length > 0) element.style.backgroundAttachment = attachment;
+				element.style.backgroundPosition = p;
+				if (attachment != null) element.style.backgroundAttachment = attachment;
 			}
 		}
 		return element.style.background;
@@ -154,7 +154,7 @@ class Display implements IDisplay {
 	
 	
 	public function children():ITable {
-		if (_children == null) _children = Sirius.all(null, element);
+		if (_children == null) _children = Sirius.all('*', element);
 		return _children;
 	}
 	

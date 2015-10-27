@@ -9,16 +9,7 @@ import sirius.utils.Dice;
 @:expose('AutomatorRules')
 class AutomatorRules {
 	
-	static public var SHADOW_DIST:Int = 5;
-	
-	static public var SHADOW_DIRECTION:Int = 90;
-	
-	static public var SHADOW_COLOR_FLEX:Float = .1;
-	
-	static public var SHADOW_DRAWS:Int = 1;
-	
-	static public var SHADOW_STRENGTH:Int = 3;
-	
+	static public var shadowConfig:Dynamic = { distance:1, direction:45, flex:.1, draws:1, strength:3 };
 	
 	/**
 	 * Fix any numeric key value or key name
@@ -216,20 +207,25 @@ class AutomatorRules {
 			d.cancel();
 			var i:Bool = d.tail.key == 'i';
 			var s:Bool = n.key == 'txt';
+			
+			trace(d.keys[s ? 2 : 1].color);
+			
 			var t:ARGB = new ARGB(d.keys[s ? 2 : 1].color);
 			var x:Array<String> = d.compile(s ? 3 : 2);
 			var y:Int = 0;
-			var z:Int = 	x[0] == null ? SHADOW_DIST 			: Std.parseInt(x[0]);
-			var a:Int = 	x[1] == null ? SHADOW_DIRECTION 	: Std.parseInt(x[1]);
-			var c:Float = 	x[2] == null ? SHADOW_COLOR_FLEX 	: Std.parseFloat(x[2]);
-			var w:Int = 	x[3] == null ? SHADOW_DRAWS 		: Std.parseInt(x[3]);
-			var u:Int = 	x[4] == null ? SHADOW_STRENGTH 		: Std.parseInt(x[4]);
+			var z:Int = x[0] == null ? shadowConfig.distance	: Std.parseInt(x[0]);
+			var a:Int = x[1] == null ? shadowConfig.direction 	: Std.parseInt(x[1]);
+			var w:Int = x[2] == null ? shadowConfig.draws 		: Std.parseInt(x[2]);
+			var u:Int = x[3] == null ? shadowConfig.strength	: Std.parseInt(x[3]);
+			var c:Float = 	shadowConfig.flex;
 			var cos:Float = Math.cos(.017453 * a);
 			var sin:Float = Math.sin(.017453 * a);
 			var r:Array<String> = [];
 			var tx:Int = 0;
 			var ty:Int = 0;
 			if (a % 90 == 0) w = z;
+			w = Math.floor(cast z / w);
+			if (w <= 0) w = 1;
 			while (y < z) {
 				y += w;
 				if (y > z) y = z;
@@ -238,11 +234,12 @@ class AutomatorRules {
 				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.range(.8 - (y/z*c)).hex();
 			}
 			y = 0;
+			var oX:Float = cos * z;
+			var oY:Float = sin * z;
 			while (y < u) {
-				y += w;
-				if (y > u) y = u;
-				tx = (cast cos * (y+z));
-				ty = (cast sin * (y+z));
+				++y;
+				tx = (cast cos * y + oX);
+				ty = (cast sin * y + oY);
 				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgba(0,0,0,.1)';
 			}
 			return (s ? 'text-shadow' : 'box-shadow') + ':' + r.join(',') + (i ? ' !important' : '');

@@ -1,7 +1,7 @@
 [Module:{"version":1.0,"type":"script"}]
 	<script>
 		
-		var events = {
+		var FormidableEvents = {
 			onError : function(){ console.log('form error'); },
 			onSent : function(){ console.log('form sent'); },
 			onStart : function(){ console.log('form start'); }
@@ -11,10 +11,10 @@
 			var data = e.target.trigger.data.fields;
 			var url = e.target.uri;
 			if(data.isValid()){
-				events.onStart(data);
+				FormidableEvents.onStart(data);
 				data.send(url, function(r){ events.onSent(r.object()); });
 			}else{
-				events.onError(data);
+				FormidableEvents.onError(data);
 			}
 		}
 		
@@ -26,8 +26,6 @@
 				trigger.events.click(_validate);
 			}
 		});
-		
-		Sirius.plugins.formidable = events;
 		
 	</script>
 /EOF;
