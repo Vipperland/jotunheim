@@ -9,6 +9,7 @@ import sirius.data.DisplayData;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.math.IPoint;
+import sirius.modules.IRequest;
 import sirius.utils.ITable;
 
 /**
@@ -416,5 +417,14 @@ interface IDisplay {
 	 * Clear all object data
 	 */
 	public function dispose():Void;
+	
+	/**
+	 * Load and write a module in target
+	 * @param	url
+	 * @param	module
+	 * @param	data
+	 * @param	handler
+	 */
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
 	
 }

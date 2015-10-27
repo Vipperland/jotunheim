@@ -5,6 +5,7 @@ package sirius.modules;
  */
 
 interface IMod {
+	public var id:String;
 	public var name:String;
 	public var target:String;
 	public var require:String;

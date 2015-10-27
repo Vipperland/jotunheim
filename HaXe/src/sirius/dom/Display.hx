@@ -20,6 +20,7 @@ import sirius.math.ARGB;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.math.Point;
+import sirius.modules.IRequest;
 import sirius.Sirius;
 import sirius.tools.Key;
 import sirius.tools.Ticker;
@@ -503,6 +504,13 @@ class Display implements IDisplay {
 			else 		css('/mouse-none');
 		}
 		return element.classList.contains('mouse-none');
+	}
+	
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+		Sirius.request(url, data, function(r:IRequest) {
+			if (r.success) mount(module);
+			if (handler != null) handler(r);
+		});
 	}
 	
 }

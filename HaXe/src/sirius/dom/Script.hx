@@ -28,7 +28,7 @@ class Script extends Display{
 			if (file != null) {
 				var s:Script = new Script();
 				Sirius.document.head.addChild(s);
-				s.load(file, function(e:IEvent) {
+				s.src(file, function(e:IEvent) {
 					Script.require(url, handler);
 				});
 			}
@@ -43,7 +43,7 @@ class Script extends Display{
 		content = cast element;
 	}
 	
-	public function load(url:String, ?handler:IEvent->Void):Void {
+	public function src(url:String, ?handler:IEvent->Void):Void {
 		content.src = url;
 		if (handler != null) events.load(handler, 1);
 	}

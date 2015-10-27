@@ -1,5 +1,6 @@
 package sirius.dom;
 import js.Browser;
+import sirius.tools.Utils;
 
 /**
  * ...
@@ -17,7 +18,7 @@ class Head extends Display{
 		super(q,null);
 	}
 	
-	public function bind(content:String, type:String):IDisplay {
+	public function bind(content:String, type:String, ?id:String):IDisplay {
 		if(content != null){
 			var s:IDisplay;
 			if (content.length > 1) {
@@ -34,7 +35,8 @@ class Head extends Display{
 						s = null;
 					}
 				}
-				if(s != null){
+				if (s != null) {
+					s.attribute('module-id', Utils.isValid(id) ? id : '');
 					s.write(content);
 					addChild(s);
 					return s;

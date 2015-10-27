@@ -96,7 +96,7 @@ class ModLib {
 									Automator.build(content);
 									content = '';
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
-									Sirius.document.head.bind(content, mod.type);
+									Sirius.document.head.bind(content, mod.type, mod.id);
 									content = '';
 								}
 							}
