@@ -15,13 +15,13 @@
 			var cont = new sru.dom.Div();
 			body.addChild(cont);
 			
-			var book = cont.mount('flat-book',{bg:'blue'});
-			var page = book.mount('flat-page',{width:30});
+			var book = cont.mount('flat-paper',{bg:'blue'});
+			var page = book.mount('flat-note',{width:30});
 			var button = page.mount('flat-button',{width:5, bg:'indigo', label:'TEST BUTTON'});
 			
 		}
 		
-		Sirius.module('sirius/modules/ui/ui-basic.html', null,null, _init);
+		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>
 /EOF;

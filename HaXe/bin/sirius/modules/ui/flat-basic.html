@@ -1,0 +1,205 @@
+[Module:{"name":"flat-grid","version":1.00,"type":"html"}]
+	<div {{id}}class="grid{{css}}"></div>
+/EOF;
+
+[Module:{"name":"flat-cell","version":1.00,"type":"html"}]
+	<div {{id}}class="cel-{{width}}x24{{css}}"></div>
+/EOF;
+
+[Module:{"name":"flat-button","version":1.00,"type":"html"}]
+	<button {{id}}class="cel-{{width}}x24{{css}} glow">{{name}}</button>
+/EOF;
+
+[Module:{"name":"flat-input","version":1.00,"type":"html"}]
+	<div class="cel-{{width}}x24 padd-0{{css}}">
+		<div class="cel-{{label.width}}x24{{label.css}}">{{name}}</div>
+		<div class="cel-{{input.width}}x24 padd-0">
+			<input {{id}}class="w-100pc{{input.css}}" autocomplete="{{auto}}" type="{{type}}" form-data="{{data}}" value="{{value}}" form-required="{{required}}" placeholder="{{hint}}" />
+		</div>
+	</div>
+/EOF;
+
+[Module:{"name":"flat-checkbox","version":1.00,"type":"html"}]
+	<div class="cel-{{width}}x24 padd-0{{css}}">
+		<input {{id}}type="checkbox" form-data="{{data}}" value="{{value}}" {{checked}}hidden/>
+		<label {{target}}class="{{label.css}}">{{name}}</label>
+	</div>
+</div>
+/EOF;
+
+[Module:{"name":"flat-container","version":1.00,"type":"html"}]
+	<div {{id}}class="disp-table pos-abs cel-{{width}}x24{{css}}">
+		<div class="disp-table-cell vert-m txt-c">
+			<div {{content.id}}class="grid{{content.css}} cel-{{content.width}}x24 pull-none"> </div>
+		</div>
+	</div>
+/EOF;
+
+[Module:{"version":1.00,"type":"css"}]
+	.glow {
+		position: relative;
+		overflow: hidden;
+	}
+	.glow:after {
+		content: "";
+		background: rgba(255,255,255,0.5);
+		display: block;
+		position: absolute;
+		border-radius: 100%;
+		padding-top: 500%;
+		padding-left: 500%;
+		margin-top: -250%;
+		margin-left: -250%;
+		opacity: 0;
+		transition: all 1s;
+	}
+	.glow:active:after {
+		padding-top: 0;
+		padding-left: 0;
+		margin-top: 0;
+		margin-left: 50%;
+		opacity: 1;
+		transition: 0s;
+	}
+/EOF;
+
+[Module:{"version":1.00,"type":"script","dependency":"automator_reset"}]
+	<script>
+		
+		var FlatColors = {};
+		var FlatUI = {
+			CONTAINER:'flat-container',
+			INPUT:'flat-input',
+			BUTTON:'flat-button',
+			GRID:'flat-grid',
+			CELL:'flat-cell',
+			config:{
+			}
+		};
+		
+		
+		
+		// FLAT COLORS OVERRIDE
+		(function(){
+			
+			var colors = [
+				{a:6,i:0,n:'red',v:'#D7021E'},
+				{a:7,i:1,n:'orange',v:'#EA640B'},
+				{a:8,i:2,n:'yellow',v:'#FFE401'},
+				{a:9,i:3,n:'yellowgreen',v:'#B4CB01'},
+				{a:10,i:4,n:'green',v:'#32A32D'},
+				{a:11,i:5,n:'bluegreen',v:'#07A09B'},
+				{a:0,i:6,n:'blue',v:'#14ACDE'},
+				{a:1,i:7,n:'indigo',v:'#026AB3'},
+				{a:2,i:8,n:'purple',v:'#51398D'},
+				{a:3,i:9,n:'deeppurple',v:'#7F378B'},
+				{a:4,i:10,n:'orchid',v:'#A90C5D'},
+				{a:5,i:11,n:'pink',v:'#DE036B'},
+				{a:13,i:12,n:'black',v:'#000000'},
+				{a:12,i:13,n:'white',v:'#FFFFFF'}
+			];
+			
+			// PRE INIT CONFIG COLORS & ASCENT COLORS
+			Dice.Values(['bg','txt','shadow'], function(v1){
+				Dice.Values(colors, function(v2){
+					AutomatorRules.set(v2.n,{value:v2.v,verifier:AutomatorRules.colorKey});
+				});
+			});
+			
+			Dice.Values(colors, function(v){ 
+				var c = new ARGB(v.v);
+				v.d = c;
+				v.n = v.n.toUpperCase();
+				c.name = v.n;
+				FlatColors[v.n.toUpperCase()] = [];
+			});
+			
+			Dice.Values(colors, function(v){
+				var k = 1.5;
+				for(var i = 0; i<11; ++i){
+					var c = v.d.range(k);
+					c.ASCENT = FlatColors[colors[v.a].d.name];
+					FlatColors[v.n][i] = c;
+					k -= .1;
+				}
+				
+			});
+			
+			// DEFAULT GRID IS 24
+			Automator.mosaic([24]);
+			
+			var reset = {
+				'all':['id','bg','css'],
+				'checkbox':['value','checked','data','target','name'],
+				'input':['auto','type','data','value','required','hint','name'],
+			};
+			
+			function _reset(d,n){
+				var t = reset[n];
+				for(var i in t) {
+					i = t[i];
+					if(d[i] == null) d[i] = '';
+				}
+				return d;
+			}
+			
+			// FIX CREATED ELEMENTS
+			function _sanitize(n,d){
+				if(d == null) d = {};
+				if(!d.width) d.width = 24;
+				_reset(d,'all');
+				if(d.id != '') d.id = 'id=\"' + d.id + '\" ';
+				if(d.bg != '') 	d.bg =  "bg-" + d.bg + (d.shadow != false ? " shadow-" + (d.shadow == null ? d.bg : d.shadow) : "");
+				switch(n){
+					case '' : {
+						break;
+					}
+					case FlatUI.CONTAINER : {
+						if(!d.content) d.content = {};
+						_reset(d.content,'all');
+						_sanitize('',d.content);
+					}
+					case FlatUI.INPUT : {
+						if(!d.label) d.label = {};
+						if(!d.input) d.input = {};
+						if(!d.label.width) d.label.width = 5;
+						if(!d.input.width) d.input.width = 19;
+						if(!d.input.bg) d.input.bg = 'white';
+						_reset(d, 'input');
+						_sanitize('',d.label);
+						_sanitize('',d.input);
+						break;
+					}
+					case FlatUI.CHECKBOX : {
+						if(!d.label) d.label = {};
+						if(!d.check) d.check = {};
+						if(!d.label.width) d.label.width = 5;
+						if(!d.check.width) d.check.width = 19;
+						if(!d.check.bg) d.check.bg = 'white';
+						d.target = d.id.split('id=').join('for=')
+						_reset(d, 'checkbox');
+						_sanitize('',d.label);
+						_sanitize('',d.check);
+						break;
+					}
+				}
+				if(!d.css) d.css = d.bg != '' ? ' ' + d.bg : '';
+				else d.css = ' ' + d.bg + ' ' + d.css;
+				
+				Automator.build(d.css);
+				
+				delete d.bg;
+				delete d.shadow;
+				return d;
+			}
+			Sirius.resources.onModuleRequest(_sanitize);
+		})();
+		
+		Automator.build('txt-c txt-l txt-r vert-m curs-pointer w-100pc h-100pc pos-abs disp-table disp-table-cell pull-none');
+		Automator.build('padd-0 padd-b-10 padd-t-0 padd-1');
+		Automator.build('marg-l-auto marg-r-auto marg-b-10');
+		
+		
+		
+	</script>
+/EOF;
