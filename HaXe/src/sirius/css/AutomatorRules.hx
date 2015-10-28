@@ -20,11 +20,15 @@ class AutomatorRules {
 	 */
 	static public function numericKey(d:Entry, k:IKey, n:IKey):String {
 		var v:String = k.entry.value;
-		if (n != null && !n.position) {
-			if (n.color != null) return v + "-color:";
-			if(d.head.key == 'bord') return borderFix(v, d, k, n);
-			if (n.measure != null) return v + ":";
-			return v + ":";
+		if(n != null){
+			if (!n.position) {
+				if (n.color != null) return v + "-color:";
+				if(d.head.key == 'bord') return borderFix(v, d, k, n);
+				if (n.measure != null) return v + ":";
+				return v + ":";
+			}else {
+				return v + '-';
+			}
 		}
 		return v + (k.index == 0 ? "-" : "");
 	}
@@ -39,7 +43,7 @@ class AutomatorRules {
 	 */
 	static public function borderFix(v:String, d:Entry, k:IKey, n:IKey):String {
 		if (n.measure != null) return v + "-width:";
-		return v + (d.keys[1].key == 'rad' ? '-' : '-style:');
+		return v + (d.hasKey('rad', 1) ? '-' : '-style:');
 	}
 	
 	/**
@@ -196,6 +200,20 @@ class AutomatorRules {
 	}
 	
 	/**
+	 * Controls OVERFLOW
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function strokeKey(d:Entry, k:IKey, n:IKey):String {
+		if (d.head == k) {
+			return 'text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000';
+		}
+		return commonKey(d, k, n); 
+	}
+	
+	/**
 	 * Create a shadow selector for text or other elements
 	 * @param	d
 	 * @param	k
@@ -304,6 +322,7 @@ class AutomatorRules {
 		over:{value:'overflow',verifier:valueKey},
 		hid:{value:'',verifier:commonKey},
 		scroll:{value:'scroll',verifier:scrollKey},
+		masked:{value:'overflow:hidden',verifier:commonKey},
 		x:{value:'x',verifier:scrollKey},
 		y:{value:'y',verifier:scrollKey},
 		z:{value:'z-index',verifier:indexKey},
@@ -334,6 +353,7 @@ class AutomatorRules {
 		hidden:{value:'',verifier:displayKey},
 		visible:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
+		stroke:{value:'',verifier:strokeKey},
 		mosaic:{value:'',verifier:mosaicKey},
 		mouse:{value:'pointer-events',verifier:commonKey},
 	};

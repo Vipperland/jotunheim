@@ -13,18 +13,24 @@
 			body.css('bg-lavender txt-white');
 			
 			function createCell(color){
-				body.mount(FlatUI.GRID,{bg:color,css:'marg-b-5'})
-					.mount(FlatUI.CELL,{width:24})
-					.mount(FlatUI.BUTTON,{width:6, bg:color.ASCENT(), name:'TEST BUTTON'});
+				var o = body.mount(FlatUI.GRID,{bg:color})
+							.mount(FlatUI.CELL,{size:24});
+					o.mount(FlatUI.CELL,{size:2, bg:color.ASCENT()}).write('ASCENT');
+					o.mount(FlatUI.SPACE,{size:5});
+					o.mount(FlatUI.INPUT,{size:4,
+						label:{size:8,	css:'bord-b-l-rad-5 bord-t-l-rad-5', name:'INPUT TEST', bg:FlatColors.WHITE[2]},
+						input:{size:16, css:'bord-b-r-rad-5 bord-t-r-rad-5', bg:FlatColors.WHITE[1]}
+					});
+					o.mount(FlatUI.SPACE,{size:5});
+					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), name:'BUTTON'});
+					
 			}
 			
-			for(var a in FlatColors){
-				for(var i=0; i<11;++i)	createCell(FlatColors[a][i]);
-			}
+			for(var a in FlatColors) for(var i=0; i<11;++i)	createCell(FlatColors[a][i]);
 			
 		}
 		
-		Automator.shadowConfig({distance:3, direction:90, strength:3});
+		//Automator.shadowConfig({distance:3, direction:90, strength:3});
 		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>
