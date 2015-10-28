@@ -461,11 +461,11 @@ class Display implements IDisplay {
 	}
 	
 	public function typeOf():String {
-		return "[" + Utils.getClassName(this) + "{element:" + element.tagName + ", length:" + length() + "}]";
+		return "[" + Utils.typeof(this) + "{element:" + element.tagName + ", length:" + length() + "}]";
 	}
 	
 	public function is(tag:Either<String,Array<String>>):Bool {
-		var name:String = Utils.getClassName(this).toLowerCase();
+		var name:String = Utils.typeof(this).toLowerCase();
 		var pre:String = name.split(".").pop();
 		if (Std.is(tag, String)) tag = cast [tag];
 		var r:IDiceRoll = Dice.Values(tag, function(v:String) {

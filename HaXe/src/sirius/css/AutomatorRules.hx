@@ -207,9 +207,6 @@ class AutomatorRules {
 			d.cancel();
 			var i:Bool = d.tail.key == 'i';
 			var s:Bool = n.key == 'txt';
-			
-			trace(d.keys[s ? 2 : 1].color);
-			
 			var t:ARGB = new ARGB(d.keys[s ? 2 : 1].color);
 			var x:Array<String> = d.compile(s ? 3 : 2);
 			var y:Int = 0;

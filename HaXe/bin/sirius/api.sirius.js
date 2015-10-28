@@ -2035,11 +2035,11 @@ sirius_dom_Display.prototype = {
 		return sirius_Sirius.jQuery(this.element);
 	}
 	,typeOf: function() {
-		return "[" + sirius_tools_Utils.getClassName(this) + "{element:" + this.element.tagName + ", length:" + this.length() + "}]";
+		return "[" + sirius_tools_Utils["typeof"](this) + "{element:" + this.element.tagName + ", length:" + this.length() + "}]";
 	}
 	,'is': function(tag) {
 		var _g = this;
-		var name = sirius_tools_Utils.getClassName(this).toLowerCase();
+		var name = sirius_tools_Utils["typeof"](this).toLowerCase();
 		var pre = name.split(".").pop();
 		if(typeof(tag) == "string") tag = [tag];
 		var r = sirius_utils_Dice.Values(tag,function(v) {
@@ -4348,8 +4348,21 @@ sirius_tools_Utils.isValid = function(o) {
 	}
 	return false;
 };
-sirius_tools_Utils.getClassName = function(o) {
-	if(o != null) return Type.getClassName(Type.getClass(o)); else return "null";
+sirius_tools_Utils["typeof"] = function(o) {
+	var name;
+	if(o != null) {
+		try {
+			return o.__proto__.__class__.__name__.join(".");
+		} catch( e ) {
+			if (e instanceof js__$Boot_HaxeError) e = e.val;
+		}
+		try {
+			return Type.getClassName(Type.getClass(o));
+		} catch( e1 ) {
+			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+		}
+	}
+	return null;
 };
 var sirius_css_Entry = function(keys,dict) {
 	this.keys = keys;
@@ -4480,7 +4493,6 @@ sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
 		d.cancel();
 		var i = d.tail.key == "i";
 		var s = n.key == "txt";
-		haxe_Log.trace(d.keys[s?2:1].color,{ fileName : "AutomatorRules.hx", lineNumber : 211, className : "sirius.css.AutomatorRules", methodName : "shadowKey"});
 		var t = new sirius_math_ARGB(d.keys[s?2:1].color);
 		var x = d.compile(s?3:2);
 		var y = 0;

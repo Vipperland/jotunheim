@@ -12,15 +12,19 @@
 			var body = Sirius.document.body;
 			body.css('bg-lavender txt-white');
 			
-			var cont = new sru.dom.Div();
-			body.addChild(cont);
+			function createCell(color){
+				body.mount(FlatUI.GRID,{bg:color,css:'marg-b-5'})
+					.mount(FlatUI.CELL,{width:24})
+					.mount(FlatUI.BUTTON,{width:6, bg:color.ASCENT(), name:'TEST BUTTON'});
+			}
 			
-			var book = cont.mount('flat-paper',{bg:'blue'});
-			var page = book.mount('flat-note',{width:30});
-			var button = page.mount('flat-button',{width:5, bg:'indigo', label:'TEST BUTTON'});
+			for(var a in FlatColors){
+				for(var i=0; i<11;++i)	createCell(FlatColors[a][i]);
+			}
 			
 		}
 		
+		Automator.shadowConfig({distance:3, direction:90, strength:3});
 		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>

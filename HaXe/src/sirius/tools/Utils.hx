@@ -238,8 +238,18 @@ class Utils{
 	 * @param	o
 	 * @return
 	 */
-	static public function getClassName(o:Dynamic):String {
-		return o != null ? Type.getClassName(Type.getClass(o)) : "null";
+	static public function typeof(o:Dynamic):String {
+		var name:String;
+		if(o != null){
+			try {
+				return o.__proto__.__class__.__name__.join('.');
+			}catch (e:Dynamic) {}
+			try {
+				return Type.getClassName(Type.getClass(o));
+			}catch (e:Dynamic) {}
+		}
+		return null;
+		
 	}
 	
 }
