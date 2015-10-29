@@ -11,7 +11,7 @@
 /EOF;
 
 [Module:{"name":"flat-button","version":1.00,"type":"html"}]
-	<button {{id}}class="cel-{{size}}x24{{css}} touch">{{name}}</button>
+	<button {{id}}class="cel-{{size}}x24 pressure-plate{{css}}">{{name}}</button>
 /EOF;
 
 [Module:{"name":"flat-input","version":1.00,"type":"html"}]
@@ -24,9 +24,10 @@
 /EOF;
 
 [Module:{"name":"flat-checkbox","version":1.00,"type":"html"}]
-	<div class="cel-{{size}}x24 padd-0{{css}}">
-		<input {{id}}type="checkbox" form-data="{{data}}" value="{{value}}" {{checked}}hidden/>
-		<label {{target}}class="{{label.css}}">{{name}}</label>
+	<div class="cel-{{size}}x24 {{css}}">
+		<input {{id}}type="checkbox" form-data="{{check.data}}" value="{{check.value}}" {{check.active}} hidden/>
+		<div type="markdown" class="padd-{{rad}} switch{{mark.css}}"></div>
+		<label {{target}}class="{{label.css}}">{{label.name}}</label>
 	</div>
 </div>
 /EOF;
@@ -40,17 +41,47 @@
 /EOF;
 
 [Module:{"version":1.00,"type":"css"}]
-	.touch {
+
+	.switch {
+		position: absolute;
+		float: left;
+	}
+
+	.switch + label {
+		cursor: pointer;
+		float: left;
+		margin-left: 10px;
+	}
+
+	input[type=checkbox]:checked + div.switch {
+		opacity: 1;
+		transition: all .3s;
+	}
+	
+	input[type=checkbox] + div.switch {
+		top: 2px;
+		box-shadow: none;
 		position: relative;
 		overflow: hidden;
+		top: 0px;
+		transition: all .3s;
+		opacity: .1;
 	}
+	
+	.touch, .pressure-plate {
+		position: relative;
+		overflow: hidden;
+		top: 0px;
+		transition: all .3s;
+	}
+	
 	.touch:after {
 		content: "";
 		background: rgba(255,255,255,0.5);
 		display: block;
 		position: absolute;
 		border-radius: 100%;
-		padding-top: 100%;
+		padding-top: 200%;
 		padding-left: 200%;
 		margin-top: -50%;
 		margin-left: -50%;
@@ -60,11 +91,18 @@
 	.touch:active:after {
 		padding-top: 0;
 		padding-left: 0;
-		margin-top: 0;
-		margin-left: 50%;
+		margin-top: -20%;
+		margin-left: -20%;
 		opacity: 1;
 		transition: 0s;
 	}
+	
+	.pressure-plate:active {
+		top:2px;
+		box-shadow: none;
+		transition: all .3s;
+	}
+	
 /EOF;
 
 [Module:{"version":1.00,"type":"script","dependency":"automator_reset"}]
@@ -78,11 +116,13 @@
 			GRID:'flat-grid',
 			CELL:'flat-cell',
 			SPACE:'flat-space',
+			CHECK_BOX:'flat-checkbox',
 			config:{
+			},
+			update:function(){
+				Automator.scan();
 			}
 		};
-		
-		
 		
 		// FLAT COLORS OVERRIDE
 		(function(){
@@ -105,9 +145,7 @@
 			
 			// PRE INIT CONFIG COLORS & ASCENT COLORS
 			Dice.Values(['bg','txt','shadow'], function(v1){
-				Dice.Values(colors, function(v2){
-					AutomatorRules.set(v2.n,{value:v2.v,verifier:AutomatorRules.colorKey});
-				});
+				Dice.Values(colors, function(v2){ AutomatorRules.set(v2.n,{value:v2.v,verifier:AutomatorRules.colorKey}); });
 			});
 			
 			Dice.Values(colors, function(v){ 
@@ -146,7 +184,8 @@
 			
 			var reset = {
 				'all':['id','bg','css'],
-				'checkbox':['value','checked','data','target','name'],
+				'switch':['width'],
+				'checkbox':['value','data','active'],
 				'input':['auto','type','data','value','required','hint','name'],
 				'label':['name'],
 			};
@@ -195,37 +234,41 @@
 						_sanitize('',d.input);
 						break;
 					}
-					case FlatUI.CHECKBOX : {
+					case FlatUI.CHECK_BOX : {
 						if(!d.label) d.label = {};
 						if(!d.check) d.check = {};
+						if(!d.mark) d.mark = {};
 						if(!d.label.size) d.label.size = 5;
 						if(!d.check.size) d.check.size = 19;
 						if(!d.check.bg) d.check.bg = 'white';
-						d.target = d.id.split('id=').join('for=')
-						_reset(d, 'checkbox');
+						var uid = '"' + sru.tools.Key.GEN() + '"';
+						d.id = 'id=' + uid;
+						d.target = 'for=' + uid;
 						_sanitize('',d.label);
 						_sanitize('',d.check);
+						_sanitize('',d.mark);
+						_reset(d, 'switch');
+						_reset(d.check,'checkbox');
 						break;
 					}
 				}
 				if(!d.css) d.css = d.bg != '' ? ' ' + d.bg : '';
 				else d.css = ' ' + d.bg + ' ' + d.css;
-				
-				Automator.build(d.css);
-				
 				delete d.bg;
 				delete d.shadow;
 				return d;
 			}
+			with(Automator){
+				css.setSelector('.nowrap', 'white-space:nowrap', true);
+				build('curs-pointer pos-abs disp-table disp-table-cell pull-none', null, true);
+				build('w-100pc h-100pc', null, true);
+				build('padd-0 padd-b-10 padd-t-0 padd-1', null, true);
+				build('marg-l-auto marg-r-auto marg-b-10', null, true);
+				build('txt-c txt-l txt-r vert-m', null, true);
+				css.build();
+			}
 			Sirius.resources.onModuleRequest(_sanitize);
 		})();
-		
-		Automator.css.setSelector('.nowrap', 'white-space:nowrap');
-		Automator.build('curs-pointer pos-abs disp-table disp-table-cell pull-none ');
-		Automator.build('w-100pc h-100pc');
-		Automator.build('padd-0 padd-b-10 padd-t-0 padd-1');
-		Automator.build('marg-l-auto marg-r-auto marg-b-10');
-		Automator.build('txt-c txt-l txt-r vert-m');
 		
 	</script>
 /EOF;

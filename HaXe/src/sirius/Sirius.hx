@@ -220,11 +220,15 @@ class Sirius {
 		
 	#elseif php
 		
-		public static var header:Header = new Header();
+		static public var header:Header = new Header();
 		
-		public static var gate:IGate = new Gate();
+		static public var gate:IGate = new Gate();
 		
 		static public var loader:ILoader = new Loader();
+		
+		static public function require(file:String):Void {
+			untyped __call__('require_once', file);
+		}
 		
 	#end
 	

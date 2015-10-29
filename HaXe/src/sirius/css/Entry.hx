@@ -55,6 +55,10 @@ class Entry {
 		return v.key + (t==c ? "" : t-1==c ? ":" : "-");
 	}
 	
+	public function get(i:Int):IKey {
+		return i < keys.length ? keys[i] : null;
+	}
+	
 	public function hasKey(s:String, i:Int, ?e:Int):Bool {
 		if (e == null) e = keys.length;
 		return !Dice.Count(i, e, function(a:Int, b:Int, c:Bool) {return keys[a].key == s;}).completed;

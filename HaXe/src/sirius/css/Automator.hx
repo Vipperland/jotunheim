@@ -121,7 +121,7 @@ class Automator {
 						_screen(c); // Remove @media signature
 						var en:Entry = _parse(c);
 						s = en.build(); // Create class for selector
-						if (s != null) {
+						if (Utils.isValid(s)) {
 							r += s + ";";
 						}else {
 							Sirius.log("Automator => ERROR (" + en + ")");
@@ -139,11 +139,11 @@ class Automator {
 				}
 			}
 		});
-		if (g) { // If is a group, register all classes to correspondent group and @media value
+		if (g && Utils.isValid(r)) { // If is a group, register all classes to correspondent group and @media value
 			if (_dev == true) Sirius.log("Automator => " + group + " {" + r + "} ]", 1);
 			css.setSelector(group, r, m);
 		}
-		if (silent == null) css.build();
+		if (silent == null || silent == false) css.build();
 		
 	}
 	
@@ -160,12 +160,13 @@ class Automator {
 				var t:Dynamic = a / b * 100 - .01;
 				var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
 				var n:String = '.cel-' + a + 'x' + b;	// .cel-AxB
-				build4All('w-' + s + ' padd-' + (a==1 ? '1' : '10'), n); // w-00d00pc padd-10
-				build4All('pull-l', n); 
-				if (a < b-1) build4All('marg-l-' + s, 'o-' + n);
+				build4All('w-' + s + ' padd-' + (a==1 ? '1' : '10'), n, true); // w-00d00pc padd-10
+				build4All('pull-l', n, true); 
+				if (a < b-1) build4All('marg-l-' + s, 'o-' + n, true);
 				return null;
 			});
 		}
+		css.build();
 	}
 	
 	//static public function _init() {

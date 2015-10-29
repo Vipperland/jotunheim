@@ -49,11 +49,13 @@ extern class Sirius {
 		
 	#elseif php
 		
-		public static var header:Dynamic;
+		static public var header:Dynamic;
 		
-		public static var gate:Dynamic;
+		static public var gate:Dynamic;
 		
 		static public var loader:Dynamic;
+		
+		static public function require(file:String):Void;
 		
 	#end
 	

@@ -208,7 +208,21 @@ class AutomatorRules {
 	 */
 	static public function strokeKey(d:Entry, k:IKey, n:IKey):String {
 		if (d.head == k) {
-			return 'text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000';
+			d.cancel();
+			var c:String = new ARGB(d.keys[1].color).hex();
+			n = d.get(2);
+			var l:Int = (n != null) ? Std.parseInt(n.measure) : 1;
+			var x:Int = 0;
+			var s:Array<String> = [];
+			while (x < l) {
+				++x;
+				var xs:String = x + (x == 0 ? '' : 'px');
+				s[s.length] = '-' + xs + ' -' + xs + ' 0 ' + c;
+				s[s.length] = '-' + xs + ' ' + xs + ' 0 ' + c;
+				s[s.length] = '' + xs + ' -' + xs + ' 0 ' + c;
+				s[s.length] = '' + xs + ' ' + xs + ' 0 ' + c;
+			}
+			return 'text-shadow:' + s.join(',');
 		}
 		return commonKey(d, k, n); 
 	}
@@ -295,7 +309,6 @@ class AutomatorRules {
 		j:{value:'justify', verifier:commonKey},
 		c:{value:'center', verifier:commonKey},
 		n:{value:'none', verifier:commonKey},
-		pc:{value:'%', verifier:commonKey},
 		line:{value:'line', verifier:pushKey},
 		i:{value:' !important', verifier:commonKey},
 		marg:{value:'margin', verifier:numericKey},
@@ -334,7 +347,7 @@ class AutomatorRules {
 		upcase:{value:'font-transform:uppercase',verifier:commonKey},
 		locase:{value:'font-transform:lowercase',verifier:commonKey},
 		curs:{value:'cursor',verifier:valueKey},
-		loading:{value:'loading',verifier:valueKey},
+		load:{value:'loading',verifier:valueKey},
 		arial:{value:'font-family:arial',verifier:commonKey},
 		verdana:{value:'font-family:verdana',verifier:commonKey},
 		tahoma:{value:'font-family:tahoma',verifier:commonKey},

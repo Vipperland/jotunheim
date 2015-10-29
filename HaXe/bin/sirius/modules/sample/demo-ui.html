@@ -10,27 +10,37 @@
 			Automator.build('bg-lavender padd-10');
 			
 			var body = Sirius.document.body;
-			body.css('bg-lavender txt-white');
+			body.css('bg-lavender');
 			
 			function createCell(color){
 				var o = body.mount(FlatUI.GRID,{bg:color})
 							.mount(FlatUI.CELL,{size:24});
-					o.mount(FlatUI.CELL,{size:2, bg:color.ASCENT()}).write('ASCENT');
-					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.INPUT,{size:4,
 						label:{size:8,	css:'bord-b-l-rad-5 bord-t-l-rad-5', name:'INPUT TEST', bg:FlatColors.WHITE[2]},
 						input:{size:16, css:'bord-b-r-rad-5 bord-t-r-rad-5', bg:FlatColors.WHITE[1]}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), name:'BUTTON'});
-					
+					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'bord-rad-5', name:'BUTTON'});
+					o.mount(FlatUI.SPACE,{size:5});
+					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, bg:color.range(1.2), css:'bord-rad-5',
+						label:{name:"CHECK BOX"},
+						mark:{bg:color.ASCENT(), css:'padd-0 bord-rad-5 w-34 h-100pc'}
+					});
+					o.mount(FlatUI.SPACE,{size:5});
 			}
 			
-			for(var a in FlatColors) for(var i=0; i<11;++i)	createCell(FlatColors[a][i]);
+			for(var a in FlatColors) {
+				for(var i=0; i<11;++i)	{
+					createCell(FlatColors[a][i]);
+					if(i == 3 && FlatColors[a].name != 'WHITE') break;
+				}
+			}
+			
+			FlatUI.update();
 			
 		}
 		
-		//Automator.shadowConfig({distance:3, direction:90, strength:3});
+		Automator.shadowConfig({distance:3, direction:90, strength:3});
 		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>

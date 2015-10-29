@@ -7,17 +7,18 @@
 		*/
 		(function(){
 			with(Automator){
-				build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
-				build('arial txt-12', 'body');
-				build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
-				build('list-style-none', 'ol,ul,dl');
-				build('padd-5', 'hr');
-				build('padd-10','input,textarea,select');
-				build('disp-table content-void', '.grid:before,.grid:after');
-				build('clear-both', '.grid:after');
-				build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
+				build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*',true);
+				build('arial txt-12', 'body',true);
+				build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
+				build('list-style-none', 'ol,ul,dl',true);
+				build('padd-5', 'hr', true);
+				build('padd-10','input,textarea,select', true);
+				build('disp-table content-void', '.grid:before,.grid:after', true);
+				build('clear-both', '.grid:after', true);
+				build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix',null,true);
 				css.setSelector('@-ms-viewport', 'width:device-width;');
 				css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
+				css.build();
 			}
 		})();
 	</script>
