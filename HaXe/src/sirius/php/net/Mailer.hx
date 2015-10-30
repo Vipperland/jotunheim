@@ -20,19 +20,26 @@ class Mailer {
 	
 	private var _cLib:PHPMailer;
 
-	public function new() {
+	public function new(url:String, user:String, password:String, ?secure:String = null, ?port:UInt = 587) {
 		Sirius.require('PHPMailer/PHPMailerAutoload.php');
 		_cLib = new PHPMailer();
 		_cLib.CharSet = 'UTF-8';
 		_cLib.isSMTP();
 		_cLib.isHTML(true);
+		_cLib.From = user;
+		setAuth(url, user, password, secure, port);
+	}
+	
+	public function origin(name:String, email:String):Void {
+		if(email != null) _cLib.From = email;
+		if(name != null) _cLib.FromName = name;
 	}
 	
 	public function debug(level:UInt):Void {
 		_cLib.SMTPDebug = level;
 	}
 	
-	public function setAuth(url:String, user:String, password:String, ?secure:String = null, ?port:UInt = 587):Void {
+	public function setAuth():Void {
 		_cLib.Host = url;
 		_cLib.Username = user;
 		_cLib.Password = password;
@@ -40,9 +47,7 @@ class Mailer {
 		if (secure != null) _cLib.SMTPSecure = secure;
 	}
 	
-	public function targets(from:String, fromName:String, to:Array<Dynamic>, ?cc:Array<Dynamic>, ?bbc:Array<Dynamic>):Void {
-		_cLib.From = from;
-		_cLib.FromName = fromName;
+	public function targets(to:Array<Dynamic>, ?cc:Array<Dynamic>, ?bbc:Array<Dynamic>):Void {
 		Dice.Values(to, function(v:Dynamic) {
 			if (Std.is(v, Array)) 	_cLib.addAddress(v[0], v[1]);
 			else					_cLib.addAddress(v);
