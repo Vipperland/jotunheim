@@ -22,9 +22,9 @@
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'bord-rad-5', name:'BUTTON'});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, bg:color.range(1.2), css:'bord-rad-5',
-						label:{name:"CHECK BOX"},
-						mark:{bg:color.ASCENT(), css:'padd-0 bord-rad-5 w-34 h-100pc'}
+					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, css:'bord-rad-5 Glass', bg:color.range(1.2),
+						label:{name:"CHECK BOX", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
+						mark:{bg:color.ASCENT(), rad:10, shadow:false, css:'bord-rad-2'}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 			}
@@ -40,7 +40,7 @@
 			
 		}
 		
-		Automator.shadowConfig({distance:3, direction:90, strength:3});
+		Automator.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
 		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>

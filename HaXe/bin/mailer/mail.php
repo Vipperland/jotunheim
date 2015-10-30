@@ -35,7 +35,6 @@
 					$mail->IsSMTP();
 					$mail->SMTPAuth   = true;
 					
-					//$mail->Host       = "smtp100k1.ipreverso.com";
 					$mail->SMTPDebug  = isset($_REQUEST['debug']) && !empty($_REQUEST['debug']) ? $_REQUEST['debug'] : 0;
 					$mail->CharSet = 'UTF-8';
 					

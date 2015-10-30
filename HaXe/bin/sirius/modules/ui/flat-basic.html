@@ -11,7 +11,7 @@
 /EOF;
 
 [Module:{"name":"flat-button","version":1.00,"type":"html"}]
-	<button {{id}}class="cel-{{size}}x24 pressure-plate{{css}}">{{name}}</button>
+	<button {{id}}class="cel-{{size}}x24 PressurePlate{{css}}">{{name}}</button>
 /EOF;
 
 [Module:{"name":"flat-input","version":1.00,"type":"html"}]
@@ -26,7 +26,7 @@
 [Module:{"name":"flat-checkbox","version":1.00,"type":"html"}]
 	<div class="cel-{{size}}x24 {{css}}">
 		<input {{id}}type="checkbox" form-data="{{check.data}}" value="{{check.value}}" {{check.active}} hidden/>
-		<div type="markdown" class="padd-{{rad}} switch{{mark.css}}"></div>
+		<div type="markdown" class="padd-{{mark.size}} Switch{{mark.css}}">{{mark.content}}</div>
 		<label {{target}}class="{{label.css}}">{{label.name}}</label>
 	</div>
 </div>
@@ -41,41 +41,55 @@
 /EOF;
 
 [Module:{"version":1.00,"type":"css"}]
-
-	.switch {
+	
+	/* 
+		.Switch
+				Custom Checkbox
+		.Glass
+				Glass effect
+		.PressurePlate
+				Button controled by pressure
+		
+		
+	*/
+	.Switch {
 		position: absolute;
 		float: left;
 	}
 
-	.switch + label {
+	.Switch + label {
 		cursor: pointer;
 		float: left;
 		margin-left: 10px;
+		transition: all .3s;
 	}
-
-	input[type=checkbox]:checked + div.switch {
+	
+	input[type=checkbox]:checked + div.Switch + label {
+		margin-left: 20px;
+		transition: all .3s;
+	}
+	
+	input[type=checkbox]:checked + div.Switch {
 		opacity: 1;
 		transition: all .3s;
 	}
 	
-	input[type=checkbox] + div.switch {
-		top: 2px;
-		box-shadow: none;
+	input[type=checkbox] + div.Switch {
 		position: relative;
 		overflow: hidden;
-		top: 0px;
 		transition: all .3s;
 		opacity: .1;
 	}
 	
-	.touch, .pressure-plate {
+	.Glass, .PressurePlate {
 		position: relative;
 		overflow: hidden;
 		top: 0px;
 		transition: all .3s;
 	}
 	
-	.touch:after {
+	.Glass:after {
+		pointer-events: none;
 		content: "";
 		background: rgba(255,255,255,0.5);
 		display: block;
@@ -88,7 +102,8 @@
 		opacity: 0;
 		transition: all 1s;
 	}
-	.touch:active:after {
+	
+	.Glass:active:after {
 		padding-top: 0;
 		padding-left: 0;
 		margin-top: -20%;
@@ -97,7 +112,7 @@
 		transition: 0s;
 	}
 	
-	.pressure-plate:active {
+	.PressurePlate:active {
 		top:2px;
 		box-shadow: none;
 		transition: all .3s;
@@ -168,7 +183,7 @@
 					c._ac = a; // ascent color
 					c._nc = x; // triad + 1
 					c._pc = y; // triad - 1
-					c._cc = i; // triad - 1
+					c._cc = i; // color id
 					c._oc = w; // ascent offset for white color
 					c.ASCENT = function(i){ return i == null ? FlatColors[this._ac][this._oc ? 10 - this._cc : this._cc] : FlatColors[this._ac][this._oc ? 10 - i : i]; }
 					c.NEXT = function(i){ return i == null ? FlatColors[this._nc][this._cc] : FlatColors[this._nc][i]; }
@@ -188,6 +203,7 @@
 				'checkbox':['value','data','active'],
 				'input':['auto','type','data','value','required','hint','name'],
 				'label':['name'],
+				'mark':['content'],
 			};
 			
 			function _reset(d,n){
@@ -241,14 +257,17 @@
 						if(!d.label.size) d.label.size = 5;
 						if(!d.check.size) d.check.size = 19;
 						if(!d.check.bg) d.check.bg = 'white';
+						if(!d.mark.size) d.mark.size = 7;
 						var uid = '"' + sru.tools.Key.GEN() + '"';
 						d.id = 'id=' + uid;
 						d.target = 'for=' + uid;
+						_reset(d, 'switch');
+						_reset(d.check,'checkbox');
+						_reset(d.mark,'mark');
 						_sanitize('',d.label);
 						_sanitize('',d.check);
 						_sanitize('',d.mark);
-						_reset(d, 'switch');
-						_reset(d.check,'checkbox');
+						
 						break;
 					}
 				}

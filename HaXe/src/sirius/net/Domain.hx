@@ -78,7 +78,6 @@ class Domain implements IDomain {
 		public function reload(?force:Bool=false):Void {
 			Browser.window.location.reload(force);
 		}
-		
 		/* INTERFACE sirius.net.IDomain */
 		
 	#elseif php
@@ -91,6 +90,8 @@ class Domain implements IDomain {
 				r = Reflect.hasField(this.params, v);
 				return !r;
 			});
+			
+			
 			
 			return r;
 			
