@@ -1,6 +1,9 @@
 package sirius.net;
+import php.Lib;
+import php.NativeArray;
 import sirius.data.IFragments;
 import sirius.net.IDomainData;
+import sirius.utils.Dice;
 
 /**
  * @author Rafael Moreira

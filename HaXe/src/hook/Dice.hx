@@ -5,7 +5,7 @@ package hook;
  * @author Rafael Moreira
  */
 @:native('Dice')
-extern class Dice {
+extern public class Dice {
 	/**
 	 * For each object Value and parameter, call each(paramName,value)
 	 * @param	q		Target object
@@ -63,7 +63,14 @@ extern class Dice {
 	 * @return
 	 */
 	public static function Match (table:Array<Dynamic>, values:Dynamic, ?limit:UInt=0) : Int;
-
+	
+	/**
+	 * Concat all mixed data into one array
+	 * @param	data
+	 * @return
+	 */
+	public static function Mix(data:Array<Dynamic>):Array<Dynamic>;
+	
 	/**
 	 * For each Child element in an Object
 	 * @param	of				Target container

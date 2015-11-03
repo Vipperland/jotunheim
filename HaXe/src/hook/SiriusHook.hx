@@ -7,7 +7,7 @@ package hook;
  */
 
 @:native('Sirius')
-extern class SiriusHook {
+extern public class SiriusHook {
 	
 	/// Global resource loader
 	static public var resources:Dynamic;

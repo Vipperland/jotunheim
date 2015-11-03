@@ -14,7 +14,7 @@ class Criptog {
 		return Base64.encode(Bytes.ofString(q));
 	}
 	
-	public static function decodeBase64(q:String, ?json:Bool):String {
+	public static function decodeBase64(q:String, ?json:Bool):Dynamic {
 		var r:String = Base64.decode(q).toString();
 		return json && r.length > 1 ? Json.parse(r) : r;
 	}

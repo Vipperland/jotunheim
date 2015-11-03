@@ -7,9 +7,13 @@ class sirius_Sirius {
 	static $resources;
 	static $domain;
 	static $logger;
+	static function main() {}
 	static $header;
 	static $gate;
 	static $loader;
+	static function hrequire($file) {
+		require_once($file);
+	}
 	static function module($file, $content = null, $handler = null) {
 		sirius_Sirius::$loader->async($file, $content, $handler);
 	}

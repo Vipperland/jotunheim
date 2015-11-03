@@ -1,6 +1,7 @@
 package sirius;
 
 import haxe.Log;
+import php.NativeArray;
 import sirius.data.DataCache;
 import sirius.data.Logger;
 import sirius.errors.IError;
@@ -219,6 +220,8 @@ class Sirius {
 		}
 		
 	#elseif php
+		
+		static public function main() {  }
 		
 		static public var header:Header = new Header();
 		

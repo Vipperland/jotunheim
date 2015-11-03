@@ -34,6 +34,12 @@ class DataCache implements IDataCache {
 	
 	private var __time__:Float;
 	
+	public var data(get, null):Dynamic;
+	
+	private function get_data():Dynamic {
+		return _DB;
+	}
+	
 	private function _now():Float {
 		return Date.now().getTime();
 	}
@@ -50,9 +56,11 @@ class DataCache implements IDataCache {
 		private var _validated:Bool = false;
 		
 		private function _checkPath() {
-			var p:Array<String> = _path.split("\\").join("/").split("/");
+			var p:Array<String> = _path.split("/");
 			if (p.length > 0) {
 				var t:Array<String> = [];
+				if (p[0] == "") t[0] = "/";
+				else if (p[0] == ".") t[0] = "./";
 				Dice.Values(p, function(v:String) {
 					if (Utils.isValid(v)) {
 						t[t.length] = v;
@@ -63,7 +71,7 @@ class DataCache implements IDataCache {
 					return true;
 				});
 			}
-			_name = _path + "/" + _name + ".sru.cache";
+			_name = _path + "/" + _name;
 			_validated = true;
 		}
 		
@@ -92,9 +100,10 @@ class DataCache implements IDataCache {
 	
 	public function clear(?p:String):IDataCache {
 		if (p != null) {
-			Reflect.deleteField(_DB, p);
-		}else if (p != '__time__'){
-			_DB = { '__time__':_now() };
+			if (p != '__time__') Reflect.deleteField(_DB, p);
+		}else {
+			_DB = { };
+			if (_expire > 0) _DB.__time__ = _now();
 			#if js
 				Cookie.remove(_name, _path);
 			#elseif php
@@ -112,9 +121,7 @@ class DataCache implements IDataCache {
 	public function merge(p:String, v:Dynamic):IDataCache {
 		if (Std.is(v, Array) && Reflect.hasField(_DB, _name)) {
 			var t:Array<Dynamic> = get(p);
-			if (Std.is(t, Array)) {
-				return set(p, t.concat(v));
-			}
+			if (Std.is(t, Array)) return set(p, t.concat(v));
 		}
 		Reflect.setField(_DB, p, v);
 		return this;
@@ -137,14 +144,15 @@ class DataCache implements IDataCache {
 		}
 	}
 	
-	public function save():DataCache {
+	public function save(?base64:Bool = true):DataCache {
+		var data:String = base64 ? Criptog.encodeBase64(_DB) : json(false);
 		#if js
-			Cookie.set(_name, Criptog.encodeBase64(_DB), 0, _path);
+			Cookie.set(_name, data, 0, _path);
 		#elseif php
 			if (!_validated) _checkPath();
-			_sign(true);
-			File.saveContent(_name, Criptog.encodeBase64(_DB));
-			_sign(false);
+			if(_expire > 0) _sign(true);
+			File.saveContent(_name, data);
+			if(_expire > 0) _sign(false);
 		#end
 		return this;
 	}
@@ -153,22 +161,22 @@ class DataCache implements IDataCache {
 		if (add) {
 			_DB.__time__ = _now();
 		}else {
-			__time__ = _DB.__time__;
+			__time__ = _expire > 0 ? _DB.__time__ : 0;
 			Reflect.deleteField(_DB, '__time__');
 		}
 	}
 	
-	public function load():IDataCache {
+	public function load(?base64:Bool = true):Bool {
 		_DB = null;
 		#if js
 			if (Cookie.exists(_name)) {
-				_DB = Criptog.decodeBase64(Cookie.get(_name), true);
+				_DB = base64 ? Criptog.decodeBase64(Cookie.get(_name), true) : json(false);
 			}
 		#elseif php
 			if (!_validated) _checkPath();
 			if (FileSystem.exists(_name)) {
 				var c:String =  File.getContent(_name);
-				_DB = Criptog.decodeBase64(c, true);
+				_DB = base64 ? Criptog.decodeBase64(c, true) : Json.parse(c);
 			}
 		#end
 		if (_DB == null || (_expire != 0 && (_DB.__time__ == null || _now() - _DB.__time__ >= _expire))) {
@@ -178,16 +186,12 @@ class DataCache implements IDataCache {
 			_sign(false);
 			_loaded = true;
 		}
-		return this;
+		return _loaded;
 	}
 	
 	public function refresh():DataCache {
 		__time__ = _now();
 		return this;
-	}
-	
-	public function getData():Dynamic {
-		return _DB;
 	}
 	
 	public function json(?print:Bool):String {

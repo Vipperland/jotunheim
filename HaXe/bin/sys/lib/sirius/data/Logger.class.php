@@ -3,12 +3,13 @@
 class sirius_data_Logger {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
-		$this->_events = (new _hx_array(array((isset($this->trace) ? $this->trace: array($this, "trace")))));
+		$this->_events = (new _hx_array(array((isset($this->query) ? $this->query: array($this, "query")))));
 	}}
 	public $_bgs;
 	public $_events;
 	public function silent() {
-		if(Lambda::indexOf($this->_events, (isset($this->trace) ? $this->trace: array($this, "trace"))) !== -1) {
+		$this->query("Log => Disconnected", 2);
+		if(Lambda::indexOf($this->_events, (isset($this->query) ? $this->query: array($this, "query"))) !== -1) {
 			$this->_events->splice(0, 1);
 		}
 	}
@@ -18,7 +19,7 @@ class sirius_data_Logger {
 	public function push($q, $type) {
 		sirius_utils_Dice::Values($this->_events, array(new _hx_lambda(array(&$q, &$type), "sirius_data_Logger_0"), 'execute'), null);
 	}
-	public function trace($q, $type) {
+	public function query($q, $type) {
 		$t = null;
 		switch($type) {
 		case 0:{

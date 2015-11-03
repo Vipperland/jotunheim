@@ -154,6 +154,17 @@ class Dice {
 		return r;
 	}
 	
+	/**
+	 * Concat all mixed data into one array
+	 * @param	data
+	 * @return
+	 */
+	public static function Mix(data:Array<Dynamic>):Array<Dynamic> {
+		var r:Array<Dynamic> = [];
+		Dice.Values(data, function(v:Dynamic) {	r = r.concat(v); });
+		return r;
+	}
+	
 	#if !php
 		/**
 		 * For each Child element in an Object

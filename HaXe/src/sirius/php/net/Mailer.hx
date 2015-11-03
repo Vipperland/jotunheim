@@ -4,6 +4,7 @@ import haxe.Utf8;
 import php.Boot;
 import php.Lib;
 import php.Web;
+import sirius.tools.Utils;
 import sirius.utils.Criptog;
 import sirius.utils.Dice;
 
@@ -18,63 +19,66 @@ class Mailer {
 		return mail + '|' + name;
 	}
 	
-	private var _cLib:PHPMailer;
-
+	public var output(get, null):PHPMailer;
+	
 	public function new(url:String, user:String, password:String, ?secure:String = null, ?port:UInt = 587) {
 		Sirius.require('PHPMailer/PHPMailerAutoload.php');
-		_cLib = new PHPMailer();
-		_cLib.CharSet = 'UTF-8';
-		_cLib.isSMTP();
-		_cLib.isHTML(true);
-		_cLib.From = user;
+		output = new PHPMailer();
+		output.CharSet = 'UTF-8';
+		output.isSMTP();
+		output.isHTML(true);
 		setAuth(url, user, password, secure, port);
 	}
 	
 	public function origin(name:String, email:String):Void {
-		if(email != null) _cLib.From = email;
-		if(name != null) _cLib.FromName = name;
+		if(email != null) output.From = email;
+		if(name != null) output.FromName = name;
 	}
 	
 	public function debug(level:UInt):Void {
-		_cLib.SMTPDebug = level;
+		output.SMTPDebug = level;
 	}
 	
-	public function setAuth():Void {
-		_cLib.Host = url;
-		_cLib.Username = user;
-		_cLib.Password = password;
-		_cLib.Port = port;
-		if (secure != null) _cLib.SMTPSecure = secure;
+	public function setAuth(url:String, user:String, password:String, ?secure:String = null, ?port:UInt = 587):Void {
+		output.Host = url;
+		output.Username = user;
+		output.Password = password;
+		output.Port = port;
+		if (secure != null) output.SMTPSecure = secure;
 	}
 	
 	public function targets(to:Array<Dynamic>, ?cc:Array<Dynamic>, ?bbc:Array<Dynamic>):Void {
 		Dice.Values(to, function(v:Dynamic) {
-			if (Std.is(v, Array)) 	_cLib.addAddress(v[0], v[1]);
-			else					_cLib.addAddress(v);
+			if (Std.is(v, Array) && Utils.isValid(v[0])) 	output.addAddress(v[0], v[1]);
+			else if(Utils.isValid(v))						output.addAddress(v);
 		});
 		Dice.Values(cc, function(v:Dynamic) {
-			if (Std.is(v, Array)) 	_cLib.addCC(v[0], v[1]);
-			else					_cLib.addCC(v);
+			if (Std.is(v, Array) && Utils.isValid(v[0]))	output.addCC(v[0], v[1]);
+			else if(Utils.isValid(v))						output.addCC(v);
 		});
 		Dice.Values(bbc, function(v:Dynamic) {
-			if (Std.is(v, Array)) 	_cLib.addBBC(v[0], v[1]);
-			else					_cLib.addBBC(v);
+			if (Std.is(v, Array) && Utils.isValid(v[0]))	output.addBCC(v[0], v[1]);
+			else if(Utils.isValid(v))						output.addBCC(v);
 		});
 	}
 	
 	public function message(subject:String, text:String):Void {
-		_cLib.Subject = subject;
-		_cLib.Body = text;
-		_cLib.AltBody = text.split('<br>').join('').split('<br/>').join('');
+		output.Subject = subject;
+		output.Body = text;
+		output.AltBody = text.split('<br>').join('').split('<br/>').join('');
 	}
 	
 	
 	public function getError():Dynamic {
-		return _cLib.ErrorInfo;
+		return output.ErrorInfo;
 	}
 	
 	public function send():Bool {
-		return _cLib.send();
+		return output.send();
+	}
+	
+	private function get_output():PHPMailer {
+		return output;
 	}
 	
 }

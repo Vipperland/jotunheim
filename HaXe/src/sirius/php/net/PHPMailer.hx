@@ -34,7 +34,7 @@ extern class PHPMailer{
 	public function addAddress(email:String, ?name:String):Void;
 	public function addReplyTo(email:String, ?name:String):Void;
 	public function addCC(email:String, ?name:String):Void;
-	public function addBBC(email:String, ?name:String):Void;
+	public function addBCC(email:String, ?name:String):Void;
 	public function addAttachment(name:String, path:String):Void;
 	
 	public function send():Bool;

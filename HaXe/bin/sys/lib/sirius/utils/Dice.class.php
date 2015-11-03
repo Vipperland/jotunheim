@@ -89,6 +89,11 @@ class sirius_utils_Dice {
 		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_7"), 'execute'), null);
 		return $r;
 	}
+	static function Mix($data) {
+		$r = (new _hx_array(array()));
+		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_8"), 'execute'), null);
+		return $r;
+	}
 	function __toString() { return 'sirius.utils.Dice'; }
 }
 function sirius_utils_Dice_0(&$complete, &$each, &$q, $p, $v) {
@@ -151,14 +156,19 @@ function sirius_utils_Dice_7(&$limit, &$r, &$table, &$values, $v) {
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
-		if(sirius_utils_Dice_8($limit, $r, $table, $v, $values)) {
+		if(sirius_utils_Dice_9($limit, $r, $table, $v, $values)) {
 			$a = --$limit;
 			return $a === 0;
 		}
 		return false;
 	}
 }
-function sirius_utils_Dice_8(&$limit, &$r, &$table, &$v, &$values) {
+function sirius_utils_Dice_8(&$data, &$r, $v) {
+	{
+		$r = $r->concat($v);
+	}
+}
+function sirius_utils_Dice_9(&$limit, &$r, &$table, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;

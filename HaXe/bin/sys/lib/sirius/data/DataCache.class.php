@@ -18,17 +18,28 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	public $_expire;
 	public $_loaded;
 	public $__time__;
+	public $data;
+	public function get_data() {
+		return $this->_DB;
+	}
 	public function _now() {
 		return Date::now()->getTime();
 	}
 	public $_validated;
 	public function _checkPath() {
-		$p = _hx_explode("/", _hx_explode("\\", $this->_path)->join("/"));
+		$p = _hx_explode("/", $this->_path);
 		if($p->length > 0) {
 			$t = (new _hx_array(array()));
+			if($p[0] === "") {
+				$t[0] = "/";
+			} else {
+				if($p[0] === ".") {
+					$t[0] = "./";
+				}
+			}
 			sirius_utils_Dice::Values($p, array(new _hx_lambda(array(&$p, &$t), "sirius_data_DataCache_0"), 'execute'), null);
 		}
-		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name) . ".sru.cache";
+		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name);
 		$this->_validated = true;
 	}
 	public function _fixData() {
@@ -43,12 +54,15 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	}
 	public function clear($p = null) {
 		if($p !== null) {
-			Reflect::deleteField($this->_DB, $p);
-		} else {
 			if($p !== "__time__") {
-				$this->_DB = _hx_anonymous(array("__time__" => $this->_now()));
-				@unlink($this->_path);
+				Reflect::deleteField($this->_DB, $p);
 			}
+		} else {
+			$this->_DB = _hx_anonymous(array());
+			if($this->_expire > 0) {
+				$this->_DB->__time__ = $this->_now();
+			}
+			@unlink($this->_path);
 		}
 		return $this;
 	}
@@ -86,31 +100,55 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			return $this->_loaded;
 		}
 	}
-	public function save() {
+	public function save($base64 = null) {
+		if($base64 === null) {
+			$base64 = true;
+		}
+		$data = null;
+		if($base64) {
+			$data = sirius_utils_Criptog::encodeBase64($this->_DB);
+		} else {
+			$data = $this->json(false);
+		}
 		if(!$this->_validated) {
 			$this->_checkPath();
 		}
-		$this->_sign(true);
-		sys_io_File::saveContent($this->_name, sirius_utils_Criptog::encodeBase64($this->_DB));
-		$this->_sign(false);
+		if($this->_expire > 0) {
+			$this->_sign(true);
+		}
+		sys_io_File::saveContent($this->_name, $data);
+		if($this->_expire > 0) {
+			$this->_sign(false);
+		}
 		return $this;
 	}
 	public function _sign($add) {
 		if($add) {
 			$this->_DB->__time__ = $this->_now();
 		} else {
-			$this->__time__ = $this->_DB->__time__;
+			if($this->_expire > 0) {
+				$this->__time__ = $this->_DB->__time__;
+			} else {
+				$this->__time__ = 0;
+			}
 			Reflect::deleteField($this->_DB, "__time__");
 		}
 	}
-	public function load() {
+	public function load($base64 = null) {
+		if($base64 === null) {
+			$base64 = true;
+		}
 		$this->_DB = null;
 		if(!$this->_validated) {
 			$this->_checkPath();
 		}
 		if(file_exists($this->_name)) {
 			$c = sys_io_File::getContent($this->_name);
-			$this->_DB = sirius_utils_Criptog::decodeBase64($c, true);
+			if($base64) {
+				$this->_DB = sirius_utils_Criptog::decodeBase64($c, true);
+			} else {
+				$this->_DB = haxe_Json::phpJsonDecode($c);
+			}
 		}
 		if(_hx_field($this, "_DB") === null || $this->_expire !== 0 && (_hx_field($this->_DB, "__time__") === null || $this->_now() - $this->_DB->__time__ >= $this->_expire)) {
 			$this->_DB = _hx_anonymous(array());
@@ -119,14 +157,11 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$this->_sign(false);
 			$this->_loaded = true;
 		}
-		return $this;
+		return $this->_loaded;
 	}
 	public function refresh() {
 		$this->__time__ = $this->_now();
 		return $this;
-	}
-	public function getData() {
-		return $this->_DB;
 	}
 	public function json($print = null) {
 		$result = haxe_Json::phpJsonEncode($this->_DB, null, null);
@@ -152,6 +187,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
+	static $__properties__ = array("get_data" => "get_data");
 	function __toString() { return 'sirius.data.DataCache'; }
 }
 function sirius_data_DataCache_0(&$p, &$t, $v) {

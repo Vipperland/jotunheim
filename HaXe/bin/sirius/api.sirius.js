@@ -4641,6 +4641,7 @@ var sirius_data_IDataCache = function() { };
 sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
 sirius_data_IDataCache.prototype = {
 	__class__: sirius_data_IDataCache
+	,__properties__: {get_data:"get_data"}
 };
 var sirius_data_DataCache = function(name,path,expire) {
 	if(expire == null) expire = 0;
@@ -4652,11 +4653,16 @@ var sirius_data_DataCache = function(name,path,expire) {
 sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
 sirius_data_DataCache.__interfaces__ = [sirius_data_IDataCache];
 sirius_data_DataCache.prototype = {
-	_now: function() {
+	get_data: function() {
+		return this._DB;
+	}
+	,_now: function() {
 		return new Date().getTime();
 	}
 	,clear: function(p) {
-		if(p != null) Reflect.deleteField(this._DB,p); else if(p != "__time__") {
+		if(p != null) {
+			if(p != "__time__") Reflect.deleteField(this._DB,p);
+		} else {
 			this._DB = { '__time__' : this._now()};
 			js_Cookie.remove(this._name,this._path);
 		}
@@ -4686,8 +4692,11 @@ sirius_data_DataCache.prototype = {
 	,exists: function(name) {
 		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,this._name); else return this._loaded;
 	}
-	,save: function() {
-		js_Cookie.set(this._name,sirius_utils_Criptog.encodeBase64(this._DB),0,this._path);
+	,save: function(base64) {
+		if(base64 == null) base64 = true;
+		var data;
+		if(base64) data = sirius_utils_Criptog.encodeBase64(this._DB); else data = this.json(false);
+		js_Cookie.set(this._name,data,0,this._path);
 		return this;
 	}
 	,_sign: function(add) {
@@ -4712,24 +4721,22 @@ sirius_data_DataCache.prototype = {
 		this.__time__ = this._now();
 		return this;
 	}
-	,getData: function() {
-		return this._DB;
-	}
 	,json: function(print) {
 		var result = JSON.stringify(this._DB);
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 195, className : "sirius.data.DataCache", methodName : "json"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 196, className : "sirius.data.DataCache", methodName : "json"});
 		}
 		return result;
 	}
 	,base64: function(print) {
 		var result = sirius_utils_Criptog.encodeBase64(this._DB);
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 201, className : "sirius.data.DataCache", methodName : "base64"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 202, className : "sirius.data.DataCache", methodName : "base64"});
 		}
 		return result;
 	}
 	,__class__: sirius_data_DataCache
+	,__properties__: {get_data:"get_data"}
 };
 var sirius_data_IFormData = function() { };
 sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
