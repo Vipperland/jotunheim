@@ -18,14 +18,20 @@
 	<div class="cel-{{size}}x24 padd-0{{css}}">
 		<div class="cel-{{label.size}}x24 nowrap{{label.css}}">{{label.name}}</div>
 		<div class="cel-{{input.size}}x24 padd-0">
-			<input {{id}}class="w-100pc{{input.css}} h-100pc" autocomplete="{{input.auto}}" type="{{input.type}}" form-data="{{input.data}}" value="{{input.value}}" form-required="{{input.required}}" placeholder="{{input.hint}}" />
+			<{{type}} {{id}}class="w-100pc{{input.css}} h-100pc" autocomplete="{{input.auto}}" type="{{input.type}}" form-data="{{input.data}}" value="{{input.value}}" form-required="{{input.required}}" placeholder="{{input.hint}}"></{{type}}>
 		</div>
+	</div>
+/EOF;
+
+[Module:{"name":"flat-input-clear","version":1.00,"type":"html"}]
+	<div class="cel-{{size}}x24 padd-0{{css}}">
+		<{{type}} {{id}}class="w-100pc{{input.css}} h-100pc" autocomplete="{{input.auto}}" type="{{input.type}}" form-data="{{input.data}}" value="{{input.value}}" form-required="{{input.required}}" placeholder="{{input.hint}}"></{{type}}>
 	</div>
 /EOF;
 
 [Module:{"name":"flat-checkbox","version":1.00,"type":"html"}]
 	<div class="cel-{{size}}x24 {{css}}">
-		<input {{id}}type="checkbox" form-data="{{check.data}}" value="{{check.value}}" {{check.active}} hidden/>
+		<input {{id}}type="{{type}}" plugin="Switch" name="{{check.group}}" form-data="{{check.data}}" value="{{check.value}}" {{check.active}} hidden/>
 		<div type="markdown" class="padd-{{mark.size}} Switch{{mark.css}}">{{mark.content}}</div>
 		<label {{target}}class="{{label.css}}">{{label.name}}</label>
 	</div>
@@ -64,17 +70,17 @@
 		transition: all .3s;
 	}
 	
-	input[type=checkbox]:checked + div.Switch + label {
+	input[plugin="Switch"]:checked + div.Switch + label {
 		margin-left: 20px;
 		transition: all .3s;
 	}
 	
-	input[type=checkbox]:checked + div.Switch {
+	input[plugin="Switch"]:checked + div.Switch {
 		opacity: 1;
 		transition: all .3s;
 	}
 	
-	input[type=checkbox] + div.Switch {
+	input[plugin="Switch"] + div.Switch {
 		position: relative;
 		overflow: hidden;
 		transition: all .3s;
@@ -127,13 +133,12 @@
 		var FlatUI = {
 			CONTAINER:'flat-container',
 			INPUT:'flat-input',
+			INPUT_CLEAR:'flat-input-clear',
 			BUTTON:'flat-button',
 			GRID:'flat-grid',
 			CELL:'flat-cell',
 			SPACE:'flat-space',
 			CHECK_BOX:'flat-checkbox',
-			config:{
-			},
 			update:function(){
 				Automator.scan();
 			}
@@ -180,6 +185,7 @@
 				var w = a == 'WHITE';
 				for(var i = 0; i<11; ++i){
 					var c = v.d.range(k);
+					c.NAME = v.n;
 					c._ac = a; // ascent color
 					c._nc = x; // triad + 1
 					c._pc = y; // triad - 1
@@ -200,7 +206,7 @@
 			var reset = {
 				'all':['id','bg','css'],
 				'switch':['width'],
-				'checkbox':['value','data','active'],
+				'checkbox':['value','data','active','group'],
 				'input':['auto','type','data','value','required','hint','name'],
 				'label':['name'],
 				'mark':['content'],
@@ -241,16 +247,20 @@
 					}
 					case FlatUI.INPUT : {
 						if(!d.label) d.label = {};
-						if(!d.input) d.input = {};
 						if(!d.label.size) d.label.size = 5;
+						_sanitize('',d.label);
+					}
+					case FlatUI.INPUT_CLEAR : {
+						if(!d.type || (d.type != "input" && d.type != "textarea")) d.type = "input";
+						if(!d.input) d.input = {};
 						if(!d.input.size) d.input.size = 19;
 						if(!d.input.bg) d.input.bg = 'white';
 						_reset(d.input, 'input');
-						_sanitize('',d.label);
 						_sanitize('',d.input);
 						break;
 					}
 					case FlatUI.CHECK_BOX : {
+						if(!d.type || (d.type != "checkbox" && d.type != "radio")) d.type = "checkbox";
 						if(!d.label) d.label = {};
 						if(!d.check) d.check = {};
 						if(!d.mark) d.mark = {};

@@ -2732,6 +2732,13 @@ sirius_utils_Dice.Match = function(table,values,limit) {
 	});
 	return r;
 };
+sirius_utils_Dice.Mix = function(data) {
+	var r = [];
+	sirius_utils_Dice.Values(data,function(v) {
+		r = r.concat(v);
+	});
+	return r;
+};
 sirius_utils_Dice.Children = function(of,each,complete) {
 	var r = { children : []};
 	var l = 0;
@@ -4663,7 +4670,8 @@ sirius_data_DataCache.prototype = {
 		if(p != null) {
 			if(p != "__time__") Reflect.deleteField(this._DB,p);
 		} else {
-			this._DB = { '__time__' : this._now()};
+			this._DB = { };
+			if(this._expire > 0) this._DB.__time__ = this._now();
 			js_Cookie.remove(this._name,this._path);
 		}
 		return this;
@@ -4701,13 +4709,14 @@ sirius_data_DataCache.prototype = {
 	}
 	,_sign: function(add) {
 		if(add) this._DB.__time__ = this._now(); else {
-			this.__time__ = this._DB.__time__;
+			if(this._expire > 0) this.__time__ = this._DB.__time__; else this.__time__ = 0;
 			Reflect.deleteField(this._DB,"__time__");
 		}
 	}
-	,load: function() {
+	,load: function(base64) {
+		if(base64 == null) base64 = true;
 		this._DB = null;
-		if(js_Cookie.exists(this._name)) this._DB = sirius_utils_Criptog.decodeBase64(js_Cookie.get(this._name),true);
+		if(js_Cookie.exists(this._name)) if(base64) this._DB = sirius_utils_Criptog.decodeBase64(js_Cookie.get(this._name),true); else this._DB = this.json(false);
 		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
 			this._DB = { };
 			this._loaded = false;
@@ -4715,7 +4724,7 @@ sirius_data_DataCache.prototype = {
 			this._sign(false);
 			this._loaded = true;
 		}
-		return this;
+		return this._loaded;
 	}
 	,refresh: function() {
 		this.__time__ = this._now();
@@ -4724,14 +4733,14 @@ sirius_data_DataCache.prototype = {
 	,json: function(print) {
 		var result = JSON.stringify(this._DB);
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 196, className : "sirius.data.DataCache", methodName : "json"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 199, className : "sirius.data.DataCache", methodName : "json"});
 		}
 		return result;
 	}
 	,base64: function(print) {
 		var result = sirius_utils_Criptog.encodeBase64(this._DB);
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 202, className : "sirius.data.DataCache", methodName : "base64"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 205, className : "sirius.data.DataCache", methodName : "base64"});
 		}
 		return result;
 	}
@@ -5592,15 +5601,22 @@ sirius_transitions_ITween.__name__ = ["sirius","transitions","ITween"];
 sirius_transitions_ITween.prototype = {
 	__class__: sirius_transitions_ITween
 };
-var sirius_utils_Criptog = function() { };
+var sirius_utils_Criptog = $hx_exports.Criptog = function() { };
 sirius_utils_Criptog.__name__ = ["sirius","utils","Criptog"];
 sirius_utils_Criptog.encodeBase64 = function(q) {
 	if(!(typeof(q) == "string")) q = JSON.stringify(q);
 	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
 };
 sirius_utils_Criptog.decodeBase64 = function(q,json) {
-	var r = haxe_crypto_Base64.decode(q).toString();
-	if(json && r.length > 1) return JSON.parse(r); else return r;
+	var r = null;
+	try {
+		r = haxe_crypto_Base64.decode(q).toString();
+	} catch( e ) {
+		if (e instanceof js__$Boot_HaxeError) e = e.val;
+	}
+	if(r != null) {
+		if(json && r.length > 1) return JSON.parse(r); else return r;
+	} else return null;
 };
 var sirius_utils_Filler = $hx_exports.sru.utils.Filler = function() { };
 sirius_utils_Filler.__name__ = ["sirius","utils","Filler"];

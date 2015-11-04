@@ -15,24 +15,9 @@
 		"email":"username@myhost.com",
 		"name":"My Username"
 	},
-	"to":[
-		{
-			"email":"",
-			"name":""
-		}
-	],
-	"cc":[
-		{
-			"email":"",
-			"name":""
-		}
-	],
-	"bcc":[
-		{
-			"email":"",
-			"name":""
-		}
-	],
+	"to":[{"email":"","name":""}],
+	"cc":[{"email":"","name":""}],
+	"bcc":[{"email":"","name":""}],
 	"require":[
 		"name",
 		"email",
@@ -40,5 +25,13 @@
 		"phone"
 	],
 	"subject":"Teste Message",
-	"message":"Message from {{name}}, ReplyTo: {{email}} / {{phone}}.<br><br>Text: {{message}}"
+	"message":"Message from {{name}}, ReplyTo: {{email}} / {{phone}}.<br><br>Text: {{message}}",
+	"locale":{
+		"success":"Mensagem enviada com sucesso!",
+		"missing":"Está faltando o campo {{name}}.",
+		"error":"Erro ao enviar formulário, tente novamente.",
+		"authentication":"SMTP de envio não configurado.",
+		"sender":"Email disparador não configurado.",
+		"target":"Email(s) de destino não configurado."
+	}
 }

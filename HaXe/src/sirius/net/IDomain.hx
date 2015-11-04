@@ -1,6 +1,8 @@
 package sirius.net;
-import php.Lib;
-import php.NativeArray;
+#if php
+	import php.Lib;
+	import php.NativeArray;
+#end
 import sirius.data.IFragments;
 import sirius.net.IDomainData;
 import sirius.utils.Dice;

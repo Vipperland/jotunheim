@@ -12,26 +12,34 @@
 			var body = Sirius.document.body;
 			body.css('bg-lavender');
 			
-			function createCell(color){
+			function createCell(color,i){
 				var o = body.mount(FlatUI.GRID,{bg:color})
 							.mount(FlatUI.CELL,{size:24});
-					o.mount(FlatUI.INPUT,{size:4,
-						label:{size:8,	css:'bord-b-l-rad-5 bord-t-l-rad-5', name:'INPUT TEST', bg:FlatColors.WHITE[2]},
-						input:{size:16, css:'bord-b-r-rad-5 bord-t-r-rad-5', bg:FlatColors.WHITE[1]}
+					o.mount(FlatUI.INPUT,{size:4, css:'',
+						label:{size:8,	css:'', name:'INPUT TEST', bg:FlatColors.WHITE[2]},
+						input:{size:16, css:'', bg:FlatColors.WHITE[1]}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'bord-rad-5', name:'BUTTON'});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, css:'bord-rad-5 Glass', bg:color.range(1.2),
+					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'Glass', name:'BUTTON'});
+					o.mount(FlatUI.SPACE,{size:5});
+					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, type:"checkbox", css:'', bg:color.range(1.2),
 						label:{name:"CHECK BOX", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
-						mark:{bg:color.ASCENT(), rad:10, shadow:false, css:'bord-rad-2'}
+						mark:{bg:color.ASCENT(), rad:10, shadow:true, css:''},
+						check:{data:color.NAME}
+					});
+					o.mount(FlatUI.SPACE,{size:5});
+					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, type:"radio", css:'', bg:color.range(1.2),
+						label:{name:"RADIO", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
+						mark:{bg:color.ASCENT(), rad:1, shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
+						check:{group:color.NAME, data:1, active:i == 0 ? 'checked' : ''}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 			}
 			
 			for(var a in FlatColors) {
 				for(var i=0; i<11;++i)	{
-					createCell(FlatColors[a][i]);
+					createCell(FlatColors[a][i], i);
 					if(i == 3 && FlatColors[a].name != 'WHITE') break;
 				}
 			}
@@ -40,7 +48,7 @@
 			
 		}
 		
-		Automator.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
+		Automator.shadowConfig({distance:1, direction:90, strength:3, flex:.2});
 		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
 		
 	</script>

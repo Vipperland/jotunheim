@@ -22,7 +22,9 @@
 			var params = Sirius.one(trigger.attribute('form-trigger'));
 			if(params){
 				trigger.data.uri = trigger.attribute('form-target');
-				trigger.data.fields = new sru.data.FormData().scan(params);
+				var group = trigger.attribute('form-group');
+				if(group != null) group = Sirius.one(group);
+				trigger.data.fields = new sru.data.FormData(group).scan();
 				trigger.events.click(_validate);
 			}
 		});

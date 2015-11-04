@@ -7,6 +7,7 @@ import haxe.Json;
  * ...
  * @author Rafael Moreira
  */
+@:expose('Criptog')
 class Criptog {
 
 	public static function encodeBase64(q:Dynamic):String {
@@ -15,8 +16,11 @@ class Criptog {
 	}
 	
 	public static function decodeBase64(q:String, ?json:Bool):Dynamic {
-		var r:String = Base64.decode(q).toString();
-		return json && r.length > 1 ? Json.parse(r) : r;
+		var r:String = null;
+		try {
+			r = Base64.decode(q).toString();
+		}catch (e:Dynamic) {}
+		return r != null ? (json && r.length > 1 ? Json.parse(r) : r) : null;
 	}
 	
 }

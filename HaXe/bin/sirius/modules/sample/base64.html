@@ -1,0 +1,87 @@
+[Module:{"name":"base64","version":1.00,"type":"html"}]
+	
+/EOF;
+
+[Module:{"version":1.00,"type":"script"}]
+	<script>
+		
+		function _apply(e){
+			var data = Sirius.one('[name=base64]:checked').attribute('form-data');
+			var encode = data == 'encode';
+			var input = Sirius.one('[form-data=entry]').value();
+			console.log([input, data, encode]);
+			try {
+				Sirius.one('textarea.min-h-200').value(encode ? Criptog.encodeBase64(input) : Criptog.decodeBase64(input));
+			}catch(e){
+				Sirius.one('textarea.min-h-200').value('Invalid data input');
+			}
+		}
+		
+		function _init(){
+			
+			Automator.build('bg-lavender padd-10');
+			
+			var body = Sirius.document.body;
+			body.background(FlatColors.BLUE[2]);
+			
+			var cont =
+			body.mount(FlatUI.GRID,{bg:FlatColors.BLUE[0]}).mount(FlatUI.CELL,{size:24});
+			with(cont){
+				css('txt-c txt-30 txt-white');
+				write("Base64 Encode & Decode Tool");
+			}
+			
+			body.mount(FlatUI.GRID,{bg:FlatColors.BLUE[1], shadow:0}).mount(FlatUI.CELL,{size:24});
+			
+			cont = 
+			body.mount(FlatUI.GRID,{}).mount(FlatUI.CELL,{size:24});
+			with(cont){
+				mount(FlatUI.CELL, {size:6});
+				mount(FlatUI.INPUT_CLEAR,{size:12, type:"textarea", css:'Glass',
+					input:{data:'entry', css:'min-h-100', bg:FlatColors.WHITE[1], hint:'Input Data'}
+				});
+			}
+			
+			cont = 
+			body.mount(FlatUI.GRID,{}).mount(FlatUI.CELL,{size:24});
+			
+			with(cont){
+				css('txt-white');
+				mount(FlatUI.CELL, {size:6});
+				mount(FlatUI.CHECK_BOX,{size:2, rad:6, type:"radio", css:'Glass',
+					label:{name:"ENCODE"},
+					mark:{bg:FlatColors.RED[0], rad:10, shadow:true, css:''},
+					check:{group:'base64', data:"encode"}
+				});
+				mount(FlatUI.CHECK_BOX,{size:2, rad:6, type:"radio", css:'Glass',
+					label:{name:"DECODE"},
+					mark:{bg:FlatColors.GREEN[0], rad:10, shadow:true, css:''},
+					check:{group:'base64', data:"decode",active:"checked"}
+				});
+				mount(FlatUI.CELL, {size:5});
+				mount(FlatUI.BUTTON,{size:3, bg:FlatColors.BLUE[0], css:'Glass', name:'APPLY'})
+					.events.click(_apply);
+			}
+			
+			body.mount(FlatUI.GRID,{bg:FlatColors.BLUE[1], shadow:0}).mount(FlatUI.CELL,{size:24});
+			
+			cont = 
+			body.mount(FlatUI.GRID,{})
+				.mount(FlatUI.CELL,{size:24});
+			with(cont){
+				mount(FlatUI.CELL, {size:6});
+				mount(FlatUI.INPUT_CLEAR,{size:12, type:"textarea",
+					input:{size:20, css:' bord-b-l-5 min-h-200', bg:FlatColors.WHITE[1], hint:'Output Data'}
+				});
+			}
+			
+			Sirius.one('textarea.min-h-200').attribute('readonly', true);
+			
+			Automator.scan();
+			
+		}
+		
+		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
+		
+	</script>
+/EOF;

@@ -213,7 +213,6 @@ class Loader implements ILoader {
 		"name"		:"testModule",				// Unique module identifier
 		"target"		:"selector",					// Auto append module in target selector
 		"require"	:"modA;modB;...;modN",			// Dependencies that will be writed in module
-		"filler"		:"myFunctionName",			// Call this function and write returned data in module
-		"repeat"		: true | false				// Repeat module structure for each property in filler result
+		"filler"		:"myFunctionName"			// Call this function and write returned data in module
 	}]
 */

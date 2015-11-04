@@ -1,4 +1,4 @@
-package sirius.php;
+package sirius.php.test;
 
 import haxe.Log;
 import php.Lib;
@@ -14,9 +14,6 @@ class Main {
 		var t:Array<Dynamic> = [ { name:"Goddamn ", nick:"Foobar", extra:{message:"- Now with Sweet Potatos!"} }, { name:"Hello", nick:"World", extra:{message:null} } ];
 		ModLib.prepare("modules/filler-test.html");
 		ModLib.print("modules/filler-test.html", t, true);
-		
-		Sirius.document.element.className
-		
 	}
 
 }

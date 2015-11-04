@@ -9,11 +9,22 @@ class sirius_utils_Criptog {
 		return haxe_crypto_Base64::encode(haxe_io_Bytes::ofString($q), null);
 	}
 	static function decodeBase64($q, $json = null) {
-		$r = haxe_crypto_Base64::decode($q, null)->toString();
-		if($json && strlen($r) > 1) {
-			return haxe_Json::phpJsonDecode($r);
+		$r = null;
+		try {
+			$r = haxe_crypto_Base64::decode($q, null)->toString();
+		}catch(Exception $__hx__e) {
+			$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
+			$e = $_ex_;
+			{}
+		}
+		if($r !== null) {
+			if($json && strlen($r) > 1) {
+				return haxe_Json::phpJsonDecode($r);
+			} else {
+				return $r;
+			}
 		} else {
-			return $r;
+			return null;
 		}
 	}
 	function __toString() { return 'sirius.utils.Criptog'; }

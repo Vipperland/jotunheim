@@ -27,16 +27,34 @@ class SendMail {
 		
 		if (d.load(true)) {
 			
+			var commonLocale:Dynamic =  { 
+				authentication:"No authentication data specified",
+				sender:"No sender data specified",
+				target:"No target data specified",
+				subject:"No default subject found",
+				missing:"Param {{name}} value is null",
+			};
+			
+			var locale:Dynamic = d.get('locale');
+			
+			if (locale != null) {
+				Dice.All(commonLocale, function(p:String, v:String) {
+					if (!Reflect.hasField(locale, p)) Reflect.setField(locale, p, v);
+				});
+			}else {
+				locale = commonLocale;
+			}
+			
 			var require:Array<Dynamic> = d.get('require');
 			if (require != null && require.length > 0) {
 				Dice.Values(require, function(v:String) {
-					if (!Sirius.domain.require([v])) _setError(e, "missing.param:" + v, "Param " + v + " value is null");
+					if (!Sirius.domain.require([v])) _setError(e, "missing.param:" + v, Filler.to(locale.missing, {name:v}));
 				});
 			}
 			
 			var x:String = Sirius.domain.params.subject;
 			if (x == null || x.length == 0) x = d.get('subject');
-			if (x == null || x.length == 0) _setError(e, "missing.subject", "No default subject found");
+			if (x == null || x.length == 0) _setError(e, "missing.param:subject", locale.subject);
 			
 			if(e.length == 0){
 				
@@ -48,9 +66,9 @@ class SendMail {
 				
 				var ms:String = d.get('message');
 				
-				if (o == null) _setError(e, "missing.auth", "No authentication data specified");
-				if (s == null) _setError(e, "missing.sender", "No sender data specified");
-				if (to == null || to.length == 0) _setError(e, "missing.to", "No target data specified");
+				if (o == null) _setError(e, "missing.auth", locale.authentication);
+				if (s == null) _setError(e, "missing.sender", locale.sender);
+				if (to == null || to.length == 0) _setError(e, "missing.to", locale.target);
 				
 				if (e.length == 0) {
 					var mail:Mailer = new Mailer(o.host, o.user, o.password, o.secure, o.port);
@@ -88,10 +106,10 @@ class SendMail {
 				}
 			}
 		}else {
-			Sirius.header.setJSON();
 			_setError(e, "missing.config", "Missing configuration file.");
 		}
 		
+		Sirius.header.setJSON();
 		o.set("result", r);
 		o.json(true);
 		

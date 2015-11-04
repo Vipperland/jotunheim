@@ -1,7 +1,6 @@
 package sirius;
 
 import haxe.Log;
-import php.NativeArray;
 import sirius.data.DataCache;
 import sirius.data.Logger;
 import sirius.errors.IError;

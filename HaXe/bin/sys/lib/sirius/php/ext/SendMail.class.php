@@ -12,16 +12,23 @@ class sirius_php_ext_SendMail {
 		$d = new sirius_data_DataCache("mail", "conf", 0);
 		$o = new sirius_data_DataCache(null, null, null);
 		if($d->load(true)) {
+			$commonLocale = _hx_anonymous(array("authentication" => "No authentication data specified", "sender" => "No sender data specified", "target" => "No target data specified", "subject" => "No default subject found", "missing" => "Param {{name}} value is null"));
+			$locale = $d->get("locale");
+			if($locale !== null) {
+				sirius_utils_Dice::All($commonLocale, array(new _hx_lambda(array(&$commonLocale, &$d, &$e, &$locale, &$o, &$r, &$z), "sirius_php_ext_SendMail_0"), 'execute'), null);
+			} else {
+				$locale = $commonLocale;
+			}
 			$require = $d->get("require");
 			if($require !== null && $require->length > 0) {
-				sirius_utils_Dice::Values($require, array(new _hx_lambda(array(&$d, &$e, &$o, &$r, &$require, &$z), "sirius_php_ext_SendMail_0"), 'execute'), null);
+				sirius_utils_Dice::Values($require, array(new _hx_lambda(array(&$commonLocale, &$d, &$e, &$locale, &$o, &$r, &$require, &$z), "sirius_php_ext_SendMail_1"), 'execute'), null);
 			}
 			$x = sirius_Sirius::$domain->params->subject;
 			if($x === null || strlen($x) === 0) {
 				$x = $d->get("subject");
 			}
 			if($x === null || strlen($x) === 0) {
-				sirius_php_ext_SendMail::_setError($e, "missing.subject", "No default subject found");
+				sirius_php_ext_SendMail::_setError($e, "missing.param:subject", $locale->subject);
 			}
 			if($e->length === 0) {
 				$o1 = $d->get("auth");
@@ -31,13 +38,13 @@ class sirius_php_ext_SendMail {
 				$bbc = $d->get("bcc");
 				$ms = $d->get("message");
 				if($o1 === null) {
-					sirius_php_ext_SendMail::_setError($e, "missing.auth", "No authentication data specified");
+					sirius_php_ext_SendMail::_setError($e, "missing.auth", $locale->authentication);
 				}
 				if($s === null) {
-					sirius_php_ext_SendMail::_setError($e, "missing.sender", "No sender data specified");
+					sirius_php_ext_SendMail::_setError($e, "missing.sender", $locale->sender);
 				}
 				if($to === null || $to->length === 0) {
-					sirius_php_ext_SendMail::_setError($e, "missing.to", "No target data specified");
+					sirius_php_ext_SendMail::_setError($e, "missing.to", $locale->target);
 				}
 				if($e->length === 0) {
 					$mail = new sirius_php_net_Mailer($o1->host, $o1->user, $o1->password, $o1->secure, $o1->port);
@@ -65,7 +72,7 @@ class sirius_php_ext_SendMail {
 					}
 					if($ms === null) {
 						$ms = "";
-						sirius_utils_Dice::All(sirius_Sirius::$domain->params, array(new _hx_lambda(array(&$bbc, &$cc, &$d, &$e, &$mail, &$ms, &$n, &$o, &$o1, &$r, &$require, &$s, &$to, &$ue, &$un, &$x, &$z), "sirius_php_ext_SendMail_1"), 'execute'), null);
+						sirius_utils_Dice::All(sirius_Sirius::$domain->params, array(new _hx_lambda(array(&$bbc, &$cc, &$commonLocale, &$d, &$e, &$locale, &$mail, &$ms, &$n, &$o, &$o1, &$r, &$require, &$s, &$to, &$ue, &$un, &$x, &$z), "sirius_php_ext_SendMail_2"), 'execute'), null);
 					} else {
 						$ms = sirius_utils_Filler::to($ms, sirius_Sirius::$domain->params, null);
 					}
@@ -85,23 +92,30 @@ class sirius_php_ext_SendMail {
 				}
 			}
 		} else {
-			sirius_Sirius::$header->setJSON();
 			sirius_php_ext_SendMail::_setError($e, "missing.config", "Missing configuration file.");
 		}
+		sirius_Sirius::$header->setJSON();
 		$o->set("result", $r);
 		$o->json(true);
 	}
 	function __toString() { return 'sirius.php.ext.SendMail'; }
 }
-function sirius_php_ext_SendMail_0(&$d, &$e, &$o, &$r, &$require, &$z, $v) {
+function sirius_php_ext_SendMail_0(&$commonLocale, &$d, &$e, &$locale, &$o, &$r, &$z, $p, $v) {
 	{
-		if(!sirius_Sirius::$domain->hrequire((new _hx_array(array($v))))) {
-			sirius_php_ext_SendMail::_setError($e, "missing.param:" . _hx_string_or_null($v), "Param " . _hx_string_or_null($v) . " value is null");
+		if(!_hx_has_field($locale, $p)) {
+			$locale->{$p} = $v;
 		}
 	}
 }
-function sirius_php_ext_SendMail_1(&$bbc, &$cc, &$d, &$e, &$mail, &$ms, &$n, &$o, &$o1, &$r, &$require, &$s, &$to, &$ue, &$un, &$x, &$z, $p, $v1) {
+function sirius_php_ext_SendMail_1(&$commonLocale, &$d, &$e, &$locale, &$o, &$r, &$require, &$z, $v1) {
 	{
-		$ms .= "<b>" . _hx_string_or_null($p) . "</b>: " . Std::string($v1);
+		if(!sirius_Sirius::$domain->hrequire((new _hx_array(array($v1))))) {
+			sirius_php_ext_SendMail::_setError($e, "missing.param:" . _hx_string_or_null($v1), sirius_utils_Filler::to($locale->missing, _hx_anonymous(array("name" => $v1)), null));
+		}
+	}
+}
+function sirius_php_ext_SendMail_2(&$bbc, &$cc, &$commonLocale, &$d, &$e, &$locale, &$mail, &$ms, &$n, &$o, &$o1, &$r, &$require, &$s, &$to, &$ue, &$un, &$x, &$z, $p1, $v2) {
+	{
+		$ms .= "<b>" . _hx_string_or_null($p1) . "</b>: " . Std::string($v2);
 	}
 }
