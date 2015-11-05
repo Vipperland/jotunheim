@@ -1,6 +1,9 @@
 package sirius.data;
 import sirius.data.IDataSet;
 import sirius.data.DataSet;
+import sirius.dom.IDisplay;
+import sirius.events.Dispatcher;
+import sirius.events.IDispatcher;
 
 /**
  * ...
@@ -12,9 +15,12 @@ class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 	
 	public var __id__:String;
 	
-	public function new(id:String) {
+	public var __events__:IDispatcher;
+	
+	public function new(id:String, q:IDisplay) {
 		__data__ = new DataSet();
 		__id__ = id;
+		__events__ = new Dispatcher(q);
 		super();
 	}
 	
@@ -23,6 +29,13 @@ class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 		super.clear();
 		__data__ = d;
 		return this;
+	}
+	
+	public function dispose():Void {
+		__events__.dispose();
+		__data__.clear();
+		__events__ = null;
+		__data__ = null;
 	}
 	
 }

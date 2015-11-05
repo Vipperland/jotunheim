@@ -21,17 +21,17 @@
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'Glass', name:'BUTTON'});
+					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'Glass', name:color.NAME + ' BUTTON'});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, type:"checkbox", css:'', bg:color.range(1.2),
-						label:{name:"CHECK BOX", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
-						mark:{bg:color.ASCENT(), rad:10, shadow:true, css:''},
+					o.mount(FlatUI.CHECK_BOX,{size:3, type:"checkbox", css:'', bg:color.range(1.2),
+						label:{name:color.NAME + " CHECK", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
+						mark:{bg:color.ASCENT(), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
 						check:{data:color.NAME}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
-					o.mount(FlatUI.CHECK_BOX,{size:3, rad:6, type:"radio", css:'', bg:color.range(1.2),
-						label:{name:"RADIO", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
-						mark:{bg:color.ASCENT(), rad:1, shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
+					o.mount(FlatUI.CHECK_BOX,{size:3, type:"radio", css:'', bg:color.range(1.2),
+						label:{name:color.NAME + " RADIO", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
+						mark:{bg:color.ASCENT(), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
 						check:{group:color.NAME, data:1, active:i == 0 ? 'checked' : ''}
 					});
 					o.mount(FlatUI.SPACE,{size:5});

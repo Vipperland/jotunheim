@@ -48,7 +48,10 @@ class Display implements IDisplay {
 			_DATA.clear();
 		}else{
 			Dice.All(_DATA.structure, function(p:String, v:DisplayData) {
-				if (Sirius.one('[sru-id=' + v.__id__ + ']') == null) _DATA.unset(p);
+				if (Sirius.one('[sru-id=' + v.__id__ + ']') == null) {
+					_DATA.get(p).dispose();
+					_DATA.unset(p);
+				}
 			});
 		}
 	}
@@ -78,12 +81,13 @@ class Display implements IDisplay {
 		if (q == null) 	q = Browser.document.createDivElement();
 		element = q;
 		
-		events = new Dispatcher(this);
-		
 		if (element != cast Browser.document) {
 			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
-			if (!_DATA.exists(_uid)) _DATA.set(_uid, new DisplayData(_uid));
+			if (!_DATA.exists(_uid)) {
+				_DATA.set(_uid, new DisplayData(_uid, this));
+			}
 			data = _DATA.get(_uid);
+			events = data.__events__;
 		}
 		
 	}
@@ -107,18 +111,6 @@ class Display implements IDisplay {
 			untyped __js__("new o(d, c)");
 		});
 		return this;
-	}
-	
-	public function alignCenter():Void {
-		css("marg-a vert-m /float-l /float-r txt-c");
-	}
-	
-	public function alignLeft():Void {
-		css("/marg-a /vert-m float-l /float-r /txt-c");
-	}
-	
-	public function alignRight():Void {
-		css("/marg-a /vert-m /float-l float-r /txt-c");
 	}
 	
 	public function background(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String):String {
@@ -195,9 +187,8 @@ class Display implements IDisplay {
 	}
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
-		q.events.apply();
 		Reflect.setField(q, '_parent', this);
-		if (at != -1 && at < length()) {
+		if (at != -1) {
 			var sw:Node = element.childNodes.item(at);
 			element.insertBefore(q.element, sw);
 		}else {
@@ -253,18 +244,6 @@ class Display implements IDisplay {
 	public function cursor(?value:String):String {
 		if (value != null) element.style.cursor = value;
 		return element.style.cursor;
-	}
-	
-	public function detach():Void {
-		css('pos-abs /pos-rel /pos-fix');
-	}
-	
-	public function attach():Void {
-		css('/pos-abs pos-rel /pos-fix');
-	}
-	
-	public function pin():Void {
-		css('/pos-abs /pos-rel pos-fix');
 	}
 	
 	public function show():Void {
@@ -403,21 +382,21 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function width(?value:Float, ?pct:Bool):Float {
+	public function width(?value:Dynamic):Int {
 		if (value != null)
-			element.style.width = value + (pct ? "%" : "px");
+			element.style.width = Std.is(value, String) ? value : value + "px";
 		return element.clientWidth;
 	}
 	
-	public function height(?value:Float, ?pct:Bool):Float {
+	public function height(?value:Dynamic):Int {
 		if (value != null)
-			element.style.height = value + (pct ? "%" : "px");
+			element.style.height = Std.is(value, String) ? value : value + "px";
 		return element.clientHeight;
 	}
 	
-	public function fit(width:Float, height:Float, ?pct:Bool):IDisplay {
-		this.width(width, pct);
-		this.height(height, pct);
+	public function fit(width:Dynamic, height:Dynamic):IDisplay {
+		this.width(width);
+		this.height(height);
 		return this;
 	}
 	

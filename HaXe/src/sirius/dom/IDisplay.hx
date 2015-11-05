@@ -152,21 +152,6 @@ interface IDisplay {
 	public function cursor(?value:String):String;
 	
 	/**
-	 * Set position style to absolute
-	 */
-	public function detach():Void;
-	
-	/**
-	 * Set position style to relative
-	 */
-	public function attach():Void;
-	
-	/**
-	 * Set position style to fixed
-	 */
-	public function pin():Void;
-	
-	/**
 	 * Remove hidden attribute from element
 	 */
 	public function show():Void;
@@ -302,27 +287,24 @@ interface IDisplay {
 	/**
 	 * Change WIDTH of Element
 	 * @param		value
-	 * @param		pct
 	 * @return		Client width
 	 */
-	public function width(?value:Float, ?pct:Bool):Float;
+	public function width(?value:Dynamic):Int;
 	
 	/**
 	 * Change HEIGHT of Element
 	 * @param		value
-	 * @param		pct
 	 * @return		Client height
 	 */
-	public function height(?value:Float, ?pct:Bool):Float;
+	public function height(?value:Dynamic):Int;
 	
 	/**
 	 * Set width & height
 	 * @param	width
 	 * @param	height
-	 * @param	pct
 	 * @return
 	 */
-	public function fit(width:Float, height:Float, ?pct:Bool):IDisplay;
+	public function fit(width:Dynamic, height:Dynamic):IDisplay;
 	
 	/**
 	 * Set overflow mode
@@ -374,21 +356,6 @@ interface IDisplay {
 	 * @return
 	 */
 	public function addToBody():IDisplay;
-	
-	/**
-	 * Align center
-	 */
-	public function alignCenter():Void;
-	
-	/**
-	 * Float left
-	 */
-	public function alignLeft():Void;
-	
-	/**
-	 * Float right
-	 */
-	public function alignRight():Void;
 	
 	/**
 	 * True position in DOM

@@ -32,7 +32,7 @@
 [Module:{"name":"flat-checkbox","version":1.00,"type":"html"}]
 	<div class="cel-{{size}}x24 {{css}}">
 		<input {{id}}type="{{type}}" plugin="Switch" name="{{check.group}}" form-data="{{check.data}}" value="{{check.value}}" {{check.active}} hidden/>
-		<div type="markdown" class="padd-{{mark.size}} Switch{{mark.css}}">{{mark.content}}</div>
+		<div type="markdown" class="Switch{{mark.css}}">{{mark.content}}</div>
 		<label {{target}}class="{{label.css}}">{{label.name}}</label>
 	</div>
 </div>
@@ -51,8 +51,6 @@
 	/* 
 		.Switch
 				Custom Checkbox
-		.Glass
-				Glass effect
 		.PressurePlate
 				Button controled by pressure
 		
@@ -68,23 +66,6 @@
 		float: left;
 		margin-left: 10px;
 		transition: all .3s;
-	}
-	
-	input[plugin="Switch"]:checked + div.Switch + label {
-		margin-left: 20px;
-		transition: all .3s;
-	}
-	
-	input[plugin="Switch"]:checked + div.Switch {
-		opacity: 1;
-		transition: all .3s;
-	}
-	
-	input[plugin="Switch"] + div.Switch {
-		position: relative;
-		overflow: hidden;
-		transition: all .3s;
-		opacity: .1;
 	}
 	
 	.Glass, .PressurePlate {
@@ -116,6 +97,30 @@
 		margin-left: -20%;
 		opacity: 1;
 		transition: 0s;
+	}
+	
+	input[plugin="Switch"]:checked + div.Switch + label {
+		margin-left: 20px;
+		transition: all .3s;
+	}
+	
+	input[plugin="Switch"]:checked + div.Switch {
+		opacity: 1;
+		transition: all .3s;
+	}
+	
+	input[plugin="Switch"] + div.Switch {
+		position: relative;
+		overflow: hidden;
+		transition: all .3s;
+		opacity: .1;
+	}
+	
+	.PressurePlate {
+		position: relative;
+		overflow: hidden;
+		top: 0px;
+		transition: all .3s;
 	}
 	
 	.PressurePlate:active {
@@ -267,7 +272,6 @@
 						if(!d.label.size) d.label.size = 5;
 						if(!d.check.size) d.check.size = 19;
 						if(!d.check.bg) d.check.bg = 'white';
-						if(!d.mark.size) d.mark.size = 7;
 						var uid = '"' + sru.tools.Key.GEN() + '"';
 						d.id = 'id=' + uid;
 						d.target = 'for=' + uid;

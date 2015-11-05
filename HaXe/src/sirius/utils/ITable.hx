@@ -102,24 +102,6 @@ interface ITable {
 	public function cursor (value:String) : ITable;
 	
 	/**
-	 * Set position to relative in all elements
-	 * @return
-	 */
-	public function detach () : ITable;
-
-	/**
-	 * Set position to absolute in all elements
-	 * @return
-	 */
-	public function attach () : ITable;
-	
-	/**
-	 * Set position to fixed in all elements
-	 * @return
-	 */
-	public function pin () : ITable;
-
-	/**
 	 * Remove all children from all elements in table
 	 * @param	fast
 	 * @return

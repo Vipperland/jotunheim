@@ -5,7 +5,7 @@ package hook;
  */
 
  @:native('sru.dom.Display')
-extern class Display extends Dynamic {
+extern class DisplayHook extends Dynamic {
 	
 	/**
 	 * Uniq data carrier

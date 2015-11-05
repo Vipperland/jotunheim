@@ -6,6 +6,7 @@
 /EOF;
 
 [Module:{"version":1.00,"type":"script"}]
+	
 	<script>
 		
 		Automator.build('padd-0');
@@ -176,7 +177,9 @@
 			
 		}
 		
-		Sirius.inject('sirius/3rd/js/jquery-2.1.4.min.js', _loaded);
+		Sirius.module('sirius/modules/devtools/logger.html', null, null, function(){
+			Sirius.inject('sirius/3rd/js/jquery-2.1.4.min.js', _loaded);
+		});
 		
 	</script>
 /EOF;

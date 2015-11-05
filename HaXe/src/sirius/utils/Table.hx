@@ -31,7 +31,7 @@ class Table implements ITable {
 	
 	public var elements:Array<Element>;
 	
-	public function new(?q:String="*", ?t:Element = null) {
+	public function new(?q:String="*", ?t:Element, ?h:Dynamic) {
 		content = [];
 		elements = [];
 		if (q != "NULL_TABLE") {
@@ -48,12 +48,17 @@ class Table implements ITable {
 				}catch (e:Dynamic) {
 					result = cast [];
 				}
+				var ih:Bool = h != null;
 				var element:Element = null;
+				var obj:IDisplay = null;
 				if(result.length > 0){
 					Dice.Count(0, result.length, function(i:Int, j:Int, k:Bool) {
 						element = cast result.item(i);
-						content[content.length] = is3D ? new Display3D(element) : Utils.displayFrom(element);
-						elements[elements.length] = element;
+						obj = is3D ? new Display3D(element) : Utils.displayFrom(element);
+						if(ih == false || h(obj)){
+							content[content.length] = obj;
+							elements[elements.length] = element;
+						}
 						return null;
 					});
 				}else {
@@ -124,18 +129,6 @@ class Table implements ITable {
 	
 	public function cursor(value:String):ITable {
 		return each(function(v:IDisplay) { v.cursor(value); } );
-	}
-	
-	public function detach():ITable {
-		return each(function(v:IDisplay) { v.detach(); } );
-	}
-	
-	public function attach():ITable {
-		return each(function(v:IDisplay) { v.attach(); } );
-	}
-	
-	public function pin():ITable {
-		return each(function(v:IDisplay) { v.pin(); } );
 	}
 	
 	public function clear(?fast:Bool):ITable {

@@ -8,15 +8,14 @@
 		var c = false;
 		var mv = 0;
 		var cr = {x:0,y:0};
-		t.pin();
-		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 max-height-100pc max-w-700 t-0 scroll-none max-h-50pc');
+		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 max-height-100pc max-w-700 t-0 scroll-none max-h-50pc pos-fix');
 		t.addToBody();
 		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-x10FFFFFF">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
 		
 		var d = t.one('#sirius:dump');
 		_bgs = ['txt-xCCCCCC','txt-x00CCFF','txt-xFFFF00','txt-xFF0000','txt-xFF99CC bold', 'txt-x0099CC'];
 		
-		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 padd-l-50 overflow-y-auto max-h-300');
+		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 padd-l-50 overflow-y-auto max-h-300 pos-fix');
 		Automator.css.setSelector('.nowrap','xFFFFFF-space: nowrap;overflow-x:hidden');
 		Automator.build(t.css());
 		Automator.build(_bgs.join(' '));

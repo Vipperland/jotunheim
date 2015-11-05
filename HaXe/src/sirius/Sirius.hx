@@ -149,10 +149,11 @@ class Sirius {
 		 * Do a QuerySelectorAll and return a display Table
 		 * @param	q
 		 * @param	t
+		 * @param	h
 		 * @return
 		 */
-		static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
-			return new Table(q, t);
+		static public function all(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic = null):ITable {
+			return new Table(q, t, h);
 		}
 		
 		/**

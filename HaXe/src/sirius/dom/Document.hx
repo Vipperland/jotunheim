@@ -6,6 +6,8 @@ import js.Error;
 import js.html.DOMRect;
 import js.html.Element;
 import js.html.MouseEvent;
+import sirius.events.Dispatcher;
+import sirius.events.IDispatcher;
 import sirius.events.IEvent;
 import sirius.math.IPoint;
 import sirius.math.Point;
@@ -20,24 +22,36 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Document")
 class Document extends Display {
 	
-	static private var __scroll__:Dynamic = { x:0, y:0 };
+	static private var __doc__:Document;
 	
-	static private var __cursor__:Dynamic = { x:0, y:0 };
-	
-	static private function _applyScroll():Void {
-		Browser.window.scroll(__scroll__.x, __scroll__.y);
+	static public function ME():Document {
+		return __doc__ == null ? new Document() : __doc__;
 	}
 	
 	public var body:Body;
 	
 	public var head:Head;
 	
+	private var __scroll__:Dynamic = { x:0, y:0 };
+	
+	private var __cursor__:Dynamic = { x:0, y:0 };
+	
+	private function _applyScroll():Void {
+		Browser.window.scroll(__scroll__.x, __scroll__.y);
+	}
+	
 	public function new() {
-		super(cast Browser.document);
-		element = Browser.document.documentElement;
-		events.wheel(stopScroll, true);
-		body = new Body(Browser.document.body);
-		head = new Head(Browser.document.head);
+		if(__doc__ == null){
+			super(cast Browser.document);
+			element = Browser.document.documentElement;
+			body = new Body(Browser.document.body);
+			head = new Head(Browser.document.head);
+			events = new Dispatcher(this);
+			events.wheel(stopScroll, true);
+			__doc__ = this;
+		}else {
+			throw new Error("Document is a singleton, use Document.ME() instead of new");
+		}
 	}
 	
 	public function scroll(x:Float, y:Float):Void {

@@ -37,9 +37,9 @@ extern public class SiriusHook {
 		
 		static public function updatePlugins():Void;
 		
-		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic->Void = null):Dynamic;
+		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic->Void = null):DisplayHook;
 		
-		static public function all(?q:String = "*", ?t:Dynamic = null):Dynamic;
+		static public function all(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic->Void = null):TableHook;
 		
 		static public function run(handler:Dynamic):Void;
 		
