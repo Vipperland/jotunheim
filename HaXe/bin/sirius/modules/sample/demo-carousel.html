@@ -12,7 +12,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-red w-100pc bg-darkred">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{love}">
 				
@@ -21,7 +21,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-orange w-100pc bg-darkorange">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{strenght}">
 			</div>
@@ -29,7 +29,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-yellow w-100pc bg-yellow">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none pos-abs">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{happyness}">
 			</div>
@@ -37,7 +37,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-yellowgreen w-100pc bg-green">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{hope}">
 			</div>
@@ -45,7 +45,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-blue w-100pc bg-blue">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{healthy}">
 			</div>
@@ -53,7 +53,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-blue w-100pc bg-indigo">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{harmony}">
 			</div>
@@ -61,7 +61,7 @@
 	</div>
 </div>
 <div class="panel h-100pc bg-darkviolet w-100pc bg-darkviolet">
-	<div class="grid padd-10 txt-white txt-c t-0 w-100pc h-100pc mouse-none">
+	<div class="grid padd-10 txt-xFFFFFF txt-c t-0 w-100pc h-100pc mouse-none">
 		<div class="disp-table w-100pc h-100pc">
 			<div class="disp-table-cell vert-m txt-c" dyn-value="{changes}">
 			</div>
@@ -75,6 +75,8 @@
 
 <script>
 	
+	Sirius.document.body.background('#000000');
+	
 	var Div = sru.dom.Div;
 	var Sprite = sru.dom.Sprite;
 	var Sprite3D = sru.dom.Sprite3D;
@@ -85,7 +87,7 @@
 		
 		Sirius.document.body.addChild(Sirius.resources.build('Carousel3D-demo'));
 		
-		Automator.build('txt-white','*');
+		Automator.build('txt-xFFFFFF','*');
 		
 		container = Sirius.plugins.Carousel3D('.panel', 20, 1000, false);
 		
@@ -120,8 +122,8 @@
 					var str = text.attribute('dyn-value');
 					if(str.length > 0){
 						var sp = new Display3D(text);
-						if(str != 'skip') 	sp.write('<span class="txt-white shadow-txt-white" style="font-size:100px">' + str + ' </span>');
-						else 				sp.write('<img src="assets/img/sirius.png" /><br/><span class="txt-100 txt-white">sirius</span><br/><span class="txt-30 txt-white">dream makers</span>')
+						if(str != 'skip') 	sp.write('<span class="txt-xFFFFFF shadow-txt-xFFFFFF" style="font-size:100px">' + str + ' </span>');
+						else 				sp.write('<img src="assets/img/sirius.png" /><br/><span class="txt-100 txt-xFFFFFF">sirius</span><br/><span class="txt-30 txt-xFFFFFF">dream makers</span>')
 						sp.attribute('dyn-value','');
 						sp.locationZ(30);
 						sp.update();
@@ -146,14 +148,14 @@
 			
 			
 			var index = new Sprite();
-			index.css('z-100 t-0 h-100pc padd-8 mouse-none pos-abs');
+			index.css('z-100 t-0 h-100pc padd-8 mouse-none pos-fix');
 			index.addToBody();
 			
 			Dice.All(container.panels, function(p, v){
 				var panel = new Div();
 				panel.fit(1, 2);
 				panel.css('padd-t-2 marg-t-4 marg-b-4');
-				panel.background('#ffffff');
+				panel.bg('#ffffff');
 				panel.style({opacity:.3});
 				index.content.addChild(panel);
 				v.data.index = panel;

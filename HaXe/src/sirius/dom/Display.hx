@@ -1,7 +1,6 @@
 package sirius.dom;
 
 import haxe.ds.Either;
-import haxe.Log;
 import js.Browser;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
@@ -9,12 +8,10 @@ import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.Node;
 import js.JQuery;
-import sirius.css.Automator;
 import sirius.data.DataSet;
 import sirius.data.DisplayData;
 import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
-import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
 import sirius.math.ARGB;
 import sirius.math.IARGB;
@@ -79,7 +76,8 @@ class Display implements IDisplay {
 	public function new(?q:Dynamic = null, ?t:Element = null) {
 		
 		if (q == null) 	q = Browser.document.createDivElement();
-		element = q;
+		if (Std.is(q, IDisplay))	element = q.element;
+		else 						element = q;
 		
 		if (element != cast Browser.document) {
 			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
@@ -113,7 +111,7 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function background(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String):String {
+	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String):String {
 		
 		if (data != null) {
 			var value:Dynamic = cast data;
@@ -304,8 +302,9 @@ class Display implements IDisplay {
 	}
 	
 	public function trueStyle():CSSStyleDeclaration {
-		if (element.ownerDocument.defaultView.opener) 	return element.ownerDocument.defaultView.getComputedStyle(element);
-		else											return Browser.window.getComputedStyle(element);
+		if (Browser.document.defaultView.opener != null) 	
+					return Browser.document.defaultView.getComputedStyle(element);
+		else		return Browser.window.getComputedStyle(element);
 	}
 	
 	public function mount(q:String, ?data:Dynamic):IDisplay {
@@ -477,7 +476,7 @@ class Display implements IDisplay {
 		return getPosition(element);
 	}
 	
-	public function mouseEnabled(?value:Bool):Bool {
+	public function mouse(?value:Bool):Bool {
 		if (value != null) {
 			if (value)	css('mouse-none');
 			else 		css('/mouse-none');

@@ -368,7 +368,7 @@ interface IDisplay {
 	 * @param	value
 	 * @return
 	 */
-	public function mouseEnabled(?value:Bool):Bool;
+	public function mouse(?value:Bool):Bool;
 	
 	/**
 	 * Change display backgroud
@@ -378,7 +378,7 @@ interface IDisplay {
 	 * @param	attachment
 	 * @return
 	 */
-	public function background(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String;
+	public function bg(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String;
 	
 	/**
 	 * Clear all object data

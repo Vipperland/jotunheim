@@ -25,7 +25,7 @@
 			
 			var c = ['.class1','.class2','.class3','.class4','.class5','.class6','.class7','.class8'];
 			var idc = 0;
-			var m = 10000;
+			var m = 5000;
 			
 			var i = 0;
 			var t = 0;
@@ -45,7 +45,7 @@
 			}
 			
 			function select_in(){
-				return '.class9';
+				return 'input.class9';
 			}
 			
 			function id(){
@@ -69,111 +69,101 @@
 			}
 			
 			// SELECT ELEMENT
-			function test1(h,n) {
-				
-				Sirius.log('--' + n);
-				
+			function test1(h,n,s) {
 				reset();
 				i=0;
-				
-				while(i < m){
-					Sirius.one(h());
-					++i;
+				if(s){
+					while(i < m){
+						Sirius.one(h());
+						++i;
+					}
+					Sirius.log('Sirius.one(' + n + '): ' + elapsed() + 'ms');
+				}else{
+					while(i < m){
+						$(h());
+						++i;
+					}
+					Sirius.log('Jquery(' + n + '): ' + elapsed() + 'ms');
 				}
-				Sirius.log('Sirius Selector: ' + elapsed() + 'ms');
-				
-				reset();
-				i=0;
-				
-				while(i < m){
-					$(h());
-					++i;
-				}
-				Sirius.log('Jquery Selector: ' + elapsed() + 'ms');
-				
 			}
 			
 			// GET ATTRIBUTE
-			function test2(h,n){
-				
-				Sirius.log('--' + n);
-				
+			function test2(h,n,s) {
 				reset();
 				i=0;
-				
-				while(i < m){
-					Sirius.one(h()).attribute('data-test1');
-					++i;
+				if(s){
+					while(i < m){
+						Sirius.one(h()).attribute('data-test1');
+						++i;
+					}
+					Sirius.log('Sirius.one(' + n + ').attribute("GET"): ' + elapsed() + 'ms');
+				}else{
+					while(i < m){
+						$(h()).data('test1');
+						++i;
+					}
+					Sirius.log('Jquery(' + n + ').data("GET"): ' + elapsed() + 'ms');
 				}
-				Sirius.log('Sirius get Attribute: ' + elapsed() + 'ms');
-				
-				reset();
-				i=0;
-				
-				while(i < m){
-					$(h()).data('test1');
-					++i;
-				}
-				Sirius.log('Jquery get Attribute: ' + elapsed() + 'ms');
-				
 			}
 			
 			// SET ATTRIBUTE
-			function test3(h, n){
-				
-				Sirius.log('--' + n);
-				
+			function test3(h,n,s) {
 				reset();
 				i=0;
-				
-				while(i < m){
-					Sirius.one(h()).attribute('data-test1', i);
-					++i;
+				if(s){
+					while(i < m){
+						Sirius.one(h()).attribute('data-test1', i);
+						++i;
+					}
+					Sirius.log('Sirius.one(' + n + ').attribute("SET",1): ' + elapsed() + 'ms');
+				}else{
+					while(i < m){
+						$(h()).data('data-test1', i);
+						++i;
+					}
+					Sirius.log('Jquery(' + n + ').data("SET",1): ' + elapsed() + 'ms');
 				}
-				Sirius.log('Sirius set Attribute: ' + elapsed() + 'ms');
-				
-				reset();
-				i=0;
-				
-				while(i < m){
-					$(h()).data('data-test1', i);
-					++i;
-				}
-				Sirius.log('Jquery set Attribute: ' + elapsed() + 'ms');
 			}
 			
 			// SET VALUE
-			function test4(h, n){
-				
-				Sirius.log('--' + n);
-				
+			function test4(h,n,s) {
 				reset();
 				i=0;
-				
-				while(i < m){
-					Sirius.one(h()).value("OK!");
-					++i;
+				if(s) {
+					while(i < m){
+						Sirius.one(h()).value("OK!");
+						++i;
+					}
+					Sirius.log('Sirius.one(' + n + ').value("SET"): ' + elapsed() + 'ms');
+				}else{
+					while(i < m){
+						$(h()).val("OK!");
+						++i;
+					}
+					Sirius.log('Jquery(' + n + ').value("SET"): ' + elapsed() + 'ms');
 				}
-				Sirius.log('Sirius set Value: ' + elapsed() + 'ms');
-				
-				reset();
-				i=0;
-				
-				while(i < m){
-					$(h()).val("OK!");
-					++i;
-				}
-				Sirius.log('Jquery set Value: ' + elapsed() + 'ms');
 			}
 			
-			test1(id, 'BY #ID');
-			test1(select, 'BY .SELECTOR');
-			test2(id, 'BY #ID');
-			test2(select, 'BY .SELECTOR');
-			test3(id, 'BY #ID');
-			test3(select, 'BY .SELECTOR');
-			test4(id_in, 'BY #ID');
-			test4(select_in, 'BY .SELECTOR');
+			Sirius.log(' ===== JQUERY ======');
+			test1(id, '#',			false);
+			test1(select, '.', 		false);
+			test2(id, '#', 			false);
+			test2(select, '.', 		false);
+			test3(id, '#', 			false);
+			test3(select, '.', 		false);
+			test4(id_in, '#', 		false);
+			test4(select_in, '.', 	false);
+			
+			Sirius.log('');
+			Sirius.log(' ===== SIRIUS ======');
+			test1(id, '#',			true);
+			test1(select, '.', 		true);
+			test2(id, '#', 			true);
+			test2(select, '.', 		true);
+			test3(id, '#', 			true);
+			test3(select, '.', 		true);
+			test4(id_in, '#', 		true);
+			test4(select_in, '.', 	true);
 			
 		}
 		

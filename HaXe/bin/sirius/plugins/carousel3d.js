@@ -65,9 +65,9 @@
 					ctr.f = i-hp;
 					ctr.g = i+hp;
 					cp.doubleSided(false);
-					cp.detach();
+					cp.css('pos-abs');
 					cp.style({y:0,top:0});
-					cp.width(100, true);
+					cp.width("100%");
 					cp.data.set('rotation', o.points.length * -o.aperture);
 					cp.setPerspective(null, '50% 50%');
 					cp.update();
@@ -211,22 +211,23 @@
 		
 		o.carousel.content.fit(100, 100, true);
         o.carousel.overflow('hidden');
-        o.carousel.pin();
-        o.carousel.width(100, true);
-        o.carousel.content.height(100, true);
+        o.carousel.css('pos-fix');
+        o.carousel.width("100%");
+        o.carousel.content.height("100%");
         o.carousel.addToBody();
 		o.carousel.setPerspective(null, '50% 50%');
         o.carousel.update();
-        o.extra.width(100, true);
+        o.extra.width("100%");
         o.extra.style({top:0});
         o.extra.addToBody();
-        o.carousel.content.height(100, true);
+        o.carousel.content.height("100%");
         o.carousel.content.update();
 		Sirius.all(selector).each(o.addPanel);
 		o.update();
 		Ticker.add(o.render);
 		Ticker.init();
 		return o;
+		
 	}
 	if(Sirius != null) Sirius.updatePlugins();
 })(typeof window != "undefined" ? window : exports);

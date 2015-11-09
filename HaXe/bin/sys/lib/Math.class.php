@@ -23,9 +23,6 @@ class Math {
 	static function ceil($v) {
 		return (int) ceil($v);
 	}
-	static function random() {
-		return mt_rand() / mt_getrandmax();
-	}
 	static function isNaN($f) {
 		return is_nan($f);
 	}

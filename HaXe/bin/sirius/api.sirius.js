@@ -1473,15 +1473,11 @@ sirius_Sirius._onLoaded = function(e) {
 };
 sirius_Sirius.one = function(q,t,h) {
 	if(q == null) q = "*";
-	try {
-		if(HxOverrides.substr(q,0,1) == "#") t = window.document.getElementById(HxOverrides.substr(q,1,q.length - 1)); else t = (t == null?window.document.body:t).querySelector(q);
-		if(t != null) {
-			t = sirius_tools_Utils.displayFrom(t);
-			if(h != null) h(t);
-			return t;
-		}
-	} catch( e ) {
-		if (e instanceof js__$Boot_HaxeError) e = e.val;
+	if(HxOverrides.substr(q,0,1) == "#") t = window.document.getElementById(q.substring(1,q.length)); else t = (t == null?window.document.body:t).querySelector(q);
+	if(t != null) {
+		t = sirius_tools_Utils.displayFrom(t);
+		if(h != null) h(t);
+		return t;
 	}
 	sirius_Sirius.log("Table => EMPTY (" + q + ")",3);
 	return null;
@@ -1712,7 +1708,7 @@ var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t) {
 		var _this = window.document;
 		q = _this.createElement("div");
 	}
-	this.element = q;
+	if(js_Boot.__instanceof(q,sirius_dom_IDisplay)) this.element = q.element; else this.element = q;
 	if(this.element != window.document) {
 		if(this.hasAttribute("sru-id")) this._uid = this.attribute("sru-id"); else this._uid = this.attribute("sru-id",sirius_tools_Key.GEN());
 		if(!sirius_dom_Display._DATA.exists(this._uid)) sirius_dom_Display._DATA.set(this._uid,new sirius_data_DisplayData(this._uid,this));
@@ -1757,7 +1753,7 @@ sirius_dom_Display.prototype = {
 		});
 		return this;
 	}
-	,background: function(data,repeat,position,attachment) {
+	,bg: function(data,repeat,position,attachment) {
 		if(data != null) {
 			var value = data;
 			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
@@ -1913,7 +1909,7 @@ sirius_dom_Display.prototype = {
 		return this.trueStyle();
 	}
 	,trueStyle: function() {
-		if(this.element.ownerDocument.defaultView.opener) return this.element.ownerDocument.defaultView.getComputedStyle(this.element); else return window.getComputedStyle(this.element);
+		if(window.document.defaultView.opener != null) return window.document.defaultView.getComputedStyle(this.element); else return window.getComputedStyle(this.element);
 	}
 	,mount: function(q,data) {
 		if(sirius_Sirius.resources.exists(q)) return this.addChildren(sirius_Sirius.resources.build(q,data).children()); else return this.addChildren(new sirius_dom_Display().write(q,false).children());
@@ -2048,7 +2044,7 @@ sirius_dom_Display.prototype = {
 	,position: function() {
 		return sirius_dom_Display.getPosition(this.element);
 	}
-	,mouseEnabled: function(value) {
+	,mouse: function(value) {
 		if(value != null) {
 			if(value) this.css("mouse-none"); else this.css("/mouse-none");
 		}

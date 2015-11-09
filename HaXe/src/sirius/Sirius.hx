@@ -132,15 +132,12 @@ class Sirius {
 		 * @return
 		 */
 		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-			try {
-				t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substr(1, q.length-1)) : (t == null ? Browser.document.body : t).querySelector(q);
+				t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substring(1, q.length)) : (t == null ? Browser.document.body : t).querySelector(q);
 				if (t != null) {
 					t = Utils.displayFrom(t);
 					if (h != null) h(t);
 					return t;
 				}
-			}catch(e:Dynamic){
-			}
 			log("Table => EMPTY (" + q + ")", 3);
 			return null;
 		}
