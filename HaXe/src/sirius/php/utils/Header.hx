@@ -1,12 +1,14 @@
 package sirius.php.utils;
+import haxe.Json;
 import php.Boot;
+import php.Lib;
 import php.Web;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class Header{
+class Header {
 	
 	static public var HTML:String = 'text/html;charset=utf-8';
 	
@@ -31,8 +33,11 @@ class Header{
 		Web.setHeader('content-type:', type);
 	}
 	
-	public function setJSON():Void {
+	public function setJSON(?data:Dynamic):Void {
 		content(JSON);
+		if (data != null) {
+			Lib.print(Json.stringify(data));
+		}
 	}
 	
 	public function setTEXT():Void {

@@ -1,4 +1,4 @@
-package sirius.db;
+package sirius.db.tools;
 import haxe.Json;
 import php.Lib;
 import php.NativeArray;
@@ -18,7 +18,10 @@ import sirius.utils.Dice;
 class Command implements ICommand {
 	
 	private var _query:String;
+	
 	private var _parameters:Dynamic;
+	
+	private var _errors:Array<IError>;
 	
 	// PDO::FETCH_ASSOC = 2
 	// PDO::FETCH_OBJ = 5
@@ -29,46 +32,52 @@ class Command implements ICommand {
 	
 	public var result:Array<Dynamic>;
 	
-	public var errors:Array<IError>;
+	public var errors(get, null):Array<IError>;
+	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, ?parameters:Dynamic) {
-		errors = [];
-		_parameters = { };
+	public function new(statement:Statement, query:String, ?parameters:Dynamic, errors:Array<IError>) {
+		_errors = errors;
 		_query = query;
 		this.statement = statement;
 		if (parameters != null) bind(parameters);
 	}
 	
 	public function bind(parameters:Dynamic):ICommand {
-		var isArray:Bool = Std.is(parameters, Array);
-		Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
-			if (isArray)	statement.setAttribute(p, v);
-			else 			statement.bindValue(p, v);
-			Reflect.setField(_parameters, p, v);
-		});
+		_parameters = parameters;
+		if(statement != null){
+			var isArray:Bool = Std.is(parameters, Array);
+			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
+				if (isArray)	statement.setAttribute(p, v);
+				else 			statement.bindValue(p, v);
+				Reflect.setField(_parameters, p, v);
+			});
+		}
 		return this;
 	}
 	
 	public function execute(?handler:IDataSet->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
-		if (type == null) type = untyped __php__("\\PDO::FETCH_OBJ");
-		var p:NativeArray = null;
-		if (parameters != null)	p = Lib.toPhpArray(parameters);
-		try {
-			success = statement.execute(p);
-			if (success) {
-				result = Lib.toHaxeArray(statement.fetchAll(type));
-				if (handler != null) fetch(handler);
-			}else {
-				errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
+		if(statement !=null){
+			if (type == null) type = untyped __php__("\\PDO::FETCH_OBJ");
+			var p:NativeArray = null;
+			if (parameters != null)	p = Lib.toPhpArray(parameters);
+			try {
+				success = statement.execute(p);
+				if (success) {
+					result = Lib.toHaxeArray(statement.fetchAll(type));
+					if (handler != null) fetch(handler);
+				}else {
+					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
+				}
+			}catch (e:Dynamic) {
+				if (Std.is(e, String)) {
+					errors[errors.length] = new Error(0, e);
+				}else {
+					errors[errors.length] = new Error(e.getCode(), e.getMessage());
+				}
 			}
-		}catch (e:Dynamic) {
-			if (Std.is(e, String)) {
-				errors[errors.length] = new Error(0, e);
-			}else {
-				errors[errors.length] = new Error(e.getCode(), e.getMessage());
-			}
+		}else {
+			errors[errors.length] = new Error(0, "Null statement. Database is not connected.");
 		}
-		
 		return this;
 	}
 	
@@ -94,7 +103,5 @@ class Command implements ICommand {
 		Dice.All(_parameters, function(p:String, v:Dynamic) { q = StringTools.replace(q, ":" + p, v); });
 		return q;
 	}
-	
-	
 	
 }

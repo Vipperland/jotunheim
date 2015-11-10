@@ -1,8 +1,9 @@
 package sirius.db;
-import sirius.data.IDataSet;
-import sirius.errors.Error;
-import sirius.db.ICommand;
+import sirius.db.tools.ICommand;
+import sirius.db.objects.IDataTable;
 import sirius.db.Token;
+import sirius.db.tools.IQueryBuilder;
+import sirius.errors.IError;
 
 /**
  * @author Rafael Moreira
@@ -16,9 +17,14 @@ interface IGate {
 	public var command : ICommand;
 	
 	/**
+	 * Fast bulk command
+	 */
+	public var builder : IQueryBuilder;
+	
+	/**
 	 * Connection and Execution Errors
 	 */
-	public var errors:Array<Error>;
+	public var errors(get, null):Array<IError>;
 	
 	/**
 	 * If the connection is available
@@ -47,20 +53,20 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function schemaOf (?table:Dynamic) : IDataSet;
+	public function schemaOf (?table:Dynamic) : ICommand;
 	
 	/**
-	 * 
+	 * Shotcut to table statements and methods
 	 * @param	table
-	 * @param	parameters
 	 * @return
 	 */
-	public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand;
+	public function getTable(table:String):IDataTable;
 	
 	/**
 	 * Last row affected
 	 * @return
 	 */
 	public function insertedId():UInt;
+	
 	
 }

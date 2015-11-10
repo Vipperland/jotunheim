@@ -957,3 +957,5 @@ if(!ini_get('date.timezone'))
 
 spl_autoload_register('_hx_autoload');
 }
+$GLOBALS['%s'] = new _hx_array(array());
+$GLOBALS['%e'] = new _hx_array(array());

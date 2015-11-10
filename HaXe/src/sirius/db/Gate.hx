@@ -1,14 +1,19 @@
 package sirius.db;
 import php.Lib;
-import sirius.data.DataSet;
 import sirius.data.IDataSet;
-import sirius.errors.Error;
-import sirius.db.Command;
+import sirius.db.tools.Command;
 import sirius.db.IGate;
+import sirius.db.objects.IDataTable;
+import sirius.db.objects.DataTable;
 import sirius.db.pdo.Bridge;
 import sirius.db.pdo.Connection;
 import sirius.db.pdo.Statement;
 import sirius.db.Token;
+import sirius.db.tools.ICommand;
+import sirius.db.tools.IQueryBuilder;
+import sirius.db.tools.QueryBuilder;
+import sirius.errors.Error;
+import sirius.errors.IError;
 import sirius.utils.Dice;
 
 /**
@@ -19,14 +24,23 @@ class Gate implements IGate {
 	
 	private var _db:Connection;
 	
-	public var command:ICommand;
-	
 	private var _token:Token;
 	
-	public var errors:Array<Error>;
+	private var _tables:Dynamic;
+	
+	private var _errors:Array<IError>;
+	
+	public var builder:IQueryBuilder;
+	
+	public var command:ICommand;
+	
+	public var errors(get, null):Array<IError>;
+	public function get_errors():Array<IError> { return _errors; }
 	
 	public function new() {
-		errors = [];
+		_errors = [];
+		_tables = { };
+		builder = new QueryBuilder(this);
 	}
 	
 	public function isOpen():Bool {
@@ -39,7 +53,6 @@ class Gate implements IGate {
 			try {
 				_db = Bridge.open(token.host, token.user, token.pass, token.options);
 			}catch (e:Dynamic) {
-				Lib.dump(e);
 				errors[errors.length] = new Error(e.getCode(), e.getMessage());
 			}
 			command = null;
@@ -48,37 +61,40 @@ class Gate implements IGate {
 	}
 	
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
-		command = null;
-		if (isOpen()) {
-			var pdo:Statement = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-			command = new Command(pdo, query, parameters);
-		}
+		var pdo:Statement = null;
+		if (isOpen()) pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
+		command = new Command(pdo, query, parameters, _errors);
 		return command;
 	}
 	
-	public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand {
-		var ps:Array<String> = [];
-		Dice.All(parameters, ps.push);
-		return prepare("INSERT INTO " + table + " (" + ps.join(",") + ") VALUES (:" + ps.join(",:") + ")", parameters, options);
-	}
+	//public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand {
+		//var ps:Array<String> = [];
+		//Dice.All(parameters, ps.push);
+		//return prepare("INSERT INTO " + table + " (" + ps.join(",") + ") VALUES (:" + ps.join(",:") + ")", parameters, options);
+	//}
 	
-	public function schemaOf(?table:Dynamic):IDataSet {
+	public function schemaOf(?table:Dynamic):ICommand {
 		var r:IDataSet = null;
-		if(isOpen()){
-			if (!Std.is(table, Array)) table = [table];
-			r = new DataSet();
-			Dice.Values(table, function(v:String) {
-				var c:ICommand = prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table", { schema:_token.db, table:v } ).execute();
-				var s:IDataSet = new DataSet();
-				Dice.All(c.result, s.set);
-				r.set(v, s);
-			});
-		}
-		return r;
+		if (!Std.is(table, Array)) table = [table];
+		
+		var tables:Array<Dynamic> = [];
+		var clausule:Clause = Clause.AND([
+			Clause.EQUAL('TABLE_SCHEMA', _token.db),
+			Clause.OR(tables),
+		]);
+		Dice.Values(table, function(v:String) {
+			tables[tables.length] = Clause.EQUAL('TABLE_NAME', v);
+		});
+		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute();
 	}
 	
 	public function insertedId():UInt {
 		return Std.parseInt(_db.lastInsertId());
+	}
+	
+	public function getTable(table:String):IDataTable {
+		if (!Reflect.hasField(_tables, table)) Reflect.setField(_tables, table, new DataTable(table, this));
+		return Reflect.field(_tables, table);
 	}
 	
 }

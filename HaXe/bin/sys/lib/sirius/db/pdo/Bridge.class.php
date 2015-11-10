@@ -3,6 +3,8 @@
 class sirius_db_pdo_Bridge {
 	public function __construct(){}
 	static function open($dsn, $user = null, $password = null, $options = null) {
+		$GLOBALS['%s']->push("sirius.db.pdo.Bridge::open");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$pdo = null;
 		if(null === $options) {
 			$pdo = new PDO($dsn, $user, $password);
@@ -20,7 +22,11 @@ class sirius_db_pdo_Bridge {
 			}
 			$pdo = new PDO($dsn, $user, $password, $arr);
 		}
-		return $pdo;
+		{
+			$GLOBALS['%s']->pop();
+			return $pdo;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	function __toString() { return 'sirius.db.pdo.Bridge'; }
 }

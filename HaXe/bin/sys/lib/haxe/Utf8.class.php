@@ -3,14 +3,27 @@
 class haxe_Utf8 {
 	public function __construct($size = null) {
 		if(!php_Boot::$skip_constructor) {
+		$GLOBALS['%s']->push("haxe.Utf8::new");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->__b = "";
+		$GLOBALS['%s']->pop();
 	}}
 	public $__b;
 	public function addChar($c) {
+		$GLOBALS['%s']->push("haxe.Utf8::addChar");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->__b .= _hx_string_or_null(haxe_Utf8::uchr($c));
+		$GLOBALS['%s']->pop();
 	}
 	public function toString() {
-		return $this->__b;
+		$GLOBALS['%s']->push("haxe.Utf8::toString");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = $this->__b;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -23,6 +36,8 @@ class haxe_Utf8 {
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	static function iter($s, $chars) {
+		$GLOBALS['%s']->push("haxe.Utf8::iter");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$len = haxe_Utf8::length($s);
 		{
 			$_g = 0;
@@ -32,22 +47,58 @@ class haxe_Utf8 {
 				unset($i);
 			}
 		}
+		$GLOBALS['%s']->pop();
 	}
 	static function charCodeAt($s, $index) {
-		return haxe_Utf8::uord(haxe_Utf8::sub($s, $index, 1));
+		$GLOBALS['%s']->push("haxe.Utf8::charCodeAt");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = haxe_Utf8::uord(haxe_Utf8::sub($s, $index, 1));
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function uchr($i) {
-		return mb_convert_encoding(pack('N',$i), 'UTF-8', 'UCS-4BE');
+		$GLOBALS['%s']->push("haxe.Utf8::uchr");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = mb_convert_encoding(pack('N',$i), 'UTF-8', 'UCS-4BE');
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function uord($s) {
+		$GLOBALS['%s']->push("haxe.Utf8::uord");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$c = unpack('N', mb_convert_encoding($s, 'UCS-4BE', 'UTF-8'));
-		return $c[1];
+		{
+			$tmp = $c[1];
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function length($s) {
-		return mb_strlen($s, "UTF-8");
+		$GLOBALS['%s']->push("haxe.Utf8::length");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = mb_strlen($s, "UTF-8");
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function sub($s, $pos, $len) {
-		return mb_substr($s, $pos, $len, "UTF-8");
+		$GLOBALS['%s']->push("haxe.Utf8::sub");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = mb_substr($s, $pos, $len, "UTF-8");
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	function __toString() { return $this->toString(); }
 }

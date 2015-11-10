@@ -3,6 +3,8 @@
 class haxe_crypto_BaseCode {
 	public function __construct($base) {
 		if(!php_Boot::$skip_constructor) {
+		$GLOBALS['%s']->push("haxe.crypto.BaseCode::new");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$len = $base->length;
 		$nbits = 1;
 		while($len > 1 << $nbits) {
@@ -13,11 +15,14 @@ class haxe_crypto_BaseCode {
 		}
 		$this->base = $base;
 		$this->nbits = $nbits;
+		$GLOBALS['%s']->pop();
 	}}
 	public $base;
 	public $nbits;
 	public $tbl;
 	public function encodeBytes($b) {
+		$GLOBALS['%s']->push("haxe.crypto.BaseCode::encodeBytes");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$nbits = $this->nbits;
 		$base = $this->base;
 		$size = Std::int($b->length * 8 / $nbits);
@@ -50,9 +55,15 @@ class haxe_crypto_BaseCode {
 			$v1 = ord($base->b[$buf << $nbits - $curbits & $mask]);
 			$out->b[$pos2] = chr($v1);
 		}
-		return $out;
+		{
+			$GLOBALS['%s']->pop();
+			return $out;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function initTable() {
+		$GLOBALS['%s']->push("haxe.crypto.BaseCode::initTable");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$tbl = new _hx_array(array());
 		{
 			$_g = 0;
@@ -72,8 +83,11 @@ class haxe_crypto_BaseCode {
 			}
 		}
 		$this->tbl = $tbl;
+		$GLOBALS['%s']->pop();
 	}
 	public function decodeBytes($b) {
+		$GLOBALS['%s']->push("haxe.crypto.BaseCode::decodeBytes");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$nbits = $this->nbits;
 		$base = $this->base;
 		if($this->tbl === null) {
@@ -104,7 +118,11 @@ class haxe_crypto_BaseCode {
 				unset($pos1);
 			}
 		}
-		return $out;
+		{
+			$GLOBALS['%s']->pop();
+			return $out;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

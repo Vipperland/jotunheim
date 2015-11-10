@@ -6,11 +6,14 @@ class haxe_Http {
 		if(!isset($this->onError)) $this->onError = array(new _hx_lambda(array(&$this, &$url), "haxe_Http_1"), 'execute');
 		if(!isset($this->onStatus)) $this->onStatus = array(new _hx_lambda(array(&$this, &$url), "haxe_Http_2"), 'execute');
 		if(!php_Boot::$skip_constructor) {
+		$GLOBALS['%s']->push("haxe.Http::new");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->url = $url;
 		$this->headers = new HList();
 		$this->params = new HList();
 		$this->cnxTimeout = 10;
 		$this->noShutdown = !function_exists("stream_socket_shutdown");
+		$GLOBALS['%s']->pop();
 	}}
 	public $url;
 	public $responseData;
@@ -24,11 +27,19 @@ class haxe_Http {
 	public $headers;
 	public $params;
 	public function setParameter($param, $value) {
+		$GLOBALS['%s']->push("haxe.Http::setParameter");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->params = Lambda::filter($this->params, array(new _hx_lambda(array(&$param, &$value), "haxe_Http_3"), 'execute'));
 		$this->params->push(_hx_anonymous(array("param" => $param, "value" => $value)));
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function request($post = null) {
+		$GLOBALS['%s']->push("haxe.Http::request");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$_g = $this;
 		$me = $this;
 		$me1 = $this;
@@ -40,13 +51,19 @@ class haxe_Http {
 		if(!$err) {
 			$me1->onData($me1->responseData = $output->getBytes()->toString());
 		}
+		$GLOBALS['%s']->pop();
 	}
 	public function customRequest($post, $api, $sock = null, $method = null) {
+		$GLOBALS['%s']->push("haxe.Http::customRequest");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->responseData = null;
 		$url_regexp = new EReg("^(https?://)?([a-zA-Z\\.0-9_-]+)(:[0-9]+)?(.*)\$", "");
 		if(!$url_regexp->match($this->url)) {
 			$this->onError("Invalid URL");
-			return;
+			{
+				$GLOBALS['%s']->pop();
+				return;
+			}
 		}
 		$secure = $url_regexp->matched(1) === "https://";
 		if($sock === null) {
@@ -216,6 +233,11 @@ class haxe_Http {
 					}catch(Exception $__hx__e) {
 						$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 						if(($e = $_ex_) instanceof haxe_io_Eof){
+							$GLOBALS['%e'] = (new _hx_array(array()));
+							while($GLOBALS['%s']->length >= $__hx__spos) {
+								$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+							}
+							$GLOBALS['%s']->push($GLOBALS['%e'][0]);
 							break;
 						} else throw $__hx__e;;
 					}
@@ -234,18 +256,32 @@ class haxe_Http {
 			$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 			$e1 = $_ex_;
 			{
+				$GLOBALS['%e'] = (new _hx_array(array()));
+				while($GLOBALS['%s']->length >= $__hx__spos) {
+					$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+				}
+				$GLOBALS['%s']->push($GLOBALS['%e'][0]);
 				try {
 					$sock->close();
 				}catch(Exception $__hx__e) {
 					$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 					$e2 = $_ex_;
-					{}
+					{
+						$GLOBALS['%e'] = (new _hx_array(array()));
+						while($GLOBALS['%s']->length >= $__hx__spos) {
+							$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+						}
+						$GLOBALS['%s']->push($GLOBALS['%e'][0]);
+					}
 				}
 				$this->onError(Std::string($e1));
 			}
 		}
+		$GLOBALS['%s']->pop();
 	}
 	public function readHttpResponse($api, $sock) {
+		$GLOBALS['%s']->push("haxe.Http::readHttpResponse");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$b = new haxe_io_BytesBuffer();
 		$k = 4;
 		$s = haxe_io_Bytes::alloc(4);
@@ -407,7 +443,13 @@ class haxe_Http {
 				}
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
-				if(($e = $_ex_) instanceof haxe_io_Eof){} else throw $__hx__e;;
+				if(($e = $_ex_) instanceof haxe_io_Eof){
+					$GLOBALS['%e'] = (new _hx_array(array()));
+					while($GLOBALS['%s']->length >= $__hx__spos) {
+						$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+					}
+					$GLOBALS['%s']->push($GLOBALS['%e'][0]);
+				} else throw $__hx__e;;
 			}
 		} else {
 			$api->prepare($size);
@@ -427,6 +469,11 @@ class haxe_Http {
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 				if(($e1 = $_ex_) instanceof haxe_io_Eof){
+					$GLOBALS['%e'] = (new _hx_array(array()));
+					while($GLOBALS['%s']->length >= $__hx__spos) {
+						$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+					}
+					$GLOBALS['%s']->push($GLOBALS['%e'][0]);
 					throw new HException("Transfer aborted");
 				} else throw $__hx__e;;
 			}
@@ -438,8 +485,11 @@ class haxe_Http {
 			throw new HException("Http Error #" . _hx_string_rec($status, ""));
 		}
 		$api->close();
+		$GLOBALS['%s']->pop();
 	}
 	public function readChunk($chunk_re, $api, $buf, $len) {
+		$GLOBALS['%s']->push("haxe.Http::readChunk");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($this->chunk_size === null) {
 			if($this->chunk_buf !== null) {
 				$b = new haxe_io_BytesBuffer();
@@ -462,23 +512,39 @@ class haxe_Http {
 					if($cstr === "0") {
 						$this->chunk_size = null;
 						$this->chunk_buf = null;
-						return false;
+						{
+							$GLOBALS['%s']->pop();
+							return false;
+						}
 					}
 					$len -= $p->len;
-					return $this->readChunk($chunk_re, $api, $buf->sub($p->len, $len), $len);
+					{
+						$tmp = $this->readChunk($chunk_re, $api, $buf->sub($p->len, $len), $len);
+						$GLOBALS['%s']->pop();
+						return $tmp;
+					}
 				}
 			}
 			if($len > 10) {
 				$this->onError("Invalid chunk");
-				return false;
+				{
+					$GLOBALS['%s']->pop();
+					return false;
+				}
 			}
 			$this->chunk_buf = $buf->sub(0, $len);
-			return true;
+			{
+				$GLOBALS['%s']->pop();
+				return true;
+			}
 		}
 		if($this->chunk_size > $len) {
 			$this->chunk_size -= $len;
 			$api->writeBytes($buf, 0, $len);
-			return true;
+			{
+				$GLOBALS['%s']->pop();
+				return true;
+			}
 		}
 		$end = $this->chunk_size + 2;
 		if($len >= $end) {
@@ -488,15 +554,24 @@ class haxe_Http {
 			$len -= $end;
 			$this->chunk_size = null;
 			if($len === 0) {
+				$GLOBALS['%s']->pop();
 				return true;
 			}
-			return $this->readChunk($chunk_re, $api, $buf->sub($end, $len), $len);
+			{
+				$tmp = $this->readChunk($chunk_re, $api, $buf->sub($end, $len), $len);
+				$GLOBALS['%s']->pop();
+				return $tmp;
+			}
 		}
 		if($this->chunk_size > 0) {
 			$api->writeBytes($buf, 0, $this->chunk_size);
 		}
 		$this->chunk_size -= $len;
-		return true;
+		{
+			$GLOBALS['%s']->pop();
+			return true;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function onData($data) { return call_user_func_array($this->onData, array($data)); }
 	public $onData = null;
@@ -518,29 +593,58 @@ class haxe_Http {
 	function __toString() { return 'haxe.Http'; }
 }
 function haxe_Http_0(&$__hx__this, &$url, $data) {
-	{}
+	{
+		$GLOBALS['%s']->push("haxe.Http::new");
+		$__hx__spos = $GLOBALS['%s']->length;
+		$GLOBALS['%s']->pop();
+	}
 }
 function haxe_Http_1(&$__hx__this, &$url, $msg) {
-	{}
+	{
+		$GLOBALS['%s']->push("haxe.Http::new");
+		$__hx__spos = $GLOBALS['%s']->length;
+		$GLOBALS['%s']->pop();
+	}
 }
 function haxe_Http_2(&$__hx__this, &$url, $status) {
-	{}
+	{
+		$GLOBALS['%s']->push("haxe.Http::new");
+		$__hx__spos = $GLOBALS['%s']->length;
+		$GLOBALS['%s']->pop();
+	}
 }
 function haxe_Http_3(&$param, &$value, $p) {
 	{
-		return $p->param !== $param;
+		$GLOBALS['%s']->push("haxe.Http::setParameter@131");
+		$__hx__spos2 = $GLOBALS['%s']->length;
+		{
+			$tmp = $p->param !== $param;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 }
 function haxe_Http_4(&$_g, &$err, &$me, &$me1, &$old, &$output, &$post, $e) {
 	{
+		$GLOBALS['%s']->push("haxe.Http::request@339");
+		$__hx__spos2 = $GLOBALS['%s']->length;
 		$me1->responseData = $output->getBytes()->toString();
 		$err = true;
 		$_g->onError = $old;
 		$_g->onError($e);
+		$GLOBALS['%s']->pop();
 	}
 }
 function haxe_Http_5(&$api, &$b1, &$boundary, &$data, &$host, &$method, &$multipart, &$port, &$portString, &$post, &$request, &$secure, &$sock, &$uri, &$url_regexp, $h) {
 	{
-		return $h->header === "Content-Type";
+		$GLOBALS['%s']->push("haxe.Http::customRequest@480");
+		$__hx__spos2 = $GLOBALS['%s']->length;
+		{
+			$tmp = $h->header === "Content-Type";
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 }

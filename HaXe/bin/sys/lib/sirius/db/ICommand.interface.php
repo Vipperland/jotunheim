@@ -1,6 +1,7 @@
 <?php
 
 interface sirius_db_ICommand {
+	function get_errors();
 	//;
 	//;
 	//;

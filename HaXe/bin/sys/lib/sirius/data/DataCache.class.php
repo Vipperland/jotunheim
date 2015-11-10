@@ -3,6 +3,8 @@
 class sirius_data_DataCache implements sirius_data_IDataCache{
 	public function __construct($name = null, $path = null, $expire = null) {
 		if(!php_Boot::$skip_constructor) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::new");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($expire === null) {
 			$expire = 0;
 		}
@@ -11,6 +13,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		$this->_path = $path;
 		$this->_expire = $expire;
 		$this->clear(null);
+		$GLOBALS['%s']->pop();
 	}}
 	public $_DB;
 	public $_path;
@@ -20,13 +23,29 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	public $__time__;
 	public $data;
 	public function get_data() {
-		return $this->_DB;
+		$GLOBALS['%s']->push("sirius.data.DataCache::get_data");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = $this->_DB;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function _now() {
-		return Date::now()->getTime();
+		$GLOBALS['%s']->push("sirius.data.DataCache::_now");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = Date::now()->getTime();
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public $_validated;
 	public function _checkPath() {
+		$GLOBALS['%s']->push("sirius.data.DataCache::_checkPath");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$p = _hx_explode("/", $this->_path);
 		if($p->length > 0) {
 			$t = (new _hx_array(array()));
@@ -41,18 +60,30 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		}
 		$this->_name = _hx_string_or_null($this->_path) . "/" . _hx_string_or_null($this->_name);
 		$this->_validated = true;
+		$GLOBALS['%s']->pop();
 	}
 	public function _fixData() {
+		$GLOBALS['%s']->push("sirius.data.DataCache::_fixData");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$data = _hx_anonymous(array());
 		$this->_fixParams($this->_DB, $data);
 		php_Lib::dump($data);
-		return $data;
+		{
+			$GLOBALS['%s']->pop();
+			return $data;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function _fixParams($from, $data) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::_fixParams");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$i = null;
 		sirius_utils_Dice::All($from, array(new _hx_lambda(array(&$data, &$from, &$i), "sirius_data_DataCache_1"), 'execute'), null);
+		$GLOBALS['%s']->pop();
 	}
 	public function clear($p = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::clear");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($p !== null) {
 			if($p !== "__time__") {
 				Reflect::deleteField($this->_DB, $p);
@@ -64,23 +95,43 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			}
 			@unlink($this->_path);
 		}
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function set($p, $v) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::set");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->_DB->{$p} = $v;
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function merge($p, $v) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::merge");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if(Std::is($v, _hx_qtype("Array")) && _hx_has_field($this->_DB, $this->_name)) {
 			$t = $this->get($p);
 			if(Std::is($t, _hx_qtype("Array"))) {
-				return $this->set($p, $t->concat($v));
+				$tmp = $this->set($p, $t->concat($v));
+				$GLOBALS['%s']->pop();
+				return $tmp;
 			}
 		}
 		$this->_DB->{$p} = $v;
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function get($id = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::get");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$d = null;
 		if($id !== null) {
 			$d = Reflect::field($this->_DB, $id);
@@ -91,16 +142,29 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$d = _hx_anonymous(array());
 			$this->set($id, $d);
 		}
-		return $d;
+		{
+			$GLOBALS['%s']->pop();
+			return $d;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function exists($name = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::exists");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($name !== null) {
-			return _hx_has_field($this->_DB, $this->_name);
+			$tmp = _hx_has_field($this->_DB, $this->_name);
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		} else {
-			return $this->_loaded;
+			$tmp = $this->_loaded;
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		}
+		$GLOBALS['%s']->pop();
 	}
 	public function save($base64 = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::save");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($base64 === null) {
 			$base64 = true;
 		}
@@ -120,9 +184,15 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		if($this->_expire > 0) {
 			$this->_sign(false);
 		}
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function _sign($add) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::_sign");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($add) {
 			$this->_DB->__time__ = $this->_now();
 		} else {
@@ -133,8 +203,11 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			}
 			Reflect::deleteField($this->_DB, "__time__");
 		}
+		$GLOBALS['%s']->pop();
 	}
 	public function load($base64 = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::load");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if($base64 === null) {
 			$base64 = true;
 		}
@@ -157,25 +230,48 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			$this->_sign(false);
 			$this->_loaded = true;
 		}
-		return $this->_loaded;
+		{
+			$tmp = $this->_loaded;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function refresh() {
+		$GLOBALS['%s']->push("sirius.data.DataCache::refresh");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$this->__time__ = $this->_now();
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function json($print = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::json");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$result = haxe_Json::phpJsonEncode($this->_DB, null, null);
 		if($print) {
 			php_Lib::hprint($result);
 		}
-		return $result;
+		{
+			$GLOBALS['%s']->pop();
+			return $result;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function base64($print = null) {
+		$GLOBALS['%s']->push("sirius.data.DataCache::base64");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$result = sirius_utils_Criptog::encodeBase64($this->_DB);
 		if($print) {
 			php_Lib::hprint($result);
 		}
-		return $result;
+		{
+			$GLOBALS['%s']->pop();
+			return $result;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -192,6 +288,8 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 }
 function sirius_data_DataCache_0(&$p, &$t, $v) {
 	{
+		$GLOBALS['%s']->push("sirius.data.DataCache::_checkPath@64");
+		$__hx__spos2 = $GLOBALS['%s']->length;
 		if(sirius_tools_Utils::isValid($v)) {
 			$t[$t->length] = $v;
 			$v = $t->join("/");
@@ -215,13 +313,22 @@ function sirius_data_DataCache_0(&$p, &$t, $v) {
 					}
 				}
 			}
-			return false;
+			{
+				$GLOBALS['%s']->pop();
+				return false;
+			}
 		}
-		return true;
+		{
+			$GLOBALS['%s']->pop();
+			return true;
+		}
+		$GLOBALS['%s']->pop();
 	}
 }
 function sirius_data_DataCache_1(&$data, &$from, &$i, $p, $v) {
 	{
+		$GLOBALS['%s']->push("sirius.data.DataCache::_fixParams@87");
+		$__hx__spos2 = $GLOBALS['%s']->length;
 		if(Std::is($v, _hx_qtype("Float")) || Std::is($v, _hx_qtype("Bool")) || Std::is($v, _hx_qtype("String")) || Std::is($v, _hx_qtype("Int"))) {
 			$field = $p;
 			$data->{$field} = $v;
@@ -238,5 +345,6 @@ function sirius_data_DataCache_1(&$data, &$from, &$i, $p, $v) {
 			$field1 = $p;
 			$data->{$field1} = $v;
 		}
+		$GLOBALS['%s']->pop();
 	}
 }

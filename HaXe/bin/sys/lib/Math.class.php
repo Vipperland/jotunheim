@@ -7,27 +7,62 @@ class Math {
 	static $POSITIVE_INFINITY;
 	static $NEGATIVE_INFINITY;
 	static function min($a, $b) {
+		$GLOBALS['%s']->push("Math::min");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if(!Math::isNaN($a)) {
-			return min($a, $b);
+			$tmp = min($a, $b);
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		} else {
-			return Math::$NaN;
+			$tmp = Math::$NaN;
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		}
+		$GLOBALS['%s']->pop();
 	}
 	static function max($a, $b) {
+		$GLOBALS['%s']->push("Math::max");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if(!Math::isNaN($b)) {
-			return max($a, $b);
+			$tmp = max($a, $b);
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		} else {
-			return Math::$NaN;
+			$tmp = Math::$NaN;
+			$GLOBALS['%s']->pop();
+			return $tmp;
 		}
+		$GLOBALS['%s']->pop();
 	}
 	static function ceil($v) {
-		return (int) ceil($v);
+		$GLOBALS['%s']->push("Math::ceil");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = (int) ceil($v);
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function isNaN($f) {
-		return is_nan($f);
+		$GLOBALS['%s']->push("Math::isNaN");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = is_nan($f);
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function isFinite($f) {
-		return is_finite($f);
+		$GLOBALS['%s']->push("Math::isFinite");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = is_finite($f);
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	function __toString() { return 'Math'; }
 }

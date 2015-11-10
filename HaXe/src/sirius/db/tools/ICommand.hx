@@ -1,4 +1,4 @@
-package sirius.db;
+package sirius.db.tools;
 import php.NativeArray;
 import sirius.data.DataSet;
 import sirius.data.IDataSet;
@@ -29,7 +29,7 @@ interface ICommand {
 	/**
 	 * Running error on query
 	 */
-	public var errors:Array<IError>;
+	public var errors(get, null):Array<IError>;
 	
 	/**
 	 * Flush arguments to query

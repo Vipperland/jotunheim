@@ -3,11 +3,16 @@
 class haxe_io_Path {
 	public function __construct($path) {
 		if(!php_Boot::$skip_constructor) {
+		$GLOBALS['%s']->push("haxe.io.Path::new");
+		$__hx__spos = $GLOBALS['%s']->length;
 		switch($path) {
 		case ".":case "..":{
 			$this->dir = $path;
 			$this->file = "";
-			return;
+			{
+				$GLOBALS['%s']->pop();
+				return;
+			}
 		}break;
 		}
 		$c1 = _hx_last_index_of($path, "/", null);
@@ -32,6 +37,7 @@ class haxe_io_Path {
 			$this->ext = null;
 			$this->file = $path;
 		}
+		$GLOBALS['%s']->pop();
 	}}
 	public $dir;
 	public $file;
@@ -48,31 +54,49 @@ class haxe_io_Path {
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	static function directory($path) {
+		$GLOBALS['%s']->push("haxe.io.Path::directory");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$s = new haxe_io_Path($path);
 		if($s->dir === null) {
+			$GLOBALS['%s']->pop();
 			return "";
 		}
-		return $s->dir;
+		{
+			$tmp = $s->dir;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	static function addTrailingSlash($path) {
+		$GLOBALS['%s']->push("haxe.io.Path::addTrailingSlash");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if(strlen($path) === 0) {
+			$GLOBALS['%s']->pop();
 			return "/";
 		}
 		$c1 = _hx_last_index_of($path, "/", null);
 		$c2 = _hx_last_index_of($path, "\\", null);
 		if($c1 < $c2) {
 			if($c2 !== strlen($path) - 1) {
-				return _hx_string_or_null($path) . "\\";
+				$tmp = _hx_string_or_null($path) . "\\";
+				$GLOBALS['%s']->pop();
+				return $tmp;
 			} else {
+				$GLOBALS['%s']->pop();
 				return $path;
 			}
 		} else {
 			if($c1 !== strlen($path) - 1) {
-				return _hx_string_or_null($path) . "/";
+				$tmp = _hx_string_or_null($path) . "/";
+				$GLOBALS['%s']->pop();
+				return $tmp;
 			} else {
+				$GLOBALS['%s']->pop();
 				return $path;
 			}
 		}
+		$GLOBALS['%s']->pop();
 	}
 	function __toString() { return 'haxe.io.Path'; }
 }

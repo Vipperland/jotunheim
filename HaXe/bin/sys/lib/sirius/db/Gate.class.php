@@ -3,16 +3,43 @@
 class sirius_db_Gate implements sirius_db_IGate{
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
-		$this->errors = (new _hx_array(array()));
+		$GLOBALS['%s']->push("sirius.db.Gate::new");
+		$__hx__spos = $GLOBALS['%s']->length;
+		$this->_errors = (new _hx_array(array()));
+		$this->_tables = _hx_anonymous(array());
+		$this->builder = new sirius_db_tools_QueryBuilder($this);
+		$GLOBALS['%s']->pop();
 	}}
 	public $_db;
-	public $command;
 	public $_token;
+	public $_tables;
+	public $_errors;
+	public $builder;
+	public $command;
 	public $errors;
+	public function get_errors() {
+		$GLOBALS['%s']->push("sirius.db.Gate::get_errors");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = $this->_errors;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
+	}
 	public function isOpen() {
-		return $this->_db !== null && $this->errors->length === 0;
+		$GLOBALS['%s']->push("sirius.db.Gate::isOpen");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = $this->_db !== null && $this->get_errors()->length === 0;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function open($token) {
+		$GLOBALS['%s']->push("sirius.db.Gate::open");
+		$__hx__spos = $GLOBALS['%s']->length;
 		if(!$this->isOpen()) {
 			$this->_token = $token;
 			try {
@@ -21,41 +48,77 @@ class sirius_db_Gate implements sirius_db_IGate{
 				$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 				$e = $_ex_;
 				{
-					php_Lib::dump($e);
-					$this->errors[$this->errors->length] = new sirius_errors_Error($e->getCode(), $e->getMessage(), null);
+					$GLOBALS['%e'] = (new _hx_array(array()));
+					while($GLOBALS['%s']->length >= $__hx__spos) {
+						$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
+					}
+					$GLOBALS['%s']->push($GLOBALS['%e'][0]);
+					_hx_array_assign($this->get_errors(), $this->get_errors()->length, new sirius_errors_Error($e->getCode(), $e->getMessage(), null));
 				}
 			}
 			$this->command = null;
 		}
-		return $this;
+		{
+			$GLOBALS['%s']->pop();
+			return $this;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function prepare($query, $parameters = null, $options = null) {
-		$this->command = null;
+		$GLOBALS['%s']->push("sirius.db.Gate::prepare");
+		$__hx__spos = $GLOBALS['%s']->length;
+		$pdo = null;
 		if($this->isOpen()) {
 			$pdo = $this->_db->prepare($query, php_Lib::toPhpArray((($options === null) ? (new _hx_array(array())) : $options)));
-			$this->command = new sirius_db_Command($pdo, $query, $parameters);
 		}
-		return $this->command;
-	}
-	public function insert($table, $parameters, $options = null) {
-		$ps = (new _hx_array(array()));
-		sirius_utils_Dice::All($parameters, (isset($ps->push) ? $ps->push: array($ps, "push")), null);
-		return $this->prepare("INSERT INTO " . _hx_string_or_null($table) . " (" . _hx_string_or_null($ps->join(",")) . ") VALUES (:" . _hx_string_or_null($ps->join(",:")) . ")", $parameters, $options);
+		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $this->_errors);
+		{
+			$tmp = $this->command;
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function schemaOf($table = null) {
-		$_g = $this;
+		$GLOBALS['%s']->push("sirius.db.Gate::schemaOf");
+		$__hx__spos = $GLOBALS['%s']->length;
 		$r = null;
-		if($this->isOpen()) {
-			if(!Std::is($table, _hx_qtype("Array"))) {
-				$table = (new _hx_array(array($table)));
-			}
-			$r = new sirius_data_DataSet(null);
-			sirius_utils_Dice::Values($table, array(new _hx_lambda(array(&$_g, &$r, &$table), "sirius_db_Gate_0"), 'execute'), null);
+		if(!Std::is($table, _hx_qtype("Array"))) {
+			$table = (new _hx_array(array($table)));
 		}
-		return $r;
+		$tables = (new _hx_array(array()));
+		$clausule = sirius_db_Clause::hAND((new _hx_array(array(sirius_db_Clause::EQUAL("TABLE_SCHEMA", $this->_token->db), sirius_db_Clause::hOR($tables)))));
+		sirius_utils_Dice::Values($table, array(new _hx_lambda(array(&$clausule, &$r, &$table, &$tables), "sirius_db_Gate_0"), 'execute'), null);
+		{
+			$tmp = $this->builder->find("*", "INFORMATION_SCHEMA.COLUMNS", $clausule, null, null)->execute(null, null, null);
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function insertedId() {
-		return Std::parseInt($this->_db->lastInsertId(null));
+		$GLOBALS['%s']->push("sirius.db.Gate::insertedId");
+		$__hx__spos = $GLOBALS['%s']->length;
+		{
+			$tmp = Std::parseInt($this->_db->lastInsertId(null));
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
+	}
+	public function getTable($table) {
+		$GLOBALS['%s']->push("sirius.db.Gate::getTable");
+		$__hx__spos = $GLOBALS['%s']->length;
+		if(!_hx_has_field($this->_tables, $table)) {
+			$value = new sirius_db_objects_DataTable($table, $this);
+			$this->_tables->{$table} = $value;
+		}
+		{
+			$tmp = Reflect::field($this->_tables, $table);
+			$GLOBALS['%s']->pop();
+			return $tmp;
+		}
+		$GLOBALS['%s']->pop();
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -67,13 +130,14 @@ class sirius_db_Gate implements sirius_db_IGate{
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
+	static $__properties__ = array("get_errors" => "get_errors");
 	function __toString() { return 'sirius.db.Gate'; }
 }
-function sirius_db_Gate_0(&$_g, &$r, &$table, $v) {
+function sirius_db_Gate_0(&$clausule, &$r, &$table, &$tables, $v) {
 	{
-		$c = $_g->prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = :schema AND TABLE_NAME = :table", _hx_anonymous(array("schema" => $_g->_token->db, "table" => $v)), null)->execute(null, null, null);
-		$s = new sirius_data_DataSet(null);
-		sirius_utils_Dice::All($c->result, (isset($s->set) ? $s->set: array($s, "set")), null);
-		$r->set($v, $s);
+		$GLOBALS['%s']->push("sirius.db.Gate::schemaOf@85");
+		$__hx__spos2 = $GLOBALS['%s']->length;
+		$tables[$tables->length] = sirius_db_Clause::EQUAL("TABLE_NAME", $v);
+		$GLOBALS['%s']->pop();
 	}
 }
