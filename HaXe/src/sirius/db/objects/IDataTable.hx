@@ -9,15 +9,17 @@ interface IDataTable {
   
 	public var name(get_name, null):String;
 	
-	public var description(get_description, null):Array<Dynamic>;
+	public var description(get_description, null):Dynamic;
 	
-	public function create (?clausule:Dynamic=null, ?parameters:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic>;
+	public function create (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
 
-	public function find (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic>;
+	public function findAll (?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
+	
+	public function findOne (?clausule:Dynamic=null) : Dynamic;
 
-	public function update (?clausule:Dynamic=null, ?parameters:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic>;
+	public function update (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
 
-	public function delete (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic>;
+	public function delete (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
 	
 	public function restrict(fields:Dynamic):IDataTable;
 	

@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /rim/blog/api
+RewriteRule ^(api)/([^.]+)\.([^/]+)/(.*)$ /$1/$2/$3/$4 [L,NC,B,NE,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ ./index.php?service=$1 [L,NC,B,NE,QSA]
+</IfModule>

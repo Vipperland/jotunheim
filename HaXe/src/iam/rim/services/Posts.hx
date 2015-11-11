@@ -4,9 +4,13 @@ package iam.rim.services;
  * ...
  * @author Rafael Moreira
  */
-class Session{
+class Posts{
 
-	public static function login(name:String, pass:String):Bool {
+	public function new() {
+		
+	}
+	
+	static public function init() {
 		
 	}
 	

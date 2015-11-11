@@ -1,8 +1,24 @@
 <?php
 
 class haxe_ds_StringMap implements haxe_IMap, IteratorAggregate{
-	public function __construct(){}
+	public function __construct() {
+		if(!php_Boot::$skip_constructor) {
+		$this->h = array();
+	}}
 	public $h;
+	public function set($key, $value) {
+		$this->h[$key] = $value;
+	}
+	public function get($key) {
+		if(array_key_exists($key, $this->h)) {
+			return $this->h[$key];
+		} else {
+			return null;
+		}
+	}
+	public function keys() {
+		return new _hx_array_iterator(array_map("strval", array_keys($this->h)));
+	}
 	public function iterator() {
 		return new _hx_array_iterator(array_values($this->h));
 	}

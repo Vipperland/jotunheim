@@ -59,7 +59,7 @@ class QueryBuilder implements IQueryBuilder {
 	
 	
 	public function create(table:String, ?clause:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
-		return _gate.prepare("INSERT INTO " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		return _gate.prepare("INSERT INTO " + table + _insert(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
 	
@@ -72,7 +72,7 @@ class QueryBuilder implements IQueryBuilder {
 	
 	public function update(table:String, ?clause:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
 		if (parameters == null) parameters = { };
-		return _gate.prepare("UPDATE " + table + " " + _updateSet(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
 	public function delete(table:String, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
@@ -89,7 +89,7 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private function _updateSet(parameters:Dynamic):String {
 		var q:Array<String> = [];
-		Dice.Params(parameters, function(p:String) { q[q.length] = p + "=:" + p; });
+		Dice.All(parameters, function(p:String, v:Dynamic) { q[q.length] = p + "=:" + p; });
 		return q.join(",");
 	}
 	

@@ -13,7 +13,8 @@ class DataTable implements IDataTable {
 	private var _gate:IGate;
 	
 	private var _description:Dynamic;
-	var _fields:Dynamic;
+	
+	private var _fields:Dynamic;
 	
 	public var description(get, null):Array<Dynamic>;
 	private function get_description():Array<Dynamic> {
@@ -39,20 +40,24 @@ class DataTable implements IDataTable {
 		return this;
 	}
 	
-	public function create (?clausule:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : Array<Dynamic> {
-		return _gate.builder.create(_name, clausule, parameters, order, limit).execute().result;
+	public function create (?parameters:Dynamic = null, ?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
+		return new QueryResult(_gate.builder.create(_name, clausule, parameters, order, limit).execute().result);
 	}
 
-	public function find (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic> {
-		return _gate.builder.find(_fields, _name, clausule, order, limit).execute().result;
+	public function findAll (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
+		return new QueryResult(_gate.builder.find(_fields, _name, clausule, order, limit).execute().result);
 	}
 
-	public function update (?clausule:Dynamic=null, ?parameters:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic> {
-		return _gate.builder.update(_name, clausule, parameters, order, limit).execute().result;
+	public function findOne (?clausule:Dynamic=null) : Dynamic {
+		return new QueryResult(_gate.builder.find(_fields, _name, clausule, null, Limit.MAX(1)).execute().result).first();
 	}
 
-	public function delete (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : Array<Dynamic> {
-		return _gate.builder.delete(_name, clausule, order, limit).execute().result;
+	public function update (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
+		return new QueryResult(_gate.builder.update(_name, clausule, parameters, order, limit).execute().result);
+	}
+
+	public function delete (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
+		return new QueryResult(_gate.builder.delete(_name, clausule, order, limit).execute().result);
 	}
 	
 	public function getErrors():Dynamic {

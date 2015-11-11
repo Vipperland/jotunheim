@@ -138,7 +138,7 @@ class DataCache implements IDataCache {
 	
 	public function exists(?name:String):Bool {
 		if (name != null) {
-			return Reflect.hasField(_DB, _name);
+			return Reflect.hasField(_DB, name);
 		}else {
 			return _loaded;
 		}

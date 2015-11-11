@@ -6,6 +6,10 @@ package sirius.db;
  */
 class Token {
 	
+	public static function to(host:String, port:UInt, user:String, pass:String, db:String, ?options:Array<UInt>):Token {
+		return new Token(host, port, user, pass, db, options);
+	}
+	
 	public var options:Array<UInt>;
 	public var db:String;
 	public var pass:String;
