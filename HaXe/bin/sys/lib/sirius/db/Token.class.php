@@ -3,14 +3,11 @@
 class sirius_db_Token {
 	public function __construct($host, $port, $user, $pass, $db, $options = null) {
 		if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("sirius.db.Token::new");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$this->db = $db;
 		$this->options = $options;
 		$this->pass = $pass;
 		$this->user = $user;
 		$this->host = "mysql:host=" . _hx_string_or_null($host) . ";port=" . Std::string(sirius_db_Token_0($this, $db, $host, $options, $pass, $port, $user)) . ";dbname=" . _hx_string_or_null($db) . ";charset=UTF8";
-		$GLOBALS['%s']->pop();
 	}}
 	public $options;
 	public $db;
@@ -26,6 +23,9 @@ class sirius_db_Token {
 			return $this->__toString();
 		else
 			throw new HException('Unable to call <'.$m.'>');
+	}
+	static function to($host, $port, $user, $pass, $db, $options = null) {
+		return new sirius_db_Token($host, $port, $user, $pass, $db, $options);
 	}
 	function __toString() { return 'sirius.db.Token'; }
 }

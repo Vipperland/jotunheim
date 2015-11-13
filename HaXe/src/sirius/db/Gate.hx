@@ -92,7 +92,7 @@ class Gate implements IGate {
 		return Std.parseInt(_db.lastInsertId());
 	}
 	
-	public function getTable(table:String):IDataTable {
+	public function table(table:String):IDataTable {
 		if (!Reflect.hasField(_tables, table)) Reflect.setField(_tables, table, new DataTable(table, this));
 		return Reflect.field(_tables, table);
 	}

@@ -5,8 +5,6 @@ class haxe_crypto_Base64 {
 	static $CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	static $BYTES;
 	static function encode($bytes, $complement = null) {
-		$GLOBALS['%s']->push("haxe.crypto.Base64::encode");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($complement === null) {
 			$complement = true;
 		}
@@ -23,15 +21,9 @@ class haxe_crypto_Base64 {
 			default:{}break;
 			}
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $str;
-		}
-		$GLOBALS['%s']->pop();
+		return $str;
 	}
 	static function decode($str, $complement = null) {
-		$GLOBALS['%s']->push("haxe.crypto.Base64::decode");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($complement === null) {
 			$complement = true;
 		}
@@ -40,12 +32,7 @@ class haxe_crypto_Base64 {
 				$str = _hx_substr($str, 0, -1);
 			}
 		}
-		{
-			$tmp = _hx_deref(new haxe_crypto_BaseCode(haxe_crypto_Base64::$BYTES))->decodeBytes(haxe_io_Bytes::ofString($str));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return _hx_deref(new haxe_crypto_BaseCode(haxe_crypto_Base64::$BYTES))->decodeBytes(haxe_io_Bytes::ofString($str));
 	}
 	function __toString() { return 'haxe.crypto.Base64'; }
 }

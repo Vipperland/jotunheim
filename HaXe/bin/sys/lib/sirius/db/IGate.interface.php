@@ -9,6 +9,6 @@ interface sirius_db_IGate {
 	function open($token);
 	function prepare($query, $parameters = null, $options = null);
 	function schemaOf($table = null);
-	function getTable($table);
+	function table($table);
 	function insertedId();
 }

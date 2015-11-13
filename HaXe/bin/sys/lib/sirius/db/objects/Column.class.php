@@ -3,8 +3,6 @@
 class sirius_db_objects_Column {
 	public function __construct($data) {
 		if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("sirius.db.objects.Column::new");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$this->column = $data->COLUMN_NAME;
 		$this->nullable = _hx_equal($data->IS_NULLABLE, "YES");
 		$this->position = Std::parseInt($data->ORDINAL_POSITION);
@@ -17,7 +15,6 @@ class sirius_db_objects_Column {
 		$this->comment = $data->COLUMN_COMMENT;
 		$this->length = Std::parseInt($data->CHARACTER_MAXIMUM_LENGTH);
 		$this->previleges = _hx_string_call($data->PRIVILEGES, "split", array(","));
-		$GLOBALS['%s']->pop();
 	}}
 	public $column;
 	public $nullable;

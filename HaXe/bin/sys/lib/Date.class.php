@@ -3,31 +3,14 @@
 class Date {
 	public function __construct($year, $month, $day, $hour, $min, $sec) {
 		if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("Date::new");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$this->__t = mktime($hour, $min, $sec, $month + 1, $day, $year);
-		$GLOBALS['%s']->pop();
 	}}
 	public $__t;
 	public function getTime() {
-		$GLOBALS['%s']->push("Date::getTime");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = $this->__t * 1000;
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return $this->__t * 1000;
 	}
 	public function toString() {
-		$GLOBALS['%s']->push("Date::toString");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = date("Y-m-d H:i:s", $this->__t);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return date("Y-m-d H:i:s", $this->__t);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -40,25 +23,12 @@ class Date {
 			throw new HException('Unable to call <'.$m.'>');
 	}
 	static function now() {
-		$GLOBALS['%s']->push("Date::now");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = Date::fromPhpTime(round(microtime(true), 3));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return Date::fromPhpTime(round(microtime(true), 3));
 	}
 	static function fromPhpTime($t) {
-		$GLOBALS['%s']->push("Date::fromPhpTime");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$d = new Date(2000, 1, 1, 0, 0, 0);
 		$d->__t = $t;
-		{
-			$GLOBALS['%s']->pop();
-			return $d;
-		}
-		$GLOBALS['%s']->pop();
+		return $d;
 	}
 	function __toString() { return $this->toString(); }
 }

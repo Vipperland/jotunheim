@@ -1,51 +1,25 @@
 <?php
 
 class sirius_php_data_Cache {
-	public function __construct() { if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::new");
-		$__hx__spos = $GLOBALS['%s']->length;
-		$GLOBALS['%s']->pop();
-	}}
-	public function set($name, $value) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::set");
-		$__hx__spos = $GLOBALS['%s']->length;
+	public function __construct() {}
+	public function set($name, $value) { if(!php_Boot::$skip_constructor) {
 		$this->{$name} = $value;
-		$GLOBALS['%s']->pop();
-	}
+	}}
 	public function add($name, $value) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::add");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($this->hasField($name)) {
 			$value1 = $this->get($name)->concat($value);
 			$this->{$name} = $value1;
 		} else {
 			$this->{$name} = $value;
 		}
-		$GLOBALS['%s']->pop();
 	}
 	public function get($name) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::get");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = Reflect::field($this, $name);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return Reflect::field($this, $name);
 	}
 	public function hasField($name) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::hasField");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = _hx_has_field($this, $name);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return _hx_has_field($this, $name);
 	}
 	public function json($print = null, $encoding = null) {
-		$GLOBALS['%s']->push("sirius.php.data.Cache::json");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($print === null) {
 			$print = true;
 		}
@@ -56,11 +30,7 @@ class sirius_php_data_Cache {
 		if($print) {
 			php_Lib::hprint($result);
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $result;
-		}
-		$GLOBALS['%s']->pop();
+		return $result;
 	}
 	function __toString() { return 'sirius.php.data.Cache'; }
 }

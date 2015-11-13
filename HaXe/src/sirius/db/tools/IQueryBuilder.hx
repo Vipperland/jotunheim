@@ -7,12 +7,14 @@ import sirius.db.tools.ICommand;
 
 interface IQueryBuilder {
 	
-	public function create (table:String, ?clausule:Dynamic=null, ?parameters:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : ICommand;
+	public function add (table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
 
-	public function find (fields:Dynamic, table:String, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : ICommand;
+	public function find (fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
 
-	public function update (table:String, ?clausule:Dynamic=null, ?parameters:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : ICommand;
+	public function update (table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
 
-	public function delete (table:String, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : ICommand;
+	public function delete (table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
+	
+	public function copy(from:String, to:String, ?clause:Dynamic, ?parameters:Dynamic, ?limit:String):ICommand;
 
 }

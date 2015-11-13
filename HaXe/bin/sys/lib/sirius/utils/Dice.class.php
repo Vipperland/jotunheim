@@ -3,8 +3,6 @@
 class sirius_utils_Dice {
 	public function __construct(){}
 	static function All($q, $each, $complete = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::All");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$v = null;
 		$p = null;
 		$i = true;
@@ -39,48 +37,21 @@ class sirius_utils_Dice {
 		if($complete !== null) {
 			call_user_func_array($complete, array($r));
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $r;
-		}
-		$GLOBALS['%s']->pop();
+		return $r;
 	}
 	static function Params($q, $each, $complete = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Params");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_0"), 'execute'), $complete);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_0"), 'execute'), $complete);
 	}
 	static function Values($q, $each, $complete = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Values");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_1"), 'execute'), $complete);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$complete, &$each, &$q), "sirius_utils_Dice_1"), 'execute'), $complete);
 	}
 	static function Call($q, $method, $args = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Call");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($args === null) {
 			$args = (new _hx_array(array()));
 		}
-		{
-			$tmp = sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$args, &$method, &$q), "sirius_utils_Dice_2"), 'execute'), null);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return sirius_utils_Dice::All($q, array(new _hx_lambda(array(&$args, &$method, &$q), "sirius_utils_Dice_2"), 'execute'), null);
 	}
 	static function Count($from, $to, $each, $complete = null, $increment = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Count");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($increment === null) {
 			$increment = 1;
 		}
@@ -99,28 +70,15 @@ class sirius_utils_Dice {
 		if($complete !== null) {
 			call_user_func_array($complete, array($r));
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $r;
-		}
-		$GLOBALS['%s']->pop();
+		return $r;
 	}
 	static function One($from, $alt = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::One");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if(Std::is($from, _hx_qtype("Array"))) {
 			sirius_utils_Dice::Values($from, array(new _hx_lambda(array(&$alt, &$from), "sirius_utils_Dice_6"), 'execute'), null);
 		}
-		{
-			$tmp = _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt), "object" => $from));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return _hx_anonymous(array("value" => ((sirius_tools_Utils::isValid($from)) ? $from : $alt), "object" => $from));
 	}
 	static function Match($table, $values, $limit = null) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Match");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($limit === null) {
 			$limit = 0;
 		}
@@ -129,55 +87,28 @@ class sirius_utils_Dice {
 		}
 		$r = 0;
 		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_7"), 'execute'), null);
-		{
-			$GLOBALS['%s']->pop();
-			return $r;
-		}
-		$GLOBALS['%s']->pop();
+		return $r;
 	}
 	static function Mix($data) {
-		$GLOBALS['%s']->push("sirius.utils.Dice::Mix");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$r = (new _hx_array(array()));
 		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_8"), 'execute'), null);
-		{
-			$GLOBALS['%s']->pop();
-			return $r;
-		}
-		$GLOBALS['%s']->pop();
+		return $r;
 	}
 	function __toString() { return 'sirius.utils.Dice'; }
 }
 function sirius_utils_Dice_0(&$complete, &$each, &$q, $p, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::Params@70");
-		$__hx__spos2 = $GLOBALS['%s']->length;
-		{
-			$tmp = call_user_func_array($each, array($p));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return call_user_func_array($each, array($p));
 	}
 }
 function sirius_utils_Dice_1(&$complete, &$each, &$q, $p, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::Values@83");
-		$__hx__spos2 = $GLOBALS['%s']->length;
-		{
-			$tmp = call_user_func_array($each, array($v));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return call_user_func_array($each, array($v));
 	}
 }
 function sirius_utils_Dice_2(&$args, &$method, &$q, $p, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::Call@97");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		Reflect::callMethod($v, Reflect::field($v, $method), $args);
-		$GLOBALS['%s']->pop();
 	}
 }
 function sirius_utils_Dice_3(&$a, &$b, &$complete, &$each, &$from, &$increment, &$to) {
@@ -216,45 +147,25 @@ function sirius_utils_Dice_5(&$a, &$b, &$c, &$complete, &$each, &$from, &$increm
 }
 function sirius_utils_Dice_6(&$alt, &$from, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::One@132");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		$from = $v;
-		{
-			$tmp = $from === null;
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return $from === null;
 	}
 }
 function sirius_utils_Dice_7(&$limit, &$r, &$table, &$values, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::Match@149");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
 		if(sirius_utils_Dice_9($limit, $r, $table, $v, $values)) {
 			$a = --$limit;
-			{
-				$tmp = $a === 0;
-				$GLOBALS['%s']->pop();
-				return $tmp;
-			}
+			return $a === 0;
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return false;
-		}
-		$GLOBALS['%s']->pop();
+		return false;
 	}
 }
 function sirius_utils_Dice_8(&$data, &$r, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.utils.Dice::Mix@164");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		$r = $r->concat($v);
-		$GLOBALS['%s']->pop();
 	}
 }
 function sirius_utils_Dice_9(&$limit, &$r, &$table, &$v, &$values) {

@@ -3,15 +3,12 @@
 class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 	public function __construct($statement, $query, $parameters = null, $errors) {
 		if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::new");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$this->_errors = $errors;
 		$this->_query = $query;
 		$this->statement = $statement;
 		if($parameters !== null) {
 			$this->bind($parameters);
 		}
-		$GLOBALS['%s']->pop();
 	}}
 	public $_query;
 	public $_parameters;
@@ -21,33 +18,18 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 	public $result;
 	public $errors;
 	public function get_errors() {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::get_errors");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = $this->_errors;
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return $this->_errors;
 	}
 	public function bind($parameters) {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::bind");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$_g = $this;
 		$this->_parameters = $parameters;
 		if($this->statement !== null) {
 			$isArray = Std::is($parameters, _hx_qtype("Array"));
 			sirius_utils_Dice::All($parameters, array(new _hx_lambda(array(&$_g, &$isArray, &$parameters), "sirius_db_tools_Command_0"), 'execute'), null);
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $this;
-		}
-		$GLOBALS['%s']->pop();
+		return $this;
 	}
 	public function execute($handler = null, $type = null, $parameters = null) {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::execute");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($this->statement !== null) {
 			if($type === null) {
 				$type = \PDO::FETCH_OBJ;
@@ -73,11 +55,6 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 				$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 				$e = $_ex_;
 				{
-					$GLOBALS['%e'] = (new _hx_array(array()));
-					while($GLOBALS['%s']->length >= $__hx__spos) {
-						$GLOBALS['%e']->unshift($GLOBALS['%s']->pop());
-					}
-					$GLOBALS['%s']->push($GLOBALS['%e'][0]);
 					if(Std::is($e, _hx_qtype("String"))) {
 						_hx_array_assign($this->get_errors(), $this->get_errors()->length, new sirius_errors_Error(0, $e, null));
 					} else {
@@ -88,46 +65,24 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 		} else {
 			_hx_array_assign($this->get_errors(), $this->get_errors()->length, new sirius_errors_Error(0, "Null statement. Database is not connected.", null));
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return $this;
-		}
-		$GLOBALS['%s']->pop();
+		return $this;
 	}
 	public function fetch($handler) {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::fetch");
-		$__hx__spos = $GLOBALS['%s']->length;
 		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$handler), "sirius_db_tools_Command_2"), 'execute'), null);
-		{
-			$GLOBALS['%s']->pop();
-			return $this;
-		}
-		$GLOBALS['%s']->pop();
+		return $this;
 	}
 	public function find($param, $values, $limit = null) {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::find");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($limit === null) {
 			$limit = 0;
 		}
 		$filter = (new _hx_array(array()));
 		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$filter, &$limit, &$param, &$values), "sirius_db_tools_Command_3"), 'execute'), null);
-		{
-			$GLOBALS['%s']->pop();
-			return $filter;
-		}
-		$GLOBALS['%s']->pop();
+		return $filter;
 	}
 	public function log() {
-		$GLOBALS['%s']->push("sirius.db.tools.Command::log");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$q = $this->_query;
 		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$q), "sirius_db_tools_Command_4"), 'execute'), null);
-		{
-			$GLOBALS['%s']->pop();
-			return $q;
-		}
-		$GLOBALS['%s']->pop();
+		return $q;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -144,8 +99,6 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 }
 function sirius_db_tools_Command_0(&$_g, &$isArray, &$parameters, $p, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.db.tools.Command::bind@49");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		if($isArray) {
 			$_g->statement->setAttribute($p, $v);
 		} else {
@@ -155,7 +108,6 @@ function sirius_db_tools_Command_0(&$_g, &$isArray, &$parameters, $p, $v) {
 			$field = $p;
 			$_g->_parameters->{$field} = $v;
 		}
-		$GLOBALS['%s']->pop();
 	}
 }
 function sirius_db_tools_Command_1(&$__hx__this, &$handler, &$p, &$parameters, &$type) {
@@ -166,39 +118,20 @@ function sirius_db_tools_Command_1(&$__hx__this, &$handler, &$p, &$parameters, &
 }
 function sirius_db_tools_Command_2(&$handler, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.db.tools.Command::fetch@85");
-		$__hx__spos2 = $GLOBALS['%s']->length;
-		{
-			$tmp = call_user_func_array($handler, array(new sirius_data_DataSet($v)));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return call_user_func_array($handler, array(new sirius_data_DataSet($v)));
 	}
 }
 function sirius_db_tools_Command_3(&$filter, &$limit, &$param, &$values, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.db.tools.Command::find@91");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		if(sirius_utils_Dice::Match((new _hx_array(array(Reflect::field($v, $param)))), $values, 1) > 0) {
 			$filter[$filter->length] = $v;
-			{
-				$tmp = sirius_db_tools_Command_5($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values);
-				$GLOBALS['%s']->pop();
-				return $tmp;
-			}
+			return sirius_db_tools_Command_5($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values);
 		}
-		{
-			$GLOBALS['%s']->pop();
-			return false;
-		}
-		$GLOBALS['%s']->pop();
+		return false;
 	}
 }
 function sirius_db_tools_Command_4(&$q, $p, $v) {
 	{
-		$GLOBALS['%s']->push("sirius.db.tools.Command::log@103");
-		$__hx__spos2 = $GLOBALS['%s']->length;
 		$sub = ":" . _hx_string_or_null($p);
 		$by = $v;
 		if($sub === "") {
@@ -206,7 +139,6 @@ function sirius_db_tools_Command_4(&$q, $p, $v) {
 		} else {
 			$q = str_replace($sub, $by, $q);
 		}
-		$GLOBALS['%s']->pop();
 	}
 }
 function sirius_db_tools_Command_5(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {

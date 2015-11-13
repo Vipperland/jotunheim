@@ -5,9 +5,12 @@ interface sirius_db_objects_IDataTable {
 	function get_description();
 	//;
 	//;
-	function create($clausule = null, $parameters = null, $order = null, $limit = null);
-	function find($clausule = null, $order = null, $limit = null);
-	function update($clausule = null, $parameters = null, $order = null, $limit = null);
-	function delete($clausule = null, $order = null, $limit = null);
+	function add($parameters = null, $clause = null, $order = null, $limit = null);
+	function findAll($clause = null, $order = null, $limit = null);
+	function findOne($clause = null);
+	function update($parameters = null, $clause = null, $order = null, $limit = null);
+	function delete($clause = null, $order = null, $limit = null);
+	function copy($toTable, $clause = null, $order = null, $limit = null);
+	function clear($paramaters);
 	function restrict($fields);
 }

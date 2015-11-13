@@ -3,12 +3,9 @@
 class sirius_errors_Error implements sirius_errors_IError{
 	public function __construct($code, $message, $object = null) {
 		if(!php_Boot::$skip_constructor) {
-		$GLOBALS['%s']->push("sirius.errors.Error::new");
-		$__hx__spos = $GLOBALS['%s']->length;
 		$this->object = $object;
 		$this->message = $message;
 		$this->code = $code;
-		$GLOBALS['%s']->pop();
 	}}
 	public $object;
 	public $message;

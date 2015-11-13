@@ -60,7 +60,7 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function getTable(table:String):IDataTable;
+	public function table(table:String):IDataTable;
 	
 	/**
 	 * Last row affected

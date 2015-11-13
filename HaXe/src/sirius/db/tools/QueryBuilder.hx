@@ -49,7 +49,7 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	
-	private function _assembleBody(?clause:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):String {
+	private function _assembleBody(?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
 		if (clause != null) q += " WHERE " + _conditions(clause , parameters, " || ");
 		if (order != null) q += " ORDER BY " + _order(order);
@@ -58,26 +58,32 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	
-	public function create(table:String, ?clause:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
+	public function add(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		return _gate.prepare("INSERT INTO " + table + _insert(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
 	
-	public function find(fields:Dynamic, table:String, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
+	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		if (Std.is(fields, Array)) fields = fields.join(",");
 		var parameters:Dynamic = { };
 		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
 	
-	public function update(table:String, ?clause:Dynamic = null, ?parameters:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
+	public function update(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		if (parameters == null) parameters = { };
 		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
-	public function delete(table:String, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null):ICommand {
+	public function delete(table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var parameters:Dynamic = { };
 		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+	}
+	
+	public function copy(from:String, to:String, ?clause:Dynamic, ?parameters:Dynamic, ?limit:String):ICommand {
+		var entries:Dynamic = find("*", from, clause, null, limit).result;
+		Dice.Values(entries, function(v:Dynamic) { add(to, null, v, null, null); });
+		return null;
 	}
 	
 	private function _insert(parameters:Dynamic) {

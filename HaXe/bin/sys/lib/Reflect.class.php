@@ -3,73 +3,34 @@
 class Reflect {
 	public function __construct(){}
 	static function field($o, $field) {
-		$GLOBALS['%s']->push("Reflect::field");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = _hx_field($o, $field);
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return _hx_field($o, $field);
 	}
 	static function callMethod($o, $func, $args) {
-		$GLOBALS['%s']->push("Reflect::callMethod");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = call_user_func_array(((is_callable($func)) ? $func : array($o, $func)), ((null === $args) ? array() : $args->a));
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return call_user_func_array(((is_callable($func)) ? $func : array($o, $func)), ((null === $args) ? array() : $args->a));
 	}
 	static function fields($o) {
-		$GLOBALS['%s']->push("Reflect::fields");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if($o === null) {
-			$tmp = new _hx_array(array());
-			$GLOBALS['%s']->pop();
-			return $tmp;
+			return new _hx_array(array());
 		}
 		if($o instanceof _hx_array) {
-			$tmp = new _hx_array(array('concat','copy','insert','iterator','length','join','pop','push','remove','reverse','shift','slice','sort','splice','toString','unshift'));
-			$GLOBALS['%s']->pop();
-			return $tmp;
+			return new _hx_array(array('concat','copy','insert','iterator','length','join','pop','push','remove','reverse','shift','slice','sort','splice','toString','unshift'));
 		} else {
 			if(is_string($o)) {
-				$tmp = new _hx_array(array('charAt','charCodeAt','indexOf','lastIndexOf','length','split','substr','toLowerCase','toString','toUpperCase'));
-				$GLOBALS['%s']->pop();
-				return $tmp;
+				return new _hx_array(array('charAt','charCodeAt','indexOf','lastIndexOf','length','split','substr','toLowerCase','toString','toUpperCase'));
 			} else {
-				$tmp = new _hx_array(_hx_get_object_vars($o));
-				$GLOBALS['%s']->pop();
-				return $tmp;
+				return new _hx_array(_hx_get_object_vars($o));
 			}
 		}
-		$GLOBALS['%s']->pop();
 	}
 	static function isFunction($f) {
-		$GLOBALS['%s']->push("Reflect::isFunction");
-		$__hx__spos = $GLOBALS['%s']->length;
-		{
-			$tmp = (is_array($f) && is_callable($f)) || _hx_is_lambda($f) || is_array($f) && Reflect_0($f) && $f[1] !== "length";
-			$GLOBALS['%s']->pop();
-			return $tmp;
-		}
-		$GLOBALS['%s']->pop();
+		return (is_array($f) && is_callable($f)) || _hx_is_lambda($f) || is_array($f) && Reflect_0($f) && $f[1] !== "length";
 	}
 	static function deleteField($o, $field) {
-		$GLOBALS['%s']->push("Reflect::deleteField");
-		$__hx__spos = $GLOBALS['%s']->length;
 		if(!_hx_has_field($o, $field)) {
-			$GLOBALS['%s']->pop();
 			return false;
 		}
 		if(isset($o->__dynamics[$field])) unset($o->__dynamics[$field]); else if($o instanceof _hx_anonymous) unset($o->$field); else $o->$field = null;
-		{
-			$GLOBALS['%s']->pop();
-			return true;
-		}
-		$GLOBALS['%s']->pop();
+		return true;
 	}
 	function __toString() { return 'Reflect'; }
 }
