@@ -20,7 +20,7 @@ class DataTable implements IDataTable {
 	private function get_description():Dynamic {
 		if (_description == null) {
 			_description = { };
-			var r:Array<Dynamic> = _gate.schemaOf(_name).execute().result;
+			var r:Array<Dynamic> = _gate.schema(_name).execute().result;
 			Dice.Values(r, function(v:Dynamic) { Reflect.setField(_description, v.COLUMN_NAME, new Column(v)); });
 		}
 		return _description;
@@ -62,6 +62,10 @@ class DataTable implements IDataTable {
 	
 	public function copy (toTable:String, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
 		return new QueryResult(_gate.builder.copy(_name, toTable, clausule, order, limit).execute().result);
+	}
+	
+	public function truncate():IQueryResult {
+		return new QueryResult(_gate.builder.truncate(_name).result);
 	}
 	
 	public function clear (paramaters:Dynamic):Dynamic {

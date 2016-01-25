@@ -101,10 +101,10 @@ class BitIO {
 	public var value:UInt;
 	
 	public function new(value:UInt) {
-		this.value = value;
+		this.value = Std.parseInt(cast value);
 	}
 	
-	public function reverse(bit:UInt):Void {
+	public function invert(bit:UInt):Void {
 		value = Toggle(value, bit);
 	}
 	

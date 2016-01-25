@@ -23,6 +23,8 @@ class Command implements ICommand {
 	
 	private var _errors:Array<IError>;
 	
+	private var _log:Array<String>;
+	
 	// PDO::FETCH_ASSOC = 2
 	// PDO::FETCH_OBJ = 5
 	
@@ -35,7 +37,8 @@ class Command implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, ?parameters:Dynamic, errors:Array<IError>) {
+	public function new(statement:Statement, query:String, ?parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+		_log = log;
 		_errors = errors;
 		_query = query;
 		this.statement = statement;
@@ -75,8 +78,9 @@ class Command implements ICommand {
 					errors[errors.length] = new Error(e.getCode(), e.getMessage());
 				}
 			}
+			if (_log != null) _log[_log.length] = (success ? "[1]" : "[0]") + " " + log();
 		}else {
-			errors[errors.length] = new Error(0, "Null statement. Database is not connected.");
+			errors[errors.length] = new Error(0, "A connection with database is required.");
 		}
 		return this;
 	}

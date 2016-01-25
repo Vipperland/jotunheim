@@ -37,7 +37,7 @@ interface IGate {
 	 * @param	token
 	 * @return
 	 */
-	public function open (token:Token) : IGate;
+	public function open (token:Token, log:Bool = false) : IGate;
 	
 	/**
 	 * The query to execute
@@ -53,20 +53,20 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function schemaOf (?table:Dynamic) : ICommand;
+	public function schema (?table:Dynamic) : ICommand;
 	
 	/**
 	 * Shotcut to table statements and methods
 	 * @param	table
 	 * @return
 	 */
-	public function table(table:String):IDataTable;
+	public function table (table:String):IDataTable;
 	
 	/**
 	 * Last row affected
 	 * @return
 	 */
-	public function insertedId():UInt;
+	public function insertedId ():UInt;
 	
 	
 }

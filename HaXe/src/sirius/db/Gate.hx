@@ -5,7 +5,7 @@ import sirius.db.tools.Command;
 import sirius.db.IGate;
 import sirius.db.objects.IDataTable;
 import sirius.db.objects.DataTable;
-import sirius.db.pdo.Bridge;
+import sirius.db.pdo.Database;
 import sirius.db.pdo.Connection;
 import sirius.db.pdo.Statement;
 import sirius.db.Token;
@@ -30,6 +30,10 @@ class Gate implements IGate {
 	
 	private var _errors:Array<IError>;
 	
+	private var _log:Array<String>;
+	
+	private var _logCommands:Bool;
+	
 	public var builder:IQueryBuilder;
 	
 	public var command:ICommand;
@@ -37,8 +41,13 @@ class Gate implements IGate {
 	public var errors(get, null):Array<IError>;
 	public function get_errors():Array<IError> { return _errors; }
 	
+	public var log(get, null):Array<String>;
+	public function get_log():Array<String> { return _log; }
+	
 	public function new() {
 		_errors = [];
+		_log = [];
+		_logCommands = false;
 		_tables = { };
 		builder = new QueryBuilder(this);
 	}
@@ -47,11 +56,12 @@ class Gate implements IGate {
 		return _db != null && errors.length == 0;
 	}
 	
-	public function open(token:Token):IGate {
+	public function open(token:Token, log:Bool = false):IGate {
+		_logCommands = log;
 		if (!isOpen()) {
 			_token = token;
 			try {
-				_db = Bridge.open(token.host, token.user, token.pass, token.options);
+				_db = Database.connect(token.host, token.user, token.pass, token.options);
 			}catch (e:Dynamic) {
 				errors[errors.length] = new Error(e.getCode(), e.getMessage());
 			}
@@ -63,17 +73,11 @@ class Gate implements IGate {
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
 		var pdo:Statement = null;
 		if (isOpen()) pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-		command = new Command(pdo, query, parameters, _errors);
+		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
 		return command;
 	}
 	
-	//public function insert(table:String, parameters:Dynamic, ?options:Dynamic = null):ICommand {
-		//var ps:Array<String> = [];
-		//Dice.All(parameters, ps.push);
-		//return prepare("INSERT INTO " + table + " (" + ps.join(",") + ") VALUES (:" + ps.join(",:") + ")", parameters, options);
-	//}
-	
-	public function schemaOf(?table:Dynamic):ICommand {
+	public function schema(?table:Dynamic):ICommand {
 		var r:IDataSet = null;
 		if (!Std.is(table, Array)) table = [table];
 		

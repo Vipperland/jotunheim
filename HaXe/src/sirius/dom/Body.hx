@@ -1,14 +1,22 @@
 package sirius.dom;
-import js.Browser;
-import js.html.BodyElement;
-import js.html.Element;
-import js.html.Event;
-import sirius.tools.Utils;
+
+#if js
+	import js.Browser;
+	import js.html.BodyElement;
+	import js.html.Element;
+	import js.html.Event;
+	import sirius.tools.Utils;
+#elseif php
+	import php.Lib;
+#end
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
+
+#if js
+ 
 @:expose("sru.dom.Body")
 class Body extends Display {
 	
@@ -17,7 +25,7 @@ class Body extends Display {
 	public static function get(q:String, ?h:IDisplay->Void):Body {
 		return cast Sirius.one(q,null,h);
 	}
-
+	
 	public function new(?q:Element) {
 		if (q == null) q = Browser.document.createBodyElement();
 		super(q, null);
@@ -43,3 +51,45 @@ class Body extends Display {
 	}
 	
 }
+
+#elseif php
+	
+class Body {
+	
+	public static var content:String = "";
+	
+	public static function write(text:String, ?nl:Bool = true):Void {
+		content += text;
+		if (nl) newline();
+	}
+	
+	public static function newline():Void {
+		content += "<br>";
+	}
+	
+	public static function hr():Void {
+		content += "<hr>";
+	}
+	
+	public static function multiline():Void {
+		newline();
+		newline();
+	}
+	
+	public static function clear():Void {
+		content = "";
+	}
+	
+	public static function draw():Void {
+		Lib.print("<html>");
+		Lib.print("<head>");
+		Lib.print("</head>");
+		Lib.print("<body>");
+		Lib.print(content);
+		Lib.print("</body>");
+		Lib.print("</html>");
+	}
+	
+}
+
+#end

@@ -1,8 +1,8 @@
 package sirius.php.utils;
 import haxe.Json;
-import php.Boot;
 import php.Lib;
 import php.Web;
+import sirius.utils.Criptog;
 
 /**
  * ...
@@ -18,6 +18,8 @@ class Header {
 	
 	static public var JSONP:String = 'application/javascript;charset=utf-8';
 	
+	static public var hasType:Bool = false;
+	
 	public function new() {
 		
 	}
@@ -30,13 +32,22 @@ class Header {
 	}
 	
 	public function content(type:String):Void {
-		Web.setHeader('content-type:', type);
+		if(!hasType){
+			hasType = true;
+			Web.setHeader('content-type:', type);
+		}
 	}
 	
-	public function setJSON(?data:Dynamic):Void {
+	public function setHTML():Void {
+		content(HTML);
+	}
+	
+	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
 		content(JSON);
 		if (data != null) {
-			Lib.print(Json.stringify(data));
+			var data:String = Json.stringify(data);
+			if (encode) data = Criptog.encodeBase64(data);
+			Lib.print(data);
 		}
 	}
 	

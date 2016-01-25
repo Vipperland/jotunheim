@@ -252,4 +252,8 @@ class Utils{
 		
 	}
 	
+	static public function boolean(value:Dynamic):Bool {
+		return value == true || value == 1 || value == "1" || value == "true" || value == "yes";
+	}
+	
 }

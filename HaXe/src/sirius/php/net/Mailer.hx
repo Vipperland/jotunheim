@@ -65,7 +65,7 @@ class Mailer {
 	public function message(subject:String, text:String):Void {
 		output.Subject = subject;
 		output.Body = text;
-		output.AltBody = text.split('<br>').join('').split('<br/>').join('');
+		output.AltBody = text.split('<br>').join('\r\n').split('<br/>').join('\r\n');
 	}
 	
 	

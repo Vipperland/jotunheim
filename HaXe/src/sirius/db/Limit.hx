@@ -6,6 +6,8 @@ package sirius.db;
  */
 class Limit{
 	
+	public static var ONE:String = "1";
+	
 	public static function MAX(i:UInt = 1):String {
 		return Std.string(i);
 	}

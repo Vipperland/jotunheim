@@ -2,9 +2,9 @@ package sirius.db.pdo;
 
 import php.NativeArray;
 
-class Bridge {
+class Database {
 
-	static public function open(dsn : String, ?user : String, ?password : String, ?options : Dynamic):Connection {
+	static public function connect(dsn : String, ?user : String, ?password : String, ?options : Dynamic):Connection {
 		var pdo:Connection = null;
 		if (null == options) {
 			pdo = untyped __call__("new PDO", dsn, user, password);
