@@ -29,9 +29,8 @@ package gate.sirius.serializer.signals {
 		
 		public function extractOne(type:Class):* {
 			for each (var t:*in decoder.content) {
-				if (t is type) {
+				if (t is type)
 					break;
-				}
 			}
 			return t;
 		}

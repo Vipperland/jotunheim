@@ -39,38 +39,43 @@ package gate.sirius.isometric.recycler {
 				object.recyclerCollect.apply(object, props);
 				return _ticket.put(object);
 			}
-			switch (props.length) {
-				case 0: 
-					_object = new Type();
-					break;
-				case 1: 
-					_object = new Type(props[0]);
-					break;
-				case 2: 
-					_object = new Type(props[0], props[1]);
-					break;
-				case 3: 
-					_object = new Type(props[0], props[1], props[2]);
-					break;
-				case 4: 
-					_object = new Type(props[0], props[1], props[2], props[3]);
-					break;
-				case 5: 
-					_object = new Type(props[0], props[1], props[2], props[3], props[4]);
-					break;
-				case 6: 
-					_object = new Type(props[0], props[1], props[2], props[3], props[4], props[5]);
-					break;
-				default: 
-					_object = new Type(props);
+			var len:uint = props.length;
+			if (len > 7) {
+				_object = new Type(props);
+			}else {
+				switch (len) {
+					case 0: 
+						_object = new Type();
+						break;
+					case 1: 
+						_object = new Type(props[0]);
+						break;
+					case 2: 
+						_object = new Type(props[0], props[1]);
+						break;
+					case 3: 
+						_object = new Type(props[0], props[1], props[2]);
+						break;
+					case 4: 
+						_object = new Type(props[0], props[1], props[2], props[3]);
+						break;
+					case 5: 
+						_object = new Type(props[0], props[1], props[2], props[3], props[4]);
+						break;
+					case 6: 
+						_object = new Type(props[0], props[1], props[2], props[3], props[4], props[5]);
+						break;
+					case 7: 
+						_object = new Type(props[0], props[1], props[2], props[3], props[4], props[5], props[6]);
+						break;
+				}
 			}
 			return _ticket.put(_object);
 		}
 		
 		public function clearTrash():void {
-			for (var T:*in _junk) {
+			for (var T:*in _junk) 
 				delete _junk[T];
-			}
 		}
 		
 		public function discartAllOf(Type:Class):void {
@@ -83,12 +88,10 @@ package gate.sirius.isometric.recycler {
 		
 		public function filter(handler:Function, discart:Boolean, ... types:Array):void {
 			for each (var Type:Class in types) {
-				for each (var obj:*in _junk[Type]) {
+				for each (var obj:*in _junk[Type]) 
 					handler(obj as Type);
-				}
-				if (discart) {
+				if (discart) 
 					delete _junk[Type];
-				}
 			}
 		}
 		

@@ -98,9 +98,8 @@ package gate.sirius.serializer.data {
 				}
 				default:  {
 					if (value.length < 22) {
-						if (!isNaN(Number(value))) {
+						if (!isNaN(Number(value)))
 							return Number(value);
-						}
 					}
 				}
 			}

@@ -6,6 +6,7 @@ package gate.sirius.serializer {
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
+	import gate.sirius.meta.Console;
 	import gate.sirius.serializer.data.SruData;
 	import gate.sirius.serializer.hosts.IList;
 	import gate.sirius.serializer.hosts.IStartable;
@@ -119,8 +120,10 @@ package gate.sirius.serializer {
 		 * @return
 		 */
 		static public function getClass(name:String, allowDefaultObject:Boolean):Class {
-			if (!name || name == "Object" || name == "Array" || name == "*")
+			if (name == null || name == "" || name == "Object" || name == "*")
 				return SruObject;
+			else if (name == "Array")
+				return Array;
 			return CLASS_COLLECTION[name] || (allowDefaultObject ? SruObject : null);
 		}
 		
@@ -492,7 +495,7 @@ package gate.sirius.serializer {
 			}
 			
 			return this;
-		
+			
 		}
 		
 		

@@ -32,9 +32,8 @@ package gate.sirius.signals {
 		 * @param	handler
 		 */
 		public function hold(handler:Function):void {
-			if (_signals.indexOf(handler) == -1) {
+			if (_signals.indexOf(handler) == -1)
 				_signals[_signals.length] = handler;
-			}
 		}
 		
 		
@@ -43,9 +42,8 @@ package gate.sirius.signals {
 		 * @param	... rest
 		 */
 		public function push(... rest:Array):void {
-			for each (var entry:Array in rest) {
+			for each (var entry:Array in rest)
 				hold.apply(this, entry);
-			}
 		}
 		
 		
@@ -56,9 +54,8 @@ package gate.sirius.signals {
 		 */
 		public function release(handler:Function):void {
 			var from:int = _signals.indexOf(handler);
-			if (from !== -1) {
+			if (from !== -1)
 				_signals.splice(from, 1);
-			}
 		}
 		
 		
@@ -81,9 +78,8 @@ package gate.sirius.signals {
 			for each (var signalHandler:Function in _signals) {
 				++signal._calls;
 				signalHandler(signal);
-				if (!signal._live) {
+				if (!signal._live)
 					break;
-				}
 			}
 			
 			SignalReport.GATE._send(ticket);

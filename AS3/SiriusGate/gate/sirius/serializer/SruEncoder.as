@@ -168,7 +168,7 @@ package gate.sirius.serializer {
 							if (valueRef is SruRules)
 								continue;
 							
-							if (!valueRef is Function) {
+							if (!(valueRef is Function)) {
 							
 								if (filter) {
 									if (!filter.rules.isVisible(prop))
@@ -476,7 +476,7 @@ package gate.sirius.serializer {
 		 * @param	value
 		 * @return
 		 */
-		public static function getValue(value:Object, ident:int = 0):String {
+		public static function encode(value:Object, ident:int = 0):String {
 			if (value is Stage)
 				return "// Error, SiriusEncoder.getValue::value is Stage.";
 			if (value is Function)
@@ -490,14 +490,14 @@ package gate.sirius.serializer {
 			if (value is String)
 				return String(value);
 			BREAK = "/·br/";
-			var result:String = getValue(value, ident);
+			var result:String = encode(value, ident);
 			BREAK = "\n";
 			return "·" + result;
 		}
 		
 		
 		public static function tracer(value:*):void {
-			trace(getValue(value));
+			trace(encode(value));
 		}
 		
 	}
