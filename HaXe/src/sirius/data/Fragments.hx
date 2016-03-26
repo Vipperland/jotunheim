@@ -15,6 +15,12 @@ class Fragments implements IFragments {
 	
 	public var last:String;
 	
+	private function _sel(i:Int, e:Int):String {
+		var r:Array<String> = [];
+		while (i != e)  r[r.length] = pieces[i++];
+		return "/" + r.join("/") + "/";
+	}
+	
 	public function new(value:String, ?separator:String) {
 		this.value = value == null ? "" : value;
 		if (separator != null && separator.length > 0) split(separator);
@@ -25,8 +31,8 @@ class Fragments implements IFragments {
 		pieces = Utils.clearArray(value.split(separator));
 		if (pieces.length == 0) pieces[0] = "";
 		first = pieces[0];
-		last = pieces[pieces.length-1];
-		glue(value);
+		last = pieces[pieces.length - 1];
+		glue(separator);
 		return this;
 	}
 	
@@ -50,8 +56,15 @@ class Fragments implements IFragments {
 		return this;
 	}
 	
-	public function get(i:Int):String {
-		return i < pieces.length ? pieces[i] : "";
+	public function get(i:Int, ?e:Int):String {
+		return e == null || e <= i ? (i < pieces.length ? pieces[i] : "") : _sel(i, e);
+	}
+	
+	public function set(i:Int, val:String):IFragments {
+		if (i > pieces.length) i = pieces.length;
+		if (val != null)
+			pieces[i] = val;
+		return this;
 	}
 	
 	public function clear():IFragments {

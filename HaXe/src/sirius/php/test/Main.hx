@@ -3,6 +3,7 @@ package sirius.php.test;
 import haxe.Log;
 import php.Lib;
 import sirius.modules.ModLib;
+import sirius.serial.JsonTool;
 
 /**
  * ...

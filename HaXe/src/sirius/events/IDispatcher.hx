@@ -32,7 +32,7 @@ interface IDispatcher {
 	 * Rebuild Element events
 	 */
 	public function apply () : Void;
-
+	
 	/**
 	 * Versatile Init and assign or remove events
 	 * @param	type		Type of the event
@@ -40,8 +40,11 @@ interface IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function auto (type:String, ?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function auto (type:String, ?handler:IEvent->Void, ?mode:Int) : IEventGroup;
 
+	/// Mouse OVER, OUT and DOWN Events
+	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):Dynamic;
+	
 	/// Event
 	public function wheel (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
 

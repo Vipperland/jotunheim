@@ -8,6 +8,7 @@ import js.JQuery;
 import sirius.data.DisplayData;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
+import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.modules.IRequest;
 import sirius.utils.ITable;
@@ -175,7 +176,7 @@ interface IDisplay {
 	 * @param	value
 	 * @return
 	 */
-	public function attribute(name:String, ?value:String):String;
+	public function attribute(name:String, ?value:String):Dynamic;
 	
 	/**
 	 * Write a list of attributes to object
@@ -183,6 +184,13 @@ interface IDisplay {
 	 * @return
 	 */
 	public function attributes(values:Dynamic):IDisplay;
+	
+	/**
+	 * Crop an attribute from element and return it
+	 * @param	name
+	 * @return
+	 */
+	public function clearAttribute(name:String):Dynamic;
 	
 	/**
 	 * Write InnerText or InnerHTML properties
@@ -378,7 +386,7 @@ interface IDisplay {
 	 * @param	attachment
 	 * @return
 	 */
-	public function bg(?value:Dynamic, ?repeat:String, ?position:String, ?attachment:String):String;
+	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String, ?size:String):String;
 	
 	/**
 	 * Clear all object data

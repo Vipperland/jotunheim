@@ -1,7 +1,6 @@
 package sirius;
 
 import haxe.Log;
-import sirius.data.DataCache;
 import sirius.data.Logger;
 import sirius.errors.IError;
 import sirius.modules.IRequest;
@@ -10,6 +9,7 @@ import sirius.modules.ILoader;
 import sirius.modules.Loader;
 import sirius.net.Domain;
 import sirius.net.IDomain;
+import sirius.signals.IFlow;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
@@ -38,6 +38,7 @@ import sirius.utils.Filler;
 	import sirius.utils.Validator;
 #elseif php
 	import php.Lib;
+	import sirius.data.DataCache;
 	import sirius.db.Gate;
 	import sirius.db.IGate;
 	import sirius.php.data.Cache;
@@ -101,7 +102,8 @@ class Sirius {
 				Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				_loadPool = null;
-				loader.start(_onLoaded);
+				loader.signals.add('complete', _onLoaded);
+				loader.start();
 				Reflect.deleteField(Sirius, '_loadController');
 				Reflect.deleteField(Sirius, '_loadPool');
 			}
@@ -119,7 +121,7 @@ class Sirius {
 		}
 		
 		/** @private */
-		static private function _onLoaded(e:ILoader):Void {
+		static private function _onLoaded(e:IFlow):Void {
 			if (loader.totalFiles > 0) 
 				log("Resources <= Total " + loader.totalLoaded + " of " + loader.totalFiles + " loaded", 1);
 		}
@@ -132,13 +134,15 @@ class Sirius {
 		 * @return
 		 */
 		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-				t = q.substr(0, 1) == '#' ? Browser.document.getElementById(q.substring(1, q.length)) : (t == null ? Browser.document.body : t).querySelector(q);
-				if (t != null) {
-					t = Utils.displayFrom(t);
-					if (h != null) h(t);
-					return t;
-				}
-			log("Table => EMPTY (" + q + ")", 3);
+			t = (t == null ? document.body.element : t).querySelector(q);
+			if (t != null) {
+				t = Utils.displayFrom(t);
+				if (h != null)
+					h(t);
+				return t;
+			}else {
+				log("Find => No result on selector (" + q + ")", 2);
+			}
 			return null;
 		}
 		
@@ -150,7 +154,7 @@ class Sirius {
 		 * @return
 		 */
 		static public function all(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic = null):ITable {
-			return new Table(q, t, h);
+			return Table.recycle(q, t, h);
 		}
 		
 		/**
@@ -182,7 +186,10 @@ class Sirius {
 		 */
 		static public function onInit(handler:ILoader->Void, ?files:Array<String> = null):Void {
 			if (!_initialized) _preInit();
-			if (!_loaded && files != null && files.length > 0) loader.add(files, null, _fileError);
+			if (!_loaded && files != null && files.length > 0) {
+				loader.signals.add('error', _fileError);
+				loader.add(files);
+			}
 			run(handler);
 		}
 		
@@ -212,8 +219,20 @@ class Sirius {
 		}
 		
 		/** @private */
-		static private function _fileError(e:IError) {
+		static private function _fileError(e:IFlow) {
+			var e:IError = cast e.data;
 			log("Resources <= " + e.message + " NOT LOADED", 3);
+		}
+		
+		/**
+		 * Load and fill a external content
+		 * @param	file
+		 * @param	target
+		 * @param	content
+		 * @param	handler
+		 */
+		static public function module(file:String, ?target:Dynamic, ?content:Dynamic, ?handler:String->String->Void):Void {
+			run(function() { loader.async(file, target, content, handler); } );
 		}
 		
 	#elseif php
@@ -230,24 +249,31 @@ class Sirius {
 			untyped __call__('require_once', file);
 		}
 		
+		/**
+		 * Load and fill a external content
+		 * @param	file
+		 * @param	content
+		 * @param	handler
+		 */
+		static public function module(file:String, ?content:Dynamic, ?handler:String->String->Void):Void {
+			if (file.indexOf("http") == 0) {
+				loader.async(file, content, handler);
+			}else {
+				resources.prepare(file);
+			}
+		}
+		
 	#end
 	
-	/**
-	 * Load and fill a external content
-	 * @param	file
-	 * @param	target *js onlye
-	 * @param	content
-	 * @param	handler
-	 */
-	static public function module(file:String, #if js ?target:Dynamic, #end ?content:Dynamic, ?handler:String->String->Void):Void {
-		#if js
-			run(function() { loader.async(file, target, content, handler); } );
-		#elseif php
-			loader.async(file, content, handler);
-		#end
-	}
 	
-	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
+	/**
+	 * Call a URL with POST/GET/BINARY capabilities
+	 * @param	url
+	 * @param	data
+	 * @param	handler
+	 * @param	method
+	 */
+	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post'):Void {
 		#if js
 			run(function() { loader.request(url, data, handler, method); } );
 		#elseif php

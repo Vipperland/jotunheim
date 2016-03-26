@@ -39,6 +39,14 @@ class Event implements IEvent {
 		this.target3d = Std.is(from.target, IDisplay3D) ? cast from.target : null;
 	}
 	
+	public function cancel():Void {
+		if (event != null) {
+			event.stopPropagation();
+			event.stopImmediatePropagation();
+			event.preventDefault();
+		}
+	}
+	
 	public function description():String {
 		return "[Event{name:" + ticket.name + ",target:" + from.target.typeOf() + "}]";
 	}

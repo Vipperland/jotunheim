@@ -23,6 +23,9 @@ interface IEvent {
 	/// Original object Event
 	public var event : js.html.Event;
 	
+	/// Cancel original Event propagation and default behaviour
+	public function cancel():Void;
+	
 	/// Event description
 	public function description():String;
 	

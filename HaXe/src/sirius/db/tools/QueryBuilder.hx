@@ -106,7 +106,11 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	public function truncate(table:String):ICommand {
-		return _gate.prepare("TRUNCATE " + table);
+		return _gate.prepare("TRUNCATE :table", {table:table});
+	}
+	
+	public function rename(table:String, to:String):ICommand {
+		return _gate.prepare("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
 	}
 	
 }

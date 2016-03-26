@@ -27,10 +27,10 @@ interface IEventGroup {
 	
 	public function cancel () : IEventGroup;
 	
-	public function preventDefault():Void;
+	public function noDefault():IEventGroup;
 	
 	public function reset():IEventGroup;
 	
-	public function call():IEventGroup;
+	public function call(?bubbles:Bool = false, ?cancelable:Bool = true):IEventGroup;
 	
 }

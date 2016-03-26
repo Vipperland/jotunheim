@@ -27,8 +27,11 @@ class FormData implements IFormData {
 	 * form-persistent		
 	 * @param	target
 	 */
-	public function new(?target:IDisplay) {
-		if(target != null) scan(target);
+	public function new(?target:Dynamic) {
+		if (target != null) {
+			if(Std.is(target, String))		scan(Sirius.one(target));
+			if(Std.is(target, IDisplay))	scan(target);
+		}
 	}
 	
 	public function reset():IFormData {
@@ -48,9 +51,9 @@ class FormData implements IFormData {
 		return cast res.value; 
 	}
 	
-	public function isValid():Bool {
+	public function isValid(?needAll:Bool):Bool {
 		errors = [];
-		Dice.Values(params, function(v:FormParam) {	if (!v.isValid()) errors[errors.length] = v; });
+		Dice.Values(params, function(v:FormParam) {	if (!v.isValid(needAll)) errors[errors.length] = v; });
 		return errors.length == 0;
 	}
 	
@@ -72,6 +75,10 @@ class FormData implements IFormData {
 	
 	public function send(url:String, ?handler:IRequest->Void, method:String = 'post'):Void {
 		Sirius.request(url, getData(), handler, method);
+	}
+	
+	public function match(a:String, b:String):Bool {
+		return getParam(a).getValue() == getParam(b).getValue();
 	}
 	
 }

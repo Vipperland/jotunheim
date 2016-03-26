@@ -17,14 +17,6 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var DateTools = function() { };
-DateTools.__name__ = ["DateTools"];
-DateTools.delta = function(d,t) {
-	var t1 = d.getTime() + t;
-	var d1 = new Date();
-	d1.setTime(t1);
-	return d1;
-};
 var EReg = function(r,opt) {
 	opt = opt.split("u").join("");
 	this.r = new RegExp(r,opt);
@@ -36,9 +28,6 @@ EReg.prototype = {
 		this.r.m = this.r.exec(s);
 		this.r.s = s;
 		return this.r.m != null;
-	}
-	,replace: function(s,by) {
-		return s.replace(this.r,by);
 	}
 	,__class__: EReg
 };
@@ -161,14 +150,6 @@ Reflect.field = function(o,field) {
 Reflect.setField = function(o,field,value) {
 	o[field] = value;
 };
-Reflect.getProperty = function(o,field) {
-	var tmp;
-	if(o == null) return null; else if(o.__properties__ && (tmp = o.__properties__["get_" + field])) return o[tmp](); else return o[field];
-};
-Reflect.setProperty = function(o,field,value) {
-	var tmp;
-	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
-};
 Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 };
@@ -181,6 +162,9 @@ Reflect.fields = function(o) {
 		}
 	}
 	return a;
+};
+Reflect.compare = function(a,b) {
+	if(a == b) return 0; else if(a > b) return 1; else return -1;
 };
 Reflect.deleteField = function(o,field) {
 	if(!Object.prototype.hasOwnProperty.call(o,field)) return false;
@@ -200,21 +184,6 @@ Std.parseInt = function(x) {
 };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
-};
-var StringTools = function() { };
-StringTools.__name__ = ["StringTools"];
-StringTools.isSpace = function(s,pos) {
-	var c = HxOverrides.cca(s,pos);
-	return c > 8 && c < 14 || c == 32;
-};
-StringTools.ltrim = function(s) {
-	var l = s.length;
-	var r = 0;
-	while(r < l && StringTools.isSpace(s,r)) r++;
-	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
-};
-StringTools.fastCodeAt = function(s,index) {
-	return s.charCodeAt(index);
 };
 var Type = function() { };
 Type.__name__ = ["Type"];
@@ -236,124 +205,6 @@ _$UInt_UInt_$Impl_$.gt = function(a,b) {
 _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
 	if($int < 0) return 4294967296.0 + $int; else return $int + 0.0;
-};
-var haxe_IMap = function() { };
-haxe_IMap.__name__ = ["haxe","IMap"];
-var haxe_Http = function(url) {
-	this.url = url;
-	this.headers = new List();
-	this.params = new List();
-	this.async = true;
-	this.withCredentials = false;
-};
-haxe_Http.__name__ = ["haxe","Http"];
-haxe_Http.prototype = {
-	setParameter: function(param,value) {
-		this.params = Lambda.filter(this.params,function(p) {
-			return p.param != param;
-		});
-		this.params.push({ param : param, value : value});
-		return this;
-	}
-	,request: function(post) {
-		var me = this;
-		me.responseData = null;
-		var r = this.req = js_Browser.createXMLHttpRequest();
-		r.withCredentials = this.withCredentials;
-		var onreadystatechange = function(_) {
-			if(r.readyState != 4) return;
-			var s;
-			try {
-				s = r.status;
-			} catch( e ) {
-				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				s = null;
-			}
-			if(s != null) {
-				var protocol = window.location.protocol.toLowerCase();
-				var rlocalProtocol = new EReg("^(?:about|app|app-storage|.+-extension|file|res|widget):$","");
-				var isLocal = rlocalProtocol.match(protocol);
-				if(isLocal) if(r.responseText != null) s = 200; else s = 404;
-			}
-			if(s == undefined) s = null;
-			if(s != null) me.onStatus(s);
-			if(s != null && s >= 200 && s < 400) {
-				me.req = null;
-				me.onData(me.responseData = r.responseText);
-			} else if(s == null) {
-				me.req = null;
-				me.onError("Failed to connect or resolve host");
-			} else switch(s) {
-			case 12029:
-				me.req = null;
-				me.onError("Failed to connect to host");
-				break;
-			case 12007:
-				me.req = null;
-				me.onError("Unknown host");
-				break;
-			default:
-				me.req = null;
-				me.responseData = r.responseText;
-				me.onError("Http Error #" + r.status);
-			}
-		};
-		if(this.async) r.onreadystatechange = onreadystatechange;
-		var uri = this.postData;
-		if(uri != null) post = true; else {
-			var _g_head = this.params.h;
-			var _g_val = null;
-			while(_g_head != null) {
-				var p;
-				p = (function($this) {
-					var $r;
-					_g_val = _g_head[0];
-					_g_head = _g_head[1];
-					$r = _g_val;
-					return $r;
-				}(this));
-				if(uri == null) uri = ""; else uri += "&";
-				uri += encodeURIComponent(p.param) + "=" + encodeURIComponent(p.value);
-			}
-		}
-		try {
-			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
-				var question = this.url.split("?").length <= 1;
-				r.open("GET",this.url + (question?"?":"&") + uri,this.async);
-				uri = null;
-			} else r.open("GET",this.url,this.async);
-		} catch( e1 ) {
-			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
-			me.req = null;
-			this.onError(e1.toString());
-			return;
-		}
-		if(!Lambda.exists(this.headers,function(h) {
-			return h.header == "Content-Type";
-		}) && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-		var _g_head1 = this.headers.h;
-		var _g_val1 = null;
-		while(_g_head1 != null) {
-			var h1;
-			h1 = (function($this) {
-				var $r;
-				_g_val1 = _g_head1[0];
-				_g_head1 = _g_head1[1];
-				$r = _g_val1;
-				return $r;
-			}(this));
-			r.setRequestHeader(h1.header,h1.value);
-		}
-		r.send(uri);
-		if(!this.async) onreadystatechange(null);
-	}
-	,onData: function(data) {
-	}
-	,onError: function(msg) {
-	}
-	,onStatus: function(status) {
-	}
-	,__class__: haxe_Http
 };
 var haxe__$Int64__$_$_$Int64 = function(high,low) {
 	this.high = high;
@@ -396,206 +247,9 @@ haxe_Timer.prototype = {
 	}
 	,__class__: haxe_Timer
 };
-var haxe_io_Bytes = function(data) {
-	this.length = data.byteLength;
-	this.b = new Uint8Array(data);
-	this.b.bufferValue = data;
-	data.hxBytes = this;
-	data.bytes = this.b;
-};
-haxe_io_Bytes.__name__ = ["haxe","io","Bytes"];
-haxe_io_Bytes.alloc = function(length) {
-	return new haxe_io_Bytes(new ArrayBuffer(length));
-};
-haxe_io_Bytes.ofString = function(s) {
-	var a = [];
-	var i = 0;
-	while(i < s.length) {
-		var c = StringTools.fastCodeAt(s,i++);
-		if(55296 <= c && c <= 56319) c = c - 55232 << 10 | StringTools.fastCodeAt(s,i++) & 1023;
-		if(c <= 127) a.push(c); else if(c <= 2047) {
-			a.push(192 | c >> 6);
-			a.push(128 | c & 63);
-		} else if(c <= 65535) {
-			a.push(224 | c >> 12);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		} else {
-			a.push(240 | c >> 18);
-			a.push(128 | c >> 12 & 63);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		}
-	}
-	return new haxe_io_Bytes(new Uint8Array(a).buffer);
-};
-haxe_io_Bytes.prototype = {
-	get: function(pos) {
-		return this.b[pos];
-	}
-	,set: function(pos,v) {
-		this.b[pos] = v & 255;
-	}
-	,getString: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		var s = "";
-		var b = this.b;
-		var fcc = String.fromCharCode;
-		var i = pos;
-		var max = pos + len;
-		while(i < max) {
-			var c = b[i++];
-			if(c < 128) {
-				if(c == 0) break;
-				s += fcc(c);
-			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-				var c2 = b[i++];
-				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-			} else {
-				var c21 = b[i++];
-				var c3 = b[i++];
-				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
-				s += fcc((u >> 10) + 55232);
-				s += fcc(u & 1023 | 56320);
-			}
-		}
-		return s;
-	}
-	,toString: function() {
-		return this.getString(0,this.length);
-	}
-	,__class__: haxe_io_Bytes
-};
-var haxe_crypto_Base64 = function() { };
-haxe_crypto_Base64.__name__ = ["haxe","crypto","Base64"];
-haxe_crypto_Base64.encode = function(bytes,complement) {
-	if(complement == null) complement = true;
-	var str = new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).encodeBytes(bytes).toString();
-	if(complement) {
-		var _g = bytes.length % 3;
-		switch(_g) {
-		case 1:
-			str += "==";
-			break;
-		case 2:
-			str += "=";
-			break;
-		default:
-		}
-	}
-	return str;
-};
-haxe_crypto_Base64.decode = function(str,complement) {
-	if(complement == null) complement = true;
-	if(complement) while(HxOverrides.cca(str,str.length - 1) == 61) str = HxOverrides.substr(str,0,-1);
-	return new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).decodeBytes(haxe_io_Bytes.ofString(str));
-};
-var haxe_crypto_BaseCode = function(base) {
-	var len = base.length;
-	var nbits = 1;
-	while(len > 1 << nbits) nbits++;
-	if(nbits > 8 || len != 1 << nbits) throw new js__$Boot_HaxeError("BaseCode : base length must be a power of two.");
-	this.base = base;
-	this.nbits = nbits;
-};
-haxe_crypto_BaseCode.__name__ = ["haxe","crypto","BaseCode"];
-haxe_crypto_BaseCode.prototype = {
-	encodeBytes: function(b) {
-		var nbits = this.nbits;
-		var base = this.base;
-		var size = b.length * 8 / nbits | 0;
-		var out = haxe_io_Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
-		var buf = 0;
-		var curbits = 0;
-		var mask = (1 << nbits) - 1;
-		var pin = 0;
-		var pout = 0;
-		while(pout < size) {
-			while(curbits < nbits) {
-				curbits += 8;
-				buf <<= 8;
-				buf |= b.get(pin++);
-			}
-			curbits -= nbits;
-			out.set(pout++,base.b[buf >> curbits & mask]);
-		}
-		if(curbits > 0) out.set(pout++,base.b[buf << nbits - curbits & mask]);
-		return out;
-	}
-	,initTable: function() {
-		var tbl = [];
-		var _g = 0;
-		while(_g < 256) {
-			var i = _g++;
-			tbl[i] = -1;
-		}
-		var _g1 = 0;
-		var _g2 = this.base.length;
-		while(_g1 < _g2) {
-			var i1 = _g1++;
-			tbl[this.base.b[i1]] = i1;
-		}
-		this.tbl = tbl;
-	}
-	,decodeBytes: function(b) {
-		var nbits = this.nbits;
-		var base = this.base;
-		if(this.tbl == null) this.initTable();
-		var tbl = this.tbl;
-		var size = b.length * nbits >> 3;
-		var out = haxe_io_Bytes.alloc(size);
-		var buf = 0;
-		var curbits = 0;
-		var pin = 0;
-		var pout = 0;
-		while(pout < size) {
-			while(curbits < 8) {
-				curbits += nbits;
-				buf <<= nbits;
-				var i = tbl[b.get(pin++)];
-				if(i == -1) throw new js__$Boot_HaxeError("BaseCode : invalid encoded char");
-				buf |= i;
-			}
-			curbits -= 8;
-			out.set(pout++,buf >> curbits & 255);
-		}
-		return out;
-	}
-	,__class__: haxe_crypto_BaseCode
-};
 var haxe_ds_Either = { __ename__ : true, __constructs__ : ["Left","Right"] };
 haxe_ds_Either.Left = function(v) { var $x = ["Left",0,v]; $x.__enum__ = haxe_ds_Either; $x.toString = $estr; return $x; };
 haxe_ds_Either.Right = function(v) { var $x = ["Right",1,v]; $x.__enum__ = haxe_ds_Either; $x.toString = $estr; return $x; };
-var haxe_ds_StringMap = function() {
-	this.h = { };
-};
-haxe_ds_StringMap.__name__ = ["haxe","ds","StringMap"];
-haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
-haxe_ds_StringMap.prototype = {
-	set: function(key,value) {
-		if(__map_reserved[key] != null) this.setReserved(key,value); else this.h[key] = value;
-	}
-	,get: function(key) {
-		if(__map_reserved[key] != null) return this.getReserved(key);
-		return this.h[key];
-	}
-	,exists: function(key) {
-		if(__map_reserved[key] != null) return this.existsReserved(key);
-		return this.h.hasOwnProperty(key);
-	}
-	,setReserved: function(key,value) {
-		if(this.rh == null) this.rh = { };
-		this.rh["$" + key] = value;
-	}
-	,getReserved: function(key) {
-		if(this.rh == null) return null; else return this.rh["$" + key];
-	}
-	,existsReserved: function(key) {
-		if(this.rh == null) return false;
-		return this.rh.hasOwnProperty("$" + key);
-	}
-	,__class__: haxe_ds_StringMap
-};
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
 haxe_io_Error.Blocked = ["Blocked",0];
 haxe_io_Error.Blocked.toString = $estr;
@@ -825,41 +479,6 @@ js_Browser.createXMLHttpRequest = function() {
 	if(typeof XMLHttpRequest != "undefined") return new XMLHttpRequest();
 	if(typeof ActiveXObject != "undefined") return new ActiveXObject("Microsoft.XMLHTTP");
 	throw new js__$Boot_HaxeError("Unable to create XMLHttpRequest object.");
-};
-var js_Cookie = function() { };
-js_Cookie.__name__ = ["js","Cookie"];
-js_Cookie.set = function(name,value,expireDelay,path,domain) {
-	var s = name + "=" + encodeURIComponent(value);
-	if(expireDelay != null) {
-		var d = DateTools.delta(new Date(),expireDelay * 1000);
-		s += ";expires=" + d.toGMTString();
-	}
-	if(path != null) s += ";path=" + path;
-	if(domain != null) s += ";domain=" + domain;
-	window.document.cookie = s;
-};
-js_Cookie.all = function() {
-	var h = new haxe_ds_StringMap();
-	var a = window.document.cookie.split(";");
-	var _g = 0;
-	while(_g < a.length) {
-		var e = a[_g];
-		++_g;
-		e = StringTools.ltrim(e);
-		var t = e.split("=");
-		if(t.length < 2) continue;
-		h.set(t[0],decodeURIComponent(t[1].split("+").join(" ")));
-	}
-	return h;
-};
-js_Cookie.get = function(name) {
-	return js_Cookie.all().get(name);
-};
-js_Cookie.exists = function(name) {
-	return js_Cookie.all().exists(name);
-};
-js_Cookie.remove = function(name,path,domain) {
-	js_Cookie.set(name,"",-10,path,domain);
 };
 var js_html_compat_ArrayBuffer = function(a) {
 	if((a instanceof Array) && a.__enum__ == null) {
@@ -1131,69 +750,50 @@ var sirius_modules_Loader = $hx_exports.sru.modules.Loader = function(noCache) {
 	this._onComplete = [];
 	this._onError = [];
 	this._onChange = [];
+	this.signals = new sirius_signals_Signals(this);
 	this.totalLoaded = 0;
 	this.totalFiles = 0;
 };
 sirius_modules_Loader.__name__ = ["sirius","modules","Loader"];
 sirius_modules_Loader.__interfaces__ = [sirius_modules_ILoader];
 sirius_modules_Loader.prototype = {
-	progress: function() {
+	_getReq: function(u) {
+		return new sirius_net_HttpRequest(u + (this._noCache?"":"?t=" + new Date().getTime()));
+	}
+	,progress: function() {
 		return this.totalLoaded / this.totalFiles;
 	}
-	,unlisten: function(handler) {
-		var i = -1;
-		if(handler != null) {
-			i = Lambda.indexOf(this._onComplete,handler);
-			if(i != -1) this._onComplete.splice(i,1);
-			i = Lambda.indexOf(this._onError,handler);
-			if(i != -1) this._onError.splice(i,1);
-		}
-		return this;
-	}
-	,onChange: function(handler) {
-		if(handler != null) this._onChange[this._onChange.length] = handler;
-	}
-	,listen: function(complete,error) {
-		if(error != null && Lambda.indexOf(this._onError,error) == -1) this._onError[this._onError.length] = error;
-		if(complete != null && Lambda.indexOf(this._onComplete,complete) == -1) this._onComplete[this._onComplete.length] = complete;
-		return this;
-	}
-	,add: function(files,complete,error) {
-		this.listen(complete,error);
+	,add: function(files) {
 		if(files != null && files.length > 0) {
 			this._toload = this._toload.concat(files);
 			this.totalFiles += files.length;
 		}
 		return this;
 	}
-	,start: function(complete,error) {
+	,start: function() {
 		if(!this._isBusy) {
-			this.listen(complete,error);
 			this._isBusy = true;
 			this._loadNext();
 		}
 		return this;
 	}
-	,_changed: function(req,url,status,data) {
-		sirius_utils_Dice.Values(this._onChange,function(v) {
-			v(req,url,status,data);
-		});
+	,_changed: function(file,status,data) {
+		this.signals.call(status,{ file : file, data : data});
 	}
 	,_loadNext: function() {
 		var _g = this;
 		if(this._toload.length > 0) {
 			var f = this._toload.shift();
-			var r = new haxe_Http(f + (this._noCache?"":"?t=" + new Date().getTime()));
-			this._changed(r,f,"started");
+			var r = this._getReq(f);
+			this._changed(f,"started");
 			r.async = true;
 			r.onError = function(e) {
-				_g._changed(r,f,"error",e);
+				_g._changed(f,"error",e);
 				++_g.totalLoaded;
-				if($bind(_g,_g._error) != null) _g._error(e);
 				_g._loadNext();
 			};
 			r.onData = function(d) {
-				_g._changed(r,f,"complete",d);
+				_g._changed(f,"loaded",d);
 				++_g.totalLoaded;
 				sirius_Sirius.resources.register(f,d);
 				_g._loadNext();
@@ -1205,17 +805,11 @@ sirius_modules_Loader.prototype = {
 		}
 	}
 	,_error: function(e) {
-		var _g = this;
 		if(typeof(e) == "string") this.lastError = new sirius_errors_Error(-1,e,this); else this.lastError = new sirius_errors_Error(-1,"Unknow",{ content : e, loader : this});
-		sirius_utils_Dice.Values(this._onError,function(v) {
-			if(v != null) v(_g.lastError);
-		});
+		this.signals.call("error",this.lastError);
 	}
 	,_complete: function() {
-		var _g = this;
-		sirius_utils_Dice.Values(this._onComplete,function(v) {
-			if(v != null) v(_g);
-		});
+		this.signals.call("complete");
 		this._onComplete = [];
 		this._onError = [];
 	}
@@ -1226,13 +820,12 @@ sirius_modules_Loader.prototype = {
 		var _g = this;
 		var h;
 		if(file.indexOf("#") != -1) h = file.split("#"); else h = [file];
-		var r = new haxe_Http(h[0] + (this._noCache?"":"?t=" + new Date().getTime()));
+		var r = this._getReq(h[0]);
 		r.async = true;
-		this._changed(r,file,"started");
+		this._changed(file,"started");
 		r.onData = function(d) {
-			_g._changed(r,file,"complete",d);
+			_g._changed(file,"loaded",d);
 			sirius_Sirius.resources.register(file,d);
-			if(h.length == 2) file = h[1]; else file = file;
 			if(target != null) {
 				if(typeof(target) == "string") {
 					var e = sirius_Sirius.one(target,null);
@@ -1250,24 +843,24 @@ sirius_modules_Loader.prototype = {
 			if(handler != null) handler(file,d);
 		};
 		r.onError = function(d1) {
-			_g._changed(r,file,"error",d1);
+			_g._changed(file,"error",d1);
 			if(handler != null) handler(null,d1);
 		};
 		r.request(false);
 	}
 	,request: function(url,data,handler,method) {
-		if(method == null) method = "post";
+		if(method == null) method = "POST";
 		var _g = this;
-		var r = new haxe_Http(url + (this._noCache?"":"?t=" + new Date().getTime()));
-		this._changed(r,url,"started");
+		var r = this._getReq(url);
+		this._changed(url,"started");
 		r.async = true;
-		if(data != null) sirius_utils_Dice.All(data,$bind(r,r.setParameter));
+		if(data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
 		r.onData = function(d) {
-			_g._changed(r,url,"complete",d);
+			_g._changed(url,"loaded",d);
 			if(handler != null) handler(new sirius_modules_Request(true,d,null));
 		};
 		r.onError = function(d1) {
-			_g._changed(r,url,"error",d1);
+			_g._changed(url,"error",d1);
 			if(handler != null) handler(new sirius_modules_Request(false,null,new sirius_errors_Error(-1,d1)));
 		};
 		r.request(method == null || method.toLowerCase() == "post");
@@ -1277,17 +870,57 @@ sirius_modules_Loader.prototype = {
 	}
 	,__class__: sirius_modules_Loader
 };
+var sirius_signals_ISignals = function() { };
+sirius_signals_ISignals.__name__ = ["sirius","signals","ISignals"];
+sirius_signals_ISignals.prototype = {
+	__class__: sirius_signals_ISignals
+};
+var sirius_signals_Signals = function(to) {
+	this.object = to;
+	this.reset();
+};
+sirius_signals_Signals.__name__ = ["sirius","signals","Signals"];
+sirius_signals_Signals.__interfaces__ = [sirius_signals_ISignals];
+sirius_signals_Signals.prototype = {
+	_c: function(n) {
+		if(!this.has(n)) Reflect.setField(this._l,n,new sirius_signals_Pipe(n,this));
+		return Reflect.field(this._l,n);
+	}
+	,has: function(name) {
+		return Object.prototype.hasOwnProperty.call(this._l,name);
+	}
+	,get: function(name) {
+		return this._c(name);
+	}
+	,remove: function(name,handler) {
+		return this._c(name).remove(handler);
+	}
+	,add: function(name,handler) {
+		return this._c(name).add(handler);
+	}
+	,call: function(name,data) {
+		if(this.has(name)) this.get(name).call(data);
+		return this;
+	}
+	,reset: function() {
+		this._l = [];
+	}
+	,__class__: sirius_signals_Signals
+};
 var sirius_data_Logger = function() {
-	this._events = [$bind(this,this.query)];
+	this._events = [];
+	this._events[0] = $bind(this,this.query);
 };
 sirius_data_Logger.__name__ = ["sirius","data","Logger"];
 sirius_data_Logger.prototype = {
 	clear: function() {
 		haxe_Log.clear();
 	}
-	,silent: function() {
-		this.query("Log => Disconnected",2);
+	,mute: function() {
 		if(Lambda.indexOf(this._events,$bind(this,this.query)) != -1) this._events.splice(0,1);
+	}
+	,unmute: function() {
+		if(Lambda.indexOf(this._events,$bind(this,this.query)) == -1) this._events.unshift($bind(this,this.query));
 	}
 	,listen: function(handler) {
 		this._events[this._events.length] = handler;
@@ -1318,7 +951,7 @@ sirius_data_Logger.prototype = {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 48, className : "sirius.data.Logger", methodName : "query"});
+		haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 54, className : "sirius.data.Logger", methodName : "query"});
 	}
 	,__class__: sirius_data_Logger
 };
@@ -1355,13 +988,13 @@ sirius_modules_ModLib.prototype = {
 						if(_g.exists(mod.name)) sirius_Sirius.log("\tModLib => OVERRIDE " + mod.name,2);
 						var end = v.indexOf("/EOF;");
 						content = v.substring(i + 2,end == -1?v.length:end);
-						if(mod.type == "null" || mod.type == "html") content = content.split("\r").join("").split("\n").join("");
+						if(mod.type == null || mod.type == "null" || mod.type == "html") content = content.split("\r").join("").split("\n").join("");
 						if(mod.require != null) {
 							var dependencies = mod.require.split(";");
 							sirius_Sirius.log("\tModLib => " + mod.name + " VERIFYING...",1);
 							sirius_utils_Dice.Values(dependencies,function(v1) {
 								var set = Reflect.field(sirius_modules_ModLib.CACHE,v1.toLowerCase());
-								if(set == null) sirius_Sirius.log("\t\tModLib => REQUIRED " + v1,2); else content = content.split("<import " + v1 + "/>").join(set);
+								if(set == null) sirius_Sirius.log("\t\tModLib => REQUIRED " + v1,2); else content = content.split("{{@include:" + v1 + "}}").join(set);
 							});
 						}
 						if(mod.type != null) {
@@ -1404,6 +1037,11 @@ sirius_modules_ModLib.prototype = {
 			});
 			return d;
 		} else return new sirius_dom_Display().write(this.get(module,data));
+	}
+	,buildIn: function(module,target,data,each) {
+		var display = sirius_Sirius.one(target);
+		if(display != null) display.addChild(this.build(module,data,each));
+		return display;
 	}
 	,__class__: sirius_modules_ModLib
 };
@@ -1453,7 +1091,8 @@ sirius_Sirius._loadController = function(e) {
 		});
 		window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 		sirius_Sirius._loadPool = null;
-		sirius_Sirius.loader.start(sirius_Sirius._onLoaded);
+		sirius_Sirius.loader.signals.add("complete",sirius_Sirius._onLoaded);
+		sirius_Sirius.loader.start();
 		Reflect.deleteField(sirius_Sirius,"_loadController");
 		Reflect.deleteField(sirius_Sirius,"_loadPool");
 	}
@@ -1473,18 +1112,17 @@ sirius_Sirius._onLoaded = function(e) {
 };
 sirius_Sirius.one = function(q,t,h) {
 	if(q == null) q = "*";
-	if(HxOverrides.substr(q,0,1) == "#") t = window.document.getElementById(q.substring(1,q.length)); else t = (t == null?window.document.body:t).querySelector(q);
+	t = (t == null?sirius_Sirius.document.body.element:t).querySelector(q);
 	if(t != null) {
 		t = sirius_tools_Utils.displayFrom(t);
 		if(h != null) h(t);
 		return t;
-	}
-	sirius_Sirius.log("Table => EMPTY (" + q + ")",3);
+	} else sirius_Sirius.log("Find => No result on selector (" + q + ")",2);
 	return null;
 };
 sirius_Sirius.all = function(q,t,h) {
 	if(q == null) q = "*";
-	return new sirius_utils_Table(q,t,h);
+	return sirius_utils_Table.recycle(q,t,h);
 };
 sirius_Sirius.jQuery = function(q) {
 	if(q == null) q = "*";
@@ -1498,7 +1136,10 @@ sirius_Sirius.run = function(handler) {
 };
 sirius_Sirius.onInit = function(handler,files) {
 	if(!sirius_Sirius._initialized) sirius_Sirius._preInit();
-	if(!sirius_Sirius._loaded && files != null && files.length > 0) sirius_Sirius.loader.add(files,null,sirius_Sirius._fileError);
+	if(!sirius_Sirius._loaded && files != null && files.length > 0) {
+		sirius_Sirius.loader.signals.add("error",sirius_Sirius._fileError);
+		sirius_Sirius.loader.add(files);
+	}
 	sirius_Sirius.run(handler);
 };
 sirius_Sirius.inject = function(url,handler) {
@@ -1520,7 +1161,8 @@ sirius_Sirius.status = function() {
 	sirius_Sirius.log("Sirius => STATUS " + (sirius_Sirius._initialized?"READY ":"") + sirius_tools_Utils.toString(sirius_Sirius.agent,true),1);
 };
 sirius_Sirius._fileError = function(e) {
-	sirius_Sirius.log("Resources <= " + e.message + " NOT LOADED",3);
+	var e1 = e.data;
+	sirius_Sirius.log("Resources <= " + e1.message + " NOT LOADED",3);
 };
 sirius_Sirius.module = function(file,target,content,handler) {
 	sirius_Sirius.run(function() {
@@ -1708,8 +1350,10 @@ var sirius_dom_Display = $hx_exports.sru.dom.Display = function(q,t) {
 		var _this = window.document;
 		q = _this.createElement("div");
 	}
-	if(js_Boot.__instanceof(q,sirius_dom_IDisplay)) this.element = q.element; else this.element = q;
+	if(Object.prototype.hasOwnProperty.call(q,"element")) this.element = q.element; else this.element = q;
 	if(this.element != window.document) {
+		this._getattr = ($_=this.element,$bind($_,$_.getAttribute)) != null;
+		this._setattr = ($_=this.element,$bind($_,$_.setAttribute)) != null;
 		if(this.hasAttribute("sru-id")) this._uid = this.attribute("sru-id"); else this._uid = this.attribute("sru-id",sirius_tools_Key.GEN());
 		if(!sirius_dom_Display._DATA.exists(this._uid)) sirius_dom_Display._DATA.set(this._uid,new sirius_data_DisplayData(this._uid,this));
 		this.data = sirius_dom_Display._DATA.get(this._uid);
@@ -1720,6 +1364,10 @@ sirius_dom_Display.__name__ = ["sirius","dom","Display"];
 sirius_dom_Display.__interfaces__ = [sirius_dom_IDisplay];
 sirius_dom_Display.ofKind = function(q) {
 	return new sirius_dom_Display(window.document.createElement(q));
+};
+sirius_dom_Display.fromGC = function(id) {
+	if(sirius_dom_Display._DATA.exists(id)) return sirius_dom_Display._DATA.get(id).getDisplay();
+	return null;
 };
 sirius_dom_Display.gc = function(secure) {
 	if(secure) sirius_dom_Display._DATA.clear(); else sirius_utils_Dice.All(($_=sirius_dom_Display._DATA,$bind($_,$_.structure)),function(p,v) {
@@ -1749,24 +1397,18 @@ sirius_dom_Display.prototype = {
 			if(!((v instanceof Array) && v.__enum__ == null)) v = [v,false];
 			var o = v[0];
 			var c = v[1];
-			new o(d, c);
+			new o(d,c);
 		});
 		return this;
 	}
-	,bg: function(data,repeat,position,attachment) {
+	,bg: function(data,repeat,position,attachment,size) {
 		if(data != null) {
 			var value = data;
 			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
 			if(value.indexOf("#") == 0) this.element.style.background = value; else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else {
-				var c = "url('" + Std.string(value) + "')";
-				var r;
-				if(repeat != null) r = repeat; else r = "no-repeat";
-				var p;
-				if(position != null) p = position; else p = "center center";
-				this.element.style.backgroundImage = c;
-				this.element.style.backgroundRepeat = r;
-				this.element.style.backgroundPosition = p;
-				if(attachment != null) this.element.style.backgroundAttachment = attachment;
+				this.style({ backgroundImage : "url('" + Std.string(value) + "')", backgroundRepeat : repeat != null?repeat:"no-repeat", backgroundPosition : position != null?position:"center center"});
+				if(attachment != null) this.style({ backgroundAttachment : attachment});
+				if(size != null) this.style({ backgroundSize : size});
 			}
 		}
 		return this.element.style.background;
@@ -1825,7 +1467,7 @@ sirius_dom_Display.prototype = {
 		var l = null;
 		q.each($bind(this,this.addChild));
 		this._children = null;
-		return q.last();
+		return q.obj(q.length() - 1);
 	}
 	,addText: function(q) {
 		var t = new sirius_dom_Text(q);
@@ -1836,6 +1478,12 @@ sirius_dom_Display.prototype = {
 		this._children = null;
 		q.remove();
 		return q;
+	}
+	,removeChildren: function(min) {
+		if(min == null) min = 0;
+		var t = this.children().length();
+		while(_$UInt_UInt_$Impl_$.gt(t,min)) this.removeChild(this.getChild(--t));
+		return this;
 	}
 	,remove: function() {
 		this._parent = null;
@@ -1868,22 +1516,30 @@ sirius_dom_Display.prototype = {
 		this.element.hidden = true;
 	}
 	,hasAttribute: function(name) {
-		return ($_=this.element,$bind($_,$_.hasAttribute)) != null && this.element.hasAttribute(name) || Reflect.getProperty(this.element,name) != null;
+		return ($_=this.element,$bind($_,$_.hasAttribute)) != null && this.element.hasAttribute(name) || Reflect.field(this.element,name) != null;
 	}
 	,attribute: function(name,value) {
 		if(name != null) {
 			var t = Reflect.field(this.element,name);
 			if(t != null) {
 				if(value != null) this.element[name] = value;
-				value = Reflect.field(this.element,name);
 				return value;
 			}
 			if(value != null) {
-				if(($_=this.element,$bind($_,$_.setAttribute)) != null) this.element.setAttribute(name,value); else Reflect.setProperty(this.element,name,value);
+				if(this._setattr) this.element.setAttribute(name,value);
+				return value;
 			}
-			if(($_=this.element,$bind($_,$_.getAttribute)) != null) return this.element.getAttribute(name); else return Reflect.getProperty(this.element,name);
+			if(this._getattr) return this.element.getAttribute(name);
 		}
 		return null;
+	}
+	,clearAttribute: function(name) {
+		var value = null;
+		if(this.hasAttribute(name)) {
+			value = this.attribute(name);
+			this.element.removeAttribute(name);
+		}
+		return value;
 	}
 	,attributes: function(values) {
 		sirius_utils_Dice.All(values,$bind(this,this.attribute));
@@ -1916,7 +1572,7 @@ sirius_dom_Display.prototype = {
 	}
 	,clear: function(fast) {
 		if(fast) this.element.innerHTML = ""; else {
-			var i = this.element.children.length;
+			var i = this.element.childNodes.length;
 			while(i-- > 0) this.element.removeChild(this.element.childNodes.item(i));
 		}
 		return this;
@@ -2015,7 +1671,7 @@ sirius_dom_Display.prototype = {
 		return sirius_Sirius.jQuery(this.element);
 	}
 	,typeOf: function() {
-		return "[" + sirius_tools_Utils["typeof"](this) + "{element:" + this.element.tagName + ", length:" + this.length() + "}]";
+		return "[" + sirius_tools_Utils["typeof"](this) + "{id:" + this._uid + ", element:" + this.element.tagName + "}]";
 	}
 	,'is': function(tag) {
 		var _g = this;
@@ -2122,6 +1778,9 @@ sirius_data_DisplayData.prototype = $extend(sirius_data_DataSet.prototype,{
 		this.__events__ = null;
 		this.__data__ = null;
 	}
+	,getDisplay: function() {
+		return this.__events__.target;
+	}
 	,__class__: sirius_data_DisplayData
 });
 var sirius_events_IDispatcher = function() { };
@@ -2162,15 +1821,20 @@ sirius_events_Dispatcher.prototype = {
 	,auto: function(type,handler,mode) {
 		var ie = this.event(type);
 		if(mode == null) return ie.add(handler,false); else switch(mode) {
-		case 1:case true:case "capture":
+		case 2:case 3:
+			return ie.add(handler,mode == 3).noDefault();
+		case 1:
 			return ie.add(handler,true);
-		case 0:case false:
+		case 0:
 			return ie.add(handler,false);
-		case -1:case "remove":
+		case -1:
 			return ie.remove(handler);
 		default:
 			return ie;
 		}
+	}
+	,focusOverall: function(handler,mode) {
+		return { 'over' : this.mouseOver(handler,mode), 'out' : this.mouseOut(handler,mode), 'down' : this.mouseDown(handler,mode)};
 	}
 	,wheel: function(handler,mode) {
 		return this.auto("wheel",handler,mode);
@@ -2684,7 +2348,7 @@ sirius_utils_Dice.Values = function(q,each,complete) {
 sirius_utils_Dice.Call = function(q,method,args) {
 	if(args == null) args = [];
 	return sirius_utils_Dice.All(q,function(p,v) {
-		Reflect.callMethod(v,Reflect.field(v,method),args);
+		v[method].apply(q,args);
 	},null);
 };
 sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
@@ -2726,6 +2390,13 @@ sirius_utils_Dice.Mix = function(data) {
 	});
 	return r;
 };
+sirius_utils_Dice.Table = function(data,key,numeric) {
+	if(numeric == null) numeric = false;
+	var r = data.sort(function(a,b) {
+		if(numeric) return Reflect.compare(Reflect.field(a,key),Reflect.field(b,key)); else return Reflect.compare(sirius_utils_SearchTag.convert(Reflect.field(a,key),true),sirius_utils_SearchTag.convert(Reflect.field(b,key),true));
+	});
+	return r;
+};
 sirius_utils_Dice.Children = function(of,each,complete) {
 	var r = { children : []};
 	var l = 0;
@@ -2754,7 +2425,8 @@ sirius_dom_A.get = function(q,h) {
 sirius_dom_A.__super__ = sirius_dom_Display;
 sirius_dom_A.prototype = $extend(sirius_dom_Display.prototype,{
 	href: function(url) {
-		return this.attribute("href",url);
+		if(url != null) this.attribute("href",url);
+		return this.attribute("href");
 	}
 	,__class__: sirius_dom_A
 });
@@ -3614,14 +3286,7 @@ sirius_dom_Input.get = function(q,h) {
 };
 sirius_dom_Input.__super__ = sirius_dom_Display;
 sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
-	_update: function(e) {
-		if(this._rtc.match(this.object.value)) {
-			var s = this.object.selectionStart - 1;
-			this.object.value = this._rtc.replace(this.object.value,"");
-			this.object.setSelectionRange(s,s);
-		}
-	}
-	,type: function(q) {
+	type: function(q) {
 		if(q != null) this.object.type = q;
 		return this.object.type;
 	}
@@ -3638,44 +3303,68 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		return this.object.placeholder;
 	}
 	,validateDate: function() {
-		this.pattern("\\d{1,2}/\\d{1,2}/\\d{4}");
+		this._rgx = new EReg("\\d{1,2}/\\d{1,2}/\\d{4}","");
 	}
 	,validateURL: function() {
-		this.pattern("https?://.+");
+		this._rgx = new EReg("https?://.+","");
 	}
 	,validateIPv4: function() {
-		this.pattern("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		this._rgx = new EReg("^\\d{1,3}d{1,3}.\\d{1,3}.\\d{1,3}","");
 	}
 	,validateCurrency: function() {
-		this.pattern("\\d+(\\.\\d{2})?");
+		this._rgx = new EReg("\\d+(.\\d{2})?","");
 	}
 	,validateEmail: function() {
-		this.pattern("/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/");
+		this._rgx = new EReg("^[a-z0-9!'#$%&*+/=?^_`{|}~-]+(?:\\.[a-z0-9!'#$%&*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-zA-Z]{2,}$","giu");
 	}
-	,restrict: function(q) {
-		if(this._rtc == null && q != null) {
-			this.events.keyDown($bind(this,this._update),0);
-			this.events.keyUp($bind(this,this._update),0);
-			this.events.focusOut($bind(this,this._update),0);
-		} else if(q == null) {
-			this.events.keyDown($bind(this,this._update),-1);
-			this.events.keyUp($bind(this,this._update),-1);
-			this.events.focusOut($bind(this,this._update),-1);
-		}
-		this._rtc = q;
+	,validateNumbers: function() {
+		this._rgx = new EReg("^\\d{1,}$","");
+		this._flt = " ";
 	}
-	,restrictNumbers: function() {
-		this.restrict(new EReg("[^0-9]","gi"));
+	,validatePhone: function() {
+		this._rgx = new EReg("^(\\d{10,11})|(\\(\\d{2}\\) \\d{4,5}-\\d{4})$","");
+		this._flt = "()- ";
 	}
-	,restrictLetters: function() {
-		this.restrict(new EReg("[^A-Za-z]","giu"));
+	,validateDoc: function() {
+		this._rgx = new EReg("^(\\d{3}.\\d{3}.\\d{3}-\\d{2})|(\\d{2}.\\d{3}.\\d{3}/\\d{4}-\\d{2})$","");
+		this._flt = "-./";
+	}
+	,validateZipcode: function() {
+		this._rgx = new EReg("^(\\d{5}-\\d{3})|(\\d{8})$","");
+		this._flt = "-";
+	}
+	,validateLetters: function() {
+		this._rgx = new EReg("^[a-zA-Z]{3,}$","");
+	}
+	,validateUsr: function() {
+		this._rgx = new EReg("^[A-Za-z0-9._-]{6,18}$","");
+	}
+	,validateMd5: function() {
+		this._rgx = new EReg("^[A-Za-z0-9._-]{35}$","");
+	}
+	,restrict: function(q,filter) {
+		this._rgx = q;
+		this._flt = filter;
 	}
 	,value: function(q) {
-		if(q != null) this.object.value = q;
-		return this.object.value;
+		if(q != null) this.object.value = q; else {
+			q = this.object.value;
+			if(this.object.maxLength != null && this.object.maxLength > 0) q = HxOverrides.substr(q,0,this.object.maxLength);
+			if(this._flt != null) {
+				var k = this._flt.split("");
+				sirius_utils_Dice.Values(k,function(v1) {
+					q = q.split(v1).join("");
+				});
+			}
+		}
+		return q;
 	}
 	,isValid: function() {
-		return this.object.value.length > 0;
+		var v = this.object.value;
+		if(v.length == 0) return false; else if(this._rgx != null) return this._rgx.match(v); else return true;
+	}
+	,isEmpty: function() {
+		return this.value() == "";
 	}
 	,files: function() {
 		return this.attribute("files");
@@ -3894,6 +3583,7 @@ var sirius_dom_Option = $hx_exports.sru.dom.Option = function(q) {
 		q = _this.createElement("option");
 	}
 	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
 };
 sirius_dom_Option.__name__ = ["sirius","dom","Option"];
 sirius_dom_Option.get = function(q,h) {
@@ -3901,7 +3591,10 @@ sirius_dom_Option.get = function(q,h) {
 };
 sirius_dom_Option.__super__ = sirius_dom_Display;
 sirius_dom_Option.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Option
+	value: function() {
+		return this.object.value;
+	}
+	,__class__: sirius_dom_Option
 });
 var sirius_dom_Output = $hx_exports.sru.dom.Output = function(q) {
 	if(q == null) {
@@ -4049,6 +3742,7 @@ var sirius_dom_Select = $hx_exports.sru.dom.Select = function(q) {
 		q = _this.createElement("select");
 	}
 	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
 };
 sirius_dom_Select.__name__ = ["sirius","dom","Select"];
 sirius_dom_Select.get = function(q,h) {
@@ -4056,7 +3750,34 @@ sirius_dom_Select.get = function(q,h) {
 };
 sirius_dom_Select.__super__ = sirius_dom_Display;
 sirius_dom_Select.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Select
+	getAllSelected: function() {
+		return this.all("option:checked");
+	}
+	,getSelected: function() {
+		return this.one("option:checked");
+	}
+	,setValue: function(i) {
+		this.object.selectedIndex = i;
+		this.events.change().call(true,true);
+	}
+	,value: function() {
+		var t = this.getAllSelected();
+		var r = [];
+		if(t != null && t.length() > 0) t.each(function(v) {
+			var o = v;
+			r[r.length] = o.value();
+		});
+		return r.join(";");
+	}
+	,hasValue: function() {
+		var i = 0;
+		while(_$UInt_UInt_$Impl_$.gt(this.object.selectedOptions.length,i)) {
+			var o = this.object.selectedOptions.item(i++);
+			if(!o.disabled) return true;
+		}
+		return false;
+	}
+	,__class__: sirius_dom_Select
 });
 var sirius_dom_Shadow = $hx_exports.sru.dom.Shadow = function(q) {
 	if(q == null) {
@@ -4313,6 +4034,9 @@ sirius_tools_Utils.screenInfo = function() {
 	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
 };
 sirius_tools_Utils.displayFrom = function(t) {
+	var id;
+	if(t.hasAttribute("sru-id")) id = t.getAttribute("sru-id"); else id = null;
+	if(id != null) return sirius_dom_Display.fromGC(id);
 	if(t.nodeType != 1) return new sirius_dom_Display(t);
 	var type;
 	if(t.hasAttribute("sru-dom")) type = t.getAttribute("sru-dom"); else type = t.tagName;
@@ -4368,6 +4092,9 @@ sirius_tools_Utils["typeof"] = function(o) {
 		}
 	}
 	return null;
+};
+sirius_tools_Utils["boolean"] = function(value) {
+	return value == true || value == 1 || value == "1" || value == "true" || value == "yes";
 };
 var sirius_css_Entry = function(keys,dict) {
 	this.keys = keys;
@@ -4578,7 +4305,7 @@ sirius_css_AutomatorRules.textKey = function(d,k,n) {
 			if(n.color != null) return "color:";
 			if(n.measure != null) return "font-size:";
 		}
-		if(n.key != "decoration") return "text-align:";
+		if(n.key != "dec") return "text-align:";
 	}
 	return "text-";
 };
@@ -4641,116 +4368,16 @@ sirius_css_XCSS.prototype = {
 	}
 	,__class__: sirius_css_XCSS
 };
-var sirius_data_IDataCache = function() { };
-sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
-sirius_data_IDataCache.prototype = {
-	__class__: sirius_data_IDataCache
-	,__properties__: {get_data:"get_data"}
-};
-var sirius_data_DataCache = function(name,path,expire) {
-	if(expire == null) expire = 0;
-	this._name = name;
-	this._path = path;
-	this._expire = expire;
-	this.clear();
-};
-sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
-sirius_data_DataCache.__interfaces__ = [sirius_data_IDataCache];
-sirius_data_DataCache.prototype = {
-	get_data: function() {
-		return this._DB;
-	}
-	,_now: function() {
-		return new Date().getTime();
-	}
-	,clear: function(p) {
-		if(p != null) {
-			if(p != "__time__") Reflect.deleteField(this._DB,p);
-		} else {
-			this._DB = { };
-			if(this._expire > 0) this._DB.__time__ = this._now();
-			js_Cookie.remove(this._name,this._path);
-		}
-		return this;
-	}
-	,set: function(p,v) {
-		this._DB[p] = v;
-		return this;
-	}
-	,merge: function(p,v) {
-		if((v instanceof Array) && v.__enum__ == null && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
-			var t = this.get(p);
-			if((t instanceof Array) && t.__enum__ == null) return this.set(p,t.concat(v));
-		}
-		this._DB[p] = v;
-		return this;
-	}
-	,get: function(id) {
-		var d;
-		if(id != null) d = Reflect.field(this._DB,id); else d = null;
-		if(d == null) {
-			d = { };
-			this.set(id,d);
-		}
-		return d;
-	}
-	,exists: function(name) {
-		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,this._name); else return this._loaded;
-	}
-	,save: function(base64) {
-		if(base64 == null) base64 = true;
-		var data;
-		if(base64) data = sirius_utils_Criptog.encodeBase64(this._DB); else data = this.json(false);
-		js_Cookie.set(this._name,data,0,this._path);
-		return this;
-	}
-	,_sign: function(add) {
-		if(add) this._DB.__time__ = this._now(); else {
-			if(this._expire > 0) this.__time__ = this._DB.__time__; else this.__time__ = 0;
-			Reflect.deleteField(this._DB,"__time__");
-		}
-	}
-	,load: function(base64) {
-		if(base64 == null) base64 = true;
-		this._DB = null;
-		if(js_Cookie.exists(this._name)) if(base64) this._DB = sirius_utils_Criptog.decodeBase64(js_Cookie.get(this._name),true); else this._DB = this.json(false);
-		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
-			this._DB = { };
-			this._loaded = false;
-		} else {
-			this._sign(false);
-			this._loaded = true;
-		}
-		return this._loaded;
-	}
-	,refresh: function() {
-		this.__time__ = this._now();
-		return this;
-	}
-	,json: function(print) {
-		var result = JSON.stringify(this._DB);
-		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 199, className : "sirius.data.DataCache", methodName : "json"});
-		}
-		return result;
-	}
-	,base64: function(print) {
-		var result = sirius_utils_Criptog.encodeBase64(this._DB);
-		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 205, className : "sirius.data.DataCache", methodName : "base64"});
-		}
-		return result;
-	}
-	,__class__: sirius_data_DataCache
-	,__properties__: {get_data:"get_data"}
-};
 var sirius_data_IFormData = function() { };
 sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
 sirius_data_IFormData.prototype = {
 	__class__: sirius_data_IFormData
 };
 var sirius_data_FormData = $hx_exports.sru.data.FormData = function(target) {
-	if(target != null) this.scan(target);
+	if(target != null) {
+		if(typeof(target) == "string") this.scan(sirius_Sirius.one(target));
+		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) this.scan(target);
+	}
 };
 sirius_data_FormData.__name__ = ["sirius","data","FormData"];
 sirius_data_FormData.__interfaces__ = [sirius_data_IFormData];
@@ -4774,11 +4401,11 @@ sirius_data_FormData.prototype = {
 		});
 		return res.value;
 	}
-	,isValid: function() {
+	,isValid: function(needAll) {
 		var _g = this;
 		this.errors = [];
 		sirius_utils_Dice.Values(this.params,function(v) {
-			if(!v.isValid()) _g.errors[_g.errors.length] = v;
+			if(!v.isValid(needAll)) _g.errors[_g.errors.length] = v;
 		});
 		return this.errors.length == 0;
 	}
@@ -4807,6 +4434,9 @@ sirius_data_FormData.prototype = {
 		if(method == null) method = "post";
 		sirius_Sirius.request(url,this.getData(),handler,method);
 	}
+	,match: function(a,b) {
+		return this.getParam(a).getValue() == this.getParam(b).getValue();
+	}
 	,__class__: sirius_data_FormData
 };
 var sirius_data_FormParam = function(e) {
@@ -4831,13 +4461,20 @@ sirius_data_FormParam.prototype = {
 		return this._e.attribute("form-message");
 	}
 	,getValue: function() {
+		if(js_Boot.__instanceof(this._e,sirius_dom_Select)) {
+			var e = this._e;
+			if(!e.hasValue()) return null;
+		}
 		return this._e.attribute("value");
 	}
-	,isValid: function() {
-		return !this.isRequired() || sirius_tools_Utils.isValid(this.getValue()) && this.validate();
+	,isValid: function(require) {
+		return !require && !this.isRequired() || sirius_tools_Utils.isValid(this.getValue()) && this.validate();
 	}
 	,clear: function() {
 		if(sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-persistent")) == 0) this._e.attribute("value","");
+	}
+	,getCell: function() {
+		return this._e;
 	}
 	,__class__: sirius_data_FormParam
 };
@@ -4853,12 +4490,17 @@ var sirius_data_Fragments = function(value,separator) {
 sirius_data_Fragments.__name__ = ["sirius","data","Fragments"];
 sirius_data_Fragments.__interfaces__ = [sirius_data_IFragments];
 sirius_data_Fragments.prototype = {
-	split: function(separator) {
+	_sel: function(i,e) {
+		var r = [];
+		while(i != e) r[r.length] = this.pieces[i++];
+		return "/" + r.join("/") + "/";
+	}
+	,split: function(separator) {
 		this.pieces = sirius_tools_Utils.clearArray(this.value.split(separator));
 		if(this.pieces.length == 0) this.pieces[0] = "";
 		this.first = this.pieces[0];
 		this.last = this.pieces[this.pieces.length - 1];
-		this.glue(this.value);
+		this.glue(separator);
 		return this;
 	}
 	,find: function(value) {
@@ -4877,8 +4519,15 @@ sirius_data_Fragments.prototype = {
 		}
 		return this;
 	}
-	,get: function(i) {
-		if(i < this.pieces.length) return this.pieces[i]; else return "";
+	,get: function(i,e) {
+		if(e == null || e <= i) {
+			if(i < this.pieces.length) return this.pieces[i]; else return "";
+		} else return this._sel(i,e);
+	}
+	,set: function(i,val) {
+		if(i > this.pieces.length) i = this.pieces.length;
+		if(val != null) this.pieces[i] = val;
+		return this;
 	}
 	,clear: function() {
 		this.pieces = [];
@@ -4887,6 +4536,11 @@ sirius_data_Fragments.prototype = {
 		return this;
 	}
 	,__class__: sirius_data_Fragments
+};
+var sirius_data_IDataCache = function() { };
+sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
+sirius_data_IDataCache.prototype = {
+	__class__: sirius_data_IDataCache
 };
 var sirius_errors_IError = function() { };
 sirius_errors_IError.__name__ = ["sirius","errors","IError"];
@@ -4918,7 +4572,14 @@ var sirius_events_Event = $hx_exports.sru.events.Event = function(from,ticket,ev
 sirius_events_Event.__name__ = ["sirius","events","Event"];
 sirius_events_Event.__interfaces__ = [sirius_events_IEvent];
 sirius_events_Event.prototype = {
-	description: function() {
+	cancel: function() {
+		if(this.event != null) {
+			this.event.stopPropagation();
+			this.event.stopImmediatePropagation();
+			this.event.preventDefault();
+		}
+	}
+	,description: function() {
 		return "[Event{name:" + this.ticket.name + ",target:" + this.from.target.typeOf() + "}]";
 	}
 	,__class__: sirius_events_Event
@@ -4959,8 +4620,9 @@ sirius_events_EventGroup.prototype = {
 		this.propagation = false;
 		return this;
 	}
-	,preventDefault: function() {
+	,noDefault: function() {
 		this._pd = true;
+		return this;
 	}
 	,reset: function() {
 		this.events = [];
@@ -4977,8 +4639,14 @@ sirius_events_EventGroup.prototype = {
 		if(this._pd && e != null) evt.event.preventDefault();
 		this.propagation = true;
 	}
-	,call: function() {
-		this._runner(null);
+	,call: function(bubbles,cancelable) {
+		if(cancelable == null) cancelable = true;
+		if(bubbles == null) bubbles = false;
+		if(($_=window.document,$bind($_,$_.createEvent)) != null) {
+			var e = window.document.createEvent("HTMLEvents");
+			e.initEvent(this.name,bubbles,cancelable);
+			this.dispatcher.target.element.dispatchEvent(e);
+		} else this._runner(null);
 		return this;
 	}
 	,__class__: sirius_events_EventGroup
@@ -5070,6 +4738,136 @@ sirius_modules_Request.prototype = {
 		if(this.data != null && this.data.length > 1) return JSON.parse(this.data); else return null;
 	}
 	,__class__: sirius_modules_Request
+};
+var sirius_net_HttpRequest = function(url) {
+	this.url = url;
+	this.headers = new List();
+	this.params = new List();
+	this.async = true;
+};
+sirius_net_HttpRequest.__name__ = ["sirius","net","HttpRequest"];
+sirius_net_HttpRequest.requestUrl = function(url) {
+	var h = new sirius_net_HttpRequest(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw new js__$Boot_HaxeError(e);
+	};
+	h.request(false);
+	return r;
+};
+sirius_net_HttpRequest.prototype = {
+	setHeader: function(header,value) {
+		this.headers = Lambda.filter(this.headers,function(h) {
+			return h.header != header;
+		});
+		this.headers.push({ header : header, value : value});
+		return this;
+	}
+	,addHeader: function(header,value) {
+		this.headers.push({ header : header, value : value});
+		return this;
+	}
+	,addParameter: function(param,value) {
+		if(this.data == null) this.data = new FormData();
+		this.data.append(param,value);
+		return this;
+	}
+	,setData: function(data) {
+		this.data = data;
+		return this;
+	}
+	,cancel: function() {
+		if(this.req == null) return;
+		this.req.abort();
+		this.req = null;
+	}
+	,request: function(post) {
+		var me = this;
+		me.responseData = null;
+		var r = this.req = js_Browser.createXMLHttpRequest();
+		var onreadystatechange = function(_) {
+			if(r.readyState != 4) return;
+			var s;
+			try {
+				s = r.status;
+			} catch( e ) {
+				if (e instanceof js__$Boot_HaxeError) e = e.val;
+				s = null;
+			}
+			if(s != null) {
+				var protocol = window.location.protocol.toLowerCase();
+				var rlocalProtocol = new EReg("^(?:about|app|app-storage|.+-extension|file|res|widget):$","");
+				var isLocal = rlocalProtocol.match(protocol);
+				if(isLocal) if(r.responseText != null) s = 200; else s = 404;
+			}
+			if(s == undefined) s = null;
+			if(s != null) me.onStatus(s);
+			if(s != null && s >= 200 && s < 400) {
+				me.req = null;
+				me.onData(me.responseData = r.responseText);
+			} else if(s == null) {
+				me.req = null;
+				me.onError("Failed to connect or resolve host");
+			} else switch(s) {
+			case 12029:
+				me.req = null;
+				me.onError("Failed to connect to host");
+				break;
+			case 12007:
+				me.req = null;
+				me.onError("Unknown host");
+				break;
+			default:
+				me.req = null;
+				me.responseData = r.responseText;
+				me.onError("Http Error #" + r.status);
+			}
+		};
+		if(this.async) r.onreadystatechange = onreadystatechange;
+		var uri = null;
+		if(this.data != null) uri = this.data;
+		try {
+			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
+				var question = this.url.split("?").length <= 1;
+				r.open("GET",this.url + (question?"?":"&") + Std.string(uri),this.async);
+				uri = null;
+			} else r.open("GET",this.url,this.async);
+		} catch( e1 ) {
+			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+			me.req = null;
+			this.onError(e1.toString());
+			return;
+		}
+		if(this.data == null && !Lambda.exists(this.headers,function(h) {
+			return h.header == "Content-Type";
+		}) && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var _g_head = this.headers.h;
+		var _g_val = null;
+		while(_g_head != null) {
+			var h1;
+			h1 = (function($this) {
+				var $r;
+				_g_val = _g_head[0];
+				_g_head = _g_head[1];
+				$r = _g_val;
+				return $r;
+			}(this));
+			r.setRequestHeader(h1.header,h1.value);
+		}
+		r.send(uri);
+		if(!this.async) onreadystatechange(null);
+	}
+	,onData: function(data) {
+	}
+	,onError: function(msg) {
+	}
+	,onStatus: function(status) {
+	}
+	,__class__: sirius_net_HttpRequest
 };
 var sirius_net_IDomainData = function() { };
 sirius_net_IDomainData.__name__ = ["sirius","net","IDomainData"];
@@ -5369,7 +5167,68 @@ sirius_seo_WebSite.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,__class__: sirius_seo_WebSite
 });
+var sirius_signals_IFlow = function() { };
+sirius_signals_IFlow.__name__ = ["sirius","signals","IFlow"];
+sirius_signals_IFlow.prototype = {
+	__class__: sirius_signals_IFlow
+};
+var sirius_signals_Flow = function(pipe,data) {
+	this.data = data;
+	this.pipe = pipe;
+};
+sirius_signals_Flow.__name__ = ["sirius","signals","Flow"];
+sirius_signals_Flow.__interfaces__ = [sirius_signals_IFlow];
+sirius_signals_Flow.prototype = {
+	__class__: sirius_signals_Flow
+};
+var sirius_signals_IPipe = function() { };
+sirius_signals_IPipe.__name__ = ["sirius","signals","IPipe"];
+sirius_signals_IPipe.prototype = {
+	__class__: sirius_signals_IPipe
+};
+var sirius_signals_Pipe = function(name,host) {
+	this.calls = 0;
+	this.enabled = true;
+	this.transfer = true;
+	this.name = name;
+	this.reset();
+};
+sirius_signals_Pipe.__name__ = ["sirius","signals","Pipe"];
+sirius_signals_Pipe.__interfaces__ = [sirius_signals_IPipe];
+sirius_signals_Pipe.prototype = {
+	add: function(handler) {
+		if(Lambda.indexOf(this._l,handler) == -1) this._l.push(handler);
+		return this;
+	}
+	,remove: function(handler) {
+		var i = Lambda.indexOf(this._l,handler);
+		if(i != -1) this._l.splice(i,1);
+		return this;
+	}
+	,call: function(data) {
+		var _g = this;
+		if(this.enabled) {
+			++this.calls;
+			this.current = new sirius_signals_Flow(this,data);
+			this.transfer = true;
+			sirius_utils_Dice.Values(this._l,function(v) {
+				v(_g.current);
+				return !_g.transfer;
+			});
+		}
+		this.current = null;
+		return this;
+	}
+	,stop: function() {
+		this.transfer = false;
+	}
+	,reset: function() {
+		this._l = [];
+	}
+	,__class__: sirius_signals_Pipe
+};
 var sirius_tools_BitIO = $hx_exports.sru.bit.BitIO = function(value) {
+	if(!(typeof(value) == "number") && ((value | 0) === value)) value = Std.parseInt(value);
 	this.value = value;
 };
 sirius_tools_BitIO.__name__ = ["sirius","tools","BitIO"];
@@ -5392,7 +5251,7 @@ sirius_tools_BitIO.Value = function(hash,size) {
 	return v;
 };
 sirius_tools_BitIO.prototype = {
-	reverse: function(bit) {
+	invert: function(bit) {
 		this.value = sirius_tools_BitIO.Toggle(this.value,bit);
 	}
 	,set: function(bit) {
@@ -5598,23 +5457,6 @@ sirius_transitions_ITween.__name__ = ["sirius","transitions","ITween"];
 sirius_transitions_ITween.prototype = {
 	__class__: sirius_transitions_ITween
 };
-var sirius_utils_Criptog = $hx_exports.Criptog = function() { };
-sirius_utils_Criptog.__name__ = ["sirius","utils","Criptog"];
-sirius_utils_Criptog.encodeBase64 = function(q) {
-	if(!(typeof(q) == "string")) q = JSON.stringify(q);
-	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
-};
-sirius_utils_Criptog.decodeBase64 = function(q,json) {
-	var r = null;
-	try {
-		r = haxe_crypto_Base64.decode(q).toString();
-	} catch( e ) {
-		if (e instanceof js__$Boot_HaxeError) e = e.val;
-	}
-	if(r != null) {
-		if(json && r.length > 1) return JSON.parse(r); else return r;
-	} else return null;
-};
 var sirius_utils_Filler = $hx_exports.sru.utils.Filler = function() { };
 sirius_utils_Filler.__name__ = ["sirius","utils","Filler"];
 sirius_utils_Filler._apply = function(path,content,data) {
@@ -5668,12 +5510,12 @@ sirius_utils_SearchTag.from = function(value) {
 	if(!js_Boot.__instanceof(value,sirius_utils_SearchTag)) value = new sirius_utils_SearchTag(value);
 	return value;
 };
-sirius_utils_SearchTag.convert = function(f,condense,cCase) {
+sirius_utils_SearchTag.convert = function(data,condense,cCase) {
 	if(cCase == null) cCase = false;
 	if(condense == null) condense = true;
-	f = Std.string(f);
-	if(condense) f = f.split(" ").join("");
-	if(!cCase) f = f.toLowerCase();
+	data = Std.string(data);
+	if(condense) data = data.split(" ").join("");
+	if(!cCase) data = data.toLowerCase();
 	if(!sirius_utils_SearchTag._R) {
 		sirius_utils_Dice.Values(sirius_utils_SearchTag._M,function(v) {
 			sirius_utils_SearchTag._M.push([v[0].toUpperCase(),v[1].toUpperCase()]);
@@ -5683,10 +5525,10 @@ sirius_utils_SearchTag.convert = function(f,condense,cCase) {
 	var i = 0;
 	var l = sirius_utils_SearchTag._M.length;
 	while(i < l) {
-		f = f.split(sirius_utils_SearchTag._M[i][0]).join(sirius_utils_SearchTag._M[i][1]);
+		data = data.split(sirius_utils_SearchTag._M[i][0]).join(sirius_utils_SearchTag._M[i][1]);
 		++i;
 	}
-	return f;
+	return data;
 };
 sirius_utils_SearchTag.prototype = {
 	_tag: function() {
@@ -5735,44 +5577,55 @@ sirius_utils_SearchTag.prototype = {
 	}
 	,__class__: sirius_utils_SearchTag
 };
-var sirius_utils_Table = $hx_exports.sru.utils.Table = function(q,t,h) {
-	if(q == null) q = "*";
-	var _g = this;
-	this.content = [];
-	this.elements = [];
-	if(q != "NULL_TABLE") {
-		if(q != null || t != null) {
-			var is3D = false;
-			if(t == null) t = window.document.body; else is3D = js_Boot.__instanceof(t,sirius_dom_IDisplay3D);
-			var result;
-			try {
-				if(q != "*") result = t.querySelectorAll(q); else result = t.childNodes;
-			} catch( e ) {
-				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				result = [];
-			}
-			var ih = h != null;
-			var element = null;
-			var obj = null;
-			if(result.length > 0) sirius_utils_Dice.Count(0,result.length,function(i,j,k) {
-				element = result.item(i);
-				if(is3D) obj = new sirius_dom_Display3D(element); else obj = sirius_tools_Utils.displayFrom(element);
-				if(ih == false || h(obj)) {
-					_g.content[_g.content.length] = obj;
-					_g.elements[_g.elements.length] = element;
-				}
-				return null;
-			}); else sirius_Sirius.log("Table => " + (q != null?q:t != null?t.className:"UNKNOW") + " : EMPTY",2);
-		} else sirius_Sirius.log("Table => (QUERY,TARGET) : NULL QUERY_SELECTOR",3);
-	}
+var sirius_utils_Table = $hx_exports.sru.utils.Table = function() {
 };
 sirius_utils_Table.__name__ = ["sirius","utils","Table"];
 sirius_utils_Table.__interfaces__ = [sirius_utils_ITable];
+sirius_utils_Table.recycle = function(q,t,h) {
+	var r = null;
+	if(sirius_utils_Table._trash.length > 0) r = sirius_utils_Table._trash.pop(); else r = new sirius_utils_Table();
+	return r.scan(q,t,h);
+};
 sirius_utils_Table.empty = function() {
-	return new sirius_utils_Table("NULL_TABLE");
+	return new sirius_utils_Table().reset();
 };
 sirius_utils_Table.prototype = {
-	contains: function(q) {
+	reset: function() {
+		this.content = [];
+		this.elements = [];
+		return this;
+	}
+	,scan: function(q,t,h) {
+		this.reset();
+		if(q == null) q = "*";
+		var is3D = false;
+		if(t == null) t = window.document.body;
+		var result;
+		try {
+			if(q != "*") result = t.querySelectorAll(q); else result = t.childNodes;
+		} catch( e ) {
+			if (e instanceof js__$Boot_HaxeError) e = e.val;
+			result = [];
+		}
+		var ih = h != null;
+		var element = null;
+		var obj = null;
+		var len = result.length;
+		if(_$UInt_UInt_$Impl_$.gt(len,0)) {
+			var ind = 0;
+			while(_$UInt_UInt_$Impl_$.gt(len,ind)) {
+				element = result.item(ind);
+				obj = sirius_tools_Utils.displayFrom(element);
+				if(ih == false || h(obj)) {
+					this.content[this.content.length] = obj;
+					this.elements[this.elements.length] = element;
+				}
+				++ind;
+			}
+		} else sirius_Sirius.log("Table => " + (q != null?q:t != null?t.className:"UNKNOW") + " : EMPTY",2);
+		return this;
+	}
+	,contains: function(q) {
 		var t = sirius_utils_Table.empty();
 		var i = 0;
 		this.each(function(v) {
@@ -5874,6 +5727,11 @@ sirius_utils_Table.prototype = {
 			t.elements = t.elements.concat(v.elements);
 		});
 		return t;
+	}
+	,dispose: function() {
+		this.content = null;
+		this.elements = null;
+		sirius_utils_Table._trash[sirius_utils_Table._trash.length] = this;
 	}
 	,onWheel: function(handler,mode) {
 		return this.on("wheel",handler,mode);
@@ -6127,7 +5985,6 @@ var Bool = Boolean;
 Bool.__ename__ = ["Bool"];
 var Class = { __name__ : ["Class"]};
 var Enum = { };
-var __map_reserved = {}
 var q = window.jQuery;
 var js = js || {}
 js.JQuery = q;
@@ -6135,8 +5992,6 @@ var ArrayBuffer = (Function("return typeof ArrayBuffer != 'undefined' ? ArrayBuf
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = (Function("return typeof DataView != 'undefined' ? DataView : null"))() || js_html_compat_DataView;
 var Uint8Array = (Function("return typeof Uint8Array != 'undefined' ? Uint8Array : null"))() || js_html_compat_Uint8Array._new;
-haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);
@@ -6174,10 +6029,12 @@ sirius_tools_Key._counter = 0;
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
+sirius_utils_Dice._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
+sirius_utils_Dice._R = false;
 sirius_dom_Display3D._fixed = false;
 sirius_tools_Utils._typeOf = { a : sirius_dom_A, applet : sirius_dom_Applet, area : sirius_dom_Area, audio : sirius_dom_Audio, b : sirius_dom_B, base : sirius_dom_Base, body : sirius_dom_Body, br : sirius_dom_BR, button : sirius_dom_Button, canvas : sirius_dom_Canvas, caption : sirius_dom_Caption, col : sirius_dom_Col, content : sirius_dom_Content, datalist : sirius_dom_DataList, dir : sirius_dom_Dir, div : sirius_dom_Div, display : sirius_dom_Display, display3d : sirius_dom_Display3D, dl : sirius_dom_DL, document : sirius_dom_Document, embed : sirius_dom_Embed, fieldset : sirius_dom_FieldSet, font : sirius_dom_Font, form : sirius_dom_Form, frame : sirius_dom_Frame, frameset : sirius_dom_FrameSet, h1 : sirius_dom_H1, h2 : sirius_dom_H2, h3 : sirius_dom_H3, h4 : sirius_dom_H4, h5 : sirius_dom_H5, h6 : sirius_dom_H6, head : sirius_dom_Head, hr : sirius_dom_HR, html : sirius_dom_Html, i : sirius_dom_I, iframe : sirius_dom_IFrame, img : sirius_dom_Img, input : sirius_dom_Input, label : sirius_dom_Label, legend : sirius_dom_Legend, li : sirius_dom_LI, link : sirius_dom_Link, map : sirius_dom_Map, media : sirius_dom_Media, menu : sirius_dom_Menu, meta : sirius_dom_Meta, meter : sirius_dom_Meter, mod : sirius_dom_Mod, object : sirius_dom_Object, ol : sirius_dom_OL, optgroup : sirius_dom_OptGroup, option : sirius_dom_Option, output : sirius_dom_Output, p : sirius_dom_P, param : sirius_dom_Param, picture : sirius_dom_Picture, pre : sirius_dom_Pre, progress : sirius_dom_Progress, quote : sirius_dom_Quote, script : sirius_dom_Script, select : sirius_dom_Select, shadow : sirius_dom_Shadow, source : sirius_dom_Source, span : sirius_dom_Span, sprite : sirius_dom_Sprite, sprite3d : sirius_dom_Sprite3D, style : sirius_dom_Style, table : sirius_dom_Table, td : sirius_dom_TD, text : sirius_dom_Text, textarea : sirius_dom_TextArea, thead : sirius_dom_Thead, title : sirius_dom_Title, tr : sirius_dom_TR, track : sirius_dom_Track, ul : sirius_dom_UL, video : sirius_dom_Video};
 sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, transparent : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, block : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, decor : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, masked : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, tab : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, visible : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, i : { value : " !important", verifier : sirius_css_AutomatorRules.commonKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, ita : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, curs : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, mosaic : { value : "", verifier : sirius_css_AutomatorRules.mosaicKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}};
 sirius_css_XCSS.enabled = false;
 sirius_tools_BitIO.P01 = 1;
 sirius_tools_BitIO.P02 = 2;
@@ -6212,11 +6069,14 @@ sirius_tools_BitIO.P30 = 536870912;
 sirius_tools_BitIO.P31 = 1073741824;
 sirius_tools_BitIO.P32 = -2147483648;
 sirius_tools_BitIO.X = [sirius_tools_BitIO.Unwrite,sirius_tools_BitIO.Write,sirius_tools_BitIO.Toggle];
-sirius_tools_Delayer.CALL = setTimeout;
-sirius_tools_Delayer.CLEAR = clearTimeout;
+sirius_tools_Delayer.setTimeout = setTimeout;
+sirius_tools_Delayer.clearTimeout = clearTimeout;
+sirius_tools_Delayer.setInterval = setInterval;
+sirius_tools_Delayer.clearInterval = clearInterval;
 sirius_tools_Delayer._tks = { };
 sirius_tools_Ticker._pool = [];
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._R = false;
+sirius_utils_Table._trash = [];
 sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);

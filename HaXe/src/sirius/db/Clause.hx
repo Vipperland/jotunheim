@@ -131,8 +131,18 @@ class Clause {
 	 * @param	value
 	 * @return
 	 */
-	static public function FLAG(param:String, value:UInt):Dynamic {
+	static public function BIT(param:String, value:UInt):Dynamic {
 		return { param:param, condition:"{{p}} & :in_{{p}}", value:value };
+	}
+	
+	/**
+	 * IF A&~B
+	 * @param	param
+	 * @param	value
+	 * @return
+	 */
+	static public function BIT_NOT(param:String, value:UInt):Dynamic {
+		return { param:param, condition:"{{p}} & ~:in_{{p}}", value:value };
 	}
 	
 	public function joiner():String {

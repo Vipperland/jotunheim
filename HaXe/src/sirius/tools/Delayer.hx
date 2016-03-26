@@ -10,8 +10,11 @@ import sirius.tools.Key;
 @:expose("sru.tools.Delayer")
 class Delayer {
 	
-	static private var CALL:Dynamic = untyped __js__('setTimeout');
-	static private var CLEAR:Dynamic = untyped __js__('clearTimeout');
+	static public var setTimeout:Dynamic->Dynamic->Array<Dynamic>->Int = untyped __js__('setTimeout');
+	static public var clearTimeout:Dynamic->Dynamic->Array<Dynamic>->Int = untyped __js__('clearTimeout');
+	
+	static public var setInterval:Dynamic->Dynamic->Array<Dynamic>->Int = untyped __js__('setInterval');
+	static public var clearInterval:Dynamic->Dynamic->Array<Dynamic>->Int = untyped __js__('clearInterval');
 	
 	static private var _tks:Dynamic = { };
 	

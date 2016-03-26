@@ -27,6 +27,11 @@ interface IGate {
 	public var errors(get, null):Array<IError>;
 	
 	/**
+	 * Query runtime log
+	 */
+	public var log(get, null):Array<String>;
+	
+	/**
 	 * If the connection is available
 	 * @return
 	 */

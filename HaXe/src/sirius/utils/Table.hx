@@ -21,53 +21,67 @@ import sirius.utils.ITable;
 @:expose("sru.utils.Table")
 class Table implements ITable {
 	
+	static private var _trash:Array<ITable> = [];
+	static public function recycle(q:String, ?t:Element, ?h:Dynamic):ITable {
+		var r:ITable = null;
+		if (_trash.length > 0)
+			r = _trash.pop();
+		else
+			r = new Table();
+		return r.scan(q, t, h);
+	}
+	
 	//static public function em
 	
-	static public function empty():Table {
-		return new Table("NULL_TABLE");
+	static public function empty():ITable {
+		return new Table().reset();
 	}
 	
 	public var content:Array<IDisplay>;
 	
 	public var elements:Array<Element>;
 	
-	public function new(?q:String="*", ?t:Element, ?h:Dynamic) {
+	public function new() {
+	}
+	
+	public function reset():ITable {
 		content = [];
 		elements = [];
-		if (q != "NULL_TABLE") {
-			if (q != null || t != null) {
-				var is3D:Bool = false;
-				if (t == null) {
-					t = cast Browser.document.body;
-				}else {
-					is3D = Std.is(t, IDisplay3D);
-				}
-				var result:NodeList;
-				try {
-					result = q != "*" ? t.querySelectorAll(q) : t.childNodes;
-				}catch (e:Dynamic) {
-					result = cast [];
-				}
-				var ih:Bool = h != null;
-				var element:Element = null;
-				var obj:IDisplay = null;
-				if(result.length > 0){
-					Dice.Count(0, result.length, function(i:Int, j:Int, k:Bool) {
-						element = cast result.item(i);
-						obj = is3D ? new Display3D(element) : Utils.displayFrom(element);
-						if(ih == false || h(obj)){
-							content[content.length] = obj;
-							elements[elements.length] = element;
-						}
-						return null;
-					});
-				}else {
-					Sirius.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
-				}
-			}else {
-				Sirius.log("Table => (QUERY,TARGET) : NULL QUERY_SELECTOR", 3);
-			}
+		return this;
+	}
+	
+	public function scan(q:String, ?t:Element, ?h:IDisplay->Bool):ITable {
+		reset();
+		if (q == null)
+			q = "*";
+		var is3D:Bool = false;
+		if (t == null)
+			t = cast Browser.document.body;
+		var result:NodeList;
+		try {
+			result = q != "*" ? t.querySelectorAll(q) : t.childNodes;
+		}catch (e:Dynamic) {
+			result = cast [];
 		}
+		var ih:Bool = h != null;
+		var element:Element = null;
+		var obj:IDisplay = null;
+		var len:UInt = result.length;
+		if(len > 0){
+			var ind:UInt = 0;
+			while(ind < len){
+				element = cast result.item(ind);
+				obj = Utils.displayFrom(element);
+				if(ih == false || h(obj)){
+					content[content.length] = obj;
+					elements[elements.length] = element;
+				}
+				++ind;
+			}
+		}else {
+			Sirius.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
+		}
+		return this;
 	}
 	
 	public function contains(q:String):ITable {
@@ -157,7 +171,7 @@ class Table implements ITable {
 		return this;
 	}
 	
-	public function on(name:String, handler:IEvent->Void, ?mode:String):ITable {
+	public function on(name:String, handler:IEvent->Void, ?mode:Int):ITable {
 		each(function(v:IDisplay) {
 			v.events.auto(name, handler, mode);
 		});
@@ -165,7 +179,7 @@ class Table implements ITable {
 	}
 	
 	public function merge(?tables:Array<Table>):ITable {
-		var t:Table = Table.empty();
+		var t:ITable = Table.empty();
 		if (tables == null) tables = [];
 		tables[tables.length] = this;
 		Dice.Values(tables, function(v:Table) {
@@ -173,6 +187,12 @@ class Table implements ITable {
 			t.elements = t.elements.concat(v.elements);
 		});
 		return t;
+	}
+	
+	public function dispose():Void {
+		content = null;
+		elements = null;
+		_trash[_trash.length] = this;
 	}
 	
 	/* ============================== EVENT BATCH ============================================================================================== */

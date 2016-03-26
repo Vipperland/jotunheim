@@ -19,7 +19,9 @@ interface IFragments {
 
 	public function addPiece (value:String, ?at:Int=-1) : IFragments;
 
-	public function get (i:Int) : String;
+	public function get (i:Int, ?e:Int) : String;
+	
+	public function set(i:Int, val:String) : IFragments;
 	
 	public function find (value:String) : Bool;
 

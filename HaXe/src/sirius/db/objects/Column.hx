@@ -6,7 +6,7 @@ package sirius.db.objects;
  */
 class Column {
 	
-	public var column:String;
+	public var name:String;
 	
 	public var nullable:Bool;
 	
@@ -31,7 +31,7 @@ class Column {
 	public var previleges:Array<String>;
 	
 	public function new(data:Dynamic) {
-		column = data.COLUMN_NAME;
+		name = data.COLUMN_NAME;
 		nullable = data.IS_NULLABLE == "YES";
 		position = Std.parseInt(data.ORDINAL_POSITION);
 		value = data.COLUMN_DEFAULT;

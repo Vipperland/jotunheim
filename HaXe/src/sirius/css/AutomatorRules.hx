@@ -22,9 +22,12 @@ class AutomatorRules {
 		var v:String = k.entry.value;
 		if(n != null){
 			if (!n.position) {
-				if (n.color != null) return v + "-color:";
-				if(d.head.key == 'bord') return borderFix(v, d, k, n);
-				if (n.measure != null) return v + ":";
+				if (n.color != null)
+					return v + "-color:";
+				if (d.head.key == 'bord')
+					return borderFix(v, d, k, n);
+				if (n.measure != null)
+					return v + ":";
 				return v + ":";
 			}else {
 				return v + '-';
@@ -42,7 +45,8 @@ class AutomatorRules {
 	 * @return
 	 */
 	static public function borderFix(v:String, d:Entry, k:IKey, n:IKey):String {
-		if (n.measure != null) return v + "-width:";
+		if (n.measure != null)
+			return v + "-width:";
 		return v + (d.hasKey('rad', 1) ? '-' : '-style:');
 	}
 	
@@ -55,8 +59,10 @@ class AutomatorRules {
 	 */
 	static public function mosaicKey(d:Entry, k:IKey, n:IKey):String {
 		if (d.head == k) {
-			if (n != null)	Automator.mosaic(Std.parseInt(n.key));
-			else 			Automator.mosaic(12);
+			if (n != null)
+				Automator.mosaic(Std.parseInt(n.key));
+			else
+				Automator.mosaic(12);
 			d.cancel();
 			return null;
 		}
@@ -134,8 +140,10 @@ class AutomatorRules {
 		if (d.head == k) {
 			d.cancel();
 			var o:Int = Std.parseInt(n.key);
-			if (o > 100) o = 100;
-			else if (o < 0) o = 0;
+			if (o > 100)
+				o = 100;
+			else if (o < 0)
+				o = 0;
 			return k.entry.value + ":" + (o/100);
 		}else {
 			return valueKey(d, k, n);
@@ -193,7 +201,8 @@ class AutomatorRules {
 				d.cancel();
 				return "overflow:hidden";
 			}
-			if (k.index == 0) return '';
+			if (k.index == 0)
+				return '';
 			return "overflow" + (v == 'x'?'-x':'-y') + ":scroll;overflow-" + (v == 'x'?'-y':'-x') + ":hidden";
 		}
 		return commonKey(d, k, n);
@@ -252,9 +261,11 @@ class AutomatorRules {
 			var r:Array<String> = [];
 			var tx:Int = 0;
 			var ty:Int = 0;
-			if (a % 90 == 0) w = z;
+			if (a % 90 == 0)
+				w = z;
 			w = Math.floor(cast z / w);
-			if (w <= 0) w = 1;
+			if (w <= 0)
+				w = 1;
 			while (y < z) {
 				y += w;
 				if (y > z) y = z;
@@ -286,10 +297,13 @@ class AutomatorRules {
 	static public function textKey(d:Entry, k:IKey, n:IKey):String {
 		if (k.index == 0) {
 			if (n != null && !n.position) {
-				if (n.color != null) return 'color:';
-				if (n.measure != null) return 'font-size:';
+				if (n.color != null)
+					return 'color:';
+				if (n.measure != null)
+					return 'font-size:';
 			}
-			if(n.key != 'decoration') return 'text-align:';
+			if (n.key != 'dec')
+				return 'text-align:';
 		}
 		return 'text-';
 	}
@@ -300,9 +314,9 @@ class AutomatorRules {
 	 */
 	static private var _KEYS:Dynamic = {
 		void:{value:'""',verifier:commonKey},
-		transparent:{value:'background-color:transparent',verifier:colorKey},
-		t:{value:'top', verifier:numericKey},
-		b:{value:'bottom', verifier:numericKey},
+		glass:{value:'background-color:transparent',verifier:colorKey},
+		b:{value:'top', verifier:numericKey},
+		t:{value:'bottom', verifier:numericKey},
 		l:{value:'left', verifier:numericKey},
 		r:{value:'right', verifier:numericKey},
 		m:{value:'middle', verifier:commonKey},
@@ -319,11 +333,11 @@ class AutomatorRules {
 		o:{value:'outline', verifier:valueKey},
 		disp:{value:'display', verifier:valueKey},
 		vert:{value:'vertical-align', verifier:valueKey},
-		block:{value:'block', verifier:commonKey},
+		blk:{value:'block', verifier:commonKey},
 		"inline":{value:'inline', verifier:appendKey},
 		bg:{value:'background',verifier:numericKey},
 		txt: { value:'', verifier:textKey },
-		decor: { value:'', verifier:valueKey },
+		dec: { value:'', verifier:valueKey },
 		sub:{value:'sub',verifier:commonKey},
 		sup:{value:'super',verifier:commonKey},
 		pos:{value:'position',verifier:valueKey},
@@ -335,14 +349,14 @@ class AutomatorRules {
 		over:{value:'overflow',verifier:valueKey},
 		hid:{value:'',verifier:commonKey},
 		scroll:{value:'scroll',verifier:scrollKey},
-		masked:{value:'overflow:hidden',verifier:commonKey},
+		crop:{value:'overflow:hidden',verifier:commonKey},
 		x:{value:'x',verifier:scrollKey},
 		y:{value:'y',verifier:scrollKey},
 		z:{value:'z-index',verifier:indexKey},
 		bold:{value:'font-weight:bold',verifier:commonKey},
 		regular:{value:'font-weight:regular',verifier:commonKey},
 		underline:{value:'font-weight:underline',verifier:commonKey},
-		italic:{value:'font-weight:italic',verifier:commonKey},
+		ita:{value:'font-weight:italic',verifier:commonKey},
 		thin:{value:'font-weight:100',verifier:commonKey},
 		upcase:{value:'font-transform:uppercase',verifier:commonKey},
 		locase:{value:'font-transform:lowercase',verifier:commonKey},
@@ -355,7 +369,6 @@ class AutomatorRules {
 		georgia:{value:'font-family:georgia',verifier:commonKey},
 		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
 		table:{value:'table',verifier:appendKey},
-		tab:{value:'table',verifier:appendKey},
 		cell:{value:'cell',verifier:commonKey},
 		rad:{value:'radius',verifier:valueKey},
 		solid:{value:'solid',verifier:commonKey},
@@ -364,7 +377,6 @@ class AutomatorRules {
 		dotted:{value:'dotted',verifier:commonKey},
 		alpha:{value:'opacity',verifier:alphaKey},
 		hidden:{value:'',verifier:displayKey},
-		visible:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
 		stroke:{value:'',verifier:strokeKey},
 		mosaic:{value:'',verifier:mosaicKey},
@@ -372,8 +384,10 @@ class AutomatorRules {
 	};
 	
 	static public function set(rule:Dynamic, ?value:IEntry):Void {
-		if (Std.is(rule, Array))	Dice.All(rule, function(p:String, v:String) {	Reflect.setField(_KEYS, p, v); } );
-		else if(value != null)		Reflect.setField(_KEYS, rule, value);
+		if (Std.is(rule, Array))
+			Dice.All(rule, function(p:String, v:String) {	Reflect.setField(_KEYS, p, v); } );
+		else if (value != null)
+			Reflect.setField(_KEYS, rule, value);
 	}
 	
 	static public function get(name:String):IEntry {

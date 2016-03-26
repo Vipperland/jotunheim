@@ -5,6 +5,7 @@ import js.html.FileList;
 import js.html.InputElement;
 import js.RegExp;
 import sirius.events.IEvent;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -19,15 +20,9 @@ class Input extends Display {
 	
 	public var object:InputElement;
 	
-	private var _rtc:EReg;
+	private var _rgx:EReg;
 	
-	private function _update(e:IEvent) {
-		if (_rtc.match(object.value)) {
-			var s:Int = object.selectionStart-1;
-			object.value = _rtc.replace(object.value, "");
-			object.setSelectionRange(s, s);
-		}
-	}
+	private var _flt:String;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createInputElement();
@@ -56,53 +51,84 @@ class Input extends Display {
 	}
 	
 	public function validateDate():Void {
-		pattern("\\d{1,2}/\\d{1,2}/\\d{4}");
+		_rgx = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
 	}
 	
 	public function validateURL():Void {
-		pattern("https?://.+");
+		_rgx = ~/https?:\/\/.+/;
 	}
 	
 	public function validateIPv4():Void {
-		pattern("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		_rgx = ~/^\d{1,3}d{1,3}.\d{1,3}.\d{1,3}/;
 	}
 	
 	public function validateCurrency():Void {
-		pattern("\\d+(\\.\\d{2})?");
+		_rgx = ~/\d+(.\d{2})?/;
 	}
 	
 	public function validateEmail():Void {
-		pattern("/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$/");
+		_rgx = ~/^[a-z0-9!'#$%&*+\/=?^_`{|}~-]+(?:\.[a-z0-9!'#$%&*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-zA-Z]{2,}$/giu;
 	}
 	
-	public function restrict(q:EReg):Void {
-		if (_rtc == null && q != null) {
-			events.keyDown(_update, 0);
-			events.keyUp(_update, 0);
-			events.focusOut(_update, 0);
-		}else if (q == null) {
-			events.keyDown(_update, -1);
-			events.keyUp(_update, -1);
-			events.focusOut(_update, -1);
-		}
-		_rtc = q;
+	public function validateNumbers():Void {
+		_rgx = ~/^\d{1,}$/;
+		_flt = " ";
 	}
 	
-	public function restrictNumbers():Void {
-		restrict(~/[^0-9]/gi);
+	public function validatePhone():Void {
+		_rgx = ~/^(\d{10,11})|(\(\d{2}\) \d{4,5}-\d{4})$/;
+		_flt = "()- ";
 	}
 	
-	public function restrictLetters():Void {
-		restrict(~/[^A-Za-z]/giu);
+	public function validateDoc():Void {
+		_rgx = ~/^(\d{3}.\d{3}.\d{3}-\d{2})|(\d{2}.\d{3}.\d{3}\/\d{4}-\d{2})$/;
+		_flt = "-./";
+	}
+	
+	public function validateZipcode():Void {
+		_rgx = ~/^(\d{5}-\d{3})|(\d{8})$/;
+		_flt = "-";
+	}
+	
+	public function validateLetters():Void {
+		_rgx = ~/^[a-zA-Z]{3,}$/;
+	}
+	
+	public function validateUsr():Void {
+		_rgx = ~/^[A-Za-z0-9._-]{6,18}$/;
+	}
+	
+	public function validateMd5():Void {
+		_rgx = ~/^[A-Za-z0-9._-]{35}$/;
+	}
+	
+	public function restrict(q:EReg, ?filter:String):Void {
+		_rgx = q;
+		_flt = filter;
 	}
 	
 	public function value(?q:String):String {
-		if (q != null) object.value = q;
-		return object.value;
+		if (q != null) {
+			object.value = q;
+		}else{
+			q = object.value;
+			if (object.maxLength != null && object.maxLength > 0)
+				q = q.substr(0, object.maxLength);
+			if(_flt !=null){
+				var k:Array<String> = _flt.split("");
+				Dice.Values(k, function(v1:String) { q = q.split(v1).join(''); } );
+			}
+		}
+		return q;
 	}
 	
 	public function isValid():Bool {
-		return object.value.length > 0;
+		var v:String = object.value;
+		return v.length == 0 ? false :  _rgx != null ? _rgx.match(v) : true;
+	}
+	
+	public function isEmpty():Bool {
+		return value() == "";
 	}
 	
 	public function files():FileList {

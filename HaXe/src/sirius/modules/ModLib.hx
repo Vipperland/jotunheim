@@ -41,7 +41,8 @@ class ModLib {
 	 * @param	handler
 	 */
 	public function onModuleRequest(handler:String->Dynamic->Dynamic):Void {
-		if(Lambda.indexOf(_predata, handler) == -1)	_predata[_predata.length] = handler;
+		if (Lambda.indexOf(_predata, handler) == -1)
+			_predata[_predata.length] = handler;
 	}
 	
 	/**
@@ -69,24 +70,25 @@ class ModLib {
 					var i:Int = v.indexOf("}]");
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
-						if (mod.name == null) mod.name = file;
-						else Sirius.log("		ModLib => NAME " + mod.name, 1);
-						if (exists(mod.name)) {
+						if (mod.name == null)
+							mod.name = file;
+						else
+							Sirius.log("		ModLib => NAME " + mod.name, 1);
+						if (exists(mod.name))
 							Sirius.log("	ModLib => OVERRIDE " + mod.name, 2);
-						}
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
-						if(mod.type == 'null' || mod.type == "html") content = content.split('\r').join('').split('\n').join('');
+						if (mod.type == null || mod.type == 'null' || mod.type == "html")
+							content = content.split('\r').join('').split('\n').join('');
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
 							Sirius.log("	ModLib => " + mod.name + " VERIFYING...", 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v.toLowerCase());
-								if (set == null) {
+								if (set == null) 
 									Sirius.log("		ModLib => REQUIRED " + v, 2);
-								}else {
-									content = content.split("<import " + v + "/>").join(set);
-								}
+								else
+									content = content.split("{{@include:" + v + "}}").join(set);
 							});
 						}
 						#if js
@@ -102,9 +104,8 @@ class ModLib {
 							}
 							if (mod.target != null) {
 								var t:IDisplay = Sirius.one(mod.target);
-								if (t != null) {
+								if (t != null)
 									t.addChild(build(mod.name));
-								}
 							}
 							// ***
 						#end
@@ -175,7 +176,8 @@ class ModLib {
 					Lib.print(Filler.to(module, v, sufix));
 				});
 			}else {
-				Lib.print(get(name, data));
+				Lib.print(fill(name, data, sufix));
+				
 			}
 		}
 		
@@ -201,6 +203,14 @@ class ModLib {
 			}else {
 				return new Display().write(get(module, data));
 			}
+		}
+		
+		public function buildIn(module:String, target:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
+			var display:IDisplay = Sirius.one(target);
+			if (display != null) {
+				display.addChild(build(module, data, each));
+			}
+			return display;
 		}
 		
 		// ***

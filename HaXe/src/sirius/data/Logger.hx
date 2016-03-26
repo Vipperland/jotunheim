@@ -8,12 +8,15 @@ import sirius.utils.Dice;
  */
 class Logger{
 	
-	private var _bgs:Array<String>;
-	
 	private var _events:Array<Dynamic->UInt->Void>;
 	
 	public function new() {
-		_events = [query];
+		_events = [];
+		#if js 
+			_events[0] = query;
+		#elseif php
+			Reflect.setField(_events, "query", query);
+		#end
 	}
 	
 	#if js
@@ -22,9 +25,12 @@ class Logger{
 		}
 	#end
 	
-	public function silent():Void {
-		query("Log => Disconnected", 2);
+	public function mute():Void {
 		if (Lambda.indexOf(_events, query) != -1) _events.splice(0, 1);
+	}
+	
+	public function unmute():Void {
+		if (Lambda.indexOf(_events, query) == -1) _events.unshift(query);
 	}
 	
 	public function listen(handler:Dynamic->UInt->Void):Void {
@@ -32,7 +38,7 @@ class Logger{
 	}
 	
 	public function push(q:Dynamic, type:UInt) {
-		Dice.Values(_events, function(v:Dynamic->UInt->Void) { v(q, type); });
+		Dice.Values(_events, function(v:Dynamic->UInt->Void) { 	v(q, type); });
 	}
 	
 	public function query(q:Dynamic, type:UInt):Void {

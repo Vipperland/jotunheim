@@ -84,6 +84,26 @@ interface IDataTable {
 	 * @param	fields
 	 * @return
 	 */
-	public function restrict(fields:Dynamic):IDataTable;
+	public function restrict(fields:Dynamic, ?times:UInt = 0):IDataTable;
+	
+	/**
+	 * Unrestrict all fields for find command
+	 * @return
+	 */
+	public function unrestrict():IDataTable;
+	
+	/**
+	 * If table as a specified column name
+	 * @param	name
+	 * @return
+	 */
+	public function hasColumn(name:String):Bool;
+	
+	/**
+	 * Get table column data erference
+	 * @param	name
+	 * @return
+	 */
+	public function getColumn(name:String):Column;
 	
 }

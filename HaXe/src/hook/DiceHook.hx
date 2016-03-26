@@ -13,7 +13,7 @@ extern public class Dice {
 	 * @param	complete	On propagation stop handler, call it with fail param and value
 	 * @return	Last value
 	 */
-	public static function All (q:Dynamic, each:Dynamic, ?complete:Dynamic->Void=null) : Dynamic;
+	public static function All (q:Dynamic, each:Dynamic, ?complete:DiceRollHook->Void=null) : DiceRollHook;
 
 	/**
 	 * For each object Param call each(param)
@@ -21,7 +21,7 @@ extern public class Dice {
 	 * @param	each		Parameter handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail parameter
 	 */
-	public static function Params (q:Dynamic, each:Dynamic, ?complete:Dynamic->Void=null) : Dynamic;
+	public static function Params (q:Dynamic, each:Dynamic, ?complete:DiceRollHook->Void=null) : DiceRollHook;
 
 	/**
 	 * For each object Value call each(value)
@@ -29,7 +29,7 @@ extern public class Dice {
 	 * @param	each		Value handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail value
 	 */
-	public static function Values (q:Dynamic, each:Dynamic, ?complete:Dynamic->Void=null) : Dynamic;
+	public static function Values (q:Dynamic, each:Dynamic, ?complete:DiceRollHook->Void=null) : DiceRollHook;
 
 	/**
 	 * Execute the method in all object list (obj.method(...args))
@@ -37,7 +37,7 @@ extern public class Dice {
 	 * @param	method	Function name
 	 * @param	args		Function arguments
 	 */
-	public static function Call (q:Dynamic, method:String, ?args:Array<Dynamic>) : Dynamic;
+	public static function Call (q:Dynamic, method:String, ?args:Array<Dynamic>) : DiceRollHook;
 
 	/**
 	 * Call a method f(a,b,a==b) while (a<b; ++a)
@@ -46,7 +46,7 @@ extern public class Dice {
 	 * @param	each
 	 * @param	complete
 	 */
-	public static function Count (from:Dynamic, to:Dynamic, each:Int -> Int -> Bool -> Null<Bool>, ?complete:Dynamic->Void=null, ?increment:UInt=1) : Dynamic;
+	public static function Count (from:Dynamic, to:Dynamic, each:Int->Int->Bool->Null<Bool>, ?complete:DiceRollHook->Void=null, ?increment:UInt=1) : DiceRollHook;
 
 	/**
 	 * Return the first valid value, if no one found, will return an alternative value
@@ -54,7 +54,7 @@ extern public class Dice {
 	 * @param	alt
 	 * @return
 	 */
-	public static function One (from:Dynamic, ?alt:Dynamic) : Dynamic;
+	public static function One (from:Dynamic, ?alt:Dynamic) : DiceRollHook;
 
 	/**
 	 * Ammount of values that fit in a table
@@ -63,20 +63,29 @@ extern public class Dice {
 	 * @return
 	 */
 	public static function Match (table:Array<Dynamic>, values:Dynamic, ?limit:UInt=0) : Int;
-	
+
 	/**
 	 * Concat all mixed data into one array
 	 * @param	data
 	 * @return
 	 */
-	public static function Mix(data:Array<Dynamic>):Array<Dynamic>;
-	
+	public static function Mix (data:Array<Dynamic>) : Array<Dynamic>;
+
+	/**
+	 * Sort all data in a vector by key
+	 * @param	data
+	 * @param	key
+	 * @param	numeric
+	 * @return
+	 */
+	public static function Table (data:Array<Dynamic>, key:String, ?numeric:Bool=false) : Array<Dynamic>;
+
 	/**
 	 * For each Child element in an Object
 	 * @param	of				Target container
 	 * @param	each			h(e:Element|Node)
 	 * @param	complete		c(LastIndex_INT)
 	 */
-	public static function Children (of:Dynamic, each:Dynamic -> Int -> Null<Bool>, ?complete:Dynamic->Void = null) : Dynamic;
+	public static function Children (of:Dynamic, each:Node->Int->Null<Bool>, ?complete:DiceRollHook->Void=null) : DiceRollHook;
 	
 }

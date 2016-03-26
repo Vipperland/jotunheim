@@ -4,7 +4,7 @@ package hook;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
- @:native('sru.dom.Display')
+@:native('sru.dom.Display')
 extern class DisplayHook extends Dynamic {
 	
 	/**
@@ -33,7 +33,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	q
 	 * @return
 	 */
-	public function enable(q:Array<Dynamic>):Display;
+	public function enable(q:Array<Dynamic>):DisplayHook;
 	
 	/**
 	 * Query select on children
@@ -47,7 +47,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	q
 	 * @return
 	 */
-	public function one(q:String):Display;
+	public function one(q:String):DisplayHook;
 	
 	/**
 	 * Get all child elements
@@ -73,46 +73,46 @@ extern class DisplayHook extends Dynamic {
 	 * @param	q
 	 * @return
 	 */
-	public function indexOf(q:Display):Int;
+	public function indexOf(q:DisplayHook):Int;
 	
 	/**
 	 * Append a child to display list
 	 * @param	q
 	 * @return
 	 */
-	public function addChild(q:Display, ?at:Int = -1):Display;
+	public function addChild(q:DisplayHook, ?at:Int = -1):DisplayHook;
 	
 	/**
 	 * Append a list of children
 	 */
-	public function addChildren(q:Table):Display;
+	public function addChildren(q:Table):DisplayHook;
 	
 	/**
 	 * Add a text content to element
 	 * @param	q
 	 * @return
 	 */
-	public function addText(q:String):Display;
+	public function addText(q:String):DisplayHook;
 	
 	/**
 	 * Remove child from container
 	 * @param	q
 	 * @return
 	 */
-	public function removeChild(q:Display):Display;
+	public function removeChild(q:DisplayHook):DisplayHook;
 	
 	/**
 	 * Remove from parent container
 	 * @return
 	 */
-	public function remove():Display;
+	public function remove():DisplayHook;
 	
 	/**
 	 * Parent container, can go up to any available level until reach document element
 	 * @param	levels
 	 * @return
 	 */
-	public function parent(levels:UInt=0):Display;
+	public function parent(levels:UInt=0):DisplayHook;
 	
 	/**
 	 * Get child by index
@@ -120,7 +120,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	update
 	 * @return
 	 */
-	public function getChild(i:Int, ?update:Bool):Display;
+	public function getChild(i:Int, ?update:Bool):DisplayHook;
 	
 	/**
 	 * Current element scroll offset
@@ -186,14 +186,14 @@ extern class DisplayHook extends Dynamic {
 	 * @param	values
 	 * @return
 	 */
-	public function attributes(values:Dynamic):Display;
+	public function attributes(values:Dynamic):DisplayHook;
 	
 	/**
 	 * Write InnerText or InnerHTML properties
 	 * @param	q
 	 * @param	plainText
 	 */
-	public function write(q:String, ?plainText:Bool = false):Display;
+	public function write(q:String, ?plainText:Bool = false):DisplayHook;
 	
 	/**
 	 * Fit element in current viewport width and height
@@ -219,7 +219,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	q
 	 * @return
 	 */
-	public function mount(q:String, ?data:Dynamic):Display;
+	public function mount(q:String, ?data:Dynamic):DisplayHook;
 	
 	
 	/**
@@ -236,7 +236,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	mode
 	 * @return
 	 */
-	public function on(type:String, handler:Dynamic, ?mode:Dynamic):Display;
+	public function on(type:String, handler:Dynamic, ?mode:Dynamic):DisplayHook;
 	
 	/**
 	 * Applies a fade tween
@@ -244,7 +244,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	time
 	 * @return
 	 */
-	public function fadeTo(value:Float, time:Float = 1):Display;
+	public function fadeTo(value:Float, time:Float = 1):DisplayHook;
 	
 	/**
 	 * Transiction to target
@@ -253,7 +253,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	ease
 	 * @param	complete
 	 */
-	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):Display;
+	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):DisplayHook;
 	
 	/**
 	 * Transiction from target
@@ -262,7 +262,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	ease
 	 * @param	complete
 	 */
-	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):Display;
+	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):DisplayHook;
 	
 	/**
 	 * Transiction from target to target
@@ -272,21 +272,21 @@ extern class DisplayHook extends Dynamic {
 	 * @param	ease
 	 * @param	complete
 	 */
-	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):Display;
+	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):DisplayHook;
 	
 	/**
 	 * Add a 30FPS call handler
 	 * @param	handler
 	 * @return
 	 */
-	public function activate(handler:Dynamic):Display;
+	public function activate(handler:Dynamic):DisplayHook;
 	
 	/**
 	 * Remove a 30FPS call handler
 	 * @param	handler
 	 * @return
 	 */
-	public function deactivate(handler:Dynamic):Display;
+	public function deactivate(handler:Dynamic):DisplayHook;
 	
 	/**
 	 * Change WIDTH of Dynamic
@@ -311,7 +311,7 @@ extern class DisplayHook extends Dynamic {
 	 * @param	pct
 	 * @return
 	 */
-	public function fit(width:Float, height:Float, ?pct:Bool):Display;
+	public function fit(width:Float, height:Float, ?pct:Bool):DisplayHook;
 	
 	/**
 	 * Set overflow mode
@@ -356,13 +356,13 @@ extern class DisplayHook extends Dynamic {
 	 * @param	target
 	 * @return
 	 */
-	public function addTo(?target:Display):Display;
+	public function addTo(?target:DisplayHook):DisplayHook;
 	
 	/**
 	 * Add this to Body element
 	 * @return
 	 */
-	public function addToBody():Display;
+	public function addToBody():DisplayHook;
 	
 	/**
 	 * Align center

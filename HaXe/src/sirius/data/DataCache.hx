@@ -11,6 +11,9 @@ import haxe.Json;
 	import sys.io.FileInput;
 #end
 import haxe.Log;
+import sirius.php.utils.Header;
+import sirius.serial.JsonTool;
+import sirius.tools.BitIO;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 import sirius.utils.Criptog;
@@ -195,7 +198,7 @@ class DataCache implements IDataCache {
 	}
 	
 	public function json(?print:Bool):String {
-		var result:String = Json.stringify(_DB);
+		var result:String = JsonTool.stringfy(_DB, null, " ");
 		if (print) #if php Lib.print(result); #elseif js if (print) Log.trace(result); #end
 		return result;
 	}

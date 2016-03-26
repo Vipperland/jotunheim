@@ -20,6 +20,15 @@ interface ITable {
 	public var elements:Array<Element>;
 	
 	/**
+	 * Do a query selector
+	 * @param	q
+	 * @param	t
+	 * @param	h
+	 * @return
+	 */
+	public function scan(q:String, ?t:Element, ?h:IDisplay->Bool):ITable;
+	
+	/**
 	 * Return all elements with contains a specific value
 	 * @param	q
 	 * @return
@@ -149,7 +158,19 @@ interface ITable {
 	 * @param	capture
 	 * @return
 	 */
-	public function on(name:String, handler:IEvent->Void, ?mode:String) : ITable;
+	public function on(name:String, handler:IEvent->Void, ?mode:Int) : ITable;
+	
+	/**
+	 * Clear all table data
+	 * @return
+	 */
+	public function reset():ITable;
+	
+	/**
+	 * Enable fast Table construction
+	 * @return
+	 */
+	public function dispose():Void;
 	
 	/**
 	 * Join one or more Tables in one or clone current Table

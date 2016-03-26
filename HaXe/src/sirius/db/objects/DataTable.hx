@@ -16,6 +16,14 @@ class DataTable implements IDataTable {
 	
 	private var _fields:Dynamic;
 	
+	private var _restrict:UInt;
+	
+	private function _checkRestriction():Dynamic {
+		var r:Dynamic = _fields;
+		if (_restrict > 0 && --_restrict == 0) unrestrict();
+		return r;
+	}
+	
 	public var description(get, null):Dynamic;
 	private function get_description():Dynamic {
 		if (_description == null) {
@@ -33,23 +41,31 @@ class DataTable implements IDataTable {
 		_gate = gate;
 		_name = name;
 		_fields = "*";
+		_restrict = 0;
 	}
 	
-	public function restrict(fields:Dynamic):IDataTable {
+	public function restrict(fields:Dynamic, ?times:UInt = 0):IDataTable {
+		_restrict = times;
 		_fields = fields;
 		return this;
 	}
+	
+	public function unrestrict():IDataTable {
+		_fields = "*";
+		return this;
+	}
+	
 	
 	public function add (?parameters:Dynamic = null, ?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
 		return new QueryResult(_gate.builder.add(_name, clausule, parameters, order, limit).execute().result);
 	}
 
-	public function findAll (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
-		return new QueryResult(_gate.builder.find(_fields, _name, clausule, order, limit).execute().result);
+	public function findAll (?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
+		return new QueryResult(_gate.builder.find(_checkRestriction(), _name, clausule, order, limit).execute().result);
 	}
 
 	public function findOne (?clausule:Dynamic=null) : Dynamic {
-		return new QueryResult(_gate.builder.find(_fields, _name, clausule, null, Limit.MAX(1)).execute().result).first();
+		return new QueryResult(_gate.builder.find(_checkRestriction(), _name, clausule, null, Limit.MAX(1)).execute().result).first();
 	}
 
 	public function update (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
@@ -68,10 +84,27 @@ class DataTable implements IDataTable {
 		return new QueryResult(_gate.builder.truncate(_name).result);
 	}
 	
+	public function rename(to:String):IQueryResult {
+		var old:String = _name;
+		_name = to;
+		return new QueryResult(_gate.builder.rename(old, to).result);
+	}
+	
 	public function clear (paramaters:Dynamic):Dynamic {
 		var desc:Dynamic = get_description();
 		Dice.All(paramaters, function(p:String, v:Dynamic) { if (!Reflect.hasField(desc, p)) Reflect.deleteField(paramaters, p); });
 		return paramaters;
+	}
+	
+	public function hasColumn(name:String):Bool {
+		var d:Dynamic = description;
+		return Reflect.hasField(d, name);
+	}
+	
+	public function getColumn(name:String):Column {
+		return hasColumn(name)
+					? Reflect.field(_description, name)
+					: null;
 	}
 	
 	public function getErrors():Dynamic {

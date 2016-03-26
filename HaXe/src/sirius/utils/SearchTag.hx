@@ -15,10 +15,10 @@ class SearchTag {
 		return value;
 	}
 	
-	public static function convert(f:Dynamic, ?condense:Bool = true, ?cCase:Bool = false):String {
-		f = Std.string(f);
-		if (condense) f = f.split(' ').join('');
-		if (!cCase) f = f.toLowerCase();
+	public static function convert(data:Dynamic, ?condense:Bool = true, ?cCase:Bool = false):String {
+		data = Std.string(data);
+		if (condense) data = data.split(' ').join('');
+		if (!cCase) data = data.toLowerCase();
 		if (!_R) {
 			Dice.Values(_M, function(v:Array<String>) { _M.push([v[0].toUpperCase(), v[1].toUpperCase()]); });
 			_R = true;
@@ -26,10 +26,10 @@ class SearchTag {
 		var i:Int = 0;
 		var l:Int = _M.length;
 		while (i < l) {
-			f = f.split(_M[i][0]).join(_M[i][1]);
+			data = data.split(_M[i][0]).join(_M[i][1]);
 			++i;
 		}
-		return f;
+		return data;
 	}
 	
 	public var tags:Array<String>;

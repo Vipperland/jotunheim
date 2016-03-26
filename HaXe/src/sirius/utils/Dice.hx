@@ -19,6 +19,12 @@ import sirius.utils.IDiceRoll;
 @:expose("Dice")
 class Dice {
 	
+	/** @private */
+	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
+	
+	/** @private */
+	private static var _R:Bool = false;
+	
 	/**
 	 * For each object Value and parameter, call each(paramName,value)
 	 * @param	q		Target object
@@ -91,11 +97,15 @@ class Dice {
 	 * @param	method	Function name
 	 * @param	args		Function arguments
 	 */
-	public static function Call(q:Dynamic, method:String, ?args:Array<Dynamic>):IDiceRoll {
+	public static function Call(q:Array<Dynamic>, method:String, ?args:Array<Dynamic>):IDiceRoll {
 		if (args == null) args = [];
 		return All(q,
 			function(p:Dynamic, v:Dynamic) {
-				Reflect.callMethod(v, Reflect.field(v, method), args); 
+				#if js
+					untyped __js__("v[method].apply(q,args)");
+				#elseif php
+					Reflect.callMethod(v, Reflect.field(v, method), args); 
+				#end
 			},
 			null
 		);
@@ -162,6 +172,23 @@ class Dice {
 	public static function Mix(data:Array<Dynamic>):Array<Dynamic> {
 		var r:Array<Dynamic> = [];
 		Dice.Values(data, function(v:Dynamic) {	r = r.concat(v); });
+		return r;
+	}
+	
+	/**
+	 * Sort all data in a vector by key
+	 * @param	data
+	 * @param	key
+	 * @param	numeric
+	 * @return
+	 */
+	public static function Table(data:Array<Dynamic>, key:String, ?numeric:Bool = false):Array<Dynamic> {
+		var r:Array<Dynamic> = cast data.sort(function (a:Int, b:Int):Int {
+			if (numeric)
+				return Reflect.compare(Reflect.field(a, key), Reflect.field(b, key));
+			else
+				return Reflect.compare(SearchTag.convert(Reflect.field(a, key), true),SearchTag.convert(Reflect.field(b, key), true));
+		});
 		return r;
 	}
 	

@@ -2,6 +2,8 @@ package sirius.php.utils;
 import haxe.Json;
 import php.Lib;
 import php.Web;
+import sirius.serial.JsonTool;
+import sirius.tools.BitIO;
 import sirius.utils.Criptog;
 
 /**
@@ -45,8 +47,8 @@ class Header {
 	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
 		content(JSON);
 		if (data != null) {
-			var data:String = Json.stringify(data);
-			if (encode) data = Criptog.encodeBase64(data);
+			var data:String = JsonTool.stringfy(data, null, " ");
+			if (encode == true) data = Criptog.encodeBase64(data);
 			Lib.print(data);
 		}
 	}

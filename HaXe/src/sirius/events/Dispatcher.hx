@@ -88,13 +88,22 @@ class Dispatcher implements IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function auto(type:String, ?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
+	public function auto(type:String, ?handler:IEvent->Void, ?mode:Int):IEventGroup {
 		var ie:IEventGroup = event(type);
 		return switch(mode) {
-			case 1, true , "capture" : ie.add(handler, true);
-			case null, 0, false : ie.add(handler, false);
-			case -1, "remove" : ie.remove(handler);
+			case 2, 3 : ie.add(handler, mode == 3).noDefault();
+			case 1 : ie.add(handler, true);
+			case null, 0 : ie.add(handler, false);
+			case -1 : ie.remove(handler);
 			default : ie;
+		}
+	}
+	
+	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):Dynamic {
+		return {
+			"over":mouseOver(handler, mode),
+			"out":mouseOut(handler, mode),
+			"down":mouseDown(handler, mode),
 		}
 	}
 	

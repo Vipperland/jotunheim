@@ -11,9 +11,9 @@ import sirius.events.IDispatcher;
  */
 class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 	
-	public var __data__:IDataSet;
-	
 	public var __id__:String;
+	
+	public var __data__:IDataSet;
 	
 	public var __events__:IDispatcher;
 	
@@ -36,6 +36,10 @@ class DisplayData extends DataSet implements ArrayAccess<Dynamic> {
 		__data__.clear();
 		__events__ = null;
 		__data__ = null;
+	}
+	
+	public function getDisplay():IDisplay {
+		return __events__.target;
 	}
 	
 }

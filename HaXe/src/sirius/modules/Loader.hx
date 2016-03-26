@@ -1,11 +1,11 @@
 package sirius.modules;
-import haxe.Http;
-import haxe.Log;
+import sirius.Sirius;
 import sirius.errors.Error;
 import sirius.errors.IError;
 import sirius.modules.Request;
-import sirius.modules.ModLib;
-import sirius.Sirius;
+import sirius.net.HttpRequest;
+import sirius.signals.ISignals;
+import sirius.signals.Signals;
 import sirius.utils.Dice;
 
 #if js
@@ -22,7 +22,7 @@ class Loader implements ILoader {
 	private static var FILES:Dynamic = { };
 	
 	private var _toload:Array<String> = [];
-	private var _onChange:Array<Http->String->String->String->Void>;
+	private var _onChange:Array<HttpRequest->String->String->String->Void>;
 	private var _onComplete:Array<Dynamic>;
 	private var _onError:Array<Dynamic>;
 	private var _isBusy:Bool;
@@ -34,11 +34,18 @@ class Loader implements ILoader {
 	
 	public var lastError:IError;
 	
+	public var signals:ISignals;
+	
+	private function _getReq(u:String):HttpRequest {
+		return new HttpRequest(u + (_noCache ? "" : "?t=" + Date.now().getTime()));
+	}
+	
 	public function new(?noCache:Bool = false){
 		_noCache = noCache;
 		_onComplete = [];
 		_onError = [];
 		_onChange = [];
+		signals = new Signals(this);
 		totalLoaded = 0;
 		totalFiles = 0;
 	}
@@ -47,33 +54,7 @@ class Loader implements ILoader {
 		return totalLoaded / totalFiles;
 	}
 	
-	public function unlisten(?handler:Dynamic->Void):ILoader {
-		var i:Int = -1;
-		if(handler != null){
-			i = Lambda.indexOf(_onComplete, handler);
-			if (i != -1) _onComplete.splice(i, 1);
-			i = Lambda.indexOf(_onError, handler);
-			if (i != -1) _onError.splice(i, 1);
-		}
-		return this;
-	}
-	
-	public function onChange(handler:Http->String->String->String->Void):Void {
-		if (handler != null) _onChange[_onChange.length] = handler;
-	}
-	
-	public function listen(?complete:ILoader->Void, ?error:IError->Void):ILoader {
-		if (error != null && Lambda.indexOf(_onError, error) == -1) {
-			_onError[_onError.length] = error;
-		}
-		if (complete != null && Lambda.indexOf(_onComplete, complete) == -1) {
-			_onComplete[_onComplete.length] = complete;
-		}
-		return this;
-	}
-	
-	public function add(files:Array<String>, ?complete:ILoader->Void, ?error:IError->Void):ILoader {
-		listen(complete, error);
+	public function add(files:Array<String>):ILoader {
 		if (files != null && files.length > 0) {
 			_toload = _toload.concat(files);
 			totalFiles += files.length;
@@ -81,37 +62,33 @@ class Loader implements ILoader {
 		return this;
 	}
 	
-	public function start(?complete:ILoader->Void, ?error:IError->Void):ILoader {
+	public function start():ILoader {
 		if (!_isBusy) {
-			listen(complete, error);
 			_isBusy = true;
 			_loadNext();
 		}
 		return this;
 	}
 	
-	private function _changed(req:Http, url:String, status:String, ?data:String):Void {
-		Dice.Values(_onChange, function(v:Http->String->String->String->Void) {
-			v(req, url, status, data);
-		});
+	private function _changed(file:String, status:String, ?data:String):Void {
+		signals.call(status, { file:file, data:data } );
 	}
 	
 	private function _loadNext():Void {
 		if (_toload.length > 0) {
 			var f:String = _toload.shift();
-			var r:Http = new Http(f + (_noCache ? "" : "?t=" + Date.now().getTime()));
-			_changed(r, f, 'started');
+			var r:HttpRequest = _getReq(f);
+			_changed(f, 'started');
 			#if js
 				r.async = true;
 			#end
 			r.onError = function(e) {
-				_changed(r, f, 'error', e);
+				_changed(f, 'error', e);
 				++totalLoaded;
-				if (_error != null) _error(e);
 				_loadNext();
 			}
 			r.onData = function(d) {
-				_changed(r, f, 'complete', d);
+				_changed(f, 'loaded', d);
 				++totalLoaded;
 				Sirius.resources.register(f, d);
 				_loadNext();
@@ -125,15 +102,11 @@ class Loader implements ILoader {
 	
 	private function _error(e:Dynamic):Void {
 		lastError = Std.is(e, String) ? new Error( -1, e, this) : new Error( -1, "Unknow", { content:e, loader:this } );
-		Dice.Values(_onError, function(v:IError->Void) {
-			if (v != null) v(lastError);
-		});
+		signals.call('error', lastError);
 	}
 	
 	private function _complete():Void {
-		Dice.Values(_onComplete, function(v:ILoader->Void) {
-			if (v != null) v(this);
-		});
+		signals.call('complete');
 		_onComplete = [];
 		_onError = [];
 	}
@@ -148,21 +121,21 @@ class Loader implements ILoader {
 	
 	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:String->String->Void):Void {
 		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
-		var r:Http = new Http(h[0] + (_noCache ? "" : "?t=" + Date.now().getTime()));
+		var r:HttpRequest = _getReq(h[0]);
 		#if js 
 			r.async = true; 
 		#end
-		_changed(r, file, 'started');
+		_changed(file, 'started');
 		r.onData = function(d) {
-			_changed(r, file, 'complete', d);
+			_changed(file, 'loaded', d);
 			Sirius.resources.register(file, d);
-			file = h.length == 2 ? h[1] : file;
 			#if js
 				if (target != null) {
 					if(Std.is(target, String)) {
 						var e:IDisplay = Sirius.one(target, null);
 						if (e != null) {
-							if (!Std.is(data, Array)) data = [data];
+							if (!Std.is(data, Array)) 
+								data = [data];
 							e.addChild(build(file, data));
 						}
 					}else {
@@ -174,29 +147,39 @@ class Loader implements ILoader {
 					}
 				}
 			#end
-			if (handler != null) handler(file, d);
+			if (handler != null) 
+				handler(file, d);
 		}
 		r.onError = function(d) {
-			_changed(r, file, 'error', d);
-			if (handler != null) handler(null, d);
+			_changed(file, 'error', d);
+			if (handler != null) 
+				handler(null, d);
 		}
 		r.request(false);
 	}
 	
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void {
-		var r:Http = new Http(url + (_noCache ? "" : "?t=" + Date.now().getTime()));
-		_changed(r, url, 'started');
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST'):Void {
+		var r:HttpRequest = _getReq(url);
+		_changed(url, 'started');
 		#if js
 			r.async = true;
 		#end
-		if (data != null) Dice.All(data, r.setParameter);
+		if (data != null) {
+			#if js
+				Dice.All(data, r.addParameter);
+			#else
+				Dice.All(data, r.setParameter);
+			#end
+		}
 		r.onData = function(d) { 
-			_changed(r, url, 'complete', d);
-			if (handler != null) handler(new Request(true, d, null)); 
+			_changed(url, 'loaded', d);
+			if (handler != null) 
+				handler(new Request(true, d, null)); 
 		}
 		r.onError = function(d) { 
-			_changed(r, url, 'error', d);
-			if (handler != null) handler(new Request(false, null, new Error(-1, d))); 
+			_changed(url, 'error', d);
+			if (handler != null) 
+				handler(new Request(false, null, new Error(-1, d))); 
 		}
 		r.request(method == null || method.toLowerCase() == 'post');
 	}

@@ -1,5 +1,7 @@
 package sirius.events;
+import js.Browser;
 import sirius.dom.Display;
+import sirius.dom.Html;
 import sirius.dom.IDisplay;
 import sirius.utils.Dice;
 
@@ -32,14 +34,17 @@ class EventGroup implements IEventGroup {
 	}
 	
 	public function add(handler:IEvent->Void, ?capture:Bool):IEventGroup {
-		if (capture != null)	this.capture = capture;
-		if(handler != null)		this.events.push(handler);
+		if (capture != null)
+			this.capture = capture;
+		if (handler != null)
+			this.events.push(handler);
 		return this;
 	}
 	
 	public function remove(handler:IEvent->Void):IEventGroup {
 		var iof:Int = Lambda.indexOf(this.events, handler);
-		if (iof != -1) this.events.splice(iof, 1);
+		if (iof != -1)
+			this.events.splice(iof, 1);
 		return this;
 	}
 	
@@ -58,8 +63,9 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
-	public function preventDefault():Void {
+	public function noDefault():IEventGroup {
 		_pd = true;
+		return this;
 	}
 	
 	public function reset():IEventGroup {
@@ -71,17 +77,23 @@ class EventGroup implements IEventGroup {
 		if (!enabled) return;
 		var evt:IEvent = new Event(dispatcher, this, e);
 		Dice.Values(events, function(v:Dynamic) {
-			if (v != null) v(evt);
+			if (v != null)
+				v(evt);
 			return !propagation;
 		});
-		if (_pd && e != null) {
+		if (_pd && e != null)
 			evt.event.preventDefault();
-		}
 		propagation = true;
 	}
 	
-	public function call():IEventGroup {
-		_runner(null);
+	public function call(?bubbles:Bool = false, ?cancelable:Bool = true):IEventGroup {
+		if (Browser.document.createEvent != null) {
+			var e:js.html.Event = Browser.document.createEvent("HTMLEvents");
+			e.initEvent(name, bubbles, cancelable);
+			dispatcher.target.element.dispatchEvent(e);
+		}else {
+			_runner(null);
+		}
 		return this;
 	}
 	

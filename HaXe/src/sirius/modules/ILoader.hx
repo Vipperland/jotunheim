@@ -1,7 +1,8 @@
 package sirius.modules;
-import haxe.Http;
 import sirius.errors.IError;
 import sirius.errors.Error;
+import sirius.net.HttpRequest;
+import sirius.signals.ISignals;
 
 #if js
 	import sirius.dom.IDisplay;
@@ -27,6 +28,11 @@ interface ILoader {
 	 * Total of loaded files
 	 */
 	public var totalLoaded:Int;
+	
+	/**
+	 * Loader signals
+	 */
+	public var signals:ISignals;
 	
 	/**
 	 * Total Load Progress
@@ -67,35 +73,13 @@ interface ILoader {
 	 * @param	error
 	 * @return
 	 */
-	public function add (files:Array<String>, ?complete:ILoader->Void, ?error:IError->Void):ILoader;
+	public function add (files:Array<String>):ILoader;
 	
 	/**
 	 * Init Loader proccess
 	 * @return
 	 */
-	public function start (?complete:ILoader->Void, ?error:IError->Void) : ILoader;
-	
-	/**
-	 * Add listeners to load complete and laod error
-	 * @param	complete
-	 * @param	error
-	 * @return
-	 */
-	public function listen (?complete:ILoader->Void, ?error:IError->Void) : ILoader;
-	
-	/**
-	 * Remove an event listener
-	 * @param	handler
-	 * @return
-	 */
-	public function unlisten(?handler:Dynamic->Void):ILoader;
-	
-	/**
-	 * Any status change for all files
-	 * @param	handler
-	 * @return
-	 */
-	public function onChange(handler:Http->String->String->String->Void):Void;
+	public function start () : ILoader;
 	
 	/**
 	 * Call a url
@@ -104,7 +88,7 @@ interface ILoader {
 	 * @param	handler
 	 * @param	method
 	 */
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, method:String = 'post'):Void;
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST'):Void;
 
 
 }

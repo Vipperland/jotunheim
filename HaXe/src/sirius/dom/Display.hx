@@ -2,12 +2,13 @@ package sirius.dom;
 
 import haxe.ds.Either;
 import js.Browser;
+import js.JQuery;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
 import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.Node;
-import js.JQuery;
+import sirius.Sirius;
 import sirius.data.DataSet;
 import sirius.data.DisplayData;
 import sirius.data.IDataSet;
@@ -18,7 +19,6 @@ import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.math.Point;
 import sirius.modules.IRequest;
-import sirius.Sirius;
 import sirius.tools.Key;
 import sirius.tools.Ticker;
 import sirius.tools.Utils;
@@ -38,6 +38,12 @@ class Display implements IDisplay {
 	
 	public static function ofKind(q:String):IDisplay {
 		return new Display(Browser.document.createElement(q));
+	}
+	
+	public static function fromGC(id:String):IDisplay {
+		if (_DATA.exists(id))
+			return cast _DATA.get(id).getDisplay();
+		return null;
 	}
 	
 	static public function gc(?secure:Bool):Void {
@@ -73,17 +79,25 @@ class Display implements IDisplay {
 	
 	private var _visibility:Int;
 	
+	private var _getattr:Bool;
+	
+	private var _setattr:Bool;
+	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
 		
-		if (q == null) 	q = Browser.document.createDivElement();
-		if (Std.is(q, IDisplay))	element = q.element;
-		else 						element = q;
+		if (q == null)
+			q = Browser.document.createDivElement();
+		if (Reflect.hasField(q, 'element'))
+			element = q.element;
+		else
+			element = q;
 		
 		if (element != cast Browser.document) {
+			_getattr = element.getAttribute != null;
+			_setattr = element.setAttribute != null;
 			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
-			if (!_DATA.exists(_uid)) {
+			if (!_DATA.exists(_uid))
 				_DATA.set(_uid, new DisplayData(_uid, this));
-			}
 			data = _DATA.get(_uid);
 			events = data.__events__;
 		}
@@ -103,31 +117,34 @@ class Display implements IDisplay {
 	public function enable(q:Array<Dynamic>):IDisplay {
 		var d:IDispatcher = this.events;
 		Dice.Values(q, function(v:Dynamic) {
-			if (!Std.is(v, Array))	v = [v, false];
+			if (!Std.is(v, Array))
+				v = [v, false];
 			var o:Dynamic = v[0];
 			var c:Dynamic = v[1];
-			untyped __js__("new o(d, c)");
+			untyped __js__("new o(d,c)");
 		});
 		return this;
 	}
 	
-	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String):String {
-		
+	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String, ?size:String):String {
 		if (data != null) {
 			var value:Dynamic = cast data;
-			if (Std.is(value, IARGB)) value = value.css();
-			if (value.indexOf("#") == 0) {
+			if (Std.is(value, IARGB))
+				value = value.css();
+			if (value.indexOf("#") == 0)
 				element.style.background = value;
-			}else if (value.indexOf("rgb") == 0) {
+			else if (value.indexOf("rgb") == 0)
 				element.style.backgroundColor = value;
-			}else{
-				var c:String = "url('" + value + "')";
-				var r:String = repeat != null ? repeat : "no-repeat";
-				var p:String = position != null ? position : "center center";
-				element.style.backgroundImage = c;
-				element.style.backgroundRepeat = r;
-				element.style.backgroundPosition = p;
-				if (attachment != null) element.style.backgroundAttachment = attachment;
+			else{
+				style({
+					backgroundImage : "url('" + value + "')",
+					backgroundRepeat :  repeat != null ? repeat : "no-repeat",
+					backgroundPosition : position != null ? position : "center center",
+				});
+				if (attachment != null)
+					style( { backgroundAttachment:attachment } );
+				if (size != null)
+					style( { backgroundSize:size } );
 			}
 		}
 		return element.style.background;
@@ -145,12 +162,15 @@ class Display implements IDisplay {
 	
 	
 	public function children():ITable {
-		if (_children == null) _children = Sirius.all('*', element);
-		return _children;
+		if (_children == null)
+			_children = Sirius.all('*', element);
+		return
+			_children;
 	}
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {
-		if (o == null) o = { };
+		if (o == null)
+			o = { };
 		o.scrollX = element.scrollLeft;
 		o.scrollY = element.scrollTop;
 		o.x = element.offsetLeft;
@@ -161,7 +181,8 @@ class Display implements IDisplay {
 	}
 	
 	public function getChild(i:Int, ?update:Bool):IDisplay {
-		if (_children == null || update == true) _children = children();
+		if (_children == null || update == true)
+			_children = children();
 		return cast _children.obj(i);
 	}
 	
@@ -178,7 +199,8 @@ class Display implements IDisplay {
 		var len = chd.length;
 		var cnt = 0;
 		while (cnt < len) {
-			if (cast chd.item(cnt) == q.element) break;
+			if (cast chd.item(cnt) == q.element)
+				break;
 			++cnt;
 		}
 		return cnt == len ? -1 : cnt;
@@ -200,7 +222,7 @@ class Display implements IDisplay {
 		var l:IDisplay = null;
 		q.each(cast addChild);
 		_children = null;
-		return q.last();
+		return q.obj(q.length()-1);
 	}
 	
 	public function addText(q:String):IDisplay {
@@ -213,6 +235,13 @@ class Display implements IDisplay {
 		_children = null;
 		q.remove();
 		return q;
+	}
+	
+	public function removeChildren(min:UInt = 0):IDisplay {
+		var t:UInt = children().length();
+		while (t > min)
+			removeChild(getChild(--t));
+		return this;
 	}
 	
 	public function remove():IDisplay {
@@ -229,9 +258,11 @@ class Display implements IDisplay {
 				if (v != null && v.length > 0) {
 					if (v.substr(0, 1) == "/") {
 						v = v.substr(1, v.length - 1);
-						if (cl.contains(v)) cl.remove(v);
+						if (cl.contains(v)) 
+							cl.remove(v);
 					}else {
-						if (!cl.contains(v)) cl.add(v);
+						if (!cl.contains(v)) 
+							cl.add(v);
 					}
 				}
 			});
@@ -240,7 +271,8 @@ class Display implements IDisplay {
 	}
 	
 	public function cursor(?value:String):String {
-		if (value != null) element.style.cursor = value;
+		if (value != null)
+			element.style.cursor = value;
 		return element.style.cursor;
 	}
 	
@@ -253,25 +285,35 @@ class Display implements IDisplay {
 	}
 	
 	public function hasAttribute(name:String):Bool {
-		return (element.hasAttribute != null && element.hasAttribute(name)) || Reflect.getProperty(element, name) != null;
+		return (element.hasAttribute != null && element.hasAttribute(name)) || Reflect.field(element, name) != null;
 	}
 	
-	public function attribute(name:String, ?value:String):String {
+	public function attribute(name:String, ?value:String):Dynamic {
 		if (name != null) {
 			var t:String = Reflect.field(element, name);
 			if (t != null) {
-				if (value != null)					Reflect.setField(element, name, value);
-				value =	Reflect.field(element, name);
+				if (value != null)
+					Reflect.setField(element, name, value);
 				return value;
 			}
 			if (value != null) {
-				if (element.setAttribute != null) 	element.setAttribute(name, value);
-				else								Reflect.setProperty(element, name, value);
+				if (_setattr)
+					element.setAttribute(name, value);
+				return value;
 			}
-			if (element.getAttribute != null) 		return element.getAttribute(name);
-			else 									return Reflect.getProperty(element, name);
+			if(_getattr)
+				return element.getAttribute(name);
 		}
 		return null;
+	}
+	
+	public function clearAttribute(name:String):Dynamic {
+		var value:Dynamic = null;
+		if (hasAttribute(name)) {
+			value = attribute(name);
+			element.removeAttribute(name);
+		}
+		return value;
 	}
 	
 	public function attributes(values:Dynamic):IDisplay {
@@ -280,7 +322,8 @@ class Display implements IDisplay {
 	}
 	
 	public function write(q:String, ?plainText:Bool = false):IDisplay {
-		if (plainText) element.innerText += q;
+		if (plainText)
+			element.innerText += q;
 		else element.innerHTML = element.innerHTML + q;
 		return this;
 	}
@@ -290,7 +333,8 @@ class Display implements IDisplay {
 			if (Std.is(p, String)) {
 				if (v != null) Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
 				v = Reflect.field(trueStyle(), p);
-				if (p.toLowerCase().indexOf("color") > 0) v = new ARGB(v);
+				if (p.toLowerCase().indexOf("color") > 0)
+					v = new ARGB(v);
 				return v;
 			}else {
 				Dice.All(p, function(p:String, v:Dynamic) {
@@ -303,24 +347,25 @@ class Display implements IDisplay {
 	
 	public function trueStyle():CSSStyleDeclaration {
 		if (Browser.document.defaultView.opener != null) 	
-					return Browser.document.defaultView.getComputedStyle(element);
-		else		return Browser.window.getComputedStyle(element);
+			return Browser.document.defaultView.getComputedStyle(element);
+		else
+			return Browser.window.getComputedStyle(element);
 	}
 	
 	public function mount(q:String, ?data:Dynamic):IDisplay {
-		if (Sirius.resources.exists(q)) {
+		if (Sirius.resources.exists(q))
 			return addChildren(Sirius.resources.build(q, data).children());
-		}else {
+		else
 			return addChildren(new Display().write(q,false).children());
-		}
 	}
 	
 	public function clear(?fast:Bool):IDisplay {
 		if (fast) {
 			element.innerHTML = "";
 		}else{
-			var i:Int = element.children.length;
-			while (i-- > 0) element.removeChild(element.childNodes.item(i));
+			var i:Int = element.childNodes.length;
+			while (i-- > 0)
+				element.removeChild(element.childNodes.item(i));
 		}
 		return this;
 	}
@@ -336,8 +381,10 @@ class Display implements IDisplay {
 	}
 	
 	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null) target.onComplete = complete;
-		if (ease != null) target.ease = ease;
+		if (complete != null)
+			target.onComplete = complete;
+		if (ease != null)
+			target.ease = ease;
 		if(element != null){
 			Animator.stop(element);
 			Animator.to(element, time, target);
@@ -346,8 +393,10 @@ class Display implements IDisplay {
 	}
 	
 	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null) target.onComplete = complete;
-		if (ease != null) target.ease = ease;
+		if (complete != null)
+			target.onComplete = complete;
+		if (ease != null)
+			target.ease = ease;
 		if(element != null){
 			Animator.stop(element);
 			Animator.from(element, time, target);
@@ -356,8 +405,10 @@ class Display implements IDisplay {
 	}
 	
 	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null) from.onComplete = complete;
-		if (ease != null) from.ease = ease;
+		if (complete != null)
+			from.onComplete = complete;
+		if (ease != null)
+			from.ease = ease;
 		if(element != null){
 			Animator.stop(element);
 			Animator.fromTo(element, time, from, to);
@@ -366,9 +417,12 @@ class Display implements IDisplay {
 	}
 	
 	public function parent(levels:UInt=0):IDisplay {
-		if (_parent == null && element.parentElement != null) _parent = Utils.displayFrom(element.parentElement);
-		if (levels > 0)		return _parent.parent(--levels);
-		else 				return _parent;
+		if (_parent == null && element.parentElement != null)
+			_parent = Utils.displayFrom(element.parentElement);
+		if (levels > 0)
+			return _parent.parent(--levels);
+		else
+			return _parent;
 	}
 	
 	public function activate(handler:Dynamic):IDisplay {
@@ -418,10 +472,13 @@ class Display implements IDisplay {
 		var rect:DOMRect = this.element.getBoundingClientRect();
 		var current:Int = 0;
 		// IS FULLY VISIBLE
-		if (rect.top + offsetY >= 0 && rect.left + offsetX >= 0 && rect.bottom - offsetY <= Utils.viewportHeight() && rect.right - offsetX <= Utils.viewportWidth()) current = 2;
+		if (rect.top + offsetY >= 0 && rect.left + offsetX >= 0 && rect.bottom - offsetY <= Utils.viewportHeight() && rect.right - offsetX <= Utils.viewportWidth())
+			current = 2;
 		// IS VISIBLE
-		else if (rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth()) current = 1;
+		else if (rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth())
+			current = 1;
 		
+		// Dispatch visibility change event
 		if (current != _visibility) {
 			_visibility = current;
 			events.visibility().call();
@@ -439,7 +496,7 @@ class Display implements IDisplay {
 	}
 	
 	public function typeOf():String {
-		return "[" + Utils.typeof(this) + "{element:" + element.tagName + ", length:" + length() + "}]";
+		return "[" + Utils.typeof(this) + "{id:" + _uid + ", element:" + element.tagName + "}]";
 	}
 	
 	public function is(tag:Either<String,Array<String>>):Bool {
@@ -455,13 +512,16 @@ class Display implements IDisplay {
 	}
 	
 	public function addTo(?target:IDisplay):IDisplay {
-		if (target != null) target.addChild(this);
-		else if (Sirius.document != null) Sirius.document.body.addChild(this);
+		if (target != null)
+			target.addChild(this);
+		else if (Sirius.document != null)
+			Sirius.document.body.addChild(this);
 		return this;
 	}
 	
 	public function addToBody():IDisplay {
-		if (Sirius.document != null) Sirius.document.body.addChild(this);
+		if (Sirius.document != null)
+			Sirius.document.body.addChild(this);
 		return this;
 	}
 	
@@ -478,16 +538,20 @@ class Display implements IDisplay {
 	
 	public function mouse(?value:Bool):Bool {
 		if (value != null) {
-			if (value)	css('mouse-none');
-			else 		css('/mouse-none');
+			if (value)
+				css('mouse-none');
+			else
+				css('/mouse-none');
 		}
 		return element.classList.contains('mouse-none');
 	}
 	
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 		Sirius.request(url, data, function(r:IRequest) {
-			if (r.success) mount(module);
-			if (handler != null) handler(r);
+			if (r.success)
+				mount(module);
+			if (handler != null)
+				handler(r);
 		});
 	}
 	

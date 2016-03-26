@@ -62,9 +62,16 @@ interface IQueryBuilder {
 	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):ICommand;
 	
 	/**
-	 * Clear all table data
+	 * Empty all table data
 	 * @return
 	 */
 	public function truncate(table:String):ICommand;
+	
+	/**
+	 * Rename table
+	 * @param	name
+	 * @param	to
+	 */
+	public function rename(name:String, to:String):ICommand;
 
 }

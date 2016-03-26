@@ -1,21 +1,21 @@
 [Module:{"version":1.0,"type":"script"}]
 	<script>
 		
-		Sirius.logger.silent();
+		Sirius.logger.mute();
 		
 		var t = new sru.dom.Div();
 		var l = 0;
 		var c = false;
 		var mv = 0;
 		var cr = {x:0,y:0};
-		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 max-height-100pc max-w-700 t-0 scroll-none max-h-50pc pos-fix');
+		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 min-w-350 max-w-700 t-0 scroll-none max-h-350 pos-fix');
 		t.addToBody();
-		t.write('<div id="sirius:log" class="curs-pointer padd-5 bg-x10FFFFFF">SIRIUS LOGGER</div><div class="max-h-300 overflow-y-auto"><div class="padd-t-5" id="sirius:dump"></div></div>');
+		t.write('<div id="sirius-log" class="curs-pointer padd-5 bg-x10FFFFFF">SIRIUS LOGGER</div><div class="max-h-320 overflow-y-auto"><div class="padd-t-5" id="sirius-dump"></div></div>');
 		
-		var d = t.one('#sirius:dump');
+		var d = t.one('#sirius-dump');
 		_bgs = ['txt-xCCCCCC','txt-x00CCFF','txt-xFFFF00','txt-xFF0000','txt-xFF99CC bold', 'txt-x0099CC'];
 		
-		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 padd-l-50 overflow-y-auto max-h-300 pos-fix');
+		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 min-w-350 max-w-700 padd-l-50 overflow-y-auto max-h-320 pos-fix h-30');
 		Automator.css.setSelector('.nowrap','xFFFFFF-space: nowrap;overflow-x:hidden');
 		Automator.build(t.css());
 		Automator.build(_bgs.join(' '));
@@ -29,7 +29,7 @@
 			else if(type > 4) type = 0;
 			var s = (l++) + '';
 			while(s.length < 5) s = '·' + s;
-			d.mount('<div ' + (id !=null ? 'id="' + id + '" ' : '' ) + 'class="nowrap ' + _bgs[type] + '">[' + s + '] ' + stringIfObject(data) + '</div>');
+			d.mount('<div ' + (id !=null ? 'id="' + id + '" ' : '' ) + 'class="nowrap ' + _bgs[type] + '"><span style="color:#666666">[' + s + ']</span> ' + stringIfObject(data) + '</div>');
 			return s;
 		}
 		
@@ -103,8 +103,13 @@
 		function _toggle(e){
 			if(mv > 10) return;
 			c = !c;
-			if(c) d.hide();
-			else d.show();
+			if(c){
+				d.hide();
+				t.css('h-30');
+			}else {
+				d.show();
+				t.css('/h-30');
+			}
 			t.style({
 				top:0+'px',
 				left:0+'px'
@@ -120,8 +125,8 @@
 			});
 		}
 		function _undrag(e){
-			Sirius.document.body.events.mouseMove(_seek,'remove');
-			Sirius.document.body.events.mouseUp(_undrag,'remove');
+			Sirius.document.body.events.mouseMove(_seek,-1);
+			Sirius.document.body.events.mouseUp(_undrag,-1);
 		}
 		function _drag(e){
 			mv = 0;
@@ -131,9 +136,9 @@
 			Sirius.document.body.events.mouseUp(_undrag);
 		}
 		setInterval(xhr_render, 100);
-		Sirius.one('#sirius:log').events.click(_toggle);
-		Sirius.one('#sirius:log').events.mouseDown(_drag);
-		Sirius.loader.onChange(_listen);
+		Sirius.one('#sirius-log').events.click(_toggle, 1);
+		Sirius.one('#sirius-log').events.mouseDown(_drag, 1);
+		Sirius.loader.signals.add('loaded',_listen);
 		Sirius.logger.listen(_push);
 		
 	</script>

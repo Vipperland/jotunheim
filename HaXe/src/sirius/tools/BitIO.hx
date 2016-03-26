@@ -101,7 +101,8 @@ class BitIO {
 	public var value:UInt;
 	
 	public function new(value:UInt) {
-		this.value = Std.parseInt(cast value);
+		if (!Std.is(value, Float) && Std.is(value, Int)) value = Std.parseInt(cast value);
+		this.value = value;
 	}
 	
 	public function invert(bit:UInt):Void {
