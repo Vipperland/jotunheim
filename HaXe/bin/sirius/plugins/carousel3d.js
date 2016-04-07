@@ -1,8 +1,8 @@
 /**
+ * Carousel3D Plugin for Sirius API
  * ...
  * @author Rafael Moreira
  */
-
 (function($exports) {
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
@@ -44,18 +44,19 @@
 				o.panels[o.panels.length] = panel;
 			},
 			update : function(){
-				if(o.aperture < 20) o.aperture = 20;
+				if(o.aperture < 10) o.aperture = 10;
 				else if(o.aperture > 160) o.aperture = 160;
 				o.maxAperture = o.aperture * o.panels.length;
 				o.maxPanels = 360/o.aperture;
 				o.points.splice(0, o.points.length);
 				o.snapping = (o.aperture/180) * o.maxSnapping + o.minSnapping;
 				if(o.snapping > o.maxSnapping) o.snapping = o.maxSnapping;
-				var ap = o.aperture*1.25;
-				var hp = o.aperture*.5;
+				var ap = o.aperture*1.50;
+				var hp = o.aperture*.50;
 				while(o.points.length < o.panels.length){
 					var i = o.points.length * o.aperture;
 					var cp = o.panels[o.points.length];
+					cp.initData();
 					var ctr = cp.data.control || {panel:cp,focus:false,pin:false,id:o.points.length};
 					ctr.a = i-o.snapping;
 					ctr.b = i+o.snapping;
@@ -64,14 +65,16 @@
 					ctr.e = i+ap;
 					ctr.f = i-hp;
 					ctr.g = i+hp;
-					cp.doubleSided(false);
-					cp.css('pos-abs');
-					cp.style({y:0,top:0});
-					cp.width("100%");
-					cp.data.set('rotation', o.points.length * -o.aperture);
-					cp.setPerspective(null, '50% 50%');
-					cp.update();
-					cp.data.control = ctr;
+					with(cp){
+						doubleSided(false);
+						css('pos-abs');
+						style({y:0,top:0});
+						width("100%");
+						data.set('rotation', o.points.length * -o.aperture);
+						setPerspective(null, '50% 50%');
+						update();
+						data.control = ctr;
+					}
 					o.points[o.points.length] = ctr;
 				}
 			},
@@ -175,16 +178,18 @@
 				});
 				var th = (h*o.panels.length)>>0;
 				o.extra.style( { 'margin-top':th + 'px' } );
-				o.carousel.content.locationZ( -tz - o.offsetZFlex);
-				o.carousel.content.update();
-				o.carousel.height(h);
+				with(o.carousel){
+					content.locationZ( -tz - o.offsetZFlex);
+					content.update();
+					height(h);
+				}
 			},
 			scrollEvent : function(e){
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;
 				if(e.event.type == 'wheel')	{
 					var delta = 0;
 					if(Sirius.agent.firefox) 	delta = e.event.deltaY * -40;
-					else						delta = e.event.wheelDelta
+					else						delta = e.event.wheelDelta;
 					Sirius.document.addScroll(0, -delta);
 				}else{
 					switch(e.event.keyCode){
@@ -205,23 +210,29 @@
 		
 		if(!Sirius.agent.mobile){
 			body.style( { 'overflow-y':'hidden' } );
-			Sirius.document.events.wheel(o.scrollEvent);
-			Sirius.document.events.keyDown(o.scrollEvent);
+			with(Sirius.document.events){
+				wheel(o.scrollEvent);
+				keyDown(o.scrollEvent);
+			}
 		}
 		
-		o.carousel.content.fit(100, 100, true);
-        o.carousel.overflow('hidden');
-        o.carousel.css('pos-fix');
-        o.carousel.width("100%");
-        o.carousel.content.height("100%");
-        o.carousel.addToBody();
-		o.carousel.setPerspective(null, '50% 50%');
-        o.carousel.update();
-        o.extra.width("100%");
-        o.extra.style({top:0});
-        o.extra.addToBody();
-        o.carousel.content.height("100%");
-        o.carousel.content.update();
+		with(o.carousel){
+			content.fit(100, 100, true);
+			overflow('hidden');
+			css('pos-fix');
+			width("100%");
+			content.height("100%");
+			addToBody();
+			setPerspective(null, '50% 50%');
+			update();
+			content.height("100%");
+			content.update();
+		}
+		with(o.extra){
+			width("100%");
+			style({top:0});
+			addToBody();
+		}
 		Sirius.all(selector).each(o.addPanel);
 		o.update();
 		Ticker.add(o.render);

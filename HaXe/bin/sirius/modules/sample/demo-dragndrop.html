@@ -1,12 +1,11 @@
 [Module:{"version":1.0,"type":"html","name":"sample"}]
 
-<div id="state_{{id}}" class="ref-sample txt-xFFFFFF txt-60 bg-dodgerblue padd-0 marg-10 h-100">
-	<div class="pos-abs alpha-20 scroll-none padd-0 h-100 txt-r">
-		<span class="bold txt-100 txt-r t-0">{{name}}</span>
+<div id="state_{{id}}" class="ref-sample txt-xffffff txt-30 bg-dodgerblue padd-l-10 marg-10 h-60 shadow-x003399">
+	<div class="pos-abs alpha-20 scroll-none padd-0 h-60 crop">
+		<span class="bold txt-60 t-0 shadow-txt-x000000">{{name}}</span>
 	</div>
-	<div class="pos-abs">
-		<span>{{id}} </span>
-		<span class="bold">{{abbreviation}}</span>
+	<div class="pos-abs shadow-txt-x000000">
+		<span>{{short}}</span>
 	</div>
 </div>
 
@@ -15,14 +14,44 @@
 [Module:{"version":1.0,"type":"script"}]
 <script>
 	
+	Automator.shadowConfig({distance:3, direction:135, strength:5, flex:.2});
+	Automator.build('pos-abs alpha-20 scroll-none padd-0 h-100 txt-30 txt-60 bg-dodgerblue padd-l-10 marg-10 h-80 h-60 bold txt-xffffff t-0 shadow-x003399 shadow-txt-x000000 crop');
+	
+	var data = [
+		{ id:1,  short:"AC", name:"Acre" }, 
+		{ id:2,  short:"AL", name:"Alagoas" },
+		{ id:3,  short:"AM", name:"Amazonas" }, 
+		{ id:4,  short:"AP", name:"Amapá" }, 
+		{ id:5,  short:"BA", name:"Bahia" },
+		{ id:6,  short:"CE", name:"Ceará" }, 
+		{ id:7,  short:"DF", name:"Distrito Federal" }, 
+		{ id:8,  short:"ES", name:"Espírito Santo" }, 
+		{ id:9,  short:"GO", name:"Goiás" }, 
+		{ id:10, short:"MA", name:"Maranhão" }, 
+		{ id:11, short:"MT", name:"Mato Grosso" }, 
+		{ id:12, short:"MS", name:"Mato Grosso do Sul" }, 
+		{ id:13, short:"MG", name:"Minas Gerais" },
+		{ id:14, short:"PA", name:"Pará" }, 
+		{ id:15, short:"PB", name:"Paraíba" },
+		{ id:16, short:"PE", name:"Pernambuco" },
+		{ id:17, short:"PI", name:"Piauí" }, 
+		{ id:18, short:"PR", name:"Paraná" }, 
+		{ id:19, short:"RJ", name:"Rio de Janeiro" },
+		{ id:20, short:"RN", name:"Rio Grande do Norte" },
+		{ id:21, short:"RO", name:"Rondônia" }, 
+		{ id:22, short:"RR", name:"Roraima" }, 
+		{ id:23, short:"RS", name:"Rio Grande do Sul" }, 
+		{ id:24, short:"SC", name:"Santa Catarina" }, 
+		{ id:25, short:"SE", name:"Sergipe" }, 
+		{ id:26, short:"SP", name:"São Paulo" },
+		{ id:27, short:"TO", name:"Tocantins" }
+	];
+	
 	Sirius.onInit(function(){
-		Sirius.request('http://sirius.192.168.0.100.xip.io/sys/', null, function(r){
-			var container = new sru.dom.Div();
-			container.write(Sirius.resources.fill("sample", r.object().data));
-			container.addToBody();
-			Automator.scan();
-			Sirius.inject('sirius/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });
-		});
+		var container = new sru.dom.Div();
+		container.write(Sirius.resources.fill("sample", data));
+		container.addToBody();
+		Sirius.inject('sirius/plugins/dragndrop.min.js', function(){ Sirius.plugins.DragAndDrop(container); });
 	});
 	
 </script>

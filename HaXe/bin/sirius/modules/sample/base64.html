@@ -9,11 +9,12 @@
 			var data = Sirius.one('[name=base64]:checked').attribute('form-data');
 			var encode = data == 'encode';
 			var input = Sirius.one('[form-data=entry]').value();
-			console.log([input, data, encode]);
+			//console.log([input, data, encode]);
 			try {
 				Sirius.one('textarea.min-h-200').value(encode ? Criptog.encodeBase64(input) : Criptog.decodeBase64(input));
 			}catch(e){
 				Sirius.one('textarea.min-h-200').value('Invalid data input');
+				console.log(e);
 			}
 		}
 		
@@ -22,7 +23,7 @@
 			Automator.build('bg-lavender padd-10');
 			
 			var body = Sirius.document.body;
-			body.background(FlatColors.BLUE[2]);
+			body.bg(FlatColors.BLUE[2]);
 			
 			var cont =
 			body.mount(FlatUI.GRID,{bg:FlatColors.BLUE[0]}).mount(FlatUI.CELL,{size:24});
@@ -81,7 +82,7 @@
 			
 		}
 		
-		Sirius.module('sirius/modules/ui/flat-basic.html', null,null, _init);
+		Sirius.module('sirius/modules/ui/tech-ui.html', null,null, _init);
 		
 	</script>
 /EOF;
