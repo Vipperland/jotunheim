@@ -1,6 +1,6 @@
 #Sirius Framework
 ======
-#####*A hard coded framework to do simple and complex dreams come to reality with less headache and stress*
+#####*A flexible coded framework to do simple and complex dreams come to reality with less headache and stress*
 
 - [X] Work with JavaScript
 - [X] Work with HaXe
