@@ -46,8 +46,10 @@ class Fragments implements IFragments {
 	}
 	
 	public function addPiece(value:String, ?at:Int = -1):IFragments {
-		if (at == 0) pieces.unshift(value);
-		else if (at == -1 || at >= pieces.length) pieces.push(value);
+		if (at == 0)
+			pieces.unshift(value);
+		else if (at == -1 || at >= pieces.length)
+			pieces.push(value);
 		else {
 			var tail:Array<String> = pieces.splice(at, pieces.length - at);
 			pieces.push(value);

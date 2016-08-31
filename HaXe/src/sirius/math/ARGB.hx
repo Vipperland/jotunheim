@@ -37,7 +37,6 @@ class ARGB implements IARGB {
 			b = Std.parseInt(q[2]);
 			g = Std.parseInt(q[1]);
 			q = Std.parseInt(q[0]);
-			
 		}
 		
 		//q is INT and g NOT NULL
@@ -50,8 +49,9 @@ class ARGB implements IARGB {
 			// Extract channel values of q
 			var x:Int;
 			if (s) {	// IF q == #RRGGBB || #AARRGGBB
-				x = Std.parseInt(q.split("#").join("0x"));
-				if (q.length < 8) x = x | 0xFF000000;
+				q = q.split("#").join("0x");
+				x = Std.parseInt(q);
+				if (q.length < 10) x = x | 0xFF000000;
 			}else {		// IF q is an INT || UINT
 				x = q;
 			}
@@ -129,7 +129,7 @@ class ARGB implements IARGB {
 	 * @return
 	 */
 	public function css():String {
-		if (a == 0xFF) {
+		if (a == 0xFF || a == null) {
 			return "rgb(" + r + "," + g + "," + b + ")";
 		}else {
 			return "rgba(" + r + "," + g + "," + b + "," + (cast a/255).toFixed(2) + ")";

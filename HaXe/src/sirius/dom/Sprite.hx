@@ -10,6 +10,10 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Sprite")
 class Sprite extends Div {
 	
+	static public function get(q:String):Sprite {
+		return cast Sirius.one(q);
+	}
+	
 	public var content:Div;
 	
 	public function new(?q:Dynamic) {

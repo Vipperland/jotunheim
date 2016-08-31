@@ -9,20 +9,21 @@ import haxe.Json;
 	import sys.FileSystem;
 	import sys.io.File;
 	import sys.io.FileInput;
+	import sirius.php.utils.Header;
 #end
 import haxe.Log;
-import sirius.php.utils.Header;
 import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
-import sirius.utils.Criptog;
+import sirius.utils.IOTools;
 
 
 /**
  * ...
  * @author Rafael Moreira
  */
+@:expose("sru.data.DataCache")
 class DataCache implements IDataCache {
 	
 	private var _DB:Dynamic;
@@ -34,6 +35,8 @@ class DataCache implements IDataCache {
 	private var _expire:Int;
 	
 	private var _loaded:Bool;
+	
+	private var _base64:Bool;
 	
 	private var __time__:Float;
 	
@@ -47,10 +50,11 @@ class DataCache implements IDataCache {
 		return Date.now().getTime();
 	}
 	
-	public function new(?name:String, ?path:String, ?expire:Int = 0) {
+	public function new(?name:String, ?path:String, ?expire:Int = 0, ?base64:Bool) {
 		_name = name;
 		_path = path;
 		_expire = expire;
+		_base64 = base64;
 		clear();
 	} 
 	
@@ -91,7 +95,7 @@ class DataCache implements IDataCache {
 				if (Std.is(v, Float) || Std.is(v, Bool) || Std.is(v, String) || Std.is(v, Int)) { 
 					Reflect.setField(data, p, v);	
 				}else if (Std.is(v, Array)) {
-					v = Lib.toPhpArray(v);	
+					v = Lib.toPhpArray(v);
 				}else if (Std.is(v, Dynamic)) { 
 					v = Lib.associativeArrayOfObject(v);	
 				}
@@ -147,11 +151,12 @@ class DataCache implements IDataCache {
 		}
 	}
 	
-	public function save(?base64:Bool = true):DataCache {
-		var data:String = base64 ? Criptog.encodeBase64(_DB) : json(false);
+	public function save():DataCache {
 		#if js
-			Cookie.set(_name, data, 0, _path);
+			var data:String = IOTools.encodeBase64(_DB);
+			Cookie.set(_name, data, _expire > 0 ? _expire : 2592000, _path);
 		#elseif php
+			var data:String = _base64 ? IOTools.encodeBase64(_DB) : json(false);
 			if (!_validated) _checkPath();
 			if(_expire > 0) _sign(true);
 			File.saveContent(_name, data);
@@ -169,17 +174,21 @@ class DataCache implements IDataCache {
 		}
 	}
 	
-	public function load(?base64:Bool = true):Bool {
+	public function load():Bool {
 		_DB = null;
 		#if js
+			trace(_name, Cookie.exists(_name));
 			if (Cookie.exists(_name)) {
-				_DB = base64 ? Criptog.decodeBase64(Cookie.get(_name), true) : json(false);
+				var a:Dynamic = Base64.decode(Cookie.get(_name));
+				trace(a);
+				_DB = IOTools.decodeBase64(Cookie.get(_name), true);
+				trace(_DB);
 			}
 		#elseif php
 			if (!_validated) _checkPath();
 			if (FileSystem.exists(_name)) {
 				var c:String =  File.getContent(_name);
-				_DB = base64 ? Criptog.decodeBase64(c, true) : Json.parse(c);
+				_DB = _base64 ? IOTools.decodeBase64(c, true) : Json.parse(c);
 			}
 		#end
 		if (_DB == null || (_expire != 0 && (_DB.__time__ == null || _now() - _DB.__time__ >= _expire))) {
@@ -204,7 +213,7 @@ class DataCache implements IDataCache {
 	}
 	
 	public function base64(?print:Bool):String {
-		var result:String = Criptog.encodeBase64(_DB);
+		var result:String = IOTools.encodeBase64(_DB);
 		if (print) #if php Lib.print(result); #elseif js if (print) Log.trace(result); #end
 		return result;
 	}

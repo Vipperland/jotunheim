@@ -14,7 +14,10 @@ class sirius_data_DataSet implements sirius_data_IDataSet{
 		return Reflect::field($this->_content, $p);
 	}
 	public function set($p, $v) {
-		$this->_content->{$p} = $v;
+		{
+			$field = $p;
+			$this->_content->{$field} = $v;
+		}
 		return $this;
 	}
 	public function hunset($p) {
@@ -22,7 +25,8 @@ class sirius_data_DataSet implements sirius_data_IDataSet{
 		return $this;
 	}
 	public function exists($p) {
-		return _hx_has_field($this->_content, $p);
+		$field = $p;
+		return _hx_has_field($this->_content, $field);
 	}
 	public function clear() {
 		$this->_content = _hx_anonymous(array());
@@ -52,7 +56,7 @@ class sirius_data_DataSet implements sirius_data_IDataSet{
 	public function each($handler) {
 		sirius_utils_Dice::All($this->_content, $handler, null);
 	}
-	public function structure() {
+	public function data() {
 		return $this->_content;
 	}
 	public function __call($m, $a) {
@@ -81,9 +85,15 @@ function sirius_data_DataSet_1(&$h, &$handler, &$p, &$r, $p2, $v) {
 				$r->set($p2, (($h) ? call_user_func_array($handler, array($v)) : $v->get($p)));
 			}
 		} else {
-			if(_hx_has_field($v, $p)) {
+			if(sirius_data_DataSet_2($__hx__this, $h, $handler, $p, $p2, $r, $v)) {
 				$r->set($p2, (($h) ? call_user_func_array($handler, array($v)) : Reflect::field($v, $p)));
 			}
 		}
+	}
+}
+function sirius_data_DataSet_2(&$__hx__this, &$h, &$handler, &$p, &$p2, &$r, &$v) {
+	{
+		$field = $p;
+		return _hx_has_field($v, $field);
 	}
 }

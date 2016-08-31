@@ -7,9 +7,9 @@ import js.Browser;
  */
 @:expose("sru.dom.Embed")
 class Embed extends Display{
-
-	public static function get(q:String, ?h:IDisplay->Void):Embed {
-		return cast Sirius.one(q,null,h);
+	
+	static public function get(q:String):Embed {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

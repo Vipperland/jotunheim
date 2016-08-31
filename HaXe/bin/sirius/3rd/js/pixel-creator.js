@@ -56,7 +56,7 @@
 		this.idat_size = 4 + 4 + this.data_size + 4;
 		this.iend_offs = this.idat_offs + this.idat_size;	// IEND offset and size
 		this.iend_size = 4 + 4 + 4;
-		this.buffer_size  = this.iend_offs + this.iend_size;	// total PNG size
+		this.buffer_size  = this.iend_offs + this.iend_size;// total PNG size
 
 		this.buffer  = new Array();
 		this.palette = new Object();

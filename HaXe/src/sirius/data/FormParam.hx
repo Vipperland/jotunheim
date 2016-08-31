@@ -3,7 +3,6 @@ import sirius.dom.IDisplay;
 import sirius.dom.Select;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
-import sirius.utils.Validator;
 
 /**
  * ...
@@ -25,11 +24,6 @@ class FormParam {
 		return _e.attribute("form-validate");
 	}
 	
-	public function validate():Bool {
-		var hv:String = getValidator();
-		return !Utils.isValid(hv) || Reflect.field(Validator, hv)(getValue());
-	}
-	
 	public function isRequired():Bool {
 		return _e.hasAttribute("form-required") && Dice.Match(["1", "true", "yes"], _e.attribute("form-required")) > 0;
 	}
@@ -47,7 +41,7 @@ class FormParam {
 	}
 	
 	public function isValid(?require:Bool):Bool {
-		return (!require && !isRequired()) || (Utils.isValid(getValue()) && validate());
+		return (!require && !isRequired()) || Utils.isValid(getValue());
 	}
 	
 	public function clear():Void {

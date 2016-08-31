@@ -5,9 +5,10 @@ import haxe.Log;
 #if js
 
 	import js.Browser;
+	import js.html.Attr;
 	import js.html.Element;
+	import js.html.NamedNodeMap;
 	import sirius.dom.A;
-	import sirius.dom.Applet;
 	import sirius.dom.Area;
 	import sirius.dom.Audio;
 	import sirius.dom.B;
@@ -20,7 +21,6 @@ import haxe.Log;
 	import sirius.dom.Col;
 	import sirius.dom.Content;
 	import sirius.dom.DataList;
-	import sirius.dom.Dir;
 	import sirius.dom.Display;
 	import sirius.dom.Display3D;
 	import sirius.dom.Div;
@@ -28,10 +28,7 @@ import haxe.Log;
 	import sirius.dom.Document;
 	import sirius.dom.Embed;
 	import sirius.dom.FieldSet;
-	import sirius.dom.Font;
 	import sirius.dom.Form;
-	import sirius.dom.Frame;
-	import sirius.dom.FrameSet;
 	import sirius.dom.H1;
 	import sirius.dom.H2;
 	import sirius.dom.H3;
@@ -52,7 +49,6 @@ import haxe.Log;
 	import sirius.dom.Link;
 	import sirius.dom.Map;
 	import sirius.dom.Media;
-	import sirius.dom.Menu;
 	import sirius.dom.Meta;
 	import sirius.dom.Meter;
 	import sirius.dom.Mod;
@@ -75,19 +71,17 @@ import haxe.Log;
 	import sirius.dom.Sprite;
 	import sirius.dom.Sprite3D;
 	import sirius.dom.Style;
-	import sirius.dom.Table;
-	import sirius.dom.TD;
 	import sirius.dom.Text;
 	import sirius.dom.TextArea;
 	import sirius.dom.Thead;
 	import sirius.dom.Title;
-	import sirius.dom.TR;
 	import sirius.dom.Track;
 	import sirius.dom.UL;
 	import sirius.dom.Video;
 	
 #end
 
+import sirius.utils.IOTools;
 import sirius.utils.Dice;
 
 /**
@@ -125,47 +119,100 @@ class Utils{
 		
 		/** @private */
 		static private var _typeOf:Dynamic = { 
-			a:A,applet:Applet,area:Area,audio:Audio,
-			b:B,base:Base,body:Body,br:BR,
-			button:Button,canvas:Canvas,caption:Caption,col:Col,content:Content,
-			datalist:DataList,dir:Dir,div:Div,display:Display,display3d:Display3D,dl:DL,document:Document,
-			embed:Embed,
-			fieldset:FieldSet,font:Font,form:Form,frame:Frame,frameset:FrameSet,
-			h1:H1,h2:H2,h3:H3,h4:H4,h5:H5,h6:H6,head:Head,hr:HR,html:Html,
-			i:I, iframe:IFrame, img:Img, input:Input,
-			label:Label,legend:Legend,li:LI,link:Link,
-			map:Map,media:Media,menu:Menu,meta:Meta,meter:Meter,mod:Mod,
-			object:Object,ol:OL,optgroup:OptGroup,option:Option,output:Output,
-			p:P,param:Param,picture:Picture,pre:Pre,progress:Progress,
-			quote:Quote,
-			script:Script,select:Select,shadow:Shadow,source:Source,span:Span,sprite:Sprite,sprite3d:Sprite3D,style:Style,
-			table:Table,td:TD,text:Text,textarea:TextArea,thead:Thead,title:Title,tr:TR,track:Track,
-			ul:UL,
-			video:Video
+			A:A,AREA:Area,AUDIO:Audio,
+			B:B,BASE:Base,BODY:Body,BR:BR,
+			BUTTON:Button,CANVAS:Canvas,CAPTION:Caption,COL:Col,CONTENT:Content,
+			DATALIST:DataList,DIV:Div,DISPLAY:Display,DISPLAY3D:Display3D,DL:DL,DOCUMENT:Document,
+			EMBED:Embed,
+			FIELDSET:FieldSet,FORM:Form,
+			H1:H1,H2:H2,H3:H3,H4:H4,H5:H5,H6:H6,HEAD:Head,HR:HR,HTML:Html,
+			I:I, IFRAME:IFrame, IMG:Img, INPUT:Input,
+			LABEL:Label,LEGEND:Legend,LI:LI,LINK:Link,
+			MAP:Map,MEDIA:Media,META:Meta,METER:Meter,MOD:Mod,
+			OBJECT:Object,OL:OL,OPTGROUP:OptGroup,OPTION:Option,OUTPUT:Output,
+			P:P,PARAM:Param,PICTURE:Picture,PRE:Pre,PROGRESS:Progress,
+			QUOTE:Quote,
+			SCRIPT:Script,SELECT:Select,SHADOW:Shadow,SOURCE:Source,SPAN:Span,SPRITE:Sprite,SPRITE3D:Sprite3D,STYLE:Style,
+			TEXT:Text,TEXTAREA:TextArea,THEAD:Thead,TITLE:Title,TRACK:Track,
+			UL:UL,
+			VIDEO:Video
 		};
 		
 		/**
-		 * Convert an element to Sirius Display object
+		 * Convert an element to Sirius DOM object
+		 * Note that converted objects need to be disposed if unused.
 		 * @param	t
 		 * @return
 		 */
 		static public function displayFrom(t:Element):IDisplay {
-			var id:String = t.hasAttribute('sru-id') ? t.getAttribute('sru-id') : null;
-			if (id != null)
-				return Display.fromGC(id);
-			if (t.nodeType != 1)
+			var id:UInt = null;
+			var type:String = null;
+			if (t.hasAttribute != null) {
+				id = (cast t.getAttribute('sru-id')) * 1;
+				if (id == null) {
+					type = cast t.getAttribute('sru-dom');
+					if (type == null){
+						type = t.tagName.toUpperCase();
+						t.setAttribute('sru-dom', type);
+					}
+				} else {
+					return Display.fromGC(id);
+				}
+				
+			}
+			
+			var OC:Dynamic = Reflect.field(_typeOf, type);
+			if (OC == null)
 				return new Display(t);
-			var type:String = (t.hasAttribute('sru-dom') ? t.getAttribute('sru-dom') : t.tagName);
-			var OC:Dynamic = Reflect.field(_typeOf, type.toLowerCase());
-			t.setAttribute('sru-dom', type);
-			return OC == null ? new Display(t) : untyped __js__('new OC(t)');
+			else
+				return untyped __js__('new OC(t)');
 		}
 		
+		/**
+		 * Fast version of displayFrom, always return a IDisplay from that object
+		 * Note: The display can't be converted to any other Sirius DOM object, only if disposed before the new selection.
+		 * @param	t
+		 * @return
+		 */
+		static public function getDisplay(t:Element):IDisplay {
+			var id:UInt = t.hasAttribute != null && t.hasAttribute('sru-id') ? Std.parseInt(t.getAttribute('sru-id')) : null;
+			if (id != null)
+				return Display.fromGC(id);
+			return new Display(t);
+		}
+		
+		/**
+		 * Convert any number format to String, same as value.toString(rad)
+		 * @param	value
+		 * @param	rad
+		 * @return
+		 */
 		static public function intToString(value:Dynamic, ?rad:Int):String {
 			if (Std.is(value, String)) value = Std.parseInt(value);
-			value = value >> 0;
+				value = value >> 0;
 			return Reflect.callMethod(value, value.toString, rad != null ? [rad] : []);
 		}
+		
+		/**
+		 * 
+		 * @param	display
+		 * @return
+		 */
+		static public function getAttributes(display:Display):Dynamic {
+			var attr:NamedNodeMap = display.element.attributes;
+			var data:Dynamic = {};
+			if(attr != null){
+				var i:UInt = 0;
+				var len:UInt = attr.length;
+				while (i < len){
+					var a:Attr = attr.item(i);
+					Reflect.setField(data, a.name, a.value);
+					++i;
+				}
+			}
+			return data;
+		}
+		
 	
 	#elseif php
 	
@@ -228,13 +275,22 @@ class Utils{
 	 */
 	static public function isValid(o:Dynamic):Bool {
 		if (o != null) {
-			if (Std.is(o, String)) {
+			if (o != 'null' && Reflect.hasField(o, 'length'))
 				return o.length > 0;
-			}else {
-				return true;
-			}
+			else
+				return o != 0 && o != false;
 		}
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param	o
+	 * @param	alt
+	 * @return
+	 */
+	static public function isValidAlt(o:Dynamic, alt:Dynamic):Dynamic {
+		return isValid(o) ? o : alt;
 	}
 	
 	/**

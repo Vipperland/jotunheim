@@ -2,6 +2,7 @@
 
 class sirius_db_Limit {
 	public function __construct(){}
+	static $ONE = "1";
 	static function MAX($i = null) {
 		if($i === null) {
 			$i = 1;
@@ -12,14 +13,12 @@ class sirius_db_Limit {
 		if($len === null) {
 			$len = 10;
 		}
-		$i = $i;
-		$len = $len;
-		return Std::string(sirius_db_Limit_1($i, $len)) . ", " . Std::string(sirius_db_Limit_2($i, $len));
+		return Std::string(sirius_db_Limit_1($i, $len)) . " offset " . Std::string(sirius_db_Limit_2($i, $len));
 	}
 	static function SECTION($from, $to) {
 		$from = $from;
 		$to = $to;
-		return Std::string(sirius_db_Limit_3($from, $to)) . ", " . Std::string(sirius_db_Limit_4($from, $to));
+		return Std::string(sirius_db_Limit_3($from, $to)) . " offset " . Std::string(sirius_db_Limit_4($from, $to));
 	}
 	function __toString() { return 'sirius.db.Limit'; }
 }
@@ -36,7 +35,7 @@ function sirius_db_Limit_0(&$i) {
 }
 function sirius_db_Limit_1(&$i, &$len) {
 	{
-		$int = $i * $len;
+		$int = $len;
 		if($int < 0) {
 			return 4294967296.0 + $int;
 		} else {
@@ -47,7 +46,7 @@ function sirius_db_Limit_1(&$i, &$len) {
 }
 function sirius_db_Limit_2(&$i, &$len) {
 	{
-		$int1 = $i;
+		$int1 = $i * $len;
 		if($int1 < 0) {
 			return 4294967296.0 + $int1;
 		} else {
@@ -58,7 +57,7 @@ function sirius_db_Limit_2(&$i, &$len) {
 }
 function sirius_db_Limit_3(&$from, &$to) {
 	{
-		$int = $from;
+		$int = $to - $from;
 		if($int < 0) {
 			return 4294967296.0 + $int;
 		} else {
@@ -69,7 +68,7 @@ function sirius_db_Limit_3(&$from, &$to) {
 }
 function sirius_db_Limit_4(&$from, &$to) {
 	{
-		$int1 = $to - $from;
+		$int1 = $from;
 		if($int1 < 0) {
 			return 4294967296.0 + $int1;
 		} else {

@@ -10,11 +10,8 @@ import sirius.events.IEvent;
 @:expose("sru.dom.Script")
 class Script extends Display{
 	
-	public var content:ScriptElement;
-	
-	public static function get(q:String, ?h:IDisplay->Void):Script {
-		return cast Sirius.one(q,null,h);
-		
+	static public function get(q:String):Script {
+		return cast Sirius.one(q);
 	}
 	
 	/**
@@ -36,6 +33,8 @@ class Script extends Display{
 			handler(null);
 		}
 	}
+	
+	public var content:ScriptElement;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createScriptElement();

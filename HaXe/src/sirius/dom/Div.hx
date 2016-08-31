@@ -1,7 +1,6 @@
 package sirius.dom;
 import js.Browser;
 import js.html.Element;
-import sirius.tools.Utils;
 
 /**
  * ...
@@ -10,8 +9,8 @@ import sirius.tools.Utils;
 @:expose("sru.dom.Div")
 class Div extends Display {
 	
-	public static function get(q:String, ?h:IDisplay->Void):Div {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Div {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Element) {

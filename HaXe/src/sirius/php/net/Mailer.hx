@@ -5,7 +5,7 @@ import php.Boot;
 import php.Lib;
 import php.Web;
 import sirius.tools.Utils;
-import sirius.utils.Criptog;
+import sirius.utils.IOTools;
 import sirius.utils.Dice;
 
 /**
@@ -27,6 +27,7 @@ class Mailer {
 		output.CharSet = 'UTF-8';
 		output.isSMTP();
 		output.isHTML(true);
+		output.SMTPAuth = password != null && password != '';
 		setAuth(url, user, password, secure, port);
 	}
 	

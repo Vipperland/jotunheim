@@ -35,7 +35,6 @@ import sirius.utils.Filler;
 	import sirius.utils.Pixel;
 	import sirius.utils.SearchTag;
 	import sirius.utils.Table;
-	import sirius.utils.Validator;
 #elseif php
 	import php.Lib;
 	import sirius.data.DataCache;
@@ -99,7 +98,7 @@ class Sirius {
 				Ease.update();
 				updatePlugins();
 				log("Sirius => INITIALIZED", 1);
-				Dice.Values(_loadPool, function(v:Dynamic) { if(Utils.isValid(v)) v(); });
+				Dice.Values(_loadPool, function(v:Dynamic) { if(v!=null) v(); });
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				_loadPool = null;
 				loader.signals.add('complete', _onLoaded);
@@ -133,17 +132,16 @@ class Sirius {
 		 * @param	h
 		 * @return
 		 */
-		static public function one(?q:String = "*", ?t:Dynamic = null, ?h:IDisplay->Void = null):IDisplay {
-			t = (t == null ? document.body.element : t).querySelector(q);
-			if (t != null) {
+		static public function one(?q:String = "*", ?t:Dynamic = null):IDisplay {
+			if (t == null)
+				t = Browser.document.querySelector(q);
+			else
+				t = t.querySelector(q);
+			if (t != null)
 				t = Utils.displayFrom(t);
-				if (h != null)
-					h(t);
-				return t;
-			}else {
+			else
 				log("Find => No result on selector (" + q + ")", 2);
-			}
-			return null;
+			return t;
 		}
 		
 		/**
@@ -153,8 +151,8 @@ class Sirius {
 		 * @param	h
 		 * @return
 		 */
-		static public function all(?q:String = "*", ?t:Dynamic = null, ?h:Dynamic = null):ITable {
-			return Table.recycle(q, t, h);
+		static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
+			return Table.recycle(q, t);
 		}
 		
 		/**
@@ -173,8 +171,10 @@ class Sirius {
 		static public function run(handler:Dynamic):Void {
 			if (!_initialized) _preInit();
 			if (handler != null) {
-				if (!_loaded && _loadPool != null) 	_loadPool[_loadPool.length] = handler;
-				else 								handler();
+				if (!_loaded && _loadPool != null) 
+					_loadPool[_loadPool.length] = handler;
+				else
+					handler();
 			}
 		}
 		
@@ -198,11 +198,16 @@ class Sirius {
 			Script.require(url, handler);
 		}
 		
+		static public function stylish(url:Dynamic, ?handler:Null<Void>->Void):Void {
+			if (!Std.is(url, Array)) url = [url];
+			//Style.require(url, handler);
+		}
+		
 		static private function _preInit():Void {
 			if (!_initialized) {
 				_initialized = true;
 				_loadPool = [];
-				document = new Document();
+				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				//Automator._init();
 				log("Sirius => WAITING...", 2);
@@ -244,6 +249,8 @@ class Sirius {
 		static public var gate:IGate = new Gate();
 		
 		static public var loader:ILoader = new Loader();
+		
+		static public var tick:UInt = untyped __php__('time()');
 		
 		static public function require(file:String):Void {
 			untyped __call__('require_once', file);
@@ -352,5 +359,6 @@ class Sirius {
 	 * 
 	 * 		Sirius unique attributes:
 	 * 			sru-id				For unique or shared data, all elements with same sru-id share the same data.
+	 * 			sru-dom				For type idenfication and fast display conversion.
 	 * 			
 	 */

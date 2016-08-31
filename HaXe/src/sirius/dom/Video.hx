@@ -9,11 +9,11 @@ import js.html.VideoElement;
 @:expose("sru.dom.Video")
 class Video extends Display {
 	
-	public var object:VideoElement;
-	
-	public static function get(q:String, ?h:IDisplay->Void):Video {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Video {
+		return cast Sirius.one(q);
 	}
+	
+	public var object:VideoElement;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createVideoElement();

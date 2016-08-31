@@ -6,7 +6,7 @@
 (function($exports) {
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
-	$exports.sru.plugins.Carousel3D = function(selector, aperture, zoom){
+	$exports.sru.plugins.Carousel3D = function(selector, aperture, zoom, keyboard){
 		var Display3D = sru.dom.Display3D;
 		var Sprite3D = sru.dom.Sprite3D;
 		var Div = sru.dom.Div;
@@ -17,6 +17,7 @@
 			points : [],
 			extra : new Div(),
 			carousel : new Sprite3D(),
+			keyboard : keyboard == null ? true : keyboard,
 			maxAperture : 0,
 			maxPanels : 0,
 			offsetZ : 0,
@@ -39,6 +40,7 @@
 			direction : 1,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
+				p.css('w-100pc h-100pc');
 				panel.addChild(p);
 				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;
@@ -82,6 +84,9 @@
 				o.aperture = 180-x;
 				o.update();
 			},
+			setZoom : function(x){
+				o.zoom = x;
+			},
 			toggleAxys : function(x){
 				if(x != null) 	o.axys = x;
 				else 			o.axys = o.axys == 'x' ? 'y' : 'x';
@@ -94,6 +99,28 @@
 			},
 			nextPanel : function(){
 				if(o.index < o.panels.length) o.showPanel(o.index + 1);
+			},
+			on : function(n,h,m){
+				m = m ? -1 : 1;
+				Dice.Values(o.panels, function(v){ v.on(n,h,m); });
+			},
+			onPinIn : function(h,m){
+				o.on('carouselPinIn',h,m);
+			},
+			onPinOut : function(h,m){
+				o.on('carouselPinOut',h,m);
+			},
+			onFocusIn : function(h,m){
+				o.on('carouselFocusIn',h,m);
+			},
+			onFocusOut : function(h,m){
+				o.on('carouselFocusOut',h,m);
+			},
+			onZoomIn : function(h,m){
+				o.carousel.events.on('carouselZoomIn',h,m ? -1 : 1);
+			},
+			onZoomOut : function(h,m){
+				o.carousel.events.on('carouselZoomOut',h,m ? -1 : 1);
 			},
 			render : function() {
 				if(!o.enabled) return;
@@ -111,15 +138,15 @@
 							k.focus = true;
 							if(k.pin == true) {
 								k.pin = false;
-								k.panel.events.auto('carouselPinOut').call();
+								k.panel.events.on('carouselPinOut').call();
 							}
-							k.panel.events.auto('carouselFocusIn').call();
+							k.panel.events.on('carouselFocusIn').call();
 							o.focus = j * 1;
 						}
 					}else{
 						if(k.focus == true){
 							k.focus = false;
-							k.panel.events.auto('carouselFocusOut').call();
+							k.panel.events.on('carouselFocusOut').call();
 						}
 					}
 					if(k.focus){
@@ -128,25 +155,23 @@
 							o.offsetZ = 0;
 							if(k.pin == false) {
 								k.pin = true;
-								k.panel.events.auto('carouselPinIn').call();
+								k.panel.events.on('carouselPinIn').call();
 								o.index = j * 1;
 							}
 						}else{
 							if(k.pin == true) {
 								k.pin = false;
-								k.panel.events.auto('carouselPinOut').call();
+								k.panel.events.on('carouselPinOut').call();
 							}
 						}
 					}
 				}
-				if(o.zoom != 0){
-					if(!o.focused && o.offsetZ == 0){
-						o.focused = true;
-						o.carousel.events.auto('carouselZoomIn').call();
-					}else if(o.focused && o.offsetZ == o.zoom){
-						o.focused = false;
-						o.carousel.events.auto('carouselZoomOut').call();
-					}
+				if(!o.focused && o.offsetZ == 0){
+					o.focused = true;
+					o.carousel.events.on('carouselZoomIn').call();
+				}else if(o.focused && o.offsetZ != 0){
+					o.focused = false;
+					o.carousel.events.on('carouselZoomOut').call();
 				}
 				o.offsetZFlex += (o.offsetZ - o.offsetZFlex) * .1;
 				if (sy > o.maxAperture) {
@@ -191,7 +216,7 @@
 					if(Sirius.agent.firefox) 	delta = e.event.deltaY * -40;
 					else						delta = e.event.wheelDelta;
 					Sirius.document.addScroll(0, -delta);
-				}else{
+				}else if(o.keyboard) {
 					switch(e.event.keyCode){
 						case 38 : {}
 						case 33 : {
@@ -205,7 +230,8 @@
 						}
 					}
 				}
-			}
+			},
+			
 		}
 		
 		if(!Sirius.agent.mobile){
@@ -230,11 +256,14 @@
 		}
 		with(o.extra){
 			width("100%");
-			style({top:0});
+			style({top:0, height:0});
 			addToBody();
 		}
 		Sirius.all(selector).each(o.addPanel);
 		o.update();
+		
+		Automator.search(o.carousel);
+		
 		Ticker.add(o.render);
 		Ticker.init();
 		return o;

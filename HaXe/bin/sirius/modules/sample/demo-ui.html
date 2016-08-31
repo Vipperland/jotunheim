@@ -9,14 +9,14 @@
 			Automator.build('bg-lavender padd-10');
 			
 			var body = Sirius.document.body;
-			body.css('bg-lavender');
+			body.css('bg-lavender txt-white');
 			
 			function createCell(color,i){
 				var o = body.mount(FlatUI.GRID,{bg:color})
 							.mount(FlatUI.CELL,{size:24});
 					o.mount(FlatUI.INPUT,{size:4, css:'',
-						label:{size:8,	css:'', name:'INPUT TEST', bg:FlatColors.WHITE[2]},
-						input:{size:16, css:'', bg:FlatColors.WHITE[1]}
+						label:{size:8,	css:'', name:'INPUT TEST', bg:color},
+						input:{size:16, css:'', bg:FlatColors.WHITE[0]}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.SPACE,{size:5});

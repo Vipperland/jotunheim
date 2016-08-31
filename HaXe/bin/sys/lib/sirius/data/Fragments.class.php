@@ -18,6 +18,13 @@ class sirius_data_Fragments implements sirius_data_IFragments{
 	public $pieces;
 	public $first;
 	public $last;
+	public function _sel($i, $e) {
+		$r = (new _hx_array(array()));
+		while($i !== $e) {
+			$r[$r->length] = $this->pieces[$i++];
+		}
+		return "/" . _hx_string_or_null($r->join("/")) . "/";
+	}
 	public function split($separator) {
 		$this->pieces = sirius_tools_Utils::clearArray(_hx_explode($separator, $this->value), null);
 		if($this->pieces->length === 0) {
@@ -25,7 +32,7 @@ class sirius_data_Fragments implements sirius_data_IFragments{
 		}
 		$this->first = $this->pieces[0];
 		$this->last = $this->pieces[$this->pieces->length - 1];
-		$this->glue($this->value);
+		$this->glue($separator);
 		return $this;
 	}
 	public function find($value) {
@@ -52,12 +59,25 @@ class sirius_data_Fragments implements sirius_data_IFragments{
 		}
 		return $this;
 	}
-	public function get($i) {
-		if($i < $this->pieces->length) {
-			return $this->pieces[$i];
+	public function get($i, $e = null) {
+		if($e === null || $e <= $i) {
+			if($i < $this->pieces->length) {
+				return $this->pieces[$i];
+			} else {
+				return "";
+			}
 		} else {
-			return "";
+			return $this->_sel($i, $e);
 		}
+	}
+	public function set($i, $val) {
+		if($i > $this->pieces->length) {
+			$i = $this->pieces->length;
+		}
+		if($val !== null) {
+			$this->pieces[$i] = $val;
+		}
+		return $this;
 	}
 	public function clear() {
 		$this->pieces = (new _hx_array(array()));

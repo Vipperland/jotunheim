@@ -7,8 +7,8 @@ package sirius.dom;
 @:extern("sru.dom.Div")
 class Button extends Div {
 	
-	public static function get(q:String, ?h:IDisplay->Void):Button {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Button {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic){

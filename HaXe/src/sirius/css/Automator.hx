@@ -22,11 +22,24 @@ class Automator {
 	
 	static private var _dev:Bool;
 	
-	static public function enableLogging():Void {
+	static public function reset():Void {
+		build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass','*',true);
+		build('arial txt-12', 'body',true);
+		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
+		build('list-style-none', 'ol,ul,dl',true);
+		build('padd-5', 'hr', true);
+		build('padd-10','input,textarea,select', true);
+		build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix',null,true);
+		css.setSelector('@-ms-viewport', 'width:device-width;');
+		css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
+		css.build();
+	}
+	
+	static public function unmute():Void {
 		_dev = true;
 	}
 	
-	static public function disableLogging():Void {
+	static public function mute():Void {
 		_dev = false;
 	}
 	
@@ -89,13 +102,19 @@ class Automator {
 		
 	}
 	
-	static public function build4All(query:String, ?group:String, ?silent:Bool):Void {
-		build(query, group + '-xs'	, silent);
-		build(query, group + '-sm'	, silent);
-		build(query, group + '-md'	, silent);
-		build(query, group + '-lg'	, silent);
-		build(query, group + '-pr'	, silent);
-		build(query, group 			, silent);
+	/**
+	 * Build the selector for all resolution modes
+	 * @param	query
+	 * @param	group
+	 * @param	silent
+	 */
+	static public function omnibuild(query:String, ?group:String):Void {
+		build(query, group + '-xs'	, true);
+		build(query, group + '-sm'	, true);
+		build(query, group + '-md'	, true);
+		build(query, group + '-lg'	, true);
+		build(query, group + '-pr'	, true);
+		build(query, group 			, true);
 	}
 	
 	/**
@@ -104,12 +123,13 @@ class Automator {
 	 * @param	group
 	 */
 	static public function build(query:String, ?group:String, ?silent:Bool):Void {
-		var c:Array<String> = query.split(" ");	// Split class names
-		var m:String = null;	// MediaQueries rule
-		var s:String;	// Final selector
-		var g:Bool = group != null && group.length > 0;	// Is a valid group?
-		var r:String = ''; // Group value, if available
-		if (g) m = _screen(group.split("-")); // Remove MediaQuery rule from group name
+		
+		var c:Array<String> = query.split(" ");						// Split class names
+		var m:String = null;										// MediaQueries rule
+		var s:String;												// Final selector
+		var g:Bool = Utils.isValid(group);							// Is a valid group?
+		var r:String = ''; 											// Group value, if available
+		if (g) m = _screen(group.split("-"));						// Remove MediaQuery rule from group name
 		
 		Dice.Values(c, function(v:String) {
 			if (v.length > 1) {
@@ -121,17 +141,17 @@ class Automator {
 						_screen(c); // Remove @media signature
 						var en:Entry = _parse(c);
 						s = en.build(); // Create class for selector
-						if (Utils.isValid(s)) {
+						if (Utils.isValid(s))
 							r += s + ";";
-						}else {
+						else if (_dev == true) 
 							Sirius.log("Automator => ERROR (" + en + ")");
-						}
 					}else { // Rule for single class name
 						m = _screen(c); // Target @media
 						if (!css.hasSelector(v, m)) { // Check if selector exists
 							s = _parse(c).build(); // Create class for selector
 							if (Utils.isValid(s)) { // Check if value is valid
-								if (_dev == true) Sirius.log("Automator => ." + v + " {" + s + ";} ]", 1);
+								if (_dev == true) 
+									Sirius.log("Automator => ." + v + " {" + s + ";}", 1);
 								css.setSelector("." + v, s, m); // Add selector to correspondent @media group
 							}
 						}
@@ -140,49 +160,71 @@ class Automator {
 			}
 		});
 		if (g && Utils.isValid(r)) { // If is a group, register all classes to correspondent group and @media value
-			if (_dev == true) Sirius.log("Automator => " + group + " {" + r + "} ]", 1);
+			if (_dev == true) 
+				Sirius.log("Automator => " + group + " {" + r + "}", 1);
 			css.setSelector(group, r, m);
 		}
 		if (silent == null || silent == false) css.build();
 		
 	}
 	
-	static public function mosaic(size:Dynamic):Void {
-		if (!Std.is(size, Array)) size = [size];
+	/**
+	 * Build from custom text (selector: automator css-syntax;)
+	 * @param	data
+	 */
+	static public function parse(data:String):Void {
+		Dice.Values(data.split(';'), function(v:String) {
+			var set:Array<String> = v.split(':');
+			var grp:String = set.shift();
+			build(set.join(' '), grp);
+		});
+	}
+	
+	/**
+	 * Create a grid container
+	 * @param	size
+	 */
+	static public function grid(size:Dynamic):Void {
+		if (!Std.is(size, Array)) 
+			size = [size];
 		Dice.Values(size, function(v:Int) {	_createGridCol(v); });
 	}
 	
+	static public function cell(size:UInt, pad:UInt):Void {
+		Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
+			++a;
+			var t:Dynamic = a / b * 100 - .001;
+			var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
+			var n:String = '.cel-' + a + (b==12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
+			omnibuild('w-' + s + ' padd-' + pad, n); // w-00d00pc padd-10
+			return null;
+		});
+		css.build();
+	}
+	
+	/**
+	 * Create all cell styles
+	 * @param	size
+	 */
 	static private function _createGridCol(size:Int):Void {
-		var n:String = '.mosaic-' + size;
-		if(!css.hasSelector(n,null,'')){
+		var n:String = '.grid' + (size != 12 ? '-' + size : '');
+		if (!css.hasSelector(n, null, '')){
+			build('disp-table content-void', n + ':before,' + n + ':after', true);
+			build('clear-both', n + ':after', true);
 			Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
 				++a;
-				var t:Dynamic = a / b * 100 - .01;
+				var t:Dynamic = a / b * 100 - .001;
 				var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
-				var n:String = '.cel-' + a + 'x' + b;	// .cel-AxB
-				build4All('w-' + s + ' padd-' + (a==1 ? '1' : '10'), n, true); // w-00d00pc padd-10
-				build4All('pull-l', n, true); 
-				if (a < b-1) build4All('marg-l-' + s, 'o-' + n, true);
+				var n:String = '.cel-' + a + (b==12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
+				omnibuild('w-' + s + ' padd-5', n); // w-00d00pc padd-10
+				omnibuild('pull-l', n); 
+				if (a < b - 1) 
+					omnibuild('marg-l-' + s, 'o-' + n);
 				return null;
 			});
 		}
 		css.build();
 	}
-	
-	//static public function _init() {
-		//build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline transparent','*');
-		//build('arial txt-12', 'body');
-		//build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover');
-		//build('list-style-none', 'ol,ul,dl');
-		//build('padd-5', 'hr');
-		//build('padd-10','input,textarea,select');
-		//build('disp-table content-void', '.grid:before,.grid:after');
-		//build('clear-both', '.grid:after');
-		//build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix');
-		//css.setSelector('@-ms-viewport', 'width:device-width;');
-		//css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
-		//Reflect.deleteField(Automator, '_init');
-	//}
 	
 	/**
 	 * If a screen related selector will be applied
@@ -200,6 +242,11 @@ class Automator {
 	 */
 	static private function _parse(args:Array<String>):Entry {
 		var r:Array<IKey> = [];
+		var i:Bool = false;
+		if (args[args.length-1] == 'i') {
+			i = true;
+			args.pop();
+		}
 		Dice.All(args, function(p:Int, v:String) {
 			if(v.length > 0){
 				var val:IEntry = AutomatorRules.get(v);
@@ -215,7 +262,7 @@ class Automator {
 			}
 		});
 		// return all Entry structure
-		return new Entry(r,AutomatorRules.keys());
+		return new Entry(r,AutomatorRules.keys(),i);
 	}
 	
 	/**
@@ -225,7 +272,7 @@ class Automator {
 	 * @return
 	 */
 	static public function getPosition(r:String, x:String):Bool {
-		return "tblr".indexOf(x) != -1;
+		return "tblrcm".indexOf(x) != -1 || "#top#bottom#left#right#center#middle#".indexOf(x) != -1;
 	}
 	
 	/**

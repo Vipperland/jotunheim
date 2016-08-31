@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Meter")
 class Meter extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Meter {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Meter {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

@@ -1,6 +1,8 @@
 package sirius.dom;
 import js.Browser;
 import js.html.IFrameElement;
+import js.html.Location;
+import js.html.Window;
 
 /**
  * ...
@@ -9,11 +11,11 @@ import js.html.IFrameElement;
 @:expose("sru.dom.IFrame")
 class IFrame extends Display {
 	
-	public var object:IFrameElement;
-	
-	public static function get(q:String, ?h:IDisplay->Void):IFrame {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):IFrame {
+		return cast Sirius.one(q);
 	}
+	
+	public var object:IFrameElement;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createIFrameElement();
@@ -25,8 +27,8 @@ class IFrame extends Display {
 		object.src = url;
 	}
 	
-	public function noScroll():Void {
-		object.scrolling = 'no';
+	public function enableScroll(mode:Bool):Void {
+		object.scrolling = mode ? 'yes' : 'no';
 	}
 	
 }

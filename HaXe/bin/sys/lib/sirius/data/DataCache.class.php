@@ -1,7 +1,7 @@
 <?php
 
 class sirius_data_DataCache implements sirius_data_IDataCache{
-	public function __construct($name = null, $path = null, $expire = null) {
+	public function __construct($name = null, $path = null, $expire = null, $base64 = null) {
 		if(!php_Boot::$skip_constructor) {
 		if($expire === null) {
 			$expire = 0;
@@ -10,6 +10,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		$this->_name = $name;
 		$this->_path = $path;
 		$this->_expire = $expire;
+		$this->_base64 = $base64;
 		$this->clear(null);
 	}}
 	public $_DB;
@@ -17,6 +18,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	public $_name;
 	public $_expire;
 	public $_loaded;
+	public $_base64;
 	public $__time__;
 	public $data;
 	public function get_data() {
@@ -100,13 +102,10 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			return $this->_loaded;
 		}
 	}
-	public function save($base64 = null) {
-		if($base64 === null) {
-			$base64 = true;
-		}
+	public function save() {
 		$data = null;
-		if($base64) {
-			$data = sirius_utils_Criptog::encodeBase64($this->_DB);
+		if($this->_base64) {
+			$data = sirius_utils_IOTools::encodeBase64($this->_DB);
 		} else {
 			$data = $this->json(false);
 		}
@@ -134,18 +133,15 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 			Reflect::deleteField($this->_DB, "__time__");
 		}
 	}
-	public function load($base64 = null) {
-		if($base64 === null) {
-			$base64 = true;
-		}
+	public function load() {
 		$this->_DB = null;
 		if(!$this->_validated) {
 			$this->_checkPath();
 		}
 		if(file_exists($this->_name)) {
 			$c = sys_io_File::getContent($this->_name);
-			if($base64) {
-				$this->_DB = sirius_utils_Criptog::decodeBase64($c, true);
+			if($this->_base64) {
+				$this->_DB = sirius_utils_IOTools::decodeBase64($c, true);
 			} else {
 				$this->_DB = haxe_Json::phpJsonDecode($c);
 			}
@@ -164,14 +160,14 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		return $this;
 	}
 	public function json($print = null) {
-		$result = haxe_Json::phpJsonEncode($this->_DB, null, null);
+		$result = sirius_serial_JsonTool::stringfy($this->_DB, null, " ");
 		if($print) {
 			php_Lib::hprint($result);
 		}
 		return $result;
 	}
 	public function base64($print = null) {
-		$result = sirius_utils_Criptog::encodeBase64($this->_DB);
+		$result = sirius_utils_IOTools::encodeBase64($this->_DB);
 		if($print) {
 			php_Lib::hprint($result);
 		}

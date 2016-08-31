@@ -57,12 +57,12 @@ class AutomatorRules {
 	 * @param	n
 	 * @return
 	 */
-	static public function mosaicKey(d:Entry, k:IKey, n:IKey):String {
+	static public function gridKey(d:Entry, k:IKey, n:IKey):String {
 		if (d.head == k) {
 			if (n != null)
-				Automator.mosaic(Std.parseInt(n.key));
+				Automator.grid(Std.parseInt(n.key));
 			else
-				Automator.mosaic(12);
+				Automator.grid(12);
 			d.cancel();
 			return null;
 		}
@@ -89,6 +89,18 @@ class AutomatorRules {
 	 */
 	static public function commonKey(d:Entry, k:IKey, n:IKey):String {
 		return k.entry.value + (n != null ? ":" : "");
+	}
+	
+	/**
+	 * Return key value
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function commonArray(d:Entry, k:IKey, n:IKey):String {
+		d.cancel();
+		return k.entry.value + ':' + d.compile(1).join(' ').split('_').join('-');
 	}
 	
 	/**
@@ -297,10 +309,11 @@ class AutomatorRules {
 	static public function textKey(d:Entry, k:IKey, n:IKey):String {
 		if (k.index == 0) {
 			if (n != null && !n.position) {
-				if (n.color != null)
-					return 'color:';
 				if (n.measure != null)
 					return 'font-size:';
+				//if (n.color != null)
+				else
+					return 'color:';
 			}
 			if (n.key != 'dec')
 				return 'text-align:';
@@ -315,8 +328,8 @@ class AutomatorRules {
 	static private var _KEYS:Dynamic = {
 		void:{value:'""',verifier:commonKey},
 		glass:{value:'background-color:transparent',verifier:colorKey},
-		b:{value:'top', verifier:numericKey},
-		t:{value:'bottom', verifier:numericKey},
+		b:{value:'bottom', verifier:numericKey},
+		t:{value:'top', verifier:numericKey},
 		l:{value:'left', verifier:numericKey},
 		r:{value:'right', verifier:numericKey},
 		m:{value:'middle', verifier:commonKey},
@@ -324,7 +337,6 @@ class AutomatorRules {
 		c:{value:'center', verifier:commonKey},
 		n:{value:'none', verifier:commonKey},
 		line:{value:'line', verifier:pushKey},
-		i:{value:' !important', verifier:commonKey},
 		marg:{value:'margin', verifier:numericKey},
 		padd:{value:'padding', verifier:numericKey},
 		bord:{value:'border', verifier:numericKey},
@@ -360,7 +372,7 @@ class AutomatorRules {
 		thin:{value:'font-weight:100',verifier:commonKey},
 		upcase:{value:'font-transform:uppercase',verifier:commonKey},
 		locase:{value:'font-transform:lowercase',verifier:commonKey},
-		curs:{value:'cursor',verifier:valueKey},
+		cursor:{value:'cursor',verifier:valueKey},
 		load:{value:'loading',verifier:valueKey},
 		arial:{value:'font-family:arial',verifier:commonKey},
 		verdana:{value:'font-family:verdana',verifier:commonKey},
@@ -369,7 +381,6 @@ class AutomatorRules {
 		georgia:{value:'font-family:georgia',verifier:commonKey},
 		trebuchet:{value:'font-family:trebuchet',verifier:commonKey},
 		table:{value:'table',verifier:appendKey},
-		cell:{value:'cell',verifier:commonKey},
 		rad:{value:'radius',verifier:valueKey},
 		solid:{value:'solid',verifier:commonKey},
 		dashed:{value:'dashed',verifier:commonKey},
@@ -379,8 +390,11 @@ class AutomatorRules {
 		hidden:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
 		stroke:{value:'',verifier:strokeKey},
-		mosaic:{value:'',verifier:mosaicKey},
-		mouse:{value:'pointer-events',verifier:commonKey},
+		grid:{value:'', verifier:gridKey},
+		cell:{value:'cell',verifier:commonKey},
+		mouse:{value:'pointer-events', verifier:commonKey },
+		btn:{value:'cursor:pointer',verifier:commonKey},
+		ease:{value:'transition',verifier:commonArray },
 	};
 	
 	static public function set(rule:Dynamic, ?value:IEntry):Void {

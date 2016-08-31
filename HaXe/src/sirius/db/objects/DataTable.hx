@@ -1,4 +1,5 @@
 package sirius.db.objects;
+import php.Lib;
 import sirius.db.tools.ICommand;
 import sirius.utils.Dice;
 
@@ -88,6 +89,11 @@ class DataTable implements IDataTable {
 		var old:String = _name;
 		_name = to;
 		return new QueryResult(_gate.builder.rename(old, to).result);
+	}
+	
+	public function length(?clausule:Dynamic=null):UInt {
+		var command:ICommand = _gate.builder.find('COUNT(*)', _name, clausule, null, null).execute();
+		return command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], 'COUNT(*)')) : 0;
 	}
 	
 	public function clear (paramaters:Dynamic):Dynamic {

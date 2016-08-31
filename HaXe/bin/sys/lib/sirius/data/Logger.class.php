@@ -3,14 +3,18 @@
 class sirius_data_Logger {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
-		$this->_events = (new _hx_array(array((isset($this->query) ? $this->query: array($this, "query")))));
+		$this->_events = (new _hx_array(array()));
+		$this->_events->{"query"} = (isset($this->query) ? $this->query: array($this, "query"));
 	}}
-	public $_bgs;
 	public $_events;
-	public function silent() {
-		$this->query("Log => Disconnected", 2);
+	public function mute() {
 		if(Lambda::indexOf($this->_events, (isset($this->query) ? $this->query: array($this, "query"))) !== -1) {
 			$this->_events->splice(0, 1);
+		}
+	}
+	public function unmute() {
+		if(Lambda::indexOf($this->_events, (isset($this->query) ? $this->query: array($this, "query"))) === -1) {
+			$this->_events->unshift((isset($this->query) ? $this->query: array($this, "query")));
 		}
 	}
 	public function listen($handler) {

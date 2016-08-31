@@ -81,8 +81,10 @@ class EventGroup implements IEventGroup {
 				v(evt);
 			return !propagation;
 		});
-		if (_pd && e != null)
+		if (_pd && e != null){
 			evt.event.preventDefault();
+			evt.event.stopPropagation();
+		}
 		propagation = true;
 	}
 	

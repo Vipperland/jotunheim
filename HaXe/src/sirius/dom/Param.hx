@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Param")
 class Param extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Param {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Param {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

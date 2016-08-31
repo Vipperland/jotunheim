@@ -78,8 +78,13 @@ class ModLib {
 							Sirius.log("	ModLib => OVERRIDE " + mod.name, 2);
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
-						if (mod.type == null || mod.type == 'null' || mod.type == "html")
-							content = content.split('\r').join('').split('\n').join('');
+						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
+							content = content.split('\r\n').join('\r').split('\n').join('\r');
+							while (content.substr(0, 1) == '\r')
+								content = content.substring(1, content.length);
+							while (content.substr( -1) == '\r')
+								content = content.substring(0, content.length - 1);
+						}
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
 							Sirius.log("	ModLib => " + mod.name + " VERIFYING...", 1);

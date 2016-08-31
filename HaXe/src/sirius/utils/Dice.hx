@@ -1,5 +1,4 @@
 package sirius.utils;
-import haxe.Log;
 import sirius.tools.Utils;
 import sirius.utils.IDiceRoll;
 
@@ -18,12 +17,6 @@ import sirius.utils.IDiceRoll;
  */
 @:expose("Dice")
 class Dice {
-	
-	/** @private */
-	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
-	
-	/** @private */
-	private static var _R:Bool = false;
 	
 	/**
 	 * For each object Value and parameter, call each(paramName,value)
@@ -123,7 +116,8 @@ class Dice {
 		var b:Float = Math.max(from, to);
 		if (increment == null || increment < 1) increment = 1;
 		while (a < b) {
-			if (each(cast a,cast b,(a+=increment)==b) == true) break;
+			if (each(cast a, cast b, (a += increment) == b) == true)
+				break;
 		}
 		var c:Bool = a == b;
 		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a-increment };
@@ -182,13 +176,30 @@ class Dice {
 	 * @param	numeric
 	 * @return
 	 */
-	public static function Table(data:Array<Dynamic>, key:String, ?numeric:Bool = false):Array<Dynamic> {
-		var r:Array<Dynamic> = cast data.sort(function (a:Int, b:Int):Int {
-			if (numeric)
-				return Reflect.compare(Reflect.field(a, key), Reflect.field(b, key));
+	public static function Table(data:Array<Dynamic>, ?key:String, ?numeric:Bool = false):Dynamic {
+		var r:Array<Dynamic> = null;
+		if (numeric) {
+			// INT objA.key < INT objB.key
+			if(key != null)
+				r = cast data.sort(function (a:Int, b:Int):Int {
+					return Reflect.field(a, key) < Reflect.field(b, key) ? -1 : 1;
+				});
+			// INT a < INT b
 			else
-				return Reflect.compare(SearchTag.convert(Reflect.field(a, key), true),SearchTag.convert(Reflect.field(b, key), true));
-		});
+				r = cast data.sort(function (a:Int, b:Int):Int {
+					return a < b ? -1 : 1;
+				});
+		}
+		// objA.key < objB.key
+		else if(key != null)
+			r = cast data.sort(function (a:Dynamic, b:Dynamic):Int {
+				return Reflect.compare(SearchTag.convert(Reflect.field(a, key)),SearchTag.convert(Reflect.field(b, key)));
+			});
+		// STR a < STR b
+		else
+			r = cast data.sort(function (a:Int, b:Int):Int {
+				return Reflect.compare(SearchTag.convert(a),SearchTag.convert(b));
+			});
 		return r;
 	}
 	

@@ -21,20 +21,34 @@ class sirius_php_utils_Header {
 		header("Access-Control-Allow-Credentials" . ": " . Std::string($credentials));
 	}}
 	public function content($type) {
-		header("content-type:" . ": " . _hx_string_or_null($type));
+		if(!sirius_php_utils_Header::$hasType) {
+			sirius_php_utils_Header::$hasType = true;
+			header("content-type:" . ": " . _hx_string_or_null($type));
+		}
 	}
-	public function setJSON($data = null) {
+	public function setHTML() {
+		$this->content(sirius_php_utils_Header::$HTML);
+	}
+	public function setJSON($data = null, $encode = null) {
 		$this->content(sirius_php_utils_Header::$JSON);
 		if($data !== null) {
-			php_Lib::hprint(haxe_Json::phpJsonEncode($data, null, null));
+			$data1 = sirius_serial_JsonTool::stringfy($data, null, " ");
+			if($encode === true) {
+				$data1 = sirius_utils_IOTools::encodeBase64($data1);
+			}
+			php_Lib::hprint($data1);
 		}
 	}
 	public function setTEXT() {
 		$this->content(sirius_php_utils_Header::$TEXT);
 	}
+	public function setURI($value) {
+		header("location" . ": " . _hx_string_or_null($value));
+	}
 	static $HTML = "text/html;charset=utf-8";
 	static $TEXT = "text/plain;charset=utf-8";
 	static $JSON = "application/json;charset=utf-8";
 	static $JSONP = "application/javascript;charset=utf-8";
+	static $hasType = false;
 	function __toString() { return 'sirius.php.utils.Header'; }
 }

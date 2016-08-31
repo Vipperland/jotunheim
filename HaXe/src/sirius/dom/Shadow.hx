@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Shadow")
 class Shadow extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Shadow {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Shadow {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

@@ -8,9 +8,9 @@ import js.html.BaseElement;
  */
 @:expose("sru.dom.B")
 class B extends Display{
-
-	public static function get(q:String, ?h:IDisplay->Void):B {
-		return cast Sirius.one(q,null,h);
+	
+	static public function get(q:String):B {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

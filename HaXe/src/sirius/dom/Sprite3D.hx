@@ -7,6 +7,10 @@ package sirius.dom;
 @:expose("sru.dom.Sprite3D")
 class Sprite3D extends Display3D {
 	
+	static public function get(q:String):Sprite3D {
+		return cast Sirius.one(q);
+	}
+	
 	public var content:IDisplay3D;
 	
 	public function new(?q:Dynamic) {

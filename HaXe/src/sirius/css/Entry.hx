@@ -6,6 +6,9 @@ import sirius.utils.Dice;
  * @author Rafael Moreira
  */
 class Entry {
+	
+	// if class is important
+	public var important:Bool;
 	// All pieces of class
 	public var keys:Array<IKey>;
 	// First valid piece
@@ -19,7 +22,8 @@ class Entry {
 	// If parser is canceled (ignore pendent keys)
 	public var canceled:Bool;
 	
-	public function new(keys:Array<IKey>, dict:Dynamic) {
+	public function new(keys:Array<IKey>, dict:Dynamic,i:Bool) {
+		this.important = i;
 		this.keys = keys;
 		this.head = keys[0];
 		this.tail = keys[keys.length - 1];
@@ -41,7 +45,7 @@ class Entry {
 			});
 		}
 		// If all keys if missing, return NULL
-		return r;
+		return r + (important ? ' !important' : '');
 	}
 	
 	public function cancel():Void {

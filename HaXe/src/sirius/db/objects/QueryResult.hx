@@ -9,6 +9,8 @@ class QueryResult implements IQueryResult {
 	
 	public var data:Array<Dynamic>;
 	
+	private var _index:UInt = 0;
+	
 	public function new(data:Array<Dynamic>) {
 		this.data = data != null ? data : [];	
 	}

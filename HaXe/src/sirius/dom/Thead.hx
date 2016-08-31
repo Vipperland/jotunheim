@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Thead")
 class Thead extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Thead {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Thead {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

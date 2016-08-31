@@ -25,6 +25,21 @@ class Reflect {
 	static function isFunction($f) {
 		return (is_array($f) && is_callable($f)) || _hx_is_lambda($f) || is_array($f) && Reflect_0($f) && $f[1] !== "length";
 	}
+	static function compare($a, $b) {
+		if((is_object($_t = $a) && !($_t instanceof Enum) ? $_t === $b : $_t == $b)) {
+			return 0;
+		} else {
+			if(is_string($a)) {
+				return strcmp($a, $b);
+			} else {
+				if($a > $b) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+		}
+	}
 	static function deleteField($o, $field) {
 		if(!_hx_has_field($o, $field)) {
 			return false;

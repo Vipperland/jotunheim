@@ -26,7 +26,7 @@ interface ITable {
 	 * @param	h
 	 * @return
 	 */
-	public function scan(q:String, ?t:Element, ?h:IDisplay->Bool):ITable;
+	public function scan(q:String, ?t:Element):ITable;
 	
 	/**
 	 * Return all elements with contains a specific value
@@ -403,5 +403,8 @@ interface ITable {
 	
 	/// Event
 	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable;
+	
+	/// Event (mouseOver, mouseOut, click))
+	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):ITable;
 	
 }

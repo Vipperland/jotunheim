@@ -10,6 +10,6 @@ interface sirius_data_IDataCache {
 	function set($p, $v);
 	function get($id = null);
 	function exists($name = null);
-	function save($base64 = null);
-	function load($base64 = null);
+	function save();
+	function load();
 }

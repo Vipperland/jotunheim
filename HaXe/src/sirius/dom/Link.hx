@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Link")
 class Link extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Link {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Link {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

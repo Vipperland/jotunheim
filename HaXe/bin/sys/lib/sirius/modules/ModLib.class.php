@@ -59,7 +59,7 @@ class sirius_modules_ModLib {
 			$module = $this->get($name, null);
 			sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$module, &$name, &$repeat, &$sufix), "sirius_modules_ModLib_2"), 'execute'), null);
 		} else {
-			php_Lib::hprint($this->get($name, $data));
+			php_Lib::hprint($this->fill($name, $data, $sufix));
 		}
 	}
 	public function __call($m, $a) {
@@ -102,8 +102,14 @@ function sirius_modules_ModLib_1(&$_g, &$content, &$file, &$sur, $p, $v) {
 				}
 				$end = _hx_index_of($v, "/EOF;", null);
 				$content = _hx_substring($v, $i + 2, sirius_modules_ModLib_3($_g, $content, $end, $file, $i, $mod, $p, $sur, $v));
-				if($mod->type === "null" || $mod->type === "html") {
-					$content = _hx_explode("\x0A", _hx_explode("\x0D", $content)->join(""))->join("");
+				if($mod->type === null || $mod->type === "null" || $mod->type === "html") {
+					$content = _hx_explode("\x0A", _hx_explode("\x0D\x0A", $content)->join("\x0D"))->join("\x0D");
+					while(_hx_substr($content, 0, 1) === "\x0D") {
+						$content = _hx_substring($content, 1, strlen($content));
+					}
+					while(_hx_substr($content, -1, null) === "\x0D") {
+						$content = _hx_substring($content, 0, strlen($content) - 1);
+					}
 				}
 				if($mod->{"require"} !== null) {
 					$dependencies = _hx_explode(";", $mod->{"require"});
@@ -138,7 +144,7 @@ function sirius_modules_ModLib_4(&$_g, &$content, &$dependencies, &$end, &$file,
 		if($set === null) {
 			sirius_Sirius::log("\x09\x09ModLib => REQUIRED " . _hx_string_or_null($v1), 2);
 		} else {
-			$content = _hx_explode("<import " . _hx_string_or_null($v1) . "/>", $content)->join($set);
+			$content = _hx_explode("{{@include:" . _hx_string_or_null($v1) . "}}", $content)->join($set);
 		}
 	}
 }

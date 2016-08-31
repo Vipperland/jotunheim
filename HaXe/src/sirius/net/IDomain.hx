@@ -3,6 +3,7 @@ package sirius.net;
 	import php.Lib;
 	import php.NativeArray;
 #end
+import sirius.data.IDataCache;
 import sirius.data.IFragments;
 import sirius.net.IDomainData;
 import sirius.utils.Dice;
@@ -13,15 +14,17 @@ import sirius.utils.Dice;
 
 interface IDomain {
   
-	public var host : String;
+	public var host:String;
 	
-	public var port : String;
+	public var port:String;
 	
-	public var url : IFragments;
+	public var url:IFragments;
 	
 	#if js
 		
-		public var hash : IFragments;
+		public var data:IDataCache;
+		
+		public var hash:IFragments;
 		
 	#elseif php
 		
@@ -39,11 +42,13 @@ interface IDomain {
 
 	#if js
 		
-		public function reload (?force:Bool = false) : Void;
+		public function allocate (?expire:UInt=30):IDataCache;
+		
+		public function reload (?force:Bool = false):Void;
 		
 	#elseif php
 		
-		public function require(params:Array<String>) : Bool;
+		public function require(params:Array<String>):Bool;
 		
 	#end
 	

@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.OptGroup")
 class OptGroup extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):OptGroup {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):OptGroup {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

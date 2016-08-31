@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.DataList")
 class DataList extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):DataList {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):DataList {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

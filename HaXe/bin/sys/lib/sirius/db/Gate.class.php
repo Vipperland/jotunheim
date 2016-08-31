@@ -4,6 +4,8 @@ class sirius_db_Gate implements sirius_db_IGate{
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
 		$this->_errors = (new _hx_array(array()));
+		$this->_log = (new _hx_array(array()));
+		$this->_logCommands = false;
 		$this->_tables = _hx_anonymous(array());
 		$this->builder = new sirius_db_tools_QueryBuilder($this);
 	}}
@@ -11,20 +13,30 @@ class sirius_db_Gate implements sirius_db_IGate{
 	public $_token;
 	public $_tables;
 	public $_errors;
+	public $_log;
+	public $_logCommands;
 	public $builder;
 	public $command;
 	public $errors;
 	public function get_errors() {
 		return $this->_errors;
 	}
+	public $log;
+	public function get_log() {
+		return $this->_log;
+	}
 	public function isOpen() {
 		return $this->_db !== null && $this->get_errors()->length === 0;
 	}
-	public function open($token) {
+	public function open($token, $log = null) {
+		if($log === null) {
+			$log = false;
+		}
+		$this->_logCommands = $log;
 		if(!$this->isOpen()) {
 			$this->_token = $token;
 			try {
-				$this->_db = sirius_db_pdo_Bridge::open($token->host, $token->user, $token->pass, $token->options);
+				$this->_db = sirius_db_pdo_Database::connect($token->host, $token->user, $token->pass, $token->options);
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) ? $__hx__e->e : $__hx__e;
 				$e = $_ex_;
@@ -41,17 +53,17 @@ class sirius_db_Gate implements sirius_db_IGate{
 		if($this->isOpen()) {
 			$pdo = $this->_db->prepare($query, php_Lib::toPhpArray((($options === null) ? (new _hx_array(array())) : $options)));
 		}
-		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $this->_errors);
+		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $this->_errors, sirius_db_Gate_0($this, $options, $parameters, $pdo, $query));
 		return $this->command;
 	}
-	public function schemaOf($table = null) {
+	public function schema($table = null) {
 		$r = null;
 		if(!Std::is($table, _hx_qtype("Array"))) {
 			$table = (new _hx_array(array($table)));
 		}
 		$tables = (new _hx_array(array()));
 		$clausule = sirius_db_Clause::hAND((new _hx_array(array(sirius_db_Clause::EQUAL("TABLE_SCHEMA", $this->_token->db), sirius_db_Clause::hOR($tables)))));
-		sirius_utils_Dice::Values($table, array(new _hx_lambda(array(&$clausule, &$r, &$table, &$tables), "sirius_db_Gate_0"), 'execute'), null);
+		sirius_utils_Dice::Values($table, array(new _hx_lambda(array(&$clausule, &$r, &$table, &$tables), "sirius_db_Gate_1"), 'execute'), null);
 		return $this->builder->find("*", "INFORMATION_SCHEMA.COLUMNS", $clausule, null, null)->execute(null, null, null);
 	}
 	public function insertedId() {
@@ -74,10 +86,15 @@ class sirius_db_Gate implements sirius_db_IGate{
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
-	static $__properties__ = array("get_errors" => "get_errors");
+	static $__properties__ = array("get_log" => "get_log","get_errors" => "get_errors");
 	function __toString() { return 'sirius.db.Gate'; }
 }
-function sirius_db_Gate_0(&$clausule, &$r, &$table, &$tables, $v) {
+function sirius_db_Gate_0(&$__hx__this, &$options, &$parameters, &$pdo, &$query) {
+	if($__hx__this->_logCommands) {
+		return $__hx__this->_log;
+	}
+}
+function sirius_db_Gate_1(&$clausule, &$r, &$table, &$tables, $v) {
 	{
 		$tables[$tables->length] = sirius_db_Clause::EQUAL("TABLE_NAME", $v);
 	}

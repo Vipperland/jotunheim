@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Track")
 class Track extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Track {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Track {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

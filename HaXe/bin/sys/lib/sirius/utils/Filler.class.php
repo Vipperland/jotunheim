@@ -28,6 +28,24 @@ class sirius_utils_Filler {
 		}
 		return $r;
 	}
+	static function extractNumber($value) {
+		$s = "";
+		$i = 0;
+		while(sirius_utils_Filler_2($i, $s, $value)) {
+			$j = Std::parseInt(_hx_substr($value, $i, 1));
+			++$i;
+			if($j !== null) {
+				$s .= Std::string(sirius_utils_Filler_3($i, $j, $s, $value)) . "";
+			}
+			unset($j);
+		}
+		$i = Std::parseInt($s);
+		if($i === null) {
+			return 0;
+		} else {
+			return $i;
+		}
+	}
 	function __toString() { return 'sirius.utils.Filler'; }
 }
 function sirius_utils_Filler_0(&$content, &$data, &$path, $p, $v) {
@@ -40,5 +58,32 @@ function sirius_utils_Filler_1(&$data, &$r, &$sufix, &$value, $p, $v) {
 		$v->{"%0"} = $p;
 		$r .= _hx_string_or_null(sirius_utils_Filler::_apply($sufix, $value, $v));
 		Reflect::deleteField($v, "%0");
+	}
+}
+function sirius_utils_Filler_2(&$i, &$s, &$value) {
+	{
+		$b = strlen($value);
+		{
+			$aNeg = $b < 0;
+			$bNeg = $i < 0;
+			if($aNeg !== $bNeg) {
+				return $aNeg;
+			} else {
+				return $b > $i;
+			}
+			unset($bNeg,$aNeg);
+		}
+		unset($b);
+	}
+}
+function sirius_utils_Filler_3(&$i, &$j, &$s, &$value) {
+	{
+		$int = $j;
+		if($int < 0) {
+			return 4294967296.0 + $int;
+		} else {
+			return $int + 0.0;
+		}
+		unset($int);
 	}
 }

@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Audio")
 class Audio extends Display{
 
-	public static function get(q:String, ?h:IDisplay->Void):Audio {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Audio {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

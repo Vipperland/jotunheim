@@ -1,15 +1,16 @@
 package sirius.dom;
 import js.Browser;
+import sirius.events.IEvent;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.A")
-class A extends Display{
+class A extends Display {
 	
-	public static function get(q:String, ?h:IDisplay->Void):A {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):A {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {
@@ -21,6 +22,12 @@ class A extends Display{
 		if(url != null)
 			attribute('href', url);
 		return attribute('href');
+	}
+	
+	public function target(?q:String):String {
+		if(q != null)
+			attribute('target', q);
+		return attribute('target');
 	}
 	
 }

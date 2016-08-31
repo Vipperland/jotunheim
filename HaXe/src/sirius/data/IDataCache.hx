@@ -61,12 +61,12 @@ interface IDataCache {
 	 * @param	base64
 	 * @return
 	 */
-	public function save (?base64:Bool = true) : IDataCache;
+	public function save () : IDataCache;
 	
 	/**
 	 * Load data from disk or cookie based on a environment
 	 * @return
 	 */
-	public function load(?base64:Bool = true):Bool;
+	public function load():Bool;
 	
 }

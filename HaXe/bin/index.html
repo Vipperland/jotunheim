@@ -14,8 +14,10 @@
 		var files = [
 			//'sirius/modules/devtools/logger.html',
 			//'sirius/modules/automator/colors.html',
-			'sirius/modules/automator/reset.html'
+			//'sirius/modules/automator/reset.html'
 		];
+		
+		Automator.reset();
 		Sirius.onInit(function(){
 			switch(Sirius.domain.hash.last){
 				case 'dragndrop' : {
@@ -38,11 +40,200 @@
 					Sirius.module('sirius/modules/sample/speed-test.html');
 					break;
 				}
-				default : {
+				case 'ui' : {
 					Sirius.module('sirius/modules/sample/demo-ui.html');
 				}
 			}
 		}, files);
+		
+	</script>
+	
+	<div id="test-grid" class="padd-2">
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-12">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-6">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-6">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-4">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-4">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-4">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-3">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-3">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-3">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-3">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-2">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="grid txt-center txt-white">
+			
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			<div class="cel-1">
+				<div class="box">
+					A
+				</div>
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<script>
+		Automator.grid(12);
+		Automator.build('txt-18 bg-x0066CC h-200 padd-10 shadow-x0066CC-5-45','.box');
+		Automator.scan();
+		
+		Sirius.all('.box').each(function(o){
+			o.overflow('hidden');
+			o.clear().write('Euismod vestibulum eros ac dis parturient sem sociis at a tortor accumsan tempus amet amet posuere mattis et condimentum.Vel nulla sodales class consequat porta rhoncus gravida tempus scelerisque mollis sociis lacinia ligula consectetur.Interdum vitae urna vestibulum ullamcorper suspendisse. Euismod vestibulum eros ac dis parturient sem sociis at a tortor accumsan tempus amet amet posuere mattis et condimentum.Vel nulla sodales class consequat porta rhoncus gravida tempus scelerisque mollis sociis lacinia ligula consectetur.Interdum vitae urna vestibulum ullamcorper suspendisse. Euismod vestibulum eros ac dis parturient sem sociis at a tortor accumsan tempus amet amet posuere mattis et condimentum.Vel nulla sodales class consequat porta rhoncus gravida tempus scelerisque mollis sociis lacinia ligula consectetur.Interdum vitae urna vestibulum ullamcorper suspendisse.');
+		});
+		
 	</script>
 	
 </body>

@@ -36,7 +36,7 @@ class QueryBuilder implements IQueryBuilder {
 		return r.join(",");
 	}
 	
-	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String):String {
+	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String, i:UInt = 0):String {
 		
 		var r:Array<String> = [];
 		var s:String = joiner;
@@ -44,35 +44,50 @@ class QueryBuilder implements IQueryBuilder {
 		
 		// IF IS A CLAUSULE, PARSE INNER OBJECTS
 		if (Std.is(obj, Clause)) {
-			Dice.Values(obj.conditions, function(v:Dynamic) { r[r.length] = _conditions(v, props, joiner); });
+			Dice.Values(obj.conditions, function(v:Dynamic) { 
+				v = _conditions(v, props, joiner);
+				if(v != null)
+					r[r.length] = v;
+			});
 			s = obj.joiner();
 		}
 		// IF IS AN ARRAY, PARSE INNER OBJECTS
 		else if(Std.is(obj, Array)){
 			Dice.All(obj, function(p:String, v:Dynamic) {
 				if (Std.is(v, Clause)) {
-					r[r.length] = _conditions(v, props, v.joiner());
+					v = _conditions(v, props, v.joiner());
+					if (v != null)
+						r[r.length] = v;
 				}else {
-					r[r.length] = _conditions(v, props, joiner);
+					v = _conditions(v, props, joiner);
+					if (v != null)
+						r[r.length] = v;
 				}
 			});
 		}
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
 		else {
 			r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
-			Reflect.setField(props, "in_" + obj.param, obj.value);
+			Reflect.setField(props, "in_" + obj.i, obj.value);
 		}
 		
-		b = r.length > 1;
-		return (b ? "(" : "") + r.join(s) + (b ? ")" : "");
+		if(r.length > 0){
+			b = r.length > 1;
+			return (b ? "(" : "") + r.join(s) + (b ? ")" : "");
+		}else {
+			return null;
+		}
 		
 	}
 	
 	private function _assembleBody(?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
-		if (clause != null) q += " WHERE " + _conditions(clause , parameters, " || ");
-		if (order != null) q += " ORDER BY " + _order(order);
-		if (limit != null) q += " LIMIT " + limit;
+		if (clause != null)
+			q += " WHERE " + _conditions(clause , parameters, " || ");
+		if (order != null)
+			q += " ORDER BY " + _order(order);
+		if (limit != null)
+			q += " LIMIT " + limit;
 		return q;
 	}
 	

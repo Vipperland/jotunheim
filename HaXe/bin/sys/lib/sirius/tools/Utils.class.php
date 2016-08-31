@@ -24,7 +24,7 @@ class sirius_tools_Utils {
 	}
 	static function isValid($o) {
 		if($o !== null) {
-			if(Std::is($o, _hx_qtype("String"))) {
+			if(!_hx_equal($o, "null") && Std::is($o, _hx_qtype("String"))) {
 				return _hx_len($o) > 0;
 			} else {
 				return true;
@@ -51,6 +51,9 @@ class sirius_tools_Utils {
 			}
 		}
 		return null;
+	}
+	static function boolean($value) {
+		return _hx_equal($value, true) || _hx_equal($value, 1) || _hx_equal($value, "1") || _hx_equal($value, "true") || _hx_equal($value, "yes");
 	}
 	function __toString() { return 'sirius.tools.Utils'; }
 }

@@ -6,6 +6,8 @@ package sirius.db;
  */
 class Clause {
 	
+	static private var _IDX:UInt = 0;
+	
 	private var _joiner:String;
 	
 	/**
@@ -43,7 +45,7 @@ class Clause {
 	 * @return
 	 */
 	static public function LIKE(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}} LIKE :in_{{p}}", value:value };
+		return { param:param, condition:"{{p}} LIKE :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -53,7 +55,7 @@ class Clause {
 	 * @return
 	 */
 	static public function UNLIKE(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}} NOT LIKE :in_{{p}}", value:value };
+		return { param:param, condition:"{{p}} NOT LIKE :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -62,7 +64,7 @@ class Clause {
 	 * @return
 	 */
 	static public function ID(value:Dynamic):Dynamic {
-		return { param:"id", condition:"{{p}}=:in_{{p}}", value:value };
+		return { param:"id", condition:"{{p}}=:in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -72,7 +74,17 @@ class Clause {
 	 * @return
 	 */
 	static public function EQUAL(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}=:in_{{p}}", value:value };
+		return { param:param, condition:"{{p}}=:in_"+_IDX, value:value, i:_IDX++ };
+	}
+	
+	/**
+	 * IF A=B
+	 * @param	param
+	 * @param	value
+	 * @return
+	 */
+	static public function REGEXP(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}} REGEXP :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -81,7 +93,7 @@ class Clause {
 	 * @return
 	 */
 	static public function TRUE(param:String):Dynamic {
-		return { param:param, condition:"{{p}}=:in_{{p}}", value:true };
+		return { param:param, condition:"{{p}}=:in_"+_IDX, value:true, i:_IDX++ };
 	}
 	
 	/**
@@ -90,7 +102,7 @@ class Clause {
 	 * @return
 	 */
 	static public function FALSE(param:String):Dynamic {
-		return { param:param, condition:"{{p}}=:in_{{p}}", value:false };
+		return { param:param, condition:"{{p}}=:in_"+_IDX, value:false, i:_IDX++ };
 	}
 	
 	/**
@@ -100,7 +112,7 @@ class Clause {
 	 * @return
 	 */
 	static public function UNEQUAL(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}!=:in_{{p}}", value:value };
+		return { param:param, condition:"{{p}}!=:in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -111,7 +123,7 @@ class Clause {
 	 * @return
 	 */
 	static public function LESS(param:String, value:Dynamic, ?or:Bool=true):Dynamic {
-		return { param:param, condition:"{{p}}<" + (or ? "=" : "") + ":in_{{p}}", value:value };
+		return { param:param, condition:"{{p}}<" + (or ? "=" : "") + ":in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -122,7 +134,7 @@ class Clause {
 	 * @return
 	 */
 	static public function GREATER(param:String, value:Dynamic, ?or:Bool=true):Dynamic {
-		return { param:param, condition:"{{p}}>" + (or ? "=" : "") + ":in_{{p}}", value:value };
+		return { param:param, condition:"{{p}}>" + (or ? "=" : "") + ":in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -132,7 +144,7 @@ class Clause {
 	 * @return
 	 */
 	static public function BIT(param:String, value:UInt):Dynamic {
-		return { param:param, condition:"{{p}} & :in_{{p}}", value:value };
+		return { param:param, condition:"{{p}} & :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -142,7 +154,7 @@ class Clause {
 	 * @return
 	 */
 	static public function BIT_NOT(param:String, value:UInt):Dynamic {
-		return { param:param, condition:"{{p}} & ~:in_{{p}}", value:value };
+		return { param:param, condition:"~{{p}} & :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	public function joiner():String {

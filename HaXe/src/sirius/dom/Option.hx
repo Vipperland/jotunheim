@@ -7,11 +7,7 @@ import js.html.OptionElement;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Option")
-class Option extends Display{
-	
-	public static function get(q:String, ?h:IDisplay->Void):Option {
-		return cast Sirius.one(q,null,h);
-	}
+class Option extends Display {
 	
 	public var object:OptionElement;
 	
@@ -23,6 +19,10 @@ class Option extends Display{
 	
 	public function value():String {
 		return object.value;
+	}
+	
+	public function label():String {
+		return object.innerText;
 	}
 	
 }

@@ -44,4 +44,24 @@ class Filler{
 		return r;
 	}
 	
+	/**
+	 * Extract number from string
+	 * @param	value
+	 * @return
+	 */
+	static public function extractNumber(value:String):UInt {
+		var s:String = '';
+		var i:UInt = 0;
+		while (i < value.length) {
+			var j:UInt = Std.parseInt(value.substr(i, 1));
+			++i;
+			if (j != null)
+				s += j + '';
+		}
+		i = Std.parseInt(s);
+		return i == null ? 0 : i;
+	}
+	
+	
+	
 }

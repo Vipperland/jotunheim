@@ -9,8 +9,8 @@ import sirius.tools.Utils;
 @:expose("sru.dom.Head")
 class Head extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Head {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Head {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

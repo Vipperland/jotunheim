@@ -8,21 +8,18 @@ package sirius.utils;
 class SearchTag {
 	
 	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
-	private static var _R:Bool = false;
+	
+	private static var _E:EReg = ~/^[a-zA-Z0-9- ]/g;
 	
 	public static function from(value:Dynamic):SearchTag {
-		if (!Std.is(value, SearchTag)) value = new SearchTag(value);
+		if (!Std.is(value, SearchTag))
+			value = new SearchTag(value);
 		return value;
 	}
 	
-	public static function convert(data:Dynamic, ?condense:Bool = true, ?cCase:Bool = false):String {
-		data = Std.string(data);
-		if (condense) data = data.split(' ').join('');
-		if (!cCase) data = data.toLowerCase();
-		if (!_R) {
-			Dice.Values(_M, function(v:Array<String>) { _M.push([v[0].toUpperCase(), v[1].toUpperCase()]); });
-			_R = true;
-		}
+	public static function convert(data:Dynamic):String {
+		data = Std.string(data).toLowerCase().split(' ').join('');
+		data = _E.replace(data, '');
 		var i:Int = 0;
 		var l:Int = _M.length;
 		while (i < l) {
@@ -47,9 +44,10 @@ class SearchTag {
 	private function add(values:Dynamic):Void {
 		values = Std.is(values, Array) ? values : [values];
 		Dice.Values(values, function(v:Dynamic) {
-			v = convert(v, true, false);
+			v = convert(v);
 			var iof = Lambda.indexOf(this.tags, v);
-			if (iof == -1) this.tags[this.tags.length] = v;
+			if (iof == -1)
+				this.tags[this.tags.length] = v;
 		});
 	}
 	
@@ -58,7 +56,8 @@ class SearchTag {
 		values = from(values).tags;
 		Dice.Values(values, function(v:String) {
 			var iof = Lambda.indexOf(this.tags, v);
-			if (iof != -1) this.tags.splice(iof, 1); 
+			if (iof != -1)
+				this.tags.splice(iof, 1); 
 		});
 	}
 	
@@ -68,8 +67,10 @@ class SearchTag {
 		values = from(values).tags;
 		var total:UInt = values.length;
 		var count:UInt = Dice.Values(values, function(v:String) {
-			if (equality)	return tag.indexOf('|' + v + '|') == -1;
-			else 			return tag.indexOf(v) != -1;
+			if (equality)
+				return tag.indexOf('|' + v + '|') == -1;
+			else
+				return tag.indexOf(v) != -1;
 		}).keys;
 		return count/total * 100;
 	}

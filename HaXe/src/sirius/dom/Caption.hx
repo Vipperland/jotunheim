@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Caption")
 class Caption extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Caption {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Caption {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

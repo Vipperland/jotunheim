@@ -80,6 +80,12 @@ interface IDataTable {
 	public function clear(paramaters:Dynamic):Dynamic;
 	
 	/**
+	 * The ammount of rows in table
+	 * @return
+	 */
+	public function length(?clause:Dynamic=null):UInt;
+	
+	/**
 	 * Restrict the field selection of find command
 	 * @param	fields
 	 * @return

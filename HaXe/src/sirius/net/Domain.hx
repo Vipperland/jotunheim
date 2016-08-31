@@ -8,10 +8,11 @@ package sirius.net;
 	import php.Lib;
 	import php.NativeArray;
 	import php.Web;
-	import sirius.data.DataCache;
+	
 	import sirius.net.IDomainData;
 #end
 import haxe.io.Bytes;
+import sirius.data.DataCache;
 import sirius.data.Fragments;
 import sirius.data.IDataCache;
 import sirius.data.IFragments;
@@ -33,6 +34,8 @@ class Domain implements IDomain {
 	#if js
 		
 		public var hash:IFragments;
+		
+		public var data:IDataCache;
 		
 	#elseif php
 		
@@ -86,6 +89,12 @@ class Domain implements IDomain {
 	}
 	
 	#if js
+		
+		public function allocate(?expire:UInt = 30):IDataCache {
+			if(data == null)
+				data = new DataCache(host, '/', 86400 * expire);
+			return data;
+		}
 		
 		public function reload(?force:Bool=false):Void {
 			Browser.window.location.reload(force);

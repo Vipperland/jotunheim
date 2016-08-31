@@ -3,6 +3,7 @@
 class sirius_db_objects_QueryResult implements sirius_db_objects_IQueryResult{
 	public function __construct($data) {
 		if(!php_Boot::$skip_constructor) {
+		$this->_index = 0;
 		if($data !== null) {
 			$this->data = $data;
 		} else {
@@ -10,6 +11,7 @@ class sirius_db_objects_QueryResult implements sirius_db_objects_IQueryResult{
 		}
 	}}
 	public $data;
+	public $_index;
 	public function each($handler) {
 		sirius_utils_Dice::Values($this->data, array(new _hx_lambda(array(&$handler), "sirius_db_objects_QueryResult_0"), 'execute'), null);
 	}

@@ -7,9 +7,9 @@ import js.Browser;
  */
 @:expose("sru.dom.Base")
 class Base extends Display{
-
-	public static function get(q:String, ?h:IDisplay->Void):Base {
-		return cast Sirius.one(q,null,h);
+	
+	static public function get(q:String):Base {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

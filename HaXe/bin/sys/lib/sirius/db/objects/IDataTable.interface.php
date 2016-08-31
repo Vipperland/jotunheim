@@ -12,5 +12,9 @@ interface sirius_db_objects_IDataTable {
 	function delete($clause = null, $order = null, $limit = null);
 	function copy($toTable, $clause = null, $order = null, $limit = null);
 	function clear($paramaters);
-	function restrict($fields);
+	function length();
+	function restrict($fields, $times = null);
+	function unrestrict();
+	function hasColumn($name);
+	function getColumn($name);
 }

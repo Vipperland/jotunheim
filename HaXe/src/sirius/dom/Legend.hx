@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Legend")
 class Legend extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Legend {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Legend {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

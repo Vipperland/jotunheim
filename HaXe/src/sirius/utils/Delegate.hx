@@ -5,7 +5,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class Delegate{
+class Delegate {
 
 	public static function create(handler:Dynamic, ?thisObj:Dynamic, ?args:Array):Dynamic {
 		if (args == null) args = [];

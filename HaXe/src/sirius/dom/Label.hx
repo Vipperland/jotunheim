@@ -8,8 +8,8 @@ import js.Browser;
 @:expose("sru.dom.Label")
 class Label extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Label {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Label {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

@@ -1,8 +1,8 @@
 package sirius.dom;
 
+import haxe.Json;
 import haxe.ds.Either;
 import js.Browser;
-import js.JQuery;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
 import js.html.DOMTokenList;
@@ -10,16 +10,15 @@ import js.html.Element;
 import js.html.Node;
 import sirius.Sirius;
 import sirius.data.DataSet;
-import sirius.data.DisplayData;
 import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
+import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
 import sirius.math.ARGB;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.math.Point;
 import sirius.modules.IRequest;
-import sirius.tools.Key;
 import sirius.tools.Ticker;
 import sirius.tools.Utils;
 import sirius.transitions.Animator;
@@ -34,44 +33,64 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Display")
 class Display implements IDisplay {
 	
-	private static var _DATA:IDataSet = new DataSet();
+	private static var _CNT:UInt = 0;
 	
+	private static var _DATA:Array<IDisplay> = [];
+	
+	/**
+	 * Create a display by element type 
+	 * @param	q
+	 * @return
+	 */
 	public static function ofKind(q:String):IDisplay {
-		return new Display(Browser.document.createElement(q));
+		return Utils.displayFrom(Browser.document.createElement(q));
 	}
 	
-	public static function fromGC(id:String):IDisplay {
-		if (_DATA.exists(id))
-			return cast _DATA.get(id).getDisplay();
+	/**
+	 * Prevent a cretion of a new Display instance for same element
+	 * @param	id
+	 * @return
+	 */
+	public static function fromGC(id:UInt):IDisplay {
+		if (_DATA[id] != null)
+			return _DATA[id];
 		return null;
 	}
 	
+	/**
+	 * Remove all display from cache if not in dom
+	 * @param	secure
+	 */
 	static public function gc(?secure:Bool):Void {
 		if (secure) {
-			_DATA.clear();
+			_DATA = [];
 		}else{
-			Dice.All(_DATA.structure, function(p:String, v:DisplayData) {
-				if (Sirius.one('[sru-id=' + v.__id__ + ']') == null) {
-					_DATA.get(p).dispose();
-					_DATA.unset(p);
+			Dice.Values(_DATA, function(v:IDisplay) {
+				var id:UInt = v.id();
+				if (Sirius.one('[sru-id=' + id + ']') == null) {
+					Reflect.deleteField(_DATA, id + '');
 				}
 			});
 		}
 	}
 	
+	/**
+	 * Get a real position of a element
+	 * @param	target
+	 */
 	static public function getPosition(target:Element) {
 		var a:DOMRect = Sirius.document.body.getBounds();
 		var b:DOMRect = target.getBoundingClientRect();
 		return new Point(b.left - a.left, b.top - a.top);
 	}
 	
-	private var _uid:String;
-	
-	public var data:DisplayData;
+	public var data:IDataSet;
 	
 	public var element:Element;
 	
 	public var events:IDispatcher;
+	
+	private var _uid:UInt;
 	
 	private var _parent:IDisplay;
 	
@@ -95,17 +114,21 @@ class Display implements IDisplay {
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
-			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", Key.GEN());
-			if (!_DATA.exists(_uid))
-				_DATA.set(_uid, new DisplayData(_uid, this));
-			data = _DATA.get(_uid);
-			events = data.__events__;
+			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", _CNT++);
+			_DATA[_uid] = this;
 		}
+		events = new Dispatcher(this);
 		
 	}
 	
+	public function initData():IDataSet {
+		if (data == null)
+			data = new DataSet();
+		return data;
+	}
+	
 	public function dispose():Void {
-		_DATA.unset(_uid);
+		Reflect.deleteField(_DATA, _uid + '');
 		events.dispose();
 		remove();
 	}
@@ -114,15 +137,14 @@ class Display implements IDisplay {
 		return element != null && element.querySelector(q) != null;
 	}
 	
-	public function enable(q:Array<Dynamic>):IDisplay {
-		var d:IDispatcher = this.events;
-		Dice.Values(q, function(v:Dynamic) {
-			if (!Std.is(v, Array))
-				v = [v, false];
-			var o:Dynamic = v[0];
-			var c:Dynamic = v[1];
-			untyped __js__("new o(d,c)");
-		});
+	public function enable(?button:Bool):IDisplay {
+		this.style( { pointerEvents:'auto' } );
+		if (button == true) cursor('pointer');
+		return this;
+	}
+	
+	public function disable():IDisplay {
+		this.style({pointerEvents:'none'});
 		return this;
 	}
 	
@@ -211,17 +233,26 @@ class Display implements IDisplay {
 		if (at != -1) {
 			var sw:Node = element.childNodes.item(at);
 			element.insertBefore(q.element, sw);
+			_children = null;
 		}else {
 			element.appendChild(q.element);
+			if(_children != null){
+				_children.elements.push(q.element);
+				_children.content.push(q);
+			}
 		}
-		_children = null;
 		return q;
 	}
 	
-	public function addChildren(q:ITable):IDisplay {
+	public function addChildren(q:ITable, ?at:Int = -1):IDisplay {
 		var l:IDisplay = null;
-		q.each(cast addChild);
-		_children = null;
+		if (at == -1)
+			q.each(cast addChild);
+		else {
+			q.each(function(o:IDisplay) {
+				addChild(o, at++);
+			});
+		}
 		return q.obj(q.length()-1);
 	}
 	
@@ -285,16 +316,16 @@ class Display implements IDisplay {
 	}
 	
 	public function hasAttribute(name:String):Bool {
-		return (element.hasAttribute != null && element.hasAttribute(name)) || Reflect.field(element, name) != null;
+		return (_getattr && element.hasAttribute(name)) || Reflect.hasField(element, name);
 	}
 	
-	public function attribute(name:String, ?value:String):Dynamic {
+	public function attribute(name:String, ?value:Dynamic):Dynamic {
 		if (name != null) {
 			var t:String = Reflect.field(element, name);
 			if (t != null) {
 				if (value != null)
 					Reflect.setField(element, name, value);
-				return value;
+				return Reflect.field(element, name);
 			}
 			if (value != null) {
 				if (_setattr)
@@ -310,18 +341,23 @@ class Display implements IDisplay {
 	public function clearAttribute(name:String):Dynamic {
 		var value:Dynamic = null;
 		if (hasAttribute(name)) {
-			value = attribute(name);
-			element.removeAttribute(name);
+			if (Reflect.hasField(element, name)) {
+				Reflect.deleteField(element, name);
+			}else{
+				value = attribute(name);
+				element.removeAttribute(name);
+			}
 		}
 		return value;
 	}
 	
-	public function attributes(values:Dynamic):IDisplay {
-		Dice.All(values, attribute);
-		return this;
+	public function attributes(?values:Dynamic):Dynamic {
+		if (values != null)
+			Dice.All(values, attribute);
+		return Utils.getAttributes(this);
 	}
 	
-	public function write(q:String, ?plainText:Bool = false):IDisplay {
+	public function write(q:Dynamic, ?plainText:Bool = false):IDisplay {
 		if (plainText)
 			element.innerText += q;
 		else element.innerHTML = element.innerHTML + q;
@@ -331,7 +367,8 @@ class Display implements IDisplay {
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
 			if (Std.is(p, String)) {
-				if (v != null) Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+				if (v != null) 
+					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
 				v = Reflect.field(trueStyle(), p);
 				if (p.toLowerCase().indexOf("color") > 0)
 					v = new ARGB(v);
@@ -352,11 +389,11 @@ class Display implements IDisplay {
 			return Browser.window.getComputedStyle(element);
 	}
 	
-	public function mount(q:String, ?data:Dynamic):IDisplay {
+	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
 		if (Sirius.resources.exists(q))
-			return addChildren(Sirius.resources.build(q, data).children());
+			return addChildren(Sirius.resources.build(q, data).children(), at);
 		else
-			return addChildren(new Display().write(q,false).children());
+			return addChildren(new Display().write(q,false).children(), at);
 	}
 	
 	public function clear(?fast:Bool):IDisplay {
@@ -371,7 +408,7 @@ class Display implements IDisplay {
 	}
 	
 	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay {
-		events.auto(type, handler, mode);
+		events.on(type, handler, mode);
 		return this;
 	}
 	
@@ -491,10 +528,6 @@ class Display implements IDisplay {
 		return this.element.getBoundingClientRect();
 	}
 	
-	public function jQuery():JQuery {
-		return Sirius.jQuery(element);
-	}
-	
 	public function typeOf():String {
 		return "[" + Utils.typeof(this) + "{id:" + _uid + ", element:" + element.tagName + "}]";
 	}
@@ -516,6 +549,10 @@ class Display implements IDisplay {
 			target.addChild(this);
 		else if (Sirius.document != null)
 			Sirius.document.body.addChild(this);
+		else
+			Sirius.run(function() {
+				addTo(target);
+			});
 		return this;
 	}
 	
@@ -536,14 +573,20 @@ class Display implements IDisplay {
 		return getPosition(element);
 	}
 	
+	public function id():UInt {
+		return _uid;
+	}
+	
 	public function mouse(?value:Bool):Bool {
 		if (value != null) {
 			if (value)
-				css('mouse-none');
+				style({pointerEvents:null});
 			else
-				css('/mouse-none');
+				style({pointerEvents:'none'});
+			return value;
+		}else {
+			return style().pointerEvents;
 		}
-		return element.classList.contains('mouse-none');
 	}
 	
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
@@ -553,6 +596,19 @@ class Display implements IDisplay {
 			if (handler != null)
 				handler(r);
 		});
+	}
+	
+	public function toString():String {
+		var data:Dynamic = {
+			id:element.id, 
+			'sru-id': id,
+			'class':element.className,
+			index:index(),
+			length:length(),
+			attributes:Utils.getAttributes(this),
+			data:this.data,
+		};
+		return Json.stringify(data);
 	}
 	
 }

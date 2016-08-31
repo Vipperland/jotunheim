@@ -9,8 +9,8 @@ import js.html.BaseElement;
 @:expose("sru.dom.HR")
 class HR extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):HR {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):HR {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

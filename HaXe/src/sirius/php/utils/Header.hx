@@ -4,7 +4,7 @@ import php.Lib;
 import php.Web;
 import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
-import sirius.utils.Criptog;
+import sirius.utils.IOTools;
 
 /**
  * ...
@@ -48,13 +48,17 @@ class Header {
 		content(JSON);
 		if (data != null) {
 			var data:String = JsonTool.stringfy(data, null, " ");
-			if (encode == true) data = Criptog.encodeBase64(data);
+			if (encode == true) data = IOTools.encodeBase64(data);
 			Lib.print(data);
 		}
 	}
 	
 	public function setTEXT():Void {
 		content(TEXT);
+	}
+	
+	public function setURI(value:String):Void {
+		Web.setHeader('location', value);
 	}
 	
 }

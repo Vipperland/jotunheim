@@ -6,6 +6,7 @@ import js.html.CSSStyleDeclaration;
 import js.html.Element;
 import js.JQuery;
 import sirius.data.DisplayData;
+import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.math.IARGB;
@@ -22,7 +23,7 @@ interface IDisplay {
 	/**
 	 * Uniq data carrier
 	 */
-	public var data : DisplayData;
+	public var data : IDataSet;
 	
 	/**
 	 * Default target element
@@ -41,11 +42,16 @@ interface IDisplay {
 	public function exists(q:String):Bool;
 	
 	/**
-	 * Enable Specifiq events shortcuts
-	 * @param	q
+	 * Enable pointer events
 	 * @return
 	 */
-	public function enable(q:Array<Dynamic>):IDisplay;
+	public function enable(?button:Bool):IDisplay;
+	
+	/**
+	 * Disable pointer events
+	 * @return
+	 */
+	public function disable():IDisplay;
 	
 	/**
 	 * Query select on children
@@ -97,7 +103,7 @@ interface IDisplay {
 	/**
 	 * Append a list of children
 	 */
-	public function addChildren(q:ITable):IDisplay;
+	public function addChildren(q:ITable, ?at:Int = -1):IDisplay;
 	
 	/**
 	 * Add a text content to element
@@ -162,6 +168,16 @@ interface IDisplay {
 	 */
 	public function hide():Void;
 	
+	/**
+	 * Sirius DOM id
+	 */
+	public function id():UInt;
+	
+	/**
+	 * Shared component data
+	 * @return
+	 */
+	public function initData():IDataSet;
 	
 	/**
 	 * Check if element have an attribute
@@ -176,14 +192,14 @@ interface IDisplay {
 	 * @param	value
 	 * @return
 	 */
-	public function attribute(name:String, ?value:String):Dynamic;
+	public function attribute(name:String, ?value:Dynamic):Dynamic;
 	
 	/**
-	 * Write a list of attributes to object
+	 * Write a list of attributes to object and return a data copy
 	 * @param	values
 	 * @return
 	 */
-	public function attributes(values:Dynamic):IDisplay;
+	public function attributes(?values:Dynamic):Dynamic;
 	
 	/**
 	 * Crop an attribute from element and return it
@@ -197,7 +213,7 @@ interface IDisplay {
 	 * @param	q
 	 * @param	plainText
 	 */
-	public function write(q:String, ?plainText:Bool = false):IDisplay;
+	public function write(q:Dynamic, ?plainText:Bool = false):IDisplay;
 	
 	/**
 	 * Fit element in current viewport width and height
@@ -223,7 +239,7 @@ interface IDisplay {
 	 * @param	q
 	 * @return
 	 */
-	public function mount(q:String, ?data:Dynamic):IDisplay;
+	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay;
 	
 	
 	/**
@@ -332,12 +348,6 @@ interface IDisplay {
 	 * @return
 	 */
 	public function checkVisibility(?view:Bool, ?offsetY:Int = 0, ?offsetX:Int = 0):UInt;
-	
-	/**
-	 * Return Element as JQuery object structure
-	 * @return
-	 */
-	public function jQuery():JQuery;
 	
 	/**
 	 * Type of element

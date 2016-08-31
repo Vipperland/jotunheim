@@ -22,10 +22,6 @@ class Body extends Display {
 	
 	private var _body:BodyElement;
 	
-	public static function get(q:String, ?h:IDisplay->Void):Body {
-		return cast Sirius.one(q,null,h);
-	}
-	
 	public function new(?q:Element) {
 		if (q == null) q = Browser.document.createBodyElement();
 		super(q, null);
@@ -80,9 +76,11 @@ class Body {
 		content = "";
 	}
 	
-	public static function draw():Void {
+	public static function draw(?base:String = ""):Void {
 		Lib.print("<html>");
 		Lib.print("<head>");
+		Lib.print("	<meta charset=\"utf-8\">");
+		Lib.print("	<meta base=\"" + base + "\">");
 		Lib.print("</head>");
 		Lib.print("<body>");
 		Lib.print(content);

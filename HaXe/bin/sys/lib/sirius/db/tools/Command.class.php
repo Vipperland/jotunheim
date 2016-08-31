@@ -1,8 +1,9 @@
 <?php
 
 class sirius_db_tools_Command implements sirius_db_tools_ICommand{
-	public function __construct($statement, $query, $parameters = null, $errors) {
+	public function __construct($statement, $query, $parameters = null, $errors, $log) {
 		if(!php_Boot::$skip_constructor) {
+		$this->_log = $log;
 		$this->_errors = $errors;
 		$this->_query = $query;
 		$this->statement = $statement;
@@ -13,6 +14,7 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 	public $_query;
 	public $_parameters;
 	public $_errors;
+	public $_log;
 	public $success;
 	public $statement;
 	public $result;
@@ -62,8 +64,11 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 					}
 				}
 			}
+			if($this->_log !== null) {
+				$this->_log[$this->_log->length] = _hx_string_or_null(((($this->success) ? "[1]" : "[0]"))) . " " . _hx_string_or_null($this->log());
+			}
 		} else {
-			_hx_array_assign($this->get_errors(), $this->get_errors()->length, new sirius_errors_Error(0, "Null statement. Database is not connected.", null));
+			_hx_array_assign($this->get_errors(), $this->get_errors()->length, new sirius_errors_Error(0, "A connection with database is required.", null));
 		}
 		return $this;
 	}

@@ -40,7 +40,7 @@ interface IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function auto (type:String, ?handler:IEvent->Void, ?mode:Int) : IEventGroup;
+	public function on (type:String, ?handler:IEvent->Void, ?mode:Int) : IEventGroup;
 
 	/// Mouse OVER, OUT and DOWN Events
 	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):Dynamic;

@@ -16,21 +16,21 @@ class DataSet implements IDataSet {
 	
 	/* INTERFACE data.IDataSet */
 	
-	public function get(p:String):Dynamic {
+	public function get(p:Dynamic):Dynamic {
 		return Reflect.field(_content, p);
 	}
 	
-	public function set(p:String, v:Dynamic):IDataSet {
+	public function set(p:Dynamic, v:Dynamic):IDataSet {
 		Reflect.setField(_content, p, v);
 		return this;
 	}
 	
-	public function unset(p:String):IDataSet {
+	public function unset(p:Dynamic):IDataSet {
 		Reflect.deleteField(_content, p);
 		return this;
 	}
 	
-	public function exists(p:String):Bool {
+	public function exists(p:Dynamic):Bool {
 		return Reflect.hasField(_content, p);
 	}
 	
@@ -59,7 +59,7 @@ class DataSet implements IDataSet {
 		return r;
 	}
 	
-	public function filter(p:String, ?handler:Dynamic):IDataSet {
+	public function filter(p:Dynamic, ?handler:Dynamic):IDataSet {
 		var r:IDataSet = new DataSet();
 		var h:Bool = handler != null;
 		Dice.All(_content, function(p2:String, v:Dynamic) {
@@ -76,7 +76,7 @@ class DataSet implements IDataSet {
 		Dice.All(_content, handler);
 	}
 	
-	public function structure():Dynamic {
+	public function data():Dynamic {
 		return _content;
 	}
 	

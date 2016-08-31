@@ -1,9 +1,12 @@
 package sirius.dom;
 import haxe.Log;
 import js.Browser;
+import js.html.File;
 import js.html.FileList;
+import js.html.FileReader;
 import js.html.InputElement;
 import js.RegExp;
+import sirius.dom.Img;
 import sirius.events.IEvent;
 import sirius.utils.Dice;
 
@@ -14,8 +17,8 @@ import sirius.utils.Dice;
 @:expose("sru.dom.Input")
 class Input extends Display {
 	
-	public static function get(q:String, ?h:IDisplay->Void):Input {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Input {
+		return cast Sirius.one(q);
 	}
 	
 	public var object:InputElement;
@@ -23,6 +26,29 @@ class Input extends Display {
 	private var _rgx:EReg;
 	
 	private var _flt:String;
+	
+	private var _ioTarget:IDisplay;
+	
+	private var _ioHandler:Input->Void;
+	
+	private function _onFileSelected(e:Dynamic) {
+		if (Std.is(e, IEvent)) {
+			readFile(0, _onFileSelected);
+		}else {
+			if (Std.is(_ioTarget, Img)){
+				var img:Img = cast _ioTarget;
+				img.src(e);
+			}else{
+				_ioTarget.style( {
+					backgroundImage : 'url(' + e + ')',
+					backgroundSize : 'cover',
+					backgroundPosition : 'center center',
+				});
+				if(_ioHandler != null)
+					_ioHandler(this);
+			}
+		}
+	}
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createInputElement();
@@ -87,7 +113,7 @@ class Input extends Display {
 	
 	public function validateZipcode():Void {
 		_rgx = ~/^(\d{5}-\d{3})|(\d{8})$/;
-		_flt = "-";
+		_flt = "- ";
 	}
 	
 	public function validateLetters():Void {
@@ -95,7 +121,7 @@ class Input extends Display {
 	}
 	
 	public function validateUsr():Void {
-		_rgx = ~/^[A-Za-z0-9._-]{6,18}$/;
+		_rgx = ~/^[A-Za-z0-9._-]{6,24}$/;
 	}
 	
 	public function validateMd5():Void {
@@ -131,8 +157,54 @@ class Input extends Display {
 		return value() == "";
 	}
 	
+	public function hasFile():Bool {
+		return files().length > 0;
+	}
+	
 	public function files():FileList {
-		return cast attribute("files");
+		return object.files;
+	}
+	
+	public function file(id:UInt = 0):File {
+		return files().item(id);
+	}
+	
+	public function numberOnly():Void {
+		
+	}
+	
+	public function readFile(id:UInt = 0, handler:Dynamic->Void):Void{
+		var reader:FileReader = new FileReader();
+		reader.onload = function() {
+			handler(reader.result);
+		}
+		reader.readAsDataURL(file(id));
+	}
+	
+	/**
+	 * After file selected, show loaded image in any target background
+	 * @param	target
+	 * @param	handler
+	 */
+	public function fileController(target:IDisplay, ?handler:Input->Void):Void {
+		_ioHandler = handler;
+		_ioTarget = target;
+		type('file');
+		this.events.change(_onFileSelected);
+	}
+	
+	public function clearBackground(?bg:String=''):Void {
+		_ioTarget.style( {
+			backgroundImage : bg,
+		});
+	}
+	
+	public function check(?toggle:Dynamic = true):Void {
+		object.checked = toggle == null ? !object.checked : toggle == true || toggle == 1;
+	}
+	
+	public function isChecked():Bool {
+		return object.checked;
 	}
 	
 }

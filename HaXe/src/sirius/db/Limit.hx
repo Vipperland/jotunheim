@@ -13,15 +13,13 @@ class Limit{
 	}
 	
 	public static function PAGE(i:UInt, len:UInt = 10):String {
-		i = i >> 0;
-		len = len >> 0;
-		return (i * len) + ", " + i;
+		return len + " offset " + (i * len);
 	}
 	
 	public static function SECTION(from:UInt, to:UInt):String {
 		from = from >> 0;
 		to = to >> 0;
-		return from + ", " + (to - from);
+		return (to - from) + " offset " + from;
 	}
 	
 }

@@ -215,7 +215,7 @@
 					} else if(s) {
 						while(i < m){
 							Sirius.all(h()).each(function(o){
-								o.value("OK!" + (++i));
+								o.value("OK!  " + (++i));
 							});
 							++i;
 						}
@@ -224,7 +224,7 @@
 					}else{
 						while(i < m){
 							$(h()).each(function(o){
-								$(o).val("OK!" + (++i));
+								$(o).val("OK!  " + (++i));
 							});
 							++i;
 						}
@@ -238,14 +238,14 @@
 					reset();
 					var i = 0;
 					if(s) {
-						Sirius.all('input.class10').each(function(o){
-							o.element.value = "SR! " + (++i);
-						}).dispose();
+						Sirius.all('input.class11').each(function(o){
+							o.value("SR!  " + (++i));
+						});
 						log('Sirius(' + n + ').each');
 						ttSr += tirs;
 					}else{
-						$('input.class11').each(function(o){
-							$(o).val("JQ!" + (++i));
+						$('input.class10').each(function(o){
+							$(this).val("JQ!  " + (++i));
 						});
 						log('Jquery(' + n + ').val("OK!")');
 						ttJq += tirs;

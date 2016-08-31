@@ -9,8 +9,8 @@ import js.html.CanvasElement;
 @:expose("sru.dom.Canvas")
 class Canvas extends Display{
 	
-	public static function get(q:String, ?h:IDisplay->Void):Canvas {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Canvas {
+		return cast Sirius.one(q);
 	}
 	
 	public var paper:CanvasElement;

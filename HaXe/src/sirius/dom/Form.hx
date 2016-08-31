@@ -1,11 +1,8 @@
 package sirius.dom;
-import sirius.data.IFormData;
-import haxe.Log;
 import js.Browser;
 import js.html.FormElement;
 import sirius.data.FormData;
-import sirius.events.Dispatcher;
-import sirius.utils.ITable;
+import sirius.data.IFormData;
 
 /**
  * ...
@@ -14,8 +11,8 @@ import sirius.utils.ITable;
 @:expose("sru.dom.Form")
 class Form extends Display {
 	
-	public static function get(q:String, ?h:IDisplay->Void):Form {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):Form {
+		return cast Sirius.one(q);
 	}
 	
 	private var _submit:Input;

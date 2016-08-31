@@ -9,8 +9,8 @@ import js.html.TextAreaElement;
 @:expose("sru.dom.TextArea")
 class TextArea extends Input {
 	
-	public static function get(q:String, ?h:IDisplay->Void):TextArea {
-		return cast Sirius.one(q,null,h);
+	static public function get(q:String):TextArea {
+		return cast Sirius.one(q);
 	}
 	
 	public function new(?q:Dynamic) {

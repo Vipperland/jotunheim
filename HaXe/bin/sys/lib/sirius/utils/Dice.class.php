@@ -94,6 +94,26 @@ class sirius_utils_Dice {
 		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_8"), 'execute'), null);
 		return $r;
 	}
+	static function Table($data, $key = null, $numeric = null) {
+		if($numeric === null) {
+			$numeric = false;
+		}
+		$r = null;
+		if($numeric) {
+			if($key !== null) {
+				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_9"), 'execute'));
+			} else {
+				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_10"), 'execute'));
+			}
+		} else {
+			if($key !== null) {
+				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_11"), 'execute'));
+			} else {
+				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_12"), 'execute'));
+			}
+		}
+		return $r;
+	}
 	function __toString() { return 'sirius.utils.Dice'; }
 }
 function sirius_utils_Dice_0(&$complete, &$each, &$q, $p, $v) {
@@ -156,7 +176,7 @@ function sirius_utils_Dice_7(&$limit, &$r, &$table, &$values, $v) {
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
-		if(sirius_utils_Dice_9($limit, $r, $table, $v, $values)) {
+		if(sirius_utils_Dice_13($limit, $r, $table, $v, $values)) {
 			$a = --$limit;
 			return $a === 0;
 		}
@@ -168,7 +188,35 @@ function sirius_utils_Dice_8(&$data, &$r, $v) {
 		$r = $r->concat($v);
 	}
 }
-function sirius_utils_Dice_9(&$limit, &$r, &$table, &$v, &$values) {
+function sirius_utils_Dice_9(&$data, &$key, &$numeric, &$r, $a, $b) {
+	{
+		if(Reflect::field($a, $key) < Reflect::field($b, $key)) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+}
+function sirius_utils_Dice_10(&$data, &$key, &$numeric, &$r, $a1, $b1) {
+	{
+		if($a1 < $b1) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+}
+function sirius_utils_Dice_11(&$data, &$key, &$numeric, &$r, $a2, $b2) {
+	{
+		return Reflect::compare(sirius_utils_SearchTag::convert(Reflect::field($a2, $key)), sirius_utils_SearchTag::convert(Reflect::field($b2, $key)));
+	}
+}
+function sirius_utils_Dice_12(&$data, &$key, &$numeric, &$r, $a3, $b3) {
+	{
+		return Reflect::compare(sirius_utils_SearchTag::convert($a3), sirius_utils_SearchTag::convert($b3));
+	}
+}
+function sirius_utils_Dice_13(&$limit, &$r, &$table, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;

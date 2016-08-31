@@ -22,13 +22,13 @@ import sirius.utils.ITable;
 class Table implements ITable {
 	
 	static private var _trash:Array<ITable> = [];
-	static public function recycle(q:String, ?t:Element, ?h:Dynamic):ITable {
+	static public function recycle(q:String, ?t:Element):ITable {
 		var r:ITable = null;
 		if (_trash.length > 0)
 			r = _trash.pop();
 		else
 			r = new Table();
-		return r.scan(q, t, h);
+		return r.scan(q, t);
 	}
 	
 	//static public function em
@@ -50,20 +50,14 @@ class Table implements ITable {
 		return this;
 	}
 	
-	public function scan(q:String, ?t:Element, ?h:IDisplay->Bool):ITable {
+	public function scan(q:String, ?t:Element):ITable {
 		reset();
 		if (q == null)
 			q = "*";
 		var is3D:Bool = false;
 		if (t == null)
 			t = cast Browser.document.body;
-		var result:NodeList;
-		try {
-			result = q != "*" ? t.querySelectorAll(q) : t.childNodes;
-		}catch (e:Dynamic) {
-			result = cast [];
-		}
-		var ih:Bool = h != null;
+		var result:NodeList = q != "*" ? t.querySelectorAll(q) : t.childNodes;
 		var element:Element = null;
 		var obj:IDisplay = null;
 		var len:UInt = result.length;
@@ -72,10 +66,8 @@ class Table implements ITable {
 			while(ind < len){
 				element = cast result.item(ind);
 				obj = Utils.displayFrom(element);
-				if(ih == false || h(obj)){
-					content[content.length] = obj;
-					elements[elements.length] = element;
-				}
+				content[ind] = obj;
+				elements[ind] = element;
 				++ind;
 			}
 		}else {
@@ -115,7 +107,7 @@ class Table implements ITable {
 	}
 	
 	public function css(styles:String):ITable {
-		Dice.Call(content, "css", [styles]);
+		each(function(v:IDisplay) { v.css(styles); } );
 		return this;
 	}
 	
@@ -173,7 +165,7 @@ class Table implements ITable {
 	
 	public function on(name:String, handler:IEvent->Void, ?mode:Int):ITable {
 		each(function(v:IDisplay) {
-			v.events.auto(name, handler, mode);
+			v.events.on(name, handler, mode);
 		});
 		return this;
 	}
@@ -190,6 +182,7 @@ class Table implements ITable {
 	}
 	
 	public function dispose():Void {
+		each(function(o:IDisplay){ o.dispose(); });
 		content = null;
 		elements = null;
 		_trash[_trash.length] = this;
@@ -346,5 +339,9 @@ class Table implements ITable {
 	public function onTouchCancel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("touchcancel", handler, mode); }
 	
 	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("visibility", handler, mode); }
+	
+	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):ITable { 
+		return each(function(o:IDisplay) {	o.events.focusOverall(handler, mode); });
+	}
 
 }

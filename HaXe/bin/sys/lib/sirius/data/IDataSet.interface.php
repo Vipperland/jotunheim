@@ -11,5 +11,5 @@ interface sirius_data_IDataSet {
 	function values();
 	function filter($p, $handler = null);
 	function each($handler);
-	function structure();
+	function data();
 }
