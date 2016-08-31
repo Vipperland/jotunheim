@@ -7,9 +7,10 @@
 - [X] Work with PHP
 - [X] Work with JQuery
 - [X] Work with GSAP
-- [ ] Modules and Plugins
-- [ ] Api Samples
-- [ ] Api Docs
+- [X] Modules and Plugins
+- [X] Modular CSS Generator
+- [ ] Api Samples **WIP**
+- [ ] Api Docs **WIP**
 - [X] Its FREE
 
 
