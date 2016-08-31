@@ -7,6 +7,9 @@
 - [X] Work with PHP
 - [X] Work with JQuery
 - [X] Work with GSAP
+- [ ] Modules and Plugins
+- [ ] Api Samples
+- [ ] Api Docs
 - [X] Its FREE
 
 
