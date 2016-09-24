@@ -216,6 +216,9 @@ StringBuf.prototype = {
 };
 var StringTools = function() { };
 StringTools.__name__ = ["StringTools"];
+StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+};
 StringTools.isSpace = function(s,pos) {
 	var c = HxOverrides.cca(s,pos);
 	return c > 8 && c < 14 || c == 32;
@@ -1255,6 +1258,7 @@ sirius_net_Domain.prototype = {
 		this.host = l.hostname;
 		this.port = l.port;
 		this.hash = new sirius_data_Fragments(HxOverrides.substr(l.hash,1,null),"/");
+		this.params = sirius_tools_Utils.getQueryParams(l.href);
 		this.url = new sirius_data_Fragments(p,"/");
 	}
 	,allocate: function(expire) {
@@ -1562,15 +1566,20 @@ sirius_modules_ModLib.prototype = {
 	}
 	,build: function(module,data,each) {
 		var _g = this;
+		var d = null;
 		if(each != null && ((data instanceof Array) && data.__enum__ == null)) {
-			var d = new sirius_dom_Div();
+			d = new sirius_dom_Div();
 			sirius_utils_Dice.Values(data,function(v) {
 				v = new sirius_dom_Display().write(_g.get(module,v));
 				v = each(v);
-				if(v != null && js_Boot.__instanceof(v,sirius_dom_IDisplay)) d.addChild(v);
+				if(v != null && js_Boot.__instanceof(v,sirius_dom_IDisplay)) {
+					d.attribute("sru-mod",module);
+					d.addChild(v);
+				}
 			});
-			return d;
-		} else return new sirius_dom_Display().write(this.get(module,data));
+		} else d = new sirius_dom_Display().write(this.get(module,data));
+		d.attribute("sru-mod",module);
+		return d;
 	}
 	,buildIn: function(module,target,data,each) {
 		var display = sirius_Sirius.one(target);
@@ -1619,7 +1628,7 @@ sirius_Sirius._loadController = function(e) {
 		sirius_Sirius.agent.update();
 		sirius_transitions_Ease.update();
 		sirius_Sirius.updatePlugins();
-		sirius_Sirius.log("Sirius => INITIALIZED",1);
+		sirius_Sirius.log("Sirius => ENJOY :)",1);
 		sirius_utils_Dice.Values(sirius_Sirius._loadPool,function(v) {
 			if(v != null) v();
 		});
@@ -1636,8 +1645,11 @@ sirius_Sirius.updatePlugins = function() {
 		var plist = window.sru ? window.sru.plugins : null;
 		sirius_utils_Dice.All(plist,function(p,v) {
 			sirius_Sirius.plugins[p] = v;
-			sirius_Sirius.log("Plugin => " + p + " ADDED",1);
 			Reflect.deleteField(plist,p);
+			if(Object.prototype.hasOwnProperty.call(v,"onload")) {
+				v.onload();
+				sirius_Sirius.log("Plugin => " + p + "::onload()",1);
+			} else sirius_Sirius.log("Plugin => " + p + " ADDED",1);
 		});
 	}
 };
@@ -1685,7 +1697,7 @@ sirius_Sirius._preInit = function() {
 		sirius_Sirius._loadPool = [];
 		sirius_Sirius.document = sirius_dom_Document.ME();
 		window.document.addEventListener("DOMContentLoaded",sirius_Sirius._loadController);
-		sirius_Sirius.log("Sirius => WAITING...",2);
+		sirius_Sirius.log("Sirius => LOADING...",1);
 		Reflect.deleteField(sirius_Sirius,"_preInit");
 		if(window.document.readyState == "complete") sirius_Sirius._loadController(null);
 	}
@@ -1873,12 +1885,11 @@ sirius_dom_Display.prototype = {
 	,bg: function(data,repeat,position,attachment,size) {
 		if(data != null) {
 			var value = data;
-			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css();
-			if(value.indexOf("#") == 0) this.element.style.background = value; else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else {
-				this.style({ backgroundImage : "url('" + Std.string(value) + "')", backgroundRepeat : repeat != null?repeat:"no-repeat", backgroundPosition : position != null?position:"center center"});
+			if(js_Boot.__instanceof(value,sirius_math_IARGB)) value = value.css(); else if(value.indexOf("rgb") == 0) this.element.style.backgroundColor = value; else if(value.indexOf("~") == 0) {
+				this.style({ backgroundImage : "url('" + Std.string(value.substr(1)) + "')", backgroundRepeat : repeat != null?repeat:"no-repeat", backgroundSize : size != null?size:"cover", backgroundPosition : position != null?position:"center center"});
 				if(attachment != null) this.style({ backgroundAttachment : attachment});
 				if(size != null) this.style({ backgroundSize : size});
-			}
+			} else this.element.style.background = value;
 		}
 		return this.element.style.background;
 	}
@@ -1910,7 +1921,7 @@ sirius_dom_Display.prototype = {
 		return this.element.childNodes.length;
 	}
 	,index: function() {
-		return this.parent().indexOf(this);
+		if(this.parent() != null) return this._parent.indexOf(this); else return -1;
 	}
 	,indexOf: function(q) {
 		var chd = this.element.childNodes;
@@ -1968,6 +1979,10 @@ sirius_dom_Display.prototype = {
 		if(this.element.parentElement != null) this.element.parentElement.removeChild(this.element);
 		return this;
 	}
+	,mirror: function(x,y) {
+		this.style("transform","matrix(" + (x?-1:1) + ",0,0," + (y?-1:1) + ",0,0)");
+		return this;
+	}
 	,css: function(styles) {
 		if(styles != null) {
 			var s = styles.split(" ");
@@ -1989,9 +2004,11 @@ sirius_dom_Display.prototype = {
 	}
 	,show: function() {
 		this.element.hidden = false;
+		this.element.style.display = null;
 	}
 	,hide: function() {
 		this.element.hidden = true;
+		this.element.style.display = "none";
 	}
 	,hasAttribute: function(name) {
 		return this._getattr && this.element.hasAttribute(name) || Object.prototype.hasOwnProperty.call(this.element,name);
@@ -2110,6 +2127,14 @@ sirius_dom_Display.prototype = {
 		sirius_tools_Ticker.remove(handler);
 		return this;
 	}
+	,x: function(value) {
+		if(value != null) if(typeof(value) == "string") this.element.style.left = value; else this.element.style.left = Std.string(value) + "px";
+		return Std.parseInt(this.element.style.left);
+	}
+	,y: function(value) {
+		if(value != null) if(typeof(value) == "string") this.element.style.top = value; else this.element.style.top = Std.string(value) + "px";
+		return Std.parseInt(this.element.style.top);
+	}
 	,width: function(value) {
 		if(value != null) if(typeof(value) == "string") this.element.style.width = value; else this.element.style.width = Std.string(value) + "px";
 		return this.element.clientWidth;
@@ -2126,6 +2151,10 @@ sirius_dom_Display.prototype = {
 	,overflow: function(mode) {
 		if(mode != null) this.element.style.overflow = mode;
 		return this.element.style.overflow;
+	}
+	,alpha: function(value) {
+		if(value != null) this.element.style.opacity = "" + value;
+		return parseFloat(this.element.style.opacity);
 	}
 	,isFullyVisible: function() {
 		return this._visibility == 2;
@@ -2149,18 +2178,14 @@ sirius_dom_Display.prototype = {
 		return this.element.getBoundingClientRect();
 	}
 	,typeOf: function() {
-		return "[" + sirius_tools_Utils["typeof"](this) + "{id:" + Std.string(_$UInt_UInt_$Impl_$.toFloat(this._uid)) + ", element:" + this.element.tagName + "}]";
+		if(this.hasAttribute("sru-dom")) return this.attribute("sru-dom"); else return this.element.tagName;
 	}
 	,'is': function(tag) {
 		var _g = this;
-		var name = sirius_tools_Utils["typeof"](this).toLowerCase();
-		var pre = name.split(".").pop();
-		if(typeof(tag) == "string") tag = [tag];
+		if(!((tag instanceof Array) && tag.__enum__ == null)) tag = [tag];
 		var r = sirius_utils_Dice.Values(tag,function(v) {
-			v = v.toLowerCase();
-			var c;
-			if(v.indexOf(".") == -1) c = pre; else c = name;
-			return v == c || v == _g.element.tagName;
+			v = v.toUpperCase();
+			return v == _g.element.tagName || v == _g.attribute("sru-dom");
 		});
 		return !r.completed;
 	}
@@ -2262,7 +2287,10 @@ sirius_events_Dispatcher.prototype = {
 	}
 	,on: function(type,handler,mode) {
 		var ie = this.event(type);
-		if(mode == null) return ie.add(handler,false); else switch(mode) {
+		if(handler == null) {
+			ie.call();
+			return ie;
+		} else if(mode == null) return ie.add(handler,false); else switch(mode) {
 		case 2:case 3:
 			return ie.add(handler,mode == 3).noDefault();
 		case 1:
@@ -2277,6 +2305,12 @@ sirius_events_Dispatcher.prototype = {
 	}
 	,focusOverall: function(handler,mode) {
 		return { 'over' : this.mouseOver(handler,mode), 'out' : this.mouseOut(handler,mode), 'click' : this.click(handler,mode)};
+	}
+	,added: function(handler,mode) {
+		return this.on("DOMNodeInserted",handler,mode);
+	}
+	,removed: function(handler,mode) {
+		return this.on("DOMNodeRemoved",handler,mode);
 	}
 	,wheel: function(handler,mode) {
 		return this.on("wheel",handler,mode);
@@ -2520,16 +2554,31 @@ sirius_events_Dispatcher.prototype = {
 var sirius_css_Automator = $hx_exports.Automator = function() { };
 sirius_css_Automator.__name__ = ["sirius","css","Automator"];
 sirius_css_Automator.reset = function() {
-	sirius_css_Automator.build("marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass","*",true);
-	sirius_css_Automator.build("arial txt-12","body",true);
-	sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover",true);
-	sirius_css_Automator.build("list-style-none","ol,ul,dl",true);
-	sirius_css_Automator.build("padd-5","hr",true);
-	sirius_css_Automator.build("padd-10","input,textarea,select",true);
-	sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix",null,true);
-	sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
-	sirius_css_Automator.css.setSelector("*,*:before,*:after","box-sizing:border-box;");
-	sirius_css_Automator.css.build();
+	if(!sirius_css_Automator._inits.reset) {
+		sirius_css_Automator._inits.reset = true;
+		sirius_css_Automator.build("h-100pc","html,body",true);
+		sirius_css_Automator.build("marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass","*",true);
+		sirius_css_Automator.build("arial txt-12","body",true);
+		sirius_css_Automator.build("txt-decoration-none","a,a:link,a:visited,a:active,a:hover",true);
+		sirius_css_Automator.build("list-style-none","ol,ul,dl",true);
+		sirius_css_Automator.build("padd-5","hr",true);
+		sirius_css_Automator.build("padd-10","input,textarea,select",true);
+		sirius_css_Automator.build("marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix",null,true);
+		sirius_css_Automator.build("disp-inline-block","label",true);
+		sirius_css_Automator.css.setSelector("@-ms-viewport","width:device-width;");
+		sirius_css_Automator.css.setSelector("*,*:before,*:after","box-sizing:border-box;");
+		sirius_css_Automator.enableSprites();
+		sirius_css_Automator.css.build();
+	}
+};
+sirius_css_Automator.enableSprites = function() {
+	if(!sirius_css_Automator._inits.sprites) {
+		sirius_css_Automator._inits.sprites = true;
+		sirius_css_Automator.build("w-100pc h-100pc disp-table txt-c",".sprite",true);
+		sirius_css_Automator.build("disp-table-cell vert-m",".sprite > div",true);
+		sirius_css_Automator.build("marg-l-auto marg-r-auto",".sprite > div > div",true);
+		if(!sirius_css_Automator._inits.reset) sirius_css_Automator.css.build();
+	}
 };
 sirius_css_Automator.unmute = function() {
 	sirius_css_Automator._dev = true;
@@ -2551,7 +2600,7 @@ sirius_css_Automator.scan = function(dev,force) {
 };
 sirius_css_Automator._activate = function() {
 	sirius_css_Automator._scanBody();
-	sirius_tools_Delayer.create(sirius_css_Automator._scanBody,1).call(0);
+	sirius_tools_Delayer.create(sirius_css_Automator._scanBody,1).start(0);
 };
 sirius_css_Automator._scanBody = function() {
 	sirius_css_Automator.search(sirius_Sirius.document.element);
@@ -2582,6 +2631,10 @@ sirius_css_Automator.omnibuild = function(query,group) {
 	sirius_css_Automator.build(query,group,true);
 };
 sirius_css_Automator.build = function(query,group,silent) {
+	if(query == null || query == "") {
+		sirius_css_Automator.css.build();
+		return;
+	}
 	var c = query.split(" ");
 	var m = null;
 	var s;
@@ -2626,10 +2679,13 @@ sirius_css_Automator.parse = function(data) {
 	});
 };
 sirius_css_Automator.grid = function(size) {
-	if(!((size instanceof Array) && size.__enum__ == null)) size = [size];
-	sirius_utils_Dice.Values(size,function(v) {
-		sirius_css_Automator._createGridCol(v);
-	});
+	if(!Object.prototype.hasOwnProperty.call(sirius_css_Automator._inits,"grid-" + Std.string(size))) {
+		if(!((size instanceof Array) && size.__enum__ == null)) size = [size];
+		sirius_utils_Dice.Values(size,function(v) {
+			sirius_css_Automator._createGridCol(v);
+		});
+		sirius_css_Automator._inits["grid-" + Std.string(size)] = true;
+	}
 };
 sirius_css_Automator.cell = function(size,pad) {
 	sirius_utils_Dice.Count(0,size,function(a,b,c) {
@@ -3295,8 +3351,8 @@ var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
 		this.body = new sirius_dom_Body(window.document.body);
 		this.head = new sirius_dom_Head(window.document.head);
 		this.events = new sirius_events_Dispatcher(this);
-		this.events.wheel($bind(this,this.stopScroll),true);
 		sirius_dom_Document.__doc__ = this;
+		this.__init__();
 	} else throw new Error("Document is a singleton, use Document.ME() instead of new");
 };
 sirius_dom_Document.__name__ = ["sirius","dom","Document"];
@@ -3307,6 +3363,13 @@ sirius_dom_Document.__super__ = sirius_dom_Display;
 sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 	_applyScroll: function() {
 		window.scroll(this.__scroll__.x,this.__scroll__.y);
+	}
+	,__init__: function() {
+		this.events.wheel($bind(this,this.stopScroll),true);
+		window.addEventListener("scroll",$bind(this,this._hookScroll));
+	}
+	,_hookScroll: function(e) {
+		this.events.scroll().call();
 	}
 	,scroll: function(x,y) {
 		window.scroll(x,y);
@@ -3706,11 +3769,11 @@ sirius_dom_Input.get = function(q) {
 sirius_dom_Input.__super__ = sirius_dom_Display;
 sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	_onFileSelected: function(e) {
-		if(js_Boot.__instanceof(e,sirius_events_IEvent)) this.readFile(0,$bind(this,this._onFileSelected)); else if(js_Boot.__instanceof(this._ioTarget,sirius_dom_Img)) {
-			var img = this._ioTarget;
-			img.src(e);
-		} else {
-			this._ioTarget.style({ backgroundImage : "url(" + Std.string(e) + ")", backgroundSize : "cover", backgroundPosition : "center center"});
+		if(js_Boot.__instanceof(e,sirius_events_IEvent)) this.readFile(0,$bind(this,this._onFileSelected)); else {
+			if(this.fileIO.typeOf() == "IMG") {
+				var img = this.fileIO;
+				img.src(e);
+			} else this.fileIO.style({ backgroundImage : "url(" + Std.string(e) + ")"});
 			if(this._ioHandler != null) this._ioHandler(this);
 		}
 	}
@@ -3816,13 +3879,14 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,fileController: function(target,handler) {
 		this._ioHandler = handler;
-		this._ioTarget = target;
+		this.fileIO = target;
+		this.fileIO.style({ backgroundSize : "cover", backgroundPosition : "center center"});
 		this.type("file");
 		this.events.change($bind(this,this._onFileSelected));
 	}
 	,clearBackground: function(bg) {
 		if(bg == null) bg = "";
-		this._ioTarget.style({ backgroundImage : bg});
+		this.fileIO.style({ backgroundImage : bg});
 	}
 	,check: function(toggle) {
 		if(toggle == null) toggle = true;
@@ -4329,8 +4393,7 @@ var sirius_dom_Sprite = $hx_exports.sru.dom.Sprite = function(q) {
 		this.content = new sirius_dom_Div();
 		this.addChild(this.content);
 	}
-	this.css("w-100pc h-100pc disp-table txt-c");
-	this.content.css("disp-table-cell vert-m");
+	this.css("sprite");
 };
 sirius_dom_Sprite.__name__ = ["sirius","dom","Sprite"];
 sirius_dom_Sprite.get = function(q) {
@@ -4346,8 +4409,7 @@ var sirius_dom_Sprite3D = $hx_exports.sru.dom.Sprite3D = function(q) {
 	this.content = new sirius_dom_Display3D(q);
 	this.content.preserve3d().update();
 	if(this.content.parent() == null) this.addChild(this.content);
-	this.css("w-100pc h-100pc disp-table");
-	this.content.css("disp-table-cell vert-m");
+	this.css("sprite");
 	this.update();
 };
 sirius_dom_Sprite3D.__name__ = ["sirius","dom","Sprite3D"];
@@ -4531,6 +4593,15 @@ sirius_tools_Utils.getAttributes = function(display) {
 	}
 	return data;
 };
+sirius_tools_Utils.getQueryParams = function(value) {
+	var params = { };
+	if(value.indexOf("?") > 0) value = value.split("+").join(" ").split("?")[1]; else return params;
+	sirius_utils_Dice.Values(value.split("&"),function(v) {
+		var data = v.split("=");
+		Reflect.setField(params,StringTools.urlDecode(data[0]),StringTools.urlDecode(data[1]));
+	});
+	return params;
+};
 sirius_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
 	sirius_utils_Dice.Values(path,function(v) {
@@ -4681,6 +4752,9 @@ sirius_css_AutomatorRules.colorKey = function(d,k,n) {
 	}
 	return k.entry.value;
 };
+sirius_css_AutomatorRules.positionKey = function(d,k,n) {
+	return (k.index == 0?"position:":"") + sirius_css_AutomatorRules.commonKey(d,k,n);
+};
 sirius_css_AutomatorRules.pushKey = function(d,k,n) {
 	return k.entry.value + "-";
 };
@@ -4692,7 +4766,7 @@ sirius_css_AutomatorRules.alphaKey = function(d,k,n) {
 		d.cancel();
 		var o = Std.parseInt(n.key);
 		if(o > 100) o = 100; else if(o < 0) o = 0;
-		return k.entry.value + ":" + o / 100;
+		return k.entry.value + ":" + (o/100).toFixed(2);
 	} else return sirius_css_AutomatorRules.valueKey(d,k,n);
 };
 sirius_css_AutomatorRules.appendKey = function(d,k,n) {
@@ -4716,7 +4790,7 @@ sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
 			return "overflow:hidden";
 		}
 		if(k.index == 0) return "";
-		return "overflow" + (v == "x"?"-x":"-y") + ":scroll;overflow-" + (v == "x"?"-y":"-x") + ":hidden";
+		return "overflow" + (v == "x"?"-x":"-y") + ":scroll;overflow" + (v == "x"?"-y":"-x") + ":hidden";
 	}
 	return sirius_css_AutomatorRules.commonKey(d,k,n);
 };
@@ -4912,7 +4986,7 @@ sirius_data_DataCache.prototype = {
 		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,name); else return this._loaded;
 	}
 	,save: function() {
-		var data = sirius_utils_IOTools.encodeBase64(this._DB);
+		var data = sirius_serial_IOTools.encodeBase64(this._DB);
 		js_Cookie.set(this._name,data,this._expire > 0?this._expire:2592000,this._path);
 		return this;
 	}
@@ -4928,7 +5002,7 @@ sirius_data_DataCache.prototype = {
 		if(js_Cookie.exists(this._name)) {
 			var a = haxe_crypto_Base64.decode(js_Cookie.get(this._name));
 			haxe_Log.trace(a,{ fileName : "DataCache.hx", lineNumber : 183, className : "sirius.data.DataCache", methodName : "load"});
-			this._DB = sirius_utils_IOTools.decodeBase64(js_Cookie.get(this._name),true);
+			this._DB = sirius_serial_IOTools.decodeBase64(js_Cookie.get(this._name),true);
 			haxe_Log.trace(this._DB,{ fileName : "DataCache.hx", lineNumber : 185, className : "sirius.data.DataCache", methodName : "load"});
 		}
 		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
@@ -4952,7 +5026,7 @@ sirius_data_DataCache.prototype = {
 		return result;
 	}
 	,base64: function(print) {
-		var result = sirius_utils_IOTools.encodeBase64(this._DB);
+		var result = sirius_serial_IOTools.encodeBase64(this._DB);
 		if(print) {
 			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 217, className : "sirius.data.DataCache", methodName : "base64"});
 		}
@@ -5195,6 +5269,95 @@ sirius_data_Fragments.prototype = {
 	}
 	,__class__: sirius_data_Fragments
 };
+var sirius_dom_Overlay = $hx_exports.Overlay = function() { };
+sirius_dom_Overlay.__name__ = ["sirius","dom","Overlay"];
+sirius_dom_Overlay.push = function(content) {
+	if(sirius_dom_Overlay._main == null) sirius_dom_Overlay._init();
+	if(content != null) {
+		if(!js_Boot.__instanceof(content,sirius_dom_IDisplay)) {
+			content = sirius_Sirius.one(content);
+			if(content == null) return;
+		}
+		content.css("ease-all-300ms-ease");
+		sirius_dom_Overlay._queue.push(content);
+		content.remove();
+	}
+};
+sirius_dom_Overlay._init = function() {
+	sirius_dom_Overlay._main = new sirius_dom_Div();
+	sirius_dom_Overlay._main.css("sprite overlay ease-all-200ms-ease");
+	sirius_dom_Overlay._container = new sirius_dom_Div();
+	sirius_dom_Overlay._main.addChild(sirius_dom_Overlay._container);
+	sirius_dom_Overlay._main.hide();
+	sirius_css_Automator.build("fix bg-x99000000 t-0 l-0 r-0 b-0 scroll-y z-9999999",".overlay",true);
+	sirius_css_Automator.build("h-100pc scroll",".overlay > div",true);
+	sirius_css_Automator.build("ease-all-200ms-ease ease-all-300ms-ease");
+	sirius_css_Automator.enableSprites();
+	sirius_Sirius.document.body.addChild(sirius_dom_Overlay._main);
+};
+sirius_dom_Overlay._animateOut = function() {
+	sirius_dom_Overlay._busy = true;
+	sirius_dom_Overlay._current.element.style.marginTop = "100px";
+	sirius_dom_Overlay._current.alpha(0);
+	sirius_dom_Overlay._timer = haxe_Timer.delay(function() {
+		sirius_dom_Overlay._current.remove();
+		sirius_dom_Overlay._current = null;
+		sirius_dom_Overlay._clear();
+		sirius_dom_Overlay.show();
+	},500);
+};
+sirius_dom_Overlay._animateIn = function() {
+	sirius_dom_Overlay._busy = true;
+	sirius_dom_Overlay._current = sirius_dom_Overlay._queue.shift();
+	sirius_dom_Overlay._current.element.style.marginTop = "-50px";
+	sirius_dom_Overlay._container.addChild(sirius_dom_Overlay._current);
+	sirius_dom_Overlay._timer = haxe_Timer.delay(function() {
+		sirius_dom_Overlay._current.element.style.marginTop = "0px";
+		sirius_dom_Overlay._clear();
+	},100);
+};
+sirius_dom_Overlay.show = function(content) {
+	if(content != null) sirius_dom_Overlay.push(content);
+	if(sirius_dom_Overlay._busy) return;
+	sirius_dom_Overlay._busy = true;
+	if(sirius_dom_Overlay._current != null) {
+		sirius_dom_Overlay._animateOut();
+		return;
+	}
+	if(sirius_dom_Overlay._queue.length > 0) {
+		if(!sirius_dom_Overlay._started) {
+			sirius_Sirius.document.body.overflow("hidden");
+			sirius_dom_Overlay._startIn();
+		} else sirius_dom_Overlay._animateIn();
+	} else if(sirius_dom_Overlay._started) {
+		sirius_dom_Overlay._main.alpha(0);
+		sirius_dom_Overlay._timer = haxe_Timer.delay(function() {
+			sirius_dom_Overlay._main.hide();
+			sirius_dom_Overlay._started = false;
+			sirius_dom_Overlay._clear();
+		},300);
+		sirius_Sirius.document.body.overflow("");
+	}
+};
+sirius_dom_Overlay._clear = function() {
+	sirius_dom_Overlay._timer.stop();
+	sirius_dom_Overlay._timer = null;
+	sirius_dom_Overlay._busy = false;
+};
+sirius_dom_Overlay._startIn = function() {
+	sirius_dom_Overlay._started = true;
+	sirius_dom_Overlay._main.alpha(0);
+	sirius_dom_Overlay._main.show();
+	sirius_dom_Overlay._timer = haxe_Timer.delay(function() {
+		sirius_dom_Overlay._main.alpha(1);
+		sirius_dom_Overlay._timer.stop();
+		sirius_dom_Overlay._animateIn();
+	},100);
+};
+sirius_dom_Overlay.dismiss = function(all) {
+	if(all) sirius_dom_Overlay._queue = [];
+	sirius_dom_Overlay.show();
+};
 var sirius_errors_IError = function() { };
 sirius_errors_IError.__name__ = ["sirius","errors","IError"];
 sirius_errors_IError.prototype = {
@@ -5295,14 +5458,16 @@ sirius_events_EventGroup.prototype = {
 		}
 		this.propagation = true;
 	}
-	,call: function(bubbles,cancelable) {
+	,call: function(bubbles,cancelable,data) {
 		if(cancelable == null) cancelable = true;
 		if(bubbles == null) bubbles = false;
+		this.data = data;
 		if(($_=window.document,$bind($_,$_.createEvent)) != null) {
-			var e = window.document.createEvent("HTMLEvents");
+			var e = new CustomEvent(this.name);
 			e.initEvent(this.name,bubbles,cancelable);
 			this.dispatcher.target.element.dispatchEvent(e);
 		} else this._runner(null);
+		this.data = null;
 		return this;
 	}
 	,__class__: sirius_events_EventGroup
@@ -5441,7 +5606,8 @@ sirius_net_HttpRequest.prototype = {
 		this.req.abort();
 		this.req = null;
 	}
-	,request: function(post) {
+	,request: function(post,progress) {
+		var _g = this;
 		var me = this;
 		me.responseData = null;
 		var r = this.req = js_Browser.createXMLHttpRequest();
@@ -5487,15 +5653,23 @@ sirius_net_HttpRequest.prototype = {
 		var uri = null;
 		if(this.data != null) uri = this.data;
 		try {
+			if(progress != null) {
+				r.onprogress = function(e1) {
+					if(e1.lengthComputable) progress(_g.url,e1.loaded,e1.total); else progress(_g.url,0,0);
+				};
+				r.onloadend = r.onloadstart = function(e2) {
+					progress(_g.url,0,0);
+				};
+			}
 			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
 				var question = this.url.split("?").length <= 1;
 				r.open("GET",this.url + (question?"?":"&") + Std.string(uri),this.async);
 				uri = null;
 			} else r.open("GET",this.url,this.async);
-		} catch( e1 ) {
-			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+		} catch( e3 ) {
+			if (e3 instanceof js__$Boot_HaxeError) e3 = e3.val;
 			me.req = null;
-			this.onError(e1.toString());
+			this.onError(e3.toString());
 			return;
 		}
 		if(this.data == null && !Lambda.exists(this.headers,function(h) {
@@ -5823,6 +5997,32 @@ sirius_seo_WebSite.prototype = $extend(sirius_seo_SEO.prototype,{
 	}
 	,__class__: sirius_seo_WebSite
 });
+var sirius_serial_IOTools = $hx_exports.IOTools = function() { };
+sirius_serial_IOTools.__name__ = ["sirius","serial","IOTools"];
+sirius_serial_IOTools.encodeBase64 = function(q) {
+	if(!(typeof(q) == "string")) q = sirius_serial_IOTools.jsonEncode(q);
+	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
+};
+sirius_serial_IOTools.decodeBase64 = function(q,json) {
+	var r = null;
+	try {
+		r = haxe_crypto_Base64.decode(q).toString();
+	} catch( e ) {
+		if (e instanceof js__$Boot_HaxeError) e = e.val;
+	}
+	if(r != null) {
+		if(json && r.length > 1) return sirius_serial_IOTools.jsonDecode(r); else return r;
+	} else return null;
+};
+sirius_serial_IOTools.jsonEncode = function(o,rep,space) {
+	return sirius_serial_JsonTool.stringfy(o,rep,space);
+};
+sirius_serial_IOTools.jsonDecode = function(q) {
+	return JSON.parse(q);
+};
+sirius_serial_IOTools.md5Encode = function(o,base64) {
+	if(typeof(o) == "string") return haxe_crypto_Md5.encode(o); else return haxe_crypto_Md5.encode(base64?sirius_serial_IOTools.encodeBase64(o):sirius_serial_IOTools.jsonEncode(o));
+};
 var sirius_serial_JsonTool = function(replacer,space) {
 	this.replacer = replacer;
 	this.indent = space;
@@ -6118,7 +6318,7 @@ sirius_tools_Delayer.create = function(handler,time,args,thisObj) {
 	return new sirius_tools_Delayer(handler,time,args,thisObj);
 };
 sirius_tools_Delayer.prototype = {
-	call: function(repeats) {
+	start: function(repeats) {
 		if(repeats != null) this._rpt = repeats;
 		if(this._id == null) {
 			this._id = "t" + sirius_tools_Key.COUNTER();
@@ -6128,7 +6328,7 @@ sirius_tools_Delayer.prototype = {
 		this._tid.run();
 		return this;
 	}
-	,cancel: function() {
+	,stop: function() {
 		this._cnt = 0;
 		if(this._tid != null) {
 			this._tid.stop();
@@ -6140,15 +6340,21 @@ sirius_tools_Delayer.prototype = {
 		if(this._handler != null) {
 			this._tid = null;
 			Reflect.callMethod(this._this,this._handler,this._args);
-			if(this._rpt == 0 || ++this._cnt < this._rpt) this.call(); else this._cnt = 0;
+			if(this._rpt == 0 || ++this._cnt < this._rpt) this.start(); else this._cnt = 0;
 		}
 	}
 	,__class__: sirius_tools_Delayer
 };
 var sirius_tools_Key = $hx_exports.sru.tools.Key = function() { };
 sirius_tools_Key.__name__ = ["sirius","tools","Key"];
-sirius_tools_Key.COUNTER = function() {
-	return sirius_tools_Key._counter++;
+sirius_tools_Key.COUNTER = function(id) {
+	if(id == null) id = "global";
+	var v = 0;
+	if(!Object.prototype.hasOwnProperty.call(sirius_tools_Key._cts,id)) sirius_tools_Key._cts[id] = 0; else {
+		v = Reflect.field(sirius_tools_Key._cts,id);
+		sirius_tools_Key._cts[id] = v + 1;
+	}
+	return v;
 };
 sirius_tools_Key.GEN = function(size,table,mixCase) {
 	if(mixCase == null) mixCase = true;
@@ -6350,32 +6556,6 @@ var sirius_utils_IDiceRoll = function() { };
 sirius_utils_IDiceRoll.__name__ = ["sirius","utils","IDiceRoll"];
 sirius_utils_IDiceRoll.prototype = {
 	__class__: sirius_utils_IDiceRoll
-};
-var sirius_utils_IOTools = $hx_exports.IOTools = function() { };
-sirius_utils_IOTools.__name__ = ["sirius","utils","IOTools"];
-sirius_utils_IOTools.encodeBase64 = function(q) {
-	if(!(typeof(q) == "string")) q = sirius_utils_IOTools.jsonEncode(q);
-	return haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(q));
-};
-sirius_utils_IOTools.decodeBase64 = function(q,json) {
-	var r = null;
-	try {
-		r = haxe_crypto_Base64.decode(q).toString();
-	} catch( e ) {
-		if (e instanceof js__$Boot_HaxeError) e = e.val;
-	}
-	if(r != null) {
-		if(json && r.length > 1) return sirius_utils_IOTools.jsonDecode(r); else return r;
-	} else return null;
-};
-sirius_utils_IOTools.jsonEncode = function(o,rep,space) {
-	return sirius_serial_JsonTool.stringfy(o,rep,space);
-};
-sirius_utils_IOTools.jsonDecode = function(q) {
-	return JSON.parse(q);
-};
-sirius_utils_IOTools.md5Encode = function(o,base64) {
-	if(typeof(o) == "string") return haxe_crypto_Md5.encode(o); else return haxe_crypto_Md5.encode(base64?sirius_utils_IOTools.encodeBase64(o):sirius_utils_IOTools.jsonEncode(o));
 };
 var sirius_utils_ITable = function() { };
 sirius_utils_ITable.__name__ = ["sirius","utils","ITable"];
@@ -6593,10 +6773,9 @@ sirius_utils_Table.prototype = {
 		return this;
 	}
 	,on: function(name,handler,mode) {
-		this.each(function(v) {
+		return this.each(function(v) {
 			v.events.on(name,handler,mode);
 		});
-		return this;
 	}
 	,merge: function(tables) {
 		var t = sirius_utils_Table.empty();
@@ -6914,11 +7093,14 @@ sirius_dom_Display._CNT = 0;
 sirius_dom_Display._DATA = [];
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
+sirius_css_Automator._dev = false;
+sirius_css_Automator._inits = { reset : false, sprites : false};
 sirius_dom_Display3D._fixed = false;
 sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO : sirius_dom_Audio, B : sirius_dom_B, BASE : sirius_dom_Base, BODY : sirius_dom_Body, BR : sirius_dom_BR, BUTTON : sirius_dom_Button, CANVAS : sirius_dom_Canvas, CAPTION : sirius_dom_Caption, COL : sirius_dom_Col, CONTENT : sirius_dom_Content, DATALIST : sirius_dom_DataList, DIV : sirius_dom_Div, DISPLAY : sirius_dom_Display, DISPLAY3D : sirius_dom_Display3D, DL : sirius_dom_DL, DOCUMENT : sirius_dom_Document, EMBED : sirius_dom_Embed, FIELDSET : sirius_dom_FieldSet, FORM : sirius_dom_Form, H1 : sirius_dom_H1, H2 : sirius_dom_H2, H3 : sirius_dom_H3, H4 : sirius_dom_H4, H5 : sirius_dom_H5, H6 : sirius_dom_H6, HEAD : sirius_dom_Head, HR : sirius_dom_HR, HTML : sirius_dom_Html, I : sirius_dom_I, IFRAME : sirius_dom_IFrame, IMG : sirius_dom_Img, INPUT : sirius_dom_Input, LABEL : sirius_dom_Label, LEGEND : sirius_dom_Legend, LI : sirius_dom_LI, LINK : sirius_dom_Link, MAP : sirius_dom_Map, MEDIA : sirius_dom_Media, META : sirius_dom_Meta, METER : sirius_dom_Meter, MOD : sirius_dom_Mod, OBJECT : sirius_dom_Object, OL : sirius_dom_OL, OPTGROUP : sirius_dom_OptGroup, OPTION : sirius_dom_Option, OUTPUT : sirius_dom_Output, P : sirius_dom_P, PARAM : sirius_dom_Param, PICTURE : sirius_dom_Picture, PRE : sirius_dom_Pre, PROGRESS : sirius_dom_Progress, QUOTE : sirius_dom_Quote, SCRIPT : sirius_dom_Script, SELECT : sirius_dom_Select, SHADOW : sirius_dom_Shadow, SOURCE : sirius_dom_Source, SPAN : sirius_dom_Span, SPRITE : sirius_dom_Sprite, SPRITE3D : sirius_dom_Sprite3D, STYLE : sirius_dom_Style, TEXT : sirius_dom_Text, TEXTAREA : sirius_dom_TextArea, THEAD : sirius_dom_Thead, TITLE : sirius_dom_Title, TRACK : sirius_dom_Track, UL : sirius_dom_UL, VIDEO : sirius_dom_Video};
 sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.commonKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.commonKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.commonKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hid : { value : "", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, ita : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, ita : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
 sirius_css_XCSS.enabled = false;
+sirius_dom_Overlay._queue = [];
 sirius_tools_BitIO.P01 = 1;
 sirius_tools_BitIO.P02 = 2;
 sirius_tools_BitIO.P03 = 4;
@@ -6957,7 +7139,7 @@ sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;
 sirius_tools_Delayer.clearInterval = clearInterval;
 sirius_tools_Delayer._tks = { };
-sirius_tools_Key._counter = 0;
+sirius_tools_Key._cts = { 'global' : 0};
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_tools_Ticker._pool = [];
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
