@@ -15,30 +15,30 @@
 				var o = body.mount(FlatUI.GRID,{bg:color})
 							.mount(FlatUI.CELL,{size:24});
 					o.mount(FlatUI.INPUT,{size:4, css:'',
-						label:{size:8,	css:'', name:'INPUT TEST', bg:color},
-						input:{size:16, css:'', bg:FlatColors.WHITE[0]}
+						label:{size:8,	css:'', name:'INPUT TEST', bg:color.range(1.2)},
+						input:{size:16, css:'txt-black', bg:FlatColors.WHITE[0]}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.BUTTON,{size:3, bg:color.range(1.2), css:'Glass', name:color.NAME + ' BUTTON'});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.CHECK_BOX,{size:3, type:"checkbox", css:'Glass', bg:color.range(1.2),
-						label:{name:color.NAME + " CHECK", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
-						mark:{bg:color.ASCENT(), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
+						label:{name:color.NAME + " CB", css:'txt-white'},
+						mark:{bg:color.range(2), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-29 w-28'},
 						check:{data:color.NAME}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 					o.mount(FlatUI.CHECK_BOX,{size:3, type:"radio", css:'Glass', bg:color.range(1.2),
-						label:{name:color.NAME + " RADIO", css:'txt-' + color.ASCENT(1).range(.2).xcss()},
-						mark:{bg:color.ASCENT(), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
+						label:{name:color.NAME + " RADIO", css:'txt-white'},
+						mark:{bg:color.range(2), shadow:true, css:'padd-0 marg-t-10n marg-b-10n h-34 w-5'},
 						check:{group:color.NAME, data:1, active:i == 0 ? 'checked' : ''}
 					});
 					o.mount(FlatUI.SPACE,{size:5});
 			}
 			
 			for(var a in FlatColors) {
-				for(var i=0; i<9;++i)	{
-					createCell(FlatColors[a][i], i);
+				for(var i=0; i<3;++i)	{
+					createCell(FlatColors[a][i+2], i);
 				}
 			}
 			
@@ -46,7 +46,7 @@
 			
 		}
 		
-		Automator.shadowConfig({distance:1, direction:90, strength:3, flex:.2});
+		Automator.shadowConfig({distance:1, direction:45, strength:3, flex:.2});
 		Sirius.module('sirius/modules/automator/reset.html', null,null, function(e){
 			Sirius.module('sirius/modules/ui/tech-ui.html', null,null, _init);
 		});

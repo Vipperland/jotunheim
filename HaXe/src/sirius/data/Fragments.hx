@@ -17,7 +17,11 @@ class Fragments implements IFragments {
 	
 	private function _sel(i:Int, e:Int):String {
 		var r:Array<String> = [];
-		while (i != e)  r[r.length] = pieces[i++];
+			while (i != e)  {
+			var p:String = pieces[i++];
+			if(p != null && p != '')
+				r[r.length] = p;
+		}
 		return "/" + r.join("/") + "/";
 	}
 	

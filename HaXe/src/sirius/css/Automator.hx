@@ -36,7 +36,7 @@ class Automator {
 			build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
 			build('list-style-none', 'ol,ul,dl',true);
 			build('padd-5', 'hr', true);
-			build('padd-10','input,textarea,select', true);
+			build('padd-5','input,textarea,select', true);
 			build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix', null, true);
 			build('disp-inline-block','label',true);
 			css.setSelector('@-ms-viewport', 'width:device-width;');

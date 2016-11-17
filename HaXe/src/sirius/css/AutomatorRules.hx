@@ -244,16 +244,16 @@ class AutomatorRules {
 			var c:String = new ARGB(d.keys[1].color).hex();
 			n = d.get(2);
 			var l:Int = (n != null) ? Std.parseInt(n.measure) : 1;
-			var x:Int = 0;
+			var x:Int = l;
 			var s:Array<String> = [];
-			while (x < l) {
-				++x;
+			//while (x < l) {
+				//++x;
 				var xs:String = x + (x == 0 ? '' : 'px');
-				s[s.length] = '-' + xs + ' -' + xs + ' 0 ' + c;
-				s[s.length] = '-' + xs + ' ' + xs + ' 0 ' + c;
-				s[s.length] = '' + xs + ' -' + xs + ' 0 ' + c;
-				s[s.length] = '' + xs + ' ' + xs + ' 0 ' + c;
-			}
+				s[s.length] = '-' + xs + ' 0 1px ' + c;
+				s[s.length] = '0 ' + xs + ' 1px ' + c;
+				s[s.length] = '' + xs + ' 0 1px ' + c;
+				s[s.length] = '0 -' + xs + ' 1px ' + c;
+			//}
 			return 'text-shadow:' + s.join(',');
 		}
 		return commonKey(d, k, n); 
