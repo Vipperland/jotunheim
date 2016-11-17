@@ -5,7 +5,7 @@ package hook;
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
 @:native('DiceRoll')
-extern class DiceRollHook{
+extern class DiceRollHook {
 	// Last param
 	public var object:Dynamic;
 	// Last param

@@ -54,9 +54,15 @@ class Body {
 	
 	public static var content:String = "";
 	
+	public static var headData:String = "";
+	
 	public static function write(text:String, ?nl:Bool = true):Void {
 		content += text;
 		if (nl) newline();
+	}
+	
+	public static function head(text:String):Void {
+		headData += text;
 	}
 	
 	public static function newline():Void {
@@ -80,7 +86,8 @@ class Body {
 		Lib.print("<html>");
 		Lib.print("<head>");
 		Lib.print("	<meta charset=\"utf-8\">");
-		Lib.print("	<meta base=\"" + base + "\">");
+		Lib.print("	<base href=\"" + base + "\">");
+		Lib.print(headData);
 		Lib.print("</head>");
 		Lib.print("<body>");
 		Lib.print(content);

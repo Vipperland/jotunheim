@@ -90,12 +90,17 @@ class Dispatcher implements IDispatcher {
 	 */
 	public function on(type:String, ?handler:IEvent->Void, ?mode:Int):IEventGroup {
 		var ie:IEventGroup = event(type);
-		return switch(mode) {
-			case 2, 3 : ie.add(handler, mode == 3).noDefault();
-			case 1 : ie.add(handler, true);
-			case null, 0 : ie.add(handler, false);
-			case -1 : ie.remove(handler);
-			default : ie;
+		if (handler == null){
+			ie.call();
+			return ie;
+		}else{
+			return switch(mode) {
+				case 2, 3 : ie.add(handler, mode == 3).noDefault();
+				case 1 : ie.add(handler, true);
+				case null, 0 : ie.add(handler, false);
+				case -1 : ie.remove(handler);
+				default : ie;
+			}
 		}
 	}
 	
@@ -107,6 +112,16 @@ class Dispatcher implements IDispatcher {
 		}
 	}
 	
+	/** Event */
+	public function added(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
+		return on("DOMNodeInserted", handler, mode);
+	}
+
+	/** Event */
+	public function removed(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
+		return on("DOMNodeRemoved", handler, mode);
+	}
+
 	/** Event */
 	public function wheel(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup {
 		return on("wheel", handler, mode);

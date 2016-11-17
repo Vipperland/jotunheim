@@ -21,32 +21,42 @@ class Input extends Display {
 		return cast Sirius.one(q);
 	}
 	
+	static public var fixer:Dynamic = { backgroundSize : 'cover', backgroundPosition : 'center center' };
+	
+	static public var icons:Dynamic = { }
+	
 	public var object:InputElement;
 	
 	private var _rgx:EReg;
 	
 	private var _flt:String;
 	
-	private var _ioTarget:IDisplay;
+	private var fileIO:IDisplay;
 	
 	private var _ioHandler:Input->Void;
 	
 	private function _onFileSelected(e:Dynamic) {
 		if (Std.is(e, IEvent)) {
-			readFile(0, _onFileSelected);
-		}else {
-			if (Std.is(_ioTarget, Img)){
-				var img:Img = cast _ioTarget;
-				img.src(e);
+			var ftype:String = file(0).type.substr(0, 5);
+			if (ftype == 'image'){
+				readFile(0, _onFileSelected);
 			}else{
-				_ioTarget.style( {
-					backgroundImage : 'url(' + e + ')',
-					backgroundSize : 'cover',
-					backgroundPosition : 'center center',
-				});
+				var bg:String = Reflect.hasField(icons, ftype) ? Reflect.field(icons, ftype) : icons.common;
+				if(bg != null){
+					fileIO.style({backgroundImage : 'url(' + bg + ')'});
+				}
 				if(_ioHandler != null)
 					_ioHandler(this);
 			}
+		}else {
+			if (fileIO.typeOf() == 'IMG'){
+				var img:Img = cast fileIO;
+				img.src(e);
+			}else{
+				fileIO.style({backgroundImage : 'url(' + e + ')'});
+			}
+			if(_ioHandler != null)
+				_ioHandler(this);
 		}
 	}
 	
@@ -188,13 +198,14 @@ class Input extends Display {
 	 */
 	public function fileController(target:IDisplay, ?handler:Input->Void):Void {
 		_ioHandler = handler;
-		_ioTarget = target;
+		fileIO = target;
+		fileIO.style(fixer);
 		type('file');
 		this.events.change(_onFileSelected);
 	}
 	
 	public function clearBackground(?bg:String=''):Void {
-		_ioTarget.style( {
+		fileIO.style( {
 			backgroundImage : bg,
 		});
 	}

@@ -20,8 +20,7 @@ class Sprite3D extends Display3D {
 		content.preserve3d().update();
 		//content.setPerspective(null, '50% 50% 50%');
 		if (content.parent() == null) addChild(content);
-		css('w-100pc h-100pc disp-table');
-		content.css('disp-table-cell vert-m');
+		css('sprite');
 		update();
 	}
 	

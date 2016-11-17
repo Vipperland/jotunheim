@@ -1,4 +1,4 @@
-package sirius.utils;
+package sirius.serial;
 import haxe.Json;
 import haxe.crypto.Base64;
 import haxe.crypto.Md5;
@@ -63,7 +63,7 @@ class IOTools {
 	 * @param	base64
 	 * @return
 	 */
-	public static function md5Encode(o:Dynamic, base64:Bool):String {
+	public static function md5Encode(o:Dynamic, ?base64:Bool):String {
 		if (Std.is(o, String))
 			return Md5.encode(o);
 		else

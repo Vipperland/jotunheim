@@ -3,9 +3,12 @@ import haxe.Json;
 import haxe.Log;
 import js.Browser;
 import js.Error;
+import js.html.AnimationEvent;
 import js.html.DOMRect;
 import js.html.Element;
+import js.html.Event;
 import js.html.MouseEvent;
+import sirius.css.Automator;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
 import sirius.events.IEvent;
@@ -47,11 +50,20 @@ class Document extends Display {
 			body = new Body(Browser.document.body);
 			head = new Head(Browser.document.head);
 			events = new Dispatcher(this);
-			events.wheel(stopScroll, true);
 			__doc__ = this;
+			__init__();
 		}else {
 			throw new Error("Document is a singleton, use Document.ME() instead of new");
 		}
+	}
+	
+	function __init__() {
+		events.wheel(stopScroll, true);
+		Browser.window.addEventListener('scroll', _hookScroll);
+	}
+	
+	private function _hookScroll(e:Event):Void {
+		events.scroll().call();
 	}
 	
 	public function scroll(x:Float, y:Float):Void {

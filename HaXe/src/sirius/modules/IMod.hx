@@ -12,5 +12,6 @@ interface IMod {
 	public var filler:String;
 	public var repeat:String;
 	public var type:String;
+	public var wrap:String;
 	public var version:String;
 }

@@ -96,6 +96,9 @@ class ModLib {
 									content = content.split("{{@include:" + v + "}}").join(set);
 							});
 						}
+						if (mod.wrap != null){
+							content = content.split('\r\n').join(mod.wrap).split('\n').join(mod.wrap).split('\r').join(mod.wrap);
+						}
 						#if js
 							// ============================= JS ONLY =============================
 							if (mod.type != null) {
@@ -196,18 +199,22 @@ class ModLib {
 		 * @return
 		 */
 		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
-			
+			var d:IDisplay = null;
 			if (each != null && Std.is(data, Array)) {
-				var d:IDisplay = new Div();
+				d = new Div();
 				Dice.Values(data, function(v:Dynamic) {
 					v = new Display().write(get(module, v));
 					v = each(v);
-					if(v != null && Std.is(v, IDisplay)) d.addChild(v);
+					if (v != null && Std.is(v, IDisplay)) {
+						d.attribute('sru-mod', module);
+						d.addChild(v);
+					}
 				});
-				return d;
 			}else {
-				return new Display().write(get(module, data));
+				d = new Display().write(get(module, data));
 			}
+			d.attribute('sru-mod', module);
+			return d;
 		}
 		
 		public function buildIn(module:String, target:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {

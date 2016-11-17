@@ -1,5 +1,7 @@
 package sirius.events;
 import js.Browser;
+import js.html.CustomEvent;
+import js.html.CustomEventInit;
 import sirius.dom.Display;
 import sirius.dom.Html;
 import sirius.dom.IDisplay;
@@ -25,6 +27,8 @@ class EventGroup implements IEventGroup {
 	public var propagation:Bool;
 	
 	public var capture:Bool;
+	
+	public var data:Dynamic;
 
 	public function new(dispatcher:IDispatcher, name:String) {
 		this.dispatcher = dispatcher;
@@ -73,7 +77,7 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
-	private function _runner(?e:Dynamic):Void {
+	private function _runner(?e:js.html.Event):Void {
 		if (!enabled) return;
 		var evt:IEvent = new Event(dispatcher, this, e);
 		Dice.Values(events, function(v:Dynamic) {
@@ -88,14 +92,16 @@ class EventGroup implements IEventGroup {
 		propagation = true;
 	}
 	
-	public function call(?bubbles:Bool = false, ?cancelable:Bool = true):IEventGroup {
+	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):IEventGroup {
+		this.data = data;
 		if (Browser.document.createEvent != null) {
-			var e:js.html.Event = Browser.document.createEvent("HTMLEvents");
+			var e:CustomEvent = new CustomEvent(name);
 			e.initEvent(name, bubbles, cancelable);
 			dispatcher.target.element.dispatchEvent(e);
 		}else {
 			_runner(null);
 		}
+		this.data = null;
 		return this;
 	}
 	

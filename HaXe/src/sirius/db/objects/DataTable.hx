@@ -37,6 +37,12 @@ class DataTable implements IDataTable {
 	
 	public var name(get, null):String;
 	private function get_name():String { return _name; }
+	
+	public var autoIncrement(get, null):UInt;
+	private function get_autoIncrement():UInt {
+		var cmd:ICommand = _gate.builder.find('AUTO_INCREMENT', 'INFORMATION_SCHEMA.TABLES', Clause.EQUAL('TABLE_NAME', _name));
+		return cmd.result.length > 0 ? Std.parseInt(cmd.result[0].AUTO_INCREMENT) : 0;
+	}
 
 	public function new(name:String, gate:IGate) {
 		_gate = gate;
@@ -55,7 +61,6 @@ class DataTable implements IDataTable {
 		_fields = "*";
 		return this;
 	}
-	
 	
 	public function add (?parameters:Dynamic = null, ?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
 		return new QueryResult(_gate.builder.add(_name, clausule, parameters, order, limit).execute().result);
@@ -81,7 +86,7 @@ class DataTable implements IDataTable {
 		return new QueryResult(_gate.builder.copy(_name, toTable, clausule, order, limit).execute().result);
 	}
 	
-	public function truncate():IQueryResult {
+	public function clear():IQueryResult {
 		return new QueryResult(_gate.builder.truncate(_name).result);
 	}
 	
@@ -96,7 +101,7 @@ class DataTable implements IDataTable {
 		return command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], 'COUNT(*)')) : 0;
 	}
 	
-	public function clear (paramaters:Dynamic):Dynamic {
+	public function optimize(paramaters:Dynamic):Dynamic {
 		var desc:Dynamic = get_description();
 		Dice.All(paramaters, function(p:String, v:Dynamic) { if (!Reflect.hasField(desc, p)) Reflect.deleteField(paramaters, p); });
 		return paramaters;

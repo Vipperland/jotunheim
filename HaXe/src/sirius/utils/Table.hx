@@ -164,10 +164,7 @@ class Table implements ITable {
 	}
 	
 	public function on(name:String, handler:IEvent->Void, ?mode:Int):ITable {
-		each(function(v:IDisplay) {
-			v.events.on(name, handler, mode);
-		});
-		return this;
+		return each(function(v:IDisplay) { v.events.on(name, handler, mode); });
 	}
 	
 	public function merge(?tables:Array<Table>):ITable {

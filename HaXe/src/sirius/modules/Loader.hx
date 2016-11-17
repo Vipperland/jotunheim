@@ -158,7 +158,7 @@ class Loader implements ILoader {
 		r.request(false);
 	}
 	
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST'):Void {
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {
 		var r:HttpRequest = _getReq(url);
 		_changed(url, 'started');
 		#if js
@@ -170,6 +170,11 @@ class Loader implements ILoader {
 			#else
 				Dice.All(data, r.setParameter);
 			#end
+		}
+		if (headers != null){
+			Dice.All(headers, function(p:String, v:Dynamic){
+				r.setHeader(p, v);
+			});
 		}
 		r.onData = function(d) { 
 			_changed(url, 'loaded', d);

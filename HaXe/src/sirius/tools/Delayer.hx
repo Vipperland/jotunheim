@@ -40,7 +40,7 @@ class Delayer {
 		_rpt = 1;
 	}
 	
-	public function call(?repeats:Int):Delayer {
+	public function start(?repeats:Int):Delayer {
 		if (repeats != null) {
 			_rpt = repeats;
 		}
@@ -53,7 +53,7 @@ class Delayer {
 		return this;
 	}
 	
-	public function cancel():Delayer {
+	public function stop():Delayer {
 		_cnt = 0;
 		if (_tid != null) {
 			_tid.stop();
@@ -67,7 +67,7 @@ class Delayer {
 			_tid = null;
 			Reflect.callMethod(_this, _handler, _args);
 			if (_rpt == 0 || (++_cnt < _rpt)) {
-				call();
+				start();
 			}else {
 				_cnt = 0;
 			}

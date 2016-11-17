@@ -1,4 +1,5 @@
 package sirius.utils;
+import haxe.ds.ArraySort;
 import sirius.tools.Utils;
 import sirius.utils.IDiceRoll;
 
@@ -176,28 +177,28 @@ class Dice {
 	 * @param	numeric
 	 * @return
 	 */
-	public static function Table(data:Array<Dynamic>, ?key:String, ?numeric:Bool = false):Dynamic {
-		var r:Array<Dynamic> = null;
+	public static function Table(data:Array<Dynamic>, ?key:String, ?numeric:Bool = false, ?copy:Bool = false):Dynamic {
+		var r:Array<Dynamic> = copy == true ? [].concat(data) : data;
 		if (numeric) {
 			// INT objA.key < INT objB.key
 			if(key != null)
-				r = cast data.sort(function (a:Int, b:Int):Int {
+				ArraySort.sort(r, function (a:Int, b:Int):Int {
 					return Reflect.field(a, key) < Reflect.field(b, key) ? -1 : 1;
 				});
 			// INT a < INT b
 			else
-				r = cast data.sort(function (a:Int, b:Int):Int {
+				ArraySort.sort(r, function (a:Int, b:Int):Int {
 					return a < b ? -1 : 1;
 				});
 		}
 		// objA.key < objB.key
 		else if(key != null)
-			r = cast data.sort(function (a:Dynamic, b:Dynamic):Int {
+			ArraySort.sort(r, function (a:Dynamic, b:Dynamic):Int {
 				return Reflect.compare(SearchTag.convert(Reflect.field(a, key)),SearchTag.convert(Reflect.field(b, key)));
 			});
 		// STR a < STR b
 		else
-			r = cast data.sort(function (a:Int, b:Int):Int {
+			ArraySort.sort(r, function (a:Int, b:Int):Int {
 				return Reflect.compare(SearchTag.convert(a),SearchTag.convert(b));
 			});
 		return r;

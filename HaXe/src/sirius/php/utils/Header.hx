@@ -4,7 +4,7 @@ import php.Lib;
 import php.Web;
 import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
-import sirius.utils.IOTools;
+import sirius.serial.IOTools;
 
 /**
  * ...
@@ -59,6 +59,10 @@ class Header {
 	
 	public function setURI(value:String):Void {
 		Web.setHeader('location', value);
+	}
+	
+	public function setOAuth(token:String):Void {
+		Web.setHeader('Authorization:', IOTools.encodeBase64(token));
 	}
 	
 }

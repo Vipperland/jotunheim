@@ -5,7 +5,7 @@ import php.Boot;
 import php.Lib;
 import php.Web;
 import sirius.tools.Utils;
-import sirius.utils.IOTools;
+import sirius.serial.IOTools;
 import sirius.utils.Dice;
 
 /**

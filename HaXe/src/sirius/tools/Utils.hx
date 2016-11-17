@@ -57,6 +57,7 @@ import haxe.Log;
 	import sirius.dom.OptGroup;
 	import sirius.dom.Option;
 	import sirius.dom.Output;
+	import sirius.dom.Overlay;
 	import sirius.dom.P;
 	import sirius.dom.Param;
 	import sirius.dom.Picture;
@@ -81,7 +82,7 @@ import haxe.Log;
 	
 #end
 
-import sirius.utils.IOTools;
+import sirius.serial.IOTools;
 import sirius.utils.Dice;
 
 /**
@@ -213,12 +214,26 @@ class Utils{
 			return data;
 		}
 		
-	
+		
 	#elseif php
 	
 	
 	
 	#end
+	
+	static public function getQueryParams(value:String):Dynamic {
+		var params:Dynamic = {};
+		if(value.indexOf('?') > 0)
+			value = value.split('+').join(' ').split('?')[1];
+		else
+			return params;
+		Dice.Values(value.split('&'), function(v:String){
+			var data:Array<Dynamic> = v.split('=');
+			Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+		});
+		return params;
+	}
+
 	
 	/**
 	 * Remove white and null values from array
@@ -312,8 +327,12 @@ class Utils{
 		
 	}
 	
-	static public function boolean(value:Dynamic):Bool {
-		return value == true || value == 1 || value == "1" || value == "true" || value == "yes";
+	static public function boolean(q:Dynamic):Bool {
+		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
+	}
+	
+	static public function stdClone(q:Dynamic):Dynamic {
+		return Json.parse(Json.stringify(q));
 	}
 	
 }

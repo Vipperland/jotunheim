@@ -81,6 +81,12 @@ interface IDisplay {
 	public function css(?styles:String):String;
 	
 	/**
+	 * Mirror element view
+	 * @return
+	 */
+	public function mirror(x:Bool, y:Bool):IDisplay;
+	
+	/**
 	 * Current child index or -1 if not added
 	 * @return
 	 */
@@ -309,6 +315,20 @@ interface IDisplay {
 	public function deactivate(handler:Dynamic):IDisplay;
 	
 	/**
+	 * 
+	 * @param	value
+	 * @return
+	 */
+	public function x(?value:Dynamic):Int;
+	
+	/**
+	 * 
+	 * @param	value
+	 * @return
+	 */
+	public function y(?value:Dynamic):Int;
+	
+	/**
 	 * Change WIDTH of Element
 	 * @param		value
 	 * @return		Client width
@@ -336,6 +356,13 @@ interface IDisplay {
 	 * @return	Current overflow
 	 */
 	public function overflow(?mode:String):String;
+	
+	/**
+	 * Set opacity
+	 * @param	value
+	 * @return
+	 */
+	public function alpha(?value:Float):Float;
 	
 	/**
 	 * Check if all element bounds fit into viewport
@@ -411,5 +438,7 @@ interface IDisplay {
 	 * @param	handler
 	 */
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
+	
+	public function toString():String;
 	
 }

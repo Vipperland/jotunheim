@@ -9,6 +9,7 @@ import sirius.db.Token;
 import sirius.Sirius;
 import sirius.php.file.Image;
 import sirius.php.file.ImageLib;
+import sirius.php.file.Uploader;
 
 /**
  * ...
@@ -17,8 +18,9 @@ import sirius.php.file.ImageLib;
 class Test_PHP {
 
 	static public function main() {
-		var img:Image = new Image('../assets/img/image.jpg');
-		img.fit(300,300).save('../assets/img/test.jpg');
+		Uploader;
+		//var img:Image = new Image('../assets/img/image.jpg');
+		//img.fit(300,300).save('../assets/img/test.jpg');
 	}
 	
 }

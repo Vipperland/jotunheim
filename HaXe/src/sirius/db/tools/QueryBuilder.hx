@@ -1,5 +1,6 @@
 package sirius.db.tools;
 import haxe.Json;
+import php.Lib;
 import sirius.db.tools.ICommand;
 import sirius.utils.Dice;
 import sirius.utils.Filler;

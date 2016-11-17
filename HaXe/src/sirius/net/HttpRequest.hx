@@ -45,6 +45,7 @@ private typedef AbstractSocket = {
 #elseif js
 
 import js.html.FormData;
+import js.html.ProgressEvent;
 
 #end
 
@@ -202,7 +203,7 @@ class HttpRequest {
 		(Js) If `this.async` is false, the callback functions are called before
 		this method returns.
 	**/
-	public function request( ?post : Bool ) : Void {
+	public function request( ?post : Bool, ?progress:String->Float->Float->Void ) : Void {
 		var me = this;
 	#if js
 		me.responseData = null;
@@ -250,6 +251,17 @@ class HttpRequest {
 		if (data != null)
 			uri = data;
 		try {
+			if (progress != null){
+				r.onprogress = function(e:ProgressEvent){
+					if (e.lengthComputable)
+						progress(url, e.loaded, e.total);
+					else
+						progress(url, 0, 0);
+				}
+				r.onloadend = r.onloadstart = function(e:ProgressEvent){
+					progress(url, 0, 0);
+				}
+			}
 			if( post )
 				r.open("POST",url,async);
 			else if( uri != null ) {

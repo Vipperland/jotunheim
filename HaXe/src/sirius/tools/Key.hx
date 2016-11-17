@@ -7,9 +7,18 @@ package sirius.tools;
 @:expose("sru.tools.Key")
 class Key {
 	
-	static private var _counter:Int = 0;
-	public static function COUNTER():Int {
-		return _counter++;
+	static private var _cts:Dynamic = {'global':0};
+	public static function COUNTER(?id:String):Int {
+		if (id == null) 
+			id = 'global';
+		var v:UInt = 0;
+		if (!Reflect.hasField(_cts, id)) 
+			Reflect.setField(_cts, id, 0);
+		else {
+			v = Reflect.field(_cts, id);
+			Reflect.setField(_cts, id, v+1);
+		}
+		return v;
 	}
 	
 	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";

@@ -26,8 +26,7 @@ class Sprite extends Div {
 			content = new Div();
 			addChild(content);
 		}
-		css('w-100pc h-100pc disp-table txt-c');
-		content.css('disp-table-cell vert-m');
+		css('sprite');
 	}
 	
 }

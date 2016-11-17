@@ -63,6 +63,7 @@ class Domain implements IDomain {
 			host = l.hostname;
 			port = l.port;
 			hash = new Fragments(l.hash.substr(1), "/");
+			params = Utils.getQueryParams(l.href);
 		#elseif php
 			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
 			server = Web.getCwd();

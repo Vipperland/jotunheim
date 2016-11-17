@@ -20,19 +20,41 @@ class Automator {
 	
 	static private var css:CSSGroup = new CSSGroup();
 	
-	static private var _dev:Bool;
+	static private var _dev:Bool = false;
+	
+	static private var _inits:Dynamic = {
+		reset : false,
+		sprites : false,
+	};
 	
 	static public function reset():Void {
-		build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass','*',true);
-		build('arial txt-12', 'body',true);
-		build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
-		build('list-style-none', 'ol,ul,dl',true);
-		build('padd-5', 'hr', true);
-		build('padd-10','input,textarea,select', true);
-		build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix',null,true);
-		css.setSelector('@-ms-viewport', 'width:device-width;');
-		css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
-		css.build();
+		if (!_inits.reset){
+			_inits.reset = true;
+			build('h-100pc', 'html,body',true);
+			build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass','*',true);
+			build('arial txt-12', 'body',true);
+			build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
+			build('list-style-none', 'ol,ul,dl',true);
+			build('padd-5', 'hr', true);
+			build('padd-10','input,textarea,select', true);
+			build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix', null, true);
+			build('disp-inline-block','label',true);
+			css.setSelector('@-ms-viewport', 'width:device-width;');
+			css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
+			enableSprites();
+			css.build();
+		}
+	}
+	
+	static public function enableSprites() {
+		if (!_inits.sprites){
+			_inits.sprites = true;
+			build('w-100pc h-100pc disp-table txt-c', '.sprite', true);
+			build('disp-table-cell vert-m', '.sprite > div', true);
+			build('marg-l-auto marg-r-auto', '.sprite > div > div', true);
+			if (!_inits.reset) 
+				css.build();
+		}
 	}
 	
 	static public function unmute():Void {
@@ -60,7 +82,7 @@ class Automator {
 	
 	static private function _activate():Void {
 		_scanBody();
-		Delayer.create(_scanBody, 1).call(0);
+		Delayer.create(_scanBody, 1).start(0);
 	}
 	
 	/**
@@ -122,7 +144,12 @@ class Automator {
 	 * @param	query
 	 * @param	group
 	 */
-	static public function build(query:String, ?group:String, ?silent:Bool):Void {
+	static public function build(?query:String, ?group:String, ?silent:Bool):Void {
+		
+		if (query == null || query == ''){
+			css.build();
+			return;
+		}
 		
 		var c:Array<String> = query.split(" ");						// Split class names
 		var m:String = null;										// MediaQueries rule
@@ -185,9 +212,12 @@ class Automator {
 	 * @param	size
 	 */
 	static public function grid(size:Dynamic):Void {
-		if (!Std.is(size, Array)) 
-			size = [size];
-		Dice.Values(size, function(v:Int) {	_createGridCol(v); });
+		if(!Reflect.hasField(_inits, 'grid-' + size)){
+			if (!Std.is(size, Array)) 
+				size = [size];
+			Dice.Values(size, function(v:Int) {	_createGridCol(v); });
+			Reflect.setField(_inits, 'grid-' + size, true);
+		}
 	}
 	
 	static public function cell(size:UInt, pad:UInt):Void {

@@ -97,7 +97,7 @@ class Sirius {
 				agent.update();
 				Ease.update();
 				updatePlugins();
-				log("Sirius => INITIALIZED", 1);
+				log("Sirius => ENJOY :)", 1);
 				Dice.Values(_loadPool, function(v:Dynamic) { if(v!=null) v(); });
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				_loadPool = null;
@@ -113,8 +113,13 @@ class Sirius {
 				var plist:Dynamic = untyped __js__("window.sru ? window.sru.plugins : null");
 				Dice.All(plist, function(p:String, v:Dynamic) {
 					Reflect.setField(plugins, p, v);
-					log("Plugin => " + p + " ADDED", 1);
 					Reflect.deleteField(plist, p);
+					if (Reflect.hasField(v, 'onload')) {
+						v.onload();
+						log("Plugin => " + p + "::onload()", 1);
+					}else{
+						log("Plugin => " + p + " ADDED", 1);
+					}
 				});
 			}
 		}
@@ -210,7 +215,7 @@ class Sirius {
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				//Automator._init();
-				log("Sirius => WAITING...", 2);
+				log("Sirius => LOADING...", 1);
 				Reflect.deleteField(Sirius, '_preInit');
 				if (Browser.document.readyState == 'complete') _loadController(null);
 			}
@@ -263,10 +268,10 @@ class Sirius {
 		 * @param	handler
 		 */
 		static public function module(file:String, ?content:Dynamic, ?handler:String->String->Void):Void {
-			if (file.indexOf("http") == 0) {
-				loader.async(file, content, handler);
-			}else {
+			if (file.indexOf("http") == -1) {
 				resources.prepare(file);
+			}else {
+				loader.async(file, content, handler);
 			}
 		}
 		
@@ -280,11 +285,11 @@ class Sirius {
 	 * @param	handler
 	 * @param	method
 	 */
-	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post'):Void {
+	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null):Void {
 		#if js
-			run(function() { loader.request(url, data, handler, method); } );
+			run(function() { loader.request(url, data, handler, method, headers); } );
 		#elseif php
-			loader.request(url, data, handler, method);
+			loader.request(url, data, handler, method, headers);
 		#end
 	}
 	

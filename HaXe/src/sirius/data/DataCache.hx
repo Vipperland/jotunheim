@@ -16,7 +16,7 @@ import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
-import sirius.utils.IOTools;
+import sirius.serial.IOTools;
 
 
 /**

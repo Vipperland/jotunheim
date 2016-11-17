@@ -103,14 +103,12 @@ class Display implements IDisplay {
 	private var _setattr:Bool;
 	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
-		
 		if (q == null)
 			q = Browser.document.createDivElement();
 		if (Reflect.hasField(q, 'element'))
 			element = q.element;
 		else
 			element = q;
-		
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
@@ -118,7 +116,6 @@ class Display implements IDisplay {
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
-		
 	}
 	
 	public function initData():IDataSet {
@@ -153,21 +150,21 @@ class Display implements IDisplay {
 			var value:Dynamic = cast data;
 			if (Std.is(value, IARGB))
 				value = value.css();
-			if (value.indexOf("#") == 0)
-				element.style.background = value;
 			else if (value.indexOf("rgb") == 0)
 				element.style.backgroundColor = value;
-			else{
+			else if(value.indexOf('~') == 0){
 				style({
-					backgroundImage : "url('" + value + "')",
+					backgroundImage : "url('" + value.substr(1) + "')",
 					backgroundRepeat :  repeat != null ? repeat : "no-repeat",
+					backgroundSize :  size != null ? size : "cover",
 					backgroundPosition : position != null ? position : "center center",
 				});
 				if (attachment != null)
 					style( { backgroundAttachment:attachment } );
 				if (size != null)
 					style( { backgroundSize:size } );
-			}
+			}else
+				element.style.background = value;
 		}
 		return element.style.background;
 	}
@@ -213,7 +210,10 @@ class Display implements IDisplay {
 	}
 	
 	public function index():Int {
-		return parent().indexOf(this);
+		if(parent() != null)
+			return _parent.indexOf(this);
+		else
+			return -1;
 	}
 	
 	public function indexOf(q:IDisplay):Int {
@@ -281,6 +281,11 @@ class Display implements IDisplay {
 		return this;
 	}
 	
+	public function mirror(x:Bool, y:Bool):IDisplay {
+		style('transform','matrix(' + (x ? -1 : 1) + ',0,0,' + (y ? -1 : 1) + ',0,0)');
+		return this;
+	}
+	
 	public function css(?styles:String):String {
 		if(styles != null){
 			var s:Array<String> = styles.split(" ");
@@ -309,10 +314,12 @@ class Display implements IDisplay {
 	
 	public function show():Void {
 		element.hidden = false;
+		element.style.display = null;
 	}
 	
 	public function hide():Void {
 		element.hidden = true;
+		element.style.display = 'none';
 	}
 	
 	public function hasAttribute(name:String):Bool {
@@ -393,7 +400,7 @@ class Display implements IDisplay {
 		if (Sirius.resources.exists(q))
 			return addChildren(Sirius.resources.build(q, data).children(), at);
 		else
-			return addChildren(new Display().write(q,false).children(), at);
+			return addChildren(new Display().write(q, false).children(), at);
 	}
 	
 	public function clear(?fast:Bool):IDisplay {
@@ -472,6 +479,18 @@ class Display implements IDisplay {
 		return this;
 	}
 	
+	public function x(?value:Dynamic):Int {
+		if (value != null)
+			element.style.left = Std.is(value, String) ? value : value + "px";
+		return Std.parseInt(element.style.left);
+	}
+	
+	public function y(?value:Dynamic):Int {
+		if (value != null)
+			element.style.top = Std.is(value, String) ? value : value + "px";
+		return Std.parseInt(element.style.top);
+	}
+	
 	public function width(?value:Dynamic):Int {
 		if (value != null)
 			element.style.width = Std.is(value, String) ? value : value + "px";
@@ -494,6 +513,12 @@ class Display implements IDisplay {
 		if (mode != null)
 			element.style.overflow = mode;
 		return element.style.overflow;
+	}
+	
+	public function alpha(?value:Float):Float {
+		if (value != null)
+			element.style.opacity = ''+value;
+		return Std.parseFloat(element.style.opacity);
 	}
 	
 	public function isFullyVisible():Bool {
@@ -529,17 +554,14 @@ class Display implements IDisplay {
 	}
 	
 	public function typeOf():String {
-		return "[" + Utils.typeof(this) + "{id:" + _uid + ", element:" + element.tagName + "}]";
+		return hasAttribute('sru-dom') ? attribute('sru-dom') : element.tagName;
 	}
 	
-	public function is(tag:Either<String,Array<String>>):Bool {
-		var name:String = Utils.typeof(this).toLowerCase();
-		var pre:String = name.split(".").pop();
-		if (Std.is(tag, String)) tag = cast [tag];
+	public function is(tag:Dynamic):Bool {
+		if (!Std.is(tag, Array)) tag = [tag];
 		var r:IDiceRoll = Dice.Values(tag, function(v:String) {
-			v = v.toLowerCase();
-			var c:String = (v.indexOf(".") == -1) ? pre : name;
-			return v == c || v == element.tagName;
+			v = v.toUpperCase();
+			return v == element.tagName || v == attribute('sru-dom');
 		});
 		return !r.completed;
 	}

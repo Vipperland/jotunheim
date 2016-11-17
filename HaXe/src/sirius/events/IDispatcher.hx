@@ -46,6 +46,12 @@ interface IDispatcher {
 	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):Dynamic;
 	
 	/// Event
+	public function added (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	
+	/// Event
+	public function removed (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	
+	/// Event
 	public function wheel (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
 
 	/// Event
@@ -278,6 +284,5 @@ interface IDispatcher {
 	
 	/// Remove all events
 	public function dispose():Void;
-	
-	
+		
 }

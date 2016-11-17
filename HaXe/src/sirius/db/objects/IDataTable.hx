@@ -13,6 +13,11 @@ interface IDataTable {
 	public var name(get_name, null):String;
 	
 	/**
+	 * Current AUTO_INCREMENT value for table
+	 */
+	public var autoIncrement(get, null):UInt;
+	
+	/**
 	 * All table fields description
 	 */
 	public var description(get_description, null):Dynamic;
@@ -73,11 +78,17 @@ interface IDataTable {
 	public function copy (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
 	
 	/**
+	 * Erase all table entries (TRUNCATE)
+	 * @return
+	 */
+	public function clear():IQueryResult;
+	
+	/**
 	 * Validate parameters with table description and remove invalid ones
 	 * @param	paramaters
 	 * @return
 	 */
-	public function clear(paramaters:Dynamic):Dynamic;
+	public function optimize(paramaters:Dynamic):Dynamic;
 	
 	/**
 	 * The ammount of rows in table

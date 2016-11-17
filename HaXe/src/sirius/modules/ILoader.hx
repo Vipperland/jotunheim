@@ -88,7 +88,7 @@ interface ILoader {
 	 * @param	handler
 	 * @param	method
 	 */
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST'):Void;
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void;
 
 
 }

@@ -120,6 +120,17 @@ class AutomatorRules {
 	}
 	
 	/**
+	 * 
+	 * @param	d
+	 * @param	k
+	 * @param	n
+	 * @return
+	 */
+	static public function positionKey(d:Entry, k:IKey, n:IKey):String {
+		return (k.index == 0 ? 'position:' : '') + commonKey(d, k, n);
+	}
+	
+	/**
 	 * Miscelaneous keys, append '-' at the end of the key value
 	 * @param	d
 	 * @param	k
@@ -156,7 +167,7 @@ class AutomatorRules {
 				o = 100;
 			else if (o < 0)
 				o = 0;
-			return k.entry.value + ":" + (o/100);
+			return k.entry.value + ":" + untyped __js__('(o/100).toFixed(2)');
 		}else {
 			return valueKey(d, k, n);
 		}
@@ -215,7 +226,7 @@ class AutomatorRules {
 			}
 			if (k.index == 0)
 				return '';
-			return "overflow" + (v == 'x'?'-x':'-y') + ":scroll;overflow-" + (v == 'x'?'-y':'-x') + ":hidden";
+			return "overflow" + (v == 'x'?'-x':'-y') + ":scroll;overflow" + (v == 'x'?'-y':'-x') + ":hidden";
 		}
 		return commonKey(d, k, n);
 	}
@@ -353,13 +364,13 @@ class AutomatorRules {
 		sub:{value:'sub',verifier:commonKey},
 		sup:{value:'super',verifier:commonKey},
 		pos:{value:'position',verifier:valueKey},
-		abs:{value:'absolute',verifier:commonKey},
-		rel:{value:'relative',verifier:commonKey},
-		fix:{value:'fixed',verifier:commonKey},
+		abs:{value:'absolute',verifier:positionKey},
+		rel:{value:'relative',verifier:positionKey},
+		fix:{value:'fixed',verifier:positionKey},
 		pull:{value:'float',verifier:valueKey},
 		float:{value:'float',verifier:valueKey},
 		over:{value:'overflow',verifier:valueKey},
-		hid:{value:'',verifier:commonKey},
+		hide:{value:'display:none',verifier:commonKey},
 		scroll:{value:'scroll',verifier:scrollKey},
 		crop:{value:'overflow:hidden',verifier:commonKey},
 		x:{value:'x',verifier:scrollKey},
