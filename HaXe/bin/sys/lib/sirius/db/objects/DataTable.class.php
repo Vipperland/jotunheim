@@ -34,6 +34,15 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 	public function get_name() {
 		return $this->_name;
 	}
+	public $autoIncrement;
+	public function get_autoIncrement() {
+		$cmd = $this->_gate->builder->find("AUTO_INCREMENT", "INFORMATION_SCHEMA.TABLES", sirius_db_Clause::EQUAL("TABLE_NAME", $this->_name), null, null);
+		if($cmd->result->length > 0) {
+			return Std::parseInt(_hx_array_get($cmd->result, 0)->AUTO_INCREMENT);
+		} else {
+			return 0;
+		}
+	}
 	public function restrict($fields, $times = null) {
 		if($times === null) {
 			$times = 0;
@@ -64,7 +73,7 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 	public function copy($toTable, $clausule = null, $order = null, $limit = null) {
 		return new sirius_db_objects_QueryResult($this->_gate->builder->copy($this->_name, $toTable, $clausule, $order, $limit)->execute(null, null, null)->result);
 	}
-	public function truncate() {
+	public function clear() {
 		return new sirius_db_objects_QueryResult($this->_gate->builder->truncate($this->_name)->result);
 	}
 	public function rename($to) {
@@ -72,15 +81,15 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 		$this->_name = $to;
 		return new sirius_db_objects_QueryResult($this->_gate->builder->rename($old, $to)->result);
 	}
-	public function length() {
-		$command = $this->_gate->prepare("SELECT COUNT(*) FROM " . _hx_string_or_null($this->_name), null, null)->execute(null, null, null);
+	public function length($clausule = null) {
+		$command = $this->_gate->builder->find("COUNT(*)", $this->_name, $clausule, null, null)->execute(null, null, null);
 		if($command->result->length > 0) {
 			return Std::parseInt(Reflect::field($command->result[0], "COUNT(*)"));
 		} else {
 			return 0;
 		}
 	}
-	public function clear($paramaters) {
+	public function optimize($paramaters) {
 		$desc = $this->get_description();
 		sirius_utils_Dice::All($paramaters, array(new _hx_lambda(array(&$desc, &$paramaters), "sirius_db_objects_DataTable_3"), 'execute'), null);
 		return $paramaters;
@@ -109,7 +118,7 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
-	static $__properties__ = array("get_name" => "get_name","get_description" => "get_description");
+	static $__properties__ = array("get_autoIncrement" => "get_autoIncrement","get_name" => "get_name","get_description" => "get_description");
 	function __toString() { return 'sirius.db.objects.DataTable'; }
 }
 function sirius_db_objects_DataTable_0(&$__hx__this, &$r) {

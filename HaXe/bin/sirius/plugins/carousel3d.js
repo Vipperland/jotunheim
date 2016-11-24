@@ -67,16 +67,14 @@
 					ctr.e = i+ap;
 					ctr.f = i-hp;
 					ctr.g = i+hp;
-					with(cp){
-						doubleSided(false);
-						css('pos-abs');
-						style({y:0,top:0});
-						width("100%");
-						data.set('rotation', o.points.length * -o.aperture);
-						setPerspective(null, '50% 50%');
-						update();
-						data.control = ctr;
-					}
+					cp.doubleSided(false);
+					cp.css('pos-abs');
+					cp.style({y:0,top:0});
+					cp.width("100%");
+					cp.data.set('rotation', o.points.length * -o.aperture);
+					cp.setPerspective(null, '50% 50%');
+					cp.update();
+					cp.data.control = ctr;
 					o.points[o.points.length] = ctr;
 				}
 			},
@@ -201,15 +199,14 @@
 					}
 					e.update();
 				});
-				var th = (h*o.panels.length)>>0;
+				var th = (h*(o.panels.length-1))>>0;
 				o.extra.style( { 'margin-top':th + 'px' } );
-				with(o.carousel){
-					content.locationZ( -tz - o.offsetZFlex);
-					content.update();
-					height(h);
-				}
+				o.carousel.content.locationZ( -tz - o.offsetZFlex);
+				o.carousel.content.update();
+				o.carousel.height(h);
 			},
 			scrollEvent : function(e){
+				console.log(e);
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;
 				if(e.event.type == 'wheel')	{
 					var delta = 0;
@@ -217,6 +214,7 @@
 					else						delta = e.event.wheelDelta;
 					Sirius.document.addScroll(0, -delta);
 				}else if(o.keyboard) {
+					console.log(e.event.keyCode);
 					switch(e.event.keyCode){
 						case 38 : {}
 						case 33 : {
@@ -235,32 +233,29 @@
 		}
 		
 		if(!Sirius.agent.mobile){
-			body.style( { 'overflow-y':'hidden' } );
-			with(Sirius.document.events){
-				wheel(o.scrollEvent);
-				keyDown(o.scrollEvent);
-			}
+			//body.style( { 'overflow-y':'hidden' } );
+			Sirius.document.events.wheel(o.scrollEvent);
+			Sirius.document.events.keyDown(o.scrollEvent);
 		}
-		
-		with(o.carousel){
-			content.fit(100, 100, true);
-			overflow('hidden');
-			css('pos-fix');
-			width("100%");
-			content.height("100%");
-			addToBody();
-			setPerspective(null, '50% 50%');
-			update();
-			content.height("100%");
-			content.update();
-		}
-		with(o.extra){
-			width("100%");
-			style({top:0, height:0});
-			addToBody();
-		}
+		o.carousel.content.fit(100, 100, true);
+		o.carousel.overflow('hidden');
+		o.carousel.css('pos-fix');
+		o.carousel.width("100%");
+		o.carousel.content.height("100%");
+		o.carousel.addToBody();
+		o.carousel.setPerspective(null, '50% 50%');
+		o.carousel.update();
+		o.carousel.content.height("100%");
+		o.carousel.content.update();
+		o.carousel.width("100%");
+		o.carousel.style({top:0, height:0});
+		o.carousel.addToBody();
 		Sirius.all(selector).each(o.addPanel);
 		o.update();
+		
+		o.extra.width("100%");
+		o.extra.style({top:0});
+		o.extra.addToBody();
 		
 		Automator.search(o.carousel);
 		

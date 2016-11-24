@@ -7,18 +7,21 @@
 	$exports.sru.plugins = $exports.sru.plugins || {};
 	$exports.sru.plugins.LabelController = {
 		onload:function(){
-			var fix = {backgroundPosition:'center center', backgroundSize:'cover'};
+			sru.dom.Input.fixer = {backgroundPosition:'center center', backgroundSize:'cover'};
 			Sirius.all('input[type=file]').each(function(o){
 				var label = Sirius.one('label[for="' + o.attribute('id') + '"]');
+				var status = null;
 				if(label != null){
-					label.style(fix);
-					label.css('empty');
+					label.css('no-file');
 					label.overflow('hidden');
-					console.log(label.attribute('file-target'));
 					if(label.hasAttribute('file-target'))
-						o.fileController(label.one(label.attribute('file-target')), function(){ label.css('selected /empty'); });
+						o.fileController(label.one(label.attribute('file-target')), function(i){ 
+							label.css('has-file /no-file'); 
+						});
 					else
-						o.fileController(label, function(){ label.css('selected /empty'); });
+						o.fileController(label, function(i){ 
+							label.css('/has-file no-file'); 
+						});
 				}
 			});
 		}

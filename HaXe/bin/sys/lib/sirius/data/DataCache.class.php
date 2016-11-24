@@ -105,7 +105,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 	public function save() {
 		$data = null;
 		if($this->_base64) {
-			$data = sirius_utils_IOTools::encodeBase64($this->_DB);
+			$data = sirius_serial_IOTools::encodeBase64($this->_DB);
 		} else {
 			$data = $this->json(false);
 		}
@@ -141,7 +141,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		if(file_exists($this->_name)) {
 			$c = sys_io_File::getContent($this->_name);
 			if($this->_base64) {
-				$this->_DB = sirius_utils_IOTools::decodeBase64($c, true);
+				$this->_DB = sirius_serial_IOTools::decodeBase64($c, true);
 			} else {
 				$this->_DB = haxe_Json::phpJsonDecode($c);
 			}
@@ -167,7 +167,7 @@ class sirius_data_DataCache implements sirius_data_IDataCache{
 		return $result;
 	}
 	public function base64($print = null) {
-		$result = sirius_utils_IOTools::encodeBase64($this->_DB);
+		$result = sirius_serial_IOTools::encodeBase64($this->_DB);
 		if($print) {
 			php_Lib::hprint($result);
 		}

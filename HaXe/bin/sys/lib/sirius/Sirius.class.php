@@ -16,10 +16,10 @@ class sirius_Sirius {
 		require_once($file);
 	}
 	static function module($file, $content = null, $handler = null) {
-		if(_hx_index_of($file, "http", null) === 0) {
-			sirius_Sirius::$loader->async($file, $content, $handler);
-		} else {
+		if(_hx_index_of($file, "http", null) === -1) {
 			sirius_Sirius::$resources->prepare($file);
+		} else {
+			sirius_Sirius::$loader->async($file, $content, $handler);
 		}
 	}
 	static function request($url, $data = null, $handler = null, $method = null) {

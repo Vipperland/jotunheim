@@ -56,7 +56,7 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 			$this->_changed($f, "started", null);
 			$r->onError = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_modules_Loader_1"), 'execute');
 			$r->onData = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_modules_Loader_2"), 'execute');
-			$r->request(false);
+			$r->request(false, null);
 		} else {
 			$this->_isBusy = false;
 			$this->_complete();
@@ -87,7 +87,7 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 		$this->_changed($file, "started", null);
 		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_modules_Loader_3"), 'execute');
 		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_modules_Loader_4"), 'execute');
-		$r->request(false);
+		$r->request(false, null);
 	}
 	public function request($url, $data = null, $handler = null, $method = null) {
 		if($method === null) {
@@ -101,7 +101,7 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 		}
 		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$method, &$r, &$url), "sirius_modules_Loader_5"), 'execute');
 		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$method, &$r, &$url), "sirius_modules_Loader_6"), 'execute');
-		$r->request($method === null || strtolower($method) === "post");
+		$r->request($method === null || strtolower($method) === "post", null);
 	}
 	public function get($module, $data = null) {
 		return sirius_Sirius::$resources->get($module, $data);

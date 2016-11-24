@@ -34,7 +34,7 @@ class sirius_php_utils_Header {
 		if($data !== null) {
 			$data1 = sirius_serial_JsonTool::stringfy($data, null, " ");
 			if($encode === true) {
-				$data1 = sirius_utils_IOTools::encodeBase64($data1);
+				$data1 = sirius_serial_IOTools::encodeBase64($data1);
 			}
 			php_Lib::hprint($data1);
 		}
@@ -44,6 +44,10 @@ class sirius_php_utils_Header {
 	}
 	public function setURI($value) {
 		header("location" . ": " . _hx_string_or_null($value));
+	}
+	public function setOAuth($token) {
+		$v = sirius_serial_IOTools::encodeBase64($token);
+		header("Authorization:" . ": " . _hx_string_or_null($v));
 	}
 	static $HTML = "text/html;charset=utf-8";
 	static $TEXT = "text/plain;charset=utf-8";

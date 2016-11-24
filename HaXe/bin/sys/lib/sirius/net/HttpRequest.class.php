@@ -41,14 +41,14 @@ class sirius_net_HttpRequest {
 		$this->params->push(_hx_anonymous(array("param" => $param, "value" => Std::string($value))));
 		return $this;
 	}
-	public function request($post = null) {
+	public function request($post = null, $progress = null) {
 		$_g = $this;
 		$me = $this;
 		$me1 = $this;
 		$output = new haxe_io_BytesOutput();
 		$old = (isset($this->onError) ? $this->onError: array($this, "onError"));
 		$err = false;
-		$this->onError = array(new _hx_lambda(array(&$_g, &$err, &$me, &$me1, &$old, &$output, &$post), "sirius_net_HttpRequest_5"), 'execute');
+		$this->onError = array(new _hx_lambda(array(&$_g, &$err, &$me, &$me1, &$old, &$output, &$post, &$progress), "sirius_net_HttpRequest_5"), 'execute');
 		$this->customRequest($post, $output, null, null);
 		if(!$err) {
 			$me1->onData($me1->responseData = $output->getBytes()->toString());
@@ -545,7 +545,7 @@ class sirius_net_HttpRequest {
 		$r = null;
 		$h->onData = array(new _hx_lambda(array(&$h, &$r, &$url), "sirius_net_HttpRequest_7"), 'execute');
 		$h->onError = array(new _hx_lambda(array(&$h, &$r, &$url), "sirius_net_HttpRequest_8"), 'execute');
-		$h->request(false);
+		$h->request(false, null);
 		return $r;
 	}
 	function __toString() { return 'sirius.net.HttpRequest'; }
@@ -569,7 +569,7 @@ function sirius_net_HttpRequest_4(&$param, &$value, $p) {
 		return $p->param !== $param;
 	}
 }
-function sirius_net_HttpRequest_5(&$_g, &$err, &$me, &$me1, &$old, &$output, &$post, $e) {
+function sirius_net_HttpRequest_5(&$_g, &$err, &$me, &$me1, &$old, &$output, &$post, &$progress, $e) {
 	{
 		$me1->responseData = $output->getBytes()->toString();
 		$err = true;

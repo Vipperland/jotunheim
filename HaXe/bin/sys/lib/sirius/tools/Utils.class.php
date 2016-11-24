@@ -2,9 +2,19 @@
 
 class sirius_tools_Utils {
 	public function __construct(){}
+	static function getQueryParams($value) {
+		$params = _hx_anonymous(array());
+		if(_hx_index_of($value, "?", null) > 0) {
+			$value = _hx_array_get(_hx_explode("?", _hx_explode("+", $value)->join(" ")), 1);
+		} else {
+			return $params;
+		}
+		sirius_utils_Dice::Values(_hx_explode("&", $value), array(new _hx_lambda(array(&$params, &$value), "sirius_tools_Utils_0"), 'execute'), null);
+		return $params;
+	}
 	static function clearArray($path, $filter = null) {
 		$copy = (new _hx_array(array()));
-		sirius_utils_Dice::Values($path, array(new _hx_lambda(array(&$copy, &$filter, &$path), "sirius_tools_Utils_0"), 'execute'), null);
+		sirius_utils_Dice::Values($path, array(new _hx_lambda(array(&$copy, &$filter, &$path), "sirius_tools_Utils_1"), 'execute'), null);
 		return $copy;
 	}
 	static function toString($o, $json = null) {
@@ -19,18 +29,25 @@ class sirius_tools_Utils {
 	}
 	static function _sruFy($o, $i, $b) {
 		$i = _hx_string_or_null($i) . "  ";
-		sirius_utils_Dice::All($o, array(new _hx_lambda(array(&$b, &$i, &$o), "sirius_tools_Utils_1"), 'execute'), null);
+		sirius_utils_Dice::All($o, array(new _hx_lambda(array(&$b, &$i, &$o), "sirius_tools_Utils_2"), 'execute'), null);
 		return $b;
 	}
 	static function isValid($o) {
 		if($o !== null) {
-			if(!_hx_equal($o, "null") && Std::is($o, _hx_qtype("String"))) {
+			if(!_hx_equal($o, "null") && _hx_has_field($o, "length")) {
 				return _hx_len($o) > 0;
 			} else {
-				return true;
+				return !_hx_equal($o, 0) && !_hx_equal($o, false);
 			}
 		}
 		return false;
+	}
+	static function isValidAlt($o, $alt) {
+		if(sirius_tools_Utils::isValid($o)) {
+			return $o;
+		} else {
+			return $alt;
+		}
 	}
 	static function typeof($o) {
 		$name = null;
@@ -57,14 +74,32 @@ class sirius_tools_Utils {
 	}
 	function __toString() { return 'sirius.tools.Utils'; }
 }
-function sirius_tools_Utils_0(&$copy, &$filter, &$path, $v) {
+function sirius_tools_Utils_0(&$params, &$value, $v) {
+	{
+		$data = _hx_explode("=", $v);
+		{
+			$field = null;
+			{
+				$s = $data[0];
+				$field = urldecode($s);
+			}
+			$value1 = null;
+			{
+				$s1 = $data[1];
+				$value1 = urldecode($s1);
+			}
+			$params->{$field} = $value1;
+		}
+	}
+}
+function sirius_tools_Utils_1(&$copy, &$filter, &$path, $v) {
 	{
 		if($v !== null && !_hx_equal($v, "") && ($filter === null || call_user_func_array($filter, array($v)))) {
 			$copy[$copy->length] = $v;
 		}
 	}
 }
-function sirius_tools_Utils_1(&$b, &$i, &$o, $p, $v) {
+function sirius_tools_Utils_2(&$b, &$i, &$o, $p, $v) {
 	{
 		if($v === null) {
 			$b .= _hx_string_or_null($i) . _hx_string_or_null($p) . " (null) = NULL\x0D";
