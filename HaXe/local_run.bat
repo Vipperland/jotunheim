@@ -2,7 +2,7 @@
 
 echo . 
 echo . 
-echo .  THIS TOLL WILL MINIFY ALL JS FILES
+echo .  THIS TOOL WILL MINIFY ALL JS FILES
 echo . 
 echo . 
 
