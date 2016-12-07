@@ -1,4 +1,4 @@
-package sirius.modules;
+package sirius.net;
 import sirius.errors.Error;
 
 /**

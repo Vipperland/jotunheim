@@ -1,8 +1,8 @@
-package sirius.modules;
+package sirius.net;
 import sirius.Sirius;
 import sirius.errors.Error;
 import sirius.errors.IError;
-import sirius.modules.Request;
+import sirius.net.Request;
 import sirius.net.HttpRequest;
 import sirius.signals.ISignals;
 import sirius.signals.Signals;
@@ -31,6 +31,8 @@ class Loader implements ILoader {
 	public var totalFiles:Int;
 	
 	public var totalLoaded:Int;
+	
+	public var progress:Int;
 	
 	public var lastError:IError;
 	
@@ -119,7 +121,7 @@ class Loader implements ILoader {
 	
 	#end
 	
-	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:String->String->Void):Void {
+	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void, #if js ?progress:IProgress->Void #end):Void {
 		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
 		var r:HttpRequest = _getReq(h[0]);
 		#if js 
@@ -148,14 +150,28 @@ class Loader implements ILoader {
 				}
 			#end
 			if (handler != null) 
-				handler(file, d);
+				handler(new Request(true, d, null, file)); 
 		}
 		r.onError = function(d) {
 			_changed(file, 'error', d);
 			if (handler != null) 
-				handler(null, d);
+				handler(new Request(false, null, new Error(-1, d), file)); 
 		}
-		r.request(false);
+		#if js
+			if (progress == null){
+				r.request(false);
+			}else{
+				var pro:IProgress = cast {loaded:0,total:0,file:file};
+				r.request(false, cast function(u:String, a:Int, b:Int):Void{
+					pro.loaded = a;
+					pro.total = b;
+					pro.file = u;
+					progress(pro);
+				});
+			}
+		#elseif php
+			r.request(false);
+		#end
 	}
 	
 	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {

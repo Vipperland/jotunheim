@@ -1,6 +1,6 @@
 package sirius.data;
 import sirius.dom.IDisplay;
-import sirius.modules.IRequest;
+import sirius.net.IRequest;
 
 /**
  * @author Rafael Moreira

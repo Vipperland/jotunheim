@@ -1,7 +1,7 @@
 package;
 
 import sirius.css.Automator;
-import sirius.modules.ILoader;
+import sirius.net.ILoader;
 import sirius.Sirius;
 import sirius.tools.Ticker;
 import sirius.ui.Alert;

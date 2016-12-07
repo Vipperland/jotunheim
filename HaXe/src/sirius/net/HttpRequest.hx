@@ -335,7 +335,7 @@ class HttpRequest {
 			request.data = vars;
 			request.method = if( post ) "POST" else "GET";
 		}
-
+		
 		try {
 			loader.load( request );
 		}catch( e : Dynamic ){

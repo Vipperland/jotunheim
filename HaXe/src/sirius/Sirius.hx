@@ -3,10 +3,11 @@ package sirius;
 import haxe.Log;
 import sirius.data.Logger;
 import sirius.errors.IError;
-import sirius.modules.IRequest;
+import sirius.net.IProgress;
+import sirius.net.IRequest;
 import sirius.modules.ModLib;
-import sirius.modules.ILoader;
-import sirius.modules.Loader;
+import sirius.net.ILoader;
+import sirius.net.Loader;
 import sirius.net.Domain;
 import sirius.net.IDomain;
 import sirius.signals.IFlow;
@@ -241,8 +242,8 @@ class Sirius {
 		 * @param	content
 		 * @param	handler
 		 */
-		static public function module(file:String, ?target:Dynamic, ?content:Dynamic, ?handler:String->String->Void):Void {
-			run(function() { loader.async(file, target, content, handler); } );
+		static public function module(file:String, ?target:Dynamic, ?content:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
+			run(function() { loader.async(file, target, content, handler, progress); } );
 		}
 		
 	#elseif php

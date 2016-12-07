@@ -3,4 +3,4 @@
 call .\tools\minify bin\sirius
 call .\tools\minify bin\sirius\plugins
 
-explorer "http://localhost:2000/index.html"
+explorer "http://127.0.0.11/"

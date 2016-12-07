@@ -2,7 +2,7 @@ package sirius.data;
 import sirius.data.FormParam;
 import sirius.data.IFormData;
 import sirius.dom.IDisplay;
-import sirius.modules.IRequest;
+import sirius.net.IRequest;
 import sirius.utils.Dice;
 import sirius.utils.IDiceRoll;
 

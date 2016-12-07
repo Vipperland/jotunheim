@@ -1,4 +1,4 @@
-package sirius.modules;
+package sirius.net;
 import sirius.errors.IError;
 import sirius.errors.Error;
 import sirius.net.HttpRequest;
@@ -63,8 +63,13 @@ interface ILoader {
 	 * @param	target *js only
 	 * @param	data
 	 * @param	handler
+	 * @param	progress
 	 */
-	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:String->String->Void):Void;
+	#if js 
+		public function async(file:String, ?target:Dynamic, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void ):Void;
+	#elseif php
+		public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
+	#end
 	
 	/**
 	 * Load a list of files

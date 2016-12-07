@@ -18,7 +18,7 @@ import sirius.math.ARGB;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.math.Point;
-import sirius.modules.IRequest;
+import sirius.net.IRequest;
 import sirius.tools.Ticker;
 import sirius.tools.Utils;
 import sirius.transitions.Animator;

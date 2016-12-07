@@ -11,7 +11,7 @@ import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
-import sirius.modules.IRequest;
+import sirius.net.IRequest;
 import sirius.utils.ITable;
 
 /**
