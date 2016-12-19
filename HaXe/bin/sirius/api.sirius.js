@@ -1091,6 +1091,7 @@ js_Cookie.set = function(name,value,expireDelay,path,domain) {
 	}
 	if(path != null) s += ";path=" + path;
 	if(domain != null) s += ";domain=" + domain;
+	haxe_Log.trace(s,{ fileName : "Cookie.hx", lineNumber : 41, className : "js.Cookie", methodName : "set"});
 	window.document.cookie = s;
 };
 js_Cookie.all = function() {
@@ -1395,6 +1396,7 @@ var sirius_net_Loader = $hx_exports.sru.modules.Loader = function(noCache) {
 	this.signals = new sirius_signals_Signals(this);
 	this.totalLoaded = 0;
 	this.totalFiles = 0;
+	this._fileProgress = 0;
 };
 sirius_net_Loader.__name__ = ["sirius","net","Loader"];
 sirius_net_Loader.__interfaces__ = [sirius_net_ILoader];
@@ -1403,7 +1405,7 @@ sirius_net_Loader.prototype = {
 		return new sirius_net_HttpRequest(u + (this._noCache?"":"?t=" + new Date().getTime()));
 	}
 	,progress: function() {
-		return this.totalLoaded / this.totalFiles;
+		return (this.totalLoaded + (this._fileProgress < 1?this._fileProgress:0)) / this.totalFiles;
 	}
 	,add: function(files) {
 		if(files != null && files.length > 0) {
@@ -1440,11 +1442,15 @@ sirius_net_Loader.prototype = {
 				sirius_Sirius.resources.register(f,d);
 				_g._loadNext();
 			};
-			r.request(false);
+			r.request(false,$bind(this,this._onLoadProgress));
 		} else {
 			this._isBusy = false;
 			this._complete();
 		}
+	}
+	,_onLoadProgress: function(file,loaded,total) {
+		this._fileProgress = loaded / total;
+		this.signals.call("progress",{ file : file, loaded : loaded, total : total, progress : this._fileProgress});
 	}
 	,_error: function(e) {
 		if(typeof(e) == "string") this.lastError = new sirius_errors_Error(-1,e,this); else this.lastError = new sirius_errors_Error(-1,"Unknow",{ content : e, loader : this});
@@ -1498,7 +1504,7 @@ sirius_net_Loader.prototype = {
 			});
 		}
 	}
-	,request: function(url,data,handler,method,headers) {
+	,request: function(url,data,handler,method,headers,progress) {
 		if(method == null) method = "POST";
 		var _g = this;
 		var r = this._getReq(url);
@@ -2025,12 +2031,12 @@ sirius_dom_Display.prototype = {
 	}
 	,getScroll: function(o) {
 		if(o == null) o = { };
-		o.scrollX = this.element.scrollLeft;
-		o.scrollY = this.element.scrollTop;
-		o.x = this.element.offsetLeft;
-		o.y = this.element.offsetTop;
-		o.viewX = o.x - window.scrollX;
-		o.viewY = o.y - window.scrollY;
+		o.left = this.element.scrollLeft;
+		o.top = this.element.scrollTop;
+		o.offsetX = this.element.offsetLeft;
+		o.offsetY = this.element.offsetTop;
+		o.x = o.x - window.scrollX;
+		o.y = o.y - window.scrollY;
 		return o;
 	}
 	,getChild: function(i,update) {
@@ -2084,8 +2090,10 @@ sirius_dom_Display.prototype = {
 		return t;
 	}
 	,removeChild: function(q) {
-		this._children = null;
-		q.remove();
+		if(q.element.parentElement == this.element) {
+			this._children = null;
+			q.remove();
+		}
 		return q;
 	}
 	,removeChildren: function(min) {
@@ -3898,14 +3906,16 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 			if(ftype == "image") this.readFile(0,$bind(this,this._onFileSelected)); else {
 				var bg;
 				if(Object.prototype.hasOwnProperty.call(sirius_dom_Input.icons,ftype)) bg = Reflect.field(sirius_dom_Input.icons,ftype); else bg = sirius_dom_Input.icons.common;
-				if(bg != null) this.fileIO.style({ backgroundImage : "url(" + bg + ")"});
+				if(bg != null && this.fileIO != null) this.fileIO.style({ backgroundImage : "url(" + bg + ")"});
 				if(this._ioHandler != null) this._ioHandler(this);
 			}
 		} else {
-			if(this.fileIO.typeOf() == "IMG") {
-				var img = this.fileIO;
-				img.src(e);
-			} else this.fileIO.style({ backgroundImage : "url(" + Std.string(e) + ")"});
+			if(this.fileIO != null) {
+				if(this.fileIO.typeOf() == "IMG") {
+					var img = this.fileIO;
+					img.src(e);
+				} else this.fileIO.style({ backgroundImage : "url(" + Std.string(e) + ")"});
+			}
 			if(this._ioHandler != null) this._ioHandler(this);
 		}
 	}
@@ -4012,13 +4022,13 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	,fileController: function(target,handler) {
 		this._ioHandler = handler;
 		this.fileIO = target;
-		this.fileIO.style(sirius_dom_Input.fixer);
+		if(this.fileIO != null) this.fileIO.style(sirius_dom_Input.fixer);
 		this.type("file");
 		this.events.change($bind(this,this._onFileSelected));
 	}
 	,clearBackground: function(bg) {
 		if(bg == null) bg = "";
-		this.fileIO.style({ backgroundImage : bg});
+		if(this.fileIO != null) this.fileIO.style({ backgroundImage : bg});
 	}
 	,check: function(toggle) {
 		if(toggle == null) toggle = true;
@@ -5721,7 +5731,6 @@ sirius_net_HttpRequest.prototype = {
 	,cancel: function() {
 		if(this.req == null) return;
 		this.req.abort();
-		this.req = null;
 	}
 	,request: function(post,progress) {
 		var _g = this;
@@ -6728,13 +6737,7 @@ sirius_utils_SearchTag.from = function(value) {
 };
 sirius_utils_SearchTag.convert = function(data) {
 	data = Std.string(data).toLowerCase().split(" ").join("");
-	data = sirius_utils_SearchTag._E.replace(data,"");
-	var i = 0;
-	var l = sirius_utils_SearchTag._M.length;
-	while(i < l) {
-		data = data.split(sirius_utils_SearchTag._M[i][0]).join(sirius_utils_SearchTag._M[i][1]);
-		++i;
-	}
+	data = Std.string(data.substr(0,1)) + sirius_utils_SearchTag._E.replace(data,"");
 	return data;
 };
 sirius_utils_SearchTag.prototype = {
@@ -7286,7 +7289,7 @@ sirius_tools_Key._cts = { 'global' : 0};
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_tools_Ticker._pool = [];
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
-sirius_utils_SearchTag._E = new EReg("^[a-zA-Z0-9- ]","g");
+sirius_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 sirius_utils_Table._trash = [];
 sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

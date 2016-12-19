@@ -116,6 +116,9 @@ function sirius_modules_ModLib_1(&$_g, &$content, &$file, &$sur, $p, $v) {
 					sirius_Sirius::log("\x09ModLib => " . _hx_string_or_null($mod->name) . " VERIFYING...", 1);
 					sirius_utils_Dice::Values($dependencies, array(new _hx_lambda(array(&$_g, &$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$sur, &$v), "sirius_modules_ModLib_4"), 'execute'), null);
 				}
+				if($mod->wrap !== null) {
+					$content = _hx_explode("\x0D", _hx_explode("\x0A", _hx_explode("\x0D\x0A", $content)->join($mod->wrap))->join($mod->wrap))->join($mod->wrap);
+				}
 				{
 					$field = strtolower($mod->name);
 					sirius_modules_ModLib::$CACHE->{$field} = $content;

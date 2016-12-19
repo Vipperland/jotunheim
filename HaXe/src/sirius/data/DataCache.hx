@@ -9,7 +9,7 @@ import haxe.Json;
 	import sys.FileSystem;
 	import sys.io.File;
 	import sys.io.FileInput;
-	import sirius.php.utils.Header;
+	import sirius.net.Header;
 #end
 import haxe.Log;
 import sirius.serial.JsonTool;

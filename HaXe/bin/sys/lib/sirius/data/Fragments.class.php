@@ -21,7 +21,11 @@ class sirius_data_Fragments implements sirius_data_IFragments{
 	public function _sel($i, $e) {
 		$r = (new _hx_array(array()));
 		while($i !== $e) {
-			$r[$r->length] = $this->pieces[$i++];
+			$p = $this->pieces[$i++];
+			if($p !== null && $p !== "") {
+				$r[$r->length] = $p;
+			}
+			unset($p);
 		}
 		return "/" . _hx_string_or_null($r->join("/")) . "/";
 	}

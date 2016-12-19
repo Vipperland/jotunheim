@@ -6,9 +6,9 @@
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
 	$exports.sru.plugins.Anchor = function(){
-		Sirius.all('[plugin*="anchor"]').onClick(function(e){
-			var target = e.target.attribute('a-to');
-			if(target){
+		Sirius.all('a[focus]').onClick(function(e){
+			var target = e.target.attribute('focus');
+			if(target != null){
 				var find = Sirius.one(target);
 				var p = sru.dom.Display.getPosition(find.element);
 				var ease = e.target.attribute('a-ease');
@@ -17,7 +17,7 @@
 				var offY = e.target.attribute('a-y');
 				Sirius.document.scrollTo(find, time || 1, Ease.fromString(ease || 'CIRC.IO'), offX || 0, offY || 100);
 			}else{
-				Sirius.log('[PLUGIN] Anchor can´t find <' + target + '>', 10, 2);
+				Sirius.log('[PLUGIN] Anchor.js can´t find {' + target + '}', 10, 2);
 			}
 		});
 	}

@@ -37,7 +37,7 @@ class TableObject {
 		_table.update(data, Clause.ID(id), null, Limit.ONE);
 	}
 	
-	public function copy():Void {
+	public function copy():TableObject {
 		var obj:TableObject = new TableObject(_table);
 		return obj.create(untyped __call__('clone', data));
 	}

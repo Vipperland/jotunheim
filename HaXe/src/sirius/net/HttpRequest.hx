@@ -156,35 +156,29 @@ class HttpRequest {
 		return this;
 	}
 
-	#if (js || flash)
-
-	#if js
-		var req:js.html.XMLHttpRequest;
-		
-		public function setData(data:FormData):HttpRequest {
-			this.data = data;
-			return this;
-		}
+#if js
 	
-	#elseif flash
-	var req:flash.net.URLLoader;
-	#end
-
+	var req:js.html.XMLHttpRequest;
+	
+	public function setData(data:FormData):HttpRequest {
+		this.data = data;
+		return this;
+	}
+	
 	/**
 		Cancels `this` Http request if `request` has been called and a response
 		has not yet been received.
 	**/
 	public function cancel()
 	{
-		if (req == null) return;
-		#if js
+		if (req == null) 
+			return;
 		req.abort();
-		#elseif flash
-		req.close();
-		#end
-		req = null;
 	}
-	#end
+	
+#end
+
+	
 
 	/**
 		Sends `this` Http request to the Url specified by `this.url`.
@@ -203,7 +197,11 @@ class HttpRequest {
 		(Js) If `this.async` is false, the callback functions are called before
 		this method returns.
 	**/
-	public function request( ?post : Bool, ?progress:String->Float->Float->Void ) : Void {
+	#if js
+	public function request( ?post : Bool, ?progress:String->Int->Int->Void ) : Void {
+	#else
+	public function request( ?post : Bool) : Void {
+	#end
 		var me = this;
 	#if js
 		me.responseData = null;
@@ -266,7 +264,7 @@ class HttpRequest {
 				r.open("POST",url,async);
 			else if( uri != null ) {
 				var question = url.split("?").length <= 1;
-				r.open("GET",url+(if( question ) "?" else "&")+uri,async);
+				r.open("GET", url + (if ( question ) "?" else "&") + uri, async);
 				uri = null;
 			} else {
 				r.open("GET",url,async);
@@ -283,65 +281,6 @@ class HttpRequest {
 		r.send(uri);
 		if( !async )
 			onreadystatechange(null);
-	#elseif flash
-		me.responseData = null;
-		var loader = req = new flash.net.URLLoader();
-		loader.addEventListener( "complete", function(e) {
-			me.req = null;
-			me.responseData = loader.data;
-			me.onData( loader.data );
-		});
-		loader.addEventListener( "httpStatus", function(e:flash.events.HTTPStatusEvent){
-			// on Firefox 1.5, Flash calls onHTTPStatus with 0 (!??)
-			if( e.status != 0 )
-				me.onStatus( e.status );
-		});
-		loader.addEventListener( "ioError", function(e:flash.events.IOErrorEvent){
-			me.req = null;
-			me.responseData = loader.data;
-			me.onError(e.text);
-		});
-		loader.addEventListener( "securityError", function(e:flash.events.SecurityErrorEvent){
-			me.req = null;
-			me.onError(e.text);
-		});
-
-		// headers
-		var param = false;
-		var vars = new flash.net.URLVariables();
-		for( p in params ){
-			param = true;
-			Reflect.setField(vars,p.param,p.value);
-		}
-		var small_url = url;
-		if( param && !post ){
-			var k = url.split("?");
-			if( k.length > 1 ) {
-				small_url = k.shift();
-				vars.decode(k.join("?"));
-			}
-		}
-		// Bug in flash player 9 ???
-		var bug = small_url.split("xxx");
-
-		var request = new flash.net.URLRequest( small_url );
-		for( h in headers )
-			request.requestHeaders.push( new flash.net.URLRequestHeader(h.header,h.value) );
-
-		if( postData != null ) {
-			request.data = postData;
-			request.method = "POST";
-		} else {
-			request.data = vars;
-			request.method = if( post ) "POST" else "GET";
-		}
-		
-		try {
-			loader.load( request );
-		}catch( e : Dynamic ){
-			me.req = null;
-			onError("Exception: "+Std.string(e));
-		}
 	#elseif sys
 		var me = this;
 		var output = new haxe.io.BytesOutput();
@@ -393,17 +332,15 @@ class HttpRequest {
 		if( sock == null ) {
 			if( secure ) {
 				#if php
-				sock = new php.net.SslSocket();
-				#elseif java
-				sock = new java.net.SslSocket();
-				#elseif hxssl
-				#if neko
-				sock = new neko.tls.Socket();
-				#else
-				sock = new sys.ssl.Socket();
-				#end
-				#else
-				throw "Https is only supported with -lib hxssl";
+					sock = new php.net.SslSocket();
+					#elseif hxssl
+						#if neko
+							sock = new neko.tls.Socket();
+						#else
+							sock = new sys.ssl.Socket();
+						#end
+					#else
+						throw "Https is only supported with -lib hxssl";
 				#end
 			} else
 				sock = new Socket();
@@ -609,9 +546,9 @@ class HttpRequest {
 			}
 		}
 		#if neko
-		var headers = neko.Lib.stringReference(b.getBytes()).split("\r\n");
+			var headers = neko.Lib.stringReference(b.getBytes()).split("\r\n");
 		#else
-		var headers = b.getBytes().toString().split("\r\n");
+			var headers = b.getBytes().toString().split("\r\n");
 		#end
 		var response = headers.shift();
 		var rp = response.split(" ");
@@ -774,7 +711,6 @@ class HttpRequest {
 	public dynamic function onStatus( status : Int ) {
 	}
 
-#if !flash
 	/**
 		Makes a synchronous request to `url`.
 
@@ -798,6 +734,5 @@ class HttpRequest {
 		h.request(false);
 		return r;
 	}
-#end
 
 }

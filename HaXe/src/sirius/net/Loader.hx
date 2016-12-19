@@ -27,12 +27,12 @@ class Loader implements ILoader {
 	private var _onError:Array<Dynamic>;
 	private var _isBusy:Bool;
 	private var _noCache:Bool;
-	
+	#if js
+	private var _fileProgress:Float;
+	#end
 	public var totalFiles:Int;
 	
 	public var totalLoaded:Int;
-	
-	public var progress:Int;
 	
 	public var lastError:IError;
 	
@@ -50,10 +50,17 @@ class Loader implements ILoader {
 		signals = new Signals(this);
 		totalLoaded = 0;
 		totalFiles = 0;
+		#if js
+		_fileProgress = 0;
+		#end
 	}
 	
 	public function progress():Float {
+		#if js
+		return (totalLoaded + (_fileProgress < 1 ? _fileProgress : 0)) / totalFiles;
+		#else
 		return totalLoaded / totalFiles;
+		#end
 	}
 	
 	public function add(files:Array<String>):ILoader {
@@ -95,12 +102,23 @@ class Loader implements ILoader {
 				Sirius.resources.register(f, d);
 				_loadNext();
 			}
-			r.request(false);
+			#if js
+				r.request(false, _onLoadProgress);
+			#else
+				r.request(false);
+			#end
 		}else {
 			_isBusy = false;
 			_complete();
 		}
 	}
+	
+	#if js
+	private function _onLoadProgress(file:String, loaded:Int, total:Int):Void {
+		_fileProgress = loaded / total;
+		signals.call('progress', {file:file, loaded:loaded, total:total, progress:_fileProgress});
+	}
+	#end
 	
 	private function _error(e:Dynamic):Void {
 		lastError = Std.is(e, String) ? new Error( -1, e, this) : new Error( -1, "Unknow", { content:e, loader:this } );
@@ -121,7 +139,11 @@ class Loader implements ILoader {
 	
 	#end
 	
-	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void, #if js ?progress:IProgress->Void #end):Void {
+	#if js 
+	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void #if js, ?progress:IProgress->Void #end):Void {
+	#elseif php
+	public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+	#end
 		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
 		var r:HttpRequest = _getReq(h[0]);
 		#if js 
@@ -174,7 +196,12 @@ class Loader implements ILoader {
 		#end
 	}
 	
+	#if js 
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null #if js, ?progress:IProgress->Void #end):Void {
+	#elseif php
 	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {
+	#end
+	
 		var r:HttpRequest = _getReq(url);
 		_changed(url, 'started');
 		#if js

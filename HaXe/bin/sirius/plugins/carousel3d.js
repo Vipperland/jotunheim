@@ -206,7 +206,6 @@
 				o.carousel.height(h);
 			},
 			scrollEvent : function(e){
-				console.log(e);
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;
 				if(e.event.type == 'wheel')	{
 					var delta = 0;
@@ -233,7 +232,7 @@
 		}
 		
 		if(!Sirius.agent.mobile){
-			//body.style( { 'overflow-y':'hidden' } );
+			body.style( { 'overflow-y':'hidden' } );
 			Sirius.document.events.wheel(o.scrollEvent);
 			Sirius.document.events.keyDown(o.scrollEvent);
 		}

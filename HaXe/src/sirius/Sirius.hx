@@ -42,7 +42,7 @@ import sirius.utils.Filler;
 	import sirius.db.Gate;
 	import sirius.db.IGate;
 	import sirius.php.data.Cache;
-	import sirius.php.utils.Header;
+	import sirius.net.Header;
 #end
 
 
@@ -268,7 +268,7 @@ class Sirius {
 		 * @param	content
 		 * @param	handler
 		 */
-		static public function module(file:String, ?content:Dynamic, ?handler:String->String->Void):Void {
+		static public function module(file:String, ?content:Dynamic, ?handler:IRequest->Void):Void {
 			if (file.indexOf("http") == -1) {
 				resources.prepare(file);
 			}else {

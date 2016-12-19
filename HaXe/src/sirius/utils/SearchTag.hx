@@ -9,7 +9,7 @@ class SearchTag {
 	
 	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
 	
-	private static var _E:EReg = ~/^[a-zA-Z0-9- ]/g;
+	private static var _E:EReg = ~/^[a-z0-9]/g;
 	
 	public static function from(value:Dynamic):SearchTag {
 		if (!Std.is(value, SearchTag))
@@ -19,13 +19,13 @@ class SearchTag {
 	
 	public static function convert(data:Dynamic):String {
 		data = Std.string(data).toLowerCase().split(' ').join('');
-		data = _E.replace(data, '');
-		var i:Int = 0;
-		var l:Int = _M.length;
-		while (i < l) {
-			data = data.split(_M[i][0]).join(_M[i][1]);
-			++i;
-		}
+		data = data.substr(0,1) + _E.replace(data, '');
+		//var i:Int = 0;
+		//var l:Int = _M.length;
+		//while (i < l) {
+			//data = data.split(_M[i][0]).join(_M[i][1]);
+			//++i;
+		//}
 		return data;
 	}
 	

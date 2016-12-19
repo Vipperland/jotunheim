@@ -1,0 +1,7 @@
+body{background-color:black;height:100%;}
+div.blueprint{width:100%;height:100%;position:fixed;z-index:0;}
+div.blueprint .blueprint-radial{width:100%;height:100%;background-image:url(/assets/img/radial-background.png);background-size:cover;background-repeat:no-repeat;background-position:center center;}
+div.blueprint .blueprint-grain{width:100%;height:100%;background-image:url(/assets/img/grain-background.png);background-position:center center;position:absolute;top:0;left:0;}
+div.blueprint .blueprint-grid{width:100%;height:100%;background-image:url(/assets/img/grid-background.png);position:absolute;top:0;left:0;}
+div.blueprint .scanline-fx{color:white;position:fixed;border-left:1px solid white;opacity:.2;padding-left:16px;}
+div.main-content{position:absolute;color:white;}

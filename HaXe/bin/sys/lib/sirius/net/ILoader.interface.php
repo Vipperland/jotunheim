@@ -1,6 +1,6 @@
 <?php
 
-interface sirius_modules_ILoader {
+interface sirius_net_ILoader {
 	//;
 	//;
 	//;

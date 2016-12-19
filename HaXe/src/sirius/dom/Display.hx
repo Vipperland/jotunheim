@@ -190,12 +190,12 @@ class Display implements IDisplay {
 	public function getScroll(?o:Dynamic = null):Dynamic {
 		if (o == null)
 			o = { };
-		o.scrollX = element.scrollLeft;
-		o.scrollY = element.scrollTop;
-		o.x = element.offsetLeft;
-		o.y = element.offsetTop;
-		o.viewX = o.x - Browser.window.scrollX;
-		o.viewY = o.y - Browser.window.scrollY;
+		o.left = element.scrollLeft;
+		o.top = element.scrollTop;
+		o.offsetX = element.offsetLeft;
+		o.offsetY = element.offsetTop;
+		o.x = o.x - Browser.window.scrollX;
+		o.y = o.y - Browser.window.scrollY;
 		return o;
 	}
 	
@@ -263,8 +263,10 @@ class Display implements IDisplay {
 	}
 	
 	public function removeChild(q:IDisplay):IDisplay {
-		_children = null;
-		q.remove();
+		if(q.element.parentElement == element){
+			_children = null;
+			q.remove();
+		}
 		return q;
 	}
 	

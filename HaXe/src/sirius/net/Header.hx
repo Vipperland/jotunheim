@@ -1,4 +1,4 @@
-package sirius.php.utils;
+package sirius.net;
 import haxe.Json;
 import php.Lib;
 import php.Web;

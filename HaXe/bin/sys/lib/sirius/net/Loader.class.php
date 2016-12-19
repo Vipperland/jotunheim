@@ -1,6 +1,6 @@
 <?php
 
-class sirius_modules_Loader implements sirius_modules_ILoader{
+class sirius_net_Loader implements sirius_net_ILoader{
 	public function __construct($noCache = null) {
 		if(!php_Boot::$skip_constructor) {
 		if($noCache === null) {
@@ -26,7 +26,7 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 	public $lastError;
 	public $signals;
 	public function _getReq($u) {
-		return new sirius_net_HttpRequest(_hx_string_or_null($u) . _hx_string_or_null((sirius_modules_Loader_0($this, $u))));
+		return new sirius_net_HttpRequest(_hx_string_or_null($u) . _hx_string_or_null((sirius_net_Loader_0($this, $u))));
 	}
 	public function progress() {
 		return $this->totalLoaded / $this->totalFiles;
@@ -54,9 +54,9 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 			$f = $this->_toload->shift();
 			$r = $this->_getReq($f);
 			$this->_changed($f, "started", null);
-			$r->onError = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_modules_Loader_1"), 'execute');
-			$r->onData = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_modules_Loader_2"), 'execute');
-			$r->request(false, null);
+			$r->onError = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_net_Loader_1"), 'execute');
+			$r->onData = array(new _hx_lambda(array(&$_g, &$f, &$r), "sirius_net_Loader_2"), 'execute');
+			$r->request(false);
 		} else {
 			$this->_isBusy = false;
 			$this->_complete();
@@ -85,9 +85,9 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 		}
 		$r = $this->_getReq($h[0]);
 		$this->_changed($file, "started", null);
-		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_modules_Loader_3"), 'execute');
-		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_modules_Loader_4"), 'execute');
-		$r->request(false, null);
+		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_net_Loader_3"), 'execute');
+		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$file, &$h, &$handler, &$r), "sirius_net_Loader_4"), 'execute');
+		$r->request(false);
 	}
 	public function request($url, $data = null, $handler = null, $method = null, $headers = null) {
 		if($method === null) {
@@ -100,11 +100,11 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 			sirius_utils_Dice::All($data, (isset($r->setParameter) ? $r->setParameter: array($r, "setParameter")), null);
 		}
 		if($headers !== null) {
-			sirius_utils_Dice::All($headers, array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_modules_Loader_5"), 'execute'), null);
+			sirius_utils_Dice::All($headers, array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_net_Loader_5"), 'execute'), null);
 		}
-		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_modules_Loader_6"), 'execute');
-		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_modules_Loader_7"), 'execute');
-		$r->request($method === null || strtolower($method) === "post", null);
+		$r->onData = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_net_Loader_6"), 'execute');
+		$r->onError = array(new _hx_lambda(array(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url), "sirius_net_Loader_7"), 'execute');
+		$r->request($method === null || strtolower($method) === "post");
 	}
 	public function get($module, $data = null) {
 		return sirius_Sirius::$resources->get($module, $data);
@@ -121,24 +121,24 @@ class sirius_modules_Loader implements sirius_modules_ILoader{
 	}
 	static function FILES() { $args = func_get_args(); return call_user_func_array(self::$FILES, $args); }
 	static $FILES;
-	function __toString() { return 'sirius.modules.Loader'; }
+	function __toString() { return 'sirius.net.Loader'; }
 }
-sirius_modules_Loader::$FILES = _hx_anonymous(array());
-function sirius_modules_Loader_0(&$__hx__this, &$u) {
+sirius_net_Loader::$FILES = _hx_anonymous(array());
+function sirius_net_Loader_0(&$__hx__this, &$u) {
 	if($__hx__this->_noCache) {
 		return "";
 	} else {
 		return "?t=" . _hx_string_rec(Date::now()->getTime(), "");
 	}
 }
-function sirius_modules_Loader_1(&$_g, &$f, &$r, $e) {
+function sirius_net_Loader_1(&$_g, &$f, &$r, $e) {
 	{
 		$_g->_changed($f, "error", $e);
 		++$_g->totalLoaded;
 		$_g->_loadNext();
 	}
 }
-function sirius_modules_Loader_2(&$_g, &$f, &$r, $d) {
+function sirius_net_Loader_2(&$_g, &$f, &$r, $d) {
 	{
 		$_g->_changed($f, "loaded", $d);
 		++$_g->totalLoaded;
@@ -146,41 +146,41 @@ function sirius_modules_Loader_2(&$_g, &$f, &$r, $d) {
 		$_g->_loadNext();
 	}
 }
-function sirius_modules_Loader_3(&$_g, &$data, &$file, &$h, &$handler, &$r, $d) {
+function sirius_net_Loader_3(&$_g, &$data, &$file, &$h, &$handler, &$r, $d) {
 	{
 		$_g->_changed($file, "loaded", $d);
 		sirius_Sirius::$resources->register($file, $d);
 		if($handler !== null) {
-			call_user_func_array($handler, array($file, $d));
+			call_user_func_array($handler, array(new sirius_net_Request(true, $d, null, $file)));
 		}
 	}
 }
-function sirius_modules_Loader_4(&$_g, &$data, &$file, &$h, &$handler, &$r, $d1) {
+function sirius_net_Loader_4(&$_g, &$data, &$file, &$h, &$handler, &$r, $d1) {
 	{
 		$_g->_changed($file, "error", $d1);
 		if($handler !== null) {
-			call_user_func_array($handler, array(null, $d1));
+			call_user_func_array($handler, array(new sirius_net_Request(false, null, new sirius_errors_Error(-1, $d1, null), $file)));
 		}
 	}
 }
-function sirius_modules_Loader_5(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $p, $v) {
+function sirius_net_Loader_5(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $p, $v) {
 	{
 		$r->setHeader($p, $v);
 	}
 }
-function sirius_modules_Loader_6(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $d) {
+function sirius_net_Loader_6(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $d) {
 	{
 		$_g->_changed($url, "loaded", $d);
 		if($handler !== null) {
-			call_user_func_array($handler, array(new sirius_modules_Request(true, $d, null)));
+			call_user_func_array($handler, array(new sirius_net_Request(true, $d, null, null)));
 		}
 	}
 }
-function sirius_modules_Loader_7(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $d1) {
+function sirius_net_Loader_7(&$_g, &$data, &$handler, &$headers, &$method, &$r, &$url, $d1) {
 	{
 		$_g->_changed($url, "error", $d1);
 		if($handler !== null) {
-			call_user_func_array($handler, array(new sirius_modules_Request(false, null, new sirius_errors_Error(-1, $d1, null))));
+			call_user_func_array($handler, array(new sirius_net_Request(false, null, new sirius_errors_Error(-1, $d1, null), null)));
 		}
 	}
 }

@@ -69,8 +69,12 @@ class sirius_tools_Utils {
 		}
 		return null;
 	}
-	static function boolean($value) {
-		return _hx_equal($value, true) || _hx_equal($value, 1) || _hx_equal($value, "1") || _hx_equal($value, "true") || _hx_equal($value, "yes");
+	static function boolean($q) {
+		return _hx_equal($q, true) || _hx_equal($q, 1) || _hx_equal($q, "1") || _hx_equal($q, "true") || _hx_equal($q, "yes") || _hx_equal($q, "accept");
+	}
+	static function stdClone($q) {
+		$text = haxe_Json::phpJsonEncode($q, null, null);
+		return haxe_Json::phpJsonDecode($text);
 	}
 	function __toString() { return 'sirius.tools.Utils'; }
 }

@@ -42,18 +42,20 @@ class Input extends Display {
 				readFile(0, _onFileSelected);
 			}else{
 				var bg:String = Reflect.hasField(icons, ftype) ? Reflect.field(icons, ftype) : icons.common;
-				if(bg != null){
+				if(bg != null && fileIO != null){
 					fileIO.style({backgroundImage : 'url(' + bg + ')'});
 				}
 				if(_ioHandler != null)
 					_ioHandler(this);
 			}
 		}else {
-			if (fileIO.typeOf() == 'IMG'){
-				var img:Img = cast fileIO;
-				img.src(e);
-			}else{
-				fileIO.style({backgroundImage : 'url(' + e + ')'});
+			if(fileIO != null){
+				if (fileIO.typeOf() == 'IMG'){
+					var img:Img = cast fileIO;
+					img.src(e);
+				}else{
+					fileIO.style({backgroundImage : 'url(' + e + ')'});
+				}
 			}
 			if(_ioHandler != null)
 				_ioHandler(this);
@@ -199,15 +201,17 @@ class Input extends Display {
 	public function fileController(target:IDisplay, ?handler:Input->Void):Void {
 		_ioHandler = handler;
 		fileIO = target;
-		fileIO.style(fixer);
+		if (fileIO != null)
+			fileIO.style(fixer);
 		type('file');
 		this.events.change(_onFileSelected);
 	}
 	
-	public function clearBackground(?bg:String=''):Void {
-		fileIO.style( {
-			backgroundImage : bg,
-		});
+	public function clearBackground(?bg:String = ''):Void {
+		if(fileIO != null)
+			fileIO.style( {
+				backgroundImage : bg,
+			});
 	}
 	
 	public function check(?toggle:Dynamic = true):Void {

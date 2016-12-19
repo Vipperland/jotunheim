@@ -57,17 +57,22 @@ interface ILoader {
 		
 	#end
 	
-	/**
-	 * Load a module not in queue
-	 * @param	file
-	 * @param	target *js only
-	 * @param	data
-	 * @param	handler
-	 * @param	progress
-	 */
 	#if js 
+		/**
+		 * Load a module not in queue
+		 * @param	file
+		 * @param	data
+		 * @param	handler
+		 * @param	progress
+		 */
 		public function async(file:String, ?target:Dynamic, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void ):Void;
 	#elseif php
+		/**
+		 * Load a module not in queue
+		 * @param	file
+		 * @param	data
+		 * @param	handler
+		 */
 		public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
 	#end
 	
@@ -86,14 +91,27 @@ interface ILoader {
 	 */
 	public function start () : ILoader;
 	
-	/**
-	 * Call a url
-	 * @param	url
-	 * @param	data
-	 * @param	handler
-	 * @param	method
-	 */
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void;
-
+	#if js 
+		/**
+		 * Call a url
+		 * @param	url
+		 * @param	data
+		 * @param	handler
+		 * @param	method
+		 * @param	progress
+		 */
+		public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null, ?progress:IProgress->Void):Void;
+	#elseif php
+		/**
+		 * Call a url
+		 * @param	url
+		 * @param	data
+		 * @param	handler
+		 * @param	method
+		 */
+		public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void;
+	#end
+	
+	
 
 }

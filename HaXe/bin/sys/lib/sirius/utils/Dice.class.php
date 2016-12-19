@@ -94,22 +94,30 @@ class sirius_utils_Dice {
 		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_8"), 'execute'), null);
 		return $r;
 	}
-	static function Table($data, $key = null, $numeric = null) {
+	static function Table($data, $key = null, $numeric = null, $copy = null) {
+		if($copy === null) {
+			$copy = false;
+		}
 		if($numeric === null) {
 			$numeric = false;
 		}
 		$r = null;
+		if($copy === true) {
+			$r = _hx_deref((new _hx_array(array())))->concat($data);
+		} else {
+			$r = $data;
+		}
 		if($numeric) {
 			if($key !== null) {
-				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_9"), 'execute'));
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_9"), 'execute'));
 			} else {
-				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_10"), 'execute'));
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_10"), 'execute'));
 			}
 		} else {
 			if($key !== null) {
-				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_11"), 'execute'));
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_11"), 'execute'));
 			} else {
-				$r = $data->sort(array(new _hx_lambda(array(&$data, &$key, &$numeric, &$r), "sirius_utils_Dice_12"), 'execute'));
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_12"), 'execute'));
 			}
 		}
 		return $r;
@@ -188,7 +196,7 @@ function sirius_utils_Dice_8(&$data, &$r, $v) {
 		$r = $r->concat($v);
 	}
 }
-function sirius_utils_Dice_9(&$data, &$key, &$numeric, &$r, $a, $b) {
+function sirius_utils_Dice_9(&$copy, &$data, &$key, &$numeric, &$r, $a, $b) {
 	{
 		if(Reflect::field($a, $key) < Reflect::field($b, $key)) {
 			return -1;
@@ -197,7 +205,7 @@ function sirius_utils_Dice_9(&$data, &$key, &$numeric, &$r, $a, $b) {
 		}
 	}
 }
-function sirius_utils_Dice_10(&$data, &$key, &$numeric, &$r, $a1, $b1) {
+function sirius_utils_Dice_10(&$copy, &$data, &$key, &$numeric, &$r, $a1, $b1) {
 	{
 		if($a1 < $b1) {
 			return -1;
@@ -206,12 +214,12 @@ function sirius_utils_Dice_10(&$data, &$key, &$numeric, &$r, $a1, $b1) {
 		}
 	}
 }
-function sirius_utils_Dice_11(&$data, &$key, &$numeric, &$r, $a2, $b2) {
+function sirius_utils_Dice_11(&$copy, &$data, &$key, &$numeric, &$r, $a2, $b2) {
 	{
 		return Reflect::compare(sirius_utils_SearchTag::convert(Reflect::field($a2, $key)), sirius_utils_SearchTag::convert(Reflect::field($b2, $key)));
 	}
 }
-function sirius_utils_Dice_12(&$data, &$key, &$numeric, &$r, $a3, $b3) {
+function sirius_utils_Dice_12(&$copy, &$data, &$key, &$numeric, &$r, $a3, $b3) {
 	{
 		return Reflect::compare(sirius_utils_SearchTag::convert($a3), sirius_utils_SearchTag::convert($b3));
 	}
