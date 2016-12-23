@@ -11,6 +11,7 @@ import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
+import sirius.net.IProgress;
 import sirius.net.IRequest;
 import sirius.utils.ITable;
 
@@ -79,6 +80,13 @@ interface IDisplay {
 	 * @return
 	 */
 	public function css(?styles:String):String;
+	
+	/**
+	 * 
+	 * @param	name
+	 * @return
+	 */
+	public function hasCss(name:String):Bool;
 	
 	/**
 	 * Mirror element view
@@ -374,7 +382,7 @@ interface IDisplay {
 	 * Check if element is partially visible into viewport
 	 * @return
 	 */
-	public function checkVisibility(?view:Bool, ?offsetY:Int = 0, ?offsetX:Int = 0):UInt;
+	public function getVisibility(?offsetY:Int = 0, ?offsetX:Int = 0):UInt;
 	
 	/**
 	 * Type of element
@@ -437,8 +445,22 @@ interface IDisplay {
 	 * @param	data
 	 * @param	handler
 	 */
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void;
 	
+	/**
+	 * Scroll document for display visibility
+	 * @param	time
+	 * @param	ease
+	 * @param	x
+	 * @param	y
+	 * @return
+	 */
+	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay;
+	
+	/**
+	 * Display info in Sirius style
+	 * @return
+	 */
 	public function toString():String;
 	
 }

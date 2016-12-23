@@ -323,7 +323,7 @@ class AutomatorRules {
 				if (n.measure != null)
 					return 'font-size:';
 				//if (n.color != null)
-				else
+				else if(n.key != 'j')
 					return 'color:';
 			}
 			if (n.key != 'dec')
@@ -379,7 +379,7 @@ class AutomatorRules {
 		bold:{value:'font-weight:bold',verifier:commonKey},
 		regular:{value:'font-weight:regular',verifier:commonKey},
 		underline:{value:'font-weight:underline',verifier:commonKey},
-		ita:{value:'font-weight:italic',verifier:commonKey},
+		italic:{value:'font-weight:italic',verifier:commonKey},
 		thin:{value:'font-weight:100',verifier:commonKey},
 		upcase:{value:'font-transform:uppercase',verifier:commonKey},
 		locase:{value:'font-transform:lowercase',verifier:commonKey},

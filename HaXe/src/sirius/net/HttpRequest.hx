@@ -254,7 +254,7 @@ class HttpRequest {
 					if (e.lengthComputable)
 						progress(url, e.loaded, e.total);
 					else
-						progress(url, 0, 0);
+						progress(url, e.loaded, 0);
 				}
 				r.onloadend = r.onloadstart = function(e:ProgressEvent){
 					progress(url, 0, 0);

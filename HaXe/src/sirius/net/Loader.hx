@@ -229,7 +229,19 @@ class Loader implements ILoader {
 			if (handler != null) 
 				handler(new Request(false, null, new Error(-1, d))); 
 		}
-		r.request(method == null || method.toLowerCase() == 'post');
+		var setpost:Bool = method == null || method.toLowerCase() == 'post';
+		#if js
+			var pro:IProgress = cast {loaded:0,total:0,file:url};
+			r.request(setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
+				pro.loaded = a;
+				pro.total = b;
+				pro.file = u;
+				progress(pro);
+			} : null);
+		#elseif php
+			r.request(setpost);
+		#end
+		
 	}
 	
 	public function get(module:String, ?data:Dynamic):String {

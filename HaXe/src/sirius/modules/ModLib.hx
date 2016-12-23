@@ -219,13 +219,10 @@ class ModLib {
 		
 		public function buildIn(module:String, target:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
 			var display:IDisplay = Sirius.one(target);
-			if (display != null) {
+			if (display != null)
 				display.addChild(build(module, data, each));
-			}
 			return display;
 		}
-		
-		// ***
 		
 	#end;
 	

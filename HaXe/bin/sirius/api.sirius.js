@@ -1522,7 +1522,14 @@ sirius_net_Loader.prototype = {
 			_g._changed(url,"error",d1);
 			if(handler != null) handler(new sirius_net_Request(false,null,new sirius_errors_Error(-1,d1)));
 		};
-		r.request(method == null || method.toLowerCase() == "post");
+		var setpost = method == null || method.toLowerCase() == "post";
+		var pro = { loaded : 0, total : 0, file : url};
+		r.request(setpost,progress != null?function(u,a,b) {
+			pro.loaded = a;
+			pro.total = b;
+			pro.file = u;
+			progress(pro);
+		}:null);
 	}
 	,get: function(module,data) {
 		return sirius_Sirius.resources.get(module,data);
@@ -1840,10 +1847,10 @@ sirius_Sirius.module = function(file,target,content,handler,progress) {
 		sirius_Sirius.loader.async(file,target,content,handler,progress);
 	});
 };
-sirius_Sirius.request = function(url,data,handler,method,headers) {
+sirius_Sirius.request = function(url,data,handler,method,headers,progress) {
 	if(method == null) method = "post";
 	sirius_Sirius.run(function() {
-		sirius_Sirius.loader.request(url,data,handler,method,headers);
+		sirius_Sirius.loader.request(url,data,handler,method,headers,progress);
 	});
 };
 sirius_Sirius.log = function(q,type) {
@@ -2035,8 +2042,8 @@ sirius_dom_Display.prototype = {
 		o.top = this.element.scrollTop;
 		o.offsetX = this.element.offsetLeft;
 		o.offsetY = this.element.offsetTop;
-		o.x = o.x - window.scrollX;
-		o.y = o.y - window.scrollY;
+		o.x = o.offsetX - window.scrollX;
+		o.y = o.offsetY - window.scrollY;
 		return o;
 	}
 	,getChild: function(i,update) {
@@ -2125,6 +2132,9 @@ sirius_dom_Display.prototype = {
 			});
 		}
 		return this.element.className;
+	}
+	,hasCss: function(name) {
+		return (" " + this.css() + " ").indexOf(" " + name + " ") != -1;
 	}
 	,cursor: function(value) {
 		if(value != null) this.element.style.cursor = value;
@@ -2290,7 +2300,7 @@ sirius_dom_Display.prototype = {
 	,isVisible: function() {
 		return this._visibility > 0;
 	}
-	,checkVisibility: function(view,offsetY,offsetX) {
+	,getVisibility: function(offsetY,offsetX) {
 		if(offsetX == null) offsetX = 0;
 		if(offsetY == null) offsetY = 0;
 		var rect = this.element.getBoundingClientRect();
@@ -2343,15 +2353,25 @@ sirius_dom_Display.prototype = {
 			return value;
 		} else return this.style().pointerEvents;
 	}
-	,load: function(url,module,data,handler) {
+	,load: function(url,module,data,handler,headers,progress) {
 		var _g = this;
 		sirius_Sirius.request(url,data,function(r) {
 			if(r.success) _g.mount(module);
 			if(handler != null) handler(r);
-		});
+		},headers,progress);
+	}
+	,lookFor: function(time,ease,x,y) {
+		sirius_Sirius.document.scrollTo(this,time,ease,x,y);
+		return this;
 	}
 	,toString: function() {
+		var v = this.element != null && ($_=this.element,$bind($_,$_.getBoundingClientRect)) != null;
 		var data = { id : this.element.id, 'sru-id' : $bind(this,this.id), 'class' : this.element.className, index : this.index(), length : this.length(), attributes : sirius_tools_Utils.getAttributes(this), data : this.data};
+		if(v) {
+			var r = this.element.getBoundingClientRect();
+			data.visibility = this.getVisibility();
+			data.rect = { width : r.width, height : r.height, x1 : r.left, y1 : r.top, x2 : r.right, y2 : r.bottom};
+		}
 		return JSON.stringify(data);
 	}
 	,__class__: sirius_dom_Display
@@ -5006,7 +5026,7 @@ sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
 sirius_css_AutomatorRules.textKey = function(d,k,n) {
 	if(k.index == 0) {
 		if(n != null && !n.position) {
-			if(n.measure != null) return "font-size:"; else return "color:";
+			if(n.measure != null) return "font-size:"; else if(n.key != "j") return "color:";
 		}
 		if(n.key != "dec") return "text-align:";
 	}
@@ -5140,12 +5160,11 @@ sirius_data_DataCache.prototype = {
 	}
 	,load: function() {
 		this._DB = null;
-		haxe_Log.trace(this._name,{ fileName : "DataCache.hx", lineNumber : 180, className : "sirius.data.DataCache", methodName : "load", customParams : [js_Cookie.exists(this._name)]});
 		if(js_Cookie.exists(this._name)) {
 			var a = haxe_crypto_Base64.decode(js_Cookie.get(this._name));
-			haxe_Log.trace(a,{ fileName : "DataCache.hx", lineNumber : 183, className : "sirius.data.DataCache", methodName : "load"});
+			haxe_Log.trace(a,{ fileName : "DataCache.hx", lineNumber : 182, className : "sirius.data.DataCache", methodName : "load"});
 			this._DB = sirius_serial_IOTools.decodeBase64(js_Cookie.get(this._name),true);
-			haxe_Log.trace(this._DB,{ fileName : "DataCache.hx", lineNumber : 185, className : "sirius.data.DataCache", methodName : "load"});
+			haxe_Log.trace(this._DB,{ fileName : "DataCache.hx", lineNumber : 184, className : "sirius.data.DataCache", methodName : "load"});
 		}
 		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
 			this._DB = { };
@@ -5163,14 +5182,14 @@ sirius_data_DataCache.prototype = {
 	,json: function(print) {
 		var result = sirius_serial_JsonTool.stringfy(this._DB,null," ");
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 211, className : "sirius.data.DataCache", methodName : "json"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 210, className : "sirius.data.DataCache", methodName : "json"});
 		}
 		return result;
 	}
 	,base64: function(print) {
 		var result = sirius_serial_IOTools.encodeBase64(this._DB);
 		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 217, className : "sirius.data.DataCache", methodName : "base64"});
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 216, className : "sirius.data.DataCache", methodName : "base64"});
 		}
 		return result;
 	}
@@ -5781,7 +5800,7 @@ sirius_net_HttpRequest.prototype = {
 		try {
 			if(progress != null) {
 				r.onprogress = function(e1) {
-					if(e1.lengthComputable) progress(_g.url,e1.loaded,e1.total); else progress(_g.url,0,0);
+					if(e1.lengthComputable) progress(_g.url,e1.loaded,e1.total); else progress(_g.url,e1.loaded,0);
 				};
 				r.onloadend = r.onloadstart = function(e2) {
 					progress(_g.url,0,0);
@@ -7244,7 +7263,7 @@ sirius_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "cente
 sirius_dom_Input.icons = { };
 sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO : sirius_dom_Audio, B : sirius_dom_B, BASE : sirius_dom_Base, BODY : sirius_dom_Body, BR : sirius_dom_BR, BUTTON : sirius_dom_Button, CANVAS : sirius_dom_Canvas, CAPTION : sirius_dom_Caption, COL : sirius_dom_Col, CONTENT : sirius_dom_Content, DATALIST : sirius_dom_DataList, DIV : sirius_dom_Div, DISPLAY : sirius_dom_Display, DISPLAY3D : sirius_dom_Display3D, DL : sirius_dom_DL, DOCUMENT : sirius_dom_Document, EMBED : sirius_dom_Embed, FIELDSET : sirius_dom_FieldSet, FORM : sirius_dom_Form, H1 : sirius_dom_H1, H2 : sirius_dom_H2, H3 : sirius_dom_H3, H4 : sirius_dom_H4, H5 : sirius_dom_H5, H6 : sirius_dom_H6, HEAD : sirius_dom_Head, HR : sirius_dom_HR, HTML : sirius_dom_Html, I : sirius_dom_I, IFRAME : sirius_dom_IFrame, IMG : sirius_dom_Img, INPUT : sirius_dom_Input, LABEL : sirius_dom_Label, LEGEND : sirius_dom_Legend, LI : sirius_dom_LI, LINK : sirius_dom_Link, MAP : sirius_dom_Map, MEDIA : sirius_dom_Media, META : sirius_dom_Meta, METER : sirius_dom_Meter, MOD : sirius_dom_Mod, OBJECT : sirius_dom_Object, OL : sirius_dom_OL, OPTGROUP : sirius_dom_OptGroup, OPTION : sirius_dom_Option, OUTPUT : sirius_dom_Output, P : sirius_dom_P, PARAM : sirius_dom_Param, PICTURE : sirius_dom_Picture, PRE : sirius_dom_Pre, PROGRESS : sirius_dom_Progress, QUOTE : sirius_dom_Quote, SCRIPT : sirius_dom_Script, SELECT : sirius_dom_Select, SHADOW : sirius_dom_Shadow, SOURCE : sirius_dom_Source, SPAN : sirius_dom_Span, SPRITE : sirius_dom_Sprite, SPRITE3D : sirius_dom_Sprite3D, STYLE : sirius_dom_Style, TEXT : sirius_dom_Text, TEXTAREA : sirius_dom_TextArea, THEAD : sirius_dom_Thead, TITLE : sirius_dom_Title, TRACK : sirius_dom_Track, UL : sirius_dom_UL, VIDEO : sirius_dom_Video};
 sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, ita : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
 sirius_css_XCSS.enabled = false;
 sirius_dom_Overlay._queue = [];
 sirius_tools_BitIO.P01 = 1;

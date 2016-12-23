@@ -101,6 +101,7 @@ interface ILoader {
 		 * @param	progress
 		 */
 		public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null, ?progress:IProgress->Void):Void;
+		
 	#elseif php
 		/**
 		 * Call a url
@@ -110,6 +111,7 @@ interface ILoader {
 		 * @param	method
 		 */
 		public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void;
+		
 	#end
 	
 	

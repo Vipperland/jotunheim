@@ -18,6 +18,7 @@ import sirius.math.ARGB;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.math.Point;
+import sirius.net.IProgress;
 import sirius.net.IRequest;
 import sirius.tools.Ticker;
 import sirius.tools.Utils;
@@ -190,12 +191,13 @@ class Display implements IDisplay {
 	public function getScroll(?o:Dynamic = null):Dynamic {
 		if (o == null)
 			o = { };
+		
 		o.left = element.scrollLeft;
 		o.top = element.scrollTop;
 		o.offsetX = element.offsetLeft;
 		o.offsetY = element.offsetTop;
-		o.x = o.x - Browser.window.scrollX;
-		o.y = o.y - Browser.window.scrollY;
+		o.x = o.offsetX - Browser.window.scrollX;
+		o.y = o.offsetY - Browser.window.scrollY;
 		return o;
 	}
 	
@@ -306,6 +308,10 @@ class Display implements IDisplay {
 			});
 		}
 		return element.className;
+	}
+	
+	public function hasCss(name:String):Bool {
+		return (' ' + css() + ' ').indexOf(' ' + name + ' ') != -1;
 	}
 	
 	public function cursor(?value:String):String {
@@ -531,7 +537,7 @@ class Display implements IDisplay {
 		return _visibility > 0;
 	}
 	
-	public function checkVisibility(?view:Bool, ?offsetY:Int = 0, ?offsetX:Int = 0):UInt {
+	public function getVisibility(?offsetY:Int = 0, ?offsetX:Int = 0):UInt {
 		
 		var rect:DOMRect = this.element.getBoundingClientRect();
 		var current:Int = 0;
@@ -613,16 +619,22 @@ class Display implements IDisplay {
 		}
 	}
 	
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void {
 		Sirius.request(url, data, function(r:IRequest) {
 			if (r.success)
 				mount(module);
 			if (handler != null)
 				handler(r);
-		});
+		}, headers, progress);
+	}
+	
+	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay {
+		Sirius.document.scrollTo(this, time, ease, x, y);
+		return this;
 	}
 	
 	public function toString():String {
+		var v:Bool = element != null && element.getBoundingClientRect != null;
 		var data:Dynamic = {
 			id:element.id, 
 			'sru-id': id,
@@ -632,6 +644,18 @@ class Display implements IDisplay {
 			attributes:Utils.getAttributes(this),
 			data:this.data,
 		};
+		if (v){
+			var r:DOMRect = element.getBoundingClientRect();
+			data.visibility = getVisibility();
+			data.rect = {
+				width:r.width,
+				height:r.height,
+				x1:r.left,
+				y1:r.top,
+				x2:r.right,
+				y2:r.bottom,
+			};
+		}
 		return Json.stringify(data);
 	}
 	

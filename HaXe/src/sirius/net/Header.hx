@@ -6,6 +6,7 @@ import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
 import sirius.serial.IOTools;
 
+
 /**
  * ...
  * @author Rafael Moreira
@@ -40,8 +41,12 @@ class Header {
 		}
 	}
 	
-	public function setHTML():Void {
+	public function setHTML(?data:Dynamic):Void {
 		content(HTML);
+		if (data != null) {
+			Web.setHeader('Content-Length', Std.string(data.length));
+			Lib.print(data);
+		}
 	}
 	
 	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
@@ -49,6 +54,7 @@ class Header {
 		if (data != null) {
 			var data:String = JsonTool.stringfy(data, null, " ");
 			if (encode == true) data = IOTools.encodeBase64(data);
+			Web.setHeader('Content-Length', Std.string(data.length));
 			Lib.print(data);
 		}
 	}

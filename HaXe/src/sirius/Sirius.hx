@@ -236,7 +236,7 @@ class Sirius {
 		}
 		
 		/**
-		 * Load and fill a external content
+		 * Load and prepare modules for post usage
 		 * @param	file
 		 * @param	target
 		 * @param	content
@@ -244,6 +244,19 @@ class Sirius {
 		 */
 		static public function module(file:String, ?target:Dynamic, ?content:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
 			run(function() { loader.async(file, target, content, handler, progress); } );
+		}
+		
+		
+		
+		/**
+		 * Call a URL with POST/GET/BINARY capabilities
+		 * @param	url
+		 * @param	data
+		 * @param	handler
+		 * @param	method
+		 */
+		static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null, ?progress:IProgress->Void = null):Void {
+			run(function() { loader.request(url, data, handler, method, headers, progress); } );
 		}
 		
 	#elseif php
@@ -263,7 +276,7 @@ class Sirius {
 		}
 		
 		/**
-		 * Load and fill a external content
+		 * Load an external or internal module content
 		 * @param	file
 		 * @param	content
 		 * @param	handler
@@ -276,23 +289,21 @@ class Sirius {
 			}
 		}
 		
+		
+		/**
+		 * Call a URL with POST/GET/BINARY capabilities
+		 * @param	url
+		 * @param	data
+		 * @param	handler
+		 * @param	method
+		 */
+		static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null):Void {
+			loader.request(url, data, handler, method, headers);
+		}
+		
+		
 	#end
 	
-	
-	/**
-	 * Call a URL with POST/GET/BINARY capabilities
-	 * @param	url
-	 * @param	data
-	 * @param	handler
-	 * @param	method
-	 */
-	static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null):Void {
-		#if js
-			run(function() { loader.request(url, data, handler, method, headers); } );
-		#elseif php
-			loader.request(url, data, handler, method, headers);
-		#end
-	}
 	
 	/**
 	 * Level controlled log

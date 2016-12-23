@@ -9,13 +9,13 @@
 		Sirius.all('a[focus]').onClick(function(e){
 			var target = e.target.attribute('focus');
 			if(target != null){
-				var find = Sirius.one(target);
-				var p = sru.dom.Display.getPosition(find.element);
+				var r = Sirius.one(target);
+				var p = sru.dom.Display.getPosition(r.element);
 				var ease = e.target.attribute('a-ease');
 				var time = e.target.attribute('a-time');
 				var offX = e.target.attribute('a-x');
 				var offY = e.target.attribute('a-y');
-				Sirius.document.scrollTo(find, time || 1, Ease.fromString(ease || 'CIRC.IO'), offX || 0, offY || 100);
+				Sirius.document.scrollTo(r, time || 1, Ease.fromString(ease || 'CIRC.IO'), offX || 0, offY || 100);
 			}else{
 				Sirius.log('[PLUGIN] Anchor.js can´t find {' + target + '}', 10, 2);
 			}

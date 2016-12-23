@@ -177,7 +177,6 @@ class DataCache implements IDataCache {
 	public function load():Bool {
 		_DB = null;
 		#if js
-			trace(_name, Cookie.exists(_name));
 			if (Cookie.exists(_name)) {
 				var a:Dynamic = Base64.decode(Cookie.get(_name));
 				trace(a);
