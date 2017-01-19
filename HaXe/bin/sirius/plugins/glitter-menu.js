@@ -18,6 +18,7 @@
 			transition:'all .3s ease-in-out',
 			radius: 150,
 			transform:true,
+			square:false,
 		};
 		this.onload = function(){
 			var origin = null;
@@ -134,8 +135,17 @@
 					setTimeout(function(j){
 						if(!o.data.exists('info').to){
 							var rd = Math.PI/180*(radius*-j-180);
-							var tx = (Math.cos(rd) * GlitterMenu.options.radius) >> 0;
-							var ty = (Math.sin(rd) * GlitterMenu.options.radius) >> 0;
+							var tx = Math.cos(rd);
+							var ty = Math.sin(rd);
+							if(GlitterMenu.options.square){
+								var ttx = (1/ty * GlitterMenu.options.radius) >> 0;
+								var tty = (1/ty * GlitterMenu.options.radius) >> 0;
+								tx = ttx;
+								ty = tty;
+							}else{
+								tx = (tx * GlitterMenu.options.radius) >> 0;
+								ty = (ty * GlitterMenu.options.radius) >> 0;
+							}
 							var offset = o.data.get('info').offset;
 							o.data.get('info').to = {
 								top:'calc(50% + ' + tx + 'px - ' + offset.y + 'px)',

@@ -1091,7 +1091,6 @@ js_Cookie.set = function(name,value,expireDelay,path,domain) {
 	}
 	if(path != null) s += ";path=" + path;
 	if(domain != null) s += ";domain=" + domain;
-	haxe_Log.trace(s,{ fileName : "Cookie.hx", lineNumber : 41, className : "js.Cookie", methodName : "set"});
 	window.document.cookie = s;
 };
 js_Cookie.all = function() {
@@ -2143,10 +2142,12 @@ sirius_dom_Display.prototype = {
 	,show: function() {
 		this.element.hidden = false;
 		this.element.style.display = null;
+		this.css("/hidden");
 	}
 	,hide: function() {
 		this.element.hidden = true;
 		this.element.style.display = "none";
+		this.css("hidden");
 	}
 	,hasAttribute: function(name) {
 		return this._getattr && this.element.hasAttribute(name) || Object.prototype.hasOwnProperty.call(this.element,name);

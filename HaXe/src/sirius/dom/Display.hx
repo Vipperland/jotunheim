@@ -323,11 +323,13 @@ class Display implements IDisplay {
 	public function show():Void {
 		element.hidden = false;
 		element.style.display = null;
+		css('/hidden');
 	}
 	
 	public function hide():Void {
 		element.hidden = true;
 		element.style.display = 'none';
+		css('hidden');
 	}
 	
 	public function hasAttribute(name:String):Bool {

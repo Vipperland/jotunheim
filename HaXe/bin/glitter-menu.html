@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script type="text/javascript" src="sirius/api.sirius.min.js"></script>
+		<script type="text/javascript" src="sirius/plugins/glitter-menu.js"></script>
+		<script>
+			Automator.reset();
+		</script>
+		<style>
+			.glittermenu {
+				background-color: rgba(0,0,0,.8);
+				transition: all .3s ease-out;
+			}
+			.item {
+				padding:10px;
+				color: #000000;
+				border-radius: 50%;
+				width:30px;
+				height:30px;
+				background-color: #FFFFFF;
+				cursor: pointer;
+			}
+			.quote:before {
+				content:'"';
+			}
+			.quote:after {
+				content:'"';
+			}
+			.hint {
+				font-width: bold;
+				font-size: 24px;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<div class="main glittermenu" hidden>
+				<div target=".sub-a" class="item">A</div>
+				<div target=".sub-b" class="item">B</div>
+				<div target=".sub-c" class="item">C</div>
+				<div target=".sub-d" class="item">D</div>
+				<div target=".sub-e" class="item">E</div>
+				<div target=".sub-f" class="item">F</div>
+				<div target=".sub-a" class="item">A</div>
+				<div target=".sub-b" class="item">B</div>
+				<div target=".sub-c" class="item">C</div>
+				<div target=".sub-d" class="item">D</div>
+				<div target=".sub-e" class="item">E</div>
+				<div target=".sub-f" class="item">F</div>
+				<div target=".sub-a" class="item">A</div>
+				<div target=".sub-b" class="item">B</div>
+				<div target=".sub-c" class="item">C</div>
+				<div target=".sub-d" class="item">D</div>
+				<div target=".sub-e" class="item">E</div>
+				<div target=".sub-f" class="item">F</div>
+				<div target=".sub-a" class="item">A</div>
+				<div target=".sub-b" class="item">B</div>
+				<div target=".sub-c" class="item">C</div>
+				<div target=".sub-d" class="item">D</div>
+				<div target=".sub-e" class="item">E</div>
+				<div target=".sub-f" class="item">F</div>
+			</div>
+			<div class="sub-a" hidden>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div value="A1" class="item">A1</div>
+				<div value="A2" class="item">A2</div>
+				<div target=".main" class="item">X</div>
+			</div>
+			<div class="sub-b" hidden>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div value="B1" class="item">B1</div>
+				<div value="B2" class="item">B2</div>
+				<div value="B3" class="item">B3</div>
+				<div target=".main" class="item">X</div>
+			</div>
+			<div class="sub-c" hidden>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div value="C1" class="item">C1</div>
+				<div value="C2" class="item">C2</div>
+				<div value="C3" class="item">C3</div>
+				<div value="C4" class="item">C4</div>
+				<div target=".main" class="item">X</div>
+			</div>
+			<div class="sub-d" hidden>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div value="D1" class="item">D1</div>
+				<div value="D2" class="item">D2</div>
+				<div value="D3" class="item">D3</div>
+				<div value="D4" class="item">D4</div>
+				<div value="D5" class="item">D5</div>
+				<div target=".main" class="item">X</div>
+			</div>
+			<div class="sub-e" hidden>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div value="E1" class="item">E1</div>
+				<div value="E2" class="item">E2</div>
+				<div value="E3" class="item">E3</div>
+				<div value="E4" class="item">E4</div>
+				<div value="E5" class="item">E5</div>
+				<div value="E6" class="item">E6</div>
+				<div target=".main" class="item">X</div>
+			</div>
+			<div class="sub-f" hidden>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div value="F1" class="item">F1</div>
+				<div value="F2" class="item">F2</div>
+				<div value="F3" class="item">F3</div>
+				<div value="F4" class="item">F4</div>
+				<div value="F5" class="item">F5</div>
+				<div value="F6" class="item">F6</div>
+				<div target=".main" class="item">X</div>
+			</div>
+		</div>
+		<div class="sprite">
+			<div>
+				<div class="hint">
+					Click and Hold for 2 seconds
+				</div>
+				<div>
+					<span  class="quote">?</span> Selected :)
+				</div>
+			</div>
+		</div>
+		<script>
+			GlitterMenu.onClick= function(obj){
+				if(obj.hasAttribute('target')){
+					Sirius.one('.glittermenu').css('/glittermenu');
+					var next = Sirius.one(obj.attribute('target'));
+					next.css('glittermenu');
+					GlitterMenu.openMenu(next);
+				}else{
+					// Show selected and RESET menu
+					Sirius.one('.quote').clear().write(obj.element.innerText);
+					Sirius.one('.main').css('glittermenu');
+				}
+			}
+		</script>
+	</body>
+</html>
