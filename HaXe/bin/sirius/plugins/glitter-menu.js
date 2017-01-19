@@ -5,7 +5,7 @@
 (function($exports) {
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
-	$exports.sru.plugins.GliterMenu = new (function(){
+	$exports.sru.plugins.glittermenu = new (function(){
 		var int_close = null;
 		this.active = false;
 		this.scanning = false;
@@ -20,40 +20,33 @@
 			transform:true,
 		};
 		this.onload = function(){
-			var item = Sirius.one('.glitermenu');
 			var origin = null;
 			window.onmousedown = function(e){
-				GliterMenu.clearControl();
-				GliterMenu.scanning = true;
+				GlitterMenu.clearControl();
+				GlitterMenu.scanning = true;
 				origin = {
 					x:e.clientX,
 					y:e.clientY,
 				};
-				GliterMenu.control = setTimeout(function(){
-					if(GliterMenu.open)
-						GliterMenu.closeMenu();
+				GlitterMenu.control = setTimeout(function(){
+					if(GlitterMenu.open)
+						GlitterMenu.closeMenu();
 					else
-						GliterMenu.openMenu();
-				}, GliterMenu.options.openDelay);
+						GlitterMenu.openMenu();
+				}, GlitterMenu.options.openDelay);
 			}
 			window.onmousemove = function(e){
-				if(GliterMenu.scanning){
+				if(GlitterMenu.scanning && !GlitterMenu.open){
 					var x = origin.x - e.clientX;
 					var y = origin.y - e.clientY;
 					if(Math.sqrt(x*x + y*y)>50){
-						GliterMenu.clearControl();
+						GlitterMenu.clearControl();
 					}
 				}
 			}
 			window.onmouseup = function(){
-				if(GliterMenu.scanning)
-					GliterMenu.clearControl();
-			}
-		}
-		this.preventClosing = function(){
-			if(int_close != null) {
-				clearTimeout(int_close);
-				int_close = null;
+				if(GlitterMenu.scanning && !GlitterMenu.open)
+					GlitterMenu.clearControl();
 			}
 		}
 		this.clearControl = function(){
@@ -62,12 +55,15 @@
 				this.control = null;
 			}
 		}
-		this.openMenu = function(){
-			this.preventClosing();
+		this.openMenu = function(o){
 			this.scanning = false;
-			this.clearControl();
 			this.open = true;
-			var item = Sirius.one('.glitermenu');
+			this.clearControl();
+			var item = o || Sirius.one('.glittermenu');
+			item.initData();
+			if(item.data.exists('gliter')){
+				clearInterval(item.data.get('gliter'));
+			}
 			item.style({
 				width: '100%',
 				height: '100%',
@@ -77,9 +73,8 @@
 				opacity:0,
 				visibility:'none',
 				overflow:'hidden',
-				pointerEvents:'all',
 				zIndex:0xFFFFFF,
-				pointerEvents:'all',
+				pointerEvents:'none',
 			});
 			var bts = item.all('.item');
 			var count = bts.length();
@@ -99,14 +94,14 @@
 						var bdx = o.getBounds();
 						var offset = {x:((bdx.width*.5)>>0),y:((bdx.height*.5)>>0)};
 						o.events.click(function(e){
-							GliterMenu.closeMenu();
-							if(GliterMenu.onClick != null){
+							GlitterMenu.closeMenu(item);
+							if(GlitterMenu.onClick != null){
 								setTimeout(function(){
-									GliterMenu.onClick(e.target);
-								}, 100);
+									GlitterMenu.onClick(e.target);
+								}, 50);
 							}
 						});
-						if(GliterMenu.options.transform){
+						if(GlitterMenu.options.transform){
 							o.style({
 								transform:'matrix(1,0,0,1,0,0)',
 								zIndex: 1,
@@ -131,7 +126,7 @@
 								top:'calc(50% - ' + offset.y + 'px)',
 								left:'calc(50% - ' + offset.x + 'px)',
 								opacity:0,
-								transition:GliterMenu.options.transition,
+								transition:GlitterMenu.options.transition,
 							}
 						});
 					}
@@ -139,8 +134,8 @@
 					setTimeout(function(j){
 						if(!o.data.exists('info').to){
 							var rd = Math.PI/180*(radius*-j-180);
-							var tx = (Math.cos(rd) * GliterMenu.options.radius) >> 0;
-							var ty = (Math.sin(rd) * GliterMenu.options.radius) >> 0;
+							var tx = (Math.cos(rd) * GlitterMenu.options.radius) >> 0;
+							var ty = (Math.sin(rd) * GlitterMenu.options.radius) >> 0;
 							var offset = o.data.get('info').offset;
 							o.data.get('info').to = {
 								top:'calc(50% + ' + tx + 'px - ' + offset.y + 'px)',
@@ -153,35 +148,42 @@
 				},20, i++);
 			});
 			item.show();
-			setTimeout(function(){
+			item.data.set('gliter', setTimeout(function(){
 				item.style({
 					opacity:1,
 				});
-			},10);
+				item.data.set('gliter', setTimeout(function(){
+					item.style({
+						pointerEvents:'all',
+					});
+				},50 * count + 100));
+			},10));
 		}
-		this.closeMenu = function(){
+		this.closeMenu = function(o){
 			if(this.open){
 				this.open = false;
-				var item = Sirius.one('.glitermenu');
+				var item = o || Sirius.one('.glittermenu');
 				var bts = item.all('.item');
 				bts.each(function(o){
 					setTimeout(function(){
 						o.style(o.data.get('info').from);
 					},50*o.data.get('info').index);
 				});
-				setTimeout(function(){
+				item.style({
+					pointerEvents:'none',
+				});
+				item.data.set('gliter', setTimeout(function(){
 					item.style({
 						opacity:0,
-						pointerEvents:'none',
 					});
-					setTimeout(function(){
+					item.data.set('gliter', setTimeout(function(){
 						item.hide();
-						item.style({zIndex:0xFFFFFE});
-					}, GliterMenu.options.closeDelay);
-				},bts.length() * 50);
+						item.style({zIndex:0xFFFFF0});
+					}, GlitterMenu.options.closeDelay));
+				},bts.length() * 50));
 			}
 		}
-		window.GliterMenu = this;
+		window.GlitterMenu = this;
 	})();
 	
 	if(Sirius != null) Sirius.updatePlugins();
