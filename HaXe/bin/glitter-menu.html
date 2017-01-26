@@ -119,18 +119,28 @@
 	</head>
 	<body>
 		<div>
-			<div class="glittermenu" glitter-size="auto" glitter-fov="360" glitter-angle="0" glitter-autoclose="true" glitter-grow="0" glitter-multiple="true" glitter-target=".selected-value" glitter-time="30" glitter-transition="all .3s ease-in-out" glitter-transform="true" hidden>
-				<div value="Red" class="item"></div>
-				<div value="Orange" class="item"></div>
-				<div value="Yellow" class="item"></div>
-				<div value="Green" class="item"></div>
-				<div value="Blue" class="item"></div>
-				<div value="Indigo" class="item"></div>
-				<div value="Violet" class="item"></div>
-				<div glitter-select="all" class="item">All</div>
-				<div glitter-select="none" class="item">None</div>
-				<div glitter-open=".creditsmenu" class="item">What?</div>
-				<div class="item">Close</div>
+			<div class="glittermenu" 
+				 glitter-size="auto" 
+				 glitter-fov="360" 
+				 glitter-angle="0" 
+				 glitter-autoclose="true" 
+				 glitter-grow="0" 
+				 glitter-multiple="true" 
+				 glitter-target=".selected-value" 
+				 glitter-time="30" 
+				 glitter-transition="all .3s ease-in-out" 
+				 glitter-transform="true" hidden>
+					<div value="Red" class="item"></div>
+					<div value="Orange" class="item"></div>
+					<div value="Yellow" class="item"></div>
+					<div value="Green" class="item"></div>
+					<div value="Blue" class="item"></div>
+					<div value="Indigo" class="item"></div>
+					<div value="Violet" class="item"></div>
+					<div glitter-select="all" class="item">All</div>
+					<div glitter-select="none" class="item">None</div>
+					<div glitter-open=".creditsmenu" class="item">What?</div>
+					<div class="item">Close</div>
 			</div>
 			<div class="creditsmenu" glitter-fov="180" glitter-size="100*100" glitter-angle="-8" hidden>
 				<div glitter-open=".glittermenu" class="item hidden">.</div>
@@ -160,6 +170,38 @@
 					</a>
 					<div class="download">
 						<span><a href="glittermenu.zip">Download</a></span>
+					</div>
+					<div class="help">
+						<div>
+							<span class="title">glitter-size="auto|Width*Height"</span>:<span class="text">Menu radius</span>
+						</div>
+						<div>
+							<span class="title">glitter-fov="0º~360º"</span>:<span class="text">Menu Arc Size</span>
+						</div>
+						<div>
+							<span class="title">glitter-angle="0º~360º"</span>:<span class="text">Start Angle</span>
+						</div>
+						<div>
+							<span class="title">glitter-autoclose="true|false"</span>:<span class="text">Close on Value</span>
+						</div>
+						<div>
+							<span class="title">glitter-grow="0~N"</span>:<span class="text">Override item count</span>
+						</div>
+						<div>
+							<span class="title">glitter-multiple="true|false"</span>:<span class="text">Allow Multiple selection</span>
+						</div>
+						<div>
+							<span class="title">glitter-target="css-selector"</span>:<span class="text">Update input value ou write a content in target selector</span>
+						</div>
+						<div>
+							<span class="title">glitter-time="1~N"</span>:<span class="text">Node delay time</span>
+						</div>
+						<div>
+							<span class="title">glitter-transition="[css transition]"</span>:<span class="text">Set transition duration</span>
+						</div>
+						<div>
+							<span class="title">glitter-transform="true|false"</span>:<span class="text">Apply Mouse Over Event</span>
+						</div>
 					</div>
 				</div>
 			</div>

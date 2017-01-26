@@ -6,7 +6,7 @@ package sirius.php.file;
  */
 class FileInfo {
 
-	public var name:String;
+	public var type:String;
 	
 	public var input:String;
 	

@@ -63,37 +63,37 @@ class DataTable implements IDataTable {
 	}
 	
 	public function add (?parameters:Dynamic = null, ?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
-		return new QueryResult(_gate.builder.add(_name, clausule, parameters, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.add(_name, clausule, parameters, order, limit).execute().result);
 	}
 
 	public function findAll (?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
-		return new QueryResult(_gate.builder.find(_checkRestriction(), _name, clausule, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, order, limit).execute().result);
 	}
 
 	public function findOne (?clausule:Dynamic=null) : Dynamic {
-		return new QueryResult(_gate.builder.find(_checkRestriction(), _name, clausule, null, Limit.MAX(1)).execute().result).first();
+		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, null, Limit.MAX(1)).execute().result).first();
 	}
 
 	public function update (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
-		return new QueryResult(_gate.builder.update(_name, clausule, parameters, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.update(_name, clausule, parameters, order, limit).execute().result);
 	}
 
 	public function delete (?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
-		return new QueryResult(_gate.builder.delete(_name, clausule, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.delete(_name, clausule, order, limit).execute().result);
 	}
 	
 	public function copy (toTable:String, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
-		return new QueryResult(_gate.builder.copy(_name, toTable, clausule, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.copy(_name, toTable, clausule, order, limit).execute().result);
 	}
 	
 	public function clear():IQueryResult {
-		return new QueryResult(_gate.builder.truncate(_name).result);
+		return new QueryResult(this, _gate.builder.truncate(_name).result);
 	}
 	
 	public function rename(to:String):IQueryResult {
 		var old:String = _name;
 		_name = to;
-		return new QueryResult(_gate.builder.rename(old, to).result);
+		return new QueryResult(this, _gate.builder.rename(old, to).result);
 	}
 	
 	public function length(?clausule:Dynamic=null):UInt {

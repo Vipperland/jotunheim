@@ -8,6 +8,8 @@ interface IQueryResult {
   
 	public var data:Array<Dynamic>;
 	
+	public var table:IDataTable;
+	
 	public function each(handler:Dynamic->Bool):Void;
 	
 	public function one(i:Int):Dynamic;

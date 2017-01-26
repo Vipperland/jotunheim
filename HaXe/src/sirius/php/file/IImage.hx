@@ -5,8 +5,6 @@ package sirius.php.file;
  */
 interface IImage {
   
-import sirius.php.file.Image;
-
 	function open(file:Dynamic):IImage;
 	
 	function resample(width:UInt, height:UInt, ?ratio:Bool = true):IImage;

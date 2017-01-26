@@ -1,6 +1,5 @@
-package sirius.php.file
+package sirius.php.file;
 import haxe.io.Bytes;
-import net.decorador.session.Access;
 import php.Web;
 import sirius.tools.Key;
 import sirius.tools.Utils;
@@ -24,7 +23,7 @@ class Uploader {
 	
 	public static var maxHeight:UInt = 1080;
 	
-	public static var sizes:Dynamic = null
+	public static var sizes:Dynamic = null;
 	
 	public static function set(imgPath:String, ?docPath:String, ?width:UInt, ?height:UInt):Void {
 		savePathImg = imgPath;
@@ -39,9 +38,17 @@ class Uploader {
 	public static function save(?thumb:Dynamic):Array<FileInfo> {
 		if (thumb != null){
 			if(!Std.is(thumb, Array))
-				thumbSize = [thumb];
+				sizes = [thumb];
 			else
-				thumbSize = thumb;
+				sizes = thumb;
+			Dice.All(sizes, function(p:Dynamic, v:Dynamic){
+				if (!Std.is(v, Array)){
+					v = [v, v];
+				}else if(v.length == 1){
+					v[1] = v[0];
+				}
+				sizes[p] = v;
+			});
 		}
 		_verify();
 		return files;
@@ -84,7 +91,7 @@ class Uploader {
 						var type:String = _getType(name);
 						if (type != null) {
 							// Generate new filename
-							var nName:String = Key.GEN(8) + Access.time + '.' + name.split(".").pop();
+							var nName:String = Key.GEN(8) + '-' + Sirius.tick + '.' + name.split(".").pop();
 							// save file to disk
 							fileStream = File.write(_getSavePath(nName), true);
 							files[files.length] = new FileInfo(type, name, nName);
@@ -111,16 +118,16 @@ class Uploader {
 		// Iterate all "image" type files
 		Dice.Values(files, function(v:FileInfo) {
 			if (v.type == "image") {
-				var p:String = savePathImg + v.name;
+				var p:String = savePathImg + v.output;
 				image.open(p);
 				// AWAYS resample image, for disk space optimization
 				image.resample(maxWidth, maxHeight, true);
 				image.save();
 				// Generate THUMB for image
-				if (thumbSize > 0) {
-					image.fit(size, size, true);
-					image.save(savePathImg + 'thumb/' + v.name);
-				}
+				Dice.Values(sizes, function(v1:Dynamic){
+					image.fit(v1[0], v1[1], true);
+					image.save(savePathImg + 'thumb/' + v.output);
+				});
 			}
 		});
 		

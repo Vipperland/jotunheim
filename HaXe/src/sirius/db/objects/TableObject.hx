@@ -8,14 +8,14 @@ class TableObject {
 	
 	public static var PROPERTIES:Array<String> = ['id', 'updated_at', 'created_at'];
 	
-	public static var OPT_PROPERTIES:Array<String> = [];
-	
-	public static function GetProperties():Array<String> { return untyped __php__("STATIC::$PROPERTIES"); }
+	public static function GetProperties():Array<String> { 
+		return untyped __php__("STATIC::$PROPERTIES"); 
+	}
 	
 	var _table:IDataTable;
 
 	public var id(get, null):UInt;
-	public function get_id():UInt {	return data.id; }
+	public function get_id():UInt {	return data != null ? data.id : null; }
 	
 	public var data:Dynamic;
 	
