@@ -30,7 +30,16 @@ class Automator {
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
+			//.fixer {
+				//clear: left;
+				//overflow: auto;
+			//}
+			//
+			//.fixer:after {
+				//clear: both;
+			//}
 			build('h-100pc', 'html,body',true);
+			build('disp-none-i', '.hidden',true);
 			build('marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass','*',true);
 			build('arial txt-12', 'body',true);
 			build('txt-decoration-none', 'a,a:link,a:visited,a:active,a:hover',true);
@@ -38,7 +47,7 @@ class Automator {
 			build('padd-5', 'hr', true);
 			build('padd-5','input,textarea,select', true);
 			build('marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix', null, true);
-			build('disp-inline-block','label',true);
+			build('disp-inline-block', 'label', true);
 			css.setSelector('@-ms-viewport', 'width:device-width;');
 			css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
 			enableSprites();
@@ -49,7 +58,7 @@ class Automator {
 	static public function enableSprites() {
 		if (!_inits.sprites){
 			_inits.sprites = true;
-			build('w-100pc h-100pc disp-table txt-c', '.sprite', true);
+			build('w-100pc disp-table txt-c', '.sprite', true);
 			build('disp-table-cell vert-m', '.sprite > div', true);
 			build('marg-l-auto marg-r-auto', '.sprite > div > div', true);
 			if (!_inits.reset) 

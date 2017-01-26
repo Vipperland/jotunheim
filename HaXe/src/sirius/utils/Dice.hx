@@ -160,6 +160,19 @@ class Dice {
 	}
 	
 	/**
+	 * 
+	 * @param	table
+	 * @param	values
+	 */
+	public static function Remove(table:Array<Dynamic>, values:Dynamic):Void {
+		if (!Std.is(values, Array)) values = [values];
+		Dice.Values(values, function(v:Dynamic) {
+			var i:Int = Lambda.indexOf(table, v);
+			if (i != -1) table.remove(v);
+		});
+	}
+	
+	/**
 	 * Concat all mixed data into one array
 	 * @param	data
 	 * @return

@@ -232,7 +232,7 @@ interface IDisplay {
 	/**
 	 * Fit element in current viewport width and height
 	 */
-	public function goFullSize():Void;
+	public function enlarge():IDisplay;
 	
 	/**
 	 * Write or get style of the element
@@ -456,6 +456,11 @@ interface IDisplay {
 	 * @return
 	 */
 	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay;
+	
+	/**
+	 * Re-run all external loaded scripts
+	 */
+	public function rebuild():Void;
 	
 	/**
 	 * Display info in Sirius style

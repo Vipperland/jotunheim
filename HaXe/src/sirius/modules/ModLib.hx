@@ -51,6 +51,7 @@ class ModLib {
 	 * @return
 	 */
 	public function exists(module:String):Bool {
+		module = module.toLowerCase();
 		return Reflect.hasField(CACHE, module);
 	}
 	

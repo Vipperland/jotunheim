@@ -11,6 +11,7 @@ import sirius.net.Loader;
 import sirius.net.Domain;
 import sirius.net.IDomain;
 import sirius.signals.IFlow;
+import sirius.signals.ISignals;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
@@ -93,8 +94,9 @@ class Sirius {
 		
 		/** @private */
 		static private function _loadController(e:Event):Void {
-			if(!_loaded){
+			if (!_loaded){
 				_loaded = true;
+				document.checkBody();
 				agent.update();
 				Ease.update();
 				updatePlugins();
@@ -190,13 +192,15 @@ class Sirius {
 		 * @param	handler
 		 * @param	files
 		 */
-		static public function onInit(handler:ILoader->Void, ?files:Array<String> = null):Void {
+		static public function onInit(handler:IFlow->Void, ?files:Array<String> = null):Void {
 			if (!_initialized) _preInit();
 			if (!_loaded && files != null && files.length > 0) {
 				loader.signals.add('error', _fileError);
 				loader.add(files);
+				loader.signals.add('completed', handler);
+			}else{
+				run(handler);
 			}
-			run(handler);
 		}
 		
 		static public function inject(url:Dynamic, ?handler:Null<Void>->Void):Void {

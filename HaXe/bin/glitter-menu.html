@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="utf-8">
 		<title></title>
 		<script type="text/javascript" src="sirius/api.sirius.min.js"></script>
@@ -9,283 +10,160 @@
 			Automator.reset();
 		</script>
 		<style>
-			.glittermenu {
-				background-color: rgba(0,0,0,.8);
-				transition: all .3s ease-out;
-			}
 			.item {
-				padding:10px;
+				padding: 24px 0;
 				color: #000000;
 				border-radius: 50%;
-				width:30px;
-				height:30px;
+				width:60px;
+				height:60px;
+				overflow: none;
 				background-color: #FFFFFF;
 				cursor: pointer;
+				text-align: center;
 			}
-			.quote:before {
-				content:'"';
+			
+			.item[value] {
+				padding: 8px 0;
+				border: 14px solid #ffffff;
 			}
-			.quote:after {
-				content:'"';
+			
+			.item[selected=true] {
+				border: 4px solid #ffffff;
+				padding: 20px 0;
 			}
+			
 			.hint {
-				font-width: bold;
-				font-size: 24px;
+				font-size: 16px;
 			}
+			.sprite {
+				height: 100%;
+			}
+			
+			.item[value="Red"]{
+				background-color: #FF0000;
+			}
+			
+			.item[value="Orange"]{
+				background-color: #FF6600;
+			}
+			
+			.item[value="Yellow"]{
+				background-color: #FFFF66;
+			}
+			
+			.item[value="Green"]{
+				background-color: #00FF66;
+			}
+			
+			.item[value="Yellow"]{
+				background-color: #FFFF00;
+			}
+			
+			.item[value="Blue"]{
+				background-color: #0099CC;
+			}
+			
+			.item[value="Indigo"]{
+				background-color: #0066FF;
+			}
+			
+			.item[value="Violet"]{
+				background-color: #6600FF;
+			}
+			
+			.hint {
+				width: 340px;
+				padding: 20px;
+				border-radius: 20px;
+				background-color: #FFFFFF;
+			}
+			
+			.hint a div {
+				float: left;
+				padding: 10px;
+				width: 100px;
+				background-color: #DDDDDD;
+			}
+			
+			.hint a input {
+				width: 200px;
+				float: left;
+				padding: 10px;
+				background-color: #EEEEEE;
+			}
+			
+			.hint .title {
+				width: 100%;
+				font-size: 24px;
+				text-align: center;
+				color: #000000;
+				padding: 20px;
+				background-color: #FFFFFF;
+			}
+			
+			.hint .download {
+				width: 100%;
+				text-align: center;
+				padding: 20px;
+				background-color: #FFFFFF;
+				clear: both;
+			}
+			
+			body {
+				background-size: cover;
+				background-position: center center;
+				font-family: Tahoma;
+			}
+			
 		</style>
 	</head>
 	<body>
 		<div>
-			<div class="main glittermenu" hidden>
-				<div target=".sub-a" class="item">A</div>
-				<div target=".sub-b" class="item">B</div>
-				<div target=".sub-c" class="item">C</div>
-				<div target=".sub-d" class="item">D</div>
-				<div target=".sub-e" class="item">E</div>
-				<div target=".sub-f" class="item">F</div>
-				<div target=".sub-a" class="item">A</div>
-				<div target=".sub-b" class="item">B</div>
-				<div target=".sub-c" class="item">C</div>
-				<div target=".sub-d" class="item">D</div>
-				<div target=".sub-e" class="item">E</div>
-				<div target=".sub-f" class="item">F</div>
-				<div target=".sub-a" class="item">A</div>
-				<div target=".sub-b" class="item">B</div>
-				<div target=".sub-c" class="item">C</div>
-				<div target=".sub-d" class="item">D</div>
-				<div target=".sub-e" class="item">E</div>
-				<div target=".sub-f" class="item">F</div>
-				<div target=".sub-a" class="item">A</div>
-				<div target=".sub-b" class="item">B</div>
-				<div target=".sub-c" class="item">C</div>
-				<div target=".sub-d" class="item">D</div>
-				<div target=".sub-e" class="item">E</div>
-				<div target=".sub-f" class="item">F</div>
+			<div class="glittermenu" glitter-size="auto" glitter-fov="360" glitter-angle="0" glitter-autoclose="true" glitter-grow="0" glitter-multiple="true" glitter-target=".selected-value" glitter-time="30" glitter-transition="all .3s ease-in-out" glitter-transform="true" hidden>
+				<div value="Red" class="item"></div>
+				<div value="Orange" class="item"></div>
+				<div value="Yellow" class="item"></div>
+				<div value="Green" class="item"></div>
+				<div value="Blue" class="item"></div>
+				<div value="Indigo" class="item"></div>
+				<div value="Violet" class="item"></div>
+				<div glitter-select="all" class="item">All</div>
+				<div glitter-select="none" class="item">None</div>
+				<div glitter-open=".creditsmenu" class="item">What?</div>
+				<div class="item">Close</div>
 			</div>
-			<div class="sub-a" hidden>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div value="A1" class="item">A1</div>
-				<div value="A2" class="item">A2</div>
-				<div target=".main" class="item">X</div>
-			</div>
-			<div class="sub-b" hidden>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div value="B1" class="item">B1</div>
-				<div value="B2" class="item">B2</div>
-				<div value="B3" class="item">B3</div>
-				<div target=".main" class="item">X</div>
-			</div>
-			<div class="sub-c" hidden>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div value="C1" class="item">C1</div>
-				<div value="C2" class="item">C2</div>
-				<div value="C3" class="item">C3</div>
-				<div value="C4" class="item">C4</div>
-				<div target=".main" class="item">X</div>
-			</div>
-			<div class="sub-d" hidden>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div value="D1" class="item">D1</div>
-				<div value="D2" class="item">D2</div>
-				<div value="D3" class="item">D3</div>
-				<div value="D4" class="item">D4</div>
-				<div value="D5" class="item">D5</div>
-				<div target=".main" class="item">X</div>
-			</div>
-			<div class="sub-e" hidden>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div value="E1" class="item">E1</div>
-				<div value="E2" class="item">E2</div>
-				<div value="E3" class="item">E3</div>
-				<div value="E4" class="item">E4</div>
-				<div value="E5" class="item">E5</div>
-				<div value="E6" class="item">E6</div>
-				<div target=".main" class="item">X</div>
-			</div>
-			<div class="sub-f" hidden>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div value="F1" class="item">F1</div>
-				<div value="F2" class="item">F2</div>
-				<div value="F3" class="item">F3</div>
-				<div value="F4" class="item">F4</div>
-				<div value="F5" class="item">F5</div>
-				<div value="F6" class="item">F6</div>
-				<div target=".main" class="item">X</div>
+			<div class="creditsmenu" glitter-fov="180" glitter-size="100*100" glitter-angle="-8" hidden>
+				<div glitter-open=".glittermenu" class="item hidden">.</div>
+				<div glitter-open=".glittermenu" class="item">B</div>
+				<div glitter-open=".glittermenu" class="item">Y</div>
+				<div glitter-open=".glittermenu" class="item"></div>
+				<div glitter-open=".glittermenu" class="item">S</div>
+				<div glitter-open=".glittermenu" class="item">I</div>
+				<div glitter-open=".glittermenu" class="item">R</div>
+				<div glitter-open=".glittermenu" class="item">I</div>
+				<div glitter-open=".glittermenu" class="item">U</div>
+				<div glitter-open=".glittermenu" class="item">S</div>
+				<div glitter-open=".glittermenu" class="item hidden">.</div>
 			</div>
 		</div>
-		<div class="sprite">
+		<div class="sprite content">
 			<div>
 				<div class="hint">
-					Click and Hold for 2 seconds
-				</div>
-				<div>
-					<span  class="quote">?</span> Selected :)
+					<div class="title">
+						GlitterMenu
+					</div>
+					<a onclick="GlitterMenu.openMenu('.glittermenu');">
+						<div>
+							Selected
+						</div>
+						<input class="selected-value" placeholder="Click to Select" disabled>
+					</a>
+					<div class="download">
+						<span><a href="glittermenu.zip">Download</a></span>
+					</div>
 				</div>
 			</div>
+			
 		</div>
-		<script>
-			GlitterMenu.onClick= function(obj){
-				if(obj.hasAttribute('target')){
-					Sirius.one('.glittermenu').css('/glittermenu');
-					var next = Sirius.one(obj.attribute('target'));
-					next.css('glittermenu');
-					GlitterMenu.openMenu(next);
-				}else{
-					// Show selected and RESET menu
-					Sirius.one('.quote').clear().write(obj.element.innerText);
-					Sirius.one('.main').css('glittermenu');
-				}
-			}
-		</script>
 	</body>
 </html>

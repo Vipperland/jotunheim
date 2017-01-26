@@ -1,6 +1,7 @@
 package sirius.dom;
 import js.Browser;
 import js.html.StyleElement;
+import sirius.dom.IDisplay;
 
 /**
  * ...
@@ -28,6 +29,14 @@ class Style extends Display {
 	
 	public function publish():Void {
 		Browser.document.head.appendChild(cast element);
+	}
+	
+	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+		if (Sirius.resources.exists(q))
+			write(Sirius.resources.get(q, data), true);
+		else
+			write('/* <!> mod:' + q + ' not found */');
+		return this;
 	}
 	
 }

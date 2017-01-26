@@ -22,9 +22,6 @@ class Loader implements ILoader {
 	private static var FILES:Dynamic = { };
 	
 	private var _toload:Array<String> = [];
-	private var _onChange:Array<HttpRequest->String->String->String->Void>;
-	private var _onComplete:Array<Dynamic>;
-	private var _onError:Array<Dynamic>;
 	private var _isBusy:Bool;
 	private var _noCache:Bool;
 	#if js
@@ -44,9 +41,6 @@ class Loader implements ILoader {
 	
 	public function new(?noCache:Bool = false){
 		_noCache = noCache;
-		_onComplete = [];
-		_onError = [];
-		_onChange = [];
 		signals = new Signals(this);
 		totalLoaded = 0;
 		totalFiles = 0;
@@ -126,9 +120,7 @@ class Loader implements ILoader {
 	}
 	
 	private function _complete():Void {
-		signals.call('complete');
-		_onComplete = [];
-		_onError = [];
+		signals.call('completed');
 	}
 	
 	#if js

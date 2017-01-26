@@ -47,7 +47,7 @@ class Document extends Display {
 		if(__doc__ == null){
 			super(cast Browser.document);
 			element = Browser.document.documentElement;
-			body = new Body(Browser.document.body);
+			
 			head = new Head(Browser.document.head);
 			events = new Dispatcher(this);
 			__doc__ = this;
@@ -60,6 +60,11 @@ class Document extends Display {
 	function __init__() {
 		events.wheel(stopScroll, true);
 		Browser.window.addEventListener('scroll', _hookScroll);
+	}
+	
+	public function checkBody():Void {
+		if(body == null)
+			body = new Body(untyped __js__("document.body"));
 	}
 	
 	private function _hookScroll(e:Event):Void {
@@ -131,11 +136,10 @@ class Document extends Display {
 			return;
 		}
 		__cursor__.enabled = true;
-		events.mouseMove(function(e:IEvent) {
-			var me:MouseEvent = cast e.event;
-			__cursor__.x = me.clientX;
-			__cursor__.y = me.clientY;
-		}, true);
+		Browser.window.addEventListener('mousemove', function(e:js.html.MouseEvent) {
+			__cursor__.x = e.clientX;
+			__cursor__.y = e.clientY;
+		});
 	}
 	
 	public function cursorX():Int {

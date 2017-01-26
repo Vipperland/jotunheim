@@ -4,6 +4,7 @@ package sirius.signals;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
+@:expose("sru.signals.Signal")
 class Signals implements ISignals {
 	
 	private var _l:Array<Dynamic>;
@@ -43,8 +44,13 @@ class Signals implements ISignals {
 		return this;
 	}
 	
-	public function reset():Void {
-		_l = [];
+	public function reset(?name:String):Void {
+		if (name != null){
+			if (has(name))
+				get(name).reset();
+		}else{
+			_l = [];
+		}
 	}
 	
 }

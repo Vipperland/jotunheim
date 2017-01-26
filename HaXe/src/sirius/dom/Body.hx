@@ -33,11 +33,6 @@ class Body extends Display {
 		events.resize().call();
 	}
 	
-	public function enlarge(?scroll:String = "over-hid"):Body {
-		this.css("w-100pc h-100pc" + (scroll != null ? " " + scroll : "") + " padd-0 marg-0 pos-abs");
-		return this;
-	}
-	
 	public function maxScrollX():Int {
 		return _body.scrollWidth - Utils.viewportWidth();
 	}

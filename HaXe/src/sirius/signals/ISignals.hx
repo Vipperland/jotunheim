@@ -18,6 +18,6 @@ interface ISignals {
 
 	public function call (name:String, ?data:Dynamic) : Signals;
 
-	public function reset () : Void;
+	public function reset(?name:String):Void;
 	
 }

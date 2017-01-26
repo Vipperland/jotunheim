@@ -62,13 +62,14 @@ class Display implements IDisplay {
 	 * Remove all display from cache if not in dom
 	 * @param	secure
 	 */
-	static public function gc(?secure:Bool):Void {
-		if (secure) {
+	static public function gc(?force:Bool):Void {
+		if (force) {
 			_DATA = [];
 		}else{
 			Dice.Values(_DATA, function(v:IDisplay) {
 				var id:UInt = v.id();
 				if (Sirius.one('[sru-id=' + id + ']') == null) {
+					Sirius.log('Disposing object {' + id + '}...');
 					Reflect.deleteField(_DATA, id + '');
 				}
 			});
@@ -126,9 +127,18 @@ class Display implements IDisplay {
 	}
 	
 	public function dispose():Void {
-		Reflect.deleteField(_DATA, _uid + '');
-		events.dispose();
-		remove();
+		if(_uid != -1 && element != null){
+			Sirius.log('Disposing object {' + _uid + '}...');
+			Reflect.deleteField(_DATA, _uid + '');
+			if(_children != null)
+				_children.dispose();
+			if(events != null)
+				events.dispose();
+			all('[sru-id]').dispose();
+			remove();
+			element = null;
+			_uid = -1;
+		}
 	}
 	
 	public function exists(q:String):Bool {
@@ -182,10 +192,8 @@ class Display implements IDisplay {
 	
 	
 	public function children():ITable {
-		if (_children == null)
-			_children = Sirius.all('*', element);
-		return
-			_children;
+		_children = Sirius.all('*', this.element);
+		return _children;
 	}
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {
@@ -232,16 +240,12 @@ class Display implements IDisplay {
 	
 	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
 		Reflect.setField(q, '_parent', this);
+		_children = null;
 		if (at != -1) {
 			var sw:Node = element.childNodes.item(at);
 			element.insertBefore(q.element, sw);
-			_children = null;
 		}else {
 			element.appendChild(q.element);
-			if(_children != null){
-				_children.elements.push(q.element);
-				_children.content.push(q);
-			}
 		}
 		return q;
 	}
@@ -281,7 +285,7 @@ class Display implements IDisplay {
 	
 	public function remove():IDisplay {
 		this._parent = null;
-		if (element.parentElement != null) element.parentElement.removeChild(element);
+		if (element != null && element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
 	}
 	
@@ -392,7 +396,7 @@ class Display implements IDisplay {
 				return v;
 			}else {
 				Dice.All(p, function(p:String, v:Dynamic) {
-					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+					style(p, v);
 				});
 			}
 		}
@@ -594,11 +598,12 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function goFullSize():Void {
+	public function enlarge():IDisplay {
 		style( {
-			width:Utils.viewportWidth() + 'px',
-			height:Utils.viewportHeight() + 'px',
+			width:'100%',
+			height:'100%',
 		});
+		return this;
 	}
 	
 	public function position():IPoint {
@@ -659,6 +664,19 @@ class Display implements IDisplay {
 			};
 		}
 		return Json.stringify(data);
+	}
+	
+	public function rebuild():Void {
+		all('script').each(cast function(o:Script){
+			o.remove();
+			var u:String = o.attribute('src');
+			if (u != ''){
+				all('script[src="' + u + '"]' ).remove();
+				var s:Script = new Script();
+				s.src(u);
+				addChild(s);
+			}
+		});
 	}
 	
 }
