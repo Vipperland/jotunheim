@@ -3,6 +3,7 @@ package sirius.dom;
 import haxe.Constraints.Function;
 import haxe.ds.Either;
 import js.html.CSSStyleDeclaration;
+import js.html.DOMRect;
 import js.html.Element;
 import js.JQuery;
 import sirius.data.DisplayData;
@@ -415,6 +416,8 @@ interface IDisplay {
 	 * @return
 	 */
 	public function position():IPoint;
+	
+	public function getBounds():DOMRect;
 	
 	/**
 	 * Enable or Disable pointer interaction

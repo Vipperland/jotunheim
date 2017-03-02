@@ -156,6 +156,11 @@ class Display implements IDisplay {
 		return this;
 	}
 	
+	public function click():IDisplay {
+		element.click();
+		return this;
+	}
+	
 	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String, ?size:String):String {
 		if (data != null) {
 			var value:Dynamic = cast data;
@@ -199,7 +204,6 @@ class Display implements IDisplay {
 	public function getScroll(?o:Dynamic = null):Dynamic {
 		if (o == null)
 			o = { };
-		
 		o.left = element.scrollLeft;
 		o.top = element.scrollTop;
 		o.offsetX = element.offsetLeft;

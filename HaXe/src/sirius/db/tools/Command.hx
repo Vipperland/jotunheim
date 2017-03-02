@@ -104,7 +104,29 @@ class Command implements ICommand {
 	
 	public function log():String {
 		var q:String = _query;
-		Dice.All(_parameters, function(p:String, v:Dynamic) { q = StringTools.replace(q, ":" + p, v); });
+		var r:Array<String>  = q.split(':');
+		Dice.All(r, function(p:Dynamic, v:String) {
+			if(Std.parseInt(p) > 0){
+				var a = Math.min(v.indexOf(' '), v.indexOf(','));
+				var b = Math.min(v.indexOf(')'), v.indexOf(';'));
+				var i = Math.min(a, b);
+				var h = v.substring(0, cast (i-1));
+				var t = v.substring(cast i, v.length);
+				if (Reflect.hasField(_parameters, h)){
+					h = Reflect.field(_parameters, h);
+					if (Std.is(h, String)){
+						h = '"' + h + '"';
+					}
+					r[p] = h + t;
+				}else{
+					r[p] = ':' + v;
+				}
+			}
+		});
+		q = r.join('');
+		Dice.All(_parameters, function(p:String, v:String){
+			q = q.split(':' + p).join(v);
+		});
 		return q;
 	}
 	

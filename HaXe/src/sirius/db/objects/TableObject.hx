@@ -4,7 +4,7 @@ package sirius.db.objects;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class TableObject {
+class TableObject implements ITableObject {
 	
 	public static var PROPERTIES:Array<String> = ['id', 'updated_at', 'created_at'];
 	
