@@ -377,9 +377,12 @@ class Display implements IDisplay {
 	}
 	
 	public function attributes(?values:Dynamic):Dynamic {
-		if (values != null)
+		if (values != null){
 			Dice.All(values, attribute);
-		return Utils.getAttributes(this);
+			return null;
+		}else{
+			return Utils.getAttributes(this);
+		}
 	}
 	
 	public function write(q:Dynamic, ?plainText:Bool = false):IDisplay {

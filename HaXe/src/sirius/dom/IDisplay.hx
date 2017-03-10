@@ -6,7 +6,6 @@ import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
 import js.html.Element;
 import js.JQuery;
-import sirius.data.DisplayData;
 import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;

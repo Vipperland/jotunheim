@@ -7,7 +7,7 @@ import js.html.CanvasElement;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Canvas")
-class Canvas extends Display{
+class Canvas extends Display {
 	
 	static public function get(q:String):Canvas {
 		return cast Sirius.one(q);

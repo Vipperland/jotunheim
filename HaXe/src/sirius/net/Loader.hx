@@ -1,11 +1,14 @@
 package sirius.net;
+import haxe.Json;
 import sirius.Sirius;
 import sirius.errors.Error;
 import sirius.errors.IError;
 import sirius.net.Request;
 import sirius.net.HttpRequest;
+import sirius.serial.IOTools;
 import sirius.signals.ISignals;
 import sirius.signals.Signals;
+import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 #if js
@@ -189,17 +192,27 @@ class Loader implements ILoader {
 	}
 	
 	#if js 
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null #if js, ?progress:IProgress->Void #end):Void {
+	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null, ?progress:IProgress->Void):Void {
 	#elseif php
 	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {
 	#end
-	
+		var setpost:Bool = method == null || method.toUpperCase() == 'POST';
+		var setjson:Bool = !setpost && method.toUpperCase() == 'JSON';
+		if (!setpost && !setjson && data != null){
+			var ps:Array<String> = url.split('?');
+			if (ps.length == 1 || ps[1].length == 0){
+				ps[1] = Utils.paramsOf(data);
+			}else{
+				ps[1] += '&' + Utils.paramsOf(data);
+			}
+			url = ps.join('?');
+		}
 		var r:HttpRequest = _getReq(url);
 		_changed(url, 'started');
 		#if js
 			r.async = true;
 		#end
-		if (data != null) {
+		if (!setjson && setpost && data != null) {
 			#if js
 				Dice.All(data, r.addParameter);
 			#else
@@ -208,6 +221,13 @@ class Loader implements ILoader {
 		}
 		if (headers != null){
 			Dice.All(headers, function(p:String, v:Dynamic){
+				if (p == 'auth' && !Std.is(v, String)){
+					p = 'Authorization';
+					v = 'Basic ' + IOTools.encodeBase64(v.user + ':' + v.password);
+				}else if (p == 'oauth'){
+					p = 'Authorization';
+					v = 'OAuth ' + v;
+				}
 				r.setHeader(p, v);
 			});
 		}
@@ -221,10 +241,9 @@ class Loader implements ILoader {
 			if (handler != null) 
 				handler(new Request(false, null, new Error(-1, d))); 
 		}
-		var setpost:Bool = method == null || method.toLowerCase() == 'post';
 		#if js
 			var pro:IProgress = cast {loaded:0,total:0,file:url};
-			r.request(setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
+			r.request(setjson ? Json.stringify(data) : setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
 				pro.loaded = a;
 				pro.total = b;
 				pro.file = u;

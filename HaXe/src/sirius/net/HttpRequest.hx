@@ -198,12 +198,18 @@ class HttpRequest {
 		this method returns.
 	**/
 	#if js
-	public function request( ?post : Bool, ?progress:String->Int->Int->Void ) : Void {
+	public function request( ?post : Dynamic, ?progress:String->Int->Int->Void ) : Void {
 	#else
 	public function request( ?post : Bool) : Void {
 	#end
 		var me = this;
 	#if js
+		var json:Bool = Std.is(post, String);
+		var jsonData:String = null;
+		if (json){
+			jsonData = post;
+			post = true;
+		}
 		me.responseData = null;
 		var r = req = js.Browser.createXMLHttpRequest();
 		var onreadystatechange = function(_) {
@@ -274,11 +280,16 @@ class HttpRequest {
 			onError(e.toString());
 			return;
 		}
-		if( data == null && !Lambda.exists(headers, function(h) return h.header == "Content-Type") && post && postData == null )
+		if( !json && data == null && !Lambda.exists(headers, function(h) return h.header == "Content-Type") && post && postData == null )
 			r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 		for( h in headers )
 			r.setRequestHeader(h.header, h.value);
-		r.send(uri);
+		if (post && json){
+			r.setRequestHeader("Content-Type","application/json");
+			r.send(jsonData);
+		}else{
+			r.send(uri);
+		}
 		if( !async )
 			onreadystatechange(null);
 	#elseif sys

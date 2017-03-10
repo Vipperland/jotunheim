@@ -65,9 +65,11 @@ class Table implements ITable {
 			var ind:UInt = 0;
 			while(ind < len){
 				element = cast result.item(ind);
-				obj = Utils.displayFrom(element);
-				content[ind] = obj;
-				elements[ind] = element;
+				if(element.tagName != null){
+					obj = Utils.displayFrom(element);
+					content[ind] = obj;
+					elements[ind] = element;
+				}
 				++ind;
 			}
 		}else {

@@ -42,7 +42,7 @@ class FormData implements IFormData {
 	public function scan(?target:IDisplay):IFormData {
 		reset();
 		_form = target == null ? Sirius.document.body : target;
-		target.all("[form-data]").each(function(el:IDisplay) { params[params.length] = new FormParam(el); });
+		target.all("[form-data]").each(function(o:IDisplay) { params[params.length] = new FormParam(o); });
 		return this;
 	}
 	

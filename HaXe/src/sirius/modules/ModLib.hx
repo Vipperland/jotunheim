@@ -55,6 +55,12 @@ class ModLib {
 		return Reflect.hasField(CACHE, module);
 	}
 	
+	public function remove(module:String):Void {
+		if (exists(module)){
+			Reflect.deleteField(CACHE, module);
+		}
+	}
+	
 	/**
 	 * Register a module
 	 * @param	file
@@ -213,8 +219,8 @@ class ModLib {
 				});
 			}else {
 				d = new Display().write(get(module, data));
+				d.children().attribute('sru-mod', module);
 			}
-			d.attribute('sru-mod', module);
 			return d;
 		}
 		

@@ -2,13 +2,9 @@ package sirius.db.tools;
 import haxe.Json;
 import php.Lib;
 import php.NativeArray;
-import sirius.data.DataSet;
-import sirius.data.IDataSet;
-import sirius.errors.Error;
 import sirius.db.pdo.Statement;
+import sirius.errors.Error;
 import sirius.errors.IError;
-import sirius.Sirius;
-import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 /**
@@ -58,7 +54,7 @@ class Command implements ICommand {
 		return this;
 	}
 	
-	public function execute(?handler:IDataSet->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
+	public function execute(?handler:Dynamic->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
 		if(statement !=null){
 			if (type == null) type = untyped __php__("\\PDO::FETCH_OBJ");
 			var p:NativeArray = null;
@@ -85,8 +81,8 @@ class Command implements ICommand {
 		return this;
 	}
 	
-	public function fetch(handler:IDataSet->Bool):ICommand {
-		Dice.Values(result, function(v:Dynamic) { return handler(new DataSet(v)); } );
+	public function fetch(handler:Dynamic->Bool):ICommand {
+		Dice.Values(result, handler);
 		return this;
 	}
 	

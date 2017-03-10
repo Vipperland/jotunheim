@@ -75,7 +75,6 @@ class JsonTool {
 				else if( c == Array ) {
 					var v : Array<Dynamic> = v;
 					addChar('['.code);
-
 					var len = v.length;
 					var last = len - 1;
 					for (i in 0...len)

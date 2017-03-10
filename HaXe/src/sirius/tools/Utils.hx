@@ -4,6 +4,7 @@ import haxe.Log;
 
 #if js
 
+	import js.Lib;
 	import js.Browser;
 	import js.html.Attr;
 	import js.html.Element;
@@ -121,23 +122,23 @@ class Utils{
 		
 		/** @private */
 		static private var _typeOf:Dynamic = { 
-			A:A,AREA:Area,AUDIO:Audio,
-			B:B,BASE:Base,BODY:Body,BR:BR,
-			BUTTON:Button,CANVAS:Canvas,CAPTION:Caption,COL:Col,CONTENT:Content,
-			DATALIST:DataList,DIV:Div,DISPLAY:Display,DISPLAY3D:Display3D,DL:DL,DOCUMENT:Document,
+			A:A, AREA:Area, AUDIO:Audio,
+			B:B, BASE:Base, BODY:Body, BR:BR, BUTTON:Button,
+			CANVAS:Canvas, CAPTION:Caption, COL:Col, CONTENT:Content,
+			DATALIST:DataList, DIV:Div, DISPLAY:Display, DISPLAY3D:Display3D, DL:DL, DOCUMENT:Document,
 			EMBED:Embed,
-			FIELDSET:FieldSet,FORM:Form,
-			H1:H1,H2:H2,H3:H3,H4:H4,H5:H5,H6:H6,HEAD:Head,HR:HR,HTML:Html,
+			FIELDSET:FieldSet, FORM:Form,
+			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HR:HR, HTML:Html,
 			I:I, IFRAME:IFrame, IMG:Img, INPUT:Input,
-			LABEL:Label,LEGEND:Legend,LI:LI,LINK:Link,
-			MAP:Map,MEDIA:Media,META:Meta,METER:Meter,MOD:Mod,
-			OBJECT:Object,OL:OL,OPTGROUP:OptGroup,OPTION:Option,OUTPUT:Output,
-			P:P,PARAM:Param,PICTURE:Picture,PRE:Pre,PROGRESS:Progress,
+			LABEL:Label, LEGEND:Legend, LI:LI, LINK:Link,
+			MAP:Map, MEDIA:Media, META:Meta, METER:Meter, MOD:Mod,
+			OBJECT:Object, OL:OL, OPTGROUP:OptGroup, OPTION:Option, OUTPUT:Output,
+			P:P, PARAM:Param, PICTURE:Picture, PRE:Pre, PROGRESS:Progress,
 			QUOTE:Quote,
-			SCRIPT:Script,SELECT:Select,SHADOW:Shadow,SOURCE:Source,SPAN:Span,SPRITE:Sprite,SPRITE3D:Sprite3D,STYLE:Style,
+			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, SPRITE:Sprite, SPRITE3D:Sprite3D, STYLE:Style,
 			TEXT:Text,TEXTAREA:TextArea,THEAD:Thead,TITLE:Title,TRACK:Track,
 			UL:UL,
-			VIDEO:Video
+			VIDEO:Video,
 		};
 		
 		/**
@@ -334,6 +335,15 @@ class Utils{
 	
 	static public function stdClone(q:Dynamic):Dynamic {
 		return Json.parse(Json.stringify(q));
+	}
+	
+	static public function paramsOf(o:Dynamic):String {
+		var r:Array<String> = [];
+		Dice.All(o, function(p:String, v:Dynamic){
+			v = Json.stringify(v);
+			r[r.length] = p + '=' + StringTools.urlEncode(v.substr(1, v.length-2));
+		});
+		return r.join('&');
 	}
 	
 }

@@ -1643,6 +1643,9 @@ sirius_modules_ModLib.prototype = {
 		module = module.toLowerCase();
 		return Object.prototype.hasOwnProperty.call(sirius_modules_ModLib.CACHE,module);
 	}
+	,remove: function(module) {
+		if(this.exists(module)) Reflect.deleteField(sirius_modules_ModLib.CACHE,module);
+	}
 	,register: function(file,content) {
 		var _g = this;
 		content = content.split("[module:{").join("[!MOD!]");
@@ -2189,8 +2192,10 @@ sirius_dom_Display.prototype = {
 		return value;
 	}
 	,attributes: function(values) {
-		if(values != null) sirius_utils_Dice.All(values,$bind(this,this.attribute));
-		return sirius_tools_Utils.getAttributes(this);
+		if(values != null) {
+			sirius_utils_Dice.All(values,$bind(this,this.attribute));
+			return null;
+		} else return sirius_tools_Utils.getAttributes(this);
 	}
 	,write: function(q,plainText) {
 		if(plainText == null) plainText = false;
@@ -5297,12 +5302,6 @@ sirius_data_DataSet.prototype = {
 	}
 	,__class__: sirius_data_DataSet
 };
-var sirius_data_DisplayData = function() {
-};
-sirius_data_DisplayData.__name__ = ["sirius","data","DisplayData"];
-sirius_data_DisplayData.prototype = {
-	__class__: sirius_data_DisplayData
-};
 var sirius_data_IFormData = function() { };
 sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
 sirius_data_IFormData.prototype = {
@@ -5325,8 +5324,8 @@ sirius_data_FormData.prototype = {
 		var _g = this;
 		this.reset();
 		if(target == null) this._form = sirius_Sirius.document.body; else this._form = target;
-		target.all("[form-data]").each(function(el) {
-			_g.params[_g.params.length] = new sirius_data_FormParam(el);
+		target.all("[form-data]").each(function(o) {
+			_g.params[_g.params.length] = new sirius_data_FormParam(o);
 		});
 		return this;
 	}
@@ -6876,9 +6875,11 @@ sirius_utils_Table.prototype = {
 			var ind = 0;
 			while(_$UInt_UInt_$Impl_$.gt(len,ind)) {
 				element = result.item(ind);
-				obj = sirius_tools_Utils.displayFrom(element);
-				this.content[ind] = obj;
-				this.elements[ind] = element;
+				if(element.tagName != null) {
+					obj = sirius_tools_Utils.displayFrom(element);
+					this.content[ind] = obj;
+					this.elements[ind] = element;
+				}
 				++ind;
 			}
 		} else sirius_Sirius.log("Table => " + (q != null?q:t != null?t.className:"UNKNOW") + " : EMPTY",2);

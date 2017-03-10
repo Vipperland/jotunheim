@@ -88,6 +88,10 @@ class Input extends Display {
 		return object.placeholder;
 	}
 	
+	public function validateCardExp():Void {
+		_rgx = ~/\d{2}\/\d{2,4}/;
+	}
+	
 	public function validateDate():Void {
 		_rgx = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
 	}
@@ -138,6 +142,10 @@ class Input extends Display {
 	
 	public function validateMd5():Void {
 		_rgx = ~/^[A-Za-z0-9._-]{35}$/;
+	}
+	
+	public function validateCard():Void {
+		_rgx = ~/\d{4}-\d{4}-\d{4}-\d{4}$/;
 	}
 	
 	public function restrict(q:EReg, ?filter:String):Void {
