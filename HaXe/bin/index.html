@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8"/>
+	<base href="/"></base>
+	<title>Arte do Sexo</title>
+	<meta name="description" content=""/>
+	<script type="text/javascript" src="sirius/api.sirius.js"></script>
+	<style>  
+		
+		html, body {
+			background-color: #1E1F21;
+			color: #ffffff;
+			width: 100%;
+			height: 100%;
+		}
+		.main-header {
+			width: 100%;
+			height: 450px;
+			background-size: cover;
+			background-position: 50% 50%;
+			background-image:url(/assets/image/fade-bg.jpg);
+		}
+		.menu-container {
+			background-color: #282a2e;
+			border-bottom: 5px solid #181a1e;
+		}
+		.site-menu {
+			max-width: 1240px;
+			background-color: #A54242;
+			border-bottom: 5px solid #853232;
+			margin-bottom: -5px;
+		}
+		.item-menu {
+			padding: 20px;
+			transition: all .1s ease-out;
+			cursor: pointer;
+			margin-bottom: -5px;
+		}
+		.item-menu:hover {
+			background-color: #bb5555;
+		}
+		.item-menu.active {
+			background-color: #cc6666;
+			border-bottom: 5px solid #953838;
+		}
+		
+	</style>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+	<div class="main-header">
+	</div>
+	<div class="sprite">
+		<div class="menu-container">
+			<div class="site-menu">
+				<div class="grid">
+					<div class="cel-2 item-menu active">INICIO</div>
+					<div class="cel-2 item-menu">CATEGORIAS</div>
+					<div class="cel-2 item-menu">PUBLICAR</div>
+					<div class="cel-2"></div>
+					<div class="no-login">
+						<div class="cel-2 item-menu">ENTRAR</div>
+						<div class="cel-2 item-menu">REGISTRAR</div>
+					</div>
+					<div class="has-login" hidden>
+						<div class="cel-4 item-menu">Rafael</div>
+						<div class="cel-2 item-menu">Mensagens</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		Automator.reset();
+		Automator.grid(12);
+	</script>
+</body>
+</html>
