@@ -243,7 +243,7 @@ class Loader implements ILoader {
 		}
 		#if js
 			var pro:IProgress = cast {loaded:0,total:0,file:url};
-			r.request(setjson ? Json.stringify(data) : setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
+			r.request(setjson ? data : setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
 				pro.loaded = a;
 				pro.total = b;
 				pro.file = u;

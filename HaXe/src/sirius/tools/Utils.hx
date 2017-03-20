@@ -291,7 +291,7 @@ class Utils{
 	 * @return
 	 */
 	static public function isValid(o:Dynamic):Bool {
-		if (o != null) {
+		if (o != null && o != '') {
 			if (o != 'null' && Reflect.hasField(o, 'length'))
 				return o.length > 0;
 			else
@@ -331,6 +331,27 @@ class Utils{
 	
 	static public function boolean(q:Dynamic):Bool {
 		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
+	}
+	
+	static public function money(val:Dynamic, s:String = '$', a:String =',', b:String = '.'):String {
+		val = '' + Std.int(val * 100);
+		var i:Int = val.length;
+		var c:Int = 0;
+		var r = '';
+		while (i-- > 0){
+			r = val.substr(i, 1) + r;
+			if(i > 0){
+				if (c == 1){
+					r = b + r;
+				}else if (c > 1 && (c+2) % 3 == 0){
+					r = a + r;
+				}
+			}else if ( c < 3){
+				r = '0' + (c == 1 ? '.' : '') + r;
+			}
+			++c;
+		}
+		return s + r;
 	}
 	
 	static public function stdClone(q:Dynamic):Dynamic {

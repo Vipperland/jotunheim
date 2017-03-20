@@ -642,6 +642,15 @@ class Display implements IDisplay {
 		}, headers, progress);
 	}
 	
+	public function autoLoad(?progress:IProgress->Void):Void {
+		all("[sru-load]").each(function(o:IDisplay){
+			var f:String = o.attribute('sru-load');
+			var d:Array<String> = f.split('#');
+			o.clearAttribute('sru-load');
+			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, null, progress);
+		});
+	}
+	
 	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay {
 		Sirius.document.scrollTo(this, time, ease, x, y);
 		return this;

@@ -450,6 +450,12 @@ interface IDisplay {
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void;
 	
 	/**
+	 * Load and build external modules spefified by the attribute 'sru-load'
+	 * @param	progress
+	 */
+	public function autoLoad(?progress:IProgress->Void):Void;
+	
+	/**
 	 * Scroll document for display visibility
 	 * @param	time
 	 * @param	ease

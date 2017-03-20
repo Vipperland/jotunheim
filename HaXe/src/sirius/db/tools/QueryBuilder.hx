@@ -26,7 +26,9 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private function _updateSet(parameters:Dynamic):String {
 		var q:Array<String> = [];
-		Dice.All(parameters, function(p:String, v:Dynamic) { q[q.length] = p + "=:" + p; });
+		Dice.All(parameters, function(p:String, v:Dynamic) { 
+			q[q.length] = p + "=:" + p; 
+		});
 		return q.join(",");
 	}
 	

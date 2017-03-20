@@ -108,6 +108,7 @@ class Sirius {
 				loader.start();
 				Reflect.deleteField(Sirius, '_loadController');
 				Reflect.deleteField(Sirius, '_loadPool');
+				document.body.autoLoad();
 			}
 		}
 		
@@ -381,5 +382,6 @@ class Sirius {
 	 * 		Sirius unique attributes:
 	 * 			sru-id				For unique or shared data, all elements with same sru-id share the same data.
 	 * 			sru-dom				For type idenfication and fast display conversion.
+	 * 			sru-load			Load and build an external module (sru="url#module")
 	 * 			
 	 */
