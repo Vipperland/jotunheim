@@ -197,126 +197,111 @@ class HttpRequest {
 		(Js) If `this.async` is false, the callback functions are called before
 		this method returns.
 	**/
+		
+	
+	
 	#if js
-	public function request( ?post : Dynamic, ?progress:String->Int->Int->Void ) : Void {
-	#else
-	public function request( ?post : Bool) : Void {
-	#end
-		var me = this;
-	#if js
-		var json:Bool = Std.is(post, String);
-		var jsonData:String = null;
-		if (json){
-			jsonData = post;
-			post = true;
-		}
-		me.responseData = null;
-		var r = req = js.Browser.createXMLHttpRequest();
-		var onreadystatechange = function(_) {
-			if( r.readyState != 4 )
+		public function request(?method:String, ?data:Dynamic, ?progress:String->Int->Int->Void) : Void {
+			var me = this;
+			me.responseData = null;
+			var r = req = js.Browser.createXMLHttpRequest();
+			var onreadystatechange = function(_) {
+				if( r.readyState != 4 )
+					return;
+				var s = try r.status catch( e : Dynamic ) null;
+				if ( s != null ) {
+					// If the request is local and we have data: assume a success (jQuery approach):
+					var protocol = js.Browser.location.protocol.toLowerCase();
+					var rlocalProtocol = ~/^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
+					var isLocal = rlocalProtocol.match(protocol);
+					if ( isLocal )
+						s = r.responseText != null ? 200 : 404;
+				}
+				if( s == untyped __js__("undefined") )
+					s = null;
+				if( s != null )
+					me.onStatus(s);
+				if( s != null && s >= 200 && s < 400 ) {
+					me.req = null;
+					me.onData(me.responseData = r.responseText);
+				}
+				else if ( s == null ) {
+					me.req = null;
+					me.onError("Failed to connect or resolve host");
+				}
+				else switch( s ) {
+				case 12029:
+					me.req = null;
+					me.onError("Failed to connect to host");
+				case 12007:
+					me.req = null;
+					me.onError("Unknown host");
+				default:
+					me.req = null;
+					me.responseData = r.responseText;
+					me.onError("Http Error #"+r.status);
+				}
+			};
+			if( async )
+				r.onreadystatechange = onreadystatechange;
+			var uri:Dynamic = null;
+			try {
+				if (progress != null){
+					r.onprogress = function(e:ProgressEvent){
+						if (e.lengthComputable)
+							progress(url, e.loaded, e.total);
+						else
+							progress(url, e.loaded, 0);
+					}
+					r.onloadend = r.onloadstart = function(e:ProgressEvent){
+						progress(url, 0, 0);
+					}
+				}
+				r.open(method, url, async);
+			} catch( e : Dynamic ) {
+				me.req = null;
+				onError(e.toString());
 				return;
-			var s = try r.status catch( e : Dynamic ) null;
-			if ( s != null ) {
-				// If the request is local and we have data: assume a success (jQuery approach):
-				var protocol = js.Browser.location.protocol.toLowerCase();
-				var rlocalProtocol = ~/^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
-				var isLocal = rlocalProtocol.match(protocol);
-				if ( isLocal )
-					s = r.responseText != null ? 200 : 404;
 			}
-			if( s == untyped __js__("undefined") )
-				s = null;
-			if( s != null )
-				me.onStatus(s);
-			if( s != null && s >= 200 && s < 400 ) {
-				me.req = null;
-				me.onData(me.responseData = r.responseText);
+			if(!Lambda.exists(headers, function(h) return h.header == "Content-Type"))
+				r.setRequestHeader("Content-Type",Std.is(data, String) ? "application/json" : "application/x-www-form-urlencoded");
+			for( h in headers )
+				r.setRequestHeader(h.header, h.value);
+			if (data != null && Std.is(data, String)){
+				r.send(data);
+			}else{
+				r.send(this.data);
 			}
-			else if ( s == null ) {
-				me.req = null;
-				me.onError("Failed to connect or resolve host");
-			}
-			else switch( s ) {
-			case 12029:
-				me.req = null;
-				me.onError("Failed to connect to host");
-			case 12007:
-				me.req = null;
-				me.onError("Unknown host");
-			default:
-				me.req = null;
-				me.responseData = r.responseText;
-				me.onError("Http Error #"+r.status);
-			}
-		};
-		if( async )
-			r.onreadystatechange = onreadystatechange;
-		var uri:Dynamic = null;
-		if (data != null)
-			uri = data;
-		try {
-			if (progress != null){
-				r.onprogress = function(e:ProgressEvent){
-					if (e.lengthComputable)
-						progress(url, e.loaded, e.total);
-					else
-						progress(url, e.loaded, 0);
-				}
-				r.onloadend = r.onloadstart = function(e:ProgressEvent){
-					progress(url, 0, 0);
-				}
-			}
-			if( post )
-				r.open("POST",url,async);
-			else if( uri != null ) {
-				var question = url.split("?").length <= 1;
-				r.open("GET", url + (if ( question ) "?" else "&") + uri, async);
-				uri = null;
-			} else {
-				r.open("GET",url,async);
-			}
-		} catch( e : Dynamic ) {
-			me.req = null;
-			onError(e.toString());
-			return;
+			if( !async )
+				onreadystatechange(null);
 		}
-		if( !json && data == null && !Lambda.exists(headers, function(h) return h.header == "Content-Type") && post && postData == null )
-			r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-		for( h in headers )
-			r.setRequestHeader(h.header, h.value);
-		if (post && json){
-			r.setRequestHeader("Content-Type","application/json");
-			r.send(jsonData);
-		}else{
-			r.send(uri);
-		}
-		if( !async )
-			onreadystatechange(null);
-	#elseif sys
-		var me = this;
-		var output = new haxe.io.BytesOutput();
-		var old = onError;
-		var err = false;
-		onError = function(e) {
+	#else
+		public function request( ?post : Bool) : Void {
+			var me = this;
+			var me = this;
+			var output = new haxe.io.BytesOutput();
+			var old = onError;
+			var err = false;
+			onError = function(e) {
+				#if neko
+				me.responseData = neko.Lib.stringReference(output.getBytes());
+				#else
+				me.responseData = output.getBytes().toString();
+				#end
+				err = true;
+				// Resetting back onError before calling it allows for a second "retry" request to be sent without onError being wrapped twice
+				onError = old;
+				onError(e);
+			}
+			customRequest(post,output);
+			if( !err )
 			#if neko
-			me.responseData = neko.Lib.stringReference(output.getBytes());
+				me.onData(me.responseData = neko.Lib.stringReference(output.getBytes()));
 			#else
-			me.responseData = output.getBytes().toString();
+				me.onData(me.responseData = output.getBytes().toString());
 			#end
-			err = true;
-			// Resetting back onError before calling it allows for a second "retry" request to be sent without onError being wrapped twice
-			onError = old;
-			onError(e);
 		}
-		customRequest(post,output);
-		if( !err )
-		#if neko
-			me.onData(me.responseData = neko.Lib.stringReference(output.getBytes()));
-		#else
-			me.onData(me.responseData = output.getBytes().toString());
-		#end
 	#end
-	}
 
 #if sys
 
@@ -742,7 +727,11 @@ class HttpRequest {
 		h.onError = function(e){
 			throw e;
 		}
-		h.request(false);
+		#if js
+			h.request('GET');
+		#else
+			h.request(false);
+		#end
 		return r;
 	}
 

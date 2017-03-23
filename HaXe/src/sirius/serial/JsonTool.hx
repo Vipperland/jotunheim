@@ -5,7 +5,7 @@ import sirius.tools.BitIO;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-
+@:expose('JsonTool')
 class JsonTool {
 	
 	/**

@@ -216,6 +216,7 @@ class Sirius {
 		
 		static private function _preInit():Void {
 			if (!_initialized) {
+				(cast Browser.window).trace = untyped __js__("console.log");
 				_initialized = true;
 				_loadPool = [];
 				document = Document.ME();

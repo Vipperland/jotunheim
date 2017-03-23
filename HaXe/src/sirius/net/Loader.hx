@@ -39,7 +39,8 @@ class Loader implements ILoader {
 	public var signals:ISignals;
 	
 	private function _getReq(u:String):HttpRequest {
-		return new HttpRequest(u + (_noCache ? "" : "?t=" + Date.now().getTime()));
+		// baseurl[?|&]_t=timestr
+		return new HttpRequest(u);// + (u.indexOf('?') == -1 ? '?' : '&') + '_t=' + (Date.now().getTime()));
 	}
 	
 	public function new(?noCache:Bool = false){
@@ -100,9 +101,9 @@ class Loader implements ILoader {
 				_loadNext();
 			}
 			#if js
-				r.request(false, _onLoadProgress);
+				r.request('GET', null, _onLoadProgress);
 			#else
-				r.request(false);
+				r.request(null);
 			#end
 		}else {
 			_isBusy = false;
@@ -135,7 +136,7 @@ class Loader implements ILoader {
 	#end
 	
 	#if js 
-	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void #if js, ?progress:IProgress->Void #end):Void {
+	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
 	#elseif php
 	public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 	#end
@@ -176,10 +177,10 @@ class Loader implements ILoader {
 		}
 		#if js
 			if (progress == null){
-				r.request(false);
+				r.request('GET', null);
 			}else{
 				var pro:IProgress = cast {loaded:0,total:0,file:file};
-				r.request(false, cast function(u:String, a:Int, b:Int):Void{
+				r.request('GET', null, cast function(u:String, a:Int, b:Int):Void{
 					pro.loaded = a;
 					pro.total = b;
 					pro.file = u;
@@ -196,9 +197,16 @@ class Loader implements ILoader {
 	#elseif php
 	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {
 	#end
-		var setpost:Bool = method == null || method.toUpperCase() == 'POST';
-		var setjson:Bool = !setpost && method.toUpperCase() == 'JSON';
-		if (!setpost && !setjson && data != null){
+		if (method == null || method == '') {
+			method = 'POST';
+		}else{
+			method = method.toUpperCase();
+		}
+		var is_post:Bool = method == 'POST';
+		var is_get:Bool = method == 'GET';
+		var is_json:Bool = Std.is(data, String);
+		// Build URL for GET parameters
+		if (method == 'GET'){
 			var ps:Array<String> = url.split('?');
 			if (ps.length == 1 || ps[1].length == 0){
 				ps[1] = Utils.paramsOf(data);
@@ -207,12 +215,14 @@ class Loader implements ILoader {
 			}
 			url = ps.join('?');
 		}
+		// Create request object
 		var r:HttpRequest = _getReq(url);
 		_changed(url, 'started');
 		#if js
 			r.async = true;
 		#end
-		if (!setjson && setpost && data != null) {
+		// Parse parameters
+		if (!is_json && data != null) {
 			#if js
 				Dice.All(data, r.addParameter);
 			#else
@@ -221,13 +231,6 @@ class Loader implements ILoader {
 		}
 		if (headers != null){
 			Dice.All(headers, function(p:String, v:Dynamic){
-				if (p == 'auth' && !Std.is(v, String)){
-					p = 'Authorization';
-					v = 'Basic ' + IOTools.encodeBase64(v.user + ':' + v.password);
-				}else if (p == 'oauth'){
-					p = 'Authorization';
-					v = 'OAuth ' + v;
-				}
 				r.setHeader(p, v);
 			});
 		}
@@ -243,14 +246,14 @@ class Loader implements ILoader {
 		}
 		#if js
 			var pro:IProgress = cast {loaded:0,total:0,file:url};
-			r.request(setjson ? data : setpost, progress != null ? cast function(u:String, a:Int, b:Int):Void{
+			r.request(method, data, progress != null ? cast function(u:String, a:Int, b:Int):Void{
 				pro.loaded = a;
 				pro.total = b;
 				pro.file = u;
 				progress(pro);
 			} : null);
 		#elseif php
-			r.request(setpost);
+			r.request(is_post);
 		#end
 		
 	}
