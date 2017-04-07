@@ -66,13 +66,23 @@ class Push implements Dynamic {
 				// Create parameter array
 				var tk:Array<String> = q.split(' ');
 				// First string is the method
-				var method = tk.shift();
+				var method:String = tk.shift();
+				var isMethod:Bool = true;
 				// Check if method or property exists
-				o = Reflect.getProperty(this, method);
-				if (o != null){
+				#if js 
+					o = Reflect.getProperty(this, method);
+					isMethod = Reflect.isFunction(o);
+				#elseif php
+					if (untyped __call__("method_exists", this, method)){
+						o = method;
+						isMethod = true;
+					}
+				#end
+				if (o != null && isMethod){
 					_log[_log.length] = q;
 					// Call method, if is a function and user the argument array, recursive call if result is a string and result the last one
-					if (Reflect.isFunction(o)){
+					
+					if (isMethod){
 						o = Reflect.callMethod(this, o, tk);
 						if (o != null && Std.is(o, String)){
 							_batchExec(o);

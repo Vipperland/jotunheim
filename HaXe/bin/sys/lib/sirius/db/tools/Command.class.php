@@ -85,8 +85,12 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 		return $filter;
 	}
 	public function log() {
+		$_g = $this;
 		$q = $this->_query;
-		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$q), "sirius_db_tools_Command_4"), 'execute'), null);
+		$r = _hx_explode(":", $q);
+		sirius_utils_Dice::All($r, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_4"), 'execute'), null);
+		$q = $r->join("");
+		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_5"), 'execute'), null);
 		return $q;
 	}
 	public function __call($m, $a) {
@@ -130,23 +134,37 @@ function sirius_db_tools_Command_3(&$filter, &$limit, &$param, &$values, $v) {
 	{
 		if(sirius_utils_Dice::Match((new _hx_array(array(Reflect::field($v, $param)))), $values, 1) > 0) {
 			$filter[$filter->length] = $v;
-			return sirius_db_tools_Command_5($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values);
+			return sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_7($__hx__this, $filter, $limit, $param, $v, $values);
 		}
 		return false;
 	}
 }
-function sirius_db_tools_Command_4(&$q, $p, $v) {
+function sirius_db_tools_Command_4(&$_g, &$q, &$r, $p, $v) {
 	{
-		$sub = ":" . _hx_string_or_null($p);
-		$by = $v;
-		if($sub === "") {
-			$q = implode(str_split ($q), $by);
-		} else {
-			$q = str_replace($sub, $by, $q);
+		if(Std::parseInt($p) > 0) {
+			$a = Math::min(_hx_index_of($v, " ", null), _hx_index_of($v, ",", null));
+			$b = Math::min(_hx_index_of($v, ")", null), _hx_index_of($v, ";", null));
+			$i = Math::min($a, $b);
+			$h = _hx_substring($v, 0, $i - 1);
+			$t = _hx_substring($v, $i, strlen($v));
+			if(_hx_has_field($_g->_parameters, $h)) {
+				$h = Reflect::field($_g->_parameters, $h);
+				if(Std::is($h, _hx_qtype("String"))) {
+					$h = "\"" . _hx_string_or_null($h) . "\"";
+				}
+				$r[$p] = _hx_string_or_null($h) . _hx_string_or_null($t);
+			} else {
+				$r[$p] = ":" . _hx_string_or_null($v);
+			}
 		}
 	}
 }
-function sirius_db_tools_Command_5(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
+function sirius_db_tools_Command_5(&$_g, &$q, &$r, $p1, $v1) {
+	{
+		$q = _hx_explode(":" . _hx_string_or_null($p1), $q)->join($v1);
+	}
+}
+function sirius_db_tools_Command_6(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;
@@ -158,7 +176,7 @@ function sirius_db_tools_Command_5(&$__hx__this, &$filter, &$limit, &$param, &$v
 		unset($bNeg,$aNeg);
 	}
 }
-function sirius_db_tools_Command_6(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
+function sirius_db_tools_Command_7(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
 	{
 		$a = --$limit;
 		return $a === 0;
