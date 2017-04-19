@@ -30,6 +30,8 @@ interface IDomain {
 		
 		public var data:IDomainData;
 		
+		public var input:Dynamic;
+		
 		public var server:String;
 		
 		public var client:String;

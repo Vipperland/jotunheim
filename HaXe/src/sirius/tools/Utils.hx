@@ -279,7 +279,7 @@ class Utils{
 			else if (Std.is(v, String)) 					b += i + p + " (string) = " + v + "\r";
 			else if(Std.is(v, Bool)) 						b += i + p + " (bool) = " + v + "\r";
 			else if(Std.is(v, Int) || Std.is(v, Float)) 	b += i + p + " (number) = " + v + "\r";
-			else if (Std.is(v, Array))						b += i + p + " (array):{\r" + _sruFy(v, i, '') + i + "}\r";
+			else if (Std.is(v, Array))						b += i + p + " (array[" + v.length + "]):[\r" + _sruFy(v, i, '') + i + "]\r";
 			else											b += i + p + " (object):{\r" + _sruFy(v, i, '') + i + "}\r";
 		});
 		return b;

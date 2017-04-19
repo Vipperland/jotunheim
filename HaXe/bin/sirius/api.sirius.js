@@ -5,12 +5,14 @@ $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
 ;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
+;$hx_exports.sru.math = $hx_exports.sru.math || {};
 ;$hx_exports.sru.data = $hx_exports.sru.data || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
 ;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.signals = $hx_exports.sru.signals || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
+;$hx_exports.sru.flow = $hx_exports.sru.flow || {};
 var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -176,6 +178,10 @@ Reflect.field = function(o,field) {
 Reflect.setField = function(o,field,value) {
 	o[field] = value;
 };
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	if(o == null) return null; else if(o.__properties__ && (tmp = o.__properties__["get_" + field])) return o[tmp](); else return o[field];
+};
 Reflect.callMethod = function(o,func,args) {
 	return func.apply(o,args);
 };
@@ -223,6 +229,9 @@ StringBuf.prototype = {
 };
 var StringTools = function() { };
 StringTools.__name__ = ["StringTools"];
+StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+};
 StringTools.urlDecode = function(s) {
 	return decodeURIComponent(s.split("+").join(" "));
 };
@@ -243,6 +252,13 @@ StringTools.lpad = function(s,c,l) {
 };
 StringTools.fastCodeAt = function(s,index) {
 	return s.charCodeAt(index);
+};
+var Test_$JS = function() { };
+Test_$JS.__name__ = ["Test_JS"];
+Test_$JS.main = function() {
+	var o = new samples_flow_TestPusher();
+	var result = o.proc(["foo\tHello Word Sirius"]);
+	haxe_Log.trace(o.log(),{ fileName : "Test_JS.hx", lineNumber : 19, className : "Test_JS", methodName : "main", customParams : [result.buffer]});
 };
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
@@ -1098,7 +1114,6 @@ js_Cookie.set = function(name,value,expireDelay,path,domain) {
 	}
 	if(path != null) s += ";path=" + path;
 	if(domain != null) s += ";domain=" + domain;
-	haxe_Log.trace(s,{ fileName : "Cookie.hx", lineNumber : 41, className : "js.Cookie", methodName : "set"});
 	window.document.cookie = s;
 };
 js_Cookie.all = function() {
@@ -1306,6 +1321,83 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
+var sirius_flow_Push = $hx_exports.sru.flow.Push = function() {
+	this._log = [];
+};
+sirius_flow_Push.__name__ = ["sirius","flow","Push"];
+sirius_flow_Push.prototype = {
+	log: function() {
+		return this._log;
+	}
+	,proc: function(data) {
+		this._buffer = { };
+		this._now = null;
+		this._batchExec(data);
+		return this._buffer;
+	}
+	,_batchExec: function(data) {
+		sirius_utils_Dice.Values((data instanceof Array) && data.__enum__ == null?data:data.split("\r"),$bind(this,this._exec));
+	}
+	,_exec: function(q) {
+		var o = null;
+		var _g = HxOverrides.substr(q,0,1);
+		switch(_g) {
+		case "@":
+			var _g1 = HxOverrides.substr(q,1,1);
+			switch(_g1) {
+			case "!":
+				this._now = null;
+				break;
+			default:
+				var prop = HxOverrides.substr(q,1,q.length - 1);
+				if(!Object.prototype.hasOwnProperty.call(this._buffer,prop)) {
+					this._now = [];
+					this._buffer[prop] = this._now;
+				} else this._now = Reflect.field(this._buffer,prop);
+			}
+			break;
+		default:
+			q = q.split("\t").join(" ");
+			while(q.indexOf("  ") != -1) q = q.split("  ").join(" ");
+			var tk = q.split(" ");
+			var method = tk.shift();
+			var isMethod = true;
+			o = Reflect.getProperty(this,method);
+			isMethod = Reflect.isFunction(o);
+			if(o != null && isMethod) {
+				this._log[this._log.length] = q;
+				if(isMethod) {
+					o = Reflect.callMethod(this,o,tk);
+					if(o != null && typeof(o) == "string") {
+						this._batchExec(o);
+						o = null;
+					}
+				} else {
+					o = tk[0];
+					this[method] = o;
+				}
+			}
+			if(o != null && this._now != null) this._now[this._now.length] = o;
+		}
+	}
+	,__class__: sirius_flow_Push
+};
+var samples_flow_TestPusher = function() {
+	sirius_flow_Push.call(this);
+};
+samples_flow_TestPusher.__name__ = ["samples","flow","TestPusher"];
+samples_flow_TestPusher.__super__ = sirius_flow_Push;
+samples_flow_TestPusher.prototype = $extend(sirius_flow_Push.prototype,{
+	foo: function(a,b,c) {
+		haxe_Log.trace("TestPusher::foo(" + a + "," + b + ")",{ fileName : "TestPusher.hx", lineNumber : 16, className : "samples.flow.TestPusher", methodName : "foo"});
+		if(c != null) return "bar\t" + c; else return a + " " + b;
+	}
+	,bar: function(a) {
+		haxe_Log.trace("TestPusher::bar(" + a + ")",{ fileName : "TestPusher.hx", lineNumber : 25, className : "samples.flow.TestPusher", methodName : "bar"});
+		return { result : "test"};
+	}
+	,__class__: samples_flow_TestPusher
+});
 var sirius_tools_IAgent = function() { };
 sirius_tools_IAgent.__name__ = ["sirius","tools","IAgent"];
 sirius_tools_IAgent.prototype = {
@@ -1406,7 +1498,7 @@ sirius_net_Loader.__name__ = ["sirius","net","Loader"];
 sirius_net_Loader.__interfaces__ = [sirius_net_ILoader];
 sirius_net_Loader.prototype = {
 	_getReq: function(u) {
-		return new sirius_net_HttpRequest(u + (this._noCache?"":"?t=" + new Date().getTime()));
+		return new sirius_net_HttpRequest(u);
 	}
 	,progress: function() {
 		return (this.totalLoaded + (this._fileProgress < 1?this._fileProgress:0)) / this.totalFiles;
@@ -1446,7 +1538,7 @@ sirius_net_Loader.prototype = {
 				sirius_Sirius.resources.register(f,d);
 				_g._loadNext();
 			};
-			r.request(false,$bind(this,this._onLoadProgress));
+			r.request("GET",null,$bind(this,this._onLoadProgress));
 		} else {
 			this._isBusy = false;
 			this._complete();
@@ -1496,9 +1588,9 @@ sirius_net_Loader.prototype = {
 			_g._changed(file,"error",d1);
 			if(handler != null) handler(new sirius_net_Request(false,null,new sirius_errors_Error(-1,d1),file));
 		};
-		if(progress == null) r.request(false); else {
+		if(progress == null) r.request("GET",null); else {
 			var pro = { loaded : 0, total : 0, file : file};
-			r.request(false,function(u,a,b) {
+			r.request("GET",null,function(u,a,b) {
 				pro.loaded = a;
 				pro.total = b;
 				pro.file = u;
@@ -1509,10 +1601,19 @@ sirius_net_Loader.prototype = {
 	,request: function(url,data,handler,method,headers,progress) {
 		if(method == null) method = "POST";
 		var _g = this;
+		if(method == null || method == "") method = "POST"; else method = method.toUpperCase();
+		var is_post = method == "POST";
+		var is_get = method == "GET";
+		var is_json = typeof(data) == "string";
+		if(method == "GET") {
+			var ps = url.split("?");
+			if(ps.length == 1 || ps[1].length == 0) ps[1] = sirius_tools_Utils.paramsOf(data); else ps[1] += "&" + sirius_tools_Utils.paramsOf(data);
+			url = ps.join("?");
+		}
 		var r = this._getReq(url);
 		this._changed(url,"started");
 		r.async = true;
-		if(data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
+		if(!is_json && data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
 		if(headers != null) sirius_utils_Dice.All(headers,function(p,v) {
 			r.setHeader(p,v);
 		});
@@ -1524,9 +1625,8 @@ sirius_net_Loader.prototype = {
 			_g._changed(url,"error",d1);
 			if(handler != null) handler(new sirius_net_Request(false,null,new sirius_errors_Error(-1,d1)));
 		};
-		var setpost = method == null || method.toLowerCase() == "post";
 		var pro = { loaded : 0, total : 0, file : url};
-		r.request(setpost,progress != null?function(u,a,b) {
+		r.request(method,data,progress != null?function(u,a,b) {
 			pro.loaded = a;
 			pro.total = b;
 			pro.file = u;
@@ -1718,8 +1818,10 @@ sirius_modules_ModLib.prototype = {
 					d.addChild(v);
 				}
 			});
-		} else d = new sirius_dom_Display().write(this.get(module,data));
-		d.attribute("sru-mod",module);
+		} else {
+			d = new sirius_dom_Display().write(this.get(module,data));
+			d.children().attribute("sru-mod",module);
+		}
 		return d;
 	}
 	,buildIn: function(module,target,data,each) {
@@ -1780,6 +1882,7 @@ sirius_Sirius._loadController = function(e) {
 		sirius_Sirius.loader.start();
 		Reflect.deleteField(sirius_Sirius,"_loadController");
 		Reflect.deleteField(sirius_Sirius,"_loadPool");
+		sirius_Sirius.document.body.autoLoad();
 	}
 };
 sirius_Sirius.updatePlugins = function() {
@@ -1835,6 +1938,7 @@ sirius_Sirius.stylish = function(url,handler) {
 };
 sirius_Sirius._preInit = function() {
 	if(!sirius_Sirius._initialized) {
+		window.trace = console.log;
 		sirius_Sirius._initialized = true;
 		sirius_Sirius._loadPool = [];
 		sirius_Sirius.document = sirius_dom_Document.ME();
@@ -2032,6 +2136,10 @@ sirius_dom_Display.prototype = {
 	}
 	,disable: function() {
 		this.style({ pointerEvents : "none"});
+		return this;
+	}
+	,click: function() {
+		this.element.click();
 		return this;
 	}
 	,bg: function(data,repeat,position,attachment,size) {
@@ -2377,6 +2485,14 @@ sirius_dom_Display.prototype = {
 			if(r.success) _g.mount(module);
 			if(handler != null) handler(r);
 		},headers,progress);
+	}
+	,autoLoad: function(progress) {
+		this.all("[sru-load]").each(function(o) {
+			var f = o.attribute("sru-load");
+			var d = f.split("#");
+			o.clearAttribute("sru-load");
+			o.load(d[0],d.length == 1?d[0]:d[1],null,null,null,progress);
+		});
 	}
 	,lookFor: function(time,ease,x,y) {
 		sirius_Sirius.document.scrollTo(this,time,ease,x,y);
@@ -3998,6 +4114,9 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		if(q != null) this.object.placeholder = q;
 		return this.object.placeholder;
 	}
+	,validateCardExp: function() {
+		this._rgx = new EReg("\\d{2}/\\d{2,4}","");
+	}
 	,validateDate: function() {
 		this._rgx = new EReg("\\d{1,2}/\\d{1,2}/\\d{4}","");
 	}
@@ -4037,6 +4156,9 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,validateMd5: function() {
 		this._rgx = new EReg("^[A-Za-z0-9._-]{35}$","");
+	}
+	,validateCard: function() {
+		this._rgx = new EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}$","");
 	}
 	,restrict: function(q,filter) {
 		this._rgx = q;
@@ -4823,12 +4945,12 @@ sirius_tools_Utils.sruString = function(o) {
 sirius_tools_Utils._sruFy = function(o,i,b) {
 	i = i + "  ";
 	sirius_utils_Dice.All(o,function(p,v) {
-		if(v == null) b += i + p + " (null) = NULL\r"; else if(typeof(v) == "string") b += i + p + " (string) = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + " (bool) = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + " (number) = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + " (array):{\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r"; else b += i + p + " (object):{\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
+		if(v == null) b += i + p + " (null) = NULL\r"; else if(typeof(v) == "string") b += i + p + " (string) = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + " (bool) = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + " (number) = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + " (array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + " (object):{\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
 	});
 	return b;
 };
 sirius_tools_Utils.isValid = function(o) {
-	if(o != null) {
+	if(o != null && o != "") {
 		if(o != "null" && Object.prototype.hasOwnProperty.call(o,"length")) return o.length > 0; else return o != 0 && o != false;
 	}
 	return false;
@@ -4855,8 +4977,33 @@ sirius_tools_Utils["typeof"] = function(o) {
 sirius_tools_Utils["boolean"] = function(q) {
 	return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
 };
+sirius_tools_Utils.money = function(val,s,a,b) {
+	if(b == null) b = ".";
+	if(a == null) a = ",";
+	if(s == null) s = "$";
+	val = "" + (val * 100 | 0);
+	var i = val.length;
+	var c = 0;
+	var r = "";
+	while(i-- > 0) {
+		r = Std.string(val.substr(i,1)) + r;
+		if(i > 0) {
+			if(c == 1) r = b + r; else if(c > 1 && (c + 2) % 3 == 0) r = a + r;
+		} else if(c < 3) r = "0" + (c == 1?".":"") + r;
+		++c;
+	}
+	return s + r;
+};
 sirius_tools_Utils.stdClone = function(q) {
 	return JSON.parse(JSON.stringify(q));
+};
+sirius_tools_Utils.paramsOf = function(o) {
+	var r = [];
+	sirius_utils_Dice.All(o,function(p,v) {
+		v = JSON.stringify(v);
+		r[r.length] = p + "=" + StringTools.urlEncode(v.substr(1,v.length - 2));
+	});
+	return r.join("&");
 };
 var sirius_css_Entry = function(keys,dict,i) {
 	this.important = i;
@@ -5138,6 +5285,7 @@ var sirius_data_IDataCache = function() { };
 sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
 sirius_data_IDataCache.prototype = {
 	__class__: sirius_data_IDataCache
+	,__properties__: {get_data:"get_data"}
 };
 var sirius_data_DataCache = $hx_exports.sru.data.DataCache = function(name,path,expire,base64) {
 	if(expire == null) expire = 0;
@@ -5237,6 +5385,7 @@ sirius_data_DataCache.prototype = {
 		return result;
 	}
 	,__class__: sirius_data_DataCache
+	,__properties__: {get_data:"get_data"}
 };
 var sirius_data_IDataSet = function() { };
 sirius_data_IDataSet.__name__ = ["sirius","data","IDataSet"];
@@ -5688,7 +5837,7 @@ sirius_math_ITransform3D.__name__ = ["sirius","math","ITransform3D"];
 sirius_math_ITransform3D.prototype = {
 	__class__: sirius_math_ITransform3D
 };
-var sirius_math_Point = function(x,y) {
+var sirius_math_Point = $hx_exports.sru.math.point = function(x,y) {
 	this.x = x;
 	this.y = y;
 };
@@ -5760,7 +5909,7 @@ sirius_net_HttpRequest.requestUrl = function(url) {
 	h.onError = function(e) {
 		throw new js__$Boot_HaxeError(e);
 	};
-	h.request(false);
+	h.request("GET");
 	return r;
 };
 sirius_net_HttpRequest.prototype = {
@@ -5788,7 +5937,7 @@ sirius_net_HttpRequest.prototype = {
 		if(this.req == null) return;
 		this.req.abort();
 	}
-	,request: function(post,progress) {
+	,request: function(method,data,progress) {
 		var _g = this;
 		var me = this;
 		me.responseData = null;
@@ -5833,7 +5982,6 @@ sirius_net_HttpRequest.prototype = {
 		};
 		if(this.async) r.onreadystatechange = onreadystatechange;
 		var uri = null;
-		if(this.data != null) uri = this.data;
 		try {
 			if(progress != null) {
 				r.onprogress = function(e1) {
@@ -5843,20 +5991,16 @@ sirius_net_HttpRequest.prototype = {
 					progress(_g.url,0,0);
 				};
 			}
-			if(post) r.open("POST",this.url,this.async); else if(uri != null) {
-				var question = this.url.split("?").length <= 1;
-				r.open("GET",this.url + (question?"?":"&") + Std.string(uri),this.async);
-				uri = null;
-			} else r.open("GET",this.url,this.async);
+			r.open(method,this.url,this.async);
 		} catch( e3 ) {
 			if (e3 instanceof js__$Boot_HaxeError) e3 = e3.val;
 			me.req = null;
 			this.onError(e3.toString());
 			return;
 		}
-		if(this.data == null && !Lambda.exists(this.headers,function(h) {
+		if(!Lambda.exists(this.headers,function(h) {
 			return h.header == "Content-Type";
-		}) && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		})) r.setRequestHeader("Content-Type",typeof(data) == "string"?"application/json":"application/x-www-form-urlencoded");
 		var _g_head = this.headers.h;
 		var _g_val = null;
 		while(_g_head != null) {
@@ -5870,7 +6014,7 @@ sirius_net_HttpRequest.prototype = {
 			}(this));
 			r.setRequestHeader(h1.header,h1.value);
 		}
-		r.send(uri);
+		if(data != null && typeof(data) == "string") r.send(data); else r.send(this.data);
 		if(!this.async) onreadystatechange(null);
 	}
 	,onData: function(data) {
@@ -6229,7 +6373,7 @@ sirius_serial_IOTools.jsonDecode = function(q) {
 sirius_serial_IOTools.md5Encode = function(o,base64) {
 	if(typeof(o) == "string") return haxe_crypto_Md5.encode(o); else return haxe_crypto_Md5.encode(base64?sirius_serial_IOTools.encodeBase64(o):sirius_serial_IOTools.jsonEncode(o));
 };
-var sirius_serial_JsonTool = function(replacer,space) {
+var sirius_serial_JsonTool = $hx_exports.JsonTool = function(replacer,space) {
 	this.replacer = replacer;
 	this.indent = space;
 	this.pretty = space != null;
@@ -7349,5 +7493,5 @@ sirius_tools_Ticker._pool = [];
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 sirius_utils_Table._trash = [];
-sirius_Sirius.main();
+Test_$JS.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

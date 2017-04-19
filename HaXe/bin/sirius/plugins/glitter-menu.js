@@ -6,7 +6,6 @@
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
 	$exports.sru.plugins.GlitterMenu = new (function(){
-		window.trace = console.log;
 		var _glitterTimer = null;
 		var _layer = new sru.dom.Div();
 		var _activity = false;

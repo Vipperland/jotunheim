@@ -11,10 +11,12 @@ interface IDomainData {
 	public var HTTP_UPGRADE_INSECURE_REQUESTS:String;
 	public var HTTP_USER_AGENT:String;
 	public var HTTP_DNT:String;
+	public var HTTP_AUTHORIZATION:String;
 	public var HTTP_ACCEPT_ENCODING:String;
 	public var HTTP_ACCEPT_LANGUAGE:String;
 	public var HTTP_COOKIE:String;
-	public var PATH:String;
+	public var CONTENT_TYPE:String;
+	public var CONTENT_LEGTH:String;
 	public var SystemRoot:String;
 	public var COMSPEC:String;
 	public var PATHEXT:String;
@@ -41,4 +43,7 @@ interface IDomainData {
 	public var PHP_SELF:String;
 	public var REQUEST_TIME_FLOAT:String;
 	public var REQUEST_TIME:String;
+	public var PHP_AUTH_USER:String;
+	public var PHP_AUTH_PW:String;
+	
 }

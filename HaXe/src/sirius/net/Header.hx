@@ -5,6 +5,7 @@ import php.Web;
 import sirius.serial.JsonTool;
 import sirius.tools.BitIO;
 import sirius.serial.IOTools;
+import sirius.utils.Dice;
 
 
 /**

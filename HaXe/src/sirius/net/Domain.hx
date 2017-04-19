@@ -11,6 +11,7 @@ package sirius.net;
 	
 	import sirius.net.IDomainData;
 #end
+import haxe.Json;
 import haxe.io.Bytes;
 import sirius.data.DataCache;
 import sirius.data.Fragments;
@@ -40,6 +41,8 @@ class Domain implements IDomain {
 	#elseif php
 		
 		public var data:IDomainData;
+		
+		public var input:Dynamic;
 		
 		public var server:String;
 		
@@ -73,6 +76,9 @@ class Domain implements IDomain {
 			
 			var boundary:String = _getMultipartKey();
 			
+			if (data.CONTENT_TYPE == 'application/json'){
+				input = Json.parse(untyped __php__ ("file_get_contents('php://input')"));
+			}
 			params = _getParams();
 			
 			if (boundary != null) {
@@ -146,6 +152,7 @@ class Domain implements IDomain {
 			if (data == null) 
 				data = {};
 			var input:String = untyped __php__ ("file_get_contents('php://input')");
+			
 			var result:Array<String> = input.split(boundary);
 			Dice.Values(result, function(v:String) {
 				if (v == null || v.length == 0) 

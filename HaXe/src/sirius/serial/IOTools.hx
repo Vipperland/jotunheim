@@ -69,5 +69,36 @@ class IOTools {
 		else
 			return Md5.encode(base64 ? encodeBase64(o) : jsonEncode(o));
 	}
+	//
+	//public static function sruCode(o:Dynamic):String {
+		///*
+		//
+			//prop:ClassName {
+				//stringVal = string
+				//intVal = 1 // int
+				//floatVal = 1.0 // float
+				//boolVal = true // bool
+				//arrayVal:Array {
+				//}
+				//defaultObjVal {
+				//}
+				//objVal:Classname {
+				//}
+			//}
+			//
+			//### Create a class with parameters call:
+			//ClassName({
+				//...props
+			//})
+			//
+			//### Call a method
+			//@method inline parameters separeted by space
+			//@method [
+				//1 // int val
+				//ClassName {
+				//}
+			//]
+		//*/
+	//}
 	
 }
