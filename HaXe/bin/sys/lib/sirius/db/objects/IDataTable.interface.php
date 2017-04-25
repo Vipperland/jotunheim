@@ -7,6 +7,7 @@ interface sirius_db_objects_IDataTable {
 	//;
 	//;
 	//;
+	function create($data);
 	function add($parameters = null, $clause = null, $order = null, $limit = null);
 	function findAll($clause = null, $order = null, $limit = null);
 	function findOne($clause = null);

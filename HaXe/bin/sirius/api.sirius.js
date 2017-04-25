@@ -6,13 +6,13 @@ $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
 ;$hx_exports.sru.math = $hx_exports.sru.math || {};
+;$hx_exports.sru.flow = $hx_exports.sru.flow || {};
 ;$hx_exports.sru.data = $hx_exports.sru.data || {};
 ;$hx_exports.sru.events = $hx_exports.sru.events || {};
 ;$hx_exports.sru.dom = $hx_exports.sru.dom || {};
 ;$hx_exports.sru.css = $hx_exports.sru.css || {};
 ;$hx_exports.sru.signals = $hx_exports.sru.signals || {};
 ;$hx_exports.sru.modules = $hx_exports.sru.modules || {};
-;$hx_exports.sru.flow = $hx_exports.sru.flow || {};
 var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -253,13 +253,6 @@ StringTools.lpad = function(s,c,l) {
 StringTools.fastCodeAt = function(s,index) {
 	return s.charCodeAt(index);
 };
-var Test_$JS = function() { };
-Test_$JS.__name__ = ["Test_JS"];
-Test_$JS.main = function() {
-	var o = new samples_flow_TestPusher();
-	var result = o.proc(["foo\tHello Word Sirius"]);
-	haxe_Log.trace(o.log(),{ fileName : "Test_JS.hx", lineNumber : 19, className : "Test_JS", methodName : "main", customParams : [result.buffer]});
-};
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -329,6 +322,11 @@ _$UInt_UInt_$Impl_$.gt = function(a,b) {
 	var aNeg = a < 0;
 	var bNeg = b < 0;
 	if(aNeg != bNeg) return aNeg; else return a > b;
+};
+_$UInt_UInt_$Impl_$.gte = function(a,b) {
+	var aNeg = a < 0;
+	var bNeg = b < 0;
+	if(aNeg != bNeg) return aNeg; else return a >= b;
 };
 _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	var $int = this1;
@@ -1321,83 +1319,6 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var sirius_flow_Push = $hx_exports.sru.flow.Push = function() {
-	this._log = [];
-};
-sirius_flow_Push.__name__ = ["sirius","flow","Push"];
-sirius_flow_Push.prototype = {
-	log: function() {
-		return this._log;
-	}
-	,proc: function(data) {
-		this._buffer = { };
-		this._now = null;
-		this._batchExec(data);
-		return this._buffer;
-	}
-	,_batchExec: function(data) {
-		sirius_utils_Dice.Values((data instanceof Array) && data.__enum__ == null?data:data.split("\r"),$bind(this,this._exec));
-	}
-	,_exec: function(q) {
-		var o = null;
-		var _g = HxOverrides.substr(q,0,1);
-		switch(_g) {
-		case "@":
-			var _g1 = HxOverrides.substr(q,1,1);
-			switch(_g1) {
-			case "!":
-				this._now = null;
-				break;
-			default:
-				var prop = HxOverrides.substr(q,1,q.length - 1);
-				if(!Object.prototype.hasOwnProperty.call(this._buffer,prop)) {
-					this._now = [];
-					this._buffer[prop] = this._now;
-				} else this._now = Reflect.field(this._buffer,prop);
-			}
-			break;
-		default:
-			q = q.split("\t").join(" ");
-			while(q.indexOf("  ") != -1) q = q.split("  ").join(" ");
-			var tk = q.split(" ");
-			var method = tk.shift();
-			var isMethod = true;
-			o = Reflect.getProperty(this,method);
-			isMethod = Reflect.isFunction(o);
-			if(o != null && isMethod) {
-				this._log[this._log.length] = q;
-				if(isMethod) {
-					o = Reflect.callMethod(this,o,tk);
-					if(o != null && typeof(o) == "string") {
-						this._batchExec(o);
-						o = null;
-					}
-				} else {
-					o = tk[0];
-					this[method] = o;
-				}
-			}
-			if(o != null && this._now != null) this._now[this._now.length] = o;
-		}
-	}
-	,__class__: sirius_flow_Push
-};
-var samples_flow_TestPusher = function() {
-	sirius_flow_Push.call(this);
-};
-samples_flow_TestPusher.__name__ = ["samples","flow","TestPusher"];
-samples_flow_TestPusher.__super__ = sirius_flow_Push;
-samples_flow_TestPusher.prototype = $extend(sirius_flow_Push.prototype,{
-	foo: function(a,b,c) {
-		haxe_Log.trace("TestPusher::foo(" + a + "," + b + ")",{ fileName : "TestPusher.hx", lineNumber : 16, className : "samples.flow.TestPusher", methodName : "foo"});
-		if(c != null) return "bar\t" + c; else return a + " " + b;
-	}
-	,bar: function(a) {
-		haxe_Log.trace("TestPusher::bar(" + a + ")",{ fileName : "TestPusher.hx", lineNumber : 25, className : "samples.flow.TestPusher", methodName : "bar"});
-		return { result : "test"};
-	}
-	,__class__: samples_flow_TestPusher
-});
 var sirius_tools_IAgent = function() { };
 sirius_tools_IAgent.__name__ = ["sirius","tools","IAgent"];
 sirius_tools_IAgent.prototype = {
@@ -1441,7 +1362,7 @@ sirius_tools_Agent.prototype = {
 			this.lg = true;
 			this.screen = 4;
 		} else this.screen = 0;
-		this.jQuery = Reflect.hasField(window,"$") || Reflect.hasField(window,"jQuery");
+		this.jquery = window.jQuery != null;
 		this.animator = sirius_transitions_Animator.available();
 		this.display = sirius_tools_Utils.screenOrientation();
 		if(handler != null) handler(this);
@@ -3260,6 +3181,21 @@ sirius_utils_Dice.Table = function(data,key,numeric,copy) {
 	});
 	return r;
 };
+sirius_utils_Dice.List = function(data,a,b) {
+	if(a == null) a = 0;
+	var copy = [];
+	var len = data.length;
+	if(b == null) b = data.length;
+	if(_$UInt_UInt_$Impl_$.gt(b,a)) while(_$UInt_UInt_$Impl_$.gt(b,a)) {
+		if(_$UInt_UInt_$Impl_$.gte(a,len)) break;
+		copy[copy.length] = data[a];
+		++a;
+	} else if(_$UInt_UInt_$Impl_$.gt(a,b)) while(_$UInt_UInt_$Impl_$.gt(a,b)) {
+		if(_$UInt_UInt_$Impl_$.gt(len,a)) copy[copy.length] = data[a];
+		--a;
+	}
+	return copy;
+};
 sirius_utils_Dice.Children = function(of,each,complete) {
 	var r = { children : []};
 	var l = 0;
@@ -4945,7 +4881,7 @@ sirius_tools_Utils.sruString = function(o) {
 sirius_tools_Utils._sruFy = function(o,i,b) {
 	i = i + "  ";
 	sirius_utils_Dice.All(o,function(p,v) {
-		if(v == null) b += i + p + " (null) = NULL\r"; else if(typeof(v) == "string") b += i + p + " (string) = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + " (bool) = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + " (number) = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + " (array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + " (object):{\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
+		if(v == null) b += i + p + ":* = NULL\r"; else if(typeof(v) == "string") b += i + p + ":String = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + ":Bool = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + ":Number = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + ":Array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + ":Object {\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
 	});
 	return b;
 };
@@ -5821,6 +5757,67 @@ sirius_events_EventGroup.prototype = {
 		return this;
 	}
 	,__class__: sirius_events_EventGroup
+};
+var sirius_flow_Push = $hx_exports.sru.flow.Push = function() {
+	this._log = [];
+};
+sirius_flow_Push.__name__ = ["sirius","flow","Push"];
+sirius_flow_Push.prototype = {
+	log: function() {
+		return this._log;
+	}
+	,proc: function(data) {
+		this._buffer = { };
+		this._now = null;
+		this._batchExec(data);
+		return this._buffer;
+	}
+	,_batchExec: function(data) {
+		sirius_utils_Dice.Values((data instanceof Array) && data.__enum__ == null?data:data.split("\r"),$bind(this,this._exec));
+	}
+	,_exec: function(q) {
+		var o = null;
+		var _g = HxOverrides.substr(q,0,1);
+		switch(_g) {
+		case "@":
+			var _g1 = HxOverrides.substr(q,1,1);
+			switch(_g1) {
+			case "!":
+				this._now = null;
+				break;
+			default:
+				var prop = HxOverrides.substr(q,1,q.length - 1);
+				if(!Object.prototype.hasOwnProperty.call(this._buffer,prop)) {
+					this._now = [];
+					this._buffer[prop] = this._now;
+				} else this._now = Reflect.field(this._buffer,prop);
+			}
+			break;
+		default:
+			q = q.split("\t").join(" ");
+			while(q.indexOf("  ") != -1) q = q.split("  ").join(" ");
+			var tk = q.split(" ");
+			var method = tk.shift();
+			var isMethod = true;
+			o = Reflect.getProperty(this,method);
+			isMethod = Reflect.isFunction(o);
+			if(o != null && isMethod) {
+				this._log[this._log.length] = q;
+				if(isMethod) {
+					o = Reflect.callMethod(this,o,tk);
+					if(o != null && typeof(o) == "string") {
+						this._batchExec(o);
+						o = null;
+					}
+				} else {
+					o = tk[0];
+					this[method] = o;
+				}
+			}
+			if(o != null && this._now != null) this._now[this._now.length] = o;
+		}
+	}
+	,__class__: sirius_flow_Push
 };
 var sirius_math_IPoint = function() { };
 sirius_math_IPoint.__name__ = ["sirius","math","IPoint"];
@@ -7493,5 +7490,5 @@ sirius_tools_Ticker._pool = [];
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 sirius_utils_Table._trash = [];
-Test_$JS.main();
+sirius_Sirius.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

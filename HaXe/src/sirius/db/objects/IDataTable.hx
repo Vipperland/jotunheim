@@ -23,6 +23,13 @@ interface IDataTable {
 	public var description(get_description, null):Dynamic;
 	
 	/**
+	 * Create a TableObject and return itself
+	 * @param	data
+	 * @return
+	 */
+	public function create(data:Dynamic):ITableObject;
+	
+	/**
 	 * Insert a new entry
 	 * @param	parameters
 	 * @param	clause

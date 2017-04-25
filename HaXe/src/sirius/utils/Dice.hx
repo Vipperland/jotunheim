@@ -217,6 +217,27 @@ class Dice {
 		return r;
 	}
 	
+	public static function List(data:Array<Dynamic>, ?a:UInt = 0, ?b:UInt):Array<Dynamic>{
+		var copy:Array<Dynamic> = [];
+		var len:UInt = data.length;
+		if (b == null) b = data.length;
+		if(a < b){
+			while (a < b){
+				if (a >= len) break;
+				copy[copy.length] = data[a];
+				++a;
+			}
+		}else if(a > b){
+			while (a > b){
+				if (a < len) {
+					copy[copy.length] = data[a];
+				}
+				--a;
+			}
+		}
+		return copy;
+	}
+	
 	#if !php
 		/**
 		 * For each Child element in an Object

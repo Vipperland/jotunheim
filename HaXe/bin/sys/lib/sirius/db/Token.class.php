@@ -24,8 +24,14 @@ class sirius_db_Token {
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
-	static function to($host, $port, $user, $pass, $db, $options = null) {
+	static function from($host, $port, $user, $pass, $db, $options = null) {
 		return new sirius_db_Token($host, $port, $user, $pass, $db, $options);
+	}
+	static function localhost($db, $pass = null, $options = null) {
+		if($pass === null) {
+			$pass = "";
+		}
+		return new sirius_db_Token("localhost", 3306, "root", $pass, $db, $options);
 	}
 	function __toString() { return 'sirius.db.Token'; }
 }

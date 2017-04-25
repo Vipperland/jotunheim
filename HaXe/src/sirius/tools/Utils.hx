@@ -275,12 +275,12 @@ class Utils{
 	static public function _sruFy(o:Dynamic, i:String, b:String):String {
 		i = i + '  ';
 		Dice.All(o, function(p:String, v:Dynamic) {
-			if (v == null) 									b += i + p + " (null) = NULL\r";
-			else if (Std.is(v, String)) 					b += i + p + " (string) = " + v + "\r";
-			else if(Std.is(v, Bool)) 						b += i + p + " (bool) = " + v + "\r";
-			else if(Std.is(v, Int) || Std.is(v, Float)) 	b += i + p + " (number) = " + v + "\r";
-			else if (Std.is(v, Array))						b += i + p + " (array[" + v.length + "]):[\r" + _sruFy(v, i, '') + i + "]\r";
-			else											b += i + p + " (object):{\r" + _sruFy(v, i, '') + i + "}\r";
+			if (v == null) 									b += i + p + ":* = NULL\r";
+			else if (Std.is(v, String)) 					b += i + p + ":String = " + v + "\r";
+			else if(Std.is(v, Bool)) 						b += i + p + ":Bool = " + v + "\r";
+			else if(Std.is(v, Int) || Std.is(v, Float)) 	b += i + p + ":Number = " + v + "\r";
+			else if (Std.is(v, Array))						b += i + p + ":Array[" + v.length + "]):[\r" + _sruFy(v, i, '') + i + "]\r";
+			else											b += i + p + ":Object {\r" + _sruFy(v, i, '') + i + "}\r";
 		});
 		return b;
 	}

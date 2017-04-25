@@ -35,7 +35,7 @@ class Agent implements IAgent {
 	
 	public var screen:Int;
 	
-	public var jQuery:Bool;
+	public var jquery:Bool;
 	
 	public var display:String;
 	
@@ -72,7 +72,7 @@ class Agent implements IAgent {
 		else if (Utils.matchMedia(CSSGroup.MEDIA_MD)) { this.md = true; this.screen = 3; }
 		else if (Utils.matchMedia(CSSGroup.MEDIA_LG)) { this.lg = true; this.screen = 4; }
 		else {															this.screen = 0; }
-		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
+		this.jquery = untyped __js__("window.jQuery != null");
 		this.animator = Animator.available();
 		this.display = Utils.screenOrientation();
 		if (handler != null) handler(this);

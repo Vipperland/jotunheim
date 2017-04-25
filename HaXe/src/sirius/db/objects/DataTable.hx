@@ -62,6 +62,10 @@ class DataTable implements IDataTable {
 		return this;
 	}
 	
+	public function create(data:Dynamic):ITableObject {
+		return (new TableObject(this)).create(data);
+	}
+	
 	public function add (?parameters:Dynamic = null, ?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
 		return new QueryResult(this, _gate.builder.add(_name, clausule, parameters, order, limit).execute().result);
 	}

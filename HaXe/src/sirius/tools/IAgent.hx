@@ -20,7 +20,7 @@ interface IAgent {
 	// Is a mobile version?
 	public var mobile:Bool;
 	// Is JQuery available?
-	public var jQuery:Bool;
+	public var jquery:Bool;
 	// Is any tween framework (GSAP like) active?
 	public var animator:Bool;
 	// Display info

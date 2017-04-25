@@ -1,6 +1,7 @@
 package samples.flow;
 import sirius.flow.Push;
 import sirius.tools.Key;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -12,18 +13,19 @@ class TestPusher extends Push {
 		super();
 	}
 	
-	public function foo(a:String, b:String, c:String):Dynamic {
+	public function foo(a:String, b:String):Dynamic {
 		trace('TestPusher::foo(' + a + ',' + b + ')');
-		if (c != null){
-			return 'bar	' + c;
+		var c:Array<Dynamic> = Dice.List(untyped __js__('arguments'), 2);
+		if (c.length > 0){
+			return 'bar	' + c.join(' ');
 		}else{
 			return a+' '+b;
 		}
 	}
 	
-	public function bar(a:String):Dynamic {
-		trace('TestPusher::bar(' + a + ')');
-		return {result:'test'};
+	public function bar():Dynamic {
+		trace('TestPusher::bar(' + Dice.List(untyped __js__('arguments')).join(' ') + ')');
+		return {result:'test'}; // set this value in 'buffer' variable
 	}
 	
 }

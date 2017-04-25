@@ -24,22 +24,27 @@ class TableObject implements ITableObject {
 		if (data != null) this.data = data;
 	}
 	
-	public function create(data:Dynamic):TableObject {
+	public function create(data:Dynamic, ?verify:Bool = false):ITableObject {
 		data.created_at = Sirius.tick;
 		data.updated_at = Sirius.tick;
+		if (verify) _table.optimize(data);
 		_table.add(data);
 		this.data = data;
 		data.id = Sirius.gate.insertedId();
 		return this;
 	}
 	
-	public function update(data:Dynamic):Void {
+	public function update(data:Dynamic, ?verify:Bool = false):Void {
+		data.updated_at = Sirius.tick;
+		if (verify) _table.optimize(data);
 		_table.update(data, Clause.ID(id), null, Limit.ONE);
 	}
 	
-	public function copy():TableObject {
-		var obj:TableObject = new TableObject(_table);
-		return obj.create(untyped __call__('clone', data));
+	public function copy():ITableObject {
+		var obj:ITableObject = new TableObject(_table);
+		var newdata:Dynamic = untyped __call__('clone', data);
+		Reflect.deleteField(newdata, 'id');
+		return obj.create(newdata);
 	}
 	
 	public function delete():Void {

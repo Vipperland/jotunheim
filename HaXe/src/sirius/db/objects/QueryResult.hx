@@ -20,7 +20,7 @@ class QueryResult implements IQueryResult {
 	
 	public function each(handler:Dynamic->Bool):Void {
 		Dice.Values(data, function(v:Dynamic) {
-			return handler(v) == true;
+			return handler(new TableObject(table, v)) == true;
 		});
 	}
 	
