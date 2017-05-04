@@ -1438,23 +1438,23 @@ sirius_net_Loader.prototype = {
 		}
 		return this;
 	}
-	,_changed: function(file,status,data) {
-		this.signals.call(status,{ file : file, data : data});
+	,_changed: function(file,status,data,request) {
+		this.signals.call(status,{ file : file, data : data, request : request});
 	}
 	,_loadNext: function() {
 		var _g = this;
 		if(this._toload.length > 0) {
 			var f = this._toload.shift();
 			var r = this._getReq(f);
-			this._changed(f,"started");
+			this._changed(f,"started",null,r);
 			r.async = true;
 			r.onError = function(e) {
-				_g._changed(f,"error",e);
+				_g._changed(f,"error",e,r);
 				++_g.totalLoaded;
 				_g._loadNext();
 			};
 			r.onData = function(d) {
-				_g._changed(f,"loaded",d);
+				_g._changed(f,"loaded",d,r);
 				++_g.totalLoaded;
 				sirius_Sirius.resources.register(f,d);
 				_g._loadNext();
@@ -1485,9 +1485,9 @@ sirius_net_Loader.prototype = {
 		if(file.indexOf("#") != -1) h = file.split("#"); else h = [file];
 		var r = this._getReq(h[0]);
 		r.async = true;
-		this._changed(file,"started");
+		this._changed(file,"started",data,r);
 		r.onData = function(d) {
-			_g._changed(file,"loaded",d);
+			_g._changed(file,"loaded",d,r);
 			sirius_Sirius.resources.register(file,d);
 			if(target != null) {
 				if(typeof(target) == "string") {
@@ -1506,7 +1506,7 @@ sirius_net_Loader.prototype = {
 			if(handler != null) handler(new sirius_net_Request(true,d,null,file));
 		};
 		r.onError = function(d1) {
-			_g._changed(file,"error",d1);
+			_g._changed(file,"error",d1,r);
 			if(handler != null) handler(new sirius_net_Request(false,null,new sirius_errors_Error(-1,d1),file));
 		};
 		if(progress == null) r.request("GET",null); else {
@@ -1532,18 +1532,18 @@ sirius_net_Loader.prototype = {
 			url = ps.join("?");
 		}
 		var r = this._getReq(url);
-		this._changed(url,"started");
+		this._changed(url,"started",data,r);
 		r.async = true;
 		if(!is_json && data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
 		if(headers != null) sirius_utils_Dice.All(headers,function(p,v) {
 			r.setHeader(p,v);
 		});
 		r.onData = function(d) {
-			_g._changed(url,"loaded",d);
+			_g._changed(url,"loaded",d,r);
 			if(handler != null) handler(new sirius_net_Request(true,d,null));
 		};
 		r.onError = function(d1) {
-			_g._changed(url,"error",d1);
+			_g._changed(url,"error",d1,r);
 			if(handler != null) handler(new sirius_net_Request(false,null,new sirius_errors_Error(-1,d1)));
 		};
 		var pro = { loaded : 0, total : 0, file : url};

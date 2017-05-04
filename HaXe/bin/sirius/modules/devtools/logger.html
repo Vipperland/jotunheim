@@ -1,3 +1,56 @@
+[Module:{"name":"sru-logger-data"}]
+	<div class="logger-sruobj" hidden>{{data}}</div>
+[Module:{"name":"sru-logger-ticket"}]
+	<div id="{{id}}" class="logger-nowrap {{bg}}">
+		<span class="tick" style="color:#666666">[{{tick}}]</span>
+		<span class="info">{{data}}</span>
+	</div>
+[Module:{"name":"sru-logger-container"}]
+	<div id="sirius-log">SIRIUS LOGGER</div>
+	<div class="logger-container">
+		<div id="sirius-dump">
+		</div>
+	</div>
+[Module:{"version":1.0,"type":"style"}]
+	<style>
+		#sirius-log {
+			cursor:pointer;
+			padding: 5px;
+			background: #222222;
+		}
+		.logger-container{
+			max-height: calc(100vh - 25px);
+			overflow-y: auto
+		}
+		.logger-console {
+			font-family: Lucida Console;
+			font-size: 10px;
+			color: #FFFFFF;
+			background-color: rgba(0,0,0,.9);
+			min-width: 350px;
+			max-width: 800px;
+			top: 0;
+			overflow: none;
+			position: fixed;
+			z-index: 9999999;
+		}
+		.logger-nowrap {
+			white-space: nowrap;
+			overflow-x: hidden;
+		}
+		.logger-sruobj {
+			color: #FFFFFF;
+			padding: 10px;
+			background-color: rgba(255,255,255,.1);
+		}
+		.logger-data {
+			color: #FFFFFF;
+			cursor: pointer;
+		}
+		.logger-closed {
+			height: 25px;
+		}
+	</style>
 [Module:{"version":1.0,"type":"script"}]
 	<script>
 		
@@ -8,16 +61,14 @@
 		var c = false;
 		var mv = 0;
 		var cr = {x:0,y:0};
-		t.css('lucida txt-10 txt-xFFFFFF padd-5 z-9999999 bg-xE0000000 min-w-350 max-w-700 t-0 scroll-none max-h-350 pos-fix');
+		t.css('logger-console');
 		t.addToBody();
-		t.write('<div id="sirius-log" class="curs-pointer padd-5 bg-x10FFFFFF">SIRIUS LOGGER</div><div class="max-h-320 overflow-y-auto"><div class="padd-t-5" id="sirius-dump"></div></div>');
+		t.mount('sru-logger-container');
 		
 		var d = t.one('#sirius-dump');
 		_bgs = ['txt-xCCCCCC','txt-x00CCFF','txt-xFFFF00','txt-xFF0000','txt-xFF99CC bold', 'txt-x0099CC'];
 		
-		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 min-w-350 max-w-700 padd-l-50 overflow-y-auto max-h-320 pos-fix h-30');
-		Automator.css.setSelector('.nowrap','xFFFFFF-space: nowrap;overflow-x:hidden');
-		Automator.build(t.css());
+		Automator.build('bg-x000000 padd-5 bg-xFFFFFF bg-x10FFFFFF padd-t-5 min-w-350 max-w-700 padd-l-50 pos-fix h-30');
 		Automator.build(_bgs.join(' '));
 		
 		function stringIfObject(o) {
@@ -29,7 +80,7 @@
 			else if(type > 4) type = 0;
 			var s = (l++) + '';
 			while(s.length < 5) s = '·' + s;
-			d.mount('<div ' + (id !=null ? 'id="' + id + '" ' : '' ) + 'class="nowrap ' + _bgs[type] + '"><span style="color:#666666">[' + s + ']</span> ' + stringIfObject(data) + '</div>');
+			d.mount('sru-logger-ticket',{id:id, tick:s,data: stringIfObject(data), bg:_bgs[type]});
 			return s;
 		}
 		
@@ -41,10 +92,10 @@
 			else tip.hide();
 		}
 		function _updateXHR(v){
-			var e = Sirius.one('#' + v.id).element;
+			var e = Sirius.one('#' + v.id).one('.tick');
 			var p = '';
 			while(p.length < 5) p = p + (v.ct == p.length ? '|' : '·');
-			e.innerHTML = e.innerHTML.split(e.innerHTML.substr(1, 5)).join(p);
+			e.clear(true).write('['+p+']');
 			if(++v.ct > 5) v.ct = 0;
 		}
 		
@@ -52,21 +103,27 @@
 			Dice.Values(xhr, _updateXHR);
 		}
 		
-		function _listen(req,url,stat,data){
-			switch(stat){
+		function _listen(flow){
+			var req = flow.data.request;
+			var url = flow.data.file;
+			var stat = flow.pipe.name;
+			var data = flow.data.data;
+			switch(flow.pipe.name){
 				case 'started' : {
 					req.id = 'xhr_' + sru.tools.Key.GEN();
 					req.time = new Date().getTime();
 					req.ct = 0;
-					req.bs = _push('Resource &lt;= ' + url + ' (LOADING...)', 1, req.id);
+					req.bs = _push('Resource &lt;= ' + url + ' <span class="status">(LOADING...)</span>', 1, req.id);
 					xhr[req.id] = req;
 					break;
 				}
+				case 'loaded' :
 				case 'complete' : {
 					if(req.id != null) {
 						var e = Sirius.one('#' + req.id);
-						var v = e.element.innerHTML;
-						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="curs-pointer txt-xFFFFFF"></span>');
+						var v = e.one('.status');
+						v.clear(true).write('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="data"></span>');
+						e.one('.tick').clear(true).write('['+req.bs+']');
 						e.css('/txt-x00FF66 txt-x0099CC bg-x000000');
 						if(data != null){
 							var o = null;
@@ -75,13 +132,13 @@
 							}catch(er){ /* NOT A JSON */ }
 							if(o != null){
 								var ac = new sru.dom.Div();
-								ac.css("padd-l-50 txt-xFFFFFF");
-								ac.write('<div class="sruobj" hidden>' + Utils.sruString(o).split('\r').join('<br/>').split(' ').join('&nbsp;') + '</div>');
+								ac.mount('sru-logger-data', {data:Utils.sruString(o).split('\r').join('<br/>').split(' ').join('&nbsp;')});
 								e.addChild(ac);
-								var sp = e.one('span');
+								var sp = e.one('.data');
+								sp.initData();
 								sp.data.tip = ac.one('.sruobj');
 								sp.write('[VIEW]');
-								sp.events.click(_expl, true);
+								sp.events.click(_expl);
 							}
 						}
 						delete xhr[req.id];
@@ -92,8 +149,7 @@
 					if(req.id != null) {
 						var e = Sirius.one('#' + req.id);
 						e.css('/txt-x00FF66 txt-xFF6600');
-						var v = e.element.innerHTML;
-						e.element.innerHTML = v.split(v.substr(1, 5)).join(req.bs).split('(LOADING...)').join('(ERROR!)');
+						e.one('.status').clear(true).write('(ERROR!)');
 						delete xhr[req.id];
 					}
 					break;
@@ -105,10 +161,10 @@
 			c = !c;
 			if(c){
 				d.hide();
-				t.css('h-30');
+				t.css('logger-closed');
 			}else {
 				d.show();
-				t.css('/h-30');
+				t.css('/logger-closed');
 			}
 			t.style({
 				top:0+'px',
@@ -138,7 +194,9 @@
 		setInterval(xhr_render, 100);
 		Sirius.one('#sirius-log').events.click(_toggle, 1);
 		Sirius.one('#sirius-log').events.mouseDown(_drag, 1);
+		Sirius.loader.signals.add('started',_listen);
 		Sirius.loader.signals.add('loaded',_listen);
+		Sirius.loader.signals.add('error',_listen);
 		Sirius.logger.listen(_push);
 		
 	</script>

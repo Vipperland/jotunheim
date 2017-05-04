@@ -77,25 +77,25 @@ class Loader implements ILoader {
 		return this;
 	}
 	
-	private function _changed(file:String, status:String, ?data:String):Void {
-		signals.call(status, { file:file, data:data } );
+	private function _changed(file:String, status:String, ?data:String, ?request:HttpRequest):Void {
+		signals.call(status, { file:file, data:data, request:request } );
 	}
 	
 	private function _loadNext():Void {
 		if (_toload.length > 0) {
 			var f:String = _toload.shift();
 			var r:HttpRequest = _getReq(f);
-			_changed(f, 'started');
+			_changed(f, 'started', null, r);
 			#if js
 				r.async = true;
 			#end
 			r.onError = function(e) {
-				_changed(f, 'error', e);
+				_changed(f, 'error', e, r);
 				++totalLoaded;
 				_loadNext();
 			}
 			r.onData = function(d) {
-				_changed(f, 'loaded', d);
+				_changed(f, 'loaded', d, r);
 				++totalLoaded;
 				Sirius.resources.register(f, d);
 				_loadNext();
@@ -145,9 +145,9 @@ class Loader implements ILoader {
 		#if js 
 			r.async = true; 
 		#end
-		_changed(file, 'started');
+		_changed(file, 'started', data, r);
 		r.onData = function(d) {
-			_changed(file, 'loaded', d);
+			_changed(file, 'loaded', d, r);
 			Sirius.resources.register(file, d);
 			#if js
 				if (target != null) {
@@ -171,7 +171,7 @@ class Loader implements ILoader {
 				handler(new Request(true, d, null, file)); 
 		}
 		r.onError = function(d) {
-			_changed(file, 'error', d);
+			_changed(file, 'error', d, r);
 			if (handler != null) 
 				handler(new Request(false, null, new Error(-1, d), file)); 
 		}
@@ -217,7 +217,7 @@ class Loader implements ILoader {
 		}
 		// Create request object
 		var r:HttpRequest = _getReq(url);
-		_changed(url, 'started');
+		_changed(url, 'started', data, r);
 		#if js
 			r.async = true;
 		#end
@@ -235,12 +235,12 @@ class Loader implements ILoader {
 			});
 		}
 		r.onData = function(d) { 
-			_changed(url, 'loaded', d);
+			_changed(url, 'loaded', d, r);
 			if (handler != null) 
 				handler(new Request(true, d, null)); 
 		}
 		r.onError = function(d) { 
-			_changed(url, 'error', d);
+			_changed(url, 'error', d, r);
 			if (handler != null) 
 				handler(new Request(false, null, new Error(-1, d))); 
 		}
