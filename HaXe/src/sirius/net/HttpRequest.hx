@@ -263,8 +263,8 @@ class HttpRequest {
 				onError(e.toString());
 				return;
 			}
-			if(!Lambda.exists(headers, function(h) return h.header == "Content-Type"))
-				r.setRequestHeader("Content-Type",Std.is(data, String) ? "application/json" : "application/x-www-form-urlencoded");
+			if(Std.is(data, String) && !Lambda.exists(headers, function(h) return h.header.toLowerCase() == "content-type"))
+				r.setRequestHeader("Content-Type","application/json");
 			for( h in headers )
 				r.setRequestHeader(h.header, h.value);
 			if (data != null && Std.is(data, String)){

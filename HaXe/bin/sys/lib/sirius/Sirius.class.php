@@ -22,11 +22,11 @@ class sirius_Sirius {
 			sirius_Sirius::$loader->async($file, $content, $handler);
 		}
 	}
-	static function request($url, $data = null, $handler = null, $method = null, $headers = null) {
+	static function request($url, $data = null, $method = null, $handler = null, $headers = null) {
 		if($method === null) {
 			$method = "post";
 		}
-		sirius_Sirius::$loader->request($url, $data, $handler, $method, $headers);
+		sirius_Sirius::$loader->request($url, $data, $method, $handler, $headers);
 	}
 	static function log($q, $type = null) {
 		if($type === null) {

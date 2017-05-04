@@ -20,7 +20,7 @@ import sirius.utils.IDiceRoll;
 class Dice {
 	
 	/**
-	 * For each object Value and parameter, call each(paramName,value)
+	 * For each object Value and parameter, call each(paramName,paramValue)
 	 * @param	q		Target object
 	 * @param	each		Parameter and Value handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail param and value

@@ -193,9 +193,9 @@ class Loader implements ILoader {
 	}
 	
 	#if js 
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null, ?progress:IProgress->Void):Void {
+	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void):Void {
 	#elseif php
-	public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'POST', ?headers:Dynamic = null):Void {
+	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
 		if (method == null || method == '') {
 			method = 'POST';

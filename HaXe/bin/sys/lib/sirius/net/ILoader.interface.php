@@ -10,5 +10,5 @@ interface sirius_net_ILoader {
 	function async($file, $data = null, $handler = null);
 	function add($files);
 	function start();
-	function request($url, $data = null, $handler = null, $method = null, $headers = null);
+	function request($url, $data = null, $method = null, $handler = null, $headers = null);
 }

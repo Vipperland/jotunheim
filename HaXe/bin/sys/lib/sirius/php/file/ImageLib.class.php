@@ -24,16 +24,21 @@ class sirius_php_file_ImageLib {
 		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$height, &$ratio, &$width), "sirius_php_file_ImageLib_1"), 'execute'), null);
 		return $this;
 	}
+	public function multisample($sizes) {
+		$_g = $this;
+		sirius_utils_Dice::Values($sizes, array(new _hx_lambda(array(&$_g, &$sizes), "sirius_php_file_ImageLib_2"), 'execute'), null);
+		return $this;
+	}
 	public function crop($x, $y, $width, $height) {
-		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$height, &$width, &$x, &$y), "sirius_php_file_ImageLib_2"), 'execute'), null);
+		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$height, &$width, &$x, &$y), "sirius_php_file_ImageLib_3"), 'execute'), null);
 		return $this;
 	}
 	public function fit($width, $height) {
-		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$height, &$width), "sirius_php_file_ImageLib_3"), 'execute'), null);
+		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$height, &$width), "sirius_php_file_ImageLib_4"), 'execute'), null);
 		return $this;
 	}
 	public function save($type = null) {
-		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$type), "sirius_php_file_ImageLib_4"), 'execute'), null);
+		sirius_utils_Dice::Values($this->content, array(new _hx_lambda(array(&$type), "sirius_php_file_ImageLib_5"), 'execute'), null);
 		return $this;
 	}
 	public function __call($m, $a) {
@@ -61,17 +66,22 @@ function sirius_php_file_ImageLib_1(&$height, &$ratio, &$width, $v) {
 		$v->resample($width, $height, $ratio);
 	}
 }
-function sirius_php_file_ImageLib_2(&$height, &$width, &$x, &$y, $v) {
+function sirius_php_file_ImageLib_2(&$_g, &$sizes, $v) {
+	{
+		$_g->resample(Std::int($v->x), Std::int($v->y), true);
+	}
+}
+function sirius_php_file_ImageLib_3(&$height, &$width, &$x, &$y, $v) {
 	{
 		$v->crop($x, $y, $width, $height);
 	}
 }
-function sirius_php_file_ImageLib_3(&$height, &$width, $v) {
+function sirius_php_file_ImageLib_4(&$height, &$width, $v) {
 	{
 		$v->fit($width, $height, null);
 	}
 }
-function sirius_php_file_ImageLib_4(&$type, $v) {
+function sirius_php_file_ImageLib_5(&$type, $v) {
 	{
 		$v->save(null, $type);
 	}

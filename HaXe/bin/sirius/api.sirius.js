@@ -1519,7 +1519,7 @@ sirius_net_Loader.prototype = {
 			});
 		}
 	}
-	,request: function(url,data,handler,method,headers,progress) {
+	,request: function(url,data,method,handler,headers,progress) {
 		if(method == null) method = "POST";
 		var _g = this;
 		if(method == null || method == "") method = "POST"; else method = method.toUpperCase();
@@ -1881,10 +1881,10 @@ sirius_Sirius.module = function(file,target,content,handler,progress) {
 		sirius_Sirius.loader.async(file,target,content,handler,progress);
 	});
 };
-sirius_Sirius.request = function(url,data,handler,method,headers,progress) {
+sirius_Sirius.request = function(url,data,method,handler,headers,progress) {
 	if(method == null) method = "post";
 	sirius_Sirius.run(function() {
-		sirius_Sirius.loader.request(url,data,handler,method,headers,progress);
+		sirius_Sirius.loader.request(url,data,method,handler,headers,progress);
 	});
 };
 sirius_Sirius.log = function(q,type) {
@@ -2402,7 +2402,7 @@ sirius_dom_Display.prototype = {
 	}
 	,load: function(url,module,data,handler,headers,progress) {
 		var _g = this;
-		sirius_Sirius.request(url,data,function(r) {
+		sirius_Sirius.request(url,data,null,function(r) {
 			if(r.success) _g.mount(module);
 			if(handler != null) handler(r);
 		},headers,progress);
@@ -5451,7 +5451,7 @@ sirius_data_FormData.prototype = {
 	}
 	,send: function(url,handler,method) {
 		if(method == null) method = "post";
-		sirius_Sirius.request(url,this.getData(),handler,method);
+		sirius_Sirius.request(url,this.getData(),null,handler,method);
 	}
 	,match: function(a,b) {
 		return this.getParam(a).getValue() == this.getParam(b).getValue();
@@ -5995,9 +5995,9 @@ sirius_net_HttpRequest.prototype = {
 			this.onError(e3.toString());
 			return;
 		}
-		if(!Lambda.exists(this.headers,function(h) {
-			return h.header == "Content-Type";
-		})) r.setRequestHeader("Content-Type",typeof(data) == "string"?"application/json":"application/x-www-form-urlencoded");
+		if(typeof(data) == "string" && !Lambda.exists(this.headers,function(h) {
+			return h.header.toLowerCase() == "content-type";
+		})) r.setRequestHeader("Content-Type","application/json");
 		var _g_head = this.headers.h;
 		var _g_val = null;
 		while(_g_head != null) {

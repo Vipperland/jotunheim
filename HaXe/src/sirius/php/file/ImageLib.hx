@@ -42,6 +42,7 @@ class ImageLib {
 		Dice.Values(sizes, function(v:IPoint) { 
 			resample(Std.int(v.x), Std.int(v.y), true);
 		});
+		return this;
 	}
 	
 	public function crop(x:UInt, y:UInt, width:UInt, height:UInt):ImageLib {

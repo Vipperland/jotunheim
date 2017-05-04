@@ -12,6 +12,10 @@ class FileInfo {
 	
 	public var output:String;
 	
+	public var sizes:Array<String>;
+	
+	public var error:Dynamic;
+	
 	public function new(type:String, input:String, output:String) {
 		this.type = type;
 		this.output = output;
