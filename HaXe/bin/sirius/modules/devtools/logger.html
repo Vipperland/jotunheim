@@ -114,6 +114,7 @@
 					req.time = new Date().getTime();
 					req.ct = 0;
 					req.bs = _push('Resource &lt;= ' + url + ' <span class="status">(LOADING...)</span>', 1, req.id);
+					req.sent = data;
 					xhr[req.id] = req;
 					break;
 				}
@@ -122,7 +123,7 @@
 					if(req.id != null) {
 						var e = Sirius.one('#' + req.id);
 						var v = e.one('.status');
-						v.clear(true).write('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="data"></span>');
+						v.clear(true).write('(COMPLETE @' + (new Date().getTime() - req.time) + 'ms)<span class="logger-data"></span>');
 						e.one('.tick').clear(true).write('['+req.bs+']');
 						e.css('/txt-x00FF66 txt-x0099CC bg-x000000');
 						if(data != null){
@@ -132,11 +133,11 @@
 							}catch(er){ /* NOT A JSON */ }
 							if(o != null){
 								var ac = new sru.dom.Div();
-								ac.mount('sru-logger-data', {data:Utils.sruString(o).split('\r').join('<br/>').split(' ').join('&nbsp;')});
+								ac.mount('sru-logger-data', {data:Utils.sruString({received:o, sent:req.sent}).split('\r').join('<br/>').split(' ').join('&nbsp;')});
 								e.addChild(ac);
-								var sp = e.one('.data');
+								var sp = e.one('.logger-data');
 								sp.initData();
-								sp.data.tip = ac.one('.sruobj');
+								sp.data.tip = ac.one('.logger-sruobj');
 								sp.write('[VIEW]');
 								sp.events.click(_expl);
 							}
