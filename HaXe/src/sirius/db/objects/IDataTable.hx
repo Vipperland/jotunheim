@@ -91,6 +91,14 @@ interface IDataTable {
 	public function clear():IQueryResult;
 	
 	/**
+	 * Sum field values and return its value
+	 * @param	field
+	 * @param	clausule
+	 * @return
+	 */
+	public function sum(field:String, ?clausule:Dynamic = null):UInt;
+	
+	/**
 	 * Validate parameters with table description and remove invalid ones
 	 * @param	paramaters
 	 * @return

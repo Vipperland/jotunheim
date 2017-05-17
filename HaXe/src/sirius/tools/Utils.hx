@@ -333,23 +333,27 @@ class Utils{
 		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
 	}
 	
-	static public function money(val:Dynamic, s:String = '$', a:String =',', b:String = '.'):String {
-		val = '' + Std.int(val * 100);
-		var i:Int = val.length;
-		var c:Int = 0;
+	static public function money(val:Dynamic, s:String = '$', a:String = ',', b:String = '.'):String {
 		var r = '';
-		while (i-- > 0){
-			r = val.substr(i, 1) + r;
-			if(i > 0){
-				if (c == 1){
-					r = b + r;
-				}else if (c > 1 && (c+2) % 3 == 0){
-					r = a + r;
+		if(val > 99){
+			val = '' + Std.int(val * 100);
+			var i:Int = val.length;
+			var c:Int = 0;
+			while (i-- > 0){
+				r = val.substr(i, 1) + r;
+				if(i > 0){
+					if (c == 1){
+						r = b + r;
+					}else if (c > 1 && (c+2) % 3 == 0){
+						r = a + r;
+					}
+				}else if ( c < 3){
+					r = '0' + (c == 1 ? '.' : '') + r;
 				}
-			}else if ( c < 3){
-				r = '0' + (c == 1 ? '.' : '') + r;
+				++c;
 			}
-			++c;
+		}else{
+			r = '0' + b + (val < 10 ? '0' : '') + val;
 		}
 		return s + r;
 	}

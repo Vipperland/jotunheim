@@ -4917,17 +4917,19 @@ sirius_tools_Utils.money = function(val,s,a,b) {
 	if(b == null) b = ".";
 	if(a == null) a = ",";
 	if(s == null) s = "$";
-	val = "" + (val * 100 | 0);
-	var i = val.length;
-	var c = 0;
 	var r = "";
-	while(i-- > 0) {
-		r = Std.string(val.substr(i,1)) + r;
-		if(i > 0) {
-			if(c == 1) r = b + r; else if(c > 1 && (c + 2) % 3 == 0) r = a + r;
-		} else if(c < 3) r = "0" + (c == 1?".":"") + r;
-		++c;
-	}
+	if(val > 99) {
+		val = "" + (val * 100 | 0);
+		var i = val.length;
+		var c = 0;
+		while(i-- > 0) {
+			r = Std.string(val.substr(i,1)) + r;
+			if(i > 0) {
+				if(c == 1) r = b + r; else if(c > 1 && (c + 2) % 3 == 0) r = a + r;
+			} else if(c < 3) r = "0" + (c == 1?".":"") + r;
+			++c;
+		}
+	} else r = "0" + b + (val < 10?"0":"") + Std.string(val);
 	return s + r;
 };
 sirius_tools_Utils.stdClone = function(q) {
@@ -5748,10 +5750,14 @@ sirius_events_EventGroup.prototype = {
 		if(cancelable == null) cancelable = true;
 		if(bubbles == null) bubbles = false;
 		this.data = data;
-		if(($_=window.document,$bind($_,$_.createEvent)) != null) {
-			var e = new CustomEvent(this.name);
-			e.initEvent(this.name,bubbles,cancelable);
+		if(_$UInt_UInt_$Impl_$.gt(sirius_Sirius.agent.ie,8)) {
+			var e = window.document.createEvent("CustomEvent");
+			e.initCustomEvent(this.name,bubbles,cancelable,{ });
 			this.dispatcher.target.element.dispatchEvent(e);
+		} else if(($_=window.document,$bind($_,$_.createEvent)) != null) {
+			var e1 = new CustomEvent(this.name);
+			e1.initEvent(this.name,bubbles,cancelable);
+			this.dispatcher.target.element.dispatchEvent(e1);
 		} else this._runner(null);
 		this.data = null;
 		return this;

@@ -94,7 +94,11 @@ class EventGroup implements IEventGroup {
 	
 	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):IEventGroup {
 		this.data = data;
-		if (Browser.document.createEvent != null) {
+		if (Sirius.agent.ie > 8){
+			var e:CustomEvent = cast Browser.document.createEvent("CustomEvent");
+			e.initCustomEvent(name, bubbles, cancelable, {});
+			dispatcher.target.element.dispatchEvent(e);
+		}else if (Browser.document.createEvent != null) {
 			var e:CustomEvent = new CustomEvent(name);
 			e.initEvent(name, bubbles, cancelable);
 			dispatcher.target.element.dispatchEvent(e);

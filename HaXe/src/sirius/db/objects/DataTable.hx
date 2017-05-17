@@ -105,6 +105,11 @@ class DataTable implements IDataTable {
 		return command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], 'COUNT(*)')) : 0;
 	}
 	
+	public function sum(field:String, ?clausule:Dynamic = null):UInt {
+		var command:ICommand = _gate.builder.find('SUM(' + field + ') as _SumResult_', _name, clausule, null, null).execute();
+		return Utils.isValidAlt(command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], '_SumResult_')) : 0, 0);
+	}
+	
 	public function optimize(paramaters:Dynamic):Dynamic {
 		var desc:Dynamic = get_description();
 		Dice.All(paramaters, function(p:String, v:Dynamic) { if (!Reflect.hasField(desc, p)) Reflect.deleteField(paramaters, p); });
