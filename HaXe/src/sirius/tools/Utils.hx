@@ -335,8 +335,9 @@ class Utils{
 	
 	static public function money(val:Dynamic, s:String = '$', a:String = ',', b:String = '.'):String {
 		var r = '';
+		val *= 100;
 		if(val > 99){
-			val = '' + Std.int(val * 100);
+			val = '' + Std.int(val);
 			var i:Int = val.length;
 			var c:Int = 0;
 			while (i-- > 0){

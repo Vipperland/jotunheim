@@ -211,6 +211,9 @@ Std.__name__ = ["Std"];
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
 };
+Std["int"] = function(x) {
+	return x | 0;
+};
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
 	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
@@ -4918,8 +4921,9 @@ sirius_tools_Utils.money = function(val,s,a,b) {
 	if(a == null) a = ",";
 	if(s == null) s = "$";
 	var r = "";
+	val *= 100;
 	if(val > 99) {
-		val = "" + (val * 100 | 0);
+		val = "" + Std["int"](val);
 		var i = val.length;
 		var c = 0;
 		while(i-- > 0) {
