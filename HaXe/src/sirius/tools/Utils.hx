@@ -223,6 +223,25 @@ class Utils{
 	
 	#end
 	
+	
+	static public function getMin(values:Array<Float>, ?filter:Float->Bool):Float {
+		var r:Float = null;
+		Dice.Values(values, function(i:Float){
+			if (filter == null || filter(i))
+				if (i < r || r == null) r = i;
+		});
+		return r;
+	}
+	
+	static public function getMax(values:Array<Float>, ?filter:Float->Bool):Float {
+		var r:Float = null;
+		Dice.Values(values, function(i:Float){
+			if (filter == null || filter(i))
+				if (i > r || r == null) r = i;
+		});
+		return r;
+	}
+	
 	static public function getQueryParams(value:String):Dynamic {
 		var params:Dynamic = {};
 		if(value.indexOf('?') > 0)

@@ -1,6 +1,7 @@
 package sirius.db.objects;
 import php.Lib;
 import sirius.db.tools.ICommand;
+import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 /**
@@ -115,6 +116,16 @@ class DataTable implements IDataTable {
 		Dice.All(paramaters, function(p:String, v:Dynamic) { if (!Reflect.hasField(desc, p)) Reflect.deleteField(paramaters, p); });
 		return paramaters;
 	}
+	
+	
+	public function link(id:String, key:String, table:String, field:String, ?del:String='RESTRICT', ?update:String='RESTRICT'):ICommand {
+		return _gate.builder.fKey(_name, id, key, table, field, del, update).execute();
+	}
+	
+	public function unlink(id:String):ICommand {
+		return _gate.builder.fKey(_name, id).execute();
+	}
+	
 	
 	public function hasColumn(name:String):Bool {
 		var d:Dynamic = description;

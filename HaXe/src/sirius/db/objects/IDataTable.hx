@@ -1,5 +1,6 @@
 package sirius.db.objects;
 import sirius.db.objects.IDataTable;
+import sirius.db.tools.ICommand;
 
 /**
  * @author Rafael Moreira
@@ -104,6 +105,12 @@ interface IDataTable {
 	 * @return
 	 */
 	public function optimize(paramaters:Dynamic):Dynamic;
+	
+	
+	public function link(id:String, field:String, table:String, field:String, ?del:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand;
+	
+	
+	public function unlink(id:String):ICommand;
 	
 	/**
 	 * The ammount of rows in table

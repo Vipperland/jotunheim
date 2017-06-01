@@ -1,5 +1,4 @@
 package sirius.php.data;
-import haxe.Json;
 import php.Lib;
 
 /**

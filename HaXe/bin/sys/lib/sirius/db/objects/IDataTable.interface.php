@@ -15,7 +15,10 @@ interface sirius_db_objects_IDataTable {
 	function delete($clause = null, $order = null, $limit = null);
 	function copy($toTable, $clause = null, $order = null, $limit = null);
 	function clear();
+	function sum($field, $clausule = null);
 	function optimize($paramaters);
+	function link($id, $field, $table, $field, $del = null, $update = null);
+	function unlink($id);
 	function length($clause = null);
 	function restrict($fields, $times = null);
 	function unrestrict();

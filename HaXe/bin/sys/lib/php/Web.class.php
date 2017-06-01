@@ -13,7 +13,6 @@ class php_Web {
 		while($__hx__it->hasNext()) {
 			unset($key);
 			$key = $__hx__it->next();
-			haxe_Log::trace($key, _hx_anonymous(array("fileName" => "Web.hx", "lineNumber" => 332, "className" => "php.Web", "methodName" => "parseMultipart")));
 			call_user_func_array($onPart, array($key, ""));
 			$v = $post->get($key);
 			call_user_func_array($onData, array(haxe_io_Bytes::ofString($v), 0, strlen($v)));

@@ -86,6 +86,19 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 		sirius_utils_Dice::Values($entries, array(new _hx_lambda(array(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
 		return null;
 	}
+	public function fKey($table, $reference, $key = null, $target = null, $field = null, $delete = null, $update = null) {
+		if($update === null) {
+			$update = "RESTRICT";
+		}
+		if($delete === null) {
+			$delete = "RESTRICT";
+		}
+		if($key === null) {
+			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " DROP FOREIGN KEY " . _hx_string_or_null($reference), null, null);
+		} else {
+			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " ADD CONSTRAINT " . _hx_string_or_null($reference) . " FOREIGN KEY (" . _hx_string_or_null($key) . ") REFERENCES " . _hx_string_or_null($target) . "(" . _hx_string_or_null($field) . ") ON DELETE " . _hx_string_or_null(strtoupper($delete)) . " ON UPDATE " . _hx_string_or_null(strtoupper($update)) . ";", null, null);
+		}
+	}
 	public function truncate($table) {
 		return $this->_gate->prepare("TRUNCATE :table", _hx_anonymous(array("table" => $table)), null);
 	}

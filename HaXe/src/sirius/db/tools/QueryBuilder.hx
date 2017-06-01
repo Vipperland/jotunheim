@@ -123,6 +123,14 @@ class QueryBuilder implements IQueryBuilder {
 		return null;
 	}
 	
+	public function fKey(table:String, reference:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand {
+		if (key == null){
+			return _gate.prepare("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
+		}else{
+			return _gate.prepare("ALTER TABLE " + table + " ADD CONSTRAINT " + reference + " FOREIGN KEY (" + key + ") REFERENCES " + target + "(" + field + ") ON DELETE " + delete.toUpperCase() + " ON UPDATE " + update.toUpperCase() + ";");
+		}
+	}
+	
 	public function truncate(table:String):ICommand {
 		return _gate.prepare("TRUNCATE :table", {table:table});
 	}

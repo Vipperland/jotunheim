@@ -62,6 +62,19 @@ interface IQueryBuilder {
 	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):ICommand;
 	
 	/**
+	 * Create a Foreign Key
+	 * @param	table
+	 * @param	name
+	 * @param	key
+	 * @param	target
+	 * @param	field
+	 * @param	delete
+	 * @param	update
+	 * @return
+	 */
+	public function fKey(table:String, name:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand;
+	
+	/**
 	 * Empty all table data
 	 * @return
 	 */

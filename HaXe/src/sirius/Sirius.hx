@@ -1,6 +1,5 @@
 package sirius;
 
-import haxe.Log;
 import sirius.data.Logger;
 import sirius.errors.IError;
 import sirius.net.IProgress;

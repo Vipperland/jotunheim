@@ -6,6 +6,7 @@ interface sirius_db_tools_IQueryBuilder {
 	function update($table, $clause = null, $parameters = null, $order = null, $limit = null);
 	function delete($table, $clause = null, $order = null, $limit = null);
 	function copy($from, $to, $clause = null, $filter = null, $limit = null);
+	function fKey($table, $name, $key = null, $target = null, $field = null, $delete = null, $update = null);
 	function truncate($table);
 	function rename($name, $to);
 }
