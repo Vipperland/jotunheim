@@ -11,7 +11,7 @@ interface IImage {
 	
 	function crop(x:UInt, y:UInt, width:UInt, height:UInt):IImage;
 	
-	function fit(width:UInt, height:UInt, ?slice:Bool = false):IImage;
+	function fit(width:UInt, height:UInt):IImage;
 	
 	function save(?name:String, ?type:UInt):Bool;
 	

@@ -78,7 +78,7 @@ function sirius_php_file_ImageLib_3(&$height, &$width, &$x, &$y, $v) {
 }
 function sirius_php_file_ImageLib_4(&$height, &$width, $v) {
 	{
-		$v->fit($width, $height, null);
+		$v->fit($width, $height);
 	}
 }
 function sirius_php_file_ImageLib_5(&$type, $v) {

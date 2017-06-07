@@ -74,7 +74,7 @@ class Uploader {
 						var type:String = _getType(name);
 						if (type != null) {
 							// Generate new filename
-							var nName:String = 'UID-' + Sirius.tick + '-' + Key.GEN(8) + '.' + name.split(".").pop();
+							var nName:String = Sirius.tick + '_' + Key.GEN(8) + '.' + name.split(".").pop();
 							// save file to disk
 							fileStream = File.write(_getSavePath(type, nName), true);
 							files.add(part, new FileInfo(type, name, nName));
@@ -106,7 +106,7 @@ class Uploader {
 							var p:String = savePathImg + v.output;
 							image.open(p);
 							image.save();
-							image.fit(s.w, s.h, true);
+							image.fit(s.w, s.h);
 							var nname:Array<String> = v.output.split('.');
 							var ext:String = nname.pop();
 							ext = nname.join('.') + '_' + s.w + 'x' + s.h + '.' + ext;

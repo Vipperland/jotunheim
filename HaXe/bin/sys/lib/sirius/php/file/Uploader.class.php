@@ -81,7 +81,7 @@ function sirius_php_file_Uploader_1(&$fileStream, &$lastFile, &$partName, $part,
 				}
 				$type = sirius_php_file_Uploader::_getType($name);
 				if($type !== null) {
-					$nName = "UID-" . Std::string(sirius_php_file_Uploader_5($fileStream, $lastFile, $name, $part, $partName, $type)) . "-" . _hx_string_or_null(sirius_tools_Key::GEN(8, null, null)) . "." . _hx_string_or_null(_hx_explode(".", $name)->pop());
+					$nName = Std::string(sirius_php_file_Uploader_5($fileStream, $lastFile, $name, $part, $partName, $type)) . "_" . _hx_string_or_null(sirius_tools_Key::GEN(8, null, null)) . "." . _hx_string_or_null(_hx_explode(".", $name)->pop());
 					$fileStream = sys_io_File::write(sirius_php_file_Uploader::_getSavePath($type, $nName), true);
 					sirius_php_file_Uploader::$files->add($part, new sirius_php_file_FileInfo($type, $name, $nName));
 				}
@@ -128,7 +128,7 @@ function sirius_php_file_Uploader_6(&$fileStream, &$image, &$lastFile, &$partNam
 		$p = _hx_string_or_null(sirius_php_file_Uploader::$savePathImg) . _hx_string_or_null($v->output);
 		$image->open($p);
 		$image->save(null, null);
-		$image->fit($s->w, $s->h, true);
+		$image->fit($s->w, $s->h);
 		$nname = _hx_explode(".", $v->output);
 		$ext = $nname->pop();
 		$ext = _hx_string_or_null($nname->join(".")) . "_" . Std::string($s->w) . "x" . Std::string($s->h) . "." . _hx_string_or_null($ext);

@@ -128,15 +128,18 @@ class Image implements IImage {
 				x = 0;
 			if (y < 0)
 				y = 0;
+			var tx:UInt = x + width;
+			var ty:UInt = y + width;
 			// Check dimension
-			if (x + width > this.width)
-				width = this.width - x;
-			if (y + height > this.height)
-				height = this.height - y;
+			if (tx > this.width)
+				tx = this.width;
+			if (ty > this.height)
+				ty = this.height;
 			// Apply crop to image
+			//trace(x, y, width, height);
 			var newimg:Dynamic = untyped __call__('imagecreatetruecolor', width, height);
 			if (newimg != null) {
-				untyped __call__('imagecopy', newimg, _res, 0, 0, x, y, width, height);
+				untyped __call__('imagecopy', newimg, _res, x, y, 0, 0, tx, ty);
 				_update(newimg);
 			}
 		}
@@ -149,16 +152,15 @@ class Image implements IImage {
 	 * @param	height
 	 * @return
 	 */
-	public function fit(width:UInt, height:UInt, ?slice:Bool = false):IImage {
+	public function fit(width:UInt, height:UInt):IImage {
 		if (isValid()) {
+			var ow:UInt = this.width;
+			var oh:UInt = this.height;
 			// Resample to min scale
-			if (this.width >= this.height)
-				resample(Math.round(width/this.width * height), height, true);
+			if (ow >= oh)
+				resample(Math.round(width/ow * height), height, true);
 			else
-				resample(width, Math.round(height/this.height * width), true);
-			// Slice outter areas
-			if(slice)
-				crop(Math.round( (this.width - width) / 2 ), Math.round((this.height - height) / 2), width, height);
+				resample(width, Math.round(height/oh * width), true);
 		}
 		return this;
 	}
