@@ -77,12 +77,15 @@ class ModLib {
 					var i:Int = v.indexOf("}]");
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
-						if (mod.name == null)
+						var path:String = file;
+						if (mod.name == null){
 							mod.name = file;
-						else
-							Sirius.log("		ModLib => NAME " + mod.name, 1);
+						}else{
+							path += '#' + mod.name;
+							Sirius.log("		ModLib => NAME " + path, 1);
+						}
 						if (exists(mod.name))
-							Sirius.log("	ModLib => OVERRIDE " + mod.name, 2);
+							Sirius.log("	ModLib => OVERRIDE " + path, 2);
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
@@ -94,7 +97,7 @@ class ModLib {
 						}
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
-							Sirius.log("	ModLib => " + mod.name + " VERIFYING...", 1);
+							Sirius.log("	ModLib => " + path + " VERIFYING...", 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v.toLowerCase());
 								if (set == null) 
@@ -102,6 +105,9 @@ class ModLib {
 								else
 									content = content.split("{{@include:" + v + "}}").join(set);
 							});
+						}
+						if (mod.data != null){
+							content = Filler.to(content, mod.data);
 						}
 						if (mod.wrap != null){
 							content = content.split('\r\n').join(mod.wrap).split('\n').join(mod.wrap).split('\r').join(mod.wrap);
@@ -124,7 +130,9 @@ class ModLib {
 							}
 							// ***
 						#end
-						Reflect.setField(CACHE, mod.name.toLowerCase(), content);
+						var n:String = mod.name.toLowerCase();
+						Reflect.setField(CACHE, n, content);
+						Reflect.setField(CACHE, '@' + n, path);
 					}else {
 						Sirius.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15), 3) + "...)";
 					}
@@ -207,19 +215,20 @@ class ModLib {
 		 */
 		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
 			var d:IDisplay = null;
+			var signature:String = Reflect.field(CACHE, '@' + module.toLowerCase());
 			if (each != null && Std.is(data, Array)) {
 				d = new Div();
 				Dice.Values(data, function(v:Dynamic) {
 					v = new Display().write(get(module, v));
 					v = each(v);
 					if (v != null && Std.is(v, IDisplay)) {
-						d.attribute('sru-mod', module);
+						d.attribute('sru-mod', signature);
 						d.addChild(v);
 					}
 				});
 			}else {
 				d = new Display().write(get(module, data));
-				d.children().attribute('sru-mod', module);
+				d.children().attribute('sru-mod', signature);
 			}
 			return d;
 		}

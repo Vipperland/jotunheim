@@ -24,7 +24,7 @@ class CSS implements ICSS {
 	public function add(a:Int,b:Int):Void { }
 	
 	public function setSelector(id:String, style:String, ?mode:String):Void {
-		ALL.setSelector(id, style, mode);
+		ALL.set(id, style, mode);
 	}
 	
 	public function distribute(id:String, style:String):Void {

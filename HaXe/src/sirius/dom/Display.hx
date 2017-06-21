@@ -385,10 +385,11 @@ class Display implements IDisplay {
 		}
 	}
 	
-	public function write(q:Dynamic, ?plainText:Bool = false):IDisplay {
-		if (plainText)
+	public function write(q:Dynamic, ?text:Bool = false):IDisplay {
+		if (text)
 			element.innerText += q;
-		else element.innerHTML = element.innerHTML + q;
+		else 
+			element.innerHTML = element.innerHTML + q;
 		return this;
 	}
 	

@@ -227,7 +227,7 @@ interface IDisplay {
 	 * @param	q
 	 * @param	plainText
 	 */
-	public function write(q:Dynamic, ?plainText:Bool = false):IDisplay;
+	public function write(q:Dynamic, ?text:Bool = false):IDisplay;
 	
 	/**
 	 * Fit element in current viewport width and height

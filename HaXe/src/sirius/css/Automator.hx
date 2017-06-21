@@ -24,179 +24,35 @@ class Automator {
 	static private var _inits:Dynamic = {
 		reset : false,
 		sprites : false,
+		grid: false,
 	};
 	
-	static public function reset():Void {
-		if (!_inits.reset){
-			_inits.reset = true;
-			css.setSelector('@-ms-viewport', 'width:device-width;');
-			css.setSelector('*,*:before,*:after', 'box-sizing:border-box;');
-			parse('html,body=h-100pc arial txt-12;.hidden=disp-none-i;*=marg-0 padd-0 bord-0 bord-solid outline-0 color-inherit font-inherit vert-baseline glass;a,a:link,a:visited,a:active,a:hover=txt-decoration-none;ol,ul,dl=list-style-none;input,textarea,select,hr=padd-5;label=disp-inline-block;marg-a vert-m float-l float-r txt-c pos-abs pos-rel pos-fix;');
-			scan();
-			enableSprites();
-			css.build();
-		}
-	}
-	
-	static public function enableSprites() {
-		if (!_inits.sprites){
-			_inits.sprites = true;
-			parse('.sprite=w-100pc disp-table txt-c;.sprite > div=disp-table-cell vert-m;.sprite > div > div=marg-l-auto marg-r-auto');
-			if (!_inits.reset)
-				css.build();
-		}
-	}
-	
-	static public function unmute():Void {
-		_dev = true;
-	}
-	
-	static public function mute():Void {
-		_dev = false;
-	}
-	
-	static public function shadowConfig(data:Dynamic):Void {
-		Dice.All(data, function(p:String, v:UInt) {	Reflect.setField(AutomatorRules.shadowConfig, p, v); } );
-	}
-	
-	static public function scan():Void {
-		Sirius.all('noscript[automator]').each(function(o:IDisplay){
-			parse(o.element.innerText, o.attribute('automator').toLowerCase() == 'omni');
-			o.dispose();
-		});
-		css.build(); // Apply changes / Append to ScriptElement
-	}
-	
-	/**
-	 * Build the selector for all resolution modes
-	 * @param	query
-	 * @param	group
-	 * @param	silent
-	 */
-	static public function omnibuild(query:String, ?group:String):Void {
-		build(query, group + '-xs'	, true);
-		build(query, group + '-sm'	, true);
-		build(query, group + '-md'	, true);
-		build(query, group + '-lg'	, true);
-		build(query, group + '-pr'	, true);
-		build(query, group 			, true);
-	}
-	
-	/**
-	 * Create selectors from string
-	 * @param	query
-	 * @param	group
-	 */
-	static public function build(?query:String, ?group:String, ?silent:Bool):Void {
-		
-		if (query == null || query == ''){
-			css.build();
-			return;
-		}
-		
-		var c:Array<String> = query.split(" ");						// Split class names
-		var m:String = null;										// MediaQueries rule
-		var s:String;												// Final selector
-		var g:Bool = Utils.isValid(group);							// Is a valid group?
-		var r:String = ''; 											// Group value, if available
-		if (g && group.length > 0) m = _screen(group.split("-"));	// Remove MediaQuery rule from group name
-		
-		Dice.Values(c, function(v:String) {
-			if (v.length > 1) {
-				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
-				c = v.split("-"); // create sections
-				if (c.length > 0) {
-					if (c[0] == 'ref') return;
-					if (g) { // Rule for groups
-						_screen(c); // Remove @media signature
-						var en:Entry = _parse(c);
-						s = en.build(); // Create class for selector
-						if (Utils.isValid(s)) r += s + ";";
-						else if (_dev == true)  Sirius.log("Automator => ERROR (" + en + ")");
-					}else { // Rule for single class name
-						m = _screen(c); // Target @media
-						if (!css.hasSelector(v, m)) { // Check if selector exists
-							s = _parse(c).build(); // Create class for selector
-							if (Utils.isValid(s)) { // Check if value is valid
-								if (_dev == true) 
-									Sirius.log("Automator => ." + v + " {" + s + ";}", 1);
-								css.setSelector('.' + v, s, m); // Add selector to correspondent @media group
-							}
-						}
-					}
-				}
-			}
-		});
-		if (g && Utils.isValid(r)) { // If is a group, register all classes to correspondent group and @media value
-			if (_dev == true) 
-				Sirius.log("Automator => " + group + " {" + r + "}", 1);
-			css.setSelector(group, r, m);
-		}
-		if (silent == null || silent == false) css.build();
-		
-	}
-	
-	/**
-	 * Build from custom text (selector: automator css-syntax;)
-	 * @param	data
-	 */
-	static public function parse(data:String, ?omni:Bool):Void {
-		Dice.Values(data.split(';'), function(v:String) {
-			var set:Array<String> = v.split('\r\n').join(' ').split('\r').join(' ').split('\n').join(' ').split('=');
-			if(set.length==2)
-				omni ? omnibuild(set[1], set[0]) : build(set[1], set[0], true);
-			else if(set.length == 1)
-				omni ? omnibuild(set[0], null) : build(set[0], null, true);
-		});
-	}
-	
-	/**
-	 * Create a grid container
-	 * @param	size
-	 */
-	static public function grid(size:Dynamic):Void {
-		if(!Reflect.hasField(_inits, 'grid-' + size)){
-			if (!Std.is(size, Array)) 
-				size = [size];
-			Dice.Values(size, function(v:Int) {	_createGridCol(v); });
-			Reflect.setField(_inits, 'grid-' + size, true);
-		}
-	}
-	
-	static public function cell(size:UInt, pad:UInt):Void {
-		Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
-			++a;
-			var t:Dynamic = a / b * 100 - .001;
-			var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
-			var n:String = '.cel-' + a + (b==12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
-			omnibuild('w-' + s + ' padd-' + pad, n); // w-00d00pc padd-10
-			return null;
-		});
-		css.build();
-	}
 	
 	/**
 	 * Create all cell styles
 	 * @param	size
 	 */
-	static private function _createGridCol(size:Int):Void {
-		var n:String = '.grid' + (size != 12 ? '-' + size : '');
-		if (!css.hasSelector(n, null, '')){
-			build('disp-table content-void', n + ':before,' + n + ':after', true);
-			build('clear-both', n + ':after', true);
-			Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
-				++a;
-				var t:Dynamic = a / b * 100 - .001;
-				var s:String = t.toFixed(16).split(".").join("d") + "pc"; // 00d00pc
-				var n:String = '.cel-' + a + (b==12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
-				omnibuild('w-' + s + ' padd-5', n); // w-00d00pc padd-10
-				omnibuild('pull-l', n); 
-				if (a < b - 1) 
-					omnibuild('marg-l-' + s, 'o-' + n);
-				return null;
-			});
+	static private function _createGrid(size:Int, pad:UInt):Void {
+		if (!_inits.grid){
+			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;', '.shelf');
+			build('disp-table content-void', '.shelf:before,.shelf:after', true);
+			build('clear-both','.shelf:after', true);
+			_inits.grid = true;
 		}
-		css.build();
+		var n:String = '.grid' + (size != 12 ? '-' + size : '');
+		omnibuild('margin: 0 -' + pad + 'px',  n + ' .shelf');
+		omnibuild('margin: 0 -' + pad + 'px',  n + '-liquid .shelf');
+		omnibuild('margin: auto auto; padding: 0 ' + pad + 'px',  n + '-liquid');
+		Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
+			++a;
+			var t:String = (cast (a / b * 100)).toFixed(16) + '%';
+			var s:String = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 " + pad + "px;position:relative;";
+			var n:String = 'cel-' + a + (b == 12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
+			omnibuild(s, '.'+n); // w-00d00pc padd-10
+			if (a < b - 1) 
+				omnibuild('margin-left:' + t, '.o-' + n);
+			return null;
+		});
 	}
 	
 	/**
@@ -236,6 +92,153 @@ class Automator {
 		});
 		// return all Entry structure
 		return new Entry(r,AutomatorRules.keys(),i);
+	}
+	
+	
+	static public function reset():Void {
+		if (!_inits.reset){
+			_inits.reset = true;
+			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,html [type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
+			grid(12);
+			enableSprites();
+			css.build();
+			Sirius.run(scan);
+		}
+	}
+	
+	static public function enableSprites() {
+		if (!_inits.sprites){
+			_inits.sprites = true;
+			parse('.sprite=w-100pc disp-table txt-c;.sprite > div=disp-table-cell vert-m;.sprite > div > div=marg-l-auto marg-r-auto');
+			if (!_inits.reset)
+				css.build();
+		}
+	}
+	
+	static public function unmute():Void {
+		_dev = true;
+	}
+	
+	static public function mute():Void {
+		_dev = false;
+	}
+	
+	static public function shadowConfig(data:Dynamic):Void {
+		Dice.All(data, function(p:String, v:UInt) {	Reflect.setField(AutomatorRules.shadowConfig, p, v); } );
+	}
+	
+	static public function scan():Void {
+		Sirius.all('noscript[automator]').each(function(o:IDisplay){
+			parse(o.element.innerText, o.attribute('automator').toLowerCase() == 'omni');
+			o.dispose();
+		});
+		css.build(); // Apply changes / Append to ScriptElement
+	}
+	
+	/**
+	 * Build the selector for all resolution modes
+	 * @param	query
+	 * @param	group
+	 * @param	silent
+	 */
+	static public function omnibuild(query:String, ?group:String):Void {
+		if(query.indexOf(':') == -1){
+			build(query, group + '-xs'	, true);
+			build(query, group + '-sm'	, true);
+			build(query, group + '-md'	, true);
+			build(query, group + '-lg'	, true);
+			build(query, group + '-pr'	, true);
+			build(query, group 			, true);
+		}else{
+			css.add(group + '-xs' + '{' + query + '}', 'xs');
+			css.add(group + '-sm' + '{' + query + '}', 'sm');
+			css.add(group + '-md' + '{' + query + '}', 'md');
+			css.add(group + '-lg' + '{' + query + '}', 'lg');
+			css.add(group + '-pr' + '{' + query + '}', 'pr');
+			css.add(group +         '{' + query + '}', null);
+		}
+	}
+	
+	/**
+	 * Create selectors from string
+	 * @param	query
+	 * @param	group
+	 */
+	static public function build(?query:String, ?group:String, ?silent:Bool):Void {
+		
+		if (query == null || query == ''){
+			css.build();
+			return;
+		}
+		
+		var c:Array<String> = query.split(" ");						// Split class names
+		var m:String = null;										// MediaQueries rule
+		var s:String;												// Final selector
+		var g:Bool = Utils.isValid(group);							// Is a valid group?
+		var r:String = ''; 											// Group value, if available
+		if (g && group.length > 0) m = _screen(group.split("-"));	// Remove MediaQuery rule from group name
+		
+		Dice.Values(c, function(v:String) {
+			if (v.length > 1) {
+				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
+				c = v.split("-"); // create sections
+				if (c.length > 0) {
+					if (c[0] == 'ref') return;
+					if (g) { // Rule for groups
+						_screen(c); // Remove @media signature
+						var en:Entry = _parse(c);
+						s = en.build(); // Create class for selector
+						if (Utils.isValid(s)) r += s + ";";
+						else if (_dev == true)  Sirius.log("Automator => ERROR (" + en + ")");
+					}else { // Rule for single class name
+						m = _screen(c); // Target @media
+						if (!css.exists(v, m)) { // Check if selector exists
+							s = _parse(c).build(); // Create class for selector
+							if (Utils.isValid(s)) { // Check if value is valid
+								if (_dev == true) 
+									Sirius.log("Automator => ." + v + " {" + s + ";}", 1);
+								css.set('.' + v, s, m); // Add selector to correspondent @media group
+							}
+						}
+					}
+				}
+			}
+		});
+		if (g && Utils.isValid(r)) { // If is a group, register all classes to correspondent group and @media value
+			if (_dev == true) 
+				Sirius.log("Automator => " + group + " {" + r + "}", 1);
+			css.set(group, r, m);
+		}
+		if (silent == null || silent == false) css.build();
+		
+	}
+	
+	/**
+	 * Build from custom text (selector: automator css-syntax;)
+	 * @param	data
+	 */
+	static public function parse(data:String, ?omni:Bool):Void {
+		Dice.Values(data.split(';'), function(v:String) {
+			var set:Array<String> = v.split('\r\n').join(' ').split('\r').join(' ').split('\n').join(' ').split('=');
+			trace(set);
+			if(set.length==2)
+				omni ? omnibuild(set[1], set[0]) : build(set[1], set[0], true);
+			else if(set.length == 1)
+				omni ? omnibuild(set[0], null) : build(set[0], null, true);
+		});
+	}
+	
+	/**
+	 * Create a grid container
+	 * @param	size
+	 */
+	static public function grid(size:Dynamic, ?pad:UInt = 10):Void {
+		if(!Reflect.hasField(_inits, 'grid-' + size)){
+			if (!Std.is(size, Array)) 
+				size = [size];
+			Dice.Values(size, function(v:Int) {	_createGrid(v, pad); });
+			Reflect.setField(_inits, 'grid-' + size, true);
+		}
 	}
 	
 	/**

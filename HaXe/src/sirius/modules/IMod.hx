@@ -14,4 +14,5 @@ interface IMod {
 	public var type:String;
 	public var wrap:String;
 	public var version:String;
+	public var data:Dynamic;
 }

@@ -220,7 +220,6 @@ class Sirius {
 				_loadPool = [];
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				//Automator._init();
 				log("Sirius => LOADING...", 1);
 				Reflect.deleteField(Sirius, '_preInit');
 				if (Browser.document.readyState == 'complete') _loadController(null);
