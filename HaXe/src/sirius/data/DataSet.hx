@@ -39,10 +39,11 @@ class DataSet implements IDataSet {
 		return this;
 	}
 	
-	public function find(v:String):Array<String> {
+	public function find(v:Dynamic):Array<Dynamic> {
 		var r:Array<String> = [];
-		Dice.All(_content, function(p:String, x:String) {
-			if (x != null && x.indexOf(v) != -1) r[r.length] = p;
+		Dice.All(_content, function(p:Dynamic, x:Dynamic) {
+			if (Std.is(x, String) && x.indexOf(v) != -1) r[r.length] = p;
+			else if(x == v) r[r.length] = p;
 		});
 		return r;
 	}

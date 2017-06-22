@@ -1,4 +1,6 @@
 package sirius.net;
+import haxe.Json;
+import sirius.serial.JsonTool;
 
 /**
  * ... Modified version of Http.hx
@@ -263,11 +265,12 @@ class HttpRequest {
 				onError(e.toString());
 				return;
 			}
-			if(Std.is(data, String) && !Lambda.exists(headers, function(h) return h.header.toLowerCase() == "content-type"))
-				r.setRequestHeader("Content-Type","application/json");
+			var is_json:Bool = Std.is(data, String);
+			if(!Lambda.exists(headers, function(h) return h.header == "Content-Type"))
+				r.setRequestHeader("Content-Type", is_json ? "application/json" : "application/x-www-form-urlencoded");
 			for( h in headers )
 				r.setRequestHeader(h.header, h.value);
-			if (data != null && Std.is(data, String)){
+			if (is_json){
 				r.send(data);
 			}else{
 				r.send(this.data);

@@ -218,9 +218,7 @@ class Utils{
 		
 		
 	#elseif php
-	
-	
-	
+		
 	#end
 	
 	

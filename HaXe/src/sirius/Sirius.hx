@@ -1,5 +1,6 @@
 package sirius;
 
+import haxe.Log;
 import sirius.data.Logger;
 import sirius.errors.IError;
 import sirius.net.IProgress;
@@ -203,12 +204,12 @@ class Sirius {
 			}
 		}
 		
-		static public function inject(url:Dynamic, ?handler:Null<Void>->Void):Void {
+		static public function inject(url:Dynamic, ?handler:Void->Void):Void {
 			if (!Std.is(url, Array)) url = [url];
 			Script.require(url, handler);
 		}
 		
-		static public function stylish(url:Dynamic, ?handler:Null<Void>->Void):Void {
+		static public function stylish(url:Dynamic, ?handler:Void->Void):Void {
 			if (!Std.is(url, Array)) url = [url];
 			//Style.require(url, handler);
 		}
@@ -220,6 +221,7 @@ class Sirius {
 				_loadPool = [];
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
+				//Automator._init();
 				log("Sirius => LOADING...", 1);
 				Reflect.deleteField(Sirius, '_preInit');
 				if (Browser.document.readyState == 'complete') _loadController(null);
@@ -229,8 +231,9 @@ class Sirius {
 		/**
 		 * Runtime status
 		 */
-		static private function status():Void {
+		static private function status():IAgent {
 			log("Sirius => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
+			return agent;
 		}
 		
 		/** @private */
@@ -259,7 +262,7 @@ class Sirius {
 		 * @param	handler
 		 * @param	method
 		 */
-		static public function request(url:String, ?data:Dynamic, ?method:String = 'post', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null):Void {
+		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null):Void {
 			run(function() { loader.request(url, data, method, handler, headers, progress); } );
 		}
 		
@@ -301,8 +304,8 @@ class Sirius {
 		 * @param	handler
 		 * @param	method
 		 */
-		static public function request(url:String, ?data:Dynamic, ?method:String = 'post', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
-			loader.request(url, data, method, handler, headers);
+		static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null):Void {
+			loader.request(url, data, handler, method, headers);
 		}
 		
 		

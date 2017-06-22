@@ -197,14 +197,16 @@ class Loader implements ILoader {
 	#elseif php
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
+	
 		if (method == null || method == '') {
 			method = 'POST';
 		}else{
 			method = method.toUpperCase();
 		}
+		
 		var is_post:Bool = method == 'POST';
 		var is_get:Bool = method == 'GET';
-		var is_json:Bool = Std.is(data, String);
+		var is_data:Bool = Std.is(data, String);
 		// Build URL for GET parameters
 		if (method == 'GET'){
 			var ps:Array<String> = url.split('?');
@@ -222,7 +224,7 @@ class Loader implements ILoader {
 			r.async = true;
 		#end
 		// Parse parameters
-		if (!is_json && data != null) {
+		if (!is_data && data != null) {
 			#if js
 				Dice.All(data, r.addParameter);
 			#else

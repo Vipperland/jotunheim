@@ -134,7 +134,7 @@ class ModLib {
 						Reflect.setField(CACHE, n, content);
 						Reflect.setField(CACHE, '@' + n, path);
 					}else {
-						Sirius.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15), 3) + "...)";
+						Sirius.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", 3);
 					}
 			}
 			});

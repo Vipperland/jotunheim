@@ -1,7 +1,6 @@
 package sirius.dom;
 import haxe.Log;
 import js.Browser;
-import js.html.Point;
 import sirius.css.Automator;
 import sirius.css.XCSS;
 import sirius.dom.IDisplay;

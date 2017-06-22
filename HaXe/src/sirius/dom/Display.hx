@@ -203,7 +203,7 @@ class Display implements IDisplay {
 	
 	public function getScroll(?o:Dynamic = null):Dynamic {
 		if (o == null)
-			o = { };
+			o = {};
 		o.left = element.scrollLeft;
 		o.top = element.scrollTop;
 		o.offsetX = element.offsetLeft;

@@ -22,7 +22,7 @@ interface IDataSet {
 	public function clear () : IDataSet;
 	
 	/** Find all properties with contains a value */
-	public function find (v:Dynamic) : Array<String>;
+	public function find (v:Dynamic) : Array<Dynamic>;
 	
 	/** All indexes names */
 	public function index () : Array<String>;

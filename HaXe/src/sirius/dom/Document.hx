@@ -95,8 +95,8 @@ class Document extends Display {
 		return current;
 	}
 	
-	override public function getScroll(?o:IPoint = null):IPoint {
-		if (o == null) o = new Point(0, 0);
+	override public function getScroll(?o:Dynamic = null):Dynamic {
+		if (o == null) o = {x:0,y:0};
 		if (Browser.window.pageXOffset != null) {
 			o.x = Browser.window.pageXOffset;
 			o.y = Browser.window.pageYOffset;

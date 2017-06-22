@@ -19,7 +19,7 @@ class Script extends Display{
 	 * @param	url
 	 * @param	handler
 	 */
-	static public function require(url:Array<String>, ?handler:Null<Void>->Void) {
+	static public function require(url:Array<String>, ?handler:Void->Void) {
 		if (url.length > 0) {
 			var file:String = url.shift();
 			if (file != null) {
@@ -30,7 +30,7 @@ class Script extends Display{
 				});
 			}
 		}else if(handler != null){
-			handler(null);
+			handler();
 		}
 	}
 	
