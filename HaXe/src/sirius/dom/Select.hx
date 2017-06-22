@@ -71,10 +71,18 @@ class Select extends Display {
 	
 	public function hasValue():Bool {
 		var i:UInt = 0;
-		while (i < object.selectedOptions.length) {
-			var o:OptionElement = cast object.selectedOptions.item(i++);
-			if (!o.disabled)
-				return true;
+		if(object.selectedOptions != null){
+			while (i < object.selectedOptions.length) {
+				var o:OptionElement = cast object.selectedOptions.item(i++);
+				if (!o.disabled)
+					return true;
+			}
+		}else{
+			while (i < object.options.length) {
+				var o:OptionElement = cast object.options[i++];
+				if (o.selected && !o.disabled)
+					return true;
+			}
 		}
 		return false;
 	}
