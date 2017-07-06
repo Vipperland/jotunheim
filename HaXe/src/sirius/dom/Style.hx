@@ -2,6 +2,7 @@ package sirius.dom;
 import js.Browser;
 import js.html.StyleElement;
 import sirius.dom.IDisplay;
+import sirius.events.IEvent;
 
 /**
  * ...
@@ -15,7 +16,18 @@ class Style extends Display {
 	}
 	
 	static public function require(url:Dynamic, handler:Dynamic) {
-		
+		if (url.length > 0) {
+			var file:String = url.shift();
+			if (file != null) {
+				var s:Link = new Link();
+				s.href(file, function(e:IEvent) {
+					Style.require(url, handler);
+				});
+				Sirius.document.head.addChild(s);
+			}
+		}else if(handler != null){
+			handler();
+		}
 	}
 	
 	public var object:StyleElement;

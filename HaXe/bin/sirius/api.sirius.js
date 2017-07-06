@@ -1528,7 +1528,7 @@ sirius_net_Loader.prototype = {
 		if(method == null || method == "") method = "POST"; else method = method.toUpperCase();
 		var is_post = method == "POST";
 		var is_get = method == "GET";
-		var is_json = typeof(data) == "string";
+		var is_data = typeof(data) == "string";
 		if(method == "GET") {
 			var ps = url.split("?");
 			if(ps.length == 1 || ps[1].length == 0) ps[1] = sirius_tools_Utils.paramsOf(data); else ps[1] += "&" + sirius_tools_Utils.paramsOf(data);
@@ -1537,7 +1537,7 @@ sirius_net_Loader.prototype = {
 		var r = this._getReq(url);
 		this._changed(url,"started",data,r);
 		r.async = true;
-		if(!is_json && data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
+		if(!is_data && data != null) sirius_utils_Dice.All(data,$bind(r,r.addParameter));
 		if(headers != null) sirius_utils_Dice.All(headers,function(p,v) {
 			r.setHeader(p,v);
 		});
@@ -1721,7 +1721,7 @@ sirius_modules_ModLib.prototype = {
 						var n = mod.name.toLowerCase();
 						sirius_modules_ModLib.CACHE[n] = content;
 						sirius_modules_ModLib.CACHE["@" + n] = path;
-					} else Std.string(sirius_Sirius.log("\tModLib => CONFIG ERROR " + file + "(" + HxOverrides.substr(v,0,15),3)) + "...)";
+					} else sirius_Sirius.log("\tModLib => CONFIG ERROR " + file + "(" + HxOverrides.substr(v,0,15) + "...)",3);
 				}
 			});
 		} else Reflect.setField(sirius_modules_ModLib.CACHE,file.toLowerCase(),content);
@@ -1882,6 +1882,7 @@ sirius_Sirius._preInit = function() {
 };
 sirius_Sirius.status = function() {
 	sirius_Sirius.log("Sirius => STATUS " + (sirius_Sirius._initialized?"READY ":"") + sirius_tools_Utils.toString(sirius_Sirius.agent,true),1);
+	return sirius_Sirius.agent;
 };
 sirius_Sirius._fileError = function(e) {
 	var e1 = e.data;
@@ -1893,7 +1894,7 @@ sirius_Sirius.module = function(file,target,content,handler,progress) {
 	});
 };
 sirius_Sirius.request = function(url,data,method,handler,headers,progress) {
-	if(method == null) method = "post";
+	if(method == null) method = "POST";
 	sirius_Sirius.run(function() {
 		sirius_Sirius.loader.request(url,data,method,handler,headers,progress);
 	});
@@ -2472,6 +2473,16 @@ sirius_dom_Style.get = function(q) {
 	return sirius_Sirius.one(q);
 };
 sirius_dom_Style.require = function(url,handler) {
+	if(url.length > 0) {
+		var file = url.shift();
+		if(file != null) {
+			var s = new sirius_dom_Link();
+			s.href(file,function(e) {
+				sirius_dom_Style.require(url,handler);
+			});
+			sirius_Sirius.document.head.addChild(s);
+		}
+	} else if(handler != null) handler();
 };
 sirius_dom_Style.__super__ = sirius_dom_Display;
 sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
@@ -3622,7 +3633,7 @@ sirius_dom_Document.prototype = $extend(sirius_dom_Display.prototype,{
 		return current;
 	}
 	,getScroll: function(o) {
-		if(o == null) o = new sirius_math_Point(0,0);
+		if(o == null) o = { x : 0, y : 0};
 		if(window.pageXOffset != null) {
 			o.x = window.pageXOffset;
 			o.y = window.pageYOffset;
@@ -4195,6 +4206,7 @@ var sirius_dom_Link = $hx_exports.sru.dom.Link = function(q) {
 		q = _this.createElement("link");
 	}
 	sirius_dom_Display.call(this,q,null);
+	this.object = this.element;
 };
 sirius_dom_Link.__name__ = ["sirius","dom","Link"];
 sirius_dom_Link.get = function(q) {
@@ -4202,7 +4214,11 @@ sirius_dom_Link.get = function(q) {
 };
 sirius_dom_Link.__super__ = sirius_dom_Display;
 sirius_dom_Link.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Link
+	href: function(url,handler) {
+		this.object.href = url;
+		if(handler != null) this.events.load(handler,1);
+	}
+	,__class__: sirius_dom_Link
 });
 var sirius_dom_Map = $hx_exports.sru.dom.Map = function(q) {
 	if(q == null) {
@@ -4465,7 +4481,7 @@ var sirius_dom_Script = $hx_exports.sru.dom.Script = function(q) {
 		q = _this.createElement("script");
 	}
 	sirius_dom_Display.call(this,q,null);
-	this.content = this.element;
+	this.object = this.element;
 };
 sirius_dom_Script.__name__ = ["sirius","dom","Script"];
 sirius_dom_Script.get = function(q) {
@@ -4481,16 +4497,16 @@ sirius_dom_Script.require = function(url,handler) {
 				sirius_dom_Script.require(url,handler);
 			});
 		}
-	} else if(handler != null) handler(null);
+	} else if(handler != null) handler();
 };
 sirius_dom_Script.__super__ = sirius_dom_Display;
 sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
 	src: function(url,handler) {
-		this.content.src = url;
+		this.object.src = url;
 		if(handler != null) this.events.load(handler,1);
 	}
 	,async: function() {
-		this.content.async = true;
+		this.object.async = true;
 	}
 	,__class__: sirius_dom_Script
 });
@@ -4541,9 +4557,12 @@ sirius_dom_Select.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,hasValue: function() {
 		var i = 0;
-		while(_$UInt_UInt_$Impl_$.gt(this.object.selectedOptions.length,i)) {
+		if(this.object.selectedOptions != null) while(_$UInt_UInt_$Impl_$.gt(this.object.selectedOptions.length,i)) {
 			var o = this.object.selectedOptions.item(i++);
 			if(!o.disabled) return true;
+		} else while(_$UInt_UInt_$Impl_$.gt(this.object.options.length,i)) {
+			var o1 = this.object.options[i++];
+			if(o1.selected && !o1.disabled) return true;
 		}
 		return false;
 	}
@@ -5360,7 +5379,7 @@ sirius_data_DataSet.prototype = {
 	,find: function(v) {
 		var r = [];
 		sirius_utils_Dice.All(this._content,function(p,x) {
-			if(x != null && x.indexOf(v) != -1) r[r.length] = p;
+			if(typeof(x) == "string" && x.indexOf(v) != -1) r[r.length] = p; else if(x == v) r[r.length] = p;
 		});
 		return r;
 	}
@@ -6004,9 +6023,10 @@ sirius_net_HttpRequest.prototype = {
 			this.onError(e3.toString());
 			return;
 		}
-		if(typeof(data) == "string" && !Lambda.exists(this.headers,function(h) {
-			return h.header.toLowerCase() == "content-type";
-		})) r.setRequestHeader("Content-Type","application/json");
+		var is_json = typeof(data) == "string";
+		if(!Lambda.exists(this.headers,function(h) {
+			return h.header == "Content-Type";
+		})) r.setRequestHeader("Content-Type",is_json?"application/json":"application/x-www-form-urlencoded");
 		var _g_head = this.headers.h;
 		var _g_val = null;
 		while(_g_head != null) {
@@ -6020,7 +6040,7 @@ sirius_net_HttpRequest.prototype = {
 			}(this));
 			r.setRequestHeader(h1.header,h1.value);
 		}
-		if(data != null && typeof(data) == "string") r.send(data); else r.send(this.data);
+		if(is_json) r.send(data); else r.send(this.data);
 		if(!this.async) onreadystatechange(null);
 	}
 	,onData: function(data) {

@@ -34,21 +34,21 @@ class Script extends Display{
 		}
 	}
 	
-	public var content:ScriptElement;
+	public var object:ScriptElement;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createScriptElement();
 		super(q, null);
-		content = cast element;
+		object = cast element;
 	}
 	
 	public function src(url:String, ?handler:IEvent->Void):Void {
-		content.src = url;
+		object.src = url;
 		if (handler != null) events.load(handler, 1);
 	}
 	
 	public function async():Void {
-		content.async = true;
+		object.async = true;
 	}
 	
 }

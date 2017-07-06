@@ -71,7 +71,13 @@ class QueryBuilder implements IQueryBuilder {
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
 		else {
 			r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
-			Reflect.setField(props, "in_" + obj.i, obj.value);
+			if (Std.is(obj.value, Array)){
+				Dice.All(obj.value, function(p:String, v:Dynamic){
+					Reflect.setField(props, "in_" + obj.i + "x" + p, v);
+				});
+			}else{
+				Reflect.setField(props, "in_" + obj.i, obj.value);
+			}
 		}
 		
 		if(r.length > 0){

@@ -78,6 +78,18 @@ class Clause {
 	}
 	
 	/**
+	 * IF A IN (B,C,...,X)
+	 * @param	param
+	 * @param	value
+	 * @return
+	 */
+	static public function IN(param:String, values:Dynamic):Dynamic {
+		var q:Array<String> = [];
+		Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = ":in_" + _IDX + "x" + p; });
+		return { param:param, condition:"{{p}} IN (" + q.join(',') + ")", value:values, i:_IDX++ };
+	}
+	
+	/**
 	 * IF A=B
 	 * @param	param
 	 * @param	value
