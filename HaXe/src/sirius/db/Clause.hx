@@ -1,4 +1,5 @@
 package sirius.db;
+import sirius.utils.Dice;
 
 /**
  * ...
@@ -123,7 +124,7 @@ class Clause {
 	 * @param	value
 	 * @return
 	 */
-	static public function UNEQUAL(param:String, value:Dynamic):Dynamic {
+	static public function DIFF(param:String, value:Dynamic):Dynamic {
 		return { param:param, condition:"{{p}}!=:in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
@@ -147,6 +148,35 @@ class Clause {
 	 */
 	static public function GREATER(param:String, value:Dynamic, ?or:Bool=true):Dynamic {
 		return { param:param, condition:"{{p}}>" + (or ? "=" : "") + ":in_"+_IDX, value:value, i:_IDX++ };
+	}
+	
+	/**
+	 * IF A>=B && A<=C [INSIDE]
+	 * @param	param
+	 * @param	from
+	 * @param	to
+	 * @param	out IF A<=C || A>=B [OUTSIDE]
+	 * @return
+	 */
+	static public function SPAN(param:String, from:UInt, to:UInt, out:Bool = false):Clause {
+		return out 
+			? Clause.OR([Clause.LESS(param, from, true), Clause.GREATER(param, to, true)]) 
+			: Clause.AND([Clause.GREATER(param, from, true), Clause.LESS(param, to, true)]);
+	}
+	
+	/**
+	 * IF A|1 AND A|2 AND A|...N [NEED ALL]
+	 * @param	param
+	 * @param	flags
+	 * @param	any		IF A|1 OR A|2 OR A|...N [NEED ANY]
+	 * @return
+	 */
+	static public function FLAGS(param:String, flags:Array<UInt>, any:Bool = false):Clause {
+		var a:Array<Dynamic> = [];
+		Dice.Values(flags, function(v:UInt):Void {
+			a[a.length] = Clause.BIT(param, v);
+		});
+		return any ? Clause.OR(a) : Clause.AND(a);
 	}
 	
 	/**
