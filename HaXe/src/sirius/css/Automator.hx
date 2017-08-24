@@ -135,6 +135,10 @@ class Automator {
 		css.build(); // Apply changes / Append to ScriptElement
 	}
 	
+	static public function apply():Void {
+		css.build();
+	}
+	
 	/**
 	 * Build the selector for all resolution modes
 	 * @param	query

@@ -1,5 +1,6 @@
 package sirius.net;
 import haxe.Json;
+import js.html.FileReader;
 import sirius.Sirius;
 import sirius.errors.Error;
 import sirius.errors.IError;
@@ -39,8 +40,7 @@ class Loader implements ILoader {
 	public var signals:ISignals;
 	
 	private function _getReq(u:String):HttpRequest {
-		// baseurl[?|&]_t=timestr
-		return new HttpRequest(u);// + (u.indexOf('?') == -1 ? '?' : '&') + '_t=' + (Date.now().getTime()));
+		return new HttpRequest(u);
 	}
 	
 	public function new(?noCache:Bool = false){
@@ -193,11 +193,10 @@ class Loader implements ILoader {
 	}
 	
 	#if js 
-	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void):Void {
+	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic = null):Void {
 	#elseif php
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
-	
 		if (method == null || method == '') {
 			method = 'POST';
 		}else{
@@ -207,7 +206,7 @@ class Loader implements ILoader {
 		var is_post:Bool = method == 'POST';
 		var is_get:Bool = method == 'GET';
 		var is_data:Bool = Std.is(data, String);
-		// Build URL for GET parameters
+		// Build URL for GET parameters 
 		if (method == 'GET'){
 			var ps:Array<String> = url.split('?');
 			if (ps.length == 1 || ps[1].length == 0){
@@ -237,9 +236,23 @@ class Loader implements ILoader {
 			});
 		}
 		r.onData = function(d) { 
-			_changed(url, 'loaded', d, r);
-			if (handler != null) 
+			if (handler != null) {
+				#if js
+					if (options != null){
+						if (options.responseType == 'blob'){
+							var f:FileReader = new FileReader();
+							f.onloadend = function(e) {
+								_changed(url, 'loaded', d, r);
+								handler(new Request(true, e.target.result, null));
+							}
+							f.readAsDataURL(cast d);
+							return;
+						}
+					}
+				#end
+				_changed(url, 'loaded', d, r);
 				handler(new Request(true, d, null)); 
+			}
 		}
 		r.onError = function(d) { 
 			_changed(url, 'error', d, r);
@@ -253,7 +266,7 @@ class Loader implements ILoader {
 				pro.total = b;
 				pro.file = u;
 				progress(pro);
-			} : null);
+			} : null, options);
 		#elseif php
 			r.request(is_post);
 		#end

@@ -1,6 +1,9 @@
 package sirius.net;
 import haxe.Json;
+import js.html.XMLHttpRequest;
+import js.html.XMLHttpRequestResponseType;
 import sirius.serial.JsonTool;
+import sirius.utils.Dice;
 
 /**
  * ... Modified version of Http.hx
@@ -167,6 +170,14 @@ class HttpRequest {
 		return this;
 	}
 	
+	public function setOptions(data:Dynamic):Void {
+		if (data != null){
+			Dice.All(data, function(p:String, v:Dynamic):Void {
+				Reflect.setField(req, p, v);
+			});
+		}
+	}
+	
 	/**
 		Cancels `this` Http request if `request` has been called and a response
 		has not yet been received.
@@ -203,10 +214,20 @@ class HttpRequest {
 	
 	
 	#if js
-		public function request(?method:String, ?data:Dynamic, ?progress:String->Int->Int->Void) : Void {
+	
+		private function _getData(r:XMLHttpRequest):Dynamic {
+			if ((cast r.responseType) == '' || (cast r.responseType) == 'text'){
+				return r.responseText;
+			}else{
+				return r.response;
+			}
+		}
+		
+		public function request(?method:String, ?data:Dynamic, ?progress:String->Int->Int->Void, ?options:Dynamic) : Void {
 			var me = this;
 			me.responseData = null;
 			var r = req = js.Browser.createXMLHttpRequest();
+			setOptions(options);
 			var onreadystatechange = function(_) {
 				if( r.readyState != 4 )
 					return;
@@ -216,8 +237,9 @@ class HttpRequest {
 					var protocol = js.Browser.location.protocol.toLowerCase();
 					var rlocalProtocol = ~/^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
 					var isLocal = rlocalProtocol.match(protocol);
-					if ( isLocal )
-						s = r.responseText != null ? 200 : 404;
+					if ( isLocal ){
+						s = _getData(r) != null ? 200 : 404;
+					}
 				}
 				if( s == untyped __js__("undefined") )
 					s = null;
@@ -225,7 +247,7 @@ class HttpRequest {
 					me.onStatus(s);
 				if( s != null && s >= 200 && s < 400 ) {
 					me.req = null;
-					me.onData(me.responseData = r.responseText);
+					me.onData(me.responseData = _getData(r));
 				}
 				else if ( s == null ) {
 					me.req = null;
@@ -240,7 +262,7 @@ class HttpRequest {
 					me.onError("Unknown host");
 				default:
 					me.req = null;
-					me.responseData = r.responseText;
+					me.responseData = _getData(r);
 					me.onError("Http Error #"+r.status);
 				}
 			};

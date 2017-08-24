@@ -262,8 +262,8 @@ class Sirius {
 		 * @param	handler
 		 * @param	method
 		 */
-		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null):Void {
-			run(function() { loader.request(url, data, method, handler, headers, progress); } );
+		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic):Void {
+			run(function() { loader.request(url, data, method, handler, headers, progress, options); } );
 		}
 		
 	#elseif php
@@ -304,10 +304,9 @@ class Sirius {
 		 * @param	handler
 		 * @param	method
 		 */
-		static public function request(url:String, ?data:Dynamic, ?handler:IRequest->Void, ?method:String = 'post', ?headers:Dynamic = null):Void {
-			loader.request(url, data, handler, method, headers);
+		static public function request(url:String, ?data:Dynamic, ?method:String = 'post', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
+			loader.request(url, data, method, handler, headers);
 		}
-		
 		
 	#end
 	
