@@ -23,7 +23,6 @@ class Automator {
 	
 	static private var _inits:Dynamic = {
 		reset : false,
-		sprites : false,
 		grid: false,
 	};
 	
@@ -32,25 +31,42 @@ class Automator {
 	 * Create all cell styles
 	 * @param	size
 	 */
-	static private function _createGrid(size:Int, pad:UInt):Void {
+	static private function _createGrid(size:Int):Void {
 		if (!_inits.grid){
-			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;', '.shelf');
-			build('disp-table content-void', '.shelf:before,.shelf:after', true);
-			build('clear-both','.shelf:after', true);
+			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;width:100%;', '.shelf');
+			// Auto grow
+			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
+			// Pack will align left, center or right
+			omnibuild('-webkit-box-pack:center;','.o-center');
+			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left');
+			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right');
+			// Lift will align top, middle and bottom
+			omnibuild('-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;','.o-top');
+			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.o-middle');
+			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom');
+			// Fill empty spaces around the cells
+			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-arrange');
+			// Fill empty spaces between the cells
+			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-fill');
+			// Order by right to left instead of left to right
+			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.o-reverse');
+			
+			var i:Int = 1;
+			while (i < 12){
+				omnibuild('-webkit-box-ordinal-group:-' + i + ';-ms-flex-order:-' + i + ';order:-' + i + ';', '.o-left-' + i);
+				omnibuild('-webkit-box-ordinal-group:' + i + ';-ms-flex-order:' + i + ';order:' + i + ';', '.o-right-' + i);
+				++i;
+			}
 			_inits.grid = true;
 		}
-		var n:String = '.grid' + (size != 12 ? '-' + size : '');
-		omnibuild('margin: 0 -' + pad + 'px',  n + ' .shelf');
-		omnibuild('margin: 0 -' + pad + 'px',  n + '-liquid .shelf');
-		omnibuild('margin: auto auto; padding: 0 ' + pad + 'px',  n + '-liquid');
 		Dice.Count(0, size, function(a:Int, b:Int, c:Bool) {
 			++a;
 			var t:String = (cast (a / b * 100)).toFixed(16) + '%';
-			var s:String = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 " + pad + "px;position:relative;";
+			var s:String = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
 			var n:String = 'cel-' + a + (b == 12 ? '' : 'x' + b);	// .cel-AxB | .cel-A
 			omnibuild(s, '.'+n); // w-00d00pc padd-10
-			if (a < b - 1) 
-				omnibuild('margin-left:' + t, '.o-' + n);
+			if (a < b) 
+				omnibuild('margin-left:' + t, '.x-' + n);
 			return null;
 		});
 	}
@@ -98,20 +114,11 @@ class Automator {
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
-			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,html [type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
+			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
+			//css.add();
 			grid(12);
-			enableSprites();
 			css.build();
 			Sirius.run(scan);
-		}
-	}
-	
-	static public function enableSprites() {
-		if (!_inits.sprites){
-			_inits.sprites = true;
-			parse('.sprite=w-100pc disp-table txt-c;.sprite > div=disp-table-cell vert-m;.sprite > div > div=marg-l-auto marg-r-auto');
-			if (!_inits.reset)
-				css.build();
 		}
 	}
 	
@@ -236,11 +243,11 @@ class Automator {
 	 * Create a grid container
 	 * @param	size
 	 */
-	static public function grid(size:Dynamic, ?pad:UInt = 10):Void {
+	static public function grid(size:Dynamic):Void {
 		if(!Reflect.hasField(_inits, 'grid-' + size)){
 			if (!Std.is(size, Array)) 
 				size = [size];
-			Dice.Values(size, function(v:Int) {	_createGrid(v, pad); });
+			Dice.Values(size, function(v:Int) {	_createGrid(v); });
 			Reflect.setField(_inits, 'grid-' + size, true);
 		}
 	}

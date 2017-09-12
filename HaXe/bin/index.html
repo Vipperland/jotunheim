@@ -4,77 +4,255 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="utf-8"/>
 	<base href="/"></base>
-	<title>Arte do Sexo</title>
+	<title>Sirius::Automator</title>
 	<meta name="description" content=""/>
 	<script type="text/javascript" src="sirius/api.sirius.js"></script>
 	<style>  
-		
-		html, body {
-			background-color: #1E1F21;
-			color: #ffffff;
-			width: 100%;
-			height: 100%;
+		body,html {
+			width:100%;
+			height:100%;
+			font-family: Tahoma;
 		}
-		.main-header {
-			width: 100%;
-			height: 450px;
-			background-size: cover;
-			background-position: 50% 50%;
-			background-image:url(/assets/image/fade-bg.jpg);
+		.test {
+			border-radius:10px;
+			box-shadow: inset 0 0 0 2px #339966;
+			background-color:#277850;
+			height: 30px;
+			text-align: center; 
+			line-height: 1.7; 
+			position:relative;
 		}
-		.menu-container {
-			background-color: #282a2e;
-			border-bottom: 5px solid #181a1e;
+		.label {
+			text-align: center;
+			padding: 10px;
 		}
-		.site-menu {
-			max-width: 1240px;
-			background-color: #A54242;
-			border-bottom: 5px solid #853232;
-			margin-bottom: -5px;
-		}
-		.item-menu {
-			padding: 20px;
-			transition: all .1s ease-out;
-			cursor: pointer;
-			margin-bottom: -5px;
-		}
-		.item-menu:hover {
-			background-color: #bb5555;
-		}
-		.item-menu.active {
-			background-color: #cc6666;
-			border-bottom: 5px solid #953838;
-		}
-		
+		div.test[class*="x-cel"]:after { position: absolute; right:100%; width:100px; }
+		.cel:before { content: 'cel'; }
+		.cel-1:before { content: 'cel-1'; }
+		.cel-2:before { content: 'cel-2'; }
+		.cel-3:before { content: 'cel-3'; }
+		.cel-4:before { content: 'cel-4'; }
+		.cel-5:before { content: 'cel-5'; }
+		.cel-6:before { content: 'cel-6'; }
+		.cel-7:before { content: 'cel-7'; }
+		.cel-8:before { content: 'cel-8'; }
+		.cel-9:before { content: 'cel-9'; }
+		.cel-10:before { content: 'cel-10'; }
+		.cel-11:before { content: 'cel-11'; }
+		.cel-12:before { content: 'cel-11'; }
+		.x-cel-1:after { content: 'x-cel-1'; }
+		.x-cel-2:after { content: 'x-cel-2'; }
+		.x-cel-3:after { content: 'x-cel-3'; }
+		.x-cel-4:after { content: 'x-cel-4'; }
+		.x-cel-5:after { content: 'x-cel-5'; }
+		.x-cel-6:after { content: 'x-cel-6'; }
+		.x-cel-7:after { content: 'x-cel-7'; }
+		.x-cel-8:after { content: 'x-cel-8'; }
+		.x-cel-9:after { content: 'x-cel-9'; }
+		.x-cel-10:after { content: 'x-cel-10'; }
+		.x-cel-11:after { content: 'x-cel-11'; }
+		.x-cel-12:after { content: 'x-cel-12'; }
 	</style>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body>
-	<div class="main-header">
+<body automator>
+	<div class="shelf">
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
 	</div>
-	<div class="sprite">
-		<div class="menu-container">
-			<div class="site-menu">
-				<div class="grid">
-					<div class="cel-2 item-menu active">INICIO</div>
-					<div class="cel-2 item-menu">CATEGORIAS</div>
-					<div class="cel-2 item-menu">PUBLICAR</div>
-					<div class="cel-2"></div>
-					<div class="no-login">
-						<div class="cel-2 item-menu">ENTRAR</div>
-						<div class="cel-2 item-menu">REGISTRAR</div>
-					</div>
-					<div class="has-login" hidden>
-						<div class="cel-4 item-menu">Rafael</div>
-						<div class="cel-2 item-menu">Mensagens</div>
-					</div>
-				</div>
-			</div>
-		</div>
+	<div class="shelf">
+		<div class="test cel-2"></div>
+		<div class="test cel-2"></div>
+		<div class="test cel-2"></div>
+		<div class="test cel-2"></div>
+		<div class="test cel-2"></div>
+		<div class="test cel-2"></div>
 	</div>
-	<script>
-		Automator.reset();
-		Automator.grid(12);
-	</script>
+	<div class="shelf">
+		<div class="test cel-3"></div>
+		<div class="test cel-3"></div>
+		<div class="test cel-3"></div>
+		<div class="test cel-3"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel-4"></div>
+		<div class="test cel-4"></div>
+		<div class="test cel-4"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel-6"></div>
+		<div class="test cel-6"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel-12"></div>
+	</div>
+	<hr/>
+	<div class="shelf"><div class="test cel-1"></div></div>
+	<div class="shelf"><div class="test cel-2"></div></div>
+	<div class="shelf"><div class="test cel-3"></div></div>
+	<div class="shelf"><div class="test cel-4"></div></div>
+	<div class="shelf"><div class="test cel-5"></div></div>
+	<div class="shelf"><div class="test cel-6"></div></div>
+	<div class="shelf"><div class="test cel-7"></div></div>
+	<div class="shelf"><div class="test cel-8"></div></div>
+	<div class="shelf"><div class="test cel-9"></div></div>
+	<div class="shelf"><div class="test cel-10"></div></div>
+	<div class="shelf"><div class="test cel-11"></div></div>
+	<div class="shelf"><div class="test cel-12"></div></div>
+	<hr/>
+	<div class="shelf"><div class="test x-cel-1 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-2 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-3 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-4 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-5 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-6 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-7 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-8 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-9 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-10 cel"></div></div>
+	<div class="shelf"><div class="test x-cel-11 cel"></div></div>
+	<hr/>
+	<div class="shelf">
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+		<div class="test cel"></div>
+	</div><hr/>
+	<div class="shelf">
+		<div class="test cel"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-3"></div>
+		<div class="test cel-2"></div>
+		<div class="test cel"></div>
+	</div>
+	<div class="shelf o-arrange">
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+	</div>
+	<div class="shelf o-fill">
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+		<div class="test cel-1"></div>
+	</div>
 </body>
 </html>

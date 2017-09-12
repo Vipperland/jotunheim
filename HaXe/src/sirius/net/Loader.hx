@@ -243,7 +243,7 @@ class Loader implements ILoader {
 							var f:FileReader = new FileReader();
 							f.onloadend = function(e) {
 								_changed(url, 'loaded', d, r);
-								handler(new Request(true, e.target.result, null));
+								handler(new Request(true, e.target.result, null, url));
 							}
 							f.readAsDataURL(cast d);
 							return;

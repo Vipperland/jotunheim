@@ -20,6 +20,11 @@ class Push implements Dynamic {
 		return _log;
 	}
 	
+	public function clear():Void {
+		_log = [];
+		_now = [];
+	}
+	
 	/**
 	 * methodName|property ...parameters|value
 	 * parameters are separated by 'TAB'
@@ -27,7 +32,7 @@ class Push implements Dynamic {
 	 * 			myFunct	prop1	prop2
 	 * @param	data
 	 */
-	public function proc(data:Dynamic):Array<Dynamic> {
+	public function proc(data:Dynamic):Dynamic {
 		_buffer = {};
 		_now = null;
 		_batchExec(data);
@@ -80,8 +85,7 @@ class Push implements Dynamic {
 				#end
 				if (o != null && isMethod){
 					_log[_log.length] = q;
-					// Call method, if is a function and user the argument array, recursive call if result is a string and result the last one
-					
+					// Call method, if is a function and use the argument array, recursive call if result is a string and result the last one
 					if (isMethod){
 						o = Reflect.callMethod(this, o, tk);
 						if (o != null && Std.is(o, String)){

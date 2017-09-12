@@ -59,7 +59,6 @@ import haxe.Log;
 	import sirius.dom.OptGroup;
 	import sirius.dom.Option;
 	import sirius.dom.Output;
-	import sirius.dom.Overlay;
 	import sirius.dom.P;
 	import sirius.dom.Param;
 	import sirius.dom.Picture;
@@ -71,8 +70,6 @@ import haxe.Log;
 	import sirius.dom.Shadow;
 	import sirius.dom.Source;
 	import sirius.dom.Span;
-	import sirius.dom.Sprite;
-	import sirius.dom.Sprite3D;
 	import sirius.dom.Style;
 	import sirius.dom.Text;
 	import sirius.dom.TextArea;
@@ -135,7 +132,7 @@ class Utils{
 			OBJECT:Object, OL:OL, OPTGROUP:OptGroup, OPTION:Option, OUTPUT:Output,
 			P:P, PARAM:Param, PICTURE:Picture, PRE:Pre, PROGRESS:Progress,
 			QUOTE:Quote,
-			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, SPRITE:Sprite, SPRITE3D:Sprite3D, STYLE:Style,
+			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, STYLE:Style,
 			TEXT:Text,TEXTAREA:TextArea,THEAD:Thead,TITLE:Title,TRACK:Track,
 			UL:UL,
 			VIDEO:Video,

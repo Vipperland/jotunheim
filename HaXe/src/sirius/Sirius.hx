@@ -178,7 +178,6 @@ class Sirius {
 		 * @param	handler
 		 */
 		static public function run(handler:Dynamic):Void {
-			if (!_initialized) _preInit();
 			if (handler != null) {
 				if (!_loaded && _loadPool != null) 
 					_loadPool[_loadPool.length] = handler;

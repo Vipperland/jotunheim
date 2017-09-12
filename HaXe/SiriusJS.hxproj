@@ -46,8 +46,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Custom" />
-    <option testMovieCommand="tools\run.bat" />
+    <option testMovie="Webserver" />
+    <option testMovieCommand="bin/index.html" />
   </options>
   <!-- Plugin storage -->
   <storage />
