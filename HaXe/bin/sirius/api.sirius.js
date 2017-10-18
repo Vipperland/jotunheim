@@ -3,7 +3,6 @@ $hx_exports.utils = $hx_exports.utils || {};
 $hx_exports.sru = $hx_exports.sru || {};
 $hx_exports.sru.utils = $hx_exports.sru.utils || {};
 ;$hx_exports.sru.tools = $hx_exports.sru.tools || {};
-;$hx_exports.sru.bit = $hx_exports.sru.bit || {};
 ;$hx_exports.sru.seo = $hx_exports.sru.seo || {};
 ;$hx_exports.sru.math = $hx_exports.sru.math || {};
 ;$hx_exports.sru.flow = $hx_exports.sru.flow || {};
@@ -1790,12 +1789,12 @@ sirius_seo_SEOTool.prototype = {
 	}
 	,init: function(types) {
 		if(types == null) types = 0;
-		if(types == 0 || sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
-		if(sirius_tools_BitIO.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",sirius_seo_Search);
+		if(types == 0 || sirius_tools_Flag.Test(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
+		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
+		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
+		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
+		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
+		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",sirius_seo_Search);
 		return this;
 	}
 	,publish: function() {
@@ -1866,6 +1865,7 @@ sirius_Sirius.run = function(handler) {
 	}
 };
 sirius_Sirius.onInit = function(handler,files) {
+	if(!sirius_Sirius._initialized) sirius_Sirius._preInit();
 	if(!sirius_Sirius._loaded && files != null && files.length > 0) {
 		sirius_Sirius.loader.signals.add("error",sirius_Sirius._fileError);
 		sirius_Sirius.loader.add(files);
@@ -6319,7 +6319,7 @@ sirius_serial_JsonTool.supressNull = function() {
 		if(typeof(a) == "string") {
 			if(a.substr(0,1) == "_") return null;
 		}
-		if(js_Boot.__instanceof(b,sirius_tools_BitIO)) return b.value;
+		if(js_Boot.__instanceof(b,sirius_tools_Flag)) return b.value;
 		if(b == null) return null; else return b;
 	};
 };
@@ -6546,48 +6546,6 @@ sirius_signals_Pipe.prototype = {
 	}
 	,__class__: sirius_signals_Pipe
 };
-var sirius_tools_BitIO = $hx_exports.sru.bit.BitIO = function(value) {
-	if(!(typeof(value) == "number") && ((value | 0) === value)) value = Std.parseInt(value);
-	this.value = value;
-};
-sirius_tools_BitIO.__name__ = ["sirius","tools","BitIO"];
-sirius_tools_BitIO.Write = function(hash,bit) {
-	return hash | bit;
-};
-sirius_tools_BitIO.Unwrite = function(hash,bit) {
-	return hash & ~bit;
-};
-sirius_tools_BitIO.Toggle = function(hash,bit) {
-	if(sirius_tools_BitIO.Test(hash,bit)) return sirius_tools_BitIO.Unwrite(hash,bit); else return sirius_tools_BitIO.Write(hash,bit);
-};
-sirius_tools_BitIO.Test = function(hash,value) {
-	return (hash & value) == value;
-};
-sirius_tools_BitIO.Value = function(hash,size) {
-	if(size == null) size = 32;
-	var v = hash.toString(2);
-	while(_$UInt_UInt_$Impl_$.gt(size,v.length)) v = "0" + v;
-	return v;
-};
-sirius_tools_BitIO.prototype = {
-	invert: function(bit) {
-		this.value = sirius_tools_BitIO.Toggle(this.value,bit);
-	}
-	,set: function(bit) {
-		this.value = sirius_tools_BitIO.Write(this.value,bit);
-	}
-	,unset: function(bit) {
-		this.value = sirius_tools_BitIO.Unwrite(this.value,bit);
-	}
-	,get: function(bit) {
-		return sirius_tools_BitIO.Test(this.value,bit);
-	}
-	,valueOf: function(size) {
-		if(size == null) size = 32;
-		return sirius_tools_BitIO.Value(this.value,size);
-	}
-	,__class__: sirius_tools_BitIO
-};
 var sirius_tools_Delayer = $hx_exports.sru.tools.Delayer = function(handler,time,args,thisObj) {
 	this._this = thisObj;
 	this._handler = handler;
@@ -6627,6 +6585,106 @@ sirius_tools_Delayer.prototype = {
 		}
 	}
 	,__class__: sirius_tools_Delayer
+};
+var sirius_tools_Flag = $hx_exports.Flag = function(value) {
+	if(!(typeof(value) == "number") && ((value | 0) === value)) value = Std.parseInt(value);
+	this.value = value >>> 0;
+};
+sirius_tools_Flag.__name__ = ["sirius","tools","Flag"];
+sirius_tools_Flag.from = function(hash) {
+	if(typeof(hash) == "string") hash = Std.parseInt(hash);
+	return new sirius_tools_Flag(hash);
+};
+sirius_tools_Flag.Put = function(hash,bit) {
+	return hash | bit;
+};
+sirius_tools_Flag.Drop = function(hash,bit) {
+	return hash & ~bit;
+};
+sirius_tools_Flag.Toggle = function(hash,bit) {
+	if(sirius_tools_Flag.Test(hash,bit)) return sirius_tools_Flag.Drop(hash,bit); else return sirius_tools_Flag.Put(hash,bit);
+};
+sirius_tools_Flag.Test = function(hash,value) {
+	return (hash & value) == value;
+};
+sirius_tools_Flag.Value = function(hash,skip) {
+	if(skip == null) skip = 0;
+	var v = hash.toString(2);
+	var i = v.length;
+	while(_$UInt_UInt_$Impl_$.gt(32,i)) {
+		v = "0" + v;
+		++i;
+	}
+	i = Std["int"](_$UInt_UInt_$Impl_$.toFloat(skip) % _$UInt_UInt_$Impl_$.toFloat(8));
+	var r = "";
+	while(_$UInt_UInt_$Impl_$.gt(8,i)) r += HxOverrides.substr(v,i * 4,4) + ((function($this) {
+		var $r;
+		var a = ++i;
+		$r = _$UInt_UInt_$Impl_$.gt(8,a);
+		return $r;
+	}(this))?" ":"");
+	return r;
+};
+sirius_tools_Flag.Length = function(hash) {
+	var count = 0;
+	while(_$UInt_UInt_$Impl_$.gt(hash,0)) {
+		hash = hash & hash - 1;
+		++count;
+	}
+	return count;
+};
+sirius_tools_Flag.prototype = {
+	toggle: function(bit) {
+		this.value = sirius_tools_Flag.Toggle(this.value,bit);
+		return this;
+	}
+	,put: function(bit) {
+		this.value = sirius_tools_Flag.Put(this.value,1 << bit);
+		return this;
+	}
+	,drop: function(bit) {
+		this.value = sirius_tools_Flag.Drop(this.value,1 << bit);
+		return this;
+	}
+	,test: function(bit) {
+		return sirius_tools_Flag.Test(this.value,1 << bit);
+	}
+	,putAll: function(bits) {
+		var _g = this;
+		sirius_utils_Dice.Values(bits,function(v) {
+			_g.put(1 << v);
+		});
+		return this;
+	}
+	,dropAll: function(bits) {
+		var _g = this;
+		sirius_utils_Dice.Values(bits,function(v) {
+			_g.drop(1 << v);
+		});
+		return this;
+	}
+	,testAll: function(bits) {
+		var _g = this;
+		return sirius_utils_Dice.Values(bits,function(v) {
+			return !_g.test(v);
+		}).completed;
+	}
+	,testAny: function(bits,min) {
+		if(min == null) min = 1;
+		var _g = this;
+		return !sirius_utils_Dice.Values(bits,function(v) {
+			if(_g.test(v)) --min;
+			return min == 0;
+		}).completed;
+	}
+	,length: function() {
+		return sirius_tools_Flag.Length(this.value);
+	}
+	,toString: function(skip) {
+		if(skip == null) skip = 0;
+		return sirius_tools_Flag.Value(this.value,skip);
+	}
+	,__class__: sirius_tools_Flag
 };
 var sirius_tools_Key = $hx_exports.sru.tools.Key = function() { };
 sirius_tools_Key.__name__ = ["sirius","tools","Key"];
@@ -7366,8 +7424,8 @@ sirius_css_CSSGroup.EOF = "}/*EOF*/";
 sirius_css_CSSGroup.MEDIA_PR = "print";
 sirius_css_CSSGroup.MEDIA_XS = "(min-width:1px)";
 sirius_css_CSSGroup.MEDIA_SM = "(min-width:768px)";
-sirius_css_CSSGroup.MEDIA_MD = "(min-width:1001px)";
-sirius_css_CSSGroup.MEDIA_LG = "(min-width:1170px)";
+sirius_css_CSSGroup.MEDIA_MD = "(min-width:992px)";
+sirius_css_CSSGroup.MEDIA_LG = "(min-width:1200px)";
 sirius_dom_Display._CNT = 0;
 sirius_dom_Display._DATA = [];
 sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
@@ -7381,39 +7439,6 @@ sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO :
 sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
 sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
 sirius_css_XCSS.enabled = false;
-sirius_tools_BitIO.P01 = 1;
-sirius_tools_BitIO.P02 = 2;
-sirius_tools_BitIO.P03 = 4;
-sirius_tools_BitIO.P04 = 8;
-sirius_tools_BitIO.P05 = 16;
-sirius_tools_BitIO.P06 = 32;
-sirius_tools_BitIO.P07 = 64;
-sirius_tools_BitIO.P08 = 128;
-sirius_tools_BitIO.P09 = 256;
-sirius_tools_BitIO.P10 = 512;
-sirius_tools_BitIO.P11 = 1024;
-sirius_tools_BitIO.P12 = 2048;
-sirius_tools_BitIO.P13 = 4096;
-sirius_tools_BitIO.P14 = 8192;
-sirius_tools_BitIO.P15 = 16384;
-sirius_tools_BitIO.P16 = 32768;
-sirius_tools_BitIO.P17 = 65536;
-sirius_tools_BitIO.P18 = 131072;
-sirius_tools_BitIO.P19 = 262144;
-sirius_tools_BitIO.P20 = 524288;
-sirius_tools_BitIO.P21 = 1048576;
-sirius_tools_BitIO.P22 = 2097152;
-sirius_tools_BitIO.P23 = 4194304;
-sirius_tools_BitIO.P24 = 8388608;
-sirius_tools_BitIO.P25 = 16777216;
-sirius_tools_BitIO.P26 = 33554432;
-sirius_tools_BitIO.P27 = 67108864;
-sirius_tools_BitIO.P28 = 134217728;
-sirius_tools_BitIO.P29 = 268435456;
-sirius_tools_BitIO.P30 = 536870912;
-sirius_tools_BitIO.P31 = 1073741824;
-sirius_tools_BitIO.P32 = -2147483648;
-sirius_tools_BitIO.X = [sirius_tools_BitIO.Unwrite,sirius_tools_BitIO.Write,sirius_tools_BitIO.Toggle];
 sirius_tools_Delayer.setTimeout = setTimeout;
 sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;

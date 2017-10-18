@@ -23,9 +23,9 @@ class CSSGroup{
 	
 	public static var MEDIA_SM:String = "(min-width:768px)";
 	
-	public static var MEDIA_MD:String = "(min-width:1001px)";
+	public static var MEDIA_MD:String = "(min-width:992px)";
 	
-	public static var MEDIA_LG:String = "(min-width:1170px)";
+	public static var MEDIA_LG:String = "(min-width:1200px)";
 	
 	public var CM:StyleElement;
 	

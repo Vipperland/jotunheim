@@ -1,7 +1,5 @@
 package sirius.net;
 import haxe.Json;
-import js.html.XMLHttpRequest;
-import js.html.XMLHttpRequestResponseType;
 import sirius.serial.JsonTool;
 import sirius.utils.Dice;
 
@@ -51,6 +49,8 @@ private typedef AbstractSocket = {
 
 import js.html.FormData;
 import js.html.ProgressEvent;
+import js.html.XMLHttpRequest;
+import js.html.XMLHttpRequestResponseType;
 
 #end
 

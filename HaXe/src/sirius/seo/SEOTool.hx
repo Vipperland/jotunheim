@@ -2,7 +2,7 @@ package sirius.seo;
 import sirius.seo.Search;
 import sirius.seo.Organization;
 import sirius.seo.Person;
-import sirius.tools.BitIO;
+import sirius.tools.Flag;
 import sirius.utils.Dice;
 
 /**
@@ -51,12 +51,12 @@ class SEOTool{
 	}
 	
 	public function init(types:Int = 0):SEOTool {
-		if ((types == 0 || BitIO.Test(types, WEBSITE))) _create('website', WebSite);
-		if (BitIO.Test(types, BREADCRUMBS)) _create('breadcrumbs', Breadcrumbs);
-		if (BitIO.Test(types, PRODUCT)) _create('product', Product);
-		if (BitIO.Test(types, ORGANIZATION)) _create('organization', Organization);
-		if (BitIO.Test(types, PERSON)) _create('person', Person);
-		if (BitIO.Test(types, SEARCH)) _create('search', Search);
+		if ((types == 0 || Flag.Test(types, WEBSITE))) _create('website', WebSite);
+		if (Flag.Test(types, BREADCRUMBS)) _create('breadcrumbs', Breadcrumbs);
+		if (Flag.Test(types, PRODUCT)) _create('product', Product);
+		if (Flag.Test(types, ORGANIZATION)) _create('organization', Organization);
+		if (Flag.Test(types, PERSON)) _create('person', Person);
+		if (Flag.Test(types, SEARCH)) _create('search', Search);
 		return this;
 	}
 	

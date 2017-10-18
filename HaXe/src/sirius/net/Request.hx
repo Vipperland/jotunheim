@@ -1,6 +1,5 @@
 package sirius.net;
 import haxe.Json;
-import js.html.FileReader;
 import sirius.errors.Error;
 
 /**

@@ -82,6 +82,7 @@ import haxe.Log;
 #end
 
 import sirius.serial.IOTools;
+import sirius.tools.Flag;
 import sirius.utils.Dice;
 
 /**
@@ -92,7 +93,6 @@ import sirius.utils.Dice;
 class Utils{
 
 	#if js
-	
 		public static function matchMedia(value:String):Bool {
 			return Browser.window.matchMedia(value).matches;
 		}

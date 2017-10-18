@@ -13,7 +13,7 @@ import haxe.Json;
 #end
 import haxe.Log;
 import sirius.serial.JsonTool;
-import sirius.tools.BitIO;
+import sirius.tools.Flag;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 import sirius.serial.IOTools;

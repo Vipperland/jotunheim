@@ -1,6 +1,5 @@
 package sirius.net;
 import haxe.Json;
-import js.html.FileReader;
 import sirius.Sirius;
 import sirius.errors.Error;
 import sirius.errors.IError;
@@ -14,6 +13,7 @@ import sirius.utils.Dice;
 
 #if js
 	import sirius.dom.IDisplay;
+	import js.html.FileReader;
 #end
 
 /**

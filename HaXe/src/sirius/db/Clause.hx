@@ -16,6 +16,11 @@ class Clause {
 	 */
 	public var conditions:Dynamic;
 	
+	/**
+	 * 
+	 * @param	conditions
+	 * @param	joiner
+	 */
 	public function new(conditions:Dynamic, joiner:String) {
 		_joiner = joiner;
 		this.conditions = conditions;
@@ -199,6 +204,10 @@ class Clause {
 		return { param:param, condition:"~{{p}} & :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public function joiner():String {
 		return _joiner;
 	}

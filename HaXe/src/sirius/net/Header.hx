@@ -3,7 +3,7 @@ import haxe.Json;
 import php.Lib;
 import php.Web;
 import sirius.serial.JsonTool;
-import sirius.tools.BitIO;
+import sirius.tools.Flag;
 import sirius.serial.IOTools;
 import sirius.utils.Dice;
 

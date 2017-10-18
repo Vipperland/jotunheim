@@ -1,5 +1,5 @@
 ﻿package sirius.serial;
-import sirius.tools.BitIO;
+import sirius.tools.Flag;
 
 /**
  * ...
@@ -19,7 +19,7 @@ class JsonTool {
 			if (Std.is(a, String)) {
 				if (a.substr(0, 1) == "_") return null;
 			}
-			if (Std.is(b, BitIO)) return b.value;
+			if (Std.is(b, Flag)) return b.value;
 			return (b == null) ? null : b; 
 		}
 	}
