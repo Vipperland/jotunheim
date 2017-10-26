@@ -1789,12 +1789,12 @@ sirius_seo_SEOTool.prototype = {
 	}
 	,init: function(types) {
 		if(types == null) types = 0;
-		if(types == 0 || sirius_tools_Flag.Test(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
-		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
-		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
-		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
-		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
-		if(sirius_tools_Flag.Test(types,sirius_seo_SEOTool.SEARCH)) this._create("search",sirius_seo_Search);
+		if(types == 0 || sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.WEBSITE)) this._create("website",sirius_seo_WebSite);
+		if(sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.BREADCRUMBS)) this._create("breadcrumbs",sirius_seo_Breadcrumbs);
+		if(sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.PRODUCT)) this._create("product",sirius_seo_Product);
+		if(sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.ORGANIZATION)) this._create("organization",sirius_seo_Organization);
+		if(sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.PERSON)) this._create("person",sirius_seo_Person);
+		if(sirius_tools_Flag.FTest(types,sirius_seo_SEOTool.SEARCH)) this._create("search",sirius_seo_Search);
 		return this;
 	}
 	,publish: function() {
@@ -6595,19 +6595,19 @@ sirius_tools_Flag.from = function(hash) {
 	if(typeof(hash) == "string") hash = Std.parseInt(hash);
 	return new sirius_tools_Flag(hash);
 };
-sirius_tools_Flag.Put = function(hash,bit) {
+sirius_tools_Flag.FPut = function(hash,bit) {
 	return hash | bit;
 };
-sirius_tools_Flag.Drop = function(hash,bit) {
+sirius_tools_Flag.FDrop = function(hash,bit) {
 	return hash & ~bit;
 };
-sirius_tools_Flag.Toggle = function(hash,bit) {
-	if(sirius_tools_Flag.Test(hash,bit)) return sirius_tools_Flag.Drop(hash,bit); else return sirius_tools_Flag.Put(hash,bit);
+sirius_tools_Flag.FToggle = function(hash,bit) {
+	if(sirius_tools_Flag.FTest(hash,bit)) return sirius_tools_Flag.FDrop(hash,bit); else return sirius_tools_Flag.FPut(hash,bit);
 };
-sirius_tools_Flag.Test = function(hash,value) {
+sirius_tools_Flag.FTest = function(hash,value) {
 	return (hash & value) == value;
 };
-sirius_tools_Flag.Value = function(hash,skip) {
+sirius_tools_Flag.FValue = function(hash,skip) {
 	if(skip == null) skip = 0;
 	var v = hash.toString(2);
 	var i = v.length;
@@ -6625,7 +6625,7 @@ sirius_tools_Flag.Value = function(hash,skip) {
 	}(this))?" ":"");
 	return r;
 };
-sirius_tools_Flag.Length = function(hash) {
+sirius_tools_Flag.FLength = function(hash) {
 	var count = 0;
 	while(_$UInt_UInt_$Impl_$.gt(hash,0)) {
 		hash = hash & hash - 1;
@@ -6635,19 +6635,19 @@ sirius_tools_Flag.Length = function(hash) {
 };
 sirius_tools_Flag.prototype = {
 	toggle: function(bit) {
-		this.value = sirius_tools_Flag.Toggle(this.value,bit);
+		this.value = sirius_tools_Flag.FToggle(this.value,bit);
 		return this;
 	}
 	,put: function(bit) {
-		this.value = sirius_tools_Flag.Put(this.value,1 << bit);
+		this.value = sirius_tools_Flag.FPut(this.value,1 << bit);
 		return this;
 	}
 	,drop: function(bit) {
-		this.value = sirius_tools_Flag.Drop(this.value,1 << bit);
+		this.value = sirius_tools_Flag.FDrop(this.value,1 << bit);
 		return this;
 	}
 	,test: function(bit) {
-		return sirius_tools_Flag.Test(this.value,1 << bit);
+		return sirius_tools_Flag.FTest(this.value,1 << bit);
 	}
 	,putAll: function(bits) {
 		var _g = this;
@@ -6678,11 +6678,11 @@ sirius_tools_Flag.prototype = {
 		}).completed;
 	}
 	,length: function() {
-		return sirius_tools_Flag.Length(this.value);
+		return sirius_tools_Flag.FLength(this.value);
 	}
 	,toString: function(skip) {
 		if(skip == null) skip = 0;
-		return sirius_tools_Flag.Value(this.value,skip);
+		return sirius_tools_Flag.FValue(this.value,skip);
 	}
 	,__class__: sirius_tools_Flag
 };

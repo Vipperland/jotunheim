@@ -84,6 +84,16 @@ class Clause {
 	}
 	
 	/**
+	 * IF A=B
+	 * @param	param
+	 * @param	value
+	 * @return
+	 */
+	static public function DIFFERENT(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}}!=:in_"+_IDX, value:value, i:_IDX++ };
+	}
+	
+	/**
 	 * IF A IN (B,C,...,X)
 	 * @param	param
 	 * @param	value

@@ -8,7 +8,20 @@
 	$exports.sru.plugins = $exports.sru.plugins || {};
 	$exports.sru.plugins.Carousel3D = function(selector, aperture, zoom, keyboard){
 		var Display3D = sru.dom.Display3D;
-		var Sprite3D = sru.dom.Sprite3D;
+		
+		function CreateContainer(){
+			var c = new Display3D();
+			c.setPerspective("1000px");
+			c.content = new Display3D();
+			c.content.preserve3d().update();
+			c.addChild(c.content);
+			//c.content.setPerspective(null, '50% 50% 50%');
+			c.style({width:'100%',height:'100%',display:'table'});
+			c.content.style({verticalAlign:'middle', display:'table-cell'});
+			c.update();
+			return c;
+		}
+		
 		var Div = sru.dom.Div;
         var body = Sirius.document.body;
 		body.style( { 'overflow-x':'hidden' } );
@@ -16,7 +29,7 @@
 			panels : [],
 			points : [],
 			extra : new Div(),
-			carousel : new Sprite3D(),
+			carousel : CreateContainer(),
 			keyboard : keyboard == null ? true : keyboard,
 			maxAperture : 0,
 			maxPanels : 0,
@@ -40,7 +53,7 @@
 			direction : 1,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
-				p.css('w-100pc h-100pc');
+				p.style({width:'100%',height:'100%'});
 				panel.addChild(p);
 				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;
@@ -68,8 +81,7 @@
 					ctr.f = i-hp;
 					ctr.g = i+hp;
 					cp.doubleSided(false);
-					cp.css('pos-abs');
-					cp.style({y:0,top:0});
+					cp.style({y:0,top:0,position:'absolute'});
 					cp.width("100%");
 					cp.data.set('rotation', o.points.length * -o.aperture);
 					cp.setPerspective(null, '50% 50%');
@@ -238,7 +250,7 @@
 		}
 		o.carousel.content.fit(100, 100, true);
 		o.carousel.overflow('hidden');
-		o.carousel.css('pos-fix');
+		o.carousel.style({position:'fixed'});
 		o.carousel.width("100%");
 		o.carousel.content.height("100%");
 		o.carousel.addToBody();
@@ -256,7 +268,7 @@
 		o.extra.style({top:0});
 		o.extra.addToBody();
 		
-		Automator.search(o.carousel);
+		//Automator.search(o.carousel);
 		
 		Ticker.add(o.render);
 		Ticker.init();

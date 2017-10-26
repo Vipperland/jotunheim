@@ -51,12 +51,12 @@ class SEOTool{
 	}
 	
 	public function init(types:Int = 0):SEOTool {
-		if ((types == 0 || Flag.Test(types, WEBSITE))) _create('website', WebSite);
-		if (Flag.Test(types, BREADCRUMBS)) _create('breadcrumbs', Breadcrumbs);
-		if (Flag.Test(types, PRODUCT)) _create('product', Product);
-		if (Flag.Test(types, ORGANIZATION)) _create('organization', Organization);
-		if (Flag.Test(types, PERSON)) _create('person', Person);
-		if (Flag.Test(types, SEARCH)) _create('search', Search);
+		if ((types == 0 || Flag.FTest(types, WEBSITE))) _create('website', WebSite);
+		if (Flag.FTest(types, BREADCRUMBS)) _create('breadcrumbs', Breadcrumbs);
+		if (Flag.FTest(types, PRODUCT)) _create('product', Product);
+		if (Flag.FTest(types, ORGANIZATION)) _create('organization', Organization);
+		if (Flag.FTest(types, PERSON)) _create('person', Person);
+		if (Flag.FTest(types, SEARCH)) _create('search', Search);
 		return this;
 	}
 	

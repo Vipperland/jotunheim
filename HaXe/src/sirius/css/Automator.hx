@@ -231,7 +231,6 @@ class Automator {
 	static public function parse(data:String, ?omni:Bool):Void {
 		Dice.Values(data.split(';'), function(v:String) {
 			var set:Array<String> = v.split('\r\n').join(' ').split('\r').join(' ').split('\n').join(' ').split('=');
-			trace(set);
 			if(set.length==2)
 				omni ? omnibuild(set[1], set[0]) : build(set[1], set[0], true);
 			else if(set.length == 1)

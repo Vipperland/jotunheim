@@ -53,23 +53,23 @@ class Flag {
 		return new Flag(hash);
 	}
 	
-	public static function Put(hash:UInt, bit:UInt):UInt {
+	public static function FPut(hash:UInt, bit:UInt):UInt {
 		return hash | bit;
 	}
 	
-	public static function Drop(hash:UInt, bit:UInt):UInt {
+	public static function FDrop(hash:UInt, bit:UInt):UInt {
 		return hash & ~bit;
 	}
 	
-	public static function Toggle(hash:UInt, bit:UInt):UInt {
-		return Test(hash, bit) ? Drop(hash, bit) : Put(hash, bit);
+	public static function FToggle(hash:UInt, bit:UInt):UInt {
+		return FTest(hash, bit) ? FDrop(hash, bit) : FPut(hash, bit);
 	}
 	
-	public static function Test(hash:UInt, value:UInt):Bool {
+	public static function FTest(hash:UInt, value:UInt):Bool {
 		return (hash & value) == value;
 	}
 	
-	public static function Value(hash:UInt, ?skip:UInt = 0):String {
+	public static function FValue(hash:UInt, ?skip:UInt = 0):String {
 		var v:String = (cast hash).toString(2);
 		var i:UInt = v.length;
 		while (i < 32){
@@ -84,7 +84,7 @@ class Flag {
 		return r;
 	}
 	
-	public static function Length(hash:UInt):UInt {
+	public static function FLength(hash:UInt):UInt {
 		var count:UInt = 0;
 		while (hash>0) {
 			hash &= hash-1;
@@ -101,22 +101,22 @@ class Flag {
 	}
 	
 	public function toggle(bit:UInt):Flag {
-		value = Toggle(value, bit);
+		value = FToggle(value, bit);
 		return this;
 	}
 	
 	public function put(bit:UInt):Flag {
-		value = Put(value, 1<<bit);
+		value = FPut(value, 1<<bit);
 		return this;
 	}
 	
 	public function drop(bit:UInt):Flag {
-		value = Drop(value, 1<<bit);
+		value = FDrop(value, 1<<bit);
 		return this;
 	}
 	
 	public function test(bit:UInt):Bool {
-		return Test(value, 1<<bit);
+		return FTest(value, 1<<bit);
 	}
 	
 	public function putAll(bits:Array<UInt>):Flag {
@@ -149,11 +149,11 @@ class Flag {
 	}
 	
 	public function length():UInt {
-		return Length(value);
+		return FLength(value);
 	}
 	
 	public function toString(?skip:UInt = 0):String {
-		return Value(value, skip);
+		return FValue(value, skip);
 	}
 	
 }
