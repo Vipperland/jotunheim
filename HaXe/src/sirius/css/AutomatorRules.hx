@@ -51,25 +51,6 @@ class AutomatorRules {
 	}
 	
 	/**
-	 * Create a grid value
-	 * @param	d
-	 * @param	k
-	 * @param	n
-	 * @return
-	 */
-	static public function gridKey(d:Entry, k:IKey, n:IKey):String {
-		if (d.head == k) {
-			if (n != null)
-				Automator.grid(Std.parseInt(n.key));
-			else
-				Automator.grid(12);
-			d.cancel();
-			return null;
-		}
-		return k.entry.value;
-	}
-	
-	/**
 	 * Miscelaneous keys, append '-' to start of the key value
 	 * @param	d
 	 * @param	k
@@ -401,7 +382,6 @@ class AutomatorRules {
 		hidden:{value:'',verifier:displayKey},
 		shadow:{value:'',verifier:shadowKey},
 		stroke:{value:'',verifier:strokeKey},
-		grid:{value:'', verifier:gridKey},
 		cell:{value:'cell',verifier:commonKey},
 		mouse:{value:'pointer-events', verifier:commonKey },
 		btn:{value:'cursor:pointer',verifier:commonKey},

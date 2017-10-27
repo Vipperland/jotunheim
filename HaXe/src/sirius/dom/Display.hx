@@ -683,7 +683,7 @@ class Display implements IDisplay {
 		return Json.stringify(data);
 	}
 	
-	public function rebuild():Void {
+	public function autoInject():Void {
 		all('script').each(cast function(o:Script){
 			o.remove();
 			var u:String = o.attribute('src');

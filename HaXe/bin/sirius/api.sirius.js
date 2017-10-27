@@ -2455,7 +2455,7 @@ sirius_dom_Display.prototype = {
 		}
 		return JSON.stringify(data);
 	}
-	,rebuild: function() {
+	,autoInject: function() {
 		var _g = this;
 		this.all("script").each(function(o) {
 			o.remove();
@@ -2810,7 +2810,7 @@ sirius_events_Dispatcher.prototype = {
 };
 var sirius_css_Automator = $hx_exports.Automator = function() { };
 sirius_css_Automator.__name__ = ["sirius","css","Automator"];
-sirius_css_Automator._createGrid = function(size) {
+sirius_css_Automator._createGrid = function() {
 	if(!sirius_css_Automator._inits.grid) {
 		sirius_css_Automator.omnibuild("display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;width:100%;",".shelf");
 		sirius_css_Automator.omnibuild("-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;",".cel");
@@ -2824,23 +2824,26 @@ sirius_css_Automator._createGrid = function(size) {
 		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-fill");
 		sirius_css_Automator.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".o-reverse");
 		var i = 1;
-		while(i < 12) {
-			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + i + ";-ms-flex-order:-" + i + ";order:-" + i + ";",".o-left-" + i);
-			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + i + ";-ms-flex-order:" + i + ";order:" + i + ";",".o-right-" + i);
-			++i;
-		}
+		sirius_utils_Dice.Count(0,24,function(a,b,c) {
+			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".index-" + a + "n");
+			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".index-" + a);
+			++a;
+			var t = (a / b * 100).toFixed(16) + "%";
+			var s = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
+			if(a % 2 == 0) {
+				var n1 = "cel-" + a + "x";
+				var n2 = "cel-" + (a / 2 | 0);
+				sirius_css_Automator.omnibuild(s,"." + n2 + ",." + n1);
+				if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".r-" + n2 + ",.r-" + n1);
+			} else {
+				var n11 = "cel-" + a + "x";
+				sirius_css_Automator.omnibuild(s,"." + n11);
+				if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".r-" + n11);
+			}
+			return null;
+		});
 		sirius_css_Automator._inits.grid = true;
 	}
-	sirius_utils_Dice.Count(0,size,function(a,b,c) {
-		++a;
-		var t = (a / b * 100).toFixed(16) + "%";
-		var s = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
-		var n;
-		n = "cel-" + a + (b == 12?"":"x" + b);
-		sirius_css_Automator.omnibuild(s,"." + n);
-		if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".x-" + n);
-		return null;
-	});
 };
 sirius_css_Automator._screen = function(args) {
 	if(sirius_css_Automator._scx.indexOf("#" + args[args.length - 1] + "#") != -1) return args.pop(); else return null;
@@ -2866,7 +2869,7 @@ sirius_css_Automator.reset = function() {
 	if(!sirius_css_Automator._inits.reset) {
 		sirius_css_Automator._inits.reset = true;
 		sirius_css_Automator.css.add("html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type=\"button\"],[type=\"reset\"],[type=\"submit\"]{-webkit-appearance:button;}button::-moz-focus-inner,[type=\"button\"]::-moz-focus-inner,[type=\"reset\"]::-moz-focus-inner,[type=\"submit\"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type=\"button\"]:-moz-focusring,[type=\"reset\"]:-moz-focusring,[type=\"submit\"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type=\"checkbox\"],[type=\"radio\"]{box-sizing:border-box;padding:0;}[type=\"number\"]::-webkit-inner-spin-button,[type=\"number\"]::-webkit-outer-spin-button{height:auto;}[type=\"search\"]{-webkit-appearance:textfield;outline-offset:-2px;}[type=\"search\"]::-webkit-search-cancel-button,[type=\"search\"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}");
-		sirius_css_Automator.grid(12);
+		sirius_css_Automator._createGrid();
 		sirius_css_Automator.css.build();
 		sirius_Sirius.run(sirius_css_Automator.scan);
 	}
@@ -2884,8 +2887,25 @@ sirius_css_Automator.shadowConfig = function(data) {
 };
 sirius_css_Automator.scan = function() {
 	sirius_Sirius.all("noscript[automator]").each(function(o) {
-		sirius_css_Automator.parse(o.element.innerText,o.attribute("automator").toLowerCase() == "omni");
+		sirius_css_Automator.parse(o.element.innerText,o.attribute("automator").toLowerCase() == "all");
 		o.dispose();
+	});
+	sirius_css_Automator.css.build();
+};
+sirius_css_Automator.search = function(t) {
+	if(t == null) return;
+	if(!(typeof(t) == "string")) {
+		if(js_Boot.__instanceof(t,sirius_dom_IDisplay)) t = t.element.outerHTML; else if(js_Boot.__instanceof(t,HTMLElement)) t = t.outerHTML; else t = Std.string(t);
+	}
+	var t1 = t.split("class=");
+	if(t1.length > 0) t1.shift();
+	sirius_utils_Dice.Values(t1,function(v) {
+		var i = HxOverrides.substr(v,0,1);
+		var j = v.indexOf(i,1);
+		if(j > 1) {
+			v = v.substring(1,j);
+			if(v.length > 0) sirius_css_Automator.build(v,null,true);
+		}
 	});
 	sirius_css_Automator.css.build();
 };
@@ -2893,32 +2913,27 @@ sirius_css_Automator.apply = function() {
 	sirius_css_Automator.css.build();
 };
 sirius_css_Automator.omnibuild = function(query,group) {
-	if(query.indexOf(":") == -1) {
-		sirius_css_Automator.build(query,group + "-xs",true);
-		sirius_css_Automator.build(query,group + "-sm",true);
-		sirius_css_Automator.build(query,group + "-md",true);
-		sirius_css_Automator.build(query,group + "-lg",true);
-		sirius_css_Automator.build(query,group + "-pr",true);
-		sirius_css_Automator.build(query,group,true);
-	} else {
-		sirius_css_Automator.css.add(group + "-xs" + "{" + query + "}","xs");
-		sirius_css_Automator.css.add(group + "-sm" + "{" + query + "}","sm");
-		sirius_css_Automator.css.add(group + "-md" + "{" + query + "}","md");
-		sirius_css_Automator.css.add(group + "-lg" + "{" + query + "}","lg");
-		sirius_css_Automator.css.add(group + "-pr" + "{" + query + "}","pr");
-		sirius_css_Automator.css.add(group + "{" + query + "}",null);
+	var g = group != null && group.length > 0;
+	if(query.indexOf(":") == -1) query = sirius_css_Automator.build(query,group,true).style; else if(g) sirius_css_Automator.css.add(group + "{" + query + "}",null);
+	if(g) {
+		sirius_css_Automator.css.styleXS += group.split(",").join("-xs,") + "-xs" + "{" + query + "}";
+		sirius_css_Automator.css.styleSM += group.split(",").join("-sm,") + "-sm" + "{" + query + "}";
+		sirius_css_Automator.css.styleMD += group.split(",").join("-md,") + "-md" + "{" + query + "}";
+		sirius_css_Automator.css.styleLG += group.split(",").join("-lg,") + "-lg" + "{" + query + "}";
+		sirius_css_Automator.css.stylePR += group.split(",").join("-pr,") + "-pr" + "{" + query + "}";
 	}
 };
 sirius_css_Automator.build = function(query,group,silent) {
 	if(query == null || query == "") {
 		sirius_css_Automator.css.build();
-		return;
+		return null;
 	}
 	var c = query.split(" ");
 	var m = null;
 	var s;
 	var g = sirius_tools_Utils.isValid(group);
 	var r = "";
+	var e = "";
 	if(g && group.length > 0) m = sirius_css_Automator._screen(group.split("-"));
 	sirius_utils_Dice.Values(c,function(v) {
 		if(v.length > 1) {
@@ -2938,6 +2953,7 @@ sirius_css_Automator.build = function(query,group,silent) {
 						if(sirius_tools_Utils.isValid(s)) {
 							if(sirius_css_Automator._dev == true) sirius_Sirius.log("Automator => ." + v + " {" + s + ";}",1);
 							sirius_css_Automator.css.set("." + v,s,m);
+							r += s + ";";
 						}
 					}
 				}
@@ -2949,11 +2965,11 @@ sirius_css_Automator.build = function(query,group,silent) {
 		sirius_css_Automator.css.set(group,r,m);
 	}
 	if(silent == null || silent == false) sirius_css_Automator.css.build();
+	return { style : r, group : group, media : m};
 };
 sirius_css_Automator.parse = function(data,omni) {
 	sirius_utils_Dice.Values(data.split(";"),function(v) {
 		var set = v.split("\r\n").join(" ").split("\r").join(" ").split("\n").join(" ").split("=");
-		haxe_Log.trace(set,{ fileName : "Automator.hx", lineNumber : 234, className : "sirius.css.Automator", methodName : "parse"});
 		if(set.length == 2) {
 			if(omni) sirius_css_Automator.omnibuild(set[1],set[0]); else sirius_css_Automator.build(set[1],set[0],true);
 		} else if(set.length == 1) {
@@ -2962,13 +2978,7 @@ sirius_css_Automator.parse = function(data,omni) {
 	});
 };
 sirius_css_Automator.grid = function(size) {
-	if(!Object.prototype.hasOwnProperty.call(sirius_css_Automator._inits,"grid-" + Std.string(size))) {
-		if(!((size instanceof Array) && size.__enum__ == null)) size = [size];
-		sirius_utils_Dice.Values(size,function(v) {
-			sirius_css_Automator._createGrid(v);
-		});
-		sirius_css_Automator._inits["grid-" + Std.string(size)] = true;
-	}
+	sirius_css_Automator._createGrid();
 };
 sirius_css_Automator.getPosition = function(r,x) {
 	return "tblrcm".indexOf(x) != -1 || "#top#bottom#left#right#center#middle#".indexOf(x) != -1;
@@ -3079,145 +3089,611 @@ sirius_math_ARGB.prototype = {
 	}
 	,__class__: sirius_math_ARGB
 };
-var sirius_utils_Dice = $hx_exports.Dice = function() { };
-sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
-sirius_utils_Dice.All = function(q,each,complete) {
-	var v = null;
-	var p = null;
-	var i = true;
-	var k = 0;
-	if(q != null) {
-		var _g = 0;
-		var _g1 = Reflect.fields(q);
-		while(_g < _g1.length) {
-			var p1 = _g1[_g];
-			++_g;
-			v = Reflect.field(q,p1);
-			if(each(p1,v) == true) {
-				i = false;
-				break;
-			} else {
-				++k;
-				p1 = null;
-				v = null;
-			}
-		}
+var sirius_css_AutomatorRules = $hx_exports.AutomatorRules = function() { };
+sirius_css_AutomatorRules.__name__ = ["sirius","css","AutomatorRules"];
+sirius_css_AutomatorRules.numericKey = function(d,k,n) {
+	var v = k.entry.value;
+	if(n != null) {
+		if(!n.position) {
+			if(n.color != null) return v + "-color:";
+			if(d.head.key == "bord") return sirius_css_AutomatorRules.borderFix(v,d,k,n);
+			if(n.measure != null) return v + ":";
+			return v + ":";
+		} else return v + "-";
 	}
-	var r = { param : p, value : v, completed : i, object : q, keys : k};
-	if(complete != null) complete(r);
-	return r;
+	return v + (k.index == 0?"-":"");
 };
-sirius_utils_Dice.Params = function(q,each,complete) {
-	return sirius_utils_Dice.All(q,function(p,v) {
-		return each(p);
-	},complete);
+sirius_css_AutomatorRules.borderFix = function(v,d,k,n) {
+	if(n.measure != null) return v + "-width:";
+	return v + (d.hasKey("rad",1)?"-":"-style:");
 };
-sirius_utils_Dice.Values = function(q,each,complete) {
-	return sirius_utils_Dice.All(q,function(p,v) {
-		return each(v);
-	},complete);
+sirius_css_AutomatorRules.shiftKey = function(d,k,n) {
+	return "-" + k.entry.value;
 };
-sirius_utils_Dice.Call = function(q,method,args) {
-	if(args == null) args = [];
-	return sirius_utils_Dice.All(q,function(p,v) {
-		v[method].apply(q,args);
-	},null);
+sirius_css_AutomatorRules.commonKey = function(d,k,n) {
+	return k.entry.value + (n != null?":":"");
 };
-sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
-	if(increment == null) increment = 1;
-	var a = Math.min(from,to);
-	var b = Math.max(from,to);
-	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
-	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
-	var c = a == b;
-	var r = { from : from, to : b, completed : c, value : a - _$UInt_UInt_$Impl_$.toFloat(increment)};
-	if(complete != null) complete(r);
-	return r;
+sirius_css_AutomatorRules.commonArray = function(d,k,n) {
+	d.cancel();
+	return k.entry.value + ":" + d.compile(1).join(" ").split("_").join("-");
 };
-sirius_utils_Dice.One = function(from,alt) {
-	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
-		from = v;
-		return from == null;
-	});
-	return { value : sirius_tools_Utils.isValid(from)?from:alt, object : from};
+sirius_css_AutomatorRules.colorKey = function(d,k,n) {
+	if(n != null && n.measure != null) {
+		n.skip = true;
+		var v = Std.parseInt(n.measure) / 100 * 255;
+		return new sirius_math_ARGB("0x" + k.entry.value.split("#").join((v >> 0).toString(16))).css();
+	}
+	return k.entry.value;
 };
-sirius_utils_Dice.Match = function(table,values,limit) {
-	if(limit == null) limit = 0;
-	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
-	var r = 0;
-	sirius_utils_Dice.Values(values,function(v) {
-		if(Lambda.indexOf(table,v) != -1) ++r;
-		if(_$UInt_UInt_$Impl_$.gt(limit,0)) {
-			var a = --limit;
-			return a == 0;
+sirius_css_AutomatorRules.positionKey = function(d,k,n) {
+	return (k.index == 0?"position:":"") + sirius_css_AutomatorRules.commonKey(d,k,n);
+};
+sirius_css_AutomatorRules.pushKey = function(d,k,n) {
+	return k.entry.value + "-";
+};
+sirius_css_AutomatorRules.valueKey = function(d,k,n) {
+	return k.entry.value + ":";
+};
+sirius_css_AutomatorRules.alphaKey = function(d,k,n) {
+	if(d.head == k) {
+		d.cancel();
+		var o = Std.parseInt(n.key);
+		if(o > 100) o = 100; else if(o < 0) o = 0;
+		return k.entry.value + ":" + (o/100).toFixed(2);
+	} else return sirius_css_AutomatorRules.valueKey(d,k,n);
+};
+sirius_css_AutomatorRules.appendKey = function(d,k,n) {
+	return k.entry.value + (n != null?"-":"");
+};
+sirius_css_AutomatorRules.displayKey = function(d,k,n) {
+	if(d.head == k) return "display:" + (k.key == "hidden"?"none":"block"); else return k.entry.value;
+};
+sirius_css_AutomatorRules.indexKey = function(d,k,n) {
+	if(d.head == k) {
+		d.cancel();
+		return "z-index:" + n.key;
+	}
+	return k.key;
+};
+sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
+	var v = k.entry.value;
+	if(d.head.key == "scroll") {
+		if(n != null && n.key == "none") {
+			d.cancel();
+			return "overflow:hidden";
 		}
-		return false;
-	});
-	return r;
+		if(k.index == 0) return "";
+		return "overflow" + (v == "x"?"-x":"-y") + ":scroll;overflow" + (v == "x"?"-y":"-x") + ":hidden";
+	}
+	return sirius_css_AutomatorRules.commonKey(d,k,n);
 };
-sirius_utils_Dice.Remove = function(table,values) {
-	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
-	sirius_utils_Dice.Values(values,function(v) {
-		var i = Lambda.indexOf(table,v);
-		if(i != -1) {
-			var x = v;
-			HxOverrides.remove(table,x);
+sirius_css_AutomatorRules.strokeKey = function(d,k,n) {
+	if(d.head == k) {
+		d.cancel();
+		var c = new sirius_math_ARGB(d.keys[1].color).hex();
+		n = d.get(2);
+		var l;
+		if(n != null) l = Std.parseInt(n.measure); else l = 1;
+		var x = l;
+		var s = [];
+		var xs;
+		xs = x + (x == 0?"":"px");
+		s[s.length] = "-" + xs + " 0 1px " + c;
+		s[s.length] = "0 " + xs + " 1px " + c;
+		s[s.length] = "" + xs + " 0 1px " + c;
+		s[s.length] = "0 -" + xs + " 1px " + c;
+		return "text-shadow:" + s.join(",");
+	}
+	return sirius_css_AutomatorRules.commonKey(d,k,n);
+};
+sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
+	if(d.head == k) {
+		d.cancel();
+		var i = d.tail.key == "i";
+		var s = n.key == "txt";
+		var t = new sirius_math_ARGB(d.keys[s?2:1].color);
+		var x = d.compile(s?3:2);
+		var y = 0;
+		var z;
+		if(x[0] == null) z = sirius_css_AutomatorRules.shadowConfig.distance; else z = Std.parseInt(x[0]);
+		var a;
+		if(x[1] == null) a = sirius_css_AutomatorRules.shadowConfig.direction; else a = Std.parseInt(x[1]);
+		var w;
+		if(x[2] == null) w = sirius_css_AutomatorRules.shadowConfig.draws; else w = Std.parseInt(x[2]);
+		var u;
+		if(x[3] == null) u = sirius_css_AutomatorRules.shadowConfig.strength; else u = Std.parseInt(x[3]);
+		var c = sirius_css_AutomatorRules.shadowConfig.flex;
+		var cos = Math.cos(.017453 * a);
+		var sin = Math.sin(.017453 * a);
+		var r = [];
+		var tx = 0;
+		var ty = 0;
+		if(a % 90 == 0) w = z;
+		w = Math.floor(z / w);
+		if(w <= 0) w = 1;
+		while(y < z) {
+			y += w;
+			if(y > z) y = z;
+			tx = cos * y;
+			ty = sin * y;
+			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 " + t.range(.8 - y / z * c).hex();
 		}
-	});
+		y = 0;
+		var oX = cos * z;
+		var oY = sin * z;
+		while(y < u) {
+			++y;
+			tx = cos * y + oX;
+			ty = sin * y + oY;
+			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 rgba(0,0,0,.1)";
+		}
+		return (s?"text-shadow":"box-shadow") + ":" + r.join(",") + (i?" !important":"");
+	}
+	return "shadow";
 };
-sirius_utils_Dice.Mix = function(data) {
-	var r = [];
-	sirius_utils_Dice.Values(data,function(v) {
-		r = r.concat(v);
-	});
-	return r;
+sirius_css_AutomatorRules.textKey = function(d,k,n) {
+	if(k.index == 0) {
+		if(n != null && !n.position) {
+			if(n.measure != null) return "font-size:"; else if(n.key != "j") return "color:";
+		}
+		if(n.key != "dec") return "text-align:";
+	}
+	return "text-";
 };
-sirius_utils_Dice.Table = function(data,key,numeric,copy) {
-	if(copy == null) copy = false;
-	if(numeric == null) numeric = false;
-	var r;
-	if(copy == true) r = [].concat(data); else r = data;
-	if(numeric) {
-		if(key != null) haxe_ds_ArraySort.sort(r,function(a,b) {
-			if(Reflect.field(a,key) < Reflect.field(b,key)) return -1; else return 1;
-		}); else haxe_ds_ArraySort.sort(r,function(a1,b1) {
-			if(a1 < b1) return -1; else return 1;
+sirius_css_AutomatorRules.set = function(rule,value) {
+	if((rule instanceof Array) && rule.__enum__ == null) sirius_utils_Dice.All(rule,function(p,v) {
+		sirius_css_AutomatorRules._KEYS[p] = v;
+	}); else if(value != null) Reflect.setField(sirius_css_AutomatorRules._KEYS,rule,value);
+};
+sirius_css_AutomatorRules.get = function(name) {
+	var e = Reflect.field(sirius_css_AutomatorRules._KEYS,name);
+	return e;
+};
+sirius_css_AutomatorRules.blank = function(name) {
+	var e = { value : name, verifier : sirius_css_AutomatorRules.commonKey};
+	sirius_css_AutomatorRules._KEYS[name] = e;
+	return e;
+};
+sirius_css_AutomatorRules.keys = function() {
+	return sirius_css_AutomatorRules._KEYS;
+};
+var sirius_css_Entry = function(keys,dict,i) {
+	this.important = i;
+	this.keys = keys;
+	this.head = keys[0];
+	this.tail = keys[keys.length - 1];
+	this.missing = 0;
+	this.canceled = false;
+};
+sirius_css_Entry.__name__ = ["sirius","css","Entry"];
+sirius_css_Entry.prototype = {
+	build: function() {
+		var _g = this;
+		var r = null;
+		if(this.head != null) {
+			r = "";
+			var c = 0;
+			var t = this.keys.length;
+			sirius_utils_Dice.Values(this.keys,function(v) {
+				if(!v.skip) {
+					_g.next = _g.keys[++c];
+					if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
+				}
+				return _g.canceled;
+			});
+		}
+		return r + (this.important?" !important":"");
+	}
+	,cancel: function() {
+		this.canceled = true;
+	}
+	,_valueOf: function(v,t,c) {
+		if(v.color != null) return v.color;
+		if(v.measure != null) return v.measure;
+		++this.missing;
+		return v.key + (t == c?"":t - 1 == c?":":"-");
+	}
+	,get: function(i) {
+		if(i < this.keys.length) return this.keys[i]; else return null;
+	}
+	,hasKey: function(s,i,e) {
+		var _g = this;
+		if(e == null) e = this.keys.length;
+		return !sirius_utils_Dice.Count(i,e,function(a,b,c) {
+			return _g.keys[a].key == s;
+		}).completed;
+	}
+	,compile: function(s,e) {
+		var _g = this;
+		var r = [];
+		if(e == null) e = this.keys.length;
+		sirius_utils_Dice.Count(s,e,function(a,b,c) {
+			r[r.length] = _g.keys[a].key;
+			return false;
 		});
-	} else if(key != null) haxe_ds_ArraySort.sort(r,function(a2,b2) {
-		return Reflect.compare(sirius_utils_SearchTag.convert(Reflect.field(a2,key)),sirius_utils_SearchTag.convert(Reflect.field(b2,key)));
-	}); else haxe_ds_ArraySort.sort(r,function(a3,b3) {
-		return Reflect.compare(sirius_utils_SearchTag.convert(a3),sirius_utils_SearchTag.convert(b3));
-	});
-	return r;
-};
-sirius_utils_Dice.List = function(data,a,b) {
-	if(a == null) a = 0;
-	var copy = [];
-	var len = data.length;
-	if(b == null) b = data.length;
-	if(_$UInt_UInt_$Impl_$.gt(b,a)) while(_$UInt_UInt_$Impl_$.gt(b,a)) {
-		if(_$UInt_UInt_$Impl_$.gte(a,len)) break;
-		copy[copy.length] = data[a];
-		++a;
-	} else if(_$UInt_UInt_$Impl_$.gt(a,b)) while(_$UInt_UInt_$Impl_$.gt(a,b)) {
-		if(_$UInt_UInt_$Impl_$.gt(len,a)) copy[copy.length] = data[a];
-		--a;
+		return r;
 	}
-	return copy;
+	,__class__: sirius_css_Entry
 };
-sirius_utils_Dice.Children = function(of,each,complete) {
-	var r = { children : []};
-	var l = 0;
-	var c;
-	if(of != null) {
-		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
-		sirius_utils_Dice.Count(0,of.childNodes.length,function(i,j,k) {
-			c = of.childNodes.item(i);
-			r.children[l] = c;
-			return each(c,i);
-		},complete);
+var sirius_css_IEntry = function() { };
+sirius_css_IEntry.__name__ = ["sirius","css","IEntry"];
+sirius_css_IEntry.prototype = {
+	__class__: sirius_css_IEntry
+};
+var sirius_css_IKey = function() { };
+sirius_css_IKey.__name__ = ["sirius","css","IKey"];
+sirius_css_IKey.prototype = {
+	__class__: sirius_css_IKey
+};
+var sirius_css_XCSS = $hx_exports.XCSS = function(data) {
+	this.reset();
+	if(data != null) this.flush(data);
+};
+sirius_css_XCSS.__name__ = ["sirius","css","XCSS"];
+sirius_css_XCSS.create = function(target,data) {
+	return new sirius_css_XCSS(data).apply(target);
+};
+sirius_css_XCSS.prototype = {
+	flush: function(data) {
+		sirius_utils_Dice.All(data,$bind(this,this.write));
 	}
-	return r;
+	,write: function(param,value) {
+		if(sirius_css_XCSS.enabled == true) {
+			var cx = HxOverrides.substr(param,0,1).toUpperCase() + HxOverrides.substr(param,1,param.length - 1);
+			this.data["webkit" + cx] = value;
+			this.data["Moz" + cx] = value;
+			this.data["ms" + cx] = value;
+			this.data["O" + cx] = value;
+		}
+		this.data[param] = value;
+	}
+	,apply: function(target) {
+		target.style(this.data);
+		return this;
+	}
+	,reset: function() {
+		this.data = { };
+		return this;
+	}
+	,__class__: sirius_css_XCSS
+};
+var sirius_data_IDataCache = function() { };
+sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
+sirius_data_IDataCache.prototype = {
+	__class__: sirius_data_IDataCache
+	,__properties__: {get_data:"get_data"}
+};
+var sirius_data_DataCache = $hx_exports.sru.data.DataCache = function(name,path,expire,base64) {
+	if(expire == null) expire = 0;
+	this._name = name;
+	this._path = path;
+	this._expire = expire;
+	this._base64 = base64;
+	this.clear();
+};
+sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
+sirius_data_DataCache.__interfaces__ = [sirius_data_IDataCache];
+sirius_data_DataCache.prototype = {
+	get_data: function() {
+		return this._DB;
+	}
+	,_now: function() {
+		return new Date().getTime();
+	}
+	,clear: function(p) {
+		if(p != null) {
+			if(p != "__time__") Reflect.deleteField(this._DB,p);
+		} else {
+			this._DB = { };
+			if(this._expire > 0) this._DB.__time__ = this._now();
+			js_Cookie.remove(this._name,this._path);
+		}
+		return this;
+	}
+	,set: function(p,v) {
+		this._DB[p] = v;
+		return this;
+	}
+	,merge: function(p,v) {
+		if((v instanceof Array) && v.__enum__ == null && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
+			var t = this.get(p);
+			if((t instanceof Array) && t.__enum__ == null) return this.set(p,t.concat(v));
+		}
+		this._DB[p] = v;
+		return this;
+	}
+	,get: function(id) {
+		var d;
+		if(id != null) d = Reflect.field(this._DB,id); else d = null;
+		if(d == null) {
+			d = { };
+			this.set(id,d);
+		}
+		return d;
+	}
+	,exists: function(name) {
+		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,name); else return this._loaded;
+	}
+	,save: function() {
+		var data = sirius_serial_IOTools.encodeBase64(this._DB);
+		js_Cookie.set(this._name,data,this._expire > 0?this._expire:2592000,this._path);
+		return this;
+	}
+	,_sign: function(add) {
+		if(add) this._DB.__time__ = this._now(); else {
+			if(this._expire > 0) this.__time__ = this._DB.__time__; else this.__time__ = 0;
+			Reflect.deleteField(this._DB,"__time__");
+		}
+	}
+	,load: function() {
+		this._DB = null;
+		if(js_Cookie.exists(this._name)) {
+			var a = haxe_crypto_Base64.decode(js_Cookie.get(this._name));
+			haxe_Log.trace(a,{ fileName : "DataCache.hx", lineNumber : 182, className : "sirius.data.DataCache", methodName : "load"});
+			this._DB = sirius_serial_IOTools.decodeBase64(js_Cookie.get(this._name),true);
+			haxe_Log.trace(this._DB,{ fileName : "DataCache.hx", lineNumber : 184, className : "sirius.data.DataCache", methodName : "load"});
+		}
+		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
+			this._DB = { };
+			this._loaded = false;
+		} else {
+			this._sign(false);
+			this._loaded = true;
+		}
+		return this._loaded;
+	}
+	,refresh: function() {
+		this.__time__ = this._now();
+		return this;
+	}
+	,json: function(print) {
+		var result = sirius_serial_JsonTool.stringfy(this._DB,null," ");
+		if(print) {
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 210, className : "sirius.data.DataCache", methodName : "json"});
+		}
+		return result;
+	}
+	,base64: function(print) {
+		var result = sirius_serial_IOTools.encodeBase64(this._DB);
+		if(print) {
+			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 216, className : "sirius.data.DataCache", methodName : "base64"});
+		}
+		return result;
+	}
+	,__class__: sirius_data_DataCache
+	,__properties__: {get_data:"get_data"}
+};
+var sirius_data_IDataSet = function() { };
+sirius_data_IDataSet.__name__ = ["sirius","data","IDataSet"];
+sirius_data_IDataSet.prototype = {
+	__class__: sirius_data_IDataSet
+};
+var sirius_data_DataSet = function(q) {
+	if(q != null) this._content = q; else this._content = { };
+};
+sirius_data_DataSet.__name__ = ["sirius","data","DataSet"];
+sirius_data_DataSet.__interfaces__ = [sirius_data_IDataSet];
+sirius_data_DataSet.prototype = {
+	get: function(p) {
+		return Reflect.field(this._content,p);
+	}
+	,set: function(p,v) {
+		Reflect.setField(this._content,p,v);
+		return this;
+	}
+	,unset: function(p) {
+		Reflect.deleteField(this._content,p);
+		return this;
+	}
+	,exists: function(p) {
+		return Reflect.hasField(this._content,p);
+	}
+	,clear: function() {
+		this._content = { };
+		return this;
+	}
+	,find: function(v) {
+		var r = [];
+		sirius_utils_Dice.All(this._content,function(p,x) {
+			if(typeof(x) == "string" && x.indexOf(v) != -1) r[r.length] = p; else if(x == v) r[r.length] = p;
+		});
+		return r;
+	}
+	,index: function() {
+		var r = [];
+		sirius_utils_Dice.Params(this._content,$arrayPushClosure(r));
+		return r;
+	}
+	,values: function() {
+		var r = [];
+		sirius_utils_Dice.Values(this._content,$arrayPushClosure(r));
+		return r;
+	}
+	,filter: function(p,handler) {
+		var r = new sirius_data_DataSet();
+		var h = handler != null;
+		sirius_utils_Dice.All(this._content,function(p2,v) {
+			if(js_Boot.__instanceof(v,sirius_data_IDataSet)) {
+				if(v.exists(p)) r.set(p2,h?handler(v):v.get(p));
+			} else if(Reflect.hasField(v,p)) r.set(p2,h?handler(v):Reflect.field(v,p));
+		});
+		return r;
+	}
+	,each: function(handler) {
+		sirius_utils_Dice.All(this._content,handler);
+	}
+	,data: function() {
+		return this._content;
+	}
+	,__class__: sirius_data_DataSet
+};
+var sirius_data_IFormData = function() { };
+sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
+sirius_data_IFormData.prototype = {
+	__class__: sirius_data_IFormData
+};
+var sirius_data_FormData = $hx_exports.sru.data.FormData = function(target) {
+	if(target != null) {
+		if(typeof(target) == "string") this.scan(sirius_Sirius.one(target));
+		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) this.scan(target);
+	}
+};
+sirius_data_FormData.__name__ = ["sirius","data","FormData"];
+sirius_data_FormData.__interfaces__ = [sirius_data_IFormData];
+sirius_data_FormData.prototype = {
+	reset: function() {
+		this.params = [];
+		return this;
+	}
+	,scan: function(target) {
+		var _g = this;
+		this.reset();
+		if(target == null) this._form = sirius_Sirius.document.body; else this._form = target;
+		target.all("[form-data]").each(function(o) {
+			_g.params[_g.params.length] = new sirius_data_FormParam(o);
+		});
+		return this;
+	}
+	,valueOf: function(p) {
+		var res = sirius_utils_Dice.Values(this.params,function(v) {
+			return v.getName() == p;
+		});
+		return res.value;
+	}
+	,isValid: function(needAll) {
+		var _g = this;
+		this.errors = [];
+		sirius_utils_Dice.Values(this.params,function(v) {
+			if(!v.isValid(needAll)) _g.errors[_g.errors.length] = v;
+		});
+		return this.errors.length == 0;
+	}
+	,getParam: function(p) {
+		var res = sirius_utils_Dice.Values(this.params,function(v) {
+			return v.getName() == p;
+		});
+		return res.value;
+	}
+	,getData: function(append) {
+		var d;
+		if(append == null) d = { }; else d = append;
+		sirius_utils_Dice.Values(this.params,function(v) {
+			Reflect.setField(d,v.getName(),v.getValue());
+			return;
+		});
+		return d;
+	}
+	,clear: function() {
+		sirius_utils_Dice.Values(this.params,function(v) {
+			v.clear();
+		});
+		return this;
+	}
+	,send: function(url,handler,method) {
+		if(method == null) method = "post";
+		sirius_Sirius.request(url,this.getData(),null,handler,method);
+	}
+	,match: function(a,b) {
+		return this.getParam(a).getValue() == this.getParam(b).getValue();
+	}
+	,__class__: sirius_data_FormData
+};
+var sirius_data_FormParam = function(e) {
+	this._e = e;
+};
+sirius_data_FormParam.__name__ = ["sirius","data","FormParam"];
+sirius_data_FormParam.prototype = {
+	getName: function() {
+		return this._e.attribute("form-data");
+	}
+	,getValidator: function() {
+		return this._e.attribute("form-validate");
+	}
+	,isRequired: function() {
+		return this._e.hasAttribute("form-required") && sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-required")) > 0;
+	}
+	,getMessage: function() {
+		return this._e.attribute("form-message");
+	}
+	,getValue: function() {
+		if(js_Boot.__instanceof(this._e,sirius_dom_Select)) {
+			var e = this._e;
+			if(!e.hasValue()) return null;
+		}
+		return this._e.attribute("value");
+	}
+	,isValid: function(require) {
+		return !require && !this.isRequired() || sirius_tools_Utils.isValid(this.getValue());
+	}
+	,clear: function() {
+		if(sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-persistent")) == 0) this._e.attribute("value","");
+	}
+	,getCell: function() {
+		return this._e;
+	}
+	,__class__: sirius_data_FormParam
+};
+var sirius_data_IFragments = function() { };
+sirius_data_IFragments.__name__ = ["sirius","data","IFragments"];
+sirius_data_IFragments.prototype = {
+	__class__: sirius_data_IFragments
+};
+var sirius_data_Fragments = function(value,separator) {
+	if(value == null) this.value = ""; else this.value = value;
+	if(separator != null && separator.length > 0) this.split(separator); else this.clear();
+};
+sirius_data_Fragments.__name__ = ["sirius","data","Fragments"];
+sirius_data_Fragments.__interfaces__ = [sirius_data_IFragments];
+sirius_data_Fragments.prototype = {
+	_sel: function(i,e) {
+		var r = [];
+		while(i != e) {
+			var p = this.pieces[i++];
+			if(p != null && p != "") r[r.length] = p;
+		}
+		return "/" + r.join("/") + "/";
+	}
+	,split: function(separator) {
+		this.pieces = sirius_tools_Utils.clearArray(this.value.split(separator));
+		if(this.pieces.length == 0) this.pieces[0] = "";
+		this.first = this.pieces[0];
+		this.last = this.pieces[this.pieces.length - 1];
+		this.glue(separator);
+		return this;
+	}
+	,find: function(value) {
+		return Lambda.indexOf(this.pieces,value) != -1;
+	}
+	,glue: function(value) {
+		this.value = this.pieces.join(value);
+		return this;
+	}
+	,addPiece: function(value,at) {
+		if(at == null) at = -1;
+		if(at == 0) this.pieces.unshift(value); else if(at == -1 || at >= this.pieces.length) this.pieces.push(value); else {
+			var tail = this.pieces.splice(at,this.pieces.length - at);
+			this.pieces.push(value);
+			this.pieces = this.pieces.concat(tail);
+		}
+		return this;
+	}
+	,get: function(i,e) {
+		if(e == null || e <= i) {
+			if(i < this.pieces.length) return this.pieces[i]; else return "";
+		} else return this._sel(i,e);
+	}
+	,set: function(i,val) {
+		if(i > this.pieces.length) i = this.pieces.length;
+		if(val != null) this.pieces[i] = val;
+		return this;
+	}
+	,clear: function() {
+		this.pieces = [];
+		this.first = "";
+		this.last = "";
+		return this;
+	}
+	,__class__: sirius_data_Fragments
 };
 var sirius_dom_A = $hx_exports.sru.dom.A = function(q) {
 	if(q == null) {
@@ -3284,6 +3760,21 @@ sirius_dom_B.__super__ = sirius_dom_Display;
 sirius_dom_B.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_B
 });
+var sirius_dom_BR = $hx_exports.sru.dom.BR = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("br");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_BR.__name__ = ["sirius","dom","BR"];
+sirius_dom_BR.get = function(q) {
+	return sirius_Sirius.one(q);
+};
+sirius_dom_BR.__super__ = sirius_dom_Display;
+sirius_dom_BR.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_BR
+});
 var sirius_dom_Base = $hx_exports.sru.dom.Base = function(q) {
 	if(q == null) {
 		var _this = window.document;
@@ -3321,21 +3812,6 @@ sirius_dom_Body.prototype = $extend(sirius_dom_Display.prototype,{
 		return this._body.scrollHeight - sirius_tools_Utils.viewportHeight();
 	}
 	,__class__: sirius_dom_Body
-});
-var sirius_dom_BR = $hx_exports.sru.dom.BR = function(q) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("br");
-	}
-	sirius_dom_Display.call(this,q,null);
-};
-sirius_dom_BR.__name__ = ["sirius","dom","BR"];
-sirius_dom_BR.get = function(q) {
-	return sirius_Sirius.one(q);
-};
-sirius_dom_BR.__super__ = sirius_dom_Display;
-sirius_dom_BR.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_BR
 });
 var sirius_dom_Div = $hx_exports.sru.dom.Div = function(q) {
 	if(q == null) {
@@ -3424,6 +3900,21 @@ sirius_dom_Content.get = function(q) {
 sirius_dom_Content.__super__ = sirius_dom_Display;
 sirius_dom_Content.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Content
+});
+var sirius_dom_DL = $hx_exports.sru.dom.DL = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("dl");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_DL.__name__ = ["sirius","dom","DL"];
+sirius_dom_DL.get = function(q) {
+	return sirius_Sirius.one(q);
+};
+sirius_dom_DL.__super__ = sirius_dom_Display;
+sirius_dom_DL.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_DL
 });
 var sirius_dom_DataList = $hx_exports.sru.dom.DataList = function(q) {
 	if(q == null) {
@@ -3579,21 +4070,6 @@ sirius_dom_Display3D.prototype = $extend(sirius_dom_Div.prototype,{
 		return this;
 	}
 	,__class__: sirius_dom_Display3D
-});
-var sirius_dom_DL = $hx_exports.sru.dom.DL = function(q) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("dl");
-	}
-	sirius_dom_Display.call(this,q,null);
-};
-sirius_dom_DL.__name__ = ["sirius","dom","DL"];
-sirius_dom_DL.get = function(q) {
-	return sirius_Sirius.one(q);
-};
-sirius_dom_DL.__super__ = sirius_dom_Display;
-sirius_dom_DL.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_DL
 });
 var sirius_dom_Document = $hx_exports.sru.dom.Document = function() {
 	this.__cursor__ = { x : 0, y : 0};
@@ -3881,6 +4357,21 @@ sirius_dom_H6.__super__ = sirius_dom_Display;
 sirius_dom_H6.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_H6
 });
+var sirius_dom_HR = $hx_exports.sru.dom.HR = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("hr");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_HR.__name__ = ["sirius","dom","HR"];
+sirius_dom_HR.get = function(q) {
+	return sirius_Sirius.one(q);
+};
+sirius_dom_HR.__super__ = sirius_dom_Display;
+sirius_dom_HR.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_HR
+});
 var sirius_dom_Head = $hx_exports.sru.dom.Head = function(q) {
 	if(q == null) {
 		var _this = window.document;
@@ -3921,21 +4412,6 @@ sirius_dom_Head.prototype = $extend(sirius_dom_Display.prototype,{
 		return null;
 	}
 	,__class__: sirius_dom_Head
-});
-var sirius_dom_HR = $hx_exports.sru.dom.HR = function(q) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("hr");
-	}
-	sirius_dom_Display.call(this,q,null);
-};
-sirius_dom_HR.__name__ = ["sirius","dom","HR"];
-sirius_dom_HR.get = function(q) {
-	return sirius_Sirius.one(q);
-};
-sirius_dom_HR.__super__ = sirius_dom_Display;
-sirius_dom_HR.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_HR
 });
 var sirius_dom_Html = $hx_exports.sru.dom.Html = function(q) {
 	if(q == null) {
@@ -4172,6 +4648,21 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,__class__: sirius_dom_Input
 });
+var sirius_dom_LI = $hx_exports.sru.dom.LI = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("li");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_LI.__name__ = ["sirius","dom","LI"];
+sirius_dom_LI.get = function(q) {
+	return sirius_Sirius.one(q);
+};
+sirius_dom_LI.__super__ = sirius_dom_Display;
+sirius_dom_LI.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_LI
+});
 var sirius_dom_Label = $hx_exports.sru.dom.Label = function(q) {
 	if(q == null) {
 		var _this = window.document;
@@ -4201,21 +4692,6 @@ sirius_dom_Legend.get = function(q) {
 sirius_dom_Legend.__super__ = sirius_dom_Display;
 sirius_dom_Legend.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Legend
-});
-var sirius_dom_LI = $hx_exports.sru.dom.LI = function(q) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("li");
-	}
-	sirius_dom_Display.call(this,q,null);
-};
-sirius_dom_LI.__name__ = ["sirius","dom","LI"];
-sirius_dom_LI.get = function(q) {
-	return sirius_Sirius.one(q);
-};
-sirius_dom_LI.__super__ = sirius_dom_Display;
-sirius_dom_LI.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_LI
 });
 var sirius_dom_Link = $hx_exports.sru.dom.Link = function(q) {
 	if(q == null) {
@@ -4323,21 +4799,6 @@ sirius_dom_Mod.__super__ = sirius_dom_Display;
 sirius_dom_Mod.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Mod
 });
-var sirius_dom_Object = $hx_exports.sru.dom.Object = function(q) {
-	if(q == null) {
-		var _this = window.document;
-		q = _this.createElement("object");
-	}
-	sirius_dom_Display.call(this,q,null);
-};
-sirius_dom_Object.__name__ = ["sirius","dom","Object"];
-sirius_dom_Object.get = function(q) {
-	return sirius_Sirius.one(q);
-};
-sirius_dom_Object.__super__ = sirius_dom_Display;
-sirius_dom_Object.prototype = $extend(sirius_dom_Display.prototype,{
-	__class__: sirius_dom_Object
-});
 var sirius_dom_OL = $hx_exports.sru.dom.OL = function(q) {
 	if(q == null) {
 		var _this = window.document;
@@ -4352,6 +4813,21 @@ sirius_dom_OL.get = function(q) {
 sirius_dom_OL.__super__ = sirius_dom_Display;
 sirius_dom_OL.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_OL
+});
+var sirius_dom_Object = $hx_exports.sru.dom.Object = function(q) {
+	if(q == null) {
+		var _this = window.document;
+		q = _this.createElement("object");
+	}
+	sirius_dom_Display.call(this,q,null);
+};
+sirius_dom_Object.__name__ = ["sirius","dom","Object"];
+sirius_dom_Object.get = function(q) {
+	return sirius_Sirius.one(q);
+};
+sirius_dom_Object.__super__ = sirius_dom_Display;
+sirius_dom_Object.prototype = $extend(sirius_dom_Display.prototype,{
+	__class__: sirius_dom_Object
 });
 var sirius_dom_OptGroup = $hx_exports.sru.dom.OptGroup = function(q) {
 	if(q == null) {
@@ -4780,787 +5256,6 @@ sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,__class__: sirius_dom_Video
 });
-var sirius_tools_Utils = $hx_exports.Utils = function() { };
-sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];
-sirius_tools_Utils.matchMedia = function(value) {
-	return window.matchMedia(value).matches;
-};
-sirius_tools_Utils.screenOrientation = function() {
-	if(sirius_tools_Utils.matchMedia("(orientation: portrait)")) return "portrait"; else return "landscape";
-};
-sirius_tools_Utils.viewportWidth = function() {
-	return window.innerWidth || document.documentElement.clientWidth;
-};
-sirius_tools_Utils.viewportHeight = function() {
-	return window.innerHeight || document.documentElement.clientHeight;
-};
-sirius_tools_Utils.mathLocation = function(uri) {
-	return window.location.href.indexOf(uri) != -1;
-};
-sirius_tools_Utils.screenInfo = function() {
-	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
-};
-sirius_tools_Utils.displayFrom = function(t) {
-	var id = null;
-	var type = null;
-	if($bind(t,t.hasAttribute) != null) {
-		id = t.getAttribute("sru-id");
-		if(id == null) {
-			type = t.getAttribute("sru-dom");
-			if(type == null) {
-				type = t.tagName.toUpperCase();
-				t.setAttribute("sru-dom",type);
-			}
-		} else return sirius_dom_Display.fromGC(id);
-	}
-	var OC = Reflect.field(sirius_tools_Utils._typeOf,type);
-	if(OC == null) return new sirius_dom_Display(t); else return new OC(t);
-};
-sirius_tools_Utils.getDisplay = function(t) {
-	var id;
-	if($bind(t,t.hasAttribute) != null && t.hasAttribute("sru-id")) id = Std.parseInt(t.getAttribute("sru-id")); else id = null;
-	if(id != null) return sirius_dom_Display.fromGC(id);
-	return new sirius_dom_Display(t);
-};
-sirius_tools_Utils.intToString = function(value,rad) {
-	if(typeof(value) == "string") value = Std.parseInt(value);
-	value = value;
-	return Reflect.callMethod(value,value.toString,rad != null?[rad]:[]);
-};
-sirius_tools_Utils.getAttributes = function(display) {
-	var attr = display.element.attributes;
-	var data = { };
-	if(attr != null) {
-		var i = 0;
-		var len = attr.length;
-		while(_$UInt_UInt_$Impl_$.gt(len,i)) {
-			var a = attr.item(i);
-			data[a.name] = a.value;
-			++i;
-		}
-	}
-	return data;
-};
-sirius_tools_Utils.getMin = function(values,filter) {
-	var r = null;
-	sirius_utils_Dice.Values(values,function(i) {
-		if(filter == null || filter(i)) {
-			if(i < r || r == null) r = i;
-		}
-	});
-	return r;
-};
-sirius_tools_Utils.getMax = function(values,filter) {
-	var r = null;
-	sirius_utils_Dice.Values(values,function(i) {
-		if(filter == null || filter(i)) {
-			if(i > r || r == null) r = i;
-		}
-	});
-	return r;
-};
-sirius_tools_Utils.getQueryParams = function(value) {
-	var params = { };
-	if(value.indexOf("?") > 0) value = value.split("+").join(" ").split("?")[1]; else return params;
-	sirius_utils_Dice.Values(value.split("&"),function(v) {
-		var data = v.split("=");
-		Reflect.setField(params,StringTools.urlDecode(data[0]),StringTools.urlDecode(data[1]));
-	});
-	return params;
-};
-sirius_tools_Utils.clearArray = function(path,filter) {
-	var copy = [];
-	sirius_utils_Dice.Values(path,function(v) {
-		if(v != null && v != "" && (filter == null || filter(v))) copy[copy.length] = v;
-	});
-	return copy;
-};
-sirius_tools_Utils.toString = function(o,json) {
-	if(json == true) return JSON.stringify(o); else return Std.string(o);
-};
-sirius_tools_Utils.sruString = function(o) {
-	return sirius_tools_Utils._sruFy(o,"","");
-};
-sirius_tools_Utils._sruFy = function(o,i,b) {
-	i = i + "  ";
-	sirius_utils_Dice.All(o,function(p,v) {
-		if(v == null) b += i + p + ":* = NULL\r"; else if(typeof(v) == "string") b += i + p + ":String = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + ":Bool = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + ":Number = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + ":Array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + ":Object {\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
-	});
-	return b;
-};
-sirius_tools_Utils.isValid = function(o) {
-	if(o != null && o != "") {
-		if(o != "null" && Object.prototype.hasOwnProperty.call(o,"length")) return o.length > 0; else return o != 0 && o != false;
-	}
-	return false;
-};
-sirius_tools_Utils.isValidAlt = function(o,alt) {
-	if(sirius_tools_Utils.isValid(o)) return o; else return alt;
-};
-sirius_tools_Utils["typeof"] = function(o) {
-	var name;
-	if(o != null) {
-		try {
-			return o.__proto__.__class__.__name__.join(".");
-		} catch( e ) {
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-		}
-		try {
-			return Type.getClassName(Type.getClass(o));
-		} catch( e1 ) {
-			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
-		}
-	}
-	return null;
-};
-sirius_tools_Utils["boolean"] = function(q) {
-	return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
-};
-sirius_tools_Utils.money = function(val,s,a,b) {
-	if(b == null) b = ".";
-	if(a == null) a = ",";
-	if(s == null) s = "$";
-	var r = "";
-	val *= 100;
-	if(val > 99) {
-		val = "" + Std["int"](val);
-		var i = val.length;
-		var c = 0;
-		while(i-- > 0) {
-			r = Std.string(val.substr(i,1)) + r;
-			if(i > 0) {
-				if(c == 1) r = b + r; else if(c > 1 && (c + 2) % 3 == 0) r = a + r;
-			} else if(c < 3) r = "0" + (c == 1?".":"") + r;
-			++c;
-		}
-	} else r = "0" + b + (val < 10?"0":"") + Std.string(val);
-	return s + r;
-};
-sirius_tools_Utils.stdClone = function(q) {
-	return JSON.parse(JSON.stringify(q));
-};
-sirius_tools_Utils.paramsOf = function(o) {
-	var r = [];
-	sirius_utils_Dice.All(o,function(p,v) {
-		v = JSON.stringify(v);
-		r[r.length] = p + "=" + StringTools.urlEncode(v.substr(1,v.length - 2));
-	});
-	return r.join("&");
-};
-var sirius_css_Entry = function(keys,dict,i) {
-	this.important = i;
-	this.keys = keys;
-	this.head = keys[0];
-	this.tail = keys[keys.length - 1];
-	this.missing = 0;
-	this.canceled = false;
-};
-sirius_css_Entry.__name__ = ["sirius","css","Entry"];
-sirius_css_Entry.prototype = {
-	build: function() {
-		var _g = this;
-		var r = null;
-		if(this.head != null) {
-			r = "";
-			var c = 0;
-			var t = this.keys.length;
-			sirius_utils_Dice.Values(this.keys,function(v) {
-				if(!v.skip) {
-					_g.next = _g.keys[++c];
-					if(v.entry != null) r += v.entry.verifier(_g,v,_g.next); else r += _g._valueOf(v,t,c);
-				}
-				return _g.canceled;
-			});
-		}
-		return r + (this.important?" !important":"");
-	}
-	,cancel: function() {
-		this.canceled = true;
-	}
-	,_valueOf: function(v,t,c) {
-		if(v.color != null) return v.color;
-		if(v.measure != null) return v.measure;
-		++this.missing;
-		return v.key + (t == c?"":t - 1 == c?":":"-");
-	}
-	,get: function(i) {
-		if(i < this.keys.length) return this.keys[i]; else return null;
-	}
-	,hasKey: function(s,i,e) {
-		var _g = this;
-		if(e == null) e = this.keys.length;
-		return !sirius_utils_Dice.Count(i,e,function(a,b,c) {
-			return _g.keys[a].key == s;
-		}).completed;
-	}
-	,compile: function(s,e) {
-		var _g = this;
-		var r = [];
-		if(e == null) e = this.keys.length;
-		sirius_utils_Dice.Count(s,e,function(a,b,c) {
-			r[r.length] = _g.keys[a].key;
-			return false;
-		});
-		return r;
-	}
-	,__class__: sirius_css_Entry
-};
-var sirius_css_AutomatorRules = $hx_exports.AutomatorRules = function() { };
-sirius_css_AutomatorRules.__name__ = ["sirius","css","AutomatorRules"];
-sirius_css_AutomatorRules.numericKey = function(d,k,n) {
-	var v = k.entry.value;
-	if(n != null) {
-		if(!n.position) {
-			if(n.color != null) return v + "-color:";
-			if(d.head.key == "bord") return sirius_css_AutomatorRules.borderFix(v,d,k,n);
-			if(n.measure != null) return v + ":";
-			return v + ":";
-		} else return v + "-";
-	}
-	return v + (k.index == 0?"-":"");
-};
-sirius_css_AutomatorRules.borderFix = function(v,d,k,n) {
-	if(n.measure != null) return v + "-width:";
-	return v + (d.hasKey("rad",1)?"-":"-style:");
-};
-sirius_css_AutomatorRules.gridKey = function(d,k,n) {
-	if(d.head == k) {
-		if(n != null) sirius_css_Automator.grid(Std.parseInt(n.key)); else sirius_css_Automator.grid(12);
-		d.cancel();
-		return null;
-	}
-	return k.entry.value;
-};
-sirius_css_AutomatorRules.shiftKey = function(d,k,n) {
-	return "-" + k.entry.value;
-};
-sirius_css_AutomatorRules.commonKey = function(d,k,n) {
-	return k.entry.value + (n != null?":":"");
-};
-sirius_css_AutomatorRules.commonArray = function(d,k,n) {
-	d.cancel();
-	return k.entry.value + ":" + d.compile(1).join(" ").split("_").join("-");
-};
-sirius_css_AutomatorRules.colorKey = function(d,k,n) {
-	if(n != null && n.measure != null) {
-		n.skip = true;
-		var v = Std.parseInt(n.measure) / 100 * 255;
-		return new sirius_math_ARGB("0x" + k.entry.value.split("#").join((v >> 0).toString(16))).css();
-	}
-	return k.entry.value;
-};
-sirius_css_AutomatorRules.positionKey = function(d,k,n) {
-	return (k.index == 0?"position:":"") + sirius_css_AutomatorRules.commonKey(d,k,n);
-};
-sirius_css_AutomatorRules.pushKey = function(d,k,n) {
-	return k.entry.value + "-";
-};
-sirius_css_AutomatorRules.valueKey = function(d,k,n) {
-	return k.entry.value + ":";
-};
-sirius_css_AutomatorRules.alphaKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var o = Std.parseInt(n.key);
-		if(o > 100) o = 100; else if(o < 0) o = 0;
-		return k.entry.value + ":" + (o/100).toFixed(2);
-	} else return sirius_css_AutomatorRules.valueKey(d,k,n);
-};
-sirius_css_AutomatorRules.appendKey = function(d,k,n) {
-	return k.entry.value + (n != null?"-":"");
-};
-sirius_css_AutomatorRules.displayKey = function(d,k,n) {
-	if(d.head == k) return "display:" + (k.key == "hidden"?"none":"block"); else return k.entry.value;
-};
-sirius_css_AutomatorRules.indexKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		return "z-index:" + n.key;
-	}
-	return k.key;
-};
-sirius_css_AutomatorRules.scrollKey = function(d,k,n) {
-	var v = k.entry.value;
-	if(d.head.key == "scroll") {
-		if(n != null && n.key == "none") {
-			d.cancel();
-			return "overflow:hidden";
-		}
-		if(k.index == 0) return "";
-		return "overflow" + (v == "x"?"-x":"-y") + ":scroll;overflow" + (v == "x"?"-y":"-x") + ":hidden";
-	}
-	return sirius_css_AutomatorRules.commonKey(d,k,n);
-};
-sirius_css_AutomatorRules.strokeKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var c = new sirius_math_ARGB(d.keys[1].color).hex();
-		n = d.get(2);
-		var l;
-		if(n != null) l = Std.parseInt(n.measure); else l = 1;
-		var x = l;
-		var s = [];
-		var xs;
-		xs = x + (x == 0?"":"px");
-		s[s.length] = "-" + xs + " 0 1px " + c;
-		s[s.length] = "0 " + xs + " 1px " + c;
-		s[s.length] = "" + xs + " 0 1px " + c;
-		s[s.length] = "0 -" + xs + " 1px " + c;
-		return "text-shadow:" + s.join(",");
-	}
-	return sirius_css_AutomatorRules.commonKey(d,k,n);
-};
-sirius_css_AutomatorRules.shadowKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var i = d.tail.key == "i";
-		var s = n.key == "txt";
-		var t = new sirius_math_ARGB(d.keys[s?2:1].color);
-		var x = d.compile(s?3:2);
-		var y = 0;
-		var z;
-		if(x[0] == null) z = sirius_css_AutomatorRules.shadowConfig.distance; else z = Std.parseInt(x[0]);
-		var a;
-		if(x[1] == null) a = sirius_css_AutomatorRules.shadowConfig.direction; else a = Std.parseInt(x[1]);
-		var w;
-		if(x[2] == null) w = sirius_css_AutomatorRules.shadowConfig.draws; else w = Std.parseInt(x[2]);
-		var u;
-		if(x[3] == null) u = sirius_css_AutomatorRules.shadowConfig.strength; else u = Std.parseInt(x[3]);
-		var c = sirius_css_AutomatorRules.shadowConfig.flex;
-		var cos = Math.cos(.017453 * a);
-		var sin = Math.sin(.017453 * a);
-		var r = [];
-		var tx = 0;
-		var ty = 0;
-		if(a % 90 == 0) w = z;
-		w = Math.floor(z / w);
-		if(w <= 0) w = 1;
-		while(y < z) {
-			y += w;
-			if(y > z) y = z;
-			tx = cos * y;
-			ty = sin * y;
-			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 " + t.range(.8 - y / z * c).hex();
-		}
-		y = 0;
-		var oX = cos * z;
-		var oY = sin * z;
-		while(y < u) {
-			++y;
-			tx = cos * y + oX;
-			ty = sin * y + oY;
-			r[r.length] = (tx == 0?"0":Math.round(tx) + "px") + " " + (ty == 0?"0":Math.round(ty) + "px") + " 0 rgba(0,0,0,.1)";
-		}
-		return (s?"text-shadow":"box-shadow") + ":" + r.join(",") + (i?" !important":"");
-	}
-	return "shadow";
-};
-sirius_css_AutomatorRules.textKey = function(d,k,n) {
-	if(k.index == 0) {
-		if(n != null && !n.position) {
-			if(n.measure != null) return "font-size:"; else if(n.key != "j") return "color:";
-		}
-		if(n.key != "dec") return "text-align:";
-	}
-	return "text-";
-};
-sirius_css_AutomatorRules.set = function(rule,value) {
-	if((rule instanceof Array) && rule.__enum__ == null) sirius_utils_Dice.All(rule,function(p,v) {
-		sirius_css_AutomatorRules._KEYS[p] = v;
-	}); else if(value != null) Reflect.setField(sirius_css_AutomatorRules._KEYS,rule,value);
-};
-sirius_css_AutomatorRules.get = function(name) {
-	var e = Reflect.field(sirius_css_AutomatorRules._KEYS,name);
-	return e;
-};
-sirius_css_AutomatorRules.blank = function(name) {
-	var e = { value : name, verifier : sirius_css_AutomatorRules.commonKey};
-	sirius_css_AutomatorRules._KEYS[name] = e;
-	return e;
-};
-sirius_css_AutomatorRules.keys = function() {
-	return sirius_css_AutomatorRules._KEYS;
-};
-var sirius_css_IEntry = function() { };
-sirius_css_IEntry.__name__ = ["sirius","css","IEntry"];
-sirius_css_IEntry.prototype = {
-	__class__: sirius_css_IEntry
-};
-var sirius_css_IKey = function() { };
-sirius_css_IKey.__name__ = ["sirius","css","IKey"];
-sirius_css_IKey.prototype = {
-	__class__: sirius_css_IKey
-};
-var sirius_css_XCSS = $hx_exports.XCSS = function(data) {
-	this.reset();
-	if(data != null) this.flush(data);
-};
-sirius_css_XCSS.__name__ = ["sirius","css","XCSS"];
-sirius_css_XCSS.create = function(target,data) {
-	return new sirius_css_XCSS(data).apply(target);
-};
-sirius_css_XCSS.prototype = {
-	flush: function(data) {
-		sirius_utils_Dice.All(data,$bind(this,this.write));
-	}
-	,write: function(param,value) {
-		if(sirius_css_XCSS.enabled == true) {
-			var cx = HxOverrides.substr(param,0,1).toUpperCase() + HxOverrides.substr(param,1,param.length - 1);
-			this.data["webkit" + cx] = value;
-			this.data["Moz" + cx] = value;
-			this.data["ms" + cx] = value;
-			this.data["O" + cx] = value;
-		}
-		this.data[param] = value;
-	}
-	,apply: function(target) {
-		target.style(this.data);
-		return this;
-	}
-	,reset: function() {
-		this.data = { };
-		return this;
-	}
-	,__class__: sirius_css_XCSS
-};
-var sirius_data_IDataCache = function() { };
-sirius_data_IDataCache.__name__ = ["sirius","data","IDataCache"];
-sirius_data_IDataCache.prototype = {
-	__class__: sirius_data_IDataCache
-	,__properties__: {get_data:"get_data"}
-};
-var sirius_data_DataCache = $hx_exports.sru.data.DataCache = function(name,path,expire,base64) {
-	if(expire == null) expire = 0;
-	this._name = name;
-	this._path = path;
-	this._expire = expire;
-	this._base64 = base64;
-	this.clear();
-};
-sirius_data_DataCache.__name__ = ["sirius","data","DataCache"];
-sirius_data_DataCache.__interfaces__ = [sirius_data_IDataCache];
-sirius_data_DataCache.prototype = {
-	get_data: function() {
-		return this._DB;
-	}
-	,_now: function() {
-		return new Date().getTime();
-	}
-	,clear: function(p) {
-		if(p != null) {
-			if(p != "__time__") Reflect.deleteField(this._DB,p);
-		} else {
-			this._DB = { };
-			if(this._expire > 0) this._DB.__time__ = this._now();
-			js_Cookie.remove(this._name,this._path);
-		}
-		return this;
-	}
-	,set: function(p,v) {
-		this._DB[p] = v;
-		return this;
-	}
-	,merge: function(p,v) {
-		if((v instanceof Array) && v.__enum__ == null && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
-			var t = this.get(p);
-			if((t instanceof Array) && t.__enum__ == null) return this.set(p,t.concat(v));
-		}
-		this._DB[p] = v;
-		return this;
-	}
-	,get: function(id) {
-		var d;
-		if(id != null) d = Reflect.field(this._DB,id); else d = null;
-		if(d == null) {
-			d = { };
-			this.set(id,d);
-		}
-		return d;
-	}
-	,exists: function(name) {
-		if(name != null) return Object.prototype.hasOwnProperty.call(this._DB,name); else return this._loaded;
-	}
-	,save: function() {
-		var data = sirius_serial_IOTools.encodeBase64(this._DB);
-		js_Cookie.set(this._name,data,this._expire > 0?this._expire:2592000,this._path);
-		return this;
-	}
-	,_sign: function(add) {
-		if(add) this._DB.__time__ = this._now(); else {
-			if(this._expire > 0) this.__time__ = this._DB.__time__; else this.__time__ = 0;
-			Reflect.deleteField(this._DB,"__time__");
-		}
-	}
-	,load: function() {
-		this._DB = null;
-		if(js_Cookie.exists(this._name)) {
-			var a = haxe_crypto_Base64.decode(js_Cookie.get(this._name));
-			haxe_Log.trace(a,{ fileName : "DataCache.hx", lineNumber : 182, className : "sirius.data.DataCache", methodName : "load"});
-			this._DB = sirius_serial_IOTools.decodeBase64(js_Cookie.get(this._name),true);
-			haxe_Log.trace(this._DB,{ fileName : "DataCache.hx", lineNumber : 184, className : "sirius.data.DataCache", methodName : "load"});
-		}
-		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
-			this._DB = { };
-			this._loaded = false;
-		} else {
-			this._sign(false);
-			this._loaded = true;
-		}
-		return this._loaded;
-	}
-	,refresh: function() {
-		this.__time__ = this._now();
-		return this;
-	}
-	,json: function(print) {
-		var result = sirius_serial_JsonTool.stringfy(this._DB,null," ");
-		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 210, className : "sirius.data.DataCache", methodName : "json"});
-		}
-		return result;
-	}
-	,base64: function(print) {
-		var result = sirius_serial_IOTools.encodeBase64(this._DB);
-		if(print) {
-			if(print) haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 216, className : "sirius.data.DataCache", methodName : "base64"});
-		}
-		return result;
-	}
-	,__class__: sirius_data_DataCache
-	,__properties__: {get_data:"get_data"}
-};
-var sirius_data_IDataSet = function() { };
-sirius_data_IDataSet.__name__ = ["sirius","data","IDataSet"];
-sirius_data_IDataSet.prototype = {
-	__class__: sirius_data_IDataSet
-};
-var sirius_data_DataSet = function(q) {
-	if(q != null) this._content = q; else this._content = { };
-};
-sirius_data_DataSet.__name__ = ["sirius","data","DataSet"];
-sirius_data_DataSet.__interfaces__ = [sirius_data_IDataSet];
-sirius_data_DataSet.prototype = {
-	get: function(p) {
-		return Reflect.field(this._content,p);
-	}
-	,set: function(p,v) {
-		Reflect.setField(this._content,p,v);
-		return this;
-	}
-	,unset: function(p) {
-		Reflect.deleteField(this._content,p);
-		return this;
-	}
-	,exists: function(p) {
-		return Reflect.hasField(this._content,p);
-	}
-	,clear: function() {
-		this._content = { };
-		return this;
-	}
-	,find: function(v) {
-		var r = [];
-		sirius_utils_Dice.All(this._content,function(p,x) {
-			if(typeof(x) == "string" && x.indexOf(v) != -1) r[r.length] = p; else if(x == v) r[r.length] = p;
-		});
-		return r;
-	}
-	,index: function() {
-		var r = [];
-		sirius_utils_Dice.Params(this._content,$arrayPushClosure(r));
-		return r;
-	}
-	,values: function() {
-		var r = [];
-		sirius_utils_Dice.Values(this._content,$arrayPushClosure(r));
-		return r;
-	}
-	,filter: function(p,handler) {
-		var r = new sirius_data_DataSet();
-		var h = handler != null;
-		sirius_utils_Dice.All(this._content,function(p2,v) {
-			if(js_Boot.__instanceof(v,sirius_data_IDataSet)) {
-				if(v.exists(p)) r.set(p2,h?handler(v):v.get(p));
-			} else if(Reflect.hasField(v,p)) r.set(p2,h?handler(v):Reflect.field(v,p));
-		});
-		return r;
-	}
-	,each: function(handler) {
-		sirius_utils_Dice.All(this._content,handler);
-	}
-	,data: function() {
-		return this._content;
-	}
-	,__class__: sirius_data_DataSet
-};
-var sirius_data_IFormData = function() { };
-sirius_data_IFormData.__name__ = ["sirius","data","IFormData"];
-sirius_data_IFormData.prototype = {
-	__class__: sirius_data_IFormData
-};
-var sirius_data_FormData = $hx_exports.sru.data.FormData = function(target) {
-	if(target != null) {
-		if(typeof(target) == "string") this.scan(sirius_Sirius.one(target));
-		if(js_Boot.__instanceof(target,sirius_dom_IDisplay)) this.scan(target);
-	}
-};
-sirius_data_FormData.__name__ = ["sirius","data","FormData"];
-sirius_data_FormData.__interfaces__ = [sirius_data_IFormData];
-sirius_data_FormData.prototype = {
-	reset: function() {
-		this.params = [];
-		return this;
-	}
-	,scan: function(target) {
-		var _g = this;
-		this.reset();
-		if(target == null) this._form = sirius_Sirius.document.body; else this._form = target;
-		target.all("[form-data]").each(function(o) {
-			_g.params[_g.params.length] = new sirius_data_FormParam(o);
-		});
-		return this;
-	}
-	,valueOf: function(p) {
-		var res = sirius_utils_Dice.Values(this.params,function(v) {
-			return v.getName() == p;
-		});
-		return res.value;
-	}
-	,isValid: function(needAll) {
-		var _g = this;
-		this.errors = [];
-		sirius_utils_Dice.Values(this.params,function(v) {
-			if(!v.isValid(needAll)) _g.errors[_g.errors.length] = v;
-		});
-		return this.errors.length == 0;
-	}
-	,getParam: function(p) {
-		var res = sirius_utils_Dice.Values(this.params,function(v) {
-			return v.getName() == p;
-		});
-		return res.value;
-	}
-	,getData: function(append) {
-		var d;
-		if(append == null) d = { }; else d = append;
-		sirius_utils_Dice.Values(this.params,function(v) {
-			Reflect.setField(d,v.getName(),v.getValue());
-			return;
-		});
-		return d;
-	}
-	,clear: function() {
-		sirius_utils_Dice.Values(this.params,function(v) {
-			v.clear();
-		});
-		return this;
-	}
-	,send: function(url,handler,method) {
-		if(method == null) method = "post";
-		sirius_Sirius.request(url,this.getData(),null,handler,method);
-	}
-	,match: function(a,b) {
-		return this.getParam(a).getValue() == this.getParam(b).getValue();
-	}
-	,__class__: sirius_data_FormData
-};
-var sirius_data_FormParam = function(e) {
-	this._e = e;
-};
-sirius_data_FormParam.__name__ = ["sirius","data","FormParam"];
-sirius_data_FormParam.prototype = {
-	getName: function() {
-		return this._e.attribute("form-data");
-	}
-	,getValidator: function() {
-		return this._e.attribute("form-validate");
-	}
-	,isRequired: function() {
-		return this._e.hasAttribute("form-required") && sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-required")) > 0;
-	}
-	,getMessage: function() {
-		return this._e.attribute("form-message");
-	}
-	,getValue: function() {
-		if(js_Boot.__instanceof(this._e,sirius_dom_Select)) {
-			var e = this._e;
-			if(!e.hasValue()) return null;
-		}
-		return this._e.attribute("value");
-	}
-	,isValid: function(require) {
-		return !require && !this.isRequired() || sirius_tools_Utils.isValid(this.getValue());
-	}
-	,clear: function() {
-		if(sirius_utils_Dice.Match(["1","true","yes"],this._e.attribute("form-persistent")) == 0) this._e.attribute("value","");
-	}
-	,getCell: function() {
-		return this._e;
-	}
-	,__class__: sirius_data_FormParam
-};
-var sirius_data_IFragments = function() { };
-sirius_data_IFragments.__name__ = ["sirius","data","IFragments"];
-sirius_data_IFragments.prototype = {
-	__class__: sirius_data_IFragments
-};
-var sirius_data_Fragments = function(value,separator) {
-	if(value == null) this.value = ""; else this.value = value;
-	if(separator != null && separator.length > 0) this.split(separator); else this.clear();
-};
-sirius_data_Fragments.__name__ = ["sirius","data","Fragments"];
-sirius_data_Fragments.__interfaces__ = [sirius_data_IFragments];
-sirius_data_Fragments.prototype = {
-	_sel: function(i,e) {
-		var r = [];
-		while(i != e) {
-			var p = this.pieces[i++];
-			if(p != null && p != "") r[r.length] = p;
-		}
-		return "/" + r.join("/") + "/";
-	}
-	,split: function(separator) {
-		this.pieces = sirius_tools_Utils.clearArray(this.value.split(separator));
-		if(this.pieces.length == 0) this.pieces[0] = "";
-		this.first = this.pieces[0];
-		this.last = this.pieces[this.pieces.length - 1];
-		this.glue(separator);
-		return this;
-	}
-	,find: function(value) {
-		return Lambda.indexOf(this.pieces,value) != -1;
-	}
-	,glue: function(value) {
-		this.value = this.pieces.join(value);
-		return this;
-	}
-	,addPiece: function(value,at) {
-		if(at == null) at = -1;
-		if(at == 0) this.pieces.unshift(value); else if(at == -1 || at >= this.pieces.length) this.pieces.push(value); else {
-			var tail = this.pieces.splice(at,this.pieces.length - at);
-			this.pieces.push(value);
-			this.pieces = this.pieces.concat(tail);
-		}
-		return this;
-	}
-	,get: function(i,e) {
-		if(e == null || e <= i) {
-			if(i < this.pieces.length) return this.pieces[i]; else return "";
-		} else return this._sel(i,e);
-	}
-	,set: function(i,val) {
-		if(i > this.pieces.length) i = this.pieces.length;
-		if(val != null) this.pieces[i] = val;
-		return this;
-	}
-	,clear: function() {
-		this.pieces = [];
-		this.first = "";
-		this.last = "";
-		return this;
-	}
-	,__class__: sirius_data_Fragments
-};
 var sirius_errors_IError = function() { };
 sirius_errors_IError.__name__ = ["sirius","errors","IError"];
 sirius_errors_IError.prototype = {
@@ -6747,6 +6442,173 @@ sirius_tools_Ticker.remove = function(handler) {
 sirius_tools_Ticker.delay = function(handler,time,args) {
 	return sirius_tools_Delayer.create(handler,time,args);
 };
+var sirius_tools_Utils = $hx_exports.Utils = function() { };
+sirius_tools_Utils.__name__ = ["sirius","tools","Utils"];
+sirius_tools_Utils.matchMedia = function(value) {
+	return window.matchMedia(value).matches;
+};
+sirius_tools_Utils.screenOrientation = function() {
+	if(sirius_tools_Utils.matchMedia("(orientation: portrait)")) return "portrait"; else return "landscape";
+};
+sirius_tools_Utils.viewportWidth = function() {
+	return window.innerWidth || document.documentElement.clientWidth;
+};
+sirius_tools_Utils.viewportHeight = function() {
+	return window.innerHeight || document.documentElement.clientHeight;
+};
+sirius_tools_Utils.mathLocation = function(uri) {
+	return window.location.href.indexOf(uri) != -1;
+};
+sirius_tools_Utils.screenInfo = function() {
+	return sirius_tools_Utils.screenOrientation() + "(" + sirius_tools_Utils.viewportWidth() + "x" + sirius_tools_Utils.viewportHeight() + ")";
+};
+sirius_tools_Utils.displayFrom = function(t) {
+	var id = null;
+	var type = null;
+	if($bind(t,t.hasAttribute) != null) {
+		id = t.getAttribute("sru-id");
+		if(id == null) {
+			type = t.getAttribute("sru-dom");
+			if(type == null) {
+				type = t.tagName.toUpperCase();
+				t.setAttribute("sru-dom",type);
+			}
+		} else return sirius_dom_Display.fromGC(id);
+	}
+	var OC = Reflect.field(sirius_tools_Utils._typeOf,type);
+	if(OC == null) return new sirius_dom_Display(t); else return new OC(t);
+};
+sirius_tools_Utils.getDisplay = function(t) {
+	var id;
+	if($bind(t,t.hasAttribute) != null && t.hasAttribute("sru-id")) id = Std.parseInt(t.getAttribute("sru-id")); else id = null;
+	if(id != null) return sirius_dom_Display.fromGC(id);
+	return new sirius_dom_Display(t);
+};
+sirius_tools_Utils.intToString = function(value,rad) {
+	if(typeof(value) == "string") value = Std.parseInt(value);
+	value = value;
+	return Reflect.callMethod(value,value.toString,rad != null?[rad]:[]);
+};
+sirius_tools_Utils.getAttributes = function(display) {
+	var attr = display.element.attributes;
+	var data = { };
+	if(attr != null) {
+		var i = 0;
+		var len = attr.length;
+		while(_$UInt_UInt_$Impl_$.gt(len,i)) {
+			var a = attr.item(i);
+			data[a.name] = a.value;
+			++i;
+		}
+	}
+	return data;
+};
+sirius_tools_Utils.getMin = function(values,filter) {
+	var r = null;
+	sirius_utils_Dice.Values(values,function(i) {
+		if(filter == null || filter(i)) {
+			if(i < r || r == null) r = i;
+		}
+	});
+	return r;
+};
+sirius_tools_Utils.getMax = function(values,filter) {
+	var r = null;
+	sirius_utils_Dice.Values(values,function(i) {
+		if(filter == null || filter(i)) {
+			if(i > r || r == null) r = i;
+		}
+	});
+	return r;
+};
+sirius_tools_Utils.getQueryParams = function(value) {
+	var params = { };
+	if(value.indexOf("?") > 0) value = value.split("+").join(" ").split("?")[1]; else return params;
+	sirius_utils_Dice.Values(value.split("&"),function(v) {
+		var data = v.split("=");
+		Reflect.setField(params,StringTools.urlDecode(data[0]),StringTools.urlDecode(data[1]));
+	});
+	return params;
+};
+sirius_tools_Utils.clearArray = function(path,filter) {
+	var copy = [];
+	sirius_utils_Dice.Values(path,function(v) {
+		if(v != null && v != "" && (filter == null || filter(v))) copy[copy.length] = v;
+	});
+	return copy;
+};
+sirius_tools_Utils.toString = function(o,json) {
+	if(json == true) return JSON.stringify(o); else return Std.string(o);
+};
+sirius_tools_Utils.sruString = function(o) {
+	return sirius_tools_Utils._sruFy(o,"","");
+};
+sirius_tools_Utils._sruFy = function(o,i,b) {
+	i = i + "  ";
+	sirius_utils_Dice.All(o,function(p,v) {
+		if(v == null) b += i + p + ":* = NULL\r"; else if(typeof(v) == "string") b += i + p + ":String = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + ":Bool = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + ":Number = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + ":Array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + ":Object {\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
+	});
+	return b;
+};
+sirius_tools_Utils.isValid = function(o) {
+	if(o != null && o != "") {
+		if(o != "null" && Object.prototype.hasOwnProperty.call(o,"length")) return o.length > 0; else return o != 0 && o != false;
+	}
+	return false;
+};
+sirius_tools_Utils.isValidAlt = function(o,alt) {
+	if(sirius_tools_Utils.isValid(o)) return o; else return alt;
+};
+sirius_tools_Utils["typeof"] = function(o) {
+	var name;
+	if(o != null) {
+		try {
+			return o.__proto__.__class__.__name__.join(".");
+		} catch( e ) {
+			if (e instanceof js__$Boot_HaxeError) e = e.val;
+		}
+		try {
+			return Type.getClassName(Type.getClass(o));
+		} catch( e1 ) {
+			if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
+		}
+	}
+	return null;
+};
+sirius_tools_Utils["boolean"] = function(q) {
+	return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
+};
+sirius_tools_Utils.money = function(val,s,a,b) {
+	if(b == null) b = ".";
+	if(a == null) a = ",";
+	if(s == null) s = "$";
+	var r = "";
+	val *= 100;
+	if(val > 99) {
+		val = "" + Std["int"](val);
+		var i = val.length;
+		var c = 0;
+		while(i-- > 0) {
+			r = Std.string(val.substr(i,1)) + r;
+			if(i > 0) {
+				if(c == 1) r = b + r; else if(c > 1 && (c + 2) % 3 == 0) r = a + r;
+			} else if(c < 3) r = "0" + (c == 1?".":"") + r;
+			++c;
+		}
+	} else r = "0" + b + (val < 10?"0":"") + Std.string(val);
+	return s + r;
+};
+sirius_tools_Utils.stdClone = function(q) {
+	return JSON.parse(JSON.stringify(q));
+};
+sirius_tools_Utils.paramsOf = function(o) {
+	var r = [];
+	sirius_utils_Dice.All(o,function(p,v) {
+		v = JSON.stringify(v);
+		r[r.length] = p + "=" + StringTools.urlEncode(v.substr(1,v.length - 2));
+	});
+	return r.join("&");
+};
 var sirius_transitions_Animator = $hx_exports.Animator = function() { };
 sirius_transitions_Animator.__name__ = ["sirius","transitions","Animator"];
 sirius_transitions_Animator.available = function() {
@@ -6861,6 +6723,146 @@ var sirius_transitions_ITween = function() { };
 sirius_transitions_ITween.__name__ = ["sirius","transitions","ITween"];
 sirius_transitions_ITween.prototype = {
 	__class__: sirius_transitions_ITween
+};
+var sirius_utils_Dice = $hx_exports.Dice = function() { };
+sirius_utils_Dice.__name__ = ["sirius","utils","Dice"];
+sirius_utils_Dice.All = function(q,each,complete) {
+	var v = null;
+	var p = null;
+	var i = true;
+	var k = 0;
+	if(q != null) {
+		var _g = 0;
+		var _g1 = Reflect.fields(q);
+		while(_g < _g1.length) {
+			var p1 = _g1[_g];
+			++_g;
+			v = Reflect.field(q,p1);
+			if(each(p1,v) == true) {
+				i = false;
+				break;
+			} else {
+				++k;
+				p1 = null;
+				v = null;
+			}
+		}
+	}
+	var r = { param : p, value : v, completed : i, object : q, keys : k};
+	if(complete != null) complete(r);
+	return r;
+};
+sirius_utils_Dice.Params = function(q,each,complete) {
+	return sirius_utils_Dice.All(q,function(p,v) {
+		return each(p);
+	},complete);
+};
+sirius_utils_Dice.Values = function(q,each,complete) {
+	return sirius_utils_Dice.All(q,function(p,v) {
+		return each(v);
+	},complete);
+};
+sirius_utils_Dice.Call = function(q,method,args) {
+	if(args == null) args = [];
+	return sirius_utils_Dice.All(q,function(p,v) {
+		v[method].apply(q,args);
+	},null);
+};
+sirius_utils_Dice.Count = function(from,to,each,complete,increment) {
+	if(increment == null) increment = 1;
+	var a = Math.min(from,to);
+	var b = Math.max(from,to);
+	if(increment == null || _$UInt_UInt_$Impl_$.gt(1,increment)) increment = 1;
+	while(a < b) if(each(a,b,(a = _$UInt_UInt_$Impl_$.toFloat(increment) + a) == b) == true) break;
+	var c = a == b;
+	var r = { from : from, to : b, completed : c, value : a - _$UInt_UInt_$Impl_$.toFloat(increment)};
+	if(complete != null) complete(r);
+	return r;
+};
+sirius_utils_Dice.One = function(from,alt) {
+	if((from instanceof Array) && from.__enum__ == null) sirius_utils_Dice.Values(from,function(v) {
+		from = v;
+		return from == null;
+	});
+	return { value : sirius_tools_Utils.isValid(from)?from:alt, object : from};
+};
+sirius_utils_Dice.Match = function(table,values,limit) {
+	if(limit == null) limit = 0;
+	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
+	var r = 0;
+	sirius_utils_Dice.Values(values,function(v) {
+		if(Lambda.indexOf(table,v) != -1) ++r;
+		if(_$UInt_UInt_$Impl_$.gt(limit,0)) {
+			var a = --limit;
+			return a == 0;
+		}
+		return false;
+	});
+	return r;
+};
+sirius_utils_Dice.Remove = function(table,values) {
+	if(!((values instanceof Array) && values.__enum__ == null)) values = [values];
+	sirius_utils_Dice.Values(values,function(v) {
+		var i = Lambda.indexOf(table,v);
+		if(i != -1) {
+			var x = v;
+			HxOverrides.remove(table,x);
+		}
+	});
+};
+sirius_utils_Dice.Mix = function(data) {
+	var r = [];
+	sirius_utils_Dice.Values(data,function(v) {
+		r = r.concat(v);
+	});
+	return r;
+};
+sirius_utils_Dice.Table = function(data,key,numeric,copy) {
+	if(copy == null) copy = false;
+	if(numeric == null) numeric = false;
+	var r;
+	if(copy == true) r = [].concat(data); else r = data;
+	if(numeric) {
+		if(key != null) haxe_ds_ArraySort.sort(r,function(a,b) {
+			if(Reflect.field(a,key) < Reflect.field(b,key)) return -1; else return 1;
+		}); else haxe_ds_ArraySort.sort(r,function(a1,b1) {
+			if(a1 < b1) return -1; else return 1;
+		});
+	} else if(key != null) haxe_ds_ArraySort.sort(r,function(a2,b2) {
+		return Reflect.compare(sirius_utils_SearchTag.convert(Reflect.field(a2,key)),sirius_utils_SearchTag.convert(Reflect.field(b2,key)));
+	}); else haxe_ds_ArraySort.sort(r,function(a3,b3) {
+		return Reflect.compare(sirius_utils_SearchTag.convert(a3),sirius_utils_SearchTag.convert(b3));
+	});
+	return r;
+};
+sirius_utils_Dice.List = function(data,a,b) {
+	if(a == null) a = 0;
+	var copy = [];
+	var len = data.length;
+	if(b == null) b = data.length;
+	if(_$UInt_UInt_$Impl_$.gt(b,a)) while(_$UInt_UInt_$Impl_$.gt(b,a)) {
+		if(_$UInt_UInt_$Impl_$.gte(a,len)) break;
+		copy[copy.length] = data[a];
+		++a;
+	} else if(_$UInt_UInt_$Impl_$.gt(a,b)) while(_$UInt_UInt_$Impl_$.gt(a,b)) {
+		if(_$UInt_UInt_$Impl_$.gt(len,a)) copy[copy.length] = data[a];
+		--a;
+	}
+	return copy;
+};
+sirius_utils_Dice.Children = function(of,each,complete) {
+	var r = { children : []};
+	var l = 0;
+	var c;
+	if(of != null) {
+		if(js_Boot.__instanceof(of,sirius_dom_IDisplay)) of = of.element;
+		sirius_utils_Dice.Count(0,of.childNodes.length,function(i,j,k) {
+			c = of.childNodes.item(i);
+			r.children[l] = c;
+			return each(c,i);
+		},complete);
+	}
+	return r;
 };
 var sirius_utils_Filler = $hx_exports.sru.utils.Filler = function() { };
 sirius_utils_Filler.__name__ = ["sirius","utils","Filler"];
@@ -7432,13 +7434,12 @@ sirius_css_Automator._scx = "#xs#sm#md#lg#pr#";
 sirius_css_Automator.css = new sirius_css_CSSGroup();
 sirius_css_Automator._dev = false;
 sirius_css_Automator._inits = { reset : false, grid : false};
+sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
+sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
+sirius_css_XCSS.enabled = false;
 sirius_dom_Display3D._fixed = false;
 sirius_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center center"};
 sirius_dom_Input.icons = { };
-sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO : sirius_dom_Audio, B : sirius_dom_B, BASE : sirius_dom_Base, BODY : sirius_dom_Body, BR : sirius_dom_BR, BUTTON : sirius_dom_Button, CANVAS : sirius_dom_Canvas, CAPTION : sirius_dom_Caption, COL : sirius_dom_Col, CONTENT : sirius_dom_Content, DATALIST : sirius_dom_DataList, DIV : sirius_dom_Div, DISPLAY : sirius_dom_Display, DISPLAY3D : sirius_dom_Display3D, DL : sirius_dom_DL, DOCUMENT : sirius_dom_Document, EMBED : sirius_dom_Embed, FIELDSET : sirius_dom_FieldSet, FORM : sirius_dom_Form, H1 : sirius_dom_H1, H2 : sirius_dom_H2, H3 : sirius_dom_H3, H4 : sirius_dom_H4, H5 : sirius_dom_H5, H6 : sirius_dom_H6, HEAD : sirius_dom_Head, HR : sirius_dom_HR, HTML : sirius_dom_Html, I : sirius_dom_I, IFRAME : sirius_dom_IFrame, IMG : sirius_dom_Img, INPUT : sirius_dom_Input, LABEL : sirius_dom_Label, LEGEND : sirius_dom_Legend, LI : sirius_dom_LI, LINK : sirius_dom_Link, MAP : sirius_dom_Map, MEDIA : sirius_dom_Media, META : sirius_dom_Meta, METER : sirius_dom_Meter, MOD : sirius_dom_Mod, OBJECT : sirius_dom_Object, OL : sirius_dom_OL, OPTGROUP : sirius_dom_OptGroup, OPTION : sirius_dom_Option, OUTPUT : sirius_dom_Output, P : sirius_dom_P, PARAM : sirius_dom_Param, PICTURE : sirius_dom_Picture, PRE : sirius_dom_Pre, PROGRESS : sirius_dom_Progress, QUOTE : sirius_dom_Quote, SCRIPT : sirius_dom_Script, SELECT : sirius_dom_Select, SHADOW : sirius_dom_Shadow, SOURCE : sirius_dom_Source, SPAN : sirius_dom_Span, STYLE : sirius_dom_Style, TEXT : sirius_dom_Text, TEXTAREA : sirius_dom_TextArea, THEAD : sirius_dom_Thead, TITLE : sirius_dom_Title, TRACK : sirius_dom_Track, UL : sirius_dom_UL, VIDEO : sirius_dom_Video};
-sirius_css_AutomatorRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
-sirius_css_AutomatorRules._KEYS = { 'void' : { value : "\"\"", verifier : sirius_css_AutomatorRules.commonKey}, glass : { value : "background-color:transparent", verifier : sirius_css_AutomatorRules.colorKey}, b : { value : "bottom", verifier : sirius_css_AutomatorRules.numericKey}, t : { value : "top", verifier : sirius_css_AutomatorRules.numericKey}, l : { value : "left", verifier : sirius_css_AutomatorRules.numericKey}, r : { value : "right", verifier : sirius_css_AutomatorRules.numericKey}, m : { value : "middle", verifier : sirius_css_AutomatorRules.commonKey}, j : { value : "justify", verifier : sirius_css_AutomatorRules.commonKey}, c : { value : "center", verifier : sirius_css_AutomatorRules.commonKey}, n : { value : "none", verifier : sirius_css_AutomatorRules.commonKey}, line : { value : "line", verifier : sirius_css_AutomatorRules.pushKey}, marg : { value : "margin", verifier : sirius_css_AutomatorRules.numericKey}, padd : { value : "padding", verifier : sirius_css_AutomatorRules.numericKey}, bord : { value : "border", verifier : sirius_css_AutomatorRules.numericKey}, w : { value : "width", verifier : sirius_css_AutomatorRules.valueKey}, h : { value : "height", verifier : sirius_css_AutomatorRules.valueKey}, o : { value : "outline", verifier : sirius_css_AutomatorRules.valueKey}, disp : { value : "display", verifier : sirius_css_AutomatorRules.valueKey}, vert : { value : "vertical-align", verifier : sirius_css_AutomatorRules.valueKey}, blk : { value : "block", verifier : sirius_css_AutomatorRules.commonKey}, 'inline' : { value : "inline", verifier : sirius_css_AutomatorRules.appendKey}, bg : { value : "background", verifier : sirius_css_AutomatorRules.numericKey}, txt : { value : "", verifier : sirius_css_AutomatorRules.textKey}, dec : { value : "", verifier : sirius_css_AutomatorRules.valueKey}, sub : { value : "sub", verifier : sirius_css_AutomatorRules.commonKey}, sup : { value : "super", verifier : sirius_css_AutomatorRules.commonKey}, pos : { value : "position", verifier : sirius_css_AutomatorRules.valueKey}, abs : { value : "absolute", verifier : sirius_css_AutomatorRules.positionKey}, rel : { value : "relative", verifier : sirius_css_AutomatorRules.positionKey}, fix : { value : "fixed", verifier : sirius_css_AutomatorRules.positionKey}, pull : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, 'float' : { value : "float", verifier : sirius_css_AutomatorRules.valueKey}, over : { value : "overflow", verifier : sirius_css_AutomatorRules.valueKey}, hide : { value : "display:none", verifier : sirius_css_AutomatorRules.commonKey}, scroll : { value : "scroll", verifier : sirius_css_AutomatorRules.scrollKey}, crop : { value : "overflow:hidden", verifier : sirius_css_AutomatorRules.commonKey}, x : { value : "x", verifier : sirius_css_AutomatorRules.scrollKey}, y : { value : "y", verifier : sirius_css_AutomatorRules.scrollKey}, z : { value : "z-index", verifier : sirius_css_AutomatorRules.indexKey}, bold : { value : "font-weight:bold", verifier : sirius_css_AutomatorRules.commonKey}, regular : { value : "font-weight:regular", verifier : sirius_css_AutomatorRules.commonKey}, underline : { value : "font-weight:underline", verifier : sirius_css_AutomatorRules.commonKey}, italic : { value : "font-weight:italic", verifier : sirius_css_AutomatorRules.commonKey}, thin : { value : "font-weight:100", verifier : sirius_css_AutomatorRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : sirius_css_AutomatorRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : sirius_css_AutomatorRules.commonKey}, cursor : { value : "cursor", verifier : sirius_css_AutomatorRules.valueKey}, load : { value : "loading", verifier : sirius_css_AutomatorRules.valueKey}, arial : { value : "font-family:arial", verifier : sirius_css_AutomatorRules.commonKey}, verdana : { value : "font-family:verdana", verifier : sirius_css_AutomatorRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : sirius_css_AutomatorRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : sirius_css_AutomatorRules.commonKey}, georgia : { value : "font-family:georgia", verifier : sirius_css_AutomatorRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : sirius_css_AutomatorRules.commonKey}, table : { value : "table", verifier : sirius_css_AutomatorRules.appendKey}, rad : { value : "radius", verifier : sirius_css_AutomatorRules.valueKey}, solid : { value : "solid", verifier : sirius_css_AutomatorRules.commonKey}, dashed : { value : "dashed", verifier : sirius_css_AutomatorRules.commonKey}, 'double' : { value : "double", verifier : sirius_css_AutomatorRules.commonKey}, dotted : { value : "dotted", verifier : sirius_css_AutomatorRules.commonKey}, alpha : { value : "opacity", verifier : sirius_css_AutomatorRules.alphaKey}, hidden : { value : "", verifier : sirius_css_AutomatorRules.displayKey}, shadow : { value : "", verifier : sirius_css_AutomatorRules.shadowKey}, stroke : { value : "", verifier : sirius_css_AutomatorRules.strokeKey}, grid : { value : "", verifier : sirius_css_AutomatorRules.gridKey}, cell : { value : "cell", verifier : sirius_css_AutomatorRules.commonKey}, mouse : { value : "pointer-events", verifier : sirius_css_AutomatorRules.commonKey}, btn : { value : "cursor:pointer", verifier : sirius_css_AutomatorRules.commonKey}, ease : { value : "transition", verifier : sirius_css_AutomatorRules.commonArray}};
-sirius_css_XCSS.enabled = false;
 sirius_tools_Delayer.setTimeout = setTimeout;
 sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;
@@ -7447,6 +7448,7 @@ sirius_tools_Delayer._tks = { };
 sirius_tools_Key._cts = { 'global' : 0};
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 sirius_tools_Ticker._pool = [];
+sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO : sirius_dom_Audio, B : sirius_dom_B, BASE : sirius_dom_Base, BODY : sirius_dom_Body, BR : sirius_dom_BR, BUTTON : sirius_dom_Button, CANVAS : sirius_dom_Canvas, CAPTION : sirius_dom_Caption, COL : sirius_dom_Col, CONTENT : sirius_dom_Content, DATALIST : sirius_dom_DataList, DIV : sirius_dom_Div, DISPLAY : sirius_dom_Display, DISPLAY3D : sirius_dom_Display3D, DL : sirius_dom_DL, DOCUMENT : sirius_dom_Document, EMBED : sirius_dom_Embed, FIELDSET : sirius_dom_FieldSet, FORM : sirius_dom_Form, H1 : sirius_dom_H1, H2 : sirius_dom_H2, H3 : sirius_dom_H3, H4 : sirius_dom_H4, H5 : sirius_dom_H5, H6 : sirius_dom_H6, HEAD : sirius_dom_Head, HR : sirius_dom_HR, HTML : sirius_dom_Html, I : sirius_dom_I, IFRAME : sirius_dom_IFrame, IMG : sirius_dom_Img, INPUT : sirius_dom_Input, LABEL : sirius_dom_Label, LEGEND : sirius_dom_Legend, LI : sirius_dom_LI, LINK : sirius_dom_Link, MAP : sirius_dom_Map, MEDIA : sirius_dom_Media, META : sirius_dom_Meta, METER : sirius_dom_Meter, MOD : sirius_dom_Mod, OBJECT : sirius_dom_Object, OL : sirius_dom_OL, OPTGROUP : sirius_dom_OptGroup, OPTION : sirius_dom_Option, OUTPUT : sirius_dom_Output, P : sirius_dom_P, PARAM : sirius_dom_Param, PICTURE : sirius_dom_Picture, PRE : sirius_dom_Pre, PROGRESS : sirius_dom_Progress, QUOTE : sirius_dom_Quote, SCRIPT : sirius_dom_Script, SELECT : sirius_dom_Select, SHADOW : sirius_dom_Shadow, SOURCE : sirius_dom_Source, SPAN : sirius_dom_Span, STYLE : sirius_dom_Style, TEXT : sirius_dom_Text, TEXTAREA : sirius_dom_TextArea, THEAD : sirius_dom_Thead, TITLE : sirius_dom_Title, TRACK : sirius_dom_Track, UL : sirius_dom_UL, VIDEO : sirius_dom_Video};
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 sirius_utils_Table._trash = [];

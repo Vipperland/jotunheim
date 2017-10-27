@@ -468,7 +468,7 @@ interface IDisplay {
 	/**
 	 * Re-run all external loaded scripts
 	 */
-	public function rebuild():Void;
+	public function autoInject():Void;
 	
 	/**
 	 * Display info in Sirius style
