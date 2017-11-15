@@ -14,9 +14,7 @@ class Point3D implements IPoint3D {
 	public var z:Float;
 	
 	public function new(x:Float,y:Float,z:Float) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		update(x, y, z);
 	}
 	
 	public function reset():Void {
@@ -28,6 +26,13 @@ class Point3D implements IPoint3D {
 		return round 
 				? Math.round(o.x) == Math.round(x) && Math.round(o.y) == Math.round(y) && Math.round(o.z) == Math.round(z) 
 				:  o.x == x && o.y == y && o.z == z;
+	}
+	
+	public function update(x:Float, y:Float, z:Float):IPoint3D {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		return this;
 	}
 	
 }

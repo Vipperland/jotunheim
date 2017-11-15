@@ -9,6 +9,7 @@ import js.JQuery;
 import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
 import sirius.events.IDispatcher;
+import sirius.flow.IPush;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
 import sirius.net.IProgress;
@@ -19,12 +20,7 @@ import sirius.utils.ITable;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
-interface IDisplay {
-	
-	/**
-	 * Uniq data carrier
-	 */
-	public var data : IDataSet;
+interface IDisplay extends IPush implements Dynamic  {
 	
 	/**
 	 * Default target element
@@ -41,12 +37,6 @@ interface IDisplay {
 	 * @return
 	 */
 	public function exists(q:String):Bool;
-	
-	/**
-	 * Enable pointer events
-	 * @return
-	 */
-	public function enable(?button:Bool):IDisplay;
 	
 	/**
 	 * Disable pointer events
@@ -89,16 +79,23 @@ interface IDisplay {
 	public function hasCss(name:String):Bool;
 	
 	/**
-	 * Mirror element view
+	 * 
+	 * @param	styles
 	 * @return
 	 */
-	public function mirror(x:Bool, y:Bool):IDisplay;
+	public function toggle(styles:String):IDisplay;
 	
 	/**
 	 * Current child index or -1 if not added
 	 * @return
 	 */
 	public function index():Int;
+	
+	/**
+	 * Unique Sirius DOM ID
+	 * @return
+	 */
+	public function id():UInt;
 	
 	/**
 	 * Get the element index in DOM
@@ -124,7 +121,7 @@ interface IDisplay {
 	 * @param	q
 	 * @return
 	 */
-	public function addText(q:String):IDisplay;
+	public function addTextElement(q:String):IDisplay;
 	
 	/**
 	 * Remove child from container
@@ -168,11 +165,6 @@ interface IDisplay {
 	public function length():Int;
 	
 	/**
-	 * Set cursor style to pointer
-	 */
-	public function cursor(?value:String):String;
-	
-	/**
 	 * Remove hidden attribute from element
 	 */
 	public function show():Void;
@@ -181,17 +173,6 @@ interface IDisplay {
 	 * Add hidden attribute to element
 	 */
 	public function hide():Void;
-	
-	/**
-	 * Sirius DOM id
-	 */
-	public function id():UInt;
-	
-	/**
-	 * Shared component data
-	 * @return
-	 */
-	public function initData():IDataSet;
 	
 	/**
 	 * Check if element have an attribute
@@ -223,18 +204,6 @@ interface IDisplay {
 	public function clearAttribute(name:String):Dynamic;
 	
 	/**
-	 * Write InnerText or InnerHTML properties
-	 * @param	q
-	 * @param	plainText
-	 */
-	public function write(q:Dynamic, ?text:Bool = false):IDisplay;
-	
-	/**
-	 * Fit element in current viewport width and height
-	 */
-	public function enlarge():IDisplay;
-	
-	/**
 	 * Write or get style of the element
 	 * @param	p
 	 * @param	v	Can accept ARGB
@@ -256,12 +225,21 @@ interface IDisplay {
 	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay;
 	
 	
+	public function writeText(q:Dynamic):IDisplay;
+	
+	public function appendText(q:Dynamic):IDisplay;
+	
+	public function writeHtml(q:Dynamic):IDisplay;
+	
+	public function appendHtml(q:Dynamic):IDisplay;
+	
+	
 	/**
 	 * Remove all elements or set innerHTML to empty
 	 * @param	fast		Use innerHtml='' instead of remove each element
 	 * @return
 	 */
-	public function clear(?fast:Bool):IDisplay;
+	public function empty(?fast:Bool):IDisplay;
 	
 	/**
 	 * Add an Event type
@@ -271,42 +249,6 @@ interface IDisplay {
 	 * @return
 	 */
 	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay;
-	
-	/**
-	 * Applies a fade tween
-	 * @param	value
-	 * @param	time
-	 * @return
-	 */
-	public function fadeTo(value:Float, time:Float = 1):IDisplay;
-	
-	/**
-	 * Transiction to target
-	 * @param	time
-	 * @param	target
-	 * @param	ease
-	 * @param	complete
-	 */
-	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay;
-	
-	/**
-	 * Transiction from target
-	 * @param	time
-	 * @param	target
-	 * @param	ease
-	 * @param	complete
-	 */
-	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay;
-	
-	/**
-	 * Transiction from target to target
-	 * @param	time
-	 * @param	from
-	 * @param	to
-	 * @param	ease
-	 * @param	complete
-	 */
-	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay;
 	
 	/**
 	 * Add a 30FPS call handler
@@ -349,21 +291,6 @@ interface IDisplay {
 	 * @return		Client height
 	 */
 	public function height(?value:Dynamic):Int;
-	
-	/**
-	 * Set width & height
-	 * @param	width
-	 * @param	height
-	 * @return
-	 */
-	public function fit(width:Dynamic, height:Dynamic):IDisplay;
-	
-	/**
-	 * Set overflow mode
-	 * @param	mode
-	 * @return	Current overflow
-	 */
-	public function overflow(?mode:String):String;
 	
 	/**
 	 * Set opacity
@@ -416,6 +343,10 @@ interface IDisplay {
 	 */
 	public function position():IPoint;
 	
+	/**
+	 * Get area and position
+	 * @return
+	 */
 	public function getBounds():DOMRect;
 	
 	/**
@@ -423,17 +354,21 @@ interface IDisplay {
 	 * @param	value
 	 * @return
 	 */
-	public function mouse(?value:Bool):Bool;
+	public function interactive(?value:Bool):Bool ;
 	
-	/**
-	 * Change display backgroud
-	 * @param	value
-	 * @param	repeat
-	 * @param	position
-	 * @param	attachment
-	 * @return
-	 */
-	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String, ?size:String):String;
+	public function rotateX(x:Float):IDisplay;
+	
+	public function rotateY(x:Float):IDisplay;
+	
+	public function rotateZ(x:Float):IDisplay;
+	
+	public function rotate(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function translate(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function scale(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function transform():IDisplay;
 	
 	/**
 	 * Clear all object data
@@ -450,25 +385,25 @@ interface IDisplay {
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void;
 	
 	/**
-	 * Load and build external modules spefified by the attribute 'sru-load'
-	 * @param	progress
-	 */
-	public function autoLoad(?progress:IProgress->Void):Void;
-	
-	/**
 	 * Scroll document for display visibility
 	 * @param	time
 	 * @param	ease
-	 * @param	x
-	 * @param	y
+	 * @param	offset x
+	 * @param	offset y
 	 * @return
 	 */
-	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay;
+	public function lookAt(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay;
 	
 	/**
 	 * Re-run all external loaded scripts
 	 */
-	public function autoInject():Void;
+	public function autoInject():IDisplay;
+	
+	/**
+	 * Load and build external modules spefified by the attribute 'sru-load'
+	 * @param	progress
+	 */
+	public function autoLoad(?progress:IProgress->Void):Void;
 	
 	/**
 	 * Display info in Sirius style

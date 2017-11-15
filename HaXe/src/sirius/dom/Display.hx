@@ -14,10 +14,14 @@ import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
 import sirius.events.Dispatcher;
 import sirius.events.IDispatcher;
+import sirius.flow.Push;
 import sirius.math.ARGB;
 import sirius.math.IARGB;
 import sirius.math.IPoint;
+import sirius.math.IPoint3D;
+import sirius.math.Matrix3D;
 import sirius.math.Point;
+import sirius.math.Point3D;
 import sirius.net.IProgress;
 import sirius.net.IRequest;
 import sirius.tools.Ticker;
@@ -32,7 +36,7 @@ import sirius.utils.ITable;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Display")
-class Display implements IDisplay {
+class Display extends Push implements IDisplay {
 	
 	private static var _CNT:UInt = 0;
 	
@@ -86,8 +90,6 @@ class Display implements IDisplay {
 		return new Point(b.left - a.left, b.top - a.top);
 	}
 	
-	public var data:IDataSet;
-	
 	public var element:Element;
 	
 	public var events:IDispatcher;
@@ -118,12 +120,14 @@ class Display implements IDisplay {
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
+		super();
 	}
 	
-	public function initData():IDataSet {
-		if (data == null)
-			data = new DataSet();
-		return data;
+	public function enablePerspective():Void {
+		style({
+			perspective: '1000px',
+			transformOrigin: '50% 50% 0',
+		});
 	}
 	
 	public function dispose():Void {
@@ -145,12 +149,6 @@ class Display implements IDisplay {
 		return element != null && element.querySelector(q) != null;
 	}
 	
-	public function enable(?button:Bool):IDisplay {
-		this.style( { pointerEvents:'auto' } );
-		if (button == true) cursor('pointer');
-		return this;
-	}
-	
 	public function disable():IDisplay {
 		this.style({pointerEvents:'none'});
 		return this;
@@ -160,41 +158,14 @@ class Display implements IDisplay {
 		element.click();
 		return this;
 	}
-	
-	public function bg(?data:Either<String,IARGB>, ?repeat:String, ?position:String, ?attachment:String, ?size:String):String {
-		if (data != null) {
-			var value:Dynamic = cast data;
-			if (Std.is(value, IARGB))
-				value = value.css();
-			else if (value.indexOf("rgb") == 0)
-				element.style.backgroundColor = value;
-			else if(value.indexOf('~') == 0){
-				style({
-					backgroundImage : "url('" + value.substr(1) + "')",
-					backgroundRepeat :  repeat != null ? repeat : "no-repeat",
-					backgroundSize :  size != null ? size : "cover",
-					backgroundPosition : position != null ? position : "center center",
-				});
-				if (attachment != null)
-					style( { backgroundAttachment:attachment } );
-				if (size != null)
-					style( { backgroundSize:size } );
-			}else
-				element.style.background = value;
-		}
-		return element.style.background;
-	}
-	
-	
+
 	public function all(q:String):ITable {
 		return Sirius.all(q, element);
 	}
 	
-	
 	public function one(q:String):IDisplay {
 		return Sirius.one(q, element);
 	}
-	
 	
 	public function children():ITable {
 		_children = Sirius.all('*', this.element);
@@ -266,7 +237,7 @@ class Display implements IDisplay {
 		return q.obj(q.length()-1);
 	}
 	
-	public function addText(q:String):IDisplay {
+	public function addTextElement(q:String):IDisplay {
 		var t:IDisplay = new Text(q);
 		addChild(t);
 		return t;
@@ -293,8 +264,68 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function mirror(x:Bool, y:Bool):IDisplay {
-		style('transform','matrix(' + (x ? -1 : 1) + ',0,0,' + (y ? -1 : 1) + ',0,0)');
+	public function rotateX(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationX = Matrix3D.rotateX(x);
+		return this;
+	}
+	
+	public function rotateY(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationY = Matrix3D.rotateY(x);
+		return this;
+	}
+	
+	public function rotateZ(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationZ = Matrix3D.rotateZ(x);
+		return this;
+	}
+	
+	public function rotate(x:Float, y:Float, z:Float):IDisplay {
+		if (x != null) {
+			rotateX(x);
+		}
+		if (y != null) {
+			rotateY(y);
+		}
+		if (z != null) {
+			rotateZ(z);
+		}
+		return this;
+	}
+	
+	public function translate(x:Float, y:Float, z:Float):IDisplay {
+		this.__changed = true;
+		this.__translation = Matrix3D.translate(x, y, z);
+		return this;
+	}
+	
+	public function scale(x:Float, y:Float, z:Float):IDisplay {
+		this.__changed = true;
+		this.__scale = Matrix3D.scale(x, y, z);
+		return this;
+	}
+	
+	public function backface(visible:Bool):Void {
+		style('backfaceVisibility', visible ? 'visible' : 'hidden');
+	}
+	
+	public function transform():IDisplay {
+		if (this.__changed){
+			if (this.__transform == null) {
+				this.__transform = [];
+				style('transformStyle', 'preserve-3d');
+				css('element3d');
+			}
+			this.__changed = false;
+			this.__transform[0] = this.__rotationX;
+			this.__transform[1] = this.__rotationY;
+			this.__transform[2] = this.__rotationZ;
+			this.__transform[3] = this.__scale;
+			this.__transform[4] = this.__translation;
+			style('transform', 'matrix3d(' + Matrix3D.transform(this.__transform).join(',') + ')');
+		}
 		return this;
 	}
 	
@@ -322,10 +353,11 @@ class Display implements IDisplay {
 		return (' ' + css() + ' ').indexOf(' ' + name + ' ') != -1;
 	}
 	
-	public function cursor(?value:String):String {
-		if (value != null)
-			element.style.cursor = value;
-		return element.style.cursor;
+	public function toggle(styles:String):IDisplay {
+		Dice.Values(styles.split(' '), function(v:String){
+			css((hasCss(v) ? '/' : '') + v); 
+		});
+		return this;
 	}
 	
 	public function show():Void {
@@ -385,11 +417,25 @@ class Display implements IDisplay {
 		}
 	}
 	
-	public function write(q:Dynamic, ?text:Bool = false):IDisplay {
-		if (text)
-			element.innerText += q;
-		else 
-			element.innerHTML = element.innerHTML + q;
+	public function writeText(q:Dynamic):IDisplay {
+		empty(false);
+		element.innerText = q;
+		return this;
+	}
+	
+	public function appendText(q:Dynamic):IDisplay {
+		element.innerText += q;
+		return this;
+	}
+	
+	public function writeHtml(q:Dynamic):IDisplay {
+		empty(false);
+		element.innerHTML = q;
+		return this;
+	}
+	
+	public function appendHtml(q:Dynamic):IDisplay {
+		element.innerHTML = element.innerHTML + q;
 		return this;
 	}
 	
@@ -422,10 +468,10 @@ class Display implements IDisplay {
 		if (Sirius.resources.exists(q))
 			return addChildren(Sirius.resources.build(q, data).children(), at);
 		else
-			return addChildren(new Display().write(q, false).children(), at);
+			return addChildren(new Display().writeHtml(q).children(), at);
 	}
 	
-	public function clear(?fast:Bool):IDisplay {
+	public function empty(?fast:Bool):IDisplay {
 		if (fast) {
 			element.innerHTML = "";
 		}else{
@@ -438,47 +484,6 @@ class Display implements IDisplay {
 	
 	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay {
 		events.on(type, handler, mode);
-		return this;
-	}
-	
-	public function fadeTo(value:Float, time:Float = 1):IDisplay {
-		tweenTo(time, { opacity:value } );
-		return this;
-	}
-	
-	public function tweenTo(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null)
-			target.onComplete = complete;
-		if (ease != null)
-			target.ease = ease;
-		if(element != null){
-			Animator.stop(element);
-			Animator.to(element, time, target);
-		}
-		return this;
-	}
-	
-	public function tweenFrom(time:Float = 1, target:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null)
-			target.onComplete = complete;
-		if (ease != null)
-			target.ease = ease;
-		if(element != null){
-			Animator.stop(element);
-			Animator.from(element, time, target);
-		}
-		return this;
-	}
-	
-	public function tweenFromTo(time:Float = 1, from:Dynamic, to:Dynamic, ?ease:Dynamic, ?complete:Dynamic):IDisplay {
-		if (complete != null)
-			from.onComplete = complete;
-		if (ease != null)
-			from.ease = ease;
-		if(element != null){
-			Animator.stop(element);
-			Animator.fromTo(element, time, from, to);
-		}
 		return this;
 	}
 	
@@ -525,22 +530,11 @@ class Display implements IDisplay {
 		return element.clientHeight;
 	}
 	
-	public function fit(width:Dynamic, height:Dynamic):IDisplay {
-		this.width(width);
-		this.height(height);
-		return this;
-	}
-	
-	public function overflow(?mode:String):String {
-		if (mode != null)
-			element.style.overflow = mode;
-		return element.style.overflow;
-	}
-	
 	public function alpha(?value:Float):Float {
-		if (value != null)
-			element.style.opacity = ''+value;
-		return Std.parseFloat(element.style.opacity);
+		if (value != null){
+			element.style.opacity = '' + (1 - value);
+		}
+		return 1-Std.parseFloat(element.style.opacity);
 	}
 	
 	public function isFullyVisible():Bool {
@@ -606,14 +600,6 @@ class Display implements IDisplay {
 		return this;
 	}
 	
-	public function enlarge():IDisplay {
-		style( {
-			width:'100%',
-			height:'100%',
-		});
-		return this;
-	}
-	
 	public function position():IPoint {
 		return getPosition(element);
 	}
@@ -622,7 +608,7 @@ class Display implements IDisplay {
 		return _uid;
 	}
 	
-	public function mouse(?value:Bool):Bool {
+	public function interactive(?value:Bool):Bool {
 		if (value != null) {
 			if (value)
 				style({pointerEvents:null});
@@ -630,7 +616,7 @@ class Display implements IDisplay {
 				style({pointerEvents:'none'});
 			return value;
 		}else {
-			return style().pointerEvents;
+			return style().pointerEvents != 'none';
 		}
 	}
 	
@@ -643,6 +629,25 @@ class Display implements IDisplay {
 		}, headers, progress);
 	}
 	
+	public function lookAt(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay {
+		Sirius.document.scrollTo(this, time, ease, x, y);
+		return this;
+	}
+	
+	public function autoInject():IDisplay {
+		all('script').each(cast function(o:Script){
+			o.remove();
+			var u:String = o.attribute('src');
+			if (u != ''){
+				all('script[src="' + u + '"]' ).remove();
+				var s:Script = new Script();
+				s.src(u);
+				addChild(s);
+			}
+		});
+		return this;
+	}
+	
 	public function autoLoad(?progress:IProgress->Void):Void {
 		all("[sru-load]").each(function(o:IDisplay){
 			var f:String = o.attribute('sru-load');
@@ -650,11 +655,6 @@ class Display implements IDisplay {
 			o.clearAttribute('sru-load');
 			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, null, progress);
 		});
-	}
-	
-	public function lookFor(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay {
-		Sirius.document.scrollTo(this, time, ease, x, y);
-		return this;
 	}
 	
 	public function toString():String {
@@ -666,7 +666,6 @@ class Display implements IDisplay {
 			index:index(),
 			length:length(),
 			attributes:Utils.getAttributes(this),
-			data:this.data,
 		};
 		if (v){
 			var r:DOMRect = element.getBoundingClientRect();
@@ -681,19 +680,6 @@ class Display implements IDisplay {
 			};
 		}
 		return Json.stringify(data);
-	}
-	
-	public function autoInject():Void {
-		all('script').each(cast function(o:Script){
-			o.remove();
-			var u:String = o.attribute('src');
-			if (u != ''){
-				all('script[src="' + u + '"]' ).remove();
-				var s:Script = new Script();
-				s.src(u);
-				addChild(s);
-			}
-		});
 	}
 	
 }

@@ -219,7 +219,7 @@ class ModLib {
 			if (each != null && Std.is(data, Array)) {
 				d = new Div();
 				Dice.Values(data, function(v:Dynamic) {
-					v = new Display().write(get(module, v));
+					v = new Display().writeHtml(get(module, v));
 					v = each(v);
 					if (v != null && Std.is(v, IDisplay)) {
 						d.attribute('sru-mod', signature);
@@ -227,7 +227,7 @@ class ModLib {
 					}
 				});
 			}else {
-				d = new Display().write(get(module, data));
+				d = new Display().writeHtml(get(module, data));
 				d.children().attribute('sru-mod', signature);
 			}
 			return d;

@@ -6,7 +6,7 @@ import sirius.utils.Dice;
  * @author Rafael Moreira
  */
 @:expose('sru.flow.Push')
-class Push implements Dynamic {
+class Push implements IPush implements Dynamic {
 	
 	private var _log:Array<String>;
 	private var _buffer:Dynamic;
@@ -20,7 +20,7 @@ class Push implements Dynamic {
 		return _log;
 	}
 	
-	public function clear():Void {
+	public function flush():Void {
 		_log = [];
 		_now = [];
 	}

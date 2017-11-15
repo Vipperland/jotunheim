@@ -1,11 +1,8 @@
 package sirius.dom;
-import haxe.Log;
-import js.Browser;
 import sirius.css.Automator;
 import sirius.css.XCSS;
 import sirius.dom.IDisplay;
 import sirius.math.ITransform3D;
-import sirius.math.Point3D;
 import sirius.math.Transform3D;
 
 /**
@@ -13,7 +10,7 @@ import sirius.math.Transform3D;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Display3D")
-class Display3D extends Div implements IDisplay3D {
+class Display3D extends Display implements IDisplay3D {
 	
 	static public function get(q:String):Display3D {
 		return cast Sirius.one(q);
@@ -24,7 +21,8 @@ class Display3D extends Div implements IDisplay3D {
 	static private function _backface_fix():Void {
 		if(!_fixed){
 			_fixed = true;
-			Automator.build("backface-visibility-inherit transform-style-inherit", "*");
+			Automator.style('[sru-dom="display3d"]', 'transform-style:inherit;backface-visibility:inherit;');
+			Automator.apply();
 		}
 	}
 	
@@ -32,27 +30,29 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public var xcss:XCSS;
 	
-	public var transform:ITransform3D;
+	public var transformData:ITransform3D;
 	
 	public function new(?q:Dynamic) {
 		super(q);
 		_backface_fix();
 		xcss = new XCSS();
-		transform = new Transform3D();
-		attribute('sru-dom', 'display3d');
+		transformData = new Transform3D();
+		if (q == null){
+			attribute('sru-dom', 'display3d');
+		}
 		update();
 	}
 	
 	public function preserve3d():IDisplay3D {
-		transform.transformStyle = "preserve-3d";
+		transformData.transformStyle = "preserve-3d";
 		return this;
 	}
 	
 	public function setPerspective(value:String, ?origin:String):IDisplay3D {
 		if (value != null)
-			transform.perspective = value;
+			transformData.perspective = value;
 		if (origin != null)
-			transform.transformOrigin = origin;
+			transformData.transformOrigin = origin;
 		return this;
 	}
 	
@@ -66,35 +66,35 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public function rotationX(?value:Float, ?add:Bool):Float {
 		if (value != null) {
-			add ? transform.rotation.x += value : transform.rotation.x = value;
-			if (transform.rotation.x < -180)
-				transform.rotation.x += 360;
-			else if (transform.rotation.x > 180)
-				transform.rotation.x -= 360;
+			add ? transformData.rotation.x += value : transformData.rotation.x = value;
+			//if (transformData.rotation.x < -180)
+				//transformData.rotation.x += 360;
+			//else if (transformData.rotation.x > 180)
+				//transformData.rotation.x -= 360;
 		}
-		return transform.rotation.x;
+		return transformData.rotation.x;
 	}
 	
 	public function rotationY(?value:Float, ?add:Bool):Float {
 		if (value != null) {
-			add ? transform.rotation.y += value : transform.rotation.y = value;
-			if (transform.rotation.y < -180)
-				transform.rotation.y += 360;
-			else if (transform.rotation.y > 180)
-				transform.rotation.y -= 360;
+			add ? transformData.rotation.y += value : transformData.rotation.y = value;
+			//if (transformData.rotation.y < -180)
+				//transformData.rotation.y += 360;
+			//else if (transformData.rotation.y > 180)
+				//transformData.rotation.y -= 360;
 		}
-		return transform.rotation.y;
+		return transformData.rotation.y;
 	}
 	
 	public function rotationZ(?value:Float, ?add:Bool):Float {
 		if (value != null) {
-			add ? transform.rotation.z += value : transform.rotation.z = value;
-			if (transform.rotation.z < -180)
-				transform.rotation.z += 360;
-			else if (transform.rotation.z > 180)
-				transform.rotation.z -= 360;
+			add ? transformData.rotation.z += value : transformData.rotation.z = value;
+			//if (transformData.rotation.z < -180)
+				//transformData.rotation.z += 360;
+			//else if (transformData.rotation.z > 180)
+				//transformData.rotation.z -= 360;
 		}
-		return transform.rotation.z;
+		return transformData.rotation.z;
 	}
 	
 	public function moveTo(x:Float, y:Float, ?z:Float, ?add:Bool):IDisplay3D {
@@ -107,20 +107,20 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public function locationX(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.location.x += value : transform.location.x = value;
-		return transform.location.x;
+			add ? transformData.location.x += value : transformData.location.x = value;
+		return transformData.location.x;
 	}
 	
 	public function locationY(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.location.y += value : transform.location.y = value;
-		return transform.location.y;
+			add ? transformData.location.y += value : transformData.location.y = value;
+		return transformData.location.y;
 	}
 	
 	public function locationZ(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.location.z += value : transform.location.z = value;
-		return transform.location.z;
+			add ? transformData.location.z += value : transformData.location.z = value;
+		return transformData.location.z;
 	}
 	
 	public function scaleAll(x:Float, y:Float, ?z:Float, ?add:Bool):IDisplay3D {
@@ -141,38 +141,38 @@ class Display3D extends Div implements IDisplay3D {
 	
 	public function scaleX(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.scale.x += value : transform.scale.x = value;
-		return transform.scale.x;
+			add ? transformData.scale.x += value : transformData.scale.x = value;
+		return transformData.scale.x;
 	}
 	
 	public function scaleY(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.scale.y += value : transform.scale.y = value;
-		return transform.scale.y;
+			add ? transformData.scale.y += value : transformData.scale.y = value;
+		return transformData.scale.y;
 	}
 	
 	public function scaleZ(?value:Float, ?add:Bool):Float {
 		if (value != null)
-			add ? transform.scale.z += value : transform.scale.z = value;
-		return transform.scale.z;
+			add ? transformData.scale.z += value : transformData.scale.z = value;
+		return transformData.scale.z;
 	}
 	
 	public function update():IDisplay {
-		if (transform.perspective != null)
-			xcss.write("perspective", transform.perspective);
-		if (transform.transformOrigin != null)
-			xcss.write("transformOrigin", transform.transformOrigin);
-		if (transform.transformStyle != null)
-			xcss.write("transformStyle", transform.transformStyle);
-		if (transform.backFace != null)
-			xcss.write("backfaceVisibility", transform.backFace);
-		xcss.write("transform", "rotateX(" + transform.rotation.x + "deg) rotateY(" + transform.rotation.y + "deg) rotateZ(" + transform.rotation.z + "deg) translate3d(" + transform.location.x + "px," + transform.location.y + "px," + transform.location.z + "px) scale3d(" + transform.scale.x + "," + transform.scale.y + "," + transform.scale.z + ")");
+		if (transformData.perspective != null)
+			xcss.write("perspective", transformData.perspective);
+		if (transformData.transformOrigin != null)
+			xcss.write("transformOrigin", transformData.transformOrigin);
+		if (transformData.transformStyle != null)
+			xcss.write("transformStyle", transformData.transformStyle);
+		if (transformData.backFace != null)
+			xcss.write("backfaceVisibility", transformData.backFace);
+		xcss.write("transform", "rotateX(" + transformData.rotation.x + "deg) rotateY(" + transformData.rotation.y + "deg) rotateZ(" + transformData.rotation.z + "deg) translate3d(" + transformData.location.x + "px," + transformData.location.y + "px," + transformData.location.z + "px) scale3d(" + transformData.scale.x + "," + transformData.scale.y + "," + transformData.scale.z + ")");
 		xcss.apply(this);
 		return this;
 	}
 	
 	public function doubleSided(value:Bool):IDisplay3D {
-		transform.backFace = value ? "visible" : "hidden";
+		transformData.backFace = value ? "visible" : "hidden";
 		return this;
 	}
 	

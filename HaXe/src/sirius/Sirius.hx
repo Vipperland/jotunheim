@@ -56,9 +56,6 @@ import sirius.utils.Filler;
 class Sirius {
 	
 	/** @private */
-	static private var _initialized:Bool = false;
-	
-	/** @private */
 	static private var _loaded:Bool = false;
 	
 	/// Global resource loader
@@ -70,9 +67,12 @@ class Sirius {
 	/// Debug tools
 	static public var logger:Logger = new Logger();
 	
+	/** @private */
+	static private var _initialized:Bool = main();
+	
 	#if js
 		
-		static public function main() { _preInit(); }
+		static public function main():Bool { return _preInit(); }
 		
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();
@@ -99,17 +99,32 @@ class Sirius {
 				document.checkBody();
 				agent.update();
 				Ease.update();
+				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
+				_loadPool = null;
 				updatePlugins();
 				log("Sirius => ENJOY :)", 1);
-				Dice.Values(_loadPool, function(v:Dynamic) { if(v!=null) v(); });
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
-				_loadPool = null;
-				loader.signals.add('complete', _onLoaded);
-				loader.start();
 				Reflect.deleteField(Sirius, '_loadController');
 				Reflect.deleteField(Sirius, '_loadPool');
 				document.body.autoLoad();
 			}
+		}
+		
+		static private function _preInit():Bool {
+			if (!_initialized) {
+				(cast Browser.window).trace = untyped __js__("console.log");
+				_initialized = true;
+				_loadPool = [];
+				document = Document.ME();
+				Browser.document.addEventListener("DOMContentLoaded", _loadController);
+				//Automator._init();
+				log("Sirius => LOADING...", 1);
+				Reflect.deleteField(Sirius, '_preInit');
+				if (Browser.document.readyState == 'complete'){
+					_loadController(null);
+				}
+			}
+			return true;
 		}
 		
 		static public function updatePlugins():Void {
@@ -126,12 +141,6 @@ class Sirius {
 					}
 				});
 			}
-		}
-		
-		/** @private */
-		static private function _onLoaded(e:IFlow):Void {
-			if (loader.totalFiles > 0) 
-				log("Resources <= Total " + loader.totalLoaded + " of " + loader.totalFiles + " loaded", 1);
 		}
 		
 		/**
@@ -186,23 +195,6 @@ class Sirius {
 			}
 		}
 		
-		
-		/**
-		 * Init Sirius Framework
-		 * @param	handler
-		 * @param	files
-		 */
-		static public function onInit(handler:IFlow->Void, ?files:Array<String> = null):Void {
-			if (!_initialized) _preInit();
-			if (!_loaded && files != null && files.length > 0) {
-				loader.signals.add('error', _fileError);
-				loader.add(files);
-				loader.signals.add('completed', handler);
-			}else{
-				run(handler);
-			}
-		}
-		
 		static public function inject(url:Dynamic, ?handler:Void->Void):Void {
 			if (!Std.is(url, Array)) url = [url];
 			Script.require(url, handler);
@@ -213,32 +205,12 @@ class Sirius {
 			//Style.require(url, handler);
 		}
 		
-		static private function _preInit():Void {
-			if (!_initialized) {
-				(cast Browser.window).trace = untyped __js__("console.log");
-				_initialized = true;
-				_loadPool = [];
-				document = Document.ME();
-				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				//Automator._init();
-				log("Sirius => LOADING...", 1);
-				Reflect.deleteField(Sirius, '_preInit');
-				if (Browser.document.readyState == 'complete') _loadController(null);
-			}
-		}
-		
 		/**
 		 * Runtime status
 		 */
 		static private function status():IAgent {
 			log("Sirius => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
 			return agent;
-		}
-		
-		/** @private */
-		static private function _fileError(e:IFlow) {
-			var e:IError = cast e.data;
-			log("Resources <= " + e.message + " NOT LOADED", 3);
 		}
 		
 		/**

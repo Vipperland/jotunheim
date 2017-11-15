@@ -37,7 +37,7 @@ class Head extends Display{
 				}
 				if (s != null) {
 					s.attribute('module-id', Utils.isValid(id) ? id : '');
-					s.write(content);
+					s.writeHtml(content);
 					addChild(s);
 					return s;
 				}

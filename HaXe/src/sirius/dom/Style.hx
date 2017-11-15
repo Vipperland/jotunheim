@@ -45,9 +45,9 @@ class Style extends Display {
 	
 	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
 		if (Sirius.resources.exists(q))
-			write(Sirius.resources.get(q, data), true);
+			writeHtml(Sirius.resources.get(q, data));
 		else
-			write('/* <!> mod:' + q + ' not found */');
+			writeHtml('/* <!> mod:' + q + ' not found */');
 		return this;
 	}
 	

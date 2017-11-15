@@ -62,11 +62,9 @@ class Document extends Display {
 	}
 	
 	public function checkBody():Void {
-		if (body == null){
-			body = new Body(untyped __js__("document.body"));
-			if (body.hasAttribute('automator')){
-				Automator.reset();
-			}
+		body = new Body(untyped __js__("document.body"));
+		if (body.hasAttribute('automator')){
+			Automator.reset();
 		}
 	}
 	

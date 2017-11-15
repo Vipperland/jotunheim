@@ -140,7 +140,7 @@ class Table implements ITable {
 	}
 	
 	public function clear(?fast:Bool):ITable {
-		return each(function(v:IDisplay) { v.clear(fast); } );
+		return each(function(v:IDisplay) { v.empty(fast); } );
 	}
 	
 	public function addTo(?target:IDisplay):ITable {

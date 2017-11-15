@@ -8,7 +8,7 @@ import sirius.math.Point3D;
 
 interface IDisplay3D extends IDisplay {
   
-	public var transform : ITransform3D;
+	public var transformData : ITransform3D;
 	
 	public function preserve3d() : IDisplay3D;
 	

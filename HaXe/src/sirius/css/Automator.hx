@@ -37,7 +37,6 @@ class Automator {
 			// Auto grow
 			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
 			// Pack will align left, center or right
-			omnibuild('-webkit-box-pack:center;','.o-center');
 			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left');
 			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right');
 			// Lift will align top, middle and bottom
@@ -45,7 +44,7 @@ class Automator {
 			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.o-middle');
 			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom');
 			// Fill empty spaces around the cells
-			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-arrange');
+			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-center');
 			// Fill empty spaces between the cells
 			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-fill');
 			// Order by right to left instead of left to right
@@ -118,7 +117,6 @@ class Automator {
 		return new Entry(r,AutomatorRules.keys(),i);
 	}
 	
-	
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
@@ -177,6 +175,10 @@ class Automator {
 			}
 		});
 		css.build(); // Apply changes / Append to ScriptElement
+	}
+	
+	static public function style(group:String, value:String):Void {
+		css.add(group + '{' + value + '}');
 	}
 	
 	static public function apply():Void {

@@ -154,6 +154,8 @@ class Utils{
 					if (type == null){
 						type = t.tagName.toUpperCase();
 						t.setAttribute('sru-dom', type);
+					}else{
+						type = type.toUpperCase();
 					}
 				} else {
 					return Display.fromGC(id);

@@ -13,7 +13,7 @@ class Button extends Div {
 	
 	public function new(?q:Dynamic){
 		super(q);
-		cursor("pointer");
+		style('cursor', 'pointer');
 	}
 	
 }
