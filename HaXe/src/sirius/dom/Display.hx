@@ -172,16 +172,34 @@ class Display extends Push implements IDisplay {
 		return _children;
 	}
 	
-	public function getScroll(?o:Dynamic = null):Dynamic {
-		if (o == null)
-			o = {};
-		o.left = element.scrollLeft;
-		o.top = element.scrollTop;
-		o.offsetX = element.offsetLeft;
-		o.offsetY = element.offsetTop;
-		o.x = o.offsetX - Browser.window.scrollX;
-		o.y = o.offsetY - Browser.window.scrollY;
+	public function getScroll(?o:IPoint = null):IPoint {
+		if (o == null){
+			o = new Point(element.scrollWidth, element.scrollHeight);
+		}else{
+			o.x = element.scrollWidth;
+			o.y = element.scrollHeight;
+		}
 		return o;
+	}
+	
+	public function setScroll(y:UInt = null, x:UInt = null):Void {
+		if (y != null){
+			element.scrollTop = y < 0 ? 0 : element.scrollHeight;
+		}
+		if (x != null){
+			element.scrollLeft = x < 0 ? 0 : element.scrollWidth;
+		}
+	}
+	
+	public function rect():Dynamic {
+		return {
+			left: element.scrollLeft,
+			top: element.scrollTop,
+			offsetX: element.offsetLeft,
+			offsetY: element.offsetTop,
+			x: element.offsetLeft - Browser.window.scrollX,
+			y: element.offsetTop - Browser.window.scrollY,
+		};
 	}
 	
 	public function getChild(i:Int, ?update:Bool):IDisplay {

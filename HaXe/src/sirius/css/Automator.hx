@@ -59,14 +59,14 @@ class Automator {
 				var t:String = (cast (a / b * 100)).toFixed(16) + '%';
 				var s:String = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
 				if (a % 2 == 0){
-					var n1:String = 'cel-' + a + 'x';
-					var n2:String = 'cel-' + Std.int(a / 2);
+					var n1:String = 'cel-' + a ;
+					var n2:String = 'hcel-' + Std.int(a / 2);
 					omnibuild(s, '.' + n2 + ',.' + n1);
 					if (a < b) {
 						omnibuild('margin-left:' + t, '.r-' + n2 + ',.r-' + n1);
 					}
 				}else{
-					var n1:String = 'cel-' + a + 'x';
+					var n1:String = 'cel-' + a;
 					omnibuild(s, '.' + n1);
 					if (a < b) {
 						omnibuild('margin-left:' + t, '.r-' + n1);
@@ -288,14 +288,6 @@ class Automator {
 			else if(set.length == 1)
 				omni ? omnibuild(set[0], null) : build(set[0], null, true);
 		});
-	}
-	
-	/**
-	 * Create a grid container
-	 * @param	size
-	 */
-	static public function grid(size:Dynamic):Void {
-		_createGrid();
 	}
 	
 	/**

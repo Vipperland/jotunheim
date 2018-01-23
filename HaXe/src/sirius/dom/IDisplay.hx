@@ -151,12 +151,18 @@ interface IDisplay extends IPush implements Dynamic  {
 	 */
 	public function getChild(i:Int, ?update:Bool):IDisplay;
 	
+	
+	public function getScroll(?o:IPoint = null):IPoint;
+	
+	public function setScroll(y:UInt = null, x:UInt = null):Void;
+	
+	
 	/**
 	 * Current element scroll offset
 	 * @param	o
 	 * @return
 	 */
-	public function getScroll(?o:Dynamic = null):Dynamic;
+	public function rect():Dynamic;
 	
 	/**
 	 * Children count

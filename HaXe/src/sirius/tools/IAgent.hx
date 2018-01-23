@@ -6,7 +6,7 @@ package sirius.tools;
 
 interface IAgent {
 	// Version of Internet Explorer
-	public var ie:UInt;
+	public var ie:Bool;
 	// Is Edge?
 	public var edge:Bool;
 	// Is Opera?
@@ -19,8 +19,10 @@ interface IAgent {
 	public var chrome:Bool;
 	// Is a mobile version?
 	public var mobile:Bool;
+	
+	public var cookies:Bool;
 	// Is JQuery available?
-	public var jquery:Bool;
+	public var jQuery:Bool;
 	// Is any tween framework (GSAP like) active?
 	public var animator:Bool;
 	// Display info
@@ -35,7 +37,11 @@ interface IAgent {
 	public var lg:Bool;
 	// Screen size level (0 to 4)
 	public var screen:Int;
+	// User Operating System name
+	public var os:String;
 	// Update all definitions
-	public function update(?handler:Dynamic):IAgent;
+	public function update():IAgent;
+	
+	public function value():String;
 	
 }

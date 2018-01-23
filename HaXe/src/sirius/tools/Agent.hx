@@ -11,7 +11,7 @@ import sirius.transitions.Animator;
  */
 class Agent implements IAgent {
 	
-	public var ie:UInt;
+	public var ie:Bool;
 	
 	public var edge:Bool;
 	
@@ -25,6 +25,8 @@ class Agent implements IAgent {
 	
 	public var mobile:Bool;
 	
+	public var cookies:Bool;
+	
 	public var xs:Bool;
 	
 	public var sm:Bool;
@@ -35,17 +37,19 @@ class Agent implements IAgent {
 	
 	public var screen:Int;
 	
-	public var jquery:Bool;
+	public var jQuery:Bool;
 	
 	public var display:String;
 	
 	public var animator:Bool;
+	
+	public var os:String;
 
 	public function new() {
 		
 	}
 	
-	public function update(?handler:Dynamic):IAgent {
+	public function update():IAgent {
 		var ua:String = Browser.navigator.userAgent;
 		// Dectect version of IE (8 to 12);
 		var ie:Int = ~/MSIE/i.match(ua) ? 8 : 0;
@@ -60,23 +64,57 @@ class Agent implements IAgent {
 		var chrome:Bool = ~/Chrome/i.match(ua);
 		var chromium:Bool = ~/Chromium/i.match(ua);
 		// Check all other versions, including mobile browsers
-		this.ie = untyped (ie < 12 ? ie : 0); 
-		this.edge = ie >=12;
+		this.ie = ie > 0; 
+		this.edge = ie > 11;
 		this.opera = opera; 
 		this.firefox = firefox; 
 		this.safari = safari && !chrome && !chromium; 
-		this.chrome = chrome && !chromium && !opera;
+		this.chrome = (chrome || chromium) && !opera;
 		this.mobile = ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua);
-		if (Utils.matchMedia(CSSGroup.MEDIA_XS)) { 		this.xs = true; this.screen = 1; }
-		else if (Utils.matchMedia(CSSGroup.MEDIA_SM)) { this.sm = true; this.screen = 2; }
-		else if (Utils.matchMedia(CSSGroup.MEDIA_MD)) { this.md = true; this.screen = 3; }
-		else if (Utils.matchMedia(CSSGroup.MEDIA_LG)) { this.lg = true; this.screen = 4; }
-		else {															this.screen = 0; }
-		this.jquery = untyped __js__("window.jQuery != null");
+		if (Utils.matchMedia(CSSGroup.MEDIA_XS)) { 		
+			this.xs = true; 
+			this.screen = 1; 
+		}else if (Utils.matchMedia(CSSGroup.MEDIA_SM)) { 
+			this.sm = true; 
+			this.screen = 2; 
+		}else if (Utils.matchMedia(CSSGroup.MEDIA_MD)) { 
+			this.md = true; 
+			this.screen = 3; 
+		}else if (Utils.matchMedia(CSSGroup.MEDIA_LG)) { 
+			this.lg = true; 
+			this.screen = 4; 
+		}else {
+			this.screen = 0; 
+		}
+		this.cookies = Browser.navigator.cookieEnabled == true;
+		if (!this.cookies){
+			Browser.document.cookie = '#validating#';
+			this.cookies = (Browser.document.cookie.indexOf('#validating#') != -1);
+		}
+		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
 		this.animator = Animator.available();
 		this.display = Utils.screenOrientation();
-		if (handler != null) handler(this);
+		
+		var platform:String = Browser.navigator.platform.toLowerCase();
+		if (['macintosh', 'macintel', 'macppc', 'mac68k'].indexOf(platform) != -1) {
+			os = 'MAC';
+		} else if (['iphone', 'ipad', 'ipod'].indexOf(platform) != -1) {
+			os = 'IOS';
+		} else if (['win32', 'win64', 'windows', 'wince'].indexOf(platform) != -1) {
+			os = 'WINDOWS';
+		} else if (~/Android/i.match(ua)) {
+			os = 'ANDROID';
+		} else if (~/linux/i.match(platform)) {
+			os = 'LINUX';
+		} else{
+			os = 'CUSTOM';
+		}
+		
 		return this;
+	}
+	
+	public function value():String {
+		return 'OS:' + Browser.navigator.oscpu + '/Browser:' + Browser.navigator.userAgent + '/Mobile:' + mobile;
 	}
 	
 }
