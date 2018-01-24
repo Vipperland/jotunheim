@@ -33,7 +33,20 @@ class Automator {
 	 */
 	static private function _createGrid():Void {
 		if (!_inits.grid){
-			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;width:100%;', '.shelf');
+			/*
+				SHELf = [0,1,2,3,4]
+				
+				HACK = [0,1,2,3,4
+						5,6,7,8,9]
+				
+				DRAWER = 	[0,
+							 1,
+							 2]
+			*/
+			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;width:100%;', '.shelf,.hack,.drawer');
+			omnibuild('-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;', '.shelf');
+			omnibuild('-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;', '.hack,.drawer');
+			omnibuild('-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;', '.drawer');
 			// Auto grow
 			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
 			// Pack will align left, center or right
@@ -44,11 +57,14 @@ class Automator {
 			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.o-middle');
 			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom');
 			// Fill empty spaces around the cells
-			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-center');
+			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-sort');
 			// Fill empty spaces between the cells
-			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-fill');
+			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-organize');
 			// Order by right to left instead of left to right
-			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.o-reverse');
+			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.shelf.o-reverse,.hack.o-reverse');
+			omnibuild('-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;', '.drawer.o-stack');
+			// Wrap modes
+			omnibuild('-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;', '.hack.o-stack');
 			var i:Int = 1;
 			Dice.Count(0, 24, function(a:Int, b:Int, c:Bool) {
 				// Index numbers
@@ -121,6 +137,7 @@ class Automator {
 		if (!_inits.reset){
 			_inits.reset = true;
 			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
+			css.add('@media(max-width:768px){.hidden-xs{display:none;}}', '');
 			_createGrid();
 			css.build();
 			Sirius.run(scan);

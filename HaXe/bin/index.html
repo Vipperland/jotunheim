@@ -14,8 +14,9 @@
 				font-family: Tahoma;
 			}
 			.test {
-				border-radius:10px;
-				box-shadow: inset 0 0 0 2px #339966;
+				border-radius:0;
+				box-shadow: inset 0 0 0 1px #339966;
+				border: 1px solid #000000;
 				background-color:#277850;
 				height: 30px;
 				text-align: center; 
@@ -93,7 +94,38 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body automator>
-		<div class="shelf">
+		<noscript automator>
+			.gigawatts=disp-none txt-12 txt-x0099ff
+		</noscript>
+		<div class="drawer">
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-1"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-2"></div>
+			<div class="test hcel-3"></div>
+			<div class="test hcel-3"></div>
+			<div class="test hcel-3"></div>
+			<div class="test hcel-3"></div>
+			<div class="test hcel-6"></div>
+			<div class="test hcel-6"></div>
+			<div class="test hcel-12"></div>
+		</div>
+		<hr/>
+		<div class="hack">
 			<div class="test hcel-12"></div>
 			<div class="test hcel-1"></div><div class="test hcel-11"></div>
 			<div class="test hcel-2"></div><div class="test hcel-10"></div>
@@ -109,7 +141,7 @@
 			<div class="test hcel-12"></div>
 		</div>
 		<hr/>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-1"></div>
 			<div class="test cel-1"></div>
 			<div class="test cel-1"></div>
@@ -135,7 +167,7 @@
 			<div class="test cel-1"></div>
 			<div class="test cel-1"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-2"></div>
 			<div class="test cel-2"></div>
 			<div class="test cel-2"></div>
@@ -149,7 +181,7 @@
 			<div class="test cel-2"></div>
 			<div class="test cel-2"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-3"></div>
 			<div class="test cel-3"></div>
 			<div class="test cel-3"></div>
@@ -159,7 +191,7 @@
 			<div class="test cel-3"></div>
 			<div class="test cel-3"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-4"></div>
 			<div class="test cel-4"></div>
 			<div class="test cel-4"></div>
@@ -167,21 +199,21 @@
 			<div class="test cel-4"></div>
 			<div class="test cel-4"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-6"></div>
 			<div class="test cel-6"></div>
 			<div class="test cel-6"></div>
 			<div class="test cel-6"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-12"></div>
 			<div class="test cel-12"></div>
 		</div>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-24"></div>
 		</div>
 		<hr/>
-		<div class="shelf">
+		<div class="hack">
 			<div class="test cel-24"></div>
 			<div class="test cel-1"></div><div class="test cel-23"></div>
 			<div class="test cel-2"></div><div class="test cel-22"></div>
@@ -207,6 +239,9 @@
 			<div class="test cel-22"></div><div class="test cel-2"></div>
 			<div class="test cel-23"></div><div class="test cel-1"></div>
 			<div class="test cel-24"></div> 
-		</div>                               
+		</div>
+		<script>
+			Sirius.run(function(){trace(1);});
+		</script>
 	</body>                                                                               
 </html>

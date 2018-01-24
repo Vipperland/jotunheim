@@ -72,7 +72,7 @@ class Sirius {
 	
 	#if js
 		
-		static public function main():Bool { return _preInit(); }
+		static public function main():Bool { return _initialized || _preInit(); }
 		
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();

@@ -27,10 +27,6 @@ class CSS implements ICSS {
 		ALL.set(id, style, mode);
 	}
 	
-	public function distribute(id:String, style:String):Void {
-		ALL.distribute(id, style);
-	}
-	
 	private function _add(id:String, style:String, important:Bool):String {
 		return  (id + "{" + style + "}") + (important ? id + "-i {" + style.split(";").join(" !important;") + "}" : "");
 	}

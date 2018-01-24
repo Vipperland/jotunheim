@@ -2997,7 +2997,7 @@ sirius_seo_SEOTool.prototype = {
 var sirius_Sirius = $hx_exports.Sirius = function() { };
 sirius_Sirius.__name__ = ["sirius","Sirius"];
 sirius_Sirius.main = function() {
-	return sirius_Sirius._preInit();
+	return sirius_Sirius._initialized || sirius_Sirius._preInit();
 };
 sirius_Sirius._loadController = function(e) {
 	if(!sirius_Sirius._loaded) {
@@ -3134,45 +3134,25 @@ sirius_css_CSSGroup.prototype = {
 			if(e.parentElement == null) this.container.element.appendChild(e);
 		}
 	}
+	,getMode: function(id) {
+		var r = id.split("-");
+		if(r.length > 1) {
+			id = r.pop();
+			if(id.length == 2) return id.toUpperCase();
+		}
+		return "";
+	}
 	,exists: function(id,content,mode) {
 		var k;
-		if(mode != null) k = mode; else k = HxOverrides.substr(id,-2,2);
+		if(mode != null) k = mode.toUpperCase(); else k = this.getMode(id);
 		id = (HxOverrides.substr(id,0,1) == "."?"":".") + id + "{";
-		if(k != null && k != "") {
-			if(k == "xs") return this._checkSelector(id,this.XS.innerHTML + this.styleXS,content);
-			if(k == "sm") return this._checkSelector(id,this.SM.innerHTML + this.styleSM,content);
-			if(k == "md") return this._checkSelector(id,this.MD.innerHTML + this.styleMD,content);
-			if(k == "lg") return this._checkSelector(id,this.LG.innerHTML + this.styleLG,content);
-			if(k == "pr") return this._checkSelector(id,this.PR.innerHTML + this.stylePR,content);
-		}
-		return this._checkSelector(id,this.CM.innerHTML + this.style,content);
-	}
-	,getByMedia: function(mode) {
-		if(mode != null) {
-			mode = mode.toLowerCase();
-			if(mode == "xs") return this.XS;
-			if(mode == "sm") return this.SM;
-			if(mode == "md") return this.MD;
-			if(mode == "lg") return this.LG;
-			if(mode == "pr") return this.PR;
-		}
-		return this.CM;
+		return this._checkSelector(id,this[k||'CM'].innerHTML + this['style'+k],content);
 	}
 	,add: function(css,mode) {
-		if(mode == "xs") this.styleXS += css; else if(mode == "sm") this.styleSM += css; else if(mode == "md") this.styleMD += css; else if(mode == "lg") this.styleLG += css; else if(mode == "pr") this.stylePR += css; else this.style += css;
+		this['style'+(mode?mode.toUpperCase():'')] += css;
 	}
 	,set: function(id,style,mode) {
-		if(!this.exists(id,style,mode)) {
-			if(mode == "xs") this.styleXS += this._add(id,style); else if(mode == "sm") this.styleSM += this._add(id,style); else if(mode == "md") this.styleMD += this._add(id,style); else if(mode == "lg") this.styleLG += this._add(id,style); else if(mode == "pr") this.stylePR += this._add(id,style); else this.style += this._add(id,style);
-		}
-	}
-	,distribute: function(id,style) {
-		this.set(id + "-xs",style,"xs");
-		this.set(id + "-sm",style,"sm");
-		this.set(id + "-md",style,"md");
-		this.set(id + "-lg",style,"lg");
-		this.set(id + "-pr",style,"pr");
-		this.set(id,style,null);
+		this['style'+(mode?mode.toUpperCase():'')] += this._add(id, style);
 	}
 	,build: function() {
 		this._write(this.CM,this.style,"");
@@ -3229,16 +3209,21 @@ var sirius_css_Automator = $hx_exports.Automator = function() { };
 sirius_css_Automator.__name__ = ["sirius","css","Automator"];
 sirius_css_Automator._createGrid = function() {
 	if(!sirius_css_Automator._inits.grid) {
-		sirius_css_Automator.omnibuild("display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;width:100%;",".shelf");
+		sirius_css_Automator.omnibuild("display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;width:100%;",".shelf,.hack,.drawer");
+		sirius_css_Automator.omnibuild("-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;",".shelf");
+		sirius_css_Automator.omnibuild("-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;",".hack,.drawer");
+		sirius_css_Automator.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;",".drawer");
 		sirius_css_Automator.omnibuild("-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;",".cel");
 		sirius_css_Automator.omnibuild("-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;",".o-left");
 		sirius_css_Automator.omnibuild("-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;",".o-right");
 		sirius_css_Automator.omnibuild("-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;",".o-top");
 		sirius_css_Automator.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".o-middle");
 		sirius_css_Automator.omnibuild("-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;",".o-bottom");
-		sirius_css_Automator.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-center");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-fill");
-		sirius_css_Automator.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".o-reverse");
+		sirius_css_Automator.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-sort");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-organize");
+		sirius_css_Automator.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".shelf.o-reverse,.hack.o-reverse");
+		sirius_css_Automator.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;",".drawer.o-stack");
+		sirius_css_Automator.omnibuild("-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;",".hack.o-stack");
 		var i = 1;
 		sirius_utils_Dice.Count(0,24,function(a,b,c) {
 			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".index-" + a + "n");
@@ -3285,6 +3270,7 @@ sirius_css_Automator.reset = function() {
 	if(!sirius_css_Automator._inits.reset) {
 		sirius_css_Automator._inits.reset = true;
 		sirius_css_Automator.css.add("html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type=\"button\"],[type=\"reset\"],[type=\"submit\"]{-webkit-appearance:button;}button::-moz-focus-inner,[type=\"button\"]::-moz-focus-inner,[type=\"reset\"]::-moz-focus-inner,[type=\"submit\"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type=\"button\"]:-moz-focusring,[type=\"reset\"]:-moz-focusring,[type=\"submit\"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type=\"checkbox\"],[type=\"radio\"]{box-sizing:border-box;padding:0;}[type=\"number\"]::-webkit-inner-spin-button,[type=\"number\"]::-webkit-outer-spin-button{height:auto;}[type=\"search\"]{-webkit-appearance:textfield;outline-offset:-2px;}[type=\"search\"]::-webkit-search-cancel-button,[type=\"search\"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}");
+		sirius_css_Automator.css.add("@media(max-width:768px){.hidden-xs{display:none;}}","");
 		sirius_css_Automator._createGrid();
 		sirius_css_Automator.css.build();
 		sirius_Sirius.run(sirius_css_Automator.scan);

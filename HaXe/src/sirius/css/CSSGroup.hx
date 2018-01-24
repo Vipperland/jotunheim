@@ -84,7 +84,9 @@ class CSSGroup{
 	private function _write(e:StyleElement, v:String, h:String):Void {
 		if (v.length > 0) {
 			e.innerHTML = h != '' ? ((e.innerHTML.length > 0 ? (h + e.innerHTML.split(h).join("").split(EOF).join("") + v) : h + v) + EOF) : e.innerHTML + v;
-			if (e.parentElement == null) container.element.appendChild(cast e);
+			if (e.parentElement == null) {
+				container.element.appendChild(cast e);
+			}
 		}
 	}
 	
@@ -102,58 +104,29 @@ class CSSGroup{
 		}
 	}
 	
-	public function exists(id:String, ?content:String, ?mode:String):Bool {
-		var k:String = mode != null ? mode : id.substr( -2, 2);
-		id = (id.substr(0,1) == "." ? "" : ".") + id + "{";
-		if(k != null && k != ''){
-			if (k == 'xs') return _checkSelector(id, XS.innerHTML + styleXS, content);
-			if (k == 'sm') return _checkSelector(id, SM.innerHTML + styleSM, content);
-			if (k == 'md') return _checkSelector(id, MD.innerHTML + styleMD, content);
-			if (k == 'lg') return _checkSelector(id, LG.innerHTML + styleLG, content);
-			if (k == 'pr') return _checkSelector(id, PR.innerHTML + stylePR, content);
+	public function getMode(id:String):String {
+		var r:Array<String> = id.split('-');
+		if (r.length > 1){
+			id = r.pop();
+			if (id.length == 2){
+				return id.toUpperCase();
+			}
 		}
-		return _checkSelector(id, CM.innerHTML + style, content);
+		return '';
 	}
 	
-	public function getByMedia(mode:String):StyleElement {
-		if (mode != null) {
-			mode = mode.toLowerCase();
-			if (mode == 'xs') return XS;
-			if (mode == 'sm') return SM;
-			if (mode == 'md') return MD;
-			if (mode == 'lg') return LG;
-			if (mode == 'pr') return PR;
-		}
-		return CM;
+	public function exists(id:String, ?content:String, ?mode:String):Bool {
+		var k:String = mode != null ? mode.toUpperCase() : getMode(id);
+		id = (id.substr(0, 1) == "." ? "" : ".") + id + "{";
+		return _checkSelector(id, untyped __js__("this[k||'CM'].innerHTML + this['style'+k]"), content);
 	}
 	
 	public function add(css:String, ?mode:String):Void {
-		if (mode == 'xs') 		this.styleXS += css;
-		else if (mode == 'sm') 	this.styleSM += css;
-		else if (mode == 'md') 	this.styleMD += css;
-		else if (mode == 'lg') 	this.styleLG += css;
-		else if (mode == 'pr') 	this.stylePR += css;
-		else 					this.style   += css;
+		untyped __js__("this['style'+(mode?mode.toUpperCase():'')] += css");
 	}
 	
 	public function set(id:String, style:String, ?mode:String):Void {
-		if(!this.exists(id, style, mode)){
-			if (mode == 'xs') 		this.styleXS += _add(id, style);
-			else if (mode == 'sm') 	this.styleSM += _add(id, style);
-			else if (mode == 'md') 	this.styleMD += _add(id, style);
-			else if (mode == 'lg') 	this.styleLG += _add(id, style);
-			else if (mode == 'pr') 	this.stylePR += _add(id, style);
-			else 					this.style   += _add(id, style);
-		}
-	}
-	
-	public function distribute(id:String, style:String):Void {
-		set(id + "-xs", style, 'xs');
-		set(id + "-sm", style, 'sm');
-		set(id + "-md", style, 'md');
-		set(id + "-lg", style, 'lg');
-		set(id + "-pr", style, 'pr');
-		set(id, 		style,	null);
+		untyped __js__("this['style'+(mode?mode.toUpperCase():'')] += this._add(id, style)");
 	}
 	
 	public function build() {
