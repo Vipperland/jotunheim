@@ -72,21 +72,11 @@ class Automator {
 				omnibuild('-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';', '.index-' + a);
 				++a;
 				// Create cel values (from 1 to 12, step 0.5 each)
-				var t:String = (cast (a / b * 100)).toFixed(16) + '%';
-				var s:String = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
-				if (a % 2 == 0){
-					var n1:String = 'cel-' + a ;
-					var n2:String = 'hcel-' + Std.int(a / 2);
-					omnibuild(s, '.' + n2 + ',.' + n1);
-					if (a < b) {
-						omnibuild('margin-left:' + t, '.r-' + n2 + ',.r-' + n1);
-					}
-				}else{
-					var n1:String = 'cel-' + a;
-					omnibuild(s, '.' + n1);
-					if (a < b) {
-						omnibuild('margin-left:' + t, '.r-' + n1);
-					}
+				var t:String = (cast (a / b * 100) - .001).toFixed(3) + '%';
+				var s:String = "flex-basis:" + t + ";max-width:" + t;
+				omnibuild(s, '.cel-' + a);
+				if (a < b) {
+					omnibuild('margin-left:' + t, '.rcel-' + a);
 				}
 				return null;
 			});

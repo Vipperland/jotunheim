@@ -73,7 +73,7 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 		return $this;
 	}
 	public function fetch($handler) {
-		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$handler), "sirius_db_tools_Command_2"), 'execute'), null);
+		sirius_utils_Dice::Values($this->result, $handler, null);
 		return $this;
 	}
 	public function find($param, $values, $limit = null) {
@@ -81,16 +81,16 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 			$limit = 0;
 		}
 		$filter = (new _hx_array(array()));
-		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$filter, &$limit, &$param, &$values), "sirius_db_tools_Command_3"), 'execute'), null);
+		sirius_utils_Dice::Values($this->result, array(new _hx_lambda(array(&$filter, &$limit, &$param, &$values), "sirius_db_tools_Command_2"), 'execute'), null);
 		return $filter;
 	}
 	public function log() {
 		$_g = $this;
 		$q = $this->_query;
 		$r = _hx_explode(":", $q);
-		sirius_utils_Dice::All($r, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_4"), 'execute'), null);
+		sirius_utils_Dice::All($r, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_3"), 'execute'), null);
 		$q = $r->join("");
-		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_5"), 'execute'), null);
+		sirius_utils_Dice::All($this->_parameters, array(new _hx_lambda(array(&$_g, &$q, &$r), "sirius_db_tools_Command_4"), 'execute'), null);
 		return $q;
 	}
 	public function __call($m, $a) {
@@ -125,21 +125,16 @@ function sirius_db_tools_Command_1(&$__hx__this, &$handler, &$p, &$parameters, &
 		return haxe_Json::phpJsonEncode($value, null, null);
 	}
 }
-function sirius_db_tools_Command_2(&$handler, $v) {
-	{
-		return call_user_func_array($handler, array(new sirius_data_DataSet($v)));
-	}
-}
-function sirius_db_tools_Command_3(&$filter, &$limit, &$param, &$values, $v) {
+function sirius_db_tools_Command_2(&$filter, &$limit, &$param, &$values, $v) {
 	{
 		if(sirius_utils_Dice::Match((new _hx_array(array(Reflect::field($v, $param)))), $values, 1) > 0) {
 			$filter[$filter->length] = $v;
-			return sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_7($__hx__this, $filter, $limit, $param, $v, $values);
+			return sirius_db_tools_Command_5($__hx__this, $filter, $limit, $param, $v, $values) && sirius_db_tools_Command_6($__hx__this, $filter, $limit, $param, $v, $values);
 		}
 		return false;
 	}
 }
-function sirius_db_tools_Command_4(&$_g, &$q, &$r, $p, $v) {
+function sirius_db_tools_Command_3(&$_g, &$q, &$r, $p, $v) {
 	{
 		if(Std::parseInt($p) > 0) {
 			$a = Math::min(_hx_index_of($v, " ", null), _hx_index_of($v, ",", null));
@@ -159,12 +154,12 @@ function sirius_db_tools_Command_4(&$_g, &$q, &$r, $p, $v) {
 		}
 	}
 }
-function sirius_db_tools_Command_5(&$_g, &$q, &$r, $p1, $v1) {
+function sirius_db_tools_Command_4(&$_g, &$q, &$r, $p1, $v1) {
 	{
 		$q = _hx_explode(":" . _hx_string_or_null($p1), $q)->join($v1);
 	}
 }
-function sirius_db_tools_Command_6(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
+function sirius_db_tools_Command_5(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;
@@ -176,7 +171,7 @@ function sirius_db_tools_Command_6(&$__hx__this, &$filter, &$limit, &$param, &$v
 		unset($bNeg,$aNeg);
 	}
 }
-function sirius_db_tools_Command_7(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
+function sirius_db_tools_Command_6(&$__hx__this, &$filter, &$limit, &$param, &$v, &$values) {
 	{
 		$a = --$limit;
 		return $a === 0;

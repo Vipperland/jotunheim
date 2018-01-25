@@ -65,19 +65,13 @@ class sirius_utils_SearchTag {
 	}
 	static function convert($data) {
 		$data = _hx_explode(" ", strtolower(Std::string($data)))->join("");
-		$data = sirius_utils_SearchTag::$_E->replace($data, "");
-		$i = 0;
-		$l = _hx_len(sirius_utils_SearchTag::$_M);
-		while($i < $l) {
-			$data = _hx_string_call($data, "split", array(sirius_utils_SearchTag::$_M[$i][0]))->join(sirius_utils_SearchTag::$_M[$i][1]);
-			++$i;
-		}
+		$data = Std::string(_hx_string_call($data, "substr", array(0, 1))) . _hx_string_or_null(sirius_utils_SearchTag::$_E->replace($data, ""));
 		return $data;
 	}
 	function __toString() { return 'sirius.utils.SearchTag'; }
 }
 sirius_utils_SearchTag::$_M = (new _hx_array(array((new _hx_array(array("á", "a"))), (new _hx_array(array("ã", "a"))), (new _hx_array(array("â", "a"))), (new _hx_array(array("à", "a"))), (new _hx_array(array("ê", "e"))), (new _hx_array(array("é", "e"))), (new _hx_array(array("è", "e"))), (new _hx_array(array("î", "i"))), (new _hx_array(array("í", "i"))), (new _hx_array(array("ì", "i"))), (new _hx_array(array("õ", "o"))), (new _hx_array(array("ô", "o"))), (new _hx_array(array("ó", "o"))), (new _hx_array(array("ò", "o"))), (new _hx_array(array("ú", "u"))), (new _hx_array(array("ù", "u"))), (new _hx_array(array("û", "u"))), (new _hx_array(array("ç", "c"))))));
-sirius_utils_SearchTag::$_E = new EReg("^[a-zA-Z0-9- ]", "g");
+sirius_utils_SearchTag::$_E = new EReg("^[a-z0-9]", "g");
 function sirius_utils_SearchTag_0(&$_g, &$values, $v) {
 	{
 		$v = sirius_utils_SearchTag::convert($v);

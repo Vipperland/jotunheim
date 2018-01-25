@@ -89,9 +89,15 @@ class sirius_utils_Dice {
 		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$limit, &$r, &$table, &$values), "sirius_utils_Dice_7"), 'execute'), null);
 		return $r;
 	}
+	static function Remove($table, $values) {
+		if(!Std::is($values, _hx_qtype("Array"))) {
+			$values = (new _hx_array(array($values)));
+		}
+		sirius_utils_Dice::Values($values, array(new _hx_lambda(array(&$table, &$values), "sirius_utils_Dice_8"), 'execute'), null);
+	}
 	static function Mix($data) {
 		$r = (new _hx_array(array()));
-		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_8"), 'execute'), null);
+		sirius_utils_Dice::Values($data, array(new _hx_lambda(array(&$data, &$r), "sirius_utils_Dice_9"), 'execute'), null);
 		return $r;
 	}
 	static function Table($data, $key = null, $numeric = null, $copy = null) {
@@ -109,18 +115,47 @@ class sirius_utils_Dice {
 		}
 		if($numeric) {
 			if($key !== null) {
-				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_9"), 'execute'));
-			} else {
 				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_10"), 'execute'));
+			} else {
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_11"), 'execute'));
 			}
 		} else {
 			if($key !== null) {
-				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_11"), 'execute'));
-			} else {
 				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_12"), 'execute'));
+			} else {
+				haxe_ds_ArraySort::sort($r, array(new _hx_lambda(array(&$copy, &$data, &$key, &$numeric, &$r), "sirius_utils_Dice_13"), 'execute'));
 			}
 		}
 		return $r;
+	}
+	static function hList($data, $a = null, $b = null) {
+		if($a === null) {
+			$a = 0;
+		}
+		$copy = (new _hx_array(array()));
+		$len = $data->length;
+		if($b === null) {
+			$b = $data->length;
+		}
+		if(sirius_utils_Dice_14($a, $b, $copy, $data, $len)) {
+			while(sirius_utils_Dice_15($a, $b, $copy, $data, $len)) {
+				if(sirius_utils_Dice_16($a, $b, $copy, $data, $len)) {
+					break;
+				}
+				$copy[$copy->length] = $data[$a];
+				++$a;
+			}
+		} else {
+			if(sirius_utils_Dice_17($a, $b, $copy, $data, $len)) {
+				while(sirius_utils_Dice_18($a, $b, $copy, $data, $len)) {
+					if(sirius_utils_Dice_19($a, $b, $copy, $data, $len)) {
+						$copy[$copy->length] = $data[$a];
+					}
+					--$a;
+				}
+			}
+		}
+		return $copy;
 	}
 	function __toString() { return 'sirius.utils.Dice'; }
 }
@@ -184,19 +219,27 @@ function sirius_utils_Dice_7(&$limit, &$r, &$table, &$values, $v) {
 		if(Lambda::indexOf($table, $v) !== -1) {
 			++$r;
 		}
-		if(sirius_utils_Dice_13($limit, $r, $table, $v, $values)) {
+		if(sirius_utils_Dice_20($limit, $r, $table, $v, $values)) {
 			$a = --$limit;
 			return $a === 0;
 		}
 		return false;
 	}
 }
-function sirius_utils_Dice_8(&$data, &$r, $v) {
+function sirius_utils_Dice_8(&$table, &$values, $v) {
+	{
+		$i = Lambda::indexOf($table, $v);
+		if($i !== -1) {
+			$table->remove($v);
+		}
+	}
+}
+function sirius_utils_Dice_9(&$data, &$r, $v) {
 	{
 		$r = $r->concat($v);
 	}
 }
-function sirius_utils_Dice_9(&$copy, &$data, &$key, &$numeric, &$r, $a, $b) {
+function sirius_utils_Dice_10(&$copy, &$data, &$key, &$numeric, &$r, $a, $b) {
 	{
 		if(Reflect::field($a, $key) < Reflect::field($b, $key)) {
 			return -1;
@@ -205,7 +248,7 @@ function sirius_utils_Dice_9(&$copy, &$data, &$key, &$numeric, &$r, $a, $b) {
 		}
 	}
 }
-function sirius_utils_Dice_10(&$copy, &$data, &$key, &$numeric, &$r, $a1, $b1) {
+function sirius_utils_Dice_11(&$copy, &$data, &$key, &$numeric, &$r, $a1, $b1) {
 	{
 		if($a1 < $b1) {
 			return -1;
@@ -214,17 +257,89 @@ function sirius_utils_Dice_10(&$copy, &$data, &$key, &$numeric, &$r, $a1, $b1) {
 		}
 	}
 }
-function sirius_utils_Dice_11(&$copy, &$data, &$key, &$numeric, &$r, $a2, $b2) {
+function sirius_utils_Dice_12(&$copy, &$data, &$key, &$numeric, &$r, $a2, $b2) {
 	{
 		return Reflect::compare(sirius_utils_SearchTag::convert(Reflect::field($a2, $key)), sirius_utils_SearchTag::convert(Reflect::field($b2, $key)));
 	}
 }
-function sirius_utils_Dice_12(&$copy, &$data, &$key, &$numeric, &$r, $a3, $b3) {
+function sirius_utils_Dice_13(&$copy, &$data, &$key, &$numeric, &$r, $a3, $b3) {
 	{
 		return Reflect::compare(sirius_utils_SearchTag::convert($a3), sirius_utils_SearchTag::convert($b3));
 	}
 }
-function sirius_utils_Dice_13(&$limit, &$r, &$table, &$v, &$values) {
+function sirius_utils_Dice_14(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg = $b < 0;
+		$bNeg = $a < 0;
+		if($aNeg !== $bNeg) {
+			return $aNeg;
+		} else {
+			return $b > $a;
+		}
+		unset($bNeg,$aNeg);
+	}
+}
+function sirius_utils_Dice_15(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg1 = $b < 0;
+		$bNeg1 = $a < 0;
+		if($aNeg1 !== $bNeg1) {
+			return $aNeg1;
+		} else {
+			return $b > $a;
+		}
+		unset($bNeg1,$aNeg1);
+	}
+}
+function sirius_utils_Dice_16(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg2 = $a < 0;
+		$bNeg2 = $len < 0;
+		if($aNeg2 !== $bNeg2) {
+			return $aNeg2;
+		} else {
+			return $a >= $len;
+		}
+		unset($bNeg2,$aNeg2);
+	}
+}
+function sirius_utils_Dice_17(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg3 = $a < 0;
+		$bNeg3 = $b < 0;
+		if($aNeg3 !== $bNeg3) {
+			return $aNeg3;
+		} else {
+			return $a > $b;
+		}
+		unset($bNeg3,$aNeg3);
+	}
+}
+function sirius_utils_Dice_18(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg4 = $a < 0;
+		$bNeg4 = $b < 0;
+		if($aNeg4 !== $bNeg4) {
+			return $aNeg4;
+		} else {
+			return $a > $b;
+		}
+		unset($bNeg4,$aNeg4);
+	}
+}
+function sirius_utils_Dice_19(&$a, &$b, &$copy, &$data, &$len) {
+	{
+		$aNeg5 = $len < 0;
+		$bNeg5 = $a < 0;
+		if($aNeg5 !== $bNeg5) {
+			return $aNeg5;
+		} else {
+			return $len > $a;
+		}
+		unset($bNeg5,$aNeg5);
+	}
+}
+function sirius_utils_Dice_20(&$limit, &$r, &$table, &$v, &$values) {
 	{
 		$aNeg = $limit < 0;
 		$bNeg = 0 < 0;

@@ -20,8 +20,14 @@ class Math {
 			return Math::$NaN;
 		}
 	}
+	static function round($v) {
+		return (int) floor($v + 0.5);
+	}
 	static function ceil($v) {
 		return (int) ceil($v);
+	}
+	static function random() {
+		return mt_rand() / mt_getrandmax();
 	}
 	static function isNaN($f) {
 		return is_nan($f);

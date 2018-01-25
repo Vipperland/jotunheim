@@ -9,6 +9,7 @@ class sirius_net_Domain implements sirius_net_IDomain{
 	public $port;
 	public $url;
 	public $data;
+	public $input;
 	public $server;
 	public $client;
 	public $file;
@@ -20,6 +21,10 @@ class sirius_net_Domain implements sirius_net_IDomain{
 		$this->client = $_SERVER['REMOTE_ADDR'];
 		$this->port = $_SERVER['SERVER_PORT'];
 		$boundary = $this->_getMultipartKey();
+		if($this->data->CONTENT_TYPE === "application/json") {
+			$text = file_get_contents('php://input');
+			$this->input = haxe_Json::phpJsonDecode($text);
+		}
 		$this->params = $this->_getParams();
 		if($boundary !== null) {
 			Reflect::deleteField($this->params, $boundary);

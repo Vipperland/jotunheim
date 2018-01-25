@@ -8,6 +8,9 @@ class php_Lib {
 	static function dump($v) {
 		var_dump($v);
 	}
+	static function isCli() {
+		return (0 == strncasecmp(PHP_SAPI, 'cli', 3));
+	}
 	static function toPhpArray($a) {
 		return $a->a;
 	}

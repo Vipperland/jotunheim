@@ -55,31 +55,34 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 		$this->_fields = "*";
 		return $this;
 	}
+	public function create($data) {
+		return _hx_deref(new sirius_db_objects_TableObject($this, null))->create($data, null);
+	}
 	public function add($parameters = null, $clausule = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->add($this->_name, $clausule, $parameters, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->add($this->_name, $clausule, $parameters, $order, $limit)->execute(null, null, null)->result);
 	}
 	public function findAll($clausule = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->find($this->_checkRestriction(), $this->_name, $clausule, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->find($this->_checkRestriction(), $this->_name, $clausule, $order, $limit)->execute(null, null, null)->result);
 	}
 	public function findOne($clausule = null) {
-		return _hx_deref(new sirius_db_objects_QueryResult($this->_gate->builder->find($this->_checkRestriction(), $this->_name, $clausule, null, sirius_db_Limit::MAX(1))->execute(null, null, null)->result))->first();
+		return _hx_deref(new sirius_db_objects_QueryResult($this, $this->_gate->builder->find($this->_checkRestriction(), $this->_name, $clausule, null, sirius_db_Limit::MAX(1))->execute(null, null, null)->result))->first();
 	}
 	public function update($parameters = null, $clausule = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->update($this->_name, $clausule, $parameters, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->update($this->_name, $clausule, $parameters, $order, $limit)->execute(null, null, null)->result);
 	}
 	public function delete($clausule = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->delete($this->_name, $clausule, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->delete($this->_name, $clausule, $order, $limit)->execute(null, null, null)->result);
 	}
 	public function copy($toTable, $clausule = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->copy($this->_name, $toTable, $clausule, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->copy($this->_name, $toTable, $clausule, $order, $limit)->execute(null, null, null)->result);
 	}
 	public function clear() {
-		return new sirius_db_objects_QueryResult($this->_gate->builder->truncate($this->_name)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->truncate($this->_name)->result);
 	}
 	public function rename($to) {
 		$old = $this->_name;
 		$this->_name = $to;
-		return new sirius_db_objects_QueryResult($this->_gate->builder->rename($old, $to)->result);
+		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->rename($old, $to)->result);
 	}
 	public function length($clausule = null) {
 		$command = $this->_gate->builder->find("COUNT(*)", $this->_name, $clausule, null, null)->execute(null, null, null);
@@ -89,10 +92,26 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 			return 0;
 		}
 	}
+	public function sum($field, $clausule = null) {
+		$command = $this->_gate->builder->find("SUM(" . _hx_string_or_null($field) . ") as _SumResult_", $this->_name, $clausule, null, null)->execute(null, null, null);
+		return sirius_tools_Utils::isValidAlt((($command->result->length > 0) ? Std::parseInt(Reflect::field($command->result[0], "_SumResult_")) : 0), 0);
+	}
 	public function optimize($paramaters) {
 		$desc = $this->get_description();
 		sirius_utils_Dice::All($paramaters, array(new _hx_lambda(array(&$desc, &$paramaters), "sirius_db_objects_DataTable_3"), 'execute'), null);
 		return $paramaters;
+	}
+	public function link($id, $key, $table, $field, $del = null, $update = null) {
+		if($update === null) {
+			$update = "RESTRICT";
+		}
+		if($del === null) {
+			$del = "RESTRICT";
+		}
+		return $this->_gate->builder->fKey($this->_name, $id, $key, $table, $field, $del, $update)->execute(null, null, null);
+	}
+	public function unlink($id) {
+		return $this->_gate->builder->fKey($this->_name, $id, null, null, null, null, null)->execute(null, null, null);
 	}
 	public function hasColumn($name) {
 		$d = $this->get_description();

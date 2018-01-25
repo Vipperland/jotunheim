@@ -1,9 +1,10 @@
 <?php
 
 class sirius_db_objects_QueryResult implements sirius_db_objects_IQueryResult{
-	public function __construct($data) {
+	public function __construct($table, $data) {
 		if(!php_Boot::$skip_constructor) {
 		$this->_index = 0;
+		$this->table = $table;
 		if($data !== null) {
 			$this->data = $data;
 		} else {
@@ -11,9 +12,11 @@ class sirius_db_objects_QueryResult implements sirius_db_objects_IQueryResult{
 		}
 	}}
 	public $data;
+	public $table;
 	public $_index;
 	public function each($handler) {
-		sirius_utils_Dice::Values($this->data, array(new _hx_lambda(array(&$handler), "sirius_db_objects_QueryResult_0"), 'execute'), null);
+		$_g = $this;
+		sirius_utils_Dice::Values($this->data, array(new _hx_lambda(array(&$_g, &$handler), "sirius_db_objects_QueryResult_0"), 'execute'), null);
 	}
 	public function one($i) {
 		if($i < $this->data->length) {
@@ -47,8 +50,8 @@ class sirius_db_objects_QueryResult implements sirius_db_objects_IQueryResult{
 	}
 	function __toString() { return 'sirius.db.objects.QueryResult'; }
 }
-function sirius_db_objects_QueryResult_0(&$handler, $v) {
+function sirius_db_objects_QueryResult_0(&$_g, &$handler, $v) {
 	{
-		return call_user_func_array($handler, array($v)) === true;
+		return call_user_func_array($handler, array(new sirius_db_objects_TableObject($_g->table, $v))) === true;
 	}
 }

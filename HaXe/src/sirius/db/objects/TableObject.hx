@@ -27,7 +27,9 @@ class TableObject implements ITableObject {
 	public function create(data:Dynamic, ?verify:Bool = false):ITableObject {
 		data.created_at = Sirius.tick;
 		data.updated_at = Sirius.tick;
-		if (verify) _table.optimize(data);
+		if (verify) {
+			_table.optimize(data);
+		}
 		_table.add(data);
 		this.data = data;
 		data.id = Sirius.gate.insertedId();
@@ -36,7 +38,9 @@ class TableObject implements ITableObject {
 	
 	public function update(data:Dynamic, ?verify:Bool = false):Void {
 		data.updated_at = Sirius.tick;
-		if (verify) _table.optimize(data);
+		if (verify) {
+			_table.optimize(data);
+		}
 		_table.update(data, Clause.ID(id), null, Limit.ONE);
 	}
 	

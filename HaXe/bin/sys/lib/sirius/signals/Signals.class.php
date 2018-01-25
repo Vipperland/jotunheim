@@ -4,7 +4,7 @@ class sirius_signals_Signals implements sirius_signals_ISignals{
 	public function __construct($to) {
 		if(!php_Boot::$skip_constructor) {
 		$this->object = $to;
-		$this->reset();
+		$this->reset(null);
 	}}
 	public $_l;
 	public $object;
@@ -33,8 +33,14 @@ class sirius_signals_Signals implements sirius_signals_ISignals{
 		}
 		return $this;
 	}
-	public function reset() {
-		$this->_l = (new _hx_array(array()));
+	public function reset($name = null) {
+		if($name !== null) {
+			if($this->has($name)) {
+				$this->get($name)->reset();
+			}
+		} else {
+			$this->_l = (new _hx_array(array()));
+		}
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

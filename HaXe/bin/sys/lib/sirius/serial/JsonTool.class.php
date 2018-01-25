@@ -366,7 +366,7 @@ function sirius_serial_JsonTool_1($a, $b) {
 				return null;
 			}
 		}
-		if(Std::is($b, _hx_qtype("sirius.tools.BitIO"))) {
+		if(Std::is($b, _hx_qtype("sirius.tools.Flag"))) {
 			return $b->value;
 		}
 		if($b === null) {

@@ -3229,18 +3229,10 @@ sirius_css_Automator._createGrid = function() {
 			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".index-" + a + "n");
 			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".index-" + a);
 			++a;
-			var t = (a / b * 100).toFixed(16) + "%";
-			var s = "-webkit-box-flex:0;-webkit-flex:0 0 " + t + ";-ms-flex:0 0 " + t + ";flex: 0 0 " + t + ";max-width:" + t + ";padding: 0 0.5rem;position:relative;";
-			if(a % 2 == 0) {
-				var n1 = "cel-" + a;
-				var n2 = "hcel-" + (a / 2 | 0);
-				sirius_css_Automator.omnibuild(s,"." + n2 + ",." + n1);
-				if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".r-" + n2 + ",.r-" + n1);
-			} else {
-				var n11 = "cel-" + a;
-				sirius_css_Automator.omnibuild(s,"." + n11);
-				if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".r-" + n11);
-			}
+			var t = (a / b * 100 - .001).toFixed(3) + "%";
+			var s = "flex-basis:" + t + ";max-width:" + t;
+			sirius_css_Automator.omnibuild(s,".cel-" + a);
+			if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".rcel-" + a);
 			return null;
 		});
 		sirius_css_Automator._inits.grid = true;

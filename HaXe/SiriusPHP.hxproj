@@ -22,7 +22,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="sirius.Sirius" />
+    <option mainClass="Test_PHP" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -33,7 +33,7 @@
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
     <compile path="src\MainPHP.hx" />
-    <compile path="src\sirius\Sirius.hx" />
+    <compile path="src\Test_PHP.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -47,7 +47,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="http://sirius.192.168.0.100.xip.io/sys/" />
+    <option testMovieCommand="http://127.0.0.7/sys/" />
   </options>
   <!-- Plugin storage -->
   <storage />

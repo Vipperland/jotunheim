@@ -16,7 +16,13 @@ class sirius_modules_ModLib {
 		}
 	}
 	public function exists($module) {
+		$module = strtolower($module);
 		return _hx_has_field(sirius_modules_ModLib::$CACHE, $module);
+	}
+	public function remove($module) {
+		if($this->exists($module)) {
+			Reflect::deleteField(sirius_modules_ModLib::$CACHE, $module);
+		}
 	}
 	public function register($file, $content) {
 		$_g = $this;
@@ -27,8 +33,8 @@ class sirius_modules_ModLib {
 			sirius_Sirius::log("ModLib => PARSING " . _hx_string_or_null($file), 1);
 			sirius_utils_Dice::All($sur, array(new _hx_lambda(array(&$_g, &$content, &$file, &$sur), "sirius_modules_ModLib_1"), 'execute'), null);
 		} else {
-			$field1 = strtolower($file);
-			sirius_modules_ModLib::$CACHE->{$field1} = $content;
+			$field = strtolower($file);
+			sirius_modules_ModLib::$CACHE->{$field} = $content;
 		}
 	}
 	public function get($name, $data = null) {
@@ -92,16 +98,18 @@ function sirius_modules_ModLib_1(&$_g, &$content, &$file, &$sur, $p, $v) {
 					$text = "{" . _hx_string_or_null(_hx_substr($v, 0, $i)) . "}";
 					$mod = haxe_Json::phpJsonDecode($text);
 				}
+				$path = $file;
 				if($mod->name === null) {
 					$mod->name = $file;
 				} else {
-					sirius_Sirius::log("\x09\x09ModLib => NAME " . _hx_string_or_null($mod->name), 1);
+					$path .= "#" . _hx_string_or_null($mod->name);
+					sirius_Sirius::log("\x09\x09ModLib => NAME " . _hx_string_or_null($path), 1);
 				}
 				if($_g->exists($mod->name)) {
-					sirius_Sirius::log("\x09ModLib => OVERRIDE " . _hx_string_or_null($mod->name), 2);
+					sirius_Sirius::log("\x09ModLib => OVERRIDE " . _hx_string_or_null($path), 2);
 				}
 				$end = _hx_index_of($v, "/EOF;", null);
-				$content = _hx_substring($v, $i + 2, sirius_modules_ModLib_3($_g, $content, $end, $file, $i, $mod, $p, $sur, $v));
+				$content = _hx_substring($v, $i + 2, sirius_modules_ModLib_3($_g, $content, $end, $file, $i, $mod, $p, $path, $sur, $v));
 				if($mod->type === null || $mod->type === "null" || $mod->type === "html") {
 					$content = _hx_explode("\x0A", _hx_explode("\x0D\x0A", $content)->join("\x0D"))->join("\x0D");
 					while(_hx_substr($content, 0, 1) === "\x0D") {
@@ -113,18 +121,20 @@ function sirius_modules_ModLib_1(&$_g, &$content, &$file, &$sur, $p, $v) {
 				}
 				if($mod->{"require"} !== null) {
 					$dependencies = _hx_explode(";", $mod->{"require"});
-					sirius_Sirius::log("\x09ModLib => " . _hx_string_or_null($mod->name) . " VERIFYING...", 1);
-					sirius_utils_Dice::Values($dependencies, array(new _hx_lambda(array(&$_g, &$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$sur, &$v), "sirius_modules_ModLib_4"), 'execute'), null);
+					sirius_Sirius::log("\x09ModLib => " . _hx_string_or_null($path) . " VERIFYING...", 1);
+					sirius_utils_Dice::Values($dependencies, array(new _hx_lambda(array(&$_g, &$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$path, &$sur, &$v), "sirius_modules_ModLib_4"), 'execute'), null);
+				}
+				if(_hx_field($mod, "data") !== null) {
+					$content = sirius_utils_Filler::to($content, $mod->data, null);
 				}
 				if($mod->wrap !== null) {
 					$content = _hx_explode("\x0D", _hx_explode("\x0A", _hx_explode("\x0D\x0A", $content)->join($mod->wrap))->join($mod->wrap))->join($mod->wrap);
 				}
-				{
-					$field = strtolower($mod->name);
-					sirius_modules_ModLib::$CACHE->{$field} = $content;
-				}
+				$n = strtolower($mod->name);
+				sirius_modules_ModLib::$CACHE->{$n} = $content;
+				sirius_modules_ModLib::$CACHE->{"@" . _hx_string_or_null($n)} = $path;
 			} else {
-				Std::string(sirius_Sirius::log("\x09ModLib => CONFIG ERROR " . _hx_string_or_null($file) . "(" . _hx_string_or_null(_hx_substr($v, 0, 15)), 3)) . "...)";
+				sirius_Sirius::log("\x09ModLib => CONFIG ERROR " . _hx_string_or_null($file) . "(" . _hx_string_or_null(_hx_substr($v, 0, 15)) . "...)", 3);
 			}
 		}
 	}
@@ -134,14 +144,14 @@ function sirius_modules_ModLib_2(&$data, &$module, &$name, &$repeat, &$sufix, $v
 		php_Lib::hprint(sirius_utils_Filler::to($module, $v, $sufix));
 	}
 }
-function sirius_modules_ModLib_3(&$_g, &$content, &$end, &$file, &$i, &$mod, &$p, &$sur, &$v) {
+function sirius_modules_ModLib_3(&$_g, &$content, &$end, &$file, &$i, &$mod, &$p, &$path, &$sur, &$v) {
 	if($end === -1) {
 		return strlen($v);
 	} else {
 		return $end;
 	}
 }
-function sirius_modules_ModLib_4(&$_g, &$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$sur, &$v, $v1) {
+function sirius_modules_ModLib_4(&$_g, &$content, &$dependencies, &$end, &$file, &$i, &$mod, &$p, &$path, &$sur, &$v, $v1) {
 	{
 		$set = Reflect::field(sirius_modules_ModLib::$CACHE, strtolower($v1));
 		if($set === null) {

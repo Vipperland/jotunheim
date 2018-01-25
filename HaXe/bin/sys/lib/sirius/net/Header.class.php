@@ -26,8 +26,12 @@ class sirius_net_Header {
 			header("content-type:" . ": " . _hx_string_or_null($type));
 		}
 	}
-	public function setHTML() {
+	public function setHTML($data = null) {
 		$this->content(sirius_net_Header::$HTML);
+		if($data !== null) {
+			header("Content-Length" . ": " . Std::string(_hx_len($data)));
+			php_Lib::hprint($data);
+		}
 	}
 	public function setJSON($data = null, $encode = null) {
 		$this->content(sirius_net_Header::$JSON);
@@ -36,6 +40,7 @@ class sirius_net_Header {
 			if($encode === true) {
 				$data1 = sirius_serial_IOTools::encodeBase64($data1);
 			}
+			header("Content-Length" . ": " . Std::string(strlen($data1)));
 			php_Lib::hprint($data1);
 		}
 	}

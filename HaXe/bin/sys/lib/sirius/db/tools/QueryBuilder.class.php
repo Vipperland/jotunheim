@@ -37,7 +37,11 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 				sirius_utils_Dice::All($obj, array(new _hx_lambda(array(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s), "sirius_db_tools_QueryBuilder_4"), 'execute'), null);
 			} else {
 				$r[$r->length] = sirius_utils_Filler::to($obj->condition, _hx_anonymous(array("p" => $obj->param)), null);
-				$props->{"in_" . Std::string($obj->i)} = $obj->value;
+				if(Std::is($obj->value, _hx_qtype("Array"))) {
+					sirius_utils_Dice::All($obj->value, array(new _hx_lambda(array(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
+				} else {
+					$props->{"in_" . Std::string($obj->i)} = $obj->value;
+				}
 			}
 		}
 		if($r->length > 0) {
@@ -83,7 +87,7 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 	public function copy($from, $to, $clause = null, $filter = null, $limit = null) {
 		$_g = $this;
 		$entries = $this->find("*", $from, $clause, null, $limit)->result;
-		sirius_utils_Dice::Values($entries, array(new _hx_lambda(array(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
+		sirius_utils_Dice::Values($entries, array(new _hx_lambda(array(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to), "sirius_db_tools_QueryBuilder_6"), 'execute'), null);
 		return null;
 	}
 	public function fKey($table, $reference, $key = null, $target = null, $field = null, $delete = null, $update = null) {
@@ -129,7 +133,7 @@ function sirius_db_tools_QueryBuilder_1(&$parameters, &$q, $p, $v) {
 }
 function sirius_db_tools_QueryBuilder_2(&$obj, &$r, $p, $v) {
 	{
-		$r[$r->length] = _hx_string_or_null($p) . _hx_string_or_null((sirius_db_tools_QueryBuilder_6($__hx__this, $obj, $p, $r, $v)));
+		$r[$r->length] = _hx_string_or_null($p) . _hx_string_or_null((sirius_db_tools_QueryBuilder_7($__hx__this, $obj, $p, $r, $v)));
 	}
 }
 function sirius_db_tools_QueryBuilder_3(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s, $v) {
@@ -155,7 +159,12 @@ function sirius_db_tools_QueryBuilder_4(&$_g, &$b, &$i, &$joiner, &$obj, &$props
 		}
 	}
 }
-function sirius_db_tools_QueryBuilder_5(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to, $v) {
+function sirius_db_tools_QueryBuilder_5(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s, $p1, $v2) {
+	{
+		$props->{"in_" . Std::string($obj->i) . "x" . _hx_string_or_null($p1)} = $v2;
+	}
+}
+function sirius_db_tools_QueryBuilder_6(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to, $v) {
 	{
 		if($filter !== null) {
 			$v = call_user_func_array($filter, array($v));
@@ -163,7 +172,7 @@ function sirius_db_tools_QueryBuilder_5(&$_g, &$clause, &$entries, &$filter, &$f
 		$_g->add($to, null, $v, null, null);
 	}
 }
-function sirius_db_tools_QueryBuilder_6(&$__hx__this, &$obj, &$p, &$r, &$v) {
+function sirius_db_tools_QueryBuilder_7(&$__hx__this, &$obj, &$p, &$r, &$v) {
 	if($v !== null) {
 		return " " . Std::string($v);
 	} else {

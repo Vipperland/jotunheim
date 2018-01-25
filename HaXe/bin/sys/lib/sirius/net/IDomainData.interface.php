@@ -37,4 +37,8 @@ interface sirius_net_IDomainData {
 	//;
 	//;
 	//;
+	//;
+	//;
+	//;
+	//;
 }

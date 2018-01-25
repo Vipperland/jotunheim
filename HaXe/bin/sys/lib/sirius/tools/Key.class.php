@@ -2,9 +2,20 @@
 
 class sirius_tools_Key {
 	public function __construct(){}
-	static $_counter = 0;
-	static function COUNTER() {
-		return sirius_tools_Key::$_counter++;
+	static function _cts() { $args = func_get_args(); return call_user_func_array(self::$_cts, $args); }
+	static $_cts;
+	static function COUNTER($id = null) {
+		if($id === null) {
+			$id = "global";
+		}
+		$v = 0;
+		if(!_hx_has_field(sirius_tools_Key::$_cts, $id)) {
+			sirius_tools_Key::$_cts->{$id} = 0;
+		} else {
+			$v = Reflect::field(sirius_tools_Key::$_cts, $id);
+			sirius_tools_Key::$_cts->{$id} = $v + 1;
+		}
+		return $v;
 	}
 	static $TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
 	static function GEN($size = null, $table = null, $mixCase = null) {
@@ -35,6 +46,7 @@ class sirius_tools_Key {
 	}
 	function __toString() { return 'sirius.tools.Key'; }
 }
+sirius_tools_Key::$_cts = _hx_anonymous(array("global" => 0));
 function sirius_tools_Key_0(&$c, &$l, &$mixCase, &$s, &$size, &$table) {
 	{
 		$a = strlen($s);

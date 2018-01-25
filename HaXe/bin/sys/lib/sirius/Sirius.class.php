@@ -2,7 +2,6 @@
 
 class sirius_Sirius {
 	public function __construct(){}
-	static $_initialized = false;
 	static $_loaded = false;
 	static $resources;
 	static $domain;

@@ -1,6 +1,6 @@
 <?php
 
-class sirius_php_file_Image {
+class sirius_php_file_Image implements sirius_php_file_IImage{
 	public function __construct($file = null) {
 		if(!php_Boot::$skip_constructor) {
 		if($file !== null) {
@@ -87,32 +87,30 @@ class sirius_php_file_Image {
 			if(sirius_php_file_Image_8($this, $height, $width, $x, $y)) {
 				$y = 0;
 			}
-			if(sirius_php_file_Image_9($this, $height, $width, $x, $y)) {
-				$width = $this->width - $x;
+			$tx = $x + $width;
+			$ty = $y + $width;
+			if(sirius_php_file_Image_9($this, $height, $tx, $ty, $width, $x, $y)) {
+				$tx = $this->width;
 			}
-			if(sirius_php_file_Image_10($this, $height, $width, $x, $y)) {
-				$height = $this->height - $y;
+			if(sirius_php_file_Image_10($this, $height, $tx, $ty, $width, $x, $y)) {
+				$ty = $this->height;
 			}
 			$newimg = imagecreatetruecolor($width, $height);
 			if($newimg !== null) {
-				imagecopy($newimg, $this->_res, 0, 0, $x, $y, $width, $height);
+				imagecopy($newimg, $this->_res, $x, $y, 0, 0, $tx, $ty);
 				$this->_update($newimg);
 			}
 		}
 		return $this;
 	}
-	public function fit($width, $height, $slice = null) {
-		if($slice === null) {
-			$slice = false;
-		}
+	public function fit($width, $height) {
 		if($this->isValid()) {
-			if(sirius_php_file_Image_11($this, $height, $slice, $width)) {
-				$this->resample(Math::round(sirius_php_file_Image_12($this, $height, $slice, $width) * (sirius_php_file_Image_13($this, $height, $slice, $width) / sirius_php_file_Image_14($this, $height, $slice, $width))), $height, true);
+			$ow = $this->width;
+			$oh = $this->height;
+			if(sirius_php_file_Image_11($this, $height, $oh, $ow, $width)) {
+				$this->resample(Math::round(sirius_php_file_Image_12($this, $height, $oh, $ow, $width) * (sirius_php_file_Image_13($this, $height, $oh, $ow, $width) / sirius_php_file_Image_14($this, $height, $oh, $ow, $width))), $height, true);
 			} else {
-				$this->resample($width, Math::round(sirius_php_file_Image_15($this, $height, $slice, $width) * (sirius_php_file_Image_16($this, $height, $slice, $width) / sirius_php_file_Image_17($this, $height, $slice, $width))), true);
-			}
-			if($slice) {
-				$this->crop(Math::round(sirius_php_file_Image_18($this, $height, $slice, $width) / sirius_php_file_Image_19($this, $height, $slice, $width)), Math::round(sirius_php_file_Image_20($this, $height, $slice, $width) / sirius_php_file_Image_21($this, $height, $slice, $width)), $width, $height);
+				$this->resample($width, Math::round(sirius_php_file_Image_15($this, $height, $oh, $ow, $width) * (sirius_php_file_Image_16($this, $height, $oh, $ow, $width) / sirius_php_file_Image_17($this, $height, $oh, $ow, $width))), true);
 			}
 		}
 		return $this;
@@ -297,49 +295,45 @@ function sirius_php_file_Image_8(&$__hx__this, &$height, &$width, &$x, &$y) {
 		unset($bNeg1,$aNeg1);
 	}
 }
-function sirius_php_file_Image_9(&$__hx__this, &$height, &$width, &$x, &$y) {
+function sirius_php_file_Image_9(&$__hx__this, &$height, &$tx, &$ty, &$width, &$x, &$y) {
 	{
-		$a = $x + $width;
 		$b = $__hx__this->width;
-		$aNeg2 = $a < 0;
+		$aNeg2 = $tx < 0;
 		$bNeg2 = $b < 0;
 		if($aNeg2 !== $bNeg2) {
 			return $aNeg2;
 		} else {
-			return $a > $b;
+			return $tx > $b;
 		}
-		unset($bNeg2,$b,$aNeg2,$a);
+		unset($bNeg2,$b,$aNeg2);
 	}
 }
-function sirius_php_file_Image_10(&$__hx__this, &$height, &$width, &$x, &$y) {
+function sirius_php_file_Image_10(&$__hx__this, &$height, &$tx, &$ty, &$width, &$x, &$y) {
 	{
-		$a1 = $y + $height;
 		$b1 = $__hx__this->height;
-		$aNeg3 = $a1 < 0;
+		$aNeg3 = $ty < 0;
 		$bNeg3 = $b1 < 0;
 		if($aNeg3 !== $bNeg3) {
 			return $aNeg3;
 		} else {
-			return $a1 > $b1;
+			return $ty > $b1;
 		}
-		unset($bNeg3,$b1,$aNeg3,$a1);
+		unset($bNeg3,$b1,$aNeg3);
 	}
 }
-function sirius_php_file_Image_11(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_11(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
-		$a = $__hx__this->width;
-		$b = $__hx__this->height;
-		$aNeg = $a < 0;
-		$bNeg = $b < 0;
+		$aNeg = $ow < 0;
+		$bNeg = $oh < 0;
 		if($aNeg !== $bNeg) {
 			return $aNeg;
 		} else {
-			return $a >= $b;
+			return $ow >= $oh;
 		}
-		unset($bNeg,$b,$aNeg,$a);
+		unset($bNeg,$aNeg);
 	}
 }
-function sirius_php_file_Image_12(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_12(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
 		$int = $height;
 		if($int < 0) {
@@ -350,7 +344,7 @@ function sirius_php_file_Image_12(&$__hx__this, &$height, &$slice, &$width) {
 		unset($int);
 	}
 }
-function sirius_php_file_Image_13(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_13(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
 		$int1 = $width;
 		if($int1 < 0) {
@@ -361,9 +355,9 @@ function sirius_php_file_Image_13(&$__hx__this, &$height, &$slice, &$width) {
 		unset($int1);
 	}
 }
-function sirius_php_file_Image_14(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_14(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
-		$int2 = $__hx__this->width;
+		$int2 = $ow;
 		if($int2 < 0) {
 			return 4294967296.0 + $int2;
 		} else {
@@ -372,7 +366,7 @@ function sirius_php_file_Image_14(&$__hx__this, &$height, &$slice, &$width) {
 		unset($int2);
 	}
 }
-function sirius_php_file_Image_15(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_15(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
 		$int3 = $width;
 		if($int3 < 0) {
@@ -383,7 +377,7 @@ function sirius_php_file_Image_15(&$__hx__this, &$height, &$slice, &$width) {
 		unset($int3);
 	}
 }
-function sirius_php_file_Image_16(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_16(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
 		$int4 = $height;
 		if($int4 < 0) {
@@ -394,58 +388,14 @@ function sirius_php_file_Image_16(&$__hx__this, &$height, &$slice, &$width) {
 		unset($int4);
 	}
 }
-function sirius_php_file_Image_17(&$__hx__this, &$height, &$slice, &$width) {
+function sirius_php_file_Image_17(&$__hx__this, &$height, &$oh, &$ow, &$width) {
 	{
-		$int5 = $__hx__this->height;
+		$int5 = $oh;
 		if($int5 < 0) {
 			return 4294967296.0 + $int5;
 		} else {
 			return $int5 + 0.0;
 		}
 		unset($int5);
-	}
-}
-function sirius_php_file_Image_18(&$__hx__this, &$height, &$slice, &$width) {
-	{
-		$int6 = $__hx__this->width - $width;
-		if($int6 < 0) {
-			return 4294967296.0 + $int6;
-		} else {
-			return $int6 + 0.0;
-		}
-		unset($int6);
-	}
-}
-function sirius_php_file_Image_19(&$__hx__this, &$height, &$slice, &$width) {
-	{
-		$int7 = 2;
-		if($int7 < 0) {
-			return 4294967296.0 + $int7;
-		} else {
-			return $int7 + 0.0;
-		}
-		unset($int7);
-	}
-}
-function sirius_php_file_Image_20(&$__hx__this, &$height, &$slice, &$width) {
-	{
-		$int8 = $__hx__this->height - $height;
-		if($int8 < 0) {
-			return 4294967296.0 + $int8;
-		} else {
-			return $int8 + 0.0;
-		}
-		unset($int8);
-	}
-}
-function sirius_php_file_Image_21(&$__hx__this, &$height, &$slice, &$width) {
-	{
-		$int9 = 2;
-		if($int9 < 0) {
-			return 4294967296.0 + $int9;
-		} else {
-			return $int9 + 0.0;
-		}
-		unset($int9);
 	}
 }

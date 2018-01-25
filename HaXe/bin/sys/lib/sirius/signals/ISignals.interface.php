@@ -7,5 +7,5 @@ interface sirius_signals_ISignals {
 	function add($name, $handler = null);
 	function remove($name, $handler = null);
 	function call($name, $data = null);
-	function reset();
+	function reset($name = null);
 }

@@ -73,8 +73,12 @@ class sirius_data_DataSet implements sirius_data_IDataSet{
 }
 function sirius_data_DataSet_0(&$r, &$v, $p, $x) {
 	{
-		if($x !== null && _hx_index_of($x, $v, null) !== -1) {
+		if(Std::is($x, _hx_qtype("String")) && !_hx_equal(_hx_string_call($x, "indexOf", array($v)), -1)) {
 			$r[$r->length] = $p;
+		} else {
+			if(_hx_equal($x, $v)) {
+				$r[$r->length] = $p;
+			}
 		}
 	}
 }
