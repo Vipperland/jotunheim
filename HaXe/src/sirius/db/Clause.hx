@@ -60,7 +60,7 @@ class Clause {
 	 * @param	value
 	 * @return
 	 */
-	static public function UNLIKE(param:String, value:Dynamic):Dynamic {
+	static public function NOT_LIKE(param:String, value:Dynamic):Dynamic {
 		return { param:param, condition:"{{p}} NOT LIKE :in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
@@ -150,33 +150,63 @@ class Clause {
 	 * @param	or
 	 * @return
 	 */
-	static public function LESS(param:String, value:Dynamic, ?or:Bool=true):Dynamic {
-		return { param:param, condition:"{{p}}<" + (or ? "=" : "") + ":in_"+_IDX, value:value, i:_IDX++ };
+	static public function LESS(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}}<:in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
-	 * IF A>[=]B
+	 * IF A<=B
 	 * @param	param
 	 * @param	value
 	 * @param	or
 	 * @return
 	 */
-	static public function GREATER(param:String, value:Dynamic, ?or:Bool=true):Dynamic {
-		return { param:param, condition:"{{p}}>" + (or ? "=" : "") + ":in_"+_IDX, value:value, i:_IDX++ };
+	static public function LESS_OR(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}}<=:in_"+_IDX, value:value, i:_IDX++ };
 	}
 	
 	/**
-	 * IF A>=B && A<=C [INSIDE]
+	 * IF A>B
+	 * @param	param
+	 * @param	value
+	 * @param	or
+	 * @return
+	 */
+	static public function GREATER(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}}>:in_"+_IDX, value:value, i:_IDX++ };
+	}
+	
+	/**
+	 * IF A>B
+	 * @param	param
+	 * @param	value
+	 * @param	or
+	 * @return
+	 */
+	static public function GREATER_OR(param:String, value:Dynamic):Dynamic {
+		return { param:param, condition:"{{p}}>=:in_"+_IDX, value:value, i:_IDX++ };
+	}
+	
+	/**
+	 * IF A>=B && A<=C
 	 * @param	param
 	 * @param	from
 	 * @param	to
-	 * @param	out IF A<=C || A>=B [OUTSIDE]
 	 * @return
 	 */
-	static public function SPAN(param:String, from:UInt, to:UInt, out:Bool = false):Clause {
-		return out 
-			? Clause.OR([Clause.LESS(param, from, true), Clause.GREATER(param, to, true)]) 
-			: Clause.AND([Clause.GREATER(param, from, true), Clause.LESS(param, to, true)]);
+	static public function IN_RANGE(param:String, from:UInt, to:UInt):Clause {
+		return Clause.AND([Clause.GREATER(param, from, true), Clause.LESS(param, to, true)]);
+	}
+	
+	/**
+	 * IF A<=B && A>=C
+	 * @param	param
+	 * @param	from
+	 * @param	to
+	 * @return
+	 */
+	static public function OUT_RANGE(param:String, from:UInt, to:UInt):Clause {
+		return Clause.OR([Clause.LESS(param, from, true), Clause.GREATER(param, to, true)]);
 	}
 	
 	/**
@@ -188,9 +218,7 @@ class Clause {
 	 */
 	static public function FLAGS(param:String, flags:Array<UInt>, any:Bool = false):Clause {
 		var a:Array<Dynamic> = [];
-		Dice.Values(flags, function(v:UInt):Void {
-			a[a.length] = Clause.BIT(param, v);
-		});
+		Dice.Values(flags, function(v:UInt):Void { a[a.length] = Clause.BIT(param, v); });
 		return any ? Clause.OR(a) : Clause.AND(a);
 	}
 	
