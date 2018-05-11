@@ -75,7 +75,7 @@ class Automator {
 				++a;
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
-				var t:String = (cast m).toFixed(3) + '%';
+				var t:String = (cast m).toFixed(5) + '%';
 				var s:String = "flex-basis:" + t + ";max-width:" + t;
 				omnibuild(s, '.cel-' + a);
 				if (a < b) {

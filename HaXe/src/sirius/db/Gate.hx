@@ -70,10 +70,10 @@ class Gate implements IGate {
 		return this;
 	}
 	
-	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
+	public function prepare(query:String, ?parameters:Dynamic = null, ?object:Dynamic, ?options:Dynamic = null):ICommand {
 		var pdo:Statement = null;
 		if (isOpen()) pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
+		command = new Command(pdo, query, parameters, object, _errors, _logCommands ? _log : null);
 		return command;
 	}
 	

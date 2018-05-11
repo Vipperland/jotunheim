@@ -350,6 +350,27 @@ interface IDisplay extends IPush implements Dynamic  {
 	public function position():IPoint;
 	
 	/**
+	 * Fix the element in screen using global positions
+	 * @param	align
+	 * @return
+	 */
+	public function pin(?align:String):IDisplay;
+	
+	/**
+	 * Unpin the element form screen
+	 * @return
+	 */
+	public function unpin():IDisplay;
+	
+	/**
+	 * Change the width and height properties
+	 * @param	width
+	 * @param	height
+	 * @return
+	 */
+	public function fit(width:Dynamic, height:Dynamic):IDisplay;
+	
+	/**
 	 * Get area and position
 	 * @return
 	 */
@@ -362,18 +383,58 @@ interface IDisplay extends IPush implements Dynamic  {
 	 */
 	public function interactive(?value:Bool):Bool ;
 	
+	/**
+	 * Rotate X axys in 3D space
+	 * @param	x
+	 * @return
+	 */
 	public function rotateX(x:Float):IDisplay;
 	
-	public function rotateY(x:Float):IDisplay;
+	/**
+	 * Rotate Y axys in 3D space
+	 * @param	y
+	 * @return
+	 */
+	public function rotateY(y:Float):IDisplay;
 	
-	public function rotateZ(x:Float):IDisplay;
+	/**
+	 * Rotate Z axys in 3D space
+	 * @param	z
+	 * @return
+	 */
+	public function rotateZ(z:Float):IDisplay;
 	
+	/**
+	 * Rotate all axys in 3D space
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @return
+	 */
 	public function rotate(x:Float, y:Float, z:Float):IDisplay;
 	
+	/**
+	 * Move element coordinates in 3D space
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @return
+	 */
 	public function translate(x:Float, y:Float, z:Float):IDisplay;
 	
+	/**
+	 * Scale element in 3D space
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @return
+	 */
 	public function scale(x:Float, y:Float, z:Float):IDisplay;
 	
+	/**
+	 * Apply all transform changes
+	 * @return
+	 */
 	public function transform():IDisplay;
 	
 	/**

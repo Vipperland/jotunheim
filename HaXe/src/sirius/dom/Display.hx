@@ -353,7 +353,14 @@ class Display extends Push implements IDisplay {
 			var cl:DOMTokenList = element.classList;
 			Dice.Values(s, function(v:String) {
 				if (v != null && v.length > 0) {
-					if (v.substr(0, 1) == "/") {
+					var c:String = v.substr(0, 1);
+					if (c == "*") {
+						v = v.substr(1, v.length - 1);
+						if (cl.contains(v)) 
+							cl.remove(v);
+						else if (!cl.contains(v)) 
+							cl.add(v);
+					}else if (c == "/") {
 						v = v.substr(1, v.length - 1);
 						if (cl.contains(v)) 
 							cl.remove(v);
@@ -573,7 +580,6 @@ class Display extends Push implements IDisplay {
 		// IS VISIBLE
 		else if (rect.bottom >= 0 && rect.right >= 0 && rect.top <= Utils.viewportHeight() && rect.left <= Utils.viewportWidth())
 			current = 1;
-		
 		// Dispatch visibility change event
 		if (current != _visibility) {
 			_visibility = current;
@@ -620,6 +626,60 @@ class Display extends Push implements IDisplay {
 	
 	public function position():IPoint {
 		return getPosition(element);
+	}
+	
+	public function pin(?align:String):IDisplay {
+		var v:Int = null;
+		var h:Int = null;
+		switch(align){
+			case 't' : 			{ v = -1; h = 0; };
+			case 'tl','lt' : 	{ v = -1; h = -1; }
+			case 'l' : 			{ v = 0; h = -1; }
+			case 'bl','lb' : 	{ v = 1; h = -1; }
+			case 'b' : 			{ v = 1; h = 0; }
+			case 'br','rb' : 	{ v = 1; h = 1; }
+			case 'r' : 			{ v = 0; h = 1; }
+			case 'tr','rt' :	{ v = -1; h = 1; }
+			case 'c' :			{ v = 0; h = 0; }
+		}
+		var o:Dynamic = {position:'fixed'};
+		if(v != null){
+			if (v < 0){
+				o.top = 0;
+			}else if (v > 0){
+				o.bottom = 0;
+			}else{
+				o.top = 'calc(50vh - ' + (height()>>1) + 'px)';
+			}
+		}
+		if(v != null){
+			if (v < 0){
+				o.left = 0;
+			}else if (v > 0){
+				o.right = 0;
+			}else{
+				o.left = 'calc(50vw - ' + (width()>>1) + 'px)';
+			}
+		}
+		style(o);
+		return this;
+	}
+	
+	public function unpin():IDisplay {
+		style({
+			position:'',
+			left:'',
+			right:'',
+			bottom:'',
+			top:'',
+		});
+		return this;
+	}
+	
+	public function fit(width:Dynamic, height:Dynamic):IDisplay {
+		this.width(width);
+		this.height(height);
+		return this;
 	}
 	
 	public function id():UInt {

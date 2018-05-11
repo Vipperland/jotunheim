@@ -32,7 +32,7 @@ class Fragments implements IFragments {
 	}
 	
 	public function split(separator:String):IFragments {
-		pieces = Utils.clearArray(value.split(separator));
+		pieces = cast Utils.clearArray(value.split(separator));
 		if (pieces.length == 0) pieces[0] = "";
 		first = pieces[0];
 		last = pieces[pieces.length - 1];

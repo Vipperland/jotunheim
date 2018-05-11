@@ -17,6 +17,8 @@ class Command implements ICommand {
 	
 	private var _parameters:Dynamic;
 	
+	private var _object:Dynamic;
+	
 	private var _errors:Array<IError>;
 	
 	private var _log:Array<String>;
@@ -33,10 +35,11 @@ class Command implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, ?parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(statement:Statement, query:String, parameters:Dynamic, object:Dynamic, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
+		_object = object;
 		this.statement = statement;
 		if (parameters != null) bind(parameters);
 	}
@@ -46,8 +49,11 @@ class Command implements ICommand {
 		if(statement != null){
 			var isArray:Bool = Std.is(parameters, Array);
 			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
-				if (isArray)	statement.setAttribute(p, v);
-				else 			statement.bindValue(p, v);
+				if (isArray){
+					statement.setAttribute(p, v);
+				}else {
+					statement.bindValue(p, v);
+				}
 				Reflect.setField(_parameters, p, v);
 			});
 		}
@@ -56,14 +62,22 @@ class Command implements ICommand {
 	
 	public function execute(?handler:Dynamic->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
 		if(statement !=null){
-			if (type == null) type = untyped __php__("\\PDO::FETCH_OBJ");
+			if (type == null) {
+				_object == null ? type = untyped __php__("\\PDO::FETCH_CLASS");
+			}else{
+				_object == null ? type = untyped __php__("\\PDO::FETCH_OBJ");
+			}
 			var p:NativeArray = null;
-			if (parameters != null)	p = Lib.toPhpArray(parameters);
+			if (parameters != null)	{
+				p = Lib.toPhpArray(parameters);
+			}
 			try {
 				success = statement.execute(p);
 				if (success) {
 					result = Lib.toHaxeArray(statement.fetchAll(type));
-					if (handler != null) fetch(handler);
+					if (handler != null) {
+						fetch(handler);
+					}
 				}else {
 					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
 				}
@@ -74,7 +88,9 @@ class Command implements ICommand {
 					errors[errors.length] = new Error(e.getCode(), e.getMessage());
 				}
 			}
-			if (_log != null) _log[_log.length] = (success ? "[1]" : "[0]") + " " + log();
+			if (_log != null) {
+				_log[_log.length] = (success ? "[1]" : "[0]") + " " + log();
+			}
 		}else {
 			errors[errors.length] = new Error(0, "A connection with database is required.");
 		}

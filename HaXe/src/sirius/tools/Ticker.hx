@@ -18,7 +18,7 @@ class Ticker {
 		});
 	}
 	
-	public static function init():Void {
+	public static function start():Void {
 		stop();
 		var t:Dynamic = _tickAll;
 		_uid = untyped __js__("setInterval(t,33)");

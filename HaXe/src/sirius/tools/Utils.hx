@@ -247,7 +247,9 @@ class Utils{
 			return params;
 		Dice.Values(value.split('&'), function(v:String){
 			var data:Array<Dynamic> = v.split('=');
-			Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+			if (data.length > 1){
+				Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+			}
 		});
 		return params;
 	}
@@ -257,7 +259,7 @@ class Utils{
 	 * Remove white and null values from array
 	 * @param	path
 	 */
-	static public function clearArray(path:Array<String>, ?filter:Dynamic) {
+	static public function clearArray(path:Array<String>, ?filter:Dynamic):Array<Dynamic> {
 		var copy:Array<String> = [];
 		Dice.Values(path, function(v:Dynamic) {
 			if (v != null && v != "" && (filter == null || filter(v))) {
@@ -295,7 +297,7 @@ class Utils{
 			else if (Std.is(v, String)) 					b += i + p + ":String = " + v + "\r";
 			else if(Std.is(v, Bool)) 						b += i + p + ":Bool = " + v + "\r";
 			else if(Std.is(v, Int) || Std.is(v, Float)) 	b += i + p + ":Number = " + v + "\r";
-			else if (Std.is(v, Array))						b += i + p + ":Array[" + v.length + "]):[\r" + _sruFy(v, i, '') + i + "]\r";
+			else if (Std.is(v, Array))						b += i + p + ":Array[" + v.length + "]:[\r" + _sruFy(v, i, '') + i + "]\r";
 			else											b += i + p + ":Object {\r" + _sruFy(v, i, '') + i + "}\r";
 		});
 		return b;

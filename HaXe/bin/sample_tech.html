@@ -22,7 +22,6 @@
 		<div class="screen-fx">
 			<div class="background"></div>
 			<div class="fog"></div>
-			<div class="grid"></div>
 		</div>
 		
 		<div class="main-content" sru-dom="sprite">
@@ -30,9 +29,6 @@
 				<div class="content-head">
 					<div class="blink">
 						<div>
-							<!--video width="100%" height="100%" autoplay>
-								<source src="assets/media/cover.mp4" type="video/mp4">
-							</video-->
 						</div>
 					</div>
 				</div>
@@ -96,10 +92,9 @@
 				direction: 90,
 				distance: 3,
 			});
-			Automator.grid(12);
 			Automator.reset();
 			
-			Sirius.onInit(function(){
+			Sirius.run(function(){
 				
 				var options = {
 					fx : {
@@ -115,7 +110,7 @@
 				Ticker.add(function(){
 					if(options.fx.blink){
 						blink.each(function(o){
-							o.alpha(Math.random() * .1 + .9);
+							o.alpha(Math.random() * .1);
 						});
 					}
 					if(options.fx.animated_bg){
@@ -123,7 +118,7 @@
 						++bg_fog_offset;
 					}
 				});
-				Ticker.init();
+				Ticker.start();
 			});
 			
 			Sirius.all('div[sru-dom=sprite]').css('sprite');

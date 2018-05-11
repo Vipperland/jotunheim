@@ -102,7 +102,7 @@ class Sirius {
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
 				updatePlugins();
-				log("Sirius => ENJOY :)", 1);
+				log("Sirius => READY", 1);
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				Reflect.deleteField(Sirius, '_loadController');
 				Reflect.deleteField(Sirius, '_loadPool');

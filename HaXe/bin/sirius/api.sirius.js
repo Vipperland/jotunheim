@@ -1607,7 +1607,11 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 			var cl = this.element.classList;
 			sirius_utils_Dice.Values(s,function(v) {
 				if(v != null && v.length > 0) {
-					if(HxOverrides.substr(v,0,1) == "/") {
+					var c = HxOverrides.substr(v,0,1);
+					if(c == "*") {
+						v = HxOverrides.substr(v,1,v.length - 1);
+						if(cl.contains(v)) cl.remove(v); else if(!cl.contains(v)) cl.add(v);
+					} else if(c == "/") {
 						v = HxOverrides.substr(v,1,v.length - 1);
 						if(cl.contains(v)) cl.remove(v);
 					} else if(!cl.contains(v)) cl.add(v);
@@ -1799,6 +1803,66 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 	}
 	,position: function() {
 		return sirius_dom_Display.getPosition(this.element);
+	}
+	,pin: function(align) {
+		var v = null;
+		var h = null;
+		if(align != null) switch(align) {
+		case "t":
+			v = -1;
+			h = 0;
+			break;
+		case "tl":case "lt":
+			v = -1;
+			h = -1;
+			break;
+		case "l":
+			v = 0;
+			h = -1;
+			break;
+		case "bl":case "lb":
+			v = 1;
+			h = -1;
+			break;
+		case "b":
+			v = 1;
+			h = 0;
+			break;
+		case "br":case "rb":
+			v = 1;
+			h = 1;
+			break;
+		case "r":
+			v = 0;
+			h = 1;
+			break;
+		case "tr":case "rt":
+			v = -1;
+			h = 1;
+			break;
+		case "c":
+			v = 0;
+			h = 0;
+			break;
+		}
+		var o = { position : "fixed"};
+		if(v != null) {
+			if(v < 0) o.top = 0; else if(v > 0) o.bottom = 0; else o.top = "calc(50vh - " + (this.height() >> 1) + "px)";
+		}
+		if(v != null) {
+			if(v < 0) o.left = 0; else if(v > 0) o.right = 0; else o.left = "calc(50vw - " + (this.width() >> 1) + "px)";
+		}
+		this.style(o);
+		return this;
+	}
+	,unpin: function() {
+		this.style({ position : "", left : "", right : "", bottom : "", top : ""});
+		return this;
+	}
+	,fit: function(width,height) {
+		this.width(width);
+		this.height(height);
+		return this;
 	}
 	,id: function() {
 		return this._uid;
@@ -3010,7 +3074,7 @@ sirius_Sirius._loadController = function(e) {
 		});
 		sirius_Sirius._loadPool = null;
 		sirius_Sirius.updatePlugins();
-		sirius_Sirius.log("Sirius => ENJOY :)",1);
+		sirius_Sirius.log("Sirius => READY",1);
 		window.document.removeEventListener("DOMContentLoaded",sirius_Sirius._loadController);
 		Reflect.deleteField(sirius_Sirius,"_loadController");
 		Reflect.deleteField(sirius_Sirius,"_loadPool");
@@ -3230,7 +3294,7 @@ sirius_css_Automator._createGrid = function() {
 			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".index-" + a);
 			++a;
 			var m = a / b * 100 - .001;
-			var t = m.toFixed(3) + "%";
+			var t = m.toFixed(5) + "%";
 			var s = "flex-basis:" + t + ";max-width:" + t;
 			sirius_css_Automator.omnibuild(s,".cel-" + a);
 			if(a < b) sirius_css_Automator.omnibuild("margin-left:" + t,".rcel-" + a);
@@ -6656,7 +6720,7 @@ sirius_tools_Ticker._tickAll = function() {
 		if(v != null) v();
 	});
 };
-sirius_tools_Ticker.init = function() {
+sirius_tools_Ticker.start = function() {
 	sirius_tools_Ticker.stop();
 	var t = sirius_tools_Ticker._tickAll;
 	sirius_tools_Ticker._uid = setInterval(t,33);
@@ -6766,7 +6830,7 @@ sirius_tools_Utils.getQueryParams = function(value) {
 	if(value.indexOf("?") > 0) value = value.split("+").join(" ").split("?")[1]; else return params;
 	sirius_utils_Dice.Values(value.split("&"),function(v) {
 		var data = v.split("=");
-		Reflect.setField(params,StringTools.urlDecode(data[0]),StringTools.urlDecode(data[1]));
+		if(data.length > 1) Reflect.setField(params,StringTools.urlDecode(data[0]),StringTools.urlDecode(data[1]));
 	});
 	return params;
 };
@@ -6786,7 +6850,7 @@ sirius_tools_Utils.sruString = function(o) {
 sirius_tools_Utils._sruFy = function(o,i,b) {
 	i = i + "  ";
 	sirius_utils_Dice.All(o,function(p,v) {
-		if(v == null) b += i + p + ":* = NULL\r"; else if(typeof(v) == "string") b += i + p + ":String = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + ":Bool = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + ":Number = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + ":Array[" + Std.string(v.length) + "]):[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + ":Object {\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
+		if(v == null) b += i + p + ":* = NULL\r"; else if(typeof(v) == "string") b += i + p + ":String = " + Std.string(v) + "\r"; else if(typeof(v) == "boolean") b += i + p + ":Bool = " + Std.string(v) + "\r"; else if(((v | 0) === v) || typeof(v) == "number") b += i + p + ":Number = " + Std.string(v) + "\r"; else if((v instanceof Array) && v.__enum__ == null) b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "]\r"; else b += i + p + ":Object {\r" + sirius_tools_Utils._sruFy(v,i,"") + i + "}\r";
 	});
 	return b;
 };
