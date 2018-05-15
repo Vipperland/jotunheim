@@ -70,13 +70,16 @@ class QueryBuilder implements IQueryBuilder {
 		}
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
 		else {
-			r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 			if (Std.is(obj.value, Array)){
+				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				Dice.All(obj.value, function(p:String, v:Dynamic){
-					Reflect.setField(props, "in_" + obj.i + "x" + p, v);
+					Reflect.setField(props, "in_" + obj.i + "x" + p + "_", v);
 				});
-			}else{
-				Reflect.setField(props, "in_" + obj.i, obj.value);
+			}else {
+				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
+				if (obj.value != null){
+					Reflect.setField(props, "in_" + obj.i + "_", obj.value);
+				}
 			}
 		}
 		
@@ -107,7 +110,7 @@ class QueryBuilder implements IQueryBuilder {
 	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		if (Std.is(fields, Array)) fields = fields.join(",");
 		var parameters:Dynamic = { };
-		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null, null);
 	}
 	
 	public function update(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {

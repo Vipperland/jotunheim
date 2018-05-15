@@ -67,10 +67,11 @@ class Sirius {
 	/// Debug tools
 	static public var logger:Logger = new Logger();
 	
-	/** @private */
-	static private var _initialized:Bool = main();
 	
 	#if js
+		
+		/** @private */
+		static private var _initialized:Bool = main();
 		
 		static public function main():Bool { return _initialized || _preInit(); }
 		

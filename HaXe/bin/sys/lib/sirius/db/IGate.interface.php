@@ -9,7 +9,7 @@ interface sirius_db_IGate {
 	//;
 	function isOpen();
 	function open($token, $log = null);
-	function prepare($query, $parameters = null, $options = null);
+	function prepare($query, $parameters = null, $object = null, $options = null);
 	function schema($table = null);
 	function table($table);
 	function insertedId();

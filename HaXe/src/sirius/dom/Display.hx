@@ -557,9 +557,12 @@ class Display extends Push implements IDisplay {
 	
 	public function alpha(?value:Float):Float {
 		if (value != null){
+			value = (1 - value);
 			element.style.opacity = '' + (1 - value);
+			return value;
+		}else{
+			return 1-Std.parseFloat(element.style.opacity);
 		}
-		return 1-Std.parseFloat(element.style.opacity);
 	}
 	
 	public function isFullyVisible():Bool {

@@ -48,10 +48,11 @@ interface IGate {
 	 * The query to execute
 	 * @param	query
 	 * @param	parameters
+	 * @param	object
 	 * @param	options
 	 * @return
 	 */
-	public function prepare (query:String, ?parameters:Dynamic = null, ?options:Dynamic = null) : ICommand;
+	public function prepare(query:String, ?parameters:Dynamic = null, ?object:Dynamic = null, ?options:Dynamic = null):ICommand;
 	
 	/**
 	 * Show all fields of a table

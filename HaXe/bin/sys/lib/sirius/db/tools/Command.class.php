@@ -1,11 +1,12 @@
 <?php
 
 class sirius_db_tools_Command implements sirius_db_tools_ICommand{
-	public function __construct($statement, $query, $parameters = null, $errors, $log) {
+	public function __construct($statement, $query, $parameters, $object, $errors, $log) {
 		if(!php_Boot::$skip_constructor) {
 		$this->_log = $log;
 		$this->_errors = $errors;
 		$this->_query = $query;
+		$this->_object = $object;
 		$this->statement = $statement;
 		if($parameters !== null) {
 			$this->bind($parameters);
@@ -13,6 +14,7 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 	}}
 	public $_query;
 	public $_parameters;
+	public $_object;
 	public $_errors;
 	public $_log;
 	public $success;
@@ -34,7 +36,11 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 	public function execute($handler = null, $type = null, $parameters = null) {
 		if($this->statement !== null) {
 			if($type === null) {
-				$type = \PDO::FETCH_OBJ;
+				if(_hx_field($this, "_object") !== null) {
+					$type = \PDO::FETCH_CLASS;
+				} else {
+					$type = \PDO::FETCH_OBJ;
+				}
 			}
 			$p = null;
 			if($parameters !== null) {

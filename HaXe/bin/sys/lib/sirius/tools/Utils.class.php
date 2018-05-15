@@ -152,7 +152,7 @@ function sirius_tools_Utils_1(&$filter, &$r, &$values, $i) {
 function sirius_tools_Utils_2(&$params, &$value, $v) {
 	{
 		$data = _hx_explode("=", $v);
-		{
+		if($data->length > 1) {
 			$field = null;
 			{
 				$s = $data[0];
@@ -189,7 +189,7 @@ function sirius_tools_Utils_4(&$b, &$i, &$o, $p, $v) {
 						$b .= _hx_string_or_null($i) . _hx_string_or_null($p) . ":Number = " . Std::string($v) . "\x0D";
 					} else {
 						if(Std::is($v, _hx_qtype("Array"))) {
-							$b .= _hx_string_or_null($i) . _hx_string_or_null($p) . ":Array[" . Std::string(_hx_len($v)) . "]):[\x0D" . _hx_string_or_null(sirius_tools_Utils::_sruFy($v, $i, "")) . _hx_string_or_null($i) . "]\x0D";
+							$b .= _hx_string_or_null($i) . _hx_string_or_null($p) . ":Array[" . Std::string(_hx_len($v)) . "]:[\x0D" . _hx_string_or_null(sirius_tools_Utils::_sruFy($v, $i, "")) . _hx_string_or_null($i) . "]\x0D";
 						} else {
 							$b .= _hx_string_or_null($i) . _hx_string_or_null($p) . ":Object {\x0D" . _hx_string_or_null(sirius_tools_Utils::_sruFy($v, $i, "")) . _hx_string_or_null($i) . "}\x0D";
 						}

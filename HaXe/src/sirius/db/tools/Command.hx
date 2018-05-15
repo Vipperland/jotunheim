@@ -61,11 +61,9 @@ class Command implements ICommand {
 	}
 	
 	public function execute(?handler:Dynamic->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
-		if(statement !=null){
-			if (type == null) {
-				_object == null ? type = untyped __php__("\\PDO::FETCH_CLASS");
-			}else{
-				_object == null ? type = untyped __php__("\\PDO::FETCH_OBJ");
+		if (statement != null){
+			if (type == null){
+				type = _object != null ? untyped __php__("\\PDO::FETCH_CLASS") : untyped __php__("\\PDO::FETCH_OBJ");
 			}
 			var p:NativeArray = null;
 			if (parameters != null)	{

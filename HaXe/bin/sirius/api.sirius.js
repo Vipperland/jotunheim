@@ -1754,8 +1754,11 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 		return this.element.clientHeight;
 	}
 	,alpha: function(value) {
-		if(value != null) this.element.style.opacity = "" + (1 - value);
-		return 1 - parseFloat(this.element.style.opacity);
+		if(value != null) {
+			value = 1 - value;
+			this.element.style.opacity = "" + (1 - value);
+			return value;
+		} else return 1 - parseFloat(this.element.style.opacity);
 	}
 	,isFullyVisible: function() {
 		return this._visibility == 2;

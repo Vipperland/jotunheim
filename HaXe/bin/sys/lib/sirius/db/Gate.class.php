@@ -48,12 +48,12 @@ class sirius_db_Gate implements sirius_db_IGate{
 		}
 		return $this;
 	}
-	public function prepare($query, $parameters = null, $options = null) {
+	public function prepare($query, $parameters = null, $object = null, $options = null) {
 		$pdo = null;
 		if($this->isOpen()) {
 			$pdo = $this->_db->prepare($query, php_Lib::toPhpArray((($options === null) ? (new _hx_array(array())) : $options)));
 		}
-		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $this->_errors, sirius_db_Gate_0($this, $options, $parameters, $pdo, $query));
+		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $object, $this->_errors, sirius_db_Gate_0($this, $object, $options, $parameters, $pdo, $query));
 		return $this->command;
 	}
 	public function schema($table = null) {
@@ -89,7 +89,7 @@ class sirius_db_Gate implements sirius_db_IGate{
 	static $__properties__ = array("get_log" => "get_log","get_errors" => "get_errors");
 	function __toString() { return 'sirius.db.Gate'; }
 }
-function sirius_db_Gate_0(&$__hx__this, &$options, &$parameters, &$pdo, &$query) {
+function sirius_db_Gate_0(&$__hx__this, &$object, &$options, &$parameters, &$pdo, &$query) {
 	if($__hx__this->_logCommands) {
 		return $__hx__this->_log;
 	}

@@ -36,11 +36,14 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 			if(Std::is($obj, _hx_qtype("Array"))) {
 				sirius_utils_Dice::All($obj, array(new _hx_lambda(array(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s), "sirius_db_tools_QueryBuilder_4"), 'execute'), null);
 			} else {
-				$r[$r->length] = sirius_utils_Filler::to($obj->condition, _hx_anonymous(array("p" => $obj->param)), null);
 				if(Std::is($obj->value, _hx_qtype("Array"))) {
+					$r[$r->length] = sirius_utils_Filler::to($obj->condition, _hx_anonymous(array("p" => $obj->param)), null);
 					sirius_utils_Dice::All($obj->value, array(new _hx_lambda(array(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
 				} else {
-					$props->{"in_" . Std::string($obj->i)} = $obj->value;
+					$r[$r->length] = sirius_utils_Filler::to($obj->condition, _hx_anonymous(array("p" => $obj->param)), null);
+					if(_hx_field($obj, "value") !== null) {
+						$props->{"in_" . Std::string($obj->i) . "_"} = $obj->value;
+					}
 				}
 			}
 		}
@@ -65,24 +68,24 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 		return $q;
 	}
 	public function add($table, $clause = null, $parameters = null, $order = null, $limit = null) {
-		return $this->_gate->prepare("INSERT INTO " . _hx_string_or_null($table) . _hx_string_or_null($this->_insert($parameters)) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null);
+		return $this->_gate->prepare("INSERT INTO " . _hx_string_or_null($table) . _hx_string_or_null($this->_insert($parameters)) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null, null);
 	}
 	public function find($fields, $table, $clause = null, $order = null, $limit = null) {
 		if(Std::is($fields, _hx_qtype("Array"))) {
 			$fields = $fields->join(",");
 		}
 		$parameters = _hx_anonymous(array());
-		return $this->_gate->prepare("SELECT " . Std::string($fields) . " FROM " . _hx_string_or_null($table) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null);
+		return $this->_gate->prepare("SELECT " . Std::string($fields) . " FROM " . _hx_string_or_null($table) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null, null);
 	}
 	public function update($table, $clause = null, $parameters = null, $order = null, $limit = null) {
 		if($parameters === null) {
 			$parameters = _hx_anonymous(array());
 		}
-		return $this->_gate->prepare("UPDATE " . _hx_string_or_null($table) . " SET " . _hx_string_or_null($this->_updateSet($parameters)) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null);
+		return $this->_gate->prepare("UPDATE " . _hx_string_or_null($table) . " SET " . _hx_string_or_null($this->_updateSet($parameters)) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null, null);
 	}
 	public function delete($table, $clause = null, $order = null, $limit = null) {
 		$parameters = _hx_anonymous(array());
-		return $this->_gate->prepare("DELETE FROM " . _hx_string_or_null($table) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null);
+		return $this->_gate->prepare("DELETE FROM " . _hx_string_or_null($table) . _hx_string_or_null($this->_assembleBody($clause, $parameters, $order, $limit)) . ";", $parameters, null, null);
 	}
 	public function copy($from, $to, $clause = null, $filter = null, $limit = null) {
 		$_g = $this;
@@ -98,16 +101,16 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 			$delete = "RESTRICT";
 		}
 		if($key === null) {
-			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " DROP FOREIGN KEY " . _hx_string_or_null($reference), null, null);
+			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " DROP FOREIGN KEY " . _hx_string_or_null($reference), null, null, null);
 		} else {
-			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " ADD CONSTRAINT " . _hx_string_or_null($reference) . " FOREIGN KEY (" . _hx_string_or_null($key) . ") REFERENCES " . _hx_string_or_null($target) . "(" . _hx_string_or_null($field) . ") ON DELETE " . _hx_string_or_null(strtoupper($delete)) . " ON UPDATE " . _hx_string_or_null(strtoupper($update)) . ";", null, null);
+			return $this->_gate->prepare("ALTER TABLE " . _hx_string_or_null($table) . " ADD CONSTRAINT " . _hx_string_or_null($reference) . " FOREIGN KEY (" . _hx_string_or_null($key) . ") REFERENCES " . _hx_string_or_null($target) . "(" . _hx_string_or_null($field) . ") ON DELETE " . _hx_string_or_null(strtoupper($delete)) . " ON UPDATE " . _hx_string_or_null(strtoupper($update)) . ";", null, null, null);
 		}
 	}
 	public function truncate($table) {
-		return $this->_gate->prepare("TRUNCATE :table", _hx_anonymous(array("table" => $table)), null);
+		return $this->_gate->prepare("TRUNCATE :table", _hx_anonymous(array("table" => $table)), null, null);
 	}
 	public function rename($table, $to) {
-		return $this->_gate->prepare("RENAME TABLE :oldname TO :newname", _hx_anonymous(array("oldname" => $table, "newname" => $to)), null);
+		return $this->_gate->prepare("RENAME TABLE :oldname TO :newname", _hx_anonymous(array("oldname" => $table, "newname" => $to)), null, null);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -161,7 +164,7 @@ function sirius_db_tools_QueryBuilder_4(&$_g, &$b, &$i, &$joiner, &$obj, &$props
 }
 function sirius_db_tools_QueryBuilder_5(&$_g, &$b, &$i, &$joiner, &$obj, &$props, &$r, &$s, $p1, $v2) {
 	{
-		$props->{"in_" . Std::string($obj->i) . "x" . _hx_string_or_null($p1)} = $v2;
+		$props->{"in_" . Std::string($obj->i) . "x" . _hx_string_or_null($p1) . "_"} = $v2;
 	}
 }
 function sirius_db_tools_QueryBuilder_6(&$_g, &$clause, &$entries, &$filter, &$from, &$limit, &$to, $v) {
