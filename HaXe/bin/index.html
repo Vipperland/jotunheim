@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8"/>
+		<base href="/"></base>
+		<title>Sirius::Automator</title>
+		<meta name="description" content=""/>
+		<script type="text/javascript" src="sirius/api.sirius.js"></script>
+		<style>  
+			body,html {
+				width:100%;
+				height:100%;
+				font-family: Tahoma;
+				background-color:#000000;
+			}
+			.test3d {
+				width: 188px;
+				height: 300px;
+			}
+			
+		</style>
+	</head>
+	<body automator>
+		<div class="test3d">
+			<img src="http://techlab.gateofsirius.com/assets/img/sirius.png" />
+		</div>
+		<script>
+			Sirius.run(function(){
+				var e = Sirius.one('.test3d');
+				e.pin('c');
+				e.angleY = 0;
+				e.rotateX(20);
+				e.activate(function(){
+					e.rotateY(e.angleY);
+					e.angleY += 10;
+					e.transform();
+				});
+				Ticker.start();
+			});
+		</script>
+	</body>                                                                               
+</html>
