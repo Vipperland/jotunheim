@@ -31,31 +31,29 @@ class Input extends Display {
 	
 	private var _flt:String;
 	
-	private var fileIO:IDisplay;
+	private var fillTarget:IDisplay;
 	
 	private var _ioHandler:Input->Void;
 	
 	private function _onFileSelected(e:Dynamic) {
-		if (Std.is(e, IEvent)) {
-			var ftype:String = file(0).type.substr(0, 5);
-			if (ftype == 'image'){
-				readFile(0, _onFileSelected);
-			}else{
-				var bg:String = Reflect.hasField(icons, ftype) ? Reflect.field(icons, ftype) : icons.common;
-				if(bg != null && fileIO != null){
-					fileIO.style({backgroundImage : 'url(' + bg + ')'});
-				}
-				if(_ioHandler != null)
-					_ioHandler(this);
-			}
-		}else {
-			if(fileIO != null){
-				if (fileIO.typeOf() == 'IMG'){
-					var img:Img = cast fileIO;
-					img.src(e);
+		var ftype:String = file(0).type.substr(0, 5);
+		if (ftype == 'image'){
+			if(fillTarget != null){
+				if (fillTarget.typeOf() == 'IMG'){
+					var img:Img = cast fillTarget;
+					img.src(readFile(0));
 				}else{
-					fileIO.style({backgroundImage : 'url(' + e + ')'});
+					fixer.backgroundImage = 'url(' + readFile(0) + ')';
+					fillTarget.style(fixer);
+					Reflect.deleteField(fixer, 'backgroundImage');
 				}
+			}
+			if(_ioHandler != null)
+				_ioHandler(this);
+		}else{
+			var bg:String = Reflect.hasField(icons, ftype) ? Reflect.field(icons, ftype) : icons.common;
+			if(bg != null && fillTarget != null){
+				fillTarget.style({backgroundImage : 'url(' + bg + ')'});
 			}
 			if(_ioHandler != null)
 				_ioHandler(this);
@@ -168,6 +166,13 @@ class Input extends Display {
 		return q;
 	}
 	
+	public function clear(?background:String):Void {
+		value("");
+		if (fillTarget != null){
+			fillTarget.style("backgroundImage", background);
+		}
+	}
+	
 	public function isValid():Bool {
 		var v:String = object.value;
 		return v.length == 0 ? false :  _rgx != null ? _rgx.match(v) : true;
@@ -189,16 +194,8 @@ class Input extends Display {
 		return files().item(id);
 	}
 	
-	public function numberOnly():Void {
-		
-	}
-	
-	public function readFile(id:UInt = 0, handler:Dynamic->Void):Void{
-		var reader:FileReader = new FileReader();
-		reader.onload = function() {
-			handler(reader.result);
-		}
-		reader.readAsDataURL(file(id));
+	public function readFile(id:UInt = 0):String {
+		return Browser.window.URL.createObjectURL(file());
 	}
 	
 	/**
@@ -206,20 +203,14 @@ class Input extends Display {
 	 * @param	target
 	 * @param	handler
 	 */
-	public function fileController(target:IDisplay, ?handler:Input->Void):Void {
+	public function control(handler:Input->Void, ?target:IDisplay):Void {
 		_ioHandler = handler;
-		fileIO = target;
-		if (fileIO != null)
-			fileIO.style(fixer);
-		type('file');
-		this.events.change(_onFileSelected);
-	}
-	
-	public function clearBackground(?bg:String = ''):Void {
-		if(fileIO != null)
-			fileIO.style( {
-				backgroundImage : bg,
-			});
+		fillTarget = target;
+		if (attribute('sr-control') != "ready"){
+			type('file');
+			attribute('sr-control', "ready");
+			this.events.change(_onFileSelected);
+		}
 	}
 	
 	public function check(?toggle:Dynamic = true):Void {
