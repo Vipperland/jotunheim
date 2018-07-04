@@ -324,7 +324,7 @@ class Utils{
 	 * @param	alt
 	 * @return
 	 */
-	static public function isValidAlt(o:Dynamic, alt:Dynamic):Dynamic {
+	static public function getValidOne(o:Dynamic, alt:Dynamic):Dynamic {
 		return isValid(o) ? o : alt;
 	}
 	
@@ -348,7 +348,7 @@ class Utils{
 	}
 	
 	static public function boolean(q:Dynamic):Bool {
-		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
+		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok";
 	}
 	
 	static public function money(val:Dynamic, s:String = '$', a:String = ',', b:String = '.'):String {

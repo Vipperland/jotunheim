@@ -72,8 +72,8 @@ class Table implements ITable {
 				}
 				++ind;
 			}
-		}else {
-			Sirius.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
+		//}else {
+			//Sirius.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
 		}
 		return this;
 	}

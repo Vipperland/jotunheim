@@ -51,7 +51,7 @@ class Logger{
 			default : "";
 		}
 		#if js
-			haxe.Log.trace(t + q);
+			untyped __js__("console.log")(t + q);
 		#elseif php
 			php.Lib.dump(q);
 		#end

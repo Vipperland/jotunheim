@@ -155,7 +155,18 @@ class ModLib {
 		var content:String = Reflect.field(CACHE, name);
 		data = _sanitize(name, data);
 		return (data != null) ? Filler.to(content, data) : content;
-
+	}
+	
+	public function getObj(name:String, ?data:Dynamic):Dynamic {
+		var val:String = get(name, data);
+		if (val != null){
+			try {
+				return Json.parse(val);
+			}catch (e:Dynamic){
+				trace("Parsing error for MOD:[" + name+"]");
+			}
+		}
+		return null;
 	}
 	
 	/**

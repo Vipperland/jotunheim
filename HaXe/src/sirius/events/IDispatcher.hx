@@ -40,247 +40,247 @@ interface IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function on (type:String, ?handler:IEvent->Void, ?mode:Int) : IEventGroup;
+	public function on (type:String, ?hanlder:Dynamic, ?mode:Int, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Mouse OVER, OUT and DOWN Events
-	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):Dynamic;
+	public function focusOverall(hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : Dynamic;
 	
 	/// Event
-	public function added (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function added (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function removed (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function removed (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function wheel (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function wheel (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function copy (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function copy (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function cut (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function cut (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function paste (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function paste (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function abort (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function abort (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function blur (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function blur (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function focusIn (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function focusIn (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function focusOut (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function focusOut (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function canPlay (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function canPlay (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function canPlayThrough (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function canPlayThrough (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function change (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function change (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function click (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function click (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function contextMenu (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function contextMenu (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dblClick (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dblClick (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function drag (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function drag (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dragEnd (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dragEnd (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dragEnter (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dragEnter (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dragLeave (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dragLeave (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dragOver (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dragOver (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function dragStart (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function dragStart (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function drop (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function drop (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function durationChange (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function durationChange (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function emptied (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function emptied (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function ended (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function ended (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function input (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function input (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function invalid (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function invalid (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function keyDown (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function keyDown (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function keyPress (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function keyPress (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function keyUp (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function keyUp (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function load (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function load (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function loadedData (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function loadedData (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function loadedMetadata (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function loadedMetadata (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function loadStart (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function loadStart (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseDown (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseDown (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseEnter (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseEnter (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseLeave (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseLeave (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseMove (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseMove (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseOut (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseOut (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseOver (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseOver (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function mouseUp (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function mouseUp (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pause (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pause (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function play (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function play (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function playing (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function playing (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function progress (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function progress (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function rateChange (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function rateChange (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function reset (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function reset (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function scroll (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function scroll (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function seeked (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function seeked (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function seeking (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function seeking (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function select (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function select (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function show (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function show (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function stalled (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function stalled (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function submit (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function submit (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function suspEnd (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function suspEnd (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function timeUpdate (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function timeUpdate (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function volumeChange (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function volumeChange (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function waiting (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function waiting (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerCancel (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerCancel (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerDown (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerDown (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerUp (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerUp (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerMove (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerMove (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerOut (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerOut (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerOver (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerOver (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerEnter (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerEnter (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerLeave (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerLeave (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function gotPointerCapture (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function gotPointerCapture (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function lostPointerCapture (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function lostPointerCapture (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerLockChange (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerLockChange (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function pointerLockError (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function pointerLockError (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function error (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function error (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function touchStart (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function touchStart (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function touchEnd (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function touchEnd (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function touchMove (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function touchMove (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
 	/// Event
-	public function touchCancel (?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function touchCancel (?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function readyState(?handler:IEvent->Void, ?mode:Dynamic) : IEventGroup;
+	public function readyState(?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function visibility(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup;
+	public function visibility(?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Event
-	public function resize(?handler:IEvent->Void, ?mode:Dynamic):IEventGroup;
+	public function resize(?hanlder:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	
 	/// Remove all events
 	public function dispose():Void;

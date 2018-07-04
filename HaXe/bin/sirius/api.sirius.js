@@ -1443,7 +1443,6 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 	}
 	,dispose: function() {
 		if(this._uid != -1 && this.element != null) {
-			sirius_Sirius.log("Disposing object {" + Std.string(_$UInt_UInt_$Impl_$.toFloat(this._uid)) + "}...");
 			Reflect.deleteField(sirius_dom_Display._DATA,Std.string(_$UInt_UInt_$Impl_$.toFloat(this._uid)) + "");
 			if(this._children != null) this._children.dispose();
 			if(this.events != null) this.events.dispose();
@@ -2135,263 +2134,253 @@ sirius_events_Dispatcher.prototype = {
 			v.prepare(_g.target);
 		});
 	}
-	,on: function(type,handler,mode) {
+	,on: function(type,handler,mode,noDefault,capture) {
 		var ie = this.event(type);
-		if(handler == null) {
-			ie.call();
-			return ie;
-		} else if(mode == null) return ie.add(handler,false); else switch(mode) {
-		case 2:case 3:
-			return ie.add(handler,mode == 3).noDefault();
-		case 1:
-			return ie.add(handler,true);
-		case 0:
-			return ie.add(handler,false);
-		case -1:
-			return ie.remove(handler);
-		default:
-			return ie;
+		if(noDefault) ie.noDefault();
+		if(handler == true) ie.call(); else if(handler != null) {
+			if(mode < 0) ie.remove(handler); else if(mode > 0) ie.addOnce(handler,capture); else ie.add(handler,capture);
 		}
+		return ie;
 	}
-	,focusOverall: function(handler,mode) {
+	,focusOverall: function(handler,mode,noDefault,capture) {
 		return { 'over' : this.mouseOver(handler,mode), 'out' : this.mouseOut(handler,mode), 'click' : this.click(handler,mode)};
 	}
-	,added: function(handler,mode) {
-		return this.on("DOMNodeInserted",handler,mode);
+	,added: function(handler,mode,noDefault,capture) {
+		return this.on("DOMNodeInserted",handler,mode,noDefault,capture);
 	}
-	,removed: function(handler,mode) {
-		return this.on("DOMNodeRemoved",handler,mode);
+	,removed: function(handler,mode,noDefault,capture) {
+		return this.on("DOMNodeRemoved",handler,mode,noDefault,capture);
 	}
-	,wheel: function(handler,mode) {
-		return this.on("wheel",handler,mode);
+	,wheel: function(handler,mode,noDefault,capture) {
+		return this.on("wheel",handler,mode,noDefault,capture);
 	}
-	,copy: function(handler,mode) {
-		return this.on("copy",handler,mode);
+	,copy: function(handler,mode,noDefault,capture) {
+		return this.on("copy",handler,mode,noDefault,capture);
 	}
-	,cut: function(handler,mode) {
-		return this.on("cut",handler,mode);
+	,cut: function(handler,mode,noDefault,capture) {
+		return this.on("cut",handler,mode,noDefault,capture);
 	}
-	,paste: function(handler,mode) {
-		return this.on("paste",handler,mode);
+	,paste: function(handler,mode,noDefault,capture) {
+		return this.on("paste",handler,mode,noDefault,capture);
 	}
-	,abort: function(handler,mode) {
-		return this.on("abort",handler,mode);
+	,abort: function(handler,mode,noDefault,capture) {
+		return this.on("abort",handler,mode,noDefault,capture);
 	}
-	,blur: function(handler,mode) {
-		return this.on("blur",handler,mode);
+	,blur: function(handler,mode,noDefault,capture) {
+		return this.on("blur",handler,mode,noDefault,capture);
 	}
-	,focusIn: function(handler,mode) {
-		return this.on("focusin",handler,mode);
+	,focusIn: function(handler,mode,noDefault,capture) {
+		return this.on("focusin",handler,mode,noDefault,capture);
 	}
-	,focusOut: function(handler,mode) {
-		return this.on("focusout",handler,mode);
+	,focusOut: function(handler,mode,noDefault,capture) {
+		return this.on("focusout",handler,mode,noDefault,capture);
 	}
-	,canPlay: function(handler,mode) {
-		return this.on("canplay",handler,mode);
+	,canPlay: function(handler,mode,noDefault,capture) {
+		return this.on("canplay",handler,mode,noDefault,capture);
 	}
-	,canPlayThrough: function(handler,mode) {
-		return this.on("canplaythrough",handler,mode);
+	,canPlayThrough: function(handler,mode,noDefault,capture) {
+		return this.on("canplaythrough",handler,mode,noDefault,capture);
 	}
-	,change: function(handler,mode) {
-		return this.on("change",handler,mode);
+	,change: function(handler,mode,noDefault,capture) {
+		return this.on("change",handler,mode,noDefault,capture);
 	}
-	,click: function(handler,mode) {
-		return this.on("click",handler,mode);
+	,click: function(handler,mode,noDefault,capture) {
+		return this.on("click",handler,mode,noDefault,capture);
 	}
-	,contextMenu: function(handler,mode) {
-		return this.on("contextmenu",handler,mode);
+	,contextMenu: function(handler,mode,noDefault,capture) {
+		return this.on("contextmenu",handler,mode,noDefault,capture);
 	}
-	,dblClick: function(handler,mode) {
-		return this.on("dblclick",handler,mode);
+	,dblClick: function(handler,mode,noDefault,capture) {
+		return this.on("dblclick",handler,mode,noDefault,capture);
 	}
-	,drag: function(handler,mode) {
-		return this.on("drag",handler,mode);
+	,drag: function(handler,mode,noDefault,capture) {
+		return this.on("drag",handler,mode,noDefault,capture);
 	}
-	,dragEnd: function(handler,mode) {
-		return this.on("dragend",handler,mode);
+	,dragEnd: function(handler,mode,noDefault,capture) {
+		return this.on("dragend",handler,mode,noDefault,capture);
 	}
-	,dragEnter: function(handler,mode) {
-		return this.on("dragenter",handler,mode);
+	,dragEnter: function(handler,mode,noDefault,capture) {
+		return this.on("dragenter",handler,mode,noDefault,capture);
 	}
-	,dragLeave: function(handler,mode) {
-		return this.on("dragleave",handler,mode);
+	,dragLeave: function(handler,mode,noDefault,capture) {
+		return this.on("dragleave",handler,mode,noDefault,capture);
 	}
-	,dragOver: function(handler,mode) {
-		return this.on("dragover",handler,mode);
+	,dragOver: function(handler,mode,noDefault,capture) {
+		return this.on("dragover",handler,mode,noDefault,capture);
 	}
-	,dragStart: function(handler,mode) {
-		return this.on("dragstart",handler,mode);
+	,dragStart: function(handler,mode,noDefault,capture) {
+		return this.on("dragstart",handler,mode,noDefault,capture);
 	}
-	,drop: function(handler,mode) {
-		return this.on("drop",handler,mode);
+	,drop: function(handler,mode,noDefault,capture) {
+		return this.on("drop",handler,mode,noDefault,capture);
 	}
-	,durationChange: function(handler,mode) {
-		return this.on("durationchange",handler,mode);
+	,durationChange: function(handler,mode,noDefault,capture) {
+		return this.on("durationchange",handler,mode,noDefault,capture);
 	}
-	,emptied: function(handler,mode) {
-		return this.on("emptied",handler,mode);
+	,emptied: function(handler,mode,noDefault,capture) {
+		return this.on("emptied",handler,mode,noDefault,capture);
 	}
-	,ended: function(handler,mode) {
-		return this.on("ended",handler,mode);
+	,ended: function(handler,mode,noDefault,capture) {
+		return this.on("ended",handler,mode,noDefault,capture);
 	}
-	,input: function(handler,mode) {
-		return this.on("input",handler,mode);
+	,input: function(handler,mode,noDefault,capture) {
+		return this.on("input",handler,mode,noDefault,capture);
 	}
-	,invalid: function(handler,mode) {
-		return this.on("invalid",handler,mode);
+	,invalid: function(handler,mode,noDefault,capture) {
+		return this.on("invalid",handler,mode,noDefault,capture);
 	}
-	,keyDown: function(handler,mode) {
-		return this.on("keydown",handler,mode);
+	,keyDown: function(handler,mode,noDefault,capture) {
+		return this.on("keydown",handler,mode,noDefault,capture);
 	}
-	,keyPress: function(handler,mode) {
-		return this.on("keypress",handler,mode);
+	,keyPress: function(handler,mode,noDefault,capture) {
+		return this.on("keypress",handler,mode,noDefault,capture);
 	}
-	,keyUp: function(handler,mode) {
-		return this.on("keyup",handler,mode);
+	,keyUp: function(handler,mode,noDefault,capture) {
+		return this.on("keyup",handler,mode,noDefault,capture);
 	}
-	,load: function(handler,mode) {
-		return this.on("load",handler,mode);
+	,load: function(handler,mode,noDefault,capture) {
+		return this.on("load",handler,mode,noDefault,capture);
 	}
-	,loadedData: function(handler,mode) {
-		return this.on("loadeddata",handler,mode);
+	,loadedData: function(handler,mode,noDefault,capture) {
+		return this.on("loadeddata",handler,mode,noDefault,capture);
 	}
-	,loadedMetadata: function(handler,mode) {
-		return this.on("loadedmetadata",handler,mode);
+	,loadedMetadata: function(handler,mode,noDefault,capture) {
+		return this.on("loadedmetadata",handler,mode,noDefault,capture);
 	}
-	,loadStart: function(handler,mode) {
-		return this.on("loadstart",handler,mode);
+	,loadStart: function(handler,mode,noDefault,capture) {
+		return this.on("loadstart",handler,mode,noDefault,capture);
 	}
-	,mouseDown: function(handler,mode) {
-		return this.on("mousedown",handler,mode);
+	,mouseDown: function(handler,mode,noDefault,capture) {
+		return this.on("mousedown",handler,mode,noDefault,capture);
 	}
-	,mouseEnter: function(handler,mode) {
-		return this.on("mouseenter",handler,mode);
+	,mouseEnter: function(handler,mode,noDefault,capture) {
+		return this.on("mouseenter",handler,mode,noDefault,capture);
 	}
-	,mouseLeave: function(handler,mode) {
-		return this.on("mouseleave",handler,mode);
+	,mouseLeave: function(handler,mode,noDefault,capture) {
+		return this.on("mouseleave",handler,mode,noDefault,capture);
 	}
-	,mouseMove: function(handler,mode) {
-		return this.on("mousemove",handler,mode);
+	,mouseMove: function(handler,mode,noDefault,capture) {
+		return this.on("mousemove",handler,mode,noDefault,capture);
 	}
-	,mouseOut: function(handler,mode) {
-		return this.on("mouseout",handler,mode);
+	,mouseOut: function(handler,mode,noDefault,capture) {
+		return this.on("mouseout",handler,mode,noDefault,capture);
 	}
-	,mouseOver: function(handler,mode) {
-		return this.on("mouseover",handler,mode);
+	,mouseOver: function(handler,mode,noDefault,capture) {
+		return this.on("mouseover",handler,mode,noDefault,capture);
 	}
-	,mouseUp: function(handler,mode) {
-		return this.on("mouseup",handler,mode);
+	,mouseUp: function(handler,mode,noDefault,capture) {
+		return this.on("mouseup",handler,mode,noDefault,capture);
 	}
-	,pause: function(handler,mode) {
-		return this.on("pause",handler,mode);
+	,pause: function(handler,mode,noDefault,capture) {
+		return this.on("pause",handler,mode,noDefault,capture);
 	}
-	,play: function(handler,mode) {
-		return this.on("play",handler,mode);
+	,play: function(handler,mode,noDefault,capture) {
+		return this.on("play",handler,mode,noDefault,capture);
 	}
-	,playing: function(handler,mode) {
-		return this.on("playing",handler,mode);
+	,playing: function(handler,mode,noDefault,capture) {
+		return this.on("playing",handler,mode,noDefault,capture);
 	}
-	,progress: function(handler,mode) {
-		return this.on("progress",handler,mode);
+	,progress: function(handler,mode,noDefault,capture) {
+		return this.on("progress",handler,mode,noDefault,capture);
 	}
-	,rateChange: function(handler,mode) {
-		return this.on("ratechange",handler,mode);
+	,rateChange: function(handler,mode,noDefault,capture) {
+		return this.on("ratechange",handler,mode,noDefault,capture);
 	}
-	,reset: function(handler,mode) {
-		return this.on("reset",handler,mode);
+	,reset: function(handler,mode,noDefault,capture) {
+		return this.on("reset",handler,mode,noDefault,capture);
 	}
-	,scroll: function(handler,mode) {
-		return this.on("scroll",handler,mode);
+	,scroll: function(handler,mode,noDefault,capture) {
+		return this.on("scroll",handler,mode,noDefault,capture);
 	}
-	,seeked: function(handler,mode) {
-		return this.on("seeked",handler,mode);
+	,seeked: function(handler,mode,noDefault,capture) {
+		return this.on("seeked",handler,mode,noDefault,capture);
 	}
-	,seeking: function(handler,mode) {
-		return this.on("seeking",handler,mode);
+	,seeking: function(handler,mode,noDefault,capture) {
+		return this.on("seeking",handler,mode,noDefault,capture);
 	}
-	,select: function(handler,mode) {
-		return this.on("select",handler,mode);
+	,select: function(handler,mode,noDefault,capture) {
+		return this.on("select",handler,mode,noDefault,capture);
 	}
-	,show: function(handler,mode) {
-		return this.on("show",handler,mode);
+	,show: function(handler,mode,noDefault,capture) {
+		return this.on("show",handler,mode,noDefault,capture);
 	}
-	,stalled: function(handler,mode) {
-		return this.on("stalled",handler,mode);
+	,stalled: function(handler,mode,noDefault,capture) {
+		return this.on("stalled",handler,mode,noDefault,capture);
 	}
-	,submit: function(handler,mode) {
-		return this.on("submit",handler,mode);
+	,submit: function(handler,mode,noDefault,capture) {
+		return this.on("submit",handler,mode,noDefault,capture);
 	}
-	,suspEnd: function(handler,mode) {
-		return this.on("suspend",handler,mode);
+	,suspEnd: function(handler,mode,noDefault,capture) {
+		return this.on("suspend",handler,mode,noDefault,capture);
 	}
-	,timeUpdate: function(handler,mode) {
-		return this.on("timeupdate",handler,mode);
+	,timeUpdate: function(handler,mode,noDefault,capture) {
+		return this.on("timeupdate",handler,mode,noDefault,capture);
 	}
-	,volumeChange: function(handler,mode) {
-		return this.on("volumechange",handler,mode);
+	,volumeChange: function(handler,mode,noDefault,capture) {
+		return this.on("volumechange",handler,mode,noDefault,capture);
 	}
-	,waiting: function(handler,mode) {
-		return this.on("waiting",handler,mode);
+	,waiting: function(handler,mode,noDefault,capture) {
+		return this.on("waiting",handler,mode,noDefault,capture);
 	}
-	,pointerCancel: function(handler,mode) {
-		return this.on("pointercancel",handler,mode);
+	,pointerCancel: function(handler,mode,noDefault,capture) {
+		return this.on("pointercancel",handler,mode,noDefault,capture);
 	}
-	,pointerDown: function(handler,mode) {
-		return this.on("pointerdown",handler,mode);
+	,pointerDown: function(handler,mode,noDefault,capture) {
+		return this.on("pointerdown",handler,mode,noDefault,capture);
 	}
-	,pointerUp: function(handler,mode) {
-		return this.on("pointerup",handler,mode);
+	,pointerUp: function(handler,mode,noDefault,capture) {
+		return this.on("pointerup",handler,mode,noDefault,capture);
 	}
-	,pointerMove: function(handler,mode) {
-		return this.on("pointermove",handler,mode);
+	,pointerMove: function(handler,mode,noDefault,capture) {
+		return this.on("pointermove",handler,mode,noDefault,capture);
 	}
-	,pointerOut: function(handler,mode) {
-		return this.on("pointerout",handler,mode);
+	,pointerOut: function(handler,mode,noDefault,capture) {
+		return this.on("pointerout",handler,mode,noDefault,capture);
 	}
-	,pointerOver: function(handler,mode) {
-		return this.on("pointerover",handler,mode);
+	,pointerOver: function(handler,mode,noDefault,capture) {
+		return this.on("pointerover",handler,mode,noDefault,capture);
 	}
-	,pointerEnter: function(handler,mode) {
-		return this.on("pointerenter",handler,mode);
+	,pointerEnter: function(handler,mode,noDefault,capture) {
+		return this.on("pointerenter",handler,mode,noDefault,capture);
 	}
-	,pointerLeave: function(handler,mode) {
-		return this.on("pointerleave",handler,mode);
+	,pointerLeave: function(handler,mode,noDefault,capture) {
+		return this.on("pointerleave",handler,mode,noDefault,capture);
 	}
-	,gotPointerCapture: function(handler,mode) {
-		return this.on("gotpointercapture",handler,mode);
+	,gotPointerCapture: function(handler,mode,noDefault,capture) {
+		return this.on("gotpointercapture",handler,mode,noDefault,capture);
 	}
-	,lostPointerCapture: function(handler,mode) {
-		return this.on("lostpointercapture",handler,mode);
+	,lostPointerCapture: function(handler,mode,noDefault,capture) {
+		return this.on("lostpointercapture",handler,mode,noDefault,capture);
 	}
-	,pointerLockChange: function(handler,mode) {
-		return this.on("pointerlockchange",handler,mode);
+	,pointerLockChange: function(handler,mode,noDefault,capture) {
+		return this.on("pointerlockchange",handler,mode,noDefault,capture);
 	}
-	,pointerLockError: function(handler,mode) {
-		return this.on("pointerlockerror",handler,mode);
+	,pointerLockError: function(handler,mode,noDefault,capture) {
+		return this.on("pointerlockerror",handler,mode,noDefault,capture);
 	}
-	,error: function(handler,mode) {
-		return this.on("error",handler,mode);
+	,error: function(handler,mode,noDefault,capture) {
+		return this.on("error",handler,mode,noDefault,capture);
 	}
-	,touchStart: function(handler,mode) {
-		return this.on("touchstart",handler,mode);
+	,touchStart: function(handler,mode,noDefault,capture) {
+		return this.on("touchstart",handler,mode,noDefault,capture);
 	}
-	,touchEnd: function(handler,mode) {
-		return this.on("touchend",handler,mode);
+	,touchEnd: function(handler,mode,noDefault,capture) {
+		return this.on("touchend",handler,mode,noDefault,capture);
 	}
-	,touchMove: function(handler,mode) {
-		return this.on("touchmove",handler,mode);
+	,touchMove: function(handler,mode,noDefault,capture) {
+		return this.on("touchmove",handler,mode,noDefault,capture);
 	}
-	,touchCancel: function(handler,mode) {
-		return this.on("touchcancel",handler,mode);
+	,touchCancel: function(handler,mode,noDefault,capture) {
+		return this.on("touchcancel",handler,mode,noDefault,capture);
 	}
-	,readyState: function(handler,mode) {
-		return this.on("readystatechange",handler,mode);
+	,readyState: function(handler,mode,noDefault,capture) {
+		return this.on("readystatechange",handler,mode,noDefault,capture);
 	}
-	,visibility: function(handler,mode) {
-		return this.on("visibility",handler,mode);
+	,visibility: function(handler,mode,noDefault,capture) {
+		return this.on("visibility",handler,mode,noDefault,capture);
 	}
-	,resize: function(handler,mode) {
-		return this.on("resize",handler,mode);
+	,resize: function(handler,mode,noDefault,capture) {
+		return this.on("resize",handler,mode,noDefault,capture);
 	}
 	,dispose: function() {
 		var _g = this;
@@ -2673,7 +2662,7 @@ sirius_data_Logger.prototype = {
 		default:
 			t = "";
 		}
-		haxe_Log.trace(t + Std.string(q),{ fileName : "Logger.hx", lineNumber : 54, className : "sirius.data.Logger", methodName : "query"});
+		console.log(t + Std.string(q));
 	}
 	,__class__: sirius_data_Logger
 };
@@ -3001,6 +2990,16 @@ sirius_modules_ModLib.prototype = {
 		var content = Reflect.field(sirius_modules_ModLib.CACHE,name);
 		data = this._sanitize(name,data);
 		if(data != null) return sirius_utils_Filler.to(content,data); else return content;
+	}
+	,getObj: function(name,data) {
+		var val = this.get(name,data);
+		if(val != null) try {
+			return JSON.parse(val);
+		} catch( e ) {
+			if (e instanceof js__$Boot_HaxeError) e = e.val;
+			haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 166, className : "sirius.modules.ModLib", methodName : "getObj"});
+		}
+		return null;
 	}
 	,fill: function(module,data,sufix) {
 		return sirius_utils_Filler.to(this.get(module),data,sufix);
@@ -4781,26 +4780,24 @@ sirius_dom_Input.get = function(q) {
 sirius_dom_Input.__super__ = sirius_dom_Display;
 sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	_onFileSelected: function(e) {
-		var ftype;
-		var _this = this.file(0).type;
-		ftype = HxOverrides.substr(_this,0,5);
-		if(ftype == "image") {
-			if(this.fillTarget != null) {
-				if(this.fillTarget.typeOf() == "IMG") {
-					var img = this.fillTarget;
-					img.src(this.readFile(0));
-				} else {
-					sirius_dom_Input.fixer.backgroundImage = "url(" + this.readFile(0) + ")";
-					this.fillTarget.style(sirius_dom_Input.fixer);
-					Reflect.deleteField(sirius_dom_Input.fixer,"backgroundImage");
-				}
+		if(js_Boot.__instanceof(e,sirius_events_IEvent)) {
+			var ftype;
+			var _this = this.file(0).type;
+			ftype = HxOverrides.substr(_this,0,5);
+			if(ftype == "image") this.readFile(0,$bind(this,this._onFileSelected)); else {
+				var bg;
+				if(Object.prototype.hasOwnProperty.call(sirius_dom_Input.icons,ftype)) bg = Reflect.field(sirius_dom_Input.icons,ftype); else bg = sirius_dom_Input.icons.common;
+				if(bg != null && this.fileIO != null) this.fileIO.style({ backgroundImage : "url(" + bg + ")"});
+				if(this._ioHandler != null) this._ioHandler(this,null);
 			}
-			if(this._ioHandler != null) this._ioHandler(this);
 		} else {
-			var bg;
-			if(Object.prototype.hasOwnProperty.call(sirius_dom_Input.icons,ftype)) bg = Reflect.field(sirius_dom_Input.icons,ftype); else bg = sirius_dom_Input.icons.common;
-			if(bg != null && this.fillTarget != null) this.fillTarget.style({ backgroundImage : "url(" + bg + ")"});
-			if(this._ioHandler != null) this._ioHandler(this);
+			if(this.fileIO != null) {
+				if(this.fileIO.typeOf() == "IMG") {
+					var img = this.fileIO;
+					img.src(e);
+				} else this.fileIO.style({ backgroundImage : "url(" + Std.string(e) + ")"});
+			}
+			if(this._ioHandler != null) this._ioHandler(this,e);
 		}
 	}
 	,type: function(q) {
@@ -4882,10 +4879,6 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		}
 		return q;
 	}
-	,clear: function(background) {
-		this.value("");
-		if(this.fillTarget != null) this.fillTarget.style("backgroundImage",background);
-	}
 	,isValid: function() {
 		var v = this.object.value;
 		if(v.length == 0) return false; else if(this._rgx != null) return this._rgx.match(v); else return true;
@@ -4903,18 +4896,26 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		if(id == null) id = 0;
 		return this.files().item(id);
 	}
-	,readFile: function(id) {
-		if(id == null) id = 0;
-		return window.URL.createObjectURL(this.file());
+	,numberOnly: function() {
 	}
-	,control: function(handler,target) {
+	,readFile: function(id,handler) {
+		if(id == null) id = 0;
+		var reader = new FileReader();
+		reader.onload = function() {
+			handler(reader.result);
+		};
+		reader.readAsDataURL(this.file(id));
+	}
+	,fileController: function(target,handler) {
 		this._ioHandler = handler;
-		this.fillTarget = target;
-		if(this.attribute("sr-control") != "ready") {
-			this.type("file");
-			this.attribute("sr-control","ready");
-			this.events.change($bind(this,this._onFileSelected));
-		}
+		this.fileIO = target;
+		if(this.fileIO != null) this.fileIO.style(sirius_dom_Input.fixer);
+		this.type("file");
+		this.events.change($bind(this,this._onFileSelected));
+	}
+	,clearBackground: function(bg) {
+		if(bg == null) bg = "";
+		if(this.fileIO != null) this.fileIO.style({ backgroundImage : bg});
 	}
 	,check: function(toggle) {
 		if(toggle == null) toggle = true;
@@ -5593,6 +5594,13 @@ sirius_events_EventGroup.prototype = {
 		if(capture != null) this.capture = capture;
 		if(handler != null) this.events.push(handler);
 		return this;
+	}
+	,addOnce: function(handler,capture) {
+		if(!this.exists(handler)) this.add(handler,capture);
+		return this;
+	}
+	,exists: function(handler) {
+		return HxOverrides.indexOf(this.events,handler,0) != -1;
 	}
 	,remove: function(handler) {
 		var iof = Lambda.indexOf(this.events,handler);
@@ -6861,7 +6869,7 @@ sirius_tools_Utils.isValid = function(o) {
 	}
 	return false;
 };
-sirius_tools_Utils.isValidAlt = function(o,alt) {
+sirius_tools_Utils.getValidOne = function(o,alt) {
 	if(sirius_tools_Utils.isValid(o)) return o; else return alt;
 };
 sirius_tools_Utils["typeof"] = function(o) {
@@ -6881,7 +6889,7 @@ sirius_tools_Utils["typeof"] = function(o) {
 	return null;
 };
 sirius_tools_Utils["boolean"] = function(q) {
-	return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept";
+	return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok";
 };
 sirius_tools_Utils.money = function(val,s,a,b) {
 	if(b == null) b = ".";
@@ -7156,7 +7164,7 @@ sirius_utils_Table.prototype = {
 				}
 				++ind;
 			}
-		} else sirius_Sirius.log("Table => " + (q != null?q:t != null?t.className:"UNKNOW") + " : EMPTY",2);
+		}
 		return this;
 	}
 	,contains: function(q) {

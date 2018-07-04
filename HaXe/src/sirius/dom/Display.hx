@@ -132,7 +132,7 @@ class Display extends Push implements IDisplay {
 	
 	public function dispose():Void {
 		if(_uid != -1 && element != null){
-			Sirius.log('Disposing object {' + _uid + '}...');
+			//Sirius.log('Disposing object {' + _uid + '}...');
 			Reflect.deleteField(_DATA, _uid + '');
 			if(_children != null)
 				_children.dispose();

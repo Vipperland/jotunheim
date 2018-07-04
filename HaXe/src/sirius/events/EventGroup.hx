@@ -45,6 +45,17 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
+	public function addOnce(handler:IEvent->Void, ?capture:Bool):IEventGroup {
+		if (!exists(handler)) {
+			add(handler, capture);
+		}
+		return this;
+	}
+	
+	public function exists(handler:IEvent->Void):Bool {
+		return this.events.indexOf(handler) != -1;
+	}
+	
 	public function remove(handler:IEvent->Void):IEventGroup {
 		var iof:Int = Lambda.indexOf(this.events, handler);
 		if (iof != -1)
