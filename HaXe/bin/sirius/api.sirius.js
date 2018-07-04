@@ -4780,24 +4780,26 @@ sirius_dom_Input.get = function(q) {
 sirius_dom_Input.__super__ = sirius_dom_Display;
 sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 	_onFileSelected: function(e) {
-		if(js_Boot.__instanceof(e,sirius_events_IEvent)) {
-			var ftype;
-			var _this = this.file(0).type;
-			ftype = HxOverrides.substr(_this,0,5);
-			if(ftype == "image") this.readFile(0,$bind(this,this._onFileSelected)); else {
-				var bg;
-				if(Object.prototype.hasOwnProperty.call(sirius_dom_Input.icons,ftype)) bg = Reflect.field(sirius_dom_Input.icons,ftype); else bg = sirius_dom_Input.icons.common;
-				if(bg != null && this.fileIO != null) this.fileIO.style({ backgroundImage : "url(" + bg + ")"});
-				if(this._ioHandler != null) this._ioHandler(this,null);
+		var ftype;
+		var _this = this.file(0).type;
+		ftype = HxOverrides.substr(_this,0,5);
+		if(ftype == "image") {
+			if(this.fillTarget != null) {
+				if(this.fillTarget.typeOf() == "IMG") {
+					var img = this.fillTarget;
+					img.src(this.readFile(0));
+				} else {
+					sirius_dom_Input.fixer.backgroundImage = "url(" + this.readFile(0) + ")";
+					this.fillTarget.style(sirius_dom_Input.fixer);
+					Reflect.deleteField(sirius_dom_Input.fixer,"backgroundImage");
+				}
 			}
+			if(this._ioHandler != null) this._ioHandler(this);
 		} else {
-			if(this.fileIO != null) {
-				if(this.fileIO.typeOf() == "IMG") {
-					var img = this.fileIO;
-					img.src(e);
-				} else this.fileIO.style({ backgroundImage : "url(" + Std.string(e) + ")"});
-			}
-			if(this._ioHandler != null) this._ioHandler(this,e);
+			var bg;
+			if(Object.prototype.hasOwnProperty.call(sirius_dom_Input.icons,ftype)) bg = Reflect.field(sirius_dom_Input.icons,ftype); else bg = sirius_dom_Input.icons.common;
+			if(bg != null && this.fillTarget != null) this.fillTarget.style({ backgroundImage : "url(" + bg + ")"});
+			if(this._ioHandler != null) this._ioHandler(this);
 		}
 	}
 	,type: function(q) {
@@ -4879,6 +4881,10 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		}
 		return q;
 	}
+	,clear: function(background) {
+		this.value("");
+		if(this.fillTarget != null) this.fillTarget.style("backgroundImage",background);
+	}
 	,isValid: function() {
 		var v = this.object.value;
 		if(v.length == 0) return false; else if(this._rgx != null) return this._rgx.match(v); else return true;
@@ -4896,26 +4902,18 @@ sirius_dom_Input.prototype = $extend(sirius_dom_Display.prototype,{
 		if(id == null) id = 0;
 		return this.files().item(id);
 	}
-	,numberOnly: function() {
-	}
-	,readFile: function(id,handler) {
+	,readFile: function(id) {
 		if(id == null) id = 0;
-		var reader = new FileReader();
-		reader.onload = function() {
-			handler(reader.result);
-		};
-		reader.readAsDataURL(this.file(id));
+		return window.URL.createObjectURL(this.file());
 	}
-	,fileController: function(target,handler) {
+	,control: function(handler,target) {
 		this._ioHandler = handler;
-		this.fileIO = target;
-		if(this.fileIO != null) this.fileIO.style(sirius_dom_Input.fixer);
-		this.type("file");
-		this.events.change($bind(this,this._onFileSelected));
-	}
-	,clearBackground: function(bg) {
-		if(bg == null) bg = "";
-		if(this.fileIO != null) this.fileIO.style({ backgroundImage : bg});
+		this.fillTarget = target;
+		if(this.attribute("sr-control") != "ready") {
+			this.type("file");
+			this.attribute("sr-control","ready");
+			this.events.change($bind(this,this._onFileSelected));
+		}
 	}
 	,check: function(toggle) {
 		if(toggle == null) toggle = true;

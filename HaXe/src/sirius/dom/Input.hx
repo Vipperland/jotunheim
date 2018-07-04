@@ -195,7 +195,7 @@ class Input extends Display {
 	}
 	
 	public function readFile(id:UInt = 0):String {
-		return Browser.window.URL.createObjectURL(file());
+		return (cast Browser.window).URL.createObjectURL(file());
 	}
 	
 	/**
