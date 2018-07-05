@@ -219,6 +219,12 @@ class Display extends Push implements IDisplay {
 			return -1;
 	}
 	
+	public function setIndex(i:UInt):IDisplay {
+		if(parent() != null)
+			_parent.addChild(this, i);
+		return this;
+	}
+	
 	public function indexOf(q:IDisplay):Int {
 		var chd = element.childNodes;
 		var len = chd.length;

@@ -92,6 +92,13 @@ interface IDisplay extends IPush implements Dynamic  {
 	public function index():Int;
 	
 	/**
+	 * Change Child Index
+	 * @param	i
+	 * @return
+	 */
+	public function setIndex(i:UInt):IDisplay;
+	
+	/**
 	 * Unique Sirius DOM ID
 	 * @return
 	 */
