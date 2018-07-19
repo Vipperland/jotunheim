@@ -1497,6 +1497,10 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 	,index: function() {
 		if(this.parent() != null) return this._parent.indexOf(this); else return -1;
 	}
+	,setIndex: function(i) {
+		if(this.parent() != null) this._parent.addChild(this,i);
+		return this;
+	}
 	,indexOf: function(q) {
 		var chd = this.element.childNodes;
 		var len = chd.length;

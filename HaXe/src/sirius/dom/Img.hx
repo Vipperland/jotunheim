@@ -1,6 +1,8 @@
 package sirius.dom;
 import js.Browser;
+import js.html.Blob;
 import js.html.ImageElement;
+import js.html.XMLHttpRequest;
 
 /**
  * ...
@@ -30,6 +32,25 @@ class Img extends Display{
 	public function alt(?value:String):String {
 		if (value != null) object.alt = value;
 		return object.alt;
+	}
+	
+	public function loadBinary(url:String):Void {
+		var req:XMLHttpRequest = new XMLHttpRequest();
+		var url:String = url;
+		req.open('GET', url, true);
+		req.responseType = cast "arraybuffer";
+		req.send(null);
+		req.onload = function(e:Dynamic){
+			var blob = new Blob([e.target.response]);
+			src(Utils.fileToURL(cast blob));
+			events.progress().call(false, true, {completed:true});
+		}
+		req.onprogress = function(e:Dynamic){
+			events.progress().call(false, true, e);
+		}
+		req.onerror = function(e:Dynamic){
+			events.error().call(false, true, e);
+		}
 	}
 	
 }
