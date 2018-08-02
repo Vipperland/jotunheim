@@ -5661,6 +5661,258 @@ sirius_events_EventGroup.prototype = {
 	}
 	,__class__: sirius_events_EventGroup
 };
+var sirius_gaming_actions_Resolution = function(type,data) {
+	this._type = type;
+	if((data.query instanceof Array) && data.query.__enum__ == null) this.query = data.query; else if(sirius_tools_Utils.isValid(data.query)) this.query = [data.query];
+	if(this.query != null) this.query.unshift("@result");
+	if(data.onSuccess != null) this.onSuccess = new sirius_gaming_actions_Events(this._type + ".onSuccess",data.onSuccess);
+	if(data.onFail != null) this.onFail = new sirius_gaming_actions_Events(this._type + ".onFail",data.onFail);
+};
+sirius_gaming_actions_Resolution.__name__ = ["sirius","gaming","actions","Resolution"];
+sirius_gaming_actions_Resolution.prototype = {
+	resolve: function(result,context) {
+		++context.ident;
+		if(result) {
+			if(this.onSuccess != null) this.onSuccess.run(context);
+		} else if(this.onFail != null) this.onFail.run(context);
+		--context.ident;
+		return result;
+	}
+	,__class__: sirius_gaming_actions_Resolution
+};
+var sirius_gaming_actions_ActionQuery = function() {
+	sirius_flow_Push.call(this);
+};
+sirius_gaming_actions_ActionQuery.__name__ = ["sirius","gaming","actions","ActionQuery"];
+sirius_gaming_actions_ActionQuery._resolve = function(a,r,v) {
+	if(r == null) r = "=";
+	switch(r) {
+	case "=":
+		return v;
+	case "++":
+		return a + v;
+	case "+":
+		return ++a;
+	case "--":
+		return --a;
+	case "-":
+		return a - v;
+	case "*":
+		return a * v;
+	case "/":
+		return a / v;
+	case "%":
+		return a % v;
+	case "<":
+		return sirius_tools_Flag.FPut(a,1 << v);
+	case ">":
+		return sirius_tools_Flag.FDrop(a,1 << v);
+	case "|":
+		return a | v;
+	case "&":
+		return a & v;
+	case "^":
+		return Math.pow(a,v);
+	}
+	return a == v;
+};
+sirius_gaming_actions_ActionQuery.__super__ = sirius_flow_Push;
+sirius_gaming_actions_ActionQuery.prototype = $extend(sirius_flow_Push.prototype,{
+	_isempty: function(value) {
+		return value == null || value == "";
+	}
+	,_getint: function(value) {
+		var o = Std.parseInt(value);
+		if(o != null) return o; else return 0;
+	}
+	,__class__: sirius_gaming_actions_ActionQuery
+});
+var sirius_gaming_actions_Action = function(type,data) {
+	var _g = this;
+	sirius_gaming_actions_Resolution.call(this,type,data);
+	this.requirements = [];
+	sirius_utils_Dice.All(data.requirements,function(p,v) {
+		_g.requirements[_g.requirements.length] = new sirius_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v);
+	});
+	if(sirius_tools_Utils.isValid(data.target)) this.target = Std["int"](data.target); else if(this.requirements.length == 0) this.target = 0; else this.target = 1;
+};
+sirius_gaming_actions_Action.__name__ = ["sirius","gaming","actions","Action"];
+sirius_gaming_actions_Action._log = function(evt,context,success,score) {
+	var s = "";
+	while(s.length < context.ident) s += "\t";
+	context.log.push(s + "↑ ACTION " + evt._type + " " + (success?"SUCCESS":"FAIL") + " score:" + score + "/" + evt.target);
+};
+sirius_gaming_actions_Action.__super__ = sirius_gaming_actions_Resolution;
+sirius_gaming_actions_Action.prototype = $extend(sirius_gaming_actions_Resolution.prototype,{
+	run: function(context) {
+		var resolution = 0;
+		++context.ident;
+		sirius_utils_Dice.Values(this.requirements,function(r) {
+			var result = r.verify(context);
+			if(result) {
+				++resolution;
+				return r.cancelOnSuccess;
+			} else {
+				--resolution;
+				return r.cancelOnFail;
+			}
+		});
+		--context.ident;
+		var success = this.target == 0 || this.target > 0 && resolution >= this.target || this.target < 0 && resolution <= this.target;
+		sirius_gaming_actions_Action._log(this,context,success,resolution);
+		if(success) {
+			if(sirius_tools_Utils.isValid(this.query)) {
+				sirius_gaming_actions_Action.commands.proc(this.query);
+				sirius_gaming_actions_Action.commands.flush();
+			}
+		}
+		return this.resolve(success,context);
+	}
+	,__class__: sirius_gaming_actions_Action
+});
+var sirius_gaming_actions_EventController = function(data) {
+	var _g = this;
+	this.events = sirius_Sirius.resources.getObj("core.data.Events");
+	sirius_utils_Dice.All(this.events,function(p,v) {
+		sirius_gaming_actions_Events.patch(_g);
+	});
+};
+sirius_gaming_actions_EventController.__name__ = ["sirius","gaming","actions","EventController"];
+sirius_gaming_actions_EventController.CONTEXT = function(data) {
+	return { log : [], ident : 0, ticks : 0, origin : data};
+};
+sirius_gaming_actions_EventController.prototype = {
+	call: function(name,data) {
+		if(Object.prototype.hasOwnProperty.call(this.events,name)) Reflect.field(this.events,name).run(sirius_gaming_actions_EventController.CONTEXT(data)); else {
+		}
+	}
+	,__class__: sirius_gaming_actions_EventController
+};
+var sirius_gaming_actions_Events = function(type,data) {
+	this._type = type;
+	this._init(data);
+};
+sirius_gaming_actions_Events.__name__ = ["sirius","gaming","actions","Events"];
+sirius_gaming_actions_Events.patch = function(data,run,origin) {
+	if(data.events != null) {
+		if(!data.events.patched) {
+			data.events.patched = true;
+			sirius_utils_Dice.All(data.events,function(p,v) {
+				data.events[p] = new sirius_gaming_actions_Events(p,v);
+			});
+		}
+	}
+	if(run != null) {
+		if(Object.prototype.hasOwnProperty.call(data.events,run)) {
+			var events = Reflect.field(data.events,run);
+			events.run(sirius_gaming_actions_EventController.CONTEXT(data));
+		}
+	}
+};
+sirius_gaming_actions_Events._log = function(evt,context) {
+	var s = "";
+	while(s.length < context.ident) s += "\t";
+	var a = evt._data.length;
+	context.log.push(s + "≈ EVENT " + evt._type + (a == 0?" <!>EMPTY":" @" + a));
+};
+sirius_gaming_actions_Events.prototype = {
+	_init: function(data) {
+		var _g = this;
+		this._data = [];
+		var i = 0;
+		sirius_utils_Dice.All(data,function(p,v) {
+			_g._data[i] = new sirius_gaming_actions_Action(_g._type + "[" + p + "]",v);
+			++i;
+		});
+	}
+	,run: function(context) {
+		var l = context.log.length;
+		++context.ident;
+		sirius_utils_Dice.Values(this._data,function(a) {
+			return !a.run(context);
+		});
+		--context.ident;
+		sirius_gaming_actions_Events._log(this,context);
+		if(context.ident == 0) {
+			context.log.reverse();
+			sirius_Sirius.log(context.log.join("\r\n\t\t\t\t|"));
+		}
+	}
+	,__class__: sirius_gaming_actions_Events
+};
+var sirius_gaming_actions_IEventContext = function() { };
+sirius_gaming_actions_IEventContext.__name__ = ["sirius","gaming","actions","IEventContext"];
+sirius_gaming_actions_IEventContext.prototype = {
+	__class__: sirius_gaming_actions_IEventContext
+};
+var sirius_gaming_actions_RequirementQuery = function() {
+	sirius_flow_Push.call(this);
+};
+sirius_gaming_actions_RequirementQuery.__name__ = ["sirius","gaming","actions","RequirementQuery"];
+sirius_gaming_actions_RequirementQuery.__super__ = sirius_flow_Push;
+sirius_gaming_actions_RequirementQuery.prototype = $extend(sirius_flow_Push.prototype,{
+	_isempty: function(value) {
+		return value == null || value == "";
+	}
+	,_getint: function(value) {
+		var o = Std.parseInt(value);
+		if(o != null) return o; else return 0;
+	}
+	,_resolve: function(a,r,v) {
+		if(r == null) r = ">=";
+		switch(r) {
+		case "<":
+			return a < v;
+		case "<=":
+			return a <= v;
+		case ">":
+			return a > v;
+		case ">=":
+			return a >= v;
+		case "!=":
+			return a != v;
+		case "*=":
+			return a.indexOf(v) != -1;
+		case "~=":
+			return v.indexOf(a) != -1;
+		}
+		return a == v;
+	}
+	,__class__: sirius_gaming_actions_RequirementQuery
+});
+var sirius_gaming_actions_Requirement = function(type,data) {
+	sirius_gaming_actions_Resolution.call(this,type,data);
+	this.cancelOnSuccess = data.cancelOnSuccess == true;
+	this.cancelOnFail = data.cancelOnFail == true;
+	this.reverse = data.reverse == true;
+	if(sirius_tools_Utils.isValid(data.target)) this.target = Std["int"](data.target); else if(this.query != null) this.target = this.query.length - 1; else this.target = 0;
+};
+sirius_gaming_actions_Requirement.__name__ = ["sirius","gaming","actions","Requirement"];
+sirius_gaming_actions_Requirement._log = function(evt,context,success,score,reversed) {
+	var s = "";
+	while(s.length < context.ident) s += "\t";
+	context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success?"SUCCESS":"FAIL") + (reversed?" REVERSED":"") + " score:" + score + "/" + evt.target);
+};
+sirius_gaming_actions_Requirement.__super__ = sirius_gaming_actions_Resolution;
+sirius_gaming_actions_Requirement.prototype = $extend(sirius_gaming_actions_Resolution.prototype,{
+	verify: function(context) {
+		var res = true;
+		var score = 0;
+		if(sirius_tools_Utils.isValid(this.query)) {
+			var sec = sirius_gaming_actions_Requirement.commands.proc(this.query).result;
+			if(sec != null) sirius_utils_Dice.Values(sec,function(v) {
+				if(sirius_tools_Utils["boolean"](v)) ++score;
+			});
+			sirius_gaming_actions_Requirement.commands.flush();
+			res = _$UInt_UInt_$Impl_$.gte(score,this.target);
+			if(this.reverse) res = !res;
+		}
+		this.resolve(res,context);
+		sirius_gaming_actions_Requirement._log(this,context,res,score,this.reverse);
+		return res;
+	}
+	,__class__: sirius_gaming_actions_Requirement
+});
 var sirius_math_IPoint = function() { };
 sirius_math_IPoint.__name__ = ["sirius","math","IPoint"];
 sirius_math_IPoint.prototype = {
@@ -7587,6 +7839,8 @@ sirius_css_XCSS.enabled = false;
 sirius_dom_Display3D._fixed = false;
 sirius_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center center"};
 sirius_dom_Input.icons = { };
+sirius_gaming_actions_Action.commands = new sirius_gaming_actions_ActionQuery();
+sirius_gaming_actions_Requirement.commands = new sirius_gaming_actions_RequirementQuery();
 sirius_tools_Delayer.setTimeout = setTimeout;
 sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;

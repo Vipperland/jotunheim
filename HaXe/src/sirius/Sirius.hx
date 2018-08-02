@@ -37,6 +37,7 @@ import sirius.utils.Filler;
 	import sirius.utils.Pixel;
 	import sirius.utils.SearchTag;
 	import sirius.utils.Table;
+	import sirius.gaming.actions.Events;
 #elseif php
 	import php.Lib;
 	import sirius.data.DataCache;
