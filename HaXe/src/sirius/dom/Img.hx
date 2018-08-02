@@ -3,13 +3,14 @@ import js.Browser;
 import js.html.Blob;
 import js.html.ImageElement;
 import js.html.XMLHttpRequest;
+import sirius.tools.Utils;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Img")
-class Img extends Display{
+class Img extends Display {
 	
 	static public function get(q:String):Img {
 		return cast Sirius.one(q);

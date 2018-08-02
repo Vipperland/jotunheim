@@ -1,6 +1,8 @@
 package sirius.tools;
 import haxe.Json;
 import haxe.Log;
+import js.html.Blob;
+import js.html.File;
 
 #if js
 
@@ -213,6 +215,10 @@ class Utils{
 				}
 			}
 			return data;
+		}
+		
+		static public function fileToURL(file:File):String {
+			return (cast Browser.window).URL.createObjectURL(file);
 		}
 		
 		
