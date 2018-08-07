@@ -8,23 +8,14 @@ import sirius.tools.Flag;
 @:expose('JsonTool')
 class JsonTool {
 	
-	/**
-	 * Supress null values and set {BitIO} object to b=b.value
-	 * @param	a
-	 * @param	b
-	 * @return
-	 */
-	static public function supressNull():Void {
-		customReplacer = function (a:Dynamic, b:Dynamic):Dynamic { 
-			if (Std.is(a, String)) {
-				if (a.substr(0, 1) == "_") return null;
-			}
-			if (Std.is(b, Flag)) return b.value;
-			return (b == null) ? null : b; 
-		}
-	}
 	
-	static public var customReplacer:Dynamic->Dynamic->Dynamic = null;
+	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
+		if (Std.is(a, String)) {
+			if (a.substr(0, 1) == "_") return null;
+		}
+		if (Std.is(b, Flag)) return b.value;
+		return (b == null) ? null : b; 
+	};
 	
 	static public function stringfy(o:Dynamic, ?replacer:Dynamic -> Dynamic -> Dynamic, ?space:String) : String {
 		var printer = new JsonTool(replacer != null ? replacer : customReplacer, space);

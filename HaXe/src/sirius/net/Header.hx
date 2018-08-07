@@ -53,10 +53,10 @@ class Header {
 	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
 		content(JSON);
 		if (data != null) {
-			var data:String = JsonTool.stringfy(data, null, " ");
-			if (encode == true) data = IOTools.encodeBase64(data);
-			Web.setHeader('Content-Length', Std.string(data.length));
-			Lib.print(data);
+			var q:String = JsonTool.stringfy(data, null, " ");
+			if (encode == true) q = IOTools.encodeBase64(q);
+			Web.setHeader('Content-Length', Std.string(q.length));
+			Lib.print(q);
 		}
 	}
 	

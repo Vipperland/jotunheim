@@ -108,7 +108,7 @@ class DataTable implements IDataTable {
 	
 	public function sum(field:String, ?clausule:Dynamic = null):UInt {
 		var command:ICommand = _gate.builder.find('SUM(' + field + ') as _SumResult_', _name, clausule, null, null).execute();
-		return Utils.isValidAlt(command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], '_SumResult_')) : 0, 0);
+		return Utils.getValidOne(command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], '_SumResult_')) : 0, 0);
 	}
 	
 	public function optimize(paramaters:Dynamic):Dynamic {

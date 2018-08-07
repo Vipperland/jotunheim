@@ -1,15 +1,16 @@
 package sirius.tools;
 import haxe.Json;
 import haxe.Log;
-import js.html.Blob;
-import js.html.File;
+import sirius.utils.IDiceRoll;
 
 #if js
 
 	import js.Lib;
 	import js.Browser;
 	import js.html.Attr;
+	import js.html.Blob;
 	import js.html.Element;
+	import js.html.File;
 	import js.html.NamedNodeMap;
 	import sirius.flow.Push;
 	import sirius.dom.A;
@@ -322,6 +323,18 @@ class Utils{
 				return o != 0 && o != false;
 		}
 		return false;
+	}
+	
+	/**
+	 * Check if a value is !null or/and length>0 if a string
+	 * @param	o
+	 * @return
+	 */
+	static public function isValidAll(o:Array<Dynamic>):Bool {
+		var q:IDiceRoll = Dice.Values(o, function(v:Dynamic){
+			return !isValid(v);
+		});
+		return q.completed;
 	}
 	
 	/**
