@@ -101,4 +101,8 @@ class Gate implements IGate {
 		return Reflect.field(_tables, table);
 	}
 	
+	public function ifTableExists(table:String):Bool {
+		return builder.find("COUNT(*)", "information_schema.TABLES", Clause.EQUAL("TABLE_NAME", table), null, Limit.ONE).execute().length() == 1;
+	}
+	
 }

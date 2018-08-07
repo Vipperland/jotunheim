@@ -74,5 +74,12 @@ interface IGate {
 	 */
 	public function insertedId ():UInt;
 	
+	/**
+	 * Verify if table exists
+	 * @param	table
+	 * @return
+	 */
+	public function ifTableExists(table:String):Bool;
+	
 	
 }

@@ -102,8 +102,7 @@ class DataTable implements IDataTable {
 	}
 	
 	public function length(?clausule:Dynamic=null):UInt {
-		var command:ICommand = _gate.builder.find('COUNT(*)', _name, clausule, null, null).execute();
-		return command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], 'COUNT(*)')) : 0;
+		return _gate.builder.find('COUNT(*)', _name, clausule, null, null).execute().length();
 	}
 	
 	public function sum(field:String, ?clausule:Dynamic = null):UInt {

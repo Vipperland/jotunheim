@@ -112,6 +112,18 @@ class Command implements ICommand {
 		return filter;
 	}
 	
+	public function length(?prop:String = 'COUNT(*)'):UInt {
+		if (result != null && result.length > 0){
+			var r0:Dynamic = result[0];
+			if (Reflect.hasField(r0, prop)){
+				return Std.parseInt(Reflect.field(r0, prop));
+			}else{
+				return result.length;
+			}
+		}
+		return 0;
+	}
+	
 	public function log():String {
 		var q:String = _query;
 		var r:Array<String>  = q.split(':');

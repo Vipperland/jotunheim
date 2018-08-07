@@ -55,9 +55,10 @@ interface ICommand {
 	public function fetch (handler:IDataSet->Bool) : ICommand;
 	
 	/**
-	 * Dump the final query
+	 * Count result length by COUNT(*) property or result length
+	 * @return
 	 */
-	public function log():String;
+	public function length(?prop:String):UInt;
 	
 	/**
 	 * Find params equal one or more value
@@ -67,5 +68,10 @@ interface ICommand {
 	 * @return
 	 */
 	public function find(param:String, values:Array<Dynamic>, ?limit:UInt = 0):Array<Dynamic>;
+	
+	/**
+	 * Dump the final query
+	 */
+	public function log():String;
 	
 }
