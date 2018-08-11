@@ -24,6 +24,13 @@ interface IDataTable {
 	public var description(get_description, null):Dynamic;
 	
 	/**
+	 * Default Constructor Object for SELECT
+	 * @param	value
+	 * @return
+	 */
+	public function setClassObj(value:Dynamic):IDataTable;
+	
+	/**
 	 * Create a TableObject and return itself
 	 * @param	data
 	 * @return
@@ -107,7 +114,7 @@ interface IDataTable {
 	public function optimize(paramaters:Dynamic):Dynamic;
 	
 	
-	public function link(id:String, field:String, table:String, field:String, ?del:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand;
+	public function link(id:String, key:String, table:String, field:String, ?del:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand;
 	
 	
 	public function unlink(id:String):ICommand;

@@ -62,6 +62,7 @@ class Gate implements IGate {
 			_token = token;
 			try {
 				_db = Database.connect(token.host, token.user, token.pass, token.options);
+				setPdoAttributes(false);
 			}catch (e:Dynamic) {
 				errors[errors.length] = new Error(e.getCode(), e.getMessage());
 			}
@@ -70,10 +71,10 @@ class Gate implements IGate {
 		return this;
 	}
 	
-	public function prepare(query:String, ?parameters:Dynamic = null, ?object:Dynamic = null, ?options:Dynamic = null):ICommand {
+	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
 		var pdo:Statement = null;
 		if (isOpen()) pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-		command = new Command(pdo, query, parameters, object, _errors, _logCommands ? _log : null);
+		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
 		return command;
 	}
 	
@@ -94,6 +95,14 @@ class Gate implements IGate {
 	
 	public function insertedId():UInt {
 		return Std.parseInt(_db.lastInsertId());
+	}
+	
+	public function setPdoAttributes(value:Bool):IGate {
+		_db.setAttribute(untyped __php__('PDO::ATTR_STRINGIFY_FETCHES'), value);
+		//_db.setAttribute(untyped __php__('PDO::ATTR_EMULATE_PREPARES'), value);
+		_db.setAttribute(untyped __php__('PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
+		//_db.setAttribute(untyped __php__('PDO::ATTR_ERRMODE'), untyped __php__('PDO::ERRMODE_EXCEPTION'));
+		return this;
 	}
 	
 	public function table(table:String):IDataTable {

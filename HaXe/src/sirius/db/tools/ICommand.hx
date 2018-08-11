@@ -45,7 +45,7 @@ interface ICommand {
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:IDataSet->Bool, ?type:Int=2, ?parameters:Array<Dynamic>) : ICommand;
+	public function execute (?handler:IDataSet->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : ICommand;
 	
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)

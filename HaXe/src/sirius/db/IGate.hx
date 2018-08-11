@@ -52,7 +52,7 @@ interface IGate {
 	 * @param	options
 	 * @return
 	 */
-	public function prepare(query:String, ?parameters:Dynamic = null, ?object:Dynamic = null, ?options:Dynamic = null):ICommand;
+	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand;
 	
 	/**
 	 * Show all fields of a table
@@ -67,6 +67,13 @@ interface IGate {
 	 * @return
 	 */
 	public function table (table:String):IDataTable;
+	
+	/**
+	 * Enable/Disable INT to String conversions
+	 * @param	value
+	 * @return
+	 */
+	public function setPdoAttributes(value:Bool):IGate;
 	
 	/**
 	 * Last row affected

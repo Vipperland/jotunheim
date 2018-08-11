@@ -51,7 +51,7 @@ class Clause {
 	 * @return
 	 */
 	static public function LIKE(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}} LIKE :in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}} LIKE ?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -61,7 +61,7 @@ class Clause {
 	 * @return
 	 */
 	static public function NOT_LIKE(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}} NOT LIKE :in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}} NOT LIKE ?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -70,7 +70,7 @@ class Clause {
 	 * @return
 	 */
 	static public function ID(value:Dynamic):Dynamic {
-		return { param:"id", condition:"{{p}}=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:"id", condition:"{{p}}=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -80,7 +80,7 @@ class Clause {
 	 * @return
 	 */
 	static public function EQUAL(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -90,7 +90,7 @@ class Clause {
 	 * @return
 	 */
 	static public function DIFFERENT(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}!=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}!=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -100,7 +100,7 @@ class Clause {
 	 * @return
 	 */
 	static public function IS_NULL(param:String):Dynamic {
-		return { param:param, condition:"{{p}} :in_"+_IDX+"_", value:"$IS NULL", i:_IDX++ };
+		return { param:param, condition:"{{p}} ?", value:"$IS NULL", i:_IDX++ };
 	}
 	
 	/**
@@ -110,7 +110,7 @@ class Clause {
 	 * @return
 	 */
 	static public function NOT_NULL(param:String):Dynamic {
-		return { param:param, condition:"{{p}} != :in_"+_IDX+"_", value:"$NULL", i:_IDX++ };
+		return { param:param, condition:"{{p}} != ?", value:"$NULL", i:_IDX++ };
 	}
 	
 	/**
@@ -122,10 +122,10 @@ class Clause {
 	static public function IN(param:String, values:Dynamic):Dynamic {
 		if (Std.is(values, Array)){ 
 			var q:Array<String> = [];
-			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = ":in_" + _IDX + "x" + p + "_"; });
+			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = "?"; });
 			return { param:param, condition:"{{p}} IN (" + q.join(',') + ")", value:values, i:_IDX++ };
 		}else{
-			return { param:param, condition:"{{p}} IN (:in_" + _IDX + ")", value:values, i:_IDX++ };
+			return { param:param, condition:"{{p}} IN (?)", value:values, i:_IDX++ };
 		}
 	}
 	
@@ -138,10 +138,10 @@ class Clause {
 	static public function NOT_IN(param:String, values:Dynamic):Dynamic {
 		if (Std.is(values, Array)){ 
 			var q:Array<String> = [];
-			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = ":in_" + _IDX + "x" + p + "_"; });
+			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = "?"; });
 			return { param:param, condition:"{{p}} NOT IN (" + q.join(',') + ")", value:values, i:_IDX++ };
 		}else{
-			return { param:param, condition:"{{p}} NOT IN (:in_" + _IDX + ")", value:values, i:_IDX++ };
+			return { param:param, condition:"{{p}} NOT IN (?)", value:values, i:_IDX++ };
 		}
 	}
 	
@@ -152,7 +152,7 @@ class Clause {
 	 * @return
 	 */
 	static public function REGEXP(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}} REGEXP :in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}} REGEXP ?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -161,7 +161,7 @@ class Clause {
 	 * @return
 	 */
 	static public function TRUE(param:String):Dynamic {
-		return { param:param, condition:"{{p}}=:in_"+_IDX+"_", value:true, i:_IDX++ };
+		return { param:param, condition:"{{p}}=?", value:true, i:_IDX++ };
 	}
 	
 	/**
@@ -170,7 +170,7 @@ class Clause {
 	 * @return
 	 */
 	static public function FALSE(param:String):Dynamic {
-		return { param:param, condition:"{{p}}=:in_"+_IDX+"_", value:false, i:_IDX++ };
+		return { param:param, condition:"{{p}}=?", value:false, i:_IDX++ };
 	}
 	
 	/**
@@ -180,7 +180,7 @@ class Clause {
 	 * @return
 	 */
 	static public function DIFF(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}!=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}!=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -191,7 +191,7 @@ class Clause {
 	 * @return
 	 */
 	static public function LESS(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}<:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}<?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -202,7 +202,7 @@ class Clause {
 	 * @return
 	 */
 	static public function LESS_OR(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}<=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}<=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -213,7 +213,7 @@ class Clause {
 	 * @return
 	 */
 	static public function GREATER(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}>:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}>?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -224,7 +224,7 @@ class Clause {
 	 * @return
 	 */
 	static public function GREATER_OR(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}>=:in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}}>=?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -269,7 +269,7 @@ class Clause {
 	 * @return
 	 */
 	static public function BIT(param:String, value:UInt):Dynamic {
-		return { param:param, condition:"{{p}} & :in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"{{p}} & ?", value:value, i:_IDX++ };
 	}
 	
 	/**
@@ -279,7 +279,7 @@ class Clause {
 	 * @return
 	 */
 	static public function BIT_NOT(param:String, value:UInt):Dynamic {
-		return { param:param, condition:"~{{p}} & :in_"+_IDX+"_", value:value, i:_IDX++ };
+		return { param:param, condition:"~{{p}} & ?", value:value, i:_IDX++ };
 	}
 	
 	/**

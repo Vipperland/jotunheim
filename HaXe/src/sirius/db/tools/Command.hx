@@ -17,8 +17,6 @@ class Command implements ICommand {
 	
 	private var _parameters:Dynamic;
 	
-	private var _object:Dynamic;
-	
 	private var _errors:Array<IError>;
 	
 	private var _log:Array<String>;
@@ -35,11 +33,10 @@ class Command implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, parameters:Dynamic, object:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(statement:Statement, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
-		_object = object;
 		this.statement = statement;
 		if (parameters != null) bind(parameters);
 	}
@@ -49,22 +46,15 @@ class Command implements ICommand {
 		if(statement != null){
 			var isArray:Bool = Std.is(parameters, Array);
 			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
-				if (isArray){
-					statement.setAttribute(p, v);
-				}else {
-					statement.bindValue(p, v);
-				}
+				statement.bindValue(1+p, v);
 				Reflect.setField(_parameters, p, v);
 			});
 		}
 		return this;
 	}
 	
-	public function execute(?handler:Dynamic->Bool, ?type:Int, ?parameters:Array<Dynamic>):ICommand {
+	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):ICommand {
 		if (statement != null){
-			if (type == null){
-				type = _object != null ? untyped __php__("\\PDO::FETCH_CLASS") : untyped __php__("\\PDO::FETCH_OBJ");
-			}
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
@@ -72,10 +62,23 @@ class Command implements ICommand {
 			try {
 				success = statement.execute(p);
 				if (success) {
-					result = Lib.toHaxeArray(statement.fetchAll(type));
-					if (handler != null) {
-						fetch(handler);
+					var obj:Dynamic;
+					result = [];
+					if (type != null){
+						if (!Std.is(type, String)){
+							type = Type.getClassName(type).split('.').join('_');
+						}
+						statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), type);
+					}else{
+						statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), 'stdClass');
 					}
+					result = Lib.toHaxeArray(statement.fetchAll());
+					//while ((obj = statement.fetchObject())){
+						//result[result.length] = obj;
+						//if (handler != null){
+							//handler(obj);
+						//}
+					//}
 				}else {
 					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
 				}
@@ -125,31 +128,17 @@ class Command implements ICommand {
 	}
 	
 	public function log():String {
-		var q:String = _query;
-		var r:Array<String>  = q.split(':');
+		var r:Array<String>  = _query.split('?');
 		Dice.All(r, function(p:Dynamic, v:String) {
-			if(Std.parseInt(p) > 0){
-				var a = Math.min(v.indexOf(' '), v.indexOf(','));
-				var b = Math.min(v.indexOf(')'), v.indexOf(';'));
-				var i = Math.min(a, b);
-				var h = v.substring(0, cast (i-1));
-				var t = v.substring(cast i, v.length);
-				if (Reflect.hasField(_parameters, h)){
-					h = Reflect.field(_parameters, h);
-					if (Std.is(h, String)){
-						h = '"' + h + '"';
-					}
-					r[p] = h + t;
-				}else{
-					r[p] = ':' + v;
+			if (p < _parameters.length){
+				var e:Dynamic = _parameters[p];
+				if (Std.is(e, String)){
+					e = '"' + e + '"';
 				}
+				r[p] = v + e;
 			}
 		});
-		q = r.join('');
-		Dice.All(_parameters, function(p:String, v:String){
-			q = q.split(':' + p).join(v);
-		});
-		return q;
+		return r.join('');
 	}
 	
 }

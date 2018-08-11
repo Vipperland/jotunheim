@@ -18,6 +18,8 @@ class DataTable implements IDataTable {
 	
 	private var _fields:Dynamic;
 	
+	private var _class:Dynamic;
+	
 	private var _restrict:UInt;
 	
 	private function _checkRestriction():Dynamic {
@@ -52,6 +54,11 @@ class DataTable implements IDataTable {
 		_restrict = 0;
 	}
 	
+	public function setClassObj(value:Dynamic):IDataTable {
+		_class = value;
+		return this;
+	}
+	
 	public function restrict(fields:Dynamic, ?times:UInt = 0):IDataTable {
 		_restrict = times;
 		_fields = fields;
@@ -72,11 +79,11 @@ class DataTable implements IDataTable {
 	}
 
 	public function findAll (?clausule:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
-		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, order, limit).execute().result);
+		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, order, limit).execute(null, _class).result);
 	}
 
 	public function findOne (?clausule:Dynamic=null) : Dynamic {
-		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, null, Limit.MAX(1)).execute().result).first();
+		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clausule, null, Limit.MAX(1)).execute(null, _class).result).first();
 	}
 
 	public function update (?parameters:Dynamic=null, ?clausule:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {

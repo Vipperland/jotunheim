@@ -17,17 +17,25 @@ class QueryBuilder implements IQueryBuilder {
 		_gate = gate;
 	}
 	
-	private function _insert(parameters:Dynamic) {
+	private function _insert(parameters:Dynamic, dataset:Array<Dynamic>) {
+		var r:Array<String> = [];
 		var q:Array<String> = [];
-		Dice.Params(parameters, function(p:String) { q[q.length] = p; } );
-		return "(" + q.join(",") + ") VALUES (:" + q.join(",:") + ")";
+		var i:UInt = 0;
+		Dice.All(parameters, function(p:String, v:Dynamic) { 
+			r[i] = p; 
+			q[i] = "?"; 
+			++i;
+			dataset[dataset.length] = v;
+		});
+		return "(" + r.join(",") + ") VALUES (" + q.join(",") + ")";
 	}
 	
 	
-	private function _updateSet(parameters:Dynamic):String {
+	private function _updateSet(parameters:Dynamic, dataset:Array<Dynamic>):String {
 		var q:Array<String> = [];
 		Dice.All(parameters, function(p:String, v:Dynamic) { 
-			q[q.length] = p + "=:" + p; 
+			q[q.length] = p + "=?"; 
+			dataset[dataset.length] = v;
 		});
 		return q.join(",");
 	}
@@ -39,7 +47,7 @@ class QueryBuilder implements IQueryBuilder {
 		return r.join(",");
 	}
 	
-	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String, i:UInt = 0):String {
+	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String):String {
 		
 		var r:Array<String> = [];
 		var s:String = joiner;
@@ -73,12 +81,12 @@ class QueryBuilder implements IQueryBuilder {
 			if (Std.is(obj.value, Array)){
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				Dice.All(obj.value, function(p:String, v:Dynamic){
-					Reflect.setField(props, "in_" + obj.i + "x" + p + "_", v);
+					props[props.length] = v;
 				});
 			}else {
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				if (obj.value != null){
-					Reflect.setField(props, "in_" + obj.i + "_", obj.value);
+					props[props.length] = obj.value;
 				}
 			}
 		}
@@ -92,7 +100,7 @@ class QueryBuilder implements IQueryBuilder {
 		
 	}
 	
-	private function _assembleBody(?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):String {
+	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
 		if (clause != null)
 			q += " WHERE " + _conditions(clause , parameters, " || ");
@@ -104,22 +112,23 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	public function add(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
-		return _gate.prepare("INSERT INTO " + table + _insert(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		var dataset:Array<Dynamic> = [];
+		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset, null);
 	}
 	
 	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		if (Std.is(fields, Array)) fields = fields.join(",");
-		var parameters:Dynamic = { };
-		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null, null);
+		var parameters:Dynamic = [];
+		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
 	public function update(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
-		if (parameters == null) parameters = { };
-		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters) + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		var dataset:Array<Dynamic> = [];
+		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset, null);
 	}
 	
 	public function delete(table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
-		var parameters:Dynamic = { };
+		var parameters:Dynamic = [];
 		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
 	}
 	
