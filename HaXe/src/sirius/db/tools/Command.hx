@@ -68,17 +68,19 @@ class Command implements ICommand {
 						if (!Std.is(type, String)){
 							type = Type.getClassName(type).split('.').join('_');
 						}
-						statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), type);
-					}else{
-						statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), 'stdClass');
+						//statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), type);
+					}else {
+						type = 'stdClass';
 					}
-					result = Lib.toHaxeArray(statement.fetchAll());
-					//while ((obj = statement.fetchObject())){
-						//result[result.length] = obj;
-						//if (handler != null){
-							//handler(obj);
-						//}
-					//}
+					statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS'), type);
+					//result = Lib.toHaxeArray(statement.fetchAll());
+					while ((obj = statement.fetchObject(type))){
+						result[result.length] = obj;
+						if (handler != null){
+							handler(obj);
+						}
+					}
+					
 				}else {
 					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
 				}
