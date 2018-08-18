@@ -19,13 +19,13 @@ interface IEventGroup {
 	
 	public var data:Dynamic;
 	
-	public function add (handler:Dynamic, ?capture:Bool) : IEventGroup;
+	public function add (handler:IEvent->Void, ?capture:Bool) : IEventGroup;
 	
-	public function addOnce(handler:Dynamic, ?capture:Bool) : IEventGroup;
+	public function addOnce(handler:IEvent->Void, ?capture:Bool) : IEventGroup;
 	
-	public function exists(handler:Dynamic) : Bool;
+	public function exists(handler:IEvent->Void) : Bool;
 	
-	public function remove (handler:Dynamic) : IEventGroup;
+	public function remove (handler:IEvent->Void) : IEventGroup;
 	
 	public function prepare (t:IDisplay) : IEventGroup;
 	

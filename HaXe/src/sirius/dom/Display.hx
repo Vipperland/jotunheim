@@ -202,6 +202,13 @@ class Display extends Push implements IDisplay {
 		};
 	}
 	
+	public function focus():IDisplay {
+		if (element != null){
+			element.focus();
+		}
+		return this;
+	}
+	
 	public function getChild(i:Int, ?update:Bool):IDisplay {
 		if (_children == null || update == true)
 			_children = children();

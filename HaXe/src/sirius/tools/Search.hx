@@ -7,7 +7,7 @@ package sirius.tools;
 @:expose("sru.tools.Search")
 class Search {
 
-	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
+	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c'],['ä', 'a'],['ë', 'e'],['ï', 'i'],['ö', 'o'],['ü', 'u'],['ÿ', 'y']];
 	public static function format(q:Dynamic, ?condense:Bool = true):String {
 		q = Std.string(q.toLowerCase());
 		var i:Int = 0;

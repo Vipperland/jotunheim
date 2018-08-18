@@ -40,7 +40,7 @@ class Header {
 	public function content(type:String):Void {
 		if(!hasType){
 			hasType = true;
-			Web.setHeader('content-type:', type);
+			Web.setHeader('content-type', type);
 		}
 	}
 	

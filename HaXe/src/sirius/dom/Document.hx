@@ -153,9 +153,9 @@ class Document extends Display {
 		return __cursor__.y;
 	}
 	
-	public function focus(?target:IDisplay):IDisplay {
-		if (target != null) target.element.focus();
-		return Utils.displayFrom(Browser.document.activeElement);
+	public function getFocused():IDisplay {
+		var el:Element = Browser.document.activeElement;
+		return el != null ? Utils.displayFrom(el) : null;
 	}
 	
 	public function print(selector:String, ?exclude:String = "button, img, .no-print"):Bool {

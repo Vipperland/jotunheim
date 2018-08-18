@@ -82,6 +82,7 @@ class HttpRequest {
 #elseif js
 	public var async : Bool;
 	public var data : FormData;
+	public var responseHeaders : Dynamic;
 #end
 	var postData : String;
 	var headers : List<{ header:String, value:String }>;
@@ -238,6 +239,7 @@ class HttpRequest {
 					var rlocalProtocol = ~/^(?:about|app|app-storage|.+-extension|file|res|widget):$/;
 					var isLocal = rlocalProtocol.match(protocol);
 					if ( isLocal ){
+						me.responseHeaders = me.req.getAllResponseHeaders();
 						s = _getData(r) != null ? 200 : 404;
 					}
 				}
@@ -245,7 +247,8 @@ class HttpRequest {
 					s = null;
 				if( s != null )
 					me.onStatus(s);
-				if( s != null && s >= 200 && s < 400 ) {
+				if ( s != null && s >= 200 && s < 400 ) {
+					me.responseHeaders = _parseHeader(me.req.getAllResponseHeaders());
 					me.req = null;
 					me.onData(me.responseData = _getData(r));
 				}
@@ -300,6 +303,19 @@ class HttpRequest {
 			if( !async )
 				onreadystatechange(null);
 		}
+		
+		function _parseHeader(headers:String):Dynamic {
+			var line:Array<String> = headers.split("\r\n");
+			var res:Dynamic = {};
+			Dice.Values(line, function(o:String){
+				line = o.split(": ");
+				var prop:String = line.shift().toLowerCase();
+				var value:String = line.join('');
+				Reflect.setField(res, prop, value);
+			});
+			return res;
+		}
+		
 	#else
 		public function request( ?post : Bool) : Void {
 			var me = this;

@@ -86,68 +86,10 @@ class Input extends Display {
 		return object.placeholder;
 	}
 	
-	public function validateCardExp():Void {
-		_rgx = ~/\d{2}\/\d{2,4}/;
-	}
-	
-	public function validateDate():Void {
-		_rgx = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
-	}
-	
-	public function validateURL():Void {
-		_rgx = ~/https?:\/\/.+/;
-	}
-	
-	public function validateIPv4():Void {
-		_rgx = ~/^\d{1,3}d{1,3}.\d{1,3}.\d{1,3}/;
-	}
-	
-	public function validateCurrency():Void {
-		_rgx = ~/\d+(.\d{2})?/;
-	}
-	
-	public function validateEmail():Void {
-		_rgx = ~/^[a-z0-9!'#$%&*+\/=?^_`{|}~-]+(?:\.[a-z0-9!'#$%&*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-zA-Z]{2,}$/giu;
-	}
-	
-	public function validateNumbers():Void {
-		_rgx = ~/^\d{1,}$/;
-		_flt = " ";
-	}
-	
-	public function validatePhone():Void {
-		_rgx = ~/^(\d{10,11})|(\(\d{2}\) \d{4,5}-\d{4})$/;
-		_flt = "()- ";
-	}
-	
-	public function validateDoc():Void {
-		_rgx = ~/^(\d{3}.\d{3}.\d{3}-\d{2})|(\d{2}.\d{3}.\d{3}\/\d{4}-\d{2})$/;
-		_flt = "-./";
-	}
-	
-	public function validateZipcode():Void {
-		_rgx = ~/^(\d{5}-\d{3})|(\d{8})$/;
-		_flt = "- ";
-	}
-	
-	public function validateLetters():Void {
-		_rgx = ~/^[a-zA-Z]{3,}$/;
-	}
-	
-	public function validateUsr():Void {
-		_rgx = ~/^[A-Za-z0-9._-]{6,24}$/;
-	}
-	
-	public function validateMd5():Void {
-		_rgx = ~/^[A-Za-z0-9._-]{35}$/;
-	}
-	
-	public function validateCard():Void {
-		_rgx = ~/\d{4}-\d{4}-\d{4}-\d{4}$/;
-	}
-	
 	public function restrict(q:EReg, ?filter:String):Void {
 		_rgx = q;
+		// phone: "() -"
+		// Number " "
 		_flt = filter;
 	}
 	

@@ -237,21 +237,26 @@ class Loader implements ILoader {
 		}
 		r.onData = function(d) { 
 			if (handler != null) {
+				var hdrs:Dynamic = r.responseHeaders;
 				#if js
 					if (options != null){
 						if (options.responseType == 'blob'){
 							var f:FileReader = new FileReader();
 							f.onloadend = function(e) {
 								_changed(url, 'loaded', d, r);
-								handler(new Request(true, e.target.result, null, url));
+								handler(new Request(true, e.target.result, null, url, hdrs));
 							}
 							f.readAsDataURL(cast d);
 							return;
 						}
+					}else{
+						_changed(url, 'loaded', d, r);
+						handler(new Request(true, d, null, url, hdrs)); 
 					}
+				#else 
+					_changed(url, 'loaded', d, r);
+					handler(new Request(true, d, null, url, hdrs)); 
 				#end
-				_changed(url, 'loaded', d, r);
-				handler(new Request(true, d, null)); 
 			}
 		}
 		r.onError = function(d) { 

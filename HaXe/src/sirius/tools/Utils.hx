@@ -325,6 +325,27 @@ class Utils{
 		return false;
 	}
 	
+	static public function isRange(o:Dynamic, min:Int, max:Int):Bool {
+		if(o != null){
+			if (!Std.is(o, Float)){
+				if (Std.is(o, Array) || Std.is(o, String)){
+					o = o.length;
+				}else{
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+		if (max == null){
+			return o >= min;
+		}else if (min == null){
+			return o <= max;
+		}else{
+			return o >= min && o <= max;
+		}
+	}
+	
 	/**
 	 * Check if a value is !null or/and length>0 if a string
 	 * @param	o

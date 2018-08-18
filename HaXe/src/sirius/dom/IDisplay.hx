@@ -150,6 +150,8 @@ interface IDisplay extends IPush implements Dynamic  {
 	 */
 	public function parent(levels:UInt=0):IDisplay;
 	
+	public function focus():IDisplay;
+	
 	/**
 	 * Get child by index
 	 * @param	i

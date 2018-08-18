@@ -1,4 +1,7 @@
 package sirius.tools;
+#if js
+	import js.RegExp;
+#end
 
 /**
  * ...
@@ -38,5 +41,29 @@ class Key {
 		}
 		return s;
 	}
+	
+	public static var VALIDATE_DATE:EReg = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
+	
+	public static var VALIDATE_URL:EReg = ~/https?:\/\/.+/;
+	
+	public static var VALIDATE_IPV4:EReg = ~/^\d{1,3}d{1,3}.\d{1,3}.\d{1,3}/;
+	
+	public static var VALIDATE_CURRENCY:EReg = ~/\d+(.\d{2})?/;
+	
+	public static var VALIDATE_EMAIL:EReg = ~/^[a-z0-9!'#$%&*+\/=?^_`{|}~-]+(?:\.[a-z0-9!'#$%&*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-zA-Z]{2,}$/giu;
+	
+	public static var VALIDATE_NUMBER:EReg = ~/^\d{1,}$/;
+	
+	public static var VALIDATE_PHONE:EReg = ~/^(\d{10,11})|(\(\d{2}\) \d{4,5}-\d{4})$/;
+	
+	public static var VALIDATE_LETTER:EReg = ~/^[a-zA-Z]{6,}$/;
+	
+	public static var VALIDATE_NAME:EReg = ~/^[a-zA-Z ]{6,}$/;
+	
+	public static var VALIDATE_NON_URL:EReg = ~/^[A-Za-z0-9._-]{6,24}$/;
+	
+	public static var VALIDATE_HASH:EReg = ~/^[A-Za-z0-9._-]{35}$/;
+	
+	public static var VALIDATE_CARD:EReg = ~/\d{4}-\d{4}-\d{4}-\d{4}$/;
 	
 }
