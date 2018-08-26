@@ -123,7 +123,7 @@ interface IDataTable {
 	 * The ammount of rows in table
 	 * @return
 	 */
-	public function length(?clause:Dynamic=null):UInt;
+	public function length(?clause:Dynamic=null, ?limit:String=null):UInt;
 	
 	/**
 	 * Restrict the field selection of find command
