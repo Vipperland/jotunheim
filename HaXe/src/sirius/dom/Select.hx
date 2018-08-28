@@ -57,7 +57,10 @@ class Select extends Display {
 		events.change().call(true,true);
 	}
 	
-	public function value():String {
+	override public function value(?q:String):String {
+		if (q != null){
+			selectValue(q);
+		}
 		var t:ITable = getAllSelected();
 		var r:Array<String> = [];
 		if (t != null && t.length() > 0) {

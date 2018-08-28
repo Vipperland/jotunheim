@@ -315,10 +315,10 @@ class Utils{
 	 * @param	o
 	 * @return
 	 */
-	static public function isValid(o:Dynamic):Bool {
+	static public function isValid(o:Dynamic, ?len:UInt = 0):Bool {
 		if (o != null && o != '') {
 			if (o != 'null' && Reflect.hasField(o, 'length'))
-				return o.length > 0;
+				return o.length > len;
 			else
 				return o != 0 && o != false;
 		}

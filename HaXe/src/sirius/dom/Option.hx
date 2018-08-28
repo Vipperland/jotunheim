@@ -17,7 +17,7 @@ class Option extends Display {
 		object = cast element;
 	}
 	
-	public function value():String {
+	override public function value(?q:String):String {
 		return object.value;
 	}
 	

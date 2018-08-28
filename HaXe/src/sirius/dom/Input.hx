@@ -93,7 +93,7 @@ class Input extends Display {
 		_flt = filter;
 	}
 	
-	public function value(?q:String):String {
+	override public function value(?q:String):String {
 		if (q != null) {
 			object.value = q;
 		}else{

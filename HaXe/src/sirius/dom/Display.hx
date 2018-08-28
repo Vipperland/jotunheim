@@ -455,6 +455,13 @@ class Display extends Push implements IDisplay {
 		}
 	}
 	
+	public function value(?q:String):String {
+		if (q != null){
+			attribute('value', q);
+		}
+		return attribute('value');
+	}
+	
 	public function writeText(q:Dynamic):IDisplay {
 		empty(false);
 		element.innerText = q;
@@ -705,7 +712,7 @@ class Display extends Push implements IDisplay {
 	public function interactive(?value:Bool):Bool {
 		if (value != null) {
 			if (value)
-				style({pointerEvents:null});
+				style({pointerEvents:'all'});
 			else
 				style({pointerEvents:'none'});
 			return value;

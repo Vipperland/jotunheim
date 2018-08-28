@@ -25,7 +25,10 @@ class Audio extends Display{
 		attribute('src', value);
 	}
 	
-	public function play():Void {
+	public function play(?reset:Bool):Void {
+		if (reset == true){
+			object.currentTime = 0;
+		}
 		object.play();
 	}
 	

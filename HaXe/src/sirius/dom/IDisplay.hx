@@ -219,6 +219,13 @@ interface IDisplay extends IPush implements Dynamic  {
 	public function clearAttribute(name:String):Dynamic;
 	
 	/**
+	 * Get the current value of the element (input.value() or dom.attribute('value'))
+	 * @param	q
+	 * @return
+	 */
+	public function value(?q:String):String;
+	
+	/**
 	 * Write or get style of the element
 	 * @param	p
 	 * @param	v	Can accept ARGB
