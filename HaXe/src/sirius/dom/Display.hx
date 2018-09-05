@@ -347,6 +347,7 @@ class Display extends Push implements IDisplay {
 			if (this.__transform == null) {
 				this.__transform = [];
 				style('transformStyle', 'preserve-3d');
+				style('transformOrigin', '50% 50% 0');
 				css('element3d');
 			}
 			this.__changed = false;

@@ -1,4 +1,5 @@
 package sirius.tools;
+import sirius.serial.IOTools;
 #if js
 	import js.RegExp;
 #end
@@ -40,6 +41,16 @@ class Key {
 			s += c;
 		}
 		return s;
+	}
+	
+	private static var _last_uuid:String;
+	public static function getLastUUID():String {
+		return _last_uuid;
+	}
+	
+	public static function UUID():String {
+		_last_uuid = IOTools.md5Encode(Date.now() + '-' + GEN());
+		return _last_uuid;
 	}
 	
 	public static var VALIDATE_DATE:EReg = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
