@@ -25,15 +25,15 @@ class Mail {
 		_from_email = email;
 		_headers = [
 			"Reply-To: " + from  + " <" + email + ">",
-			"Return-Path:" + from + " <" + email + ">",
-			"From:" + from  + " <" + email + ">",
-			"Organization:" + organizaion,
+			"Return-Path: " + from + " <" + email + ">",
+			"From: " + from  + " <" + email + ">",
+			"Organization: " + organizaion,
 			"MIME: 1.0",
 			"Content-type: text/" + (html ? "html" : "plain") + "; charset=" + charset,
 			"X-Priority: 3",
-			"X-Mailer: PHP " + untyped __call__("phpversion"),
+			"X-Mailer: PHP " + untyped __php__("phpversion()"),
 			
-		].join("\r\n");
+		].join("\r\n") + "\r\n";
 		return this;
 	}
 	
