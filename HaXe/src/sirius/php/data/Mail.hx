@@ -1,6 +1,5 @@
 package sirius.php.data;
 import php.Lib;
-import sirius.php.net.Mailer;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 
@@ -15,10 +14,20 @@ class Mail {
 	private var _from_email:String;
 	
 	private var _headers:String;
+	
+	private var _total:UInt;
+	
+	private var _errors:UInt;
 
-	public function new() {
-		
+	private function _sendRaw(subject:String, target:Dynamic, message:String):Void {
+		if (!Lib.mail(target.name + ' <' + target.email + '>', subject, Filler.to(message, target), _headers)){
+			++_errors;
+		}else{
+			++_total;
+		}
 	}
+	
+	public function new() { }
 	
 	public function init(from:String, email:String, organizaion:String, html:Bool = true, charset:String = "utf-8"):Mail {
 		_from_name = from;
@@ -28,31 +37,53 @@ class Mail {
 			"Return-Path: " + from + " <" + email + ">",
 			"From: " + from  + " <" + email + ">",
 			"Organization: " + organizaion,
-			"MIME: 1.0",
+			"MIME-Version: 1.0",
+			"Date: " + untyped __php__("date('r')"),
+			"Message-ID: <" + untyped __php__("sha1(microtime(true))") + "@rimproject.com>",
 			"Content-type: text/" + (html ? "html" : "plain") + "; charset=" + charset,
 			"X-Priority: 3",
 			"X-Mailer: PHP " + untyped __php__("phpversion()"),
-			
 		].join("\r\n") + "\r\n";
+		resetCounters();
 		return this;
 	}
 	
-	public function send(target:Dynamic, message:String):Array<Dynamic> {
-		var errors:Array<Dynamic> = [];
-		if (Std.is(target, Array)){
-			Dice.Values(target, function(v:Dynamic){
-				_sendRaw(v, message, errors);
-			});
-		}else{
-			_sendRaw(target, message, errors);
-		}
-		return errors;
+	public function getHeaders():String {
+		return _headers;
+	}
+	public function setHeaders(value:String):Mail {
+		_headers = value;
+		return this;
 	}
 	
-	public function _sendRaw(target:Dynamic, message:String, errors:Array<Dynamic>):Void {
-		if (!Lib.mail(target.name, target.email, Filler.to(message, target), _headers)){
-			errors[errors.length] = target;
-		}
+	public function hasErrors():Bool {
+		return _errors > 0;
 	}
+	
+	public function getTotalSent():UInt {
+		return _total;
+	}
+	
+	public function getErrorCount():UInt {
+		return _errors;
+	}
+	
+	public function resetCounters():Mail {
+		_total = 0;
+		_errors = 0;
+		return this;
+	}
+	
+	public function send(subject:String, target:Dynamic, message:String):Bool {
+		if (Std.is(target, Array)){
+			Dice.Values(target, function(v:Dynamic){
+				_sendRaw(subject, v, message);
+			});
+		}else{
+			_sendRaw(subject, target, message);
+		}
+		return hasErrors();
+	}
+	
 	
 }

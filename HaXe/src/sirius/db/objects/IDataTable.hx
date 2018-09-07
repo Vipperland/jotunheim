@@ -31,13 +31,6 @@ interface IDataTable {
 	public function setClassObj(value:Dynamic):IDataTable;
 	
 	/**
-	 * Create a TableObject and return itself
-	 * @param	data
-	 * @return
-	 */
-	public function create(data:Dynamic):ITableObject;
-	
-	/**
 	 * Insert a new entry
 	 * @param	parameters
 	 * @param	clause
@@ -61,7 +54,7 @@ interface IDataTable {
 	 * @param	clause
 	 * @return
 	 */
-	public function findOne (?clause:Dynamic=null) : Dynamic;
+	public function findOne (?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic;
 	
 	/**
 	 * Update a entry
@@ -71,7 +64,16 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function update (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
+	public function update (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
+	
+	/**
+	 * Update ONE entry
+	 * @param	parameters
+	 * @param	clause
+	 * @param	order
+	 * @return
+	 */
+	public function updateOne (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult;
 
 	/**
 	 * Delete an entry
@@ -83,6 +85,15 @@ interface IDataTable {
 	public function delete (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
 	
 	/**
+	 * Delete ONE entry
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
+	public function deleteOne (?clause:Dynamic = null, ?order:Dynamic = null) : IQueryResult;
+	
+	/**
 	 * Copy entry to another table
 	 * @param	toTable
 	 * @param	clause
@@ -91,6 +102,16 @@ interface IDataTable {
 	 * @return
 	 */
 	public function copy (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
+	
+	/**
+	 * Copy ONE entry to another table
+	 * @param	toTable
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
+	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult;
 	
 	/**
 	 * Erase all table entries (TRUNCATE)

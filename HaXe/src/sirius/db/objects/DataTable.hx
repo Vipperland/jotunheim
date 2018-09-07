@@ -70,10 +70,14 @@ class DataTable implements IDataTable {
 		return this;
 	}
 	
-	public function create(data:Dynamic):ITableObject {
-		return (new TableObject(this)).create(data);
+	public function addAll (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : Array<IQueryResult> {
+		var r:Array<IQueryResult> = [];
+		Dice.All(parameters, function(v:Dynamic){
+			r[r.length] = add(parameters, clause, order, limit);
+		});
+		return r;
 	}
-	
+
 	public function add (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult {
 		return new QueryResult(this, _gate.builder.add(_name, clause, parameters, order, limit).execute().result);
 	}
@@ -82,20 +86,32 @@ class DataTable implements IDataTable {
 		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clause, order, limit).execute(null, _class).result);
 	}
 
-	public function findOne (?clause:Dynamic=null) : Dynamic {
-		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clause, null, Limit.MAX(1)).execute(null, _class).result).first();
+	public function findOne (?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
+		return new QueryResult(this, _gate.builder.find(_checkRestriction(), _name, clause, order, Limit.ONE).execute(null, _class).result).first();
 	}
 
 	public function update (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
 		return new QueryResult(this, _gate.builder.update(_name, clause, parameters, order, limit).execute().result);
 	}
 
+	public function updateOne (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult {
+		return new QueryResult(this, _gate.builder.update(_name, clause, parameters, order, Limit.ONE).execute().result);
+	}
+
 	public function delete (?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
 		return new QueryResult(this, _gate.builder.delete(_name, clause, order, limit).execute().result);
 	}
 	
+	public function deleteOne (?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult {
+		return new QueryResult(this, _gate.builder.delete(_name, clause, order, Limit.ONE).execute().result);
+	}
+	
 	public function copy (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult {
 		return new QueryResult(this, _gate.builder.copy(_name, toTable, clause, order, limit).execute().result);
+	}
+	
+	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult {
+		return new QueryResult(this, _gate.builder.copy(_name, toTable, clause, order, Limit.ONE).execute().result);
 	}
 	
 	public function clear():IQueryResult {
@@ -110,6 +126,10 @@ class DataTable implements IDataTable {
 	
 	public function length(?clause:Dynamic=null, ?limit:String=null):UInt {
 		return _gate.builder.find('COUNT(*)', _name, clause, null, limit).execute().length();
+	}
+	
+	public function exists(?clause:Dynamic=null):Bool {
+		return length(clause, Limit.ONE) > 0;
 	}
 	
 	public function sum(field:String, ?clause:Dynamic = null):UInt {
