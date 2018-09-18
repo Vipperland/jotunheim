@@ -184,6 +184,15 @@ class Dice {
 	}
 	
 	/**
+	 * Concat all mixed data into one array
+	 * @param	data
+	 * @return
+	 */
+	public static function Random(data:Array<Dynamic>):Dynamic {
+		return data[Std.int(Math.random() * data.length)];
+	}
+	
+	/**
 	 * Sort all data in a vector by key
 	 * @param	data
 	 * @param	key
