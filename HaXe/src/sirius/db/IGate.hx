@@ -55,6 +55,14 @@ interface IGate {
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand;
 	
 	/**
+	 * 
+	 * @param	query
+	 * @param	parameters
+	 * @return
+	 */
+	public function query(query:String, ?parameters:Dynamic = null):ICommand;
+	
+	/**
 	 * Show all fields of a table
 	 * @param	table
 	 * @return

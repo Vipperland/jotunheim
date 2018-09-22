@@ -113,23 +113,23 @@ class QueryBuilder implements IQueryBuilder {
 	
 	public function add(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var dataset:Array<Dynamic> = [];
-		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset, null);
+		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset);
 	}
 	
 	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		if (Std.is(fields, Array)) fields = fields.join(",");
 		var parameters:Dynamic = [];
-		return _gate.prepare("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}
 	
 	public function update(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var dataset:Array<Dynamic> = [];
-		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset, null);
+		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset);
 	}
 	
 	public function delete(table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var parameters:Dynamic = [];
-		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters, null);
+		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}
 	
 	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):ICommand {
@@ -143,18 +143,18 @@ class QueryBuilder implements IQueryBuilder {
 	
 	public function fKey(table:String, reference:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand {
 		if (key == null){
-			return _gate.prepare("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
+			return _gate.query("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
 		}else{
-			return _gate.prepare("ALTER TABLE " + table + " ADD CONSTRAINT " + reference + " FOREIGN KEY (" + key + ") REFERENCES " + target + "(" + field + ") ON DELETE " + delete.toUpperCase() + " ON UPDATE " + update.toUpperCase() + ";");
+			return _gate.query("ALTER TABLE " + table + " ADD CONSTRAINT " + reference + " FOREIGN KEY (" + key + ") REFERENCES " + target + "(" + field + ") ON DELETE " + delete.toUpperCase() + " ON UPDATE " + update.toUpperCase() + ";");
 		}
 	}
 	
 	public function truncate(table:String):ICommand {
-		return _gate.prepare("TRUNCATE :table", {table:table});
+		return _gate.query("TRUNCATE :table", {table:table});
 	}
 	
 	public function rename(table:String, to:String):ICommand {
-		return _gate.prepare("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
+		return _gate.query("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
 	}
 	
 }

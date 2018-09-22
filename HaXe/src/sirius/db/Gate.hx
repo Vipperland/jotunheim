@@ -1,7 +1,7 @@
 package sirius.db;
 import php.Lib;
 import sirius.data.IDataSet;
-import sirius.db.tools.Command;
+import sirius.db.tools.SafeCommand;
 import sirius.db.IGate;
 import sirius.db.objects.IDataTable;
 import sirius.db.objects.DataTable;
@@ -12,6 +12,7 @@ import sirius.db.Token;
 import sirius.db.tools.ICommand;
 import sirius.db.tools.IQueryBuilder;
 import sirius.db.tools.QueryBuilder;
+import sirius.db.tools.UnsafeCommand;
 import sirius.errors.Error;
 import sirius.errors.IError;
 import sirius.utils.Dice;
@@ -73,8 +74,15 @@ class Gate implements IGate {
 	
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
 		var pdo:Statement = null;
-		if (isOpen()) pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
+		if (isOpen()) {
+			pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
+		}
+		command = new SafeCommand(pdo, query, parameters, _errors, _logCommands ? _log : null);
+		return command;
+	}
+	
+	public function query(query:String, ?parameters:Dynamic = null):ICommand {
+		command = new UnsafeCommand(isOpen() ? _db : null, query, parameters, _errors, _logCommands ? _log : null);
 		return command;
 	}
 	
@@ -99,9 +107,9 @@ class Gate implements IGate {
 	
 	public function setPdoAttributes(value:Bool):IGate {
 		_db.setAttribute(untyped __php__('PDO::ATTR_STRINGIFY_FETCHES'), value);
-		//_db.setAttribute(untyped __php__('PDO::ATTR_EMULATE_PREPARES'), value);
+		_db.setAttribute(untyped __php__('PDO::ATTR_EMULATE_PREPARES'), value);
 		_db.setAttribute(untyped __php__('PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
-		//_db.setAttribute(untyped __php__('PDO::ATTR_ERRMODE'), untyped __php__('PDO::ERRMODE_EXCEPTION'));
+		_db.setAttribute(untyped __php__('PDO::ATTR_ERRMODE'), untyped __php__('PDO::ERRMODE_EXCEPTION'));
 		return this;
 	}
 	

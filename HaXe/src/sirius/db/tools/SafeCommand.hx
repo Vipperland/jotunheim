@@ -11,7 +11,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class Command implements ICommand {
+class SafeCommand implements ICommand {
 	
 	private var _query:String;
 	

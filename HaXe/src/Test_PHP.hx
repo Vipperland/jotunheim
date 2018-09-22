@@ -1,13 +1,8 @@
 package;
-import php.Lib;
 import sirius.Sirius;
-import sirius.db.Clause;
 import sirius.db.Token;
 import sirius.db.objects.IDataTable;
-import sirius.db.objects.ITableObject;
-import sirius.php.file.ImageLib;
 import sirius.php.file.Uploader;
-import sirius.tools.Key;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 
@@ -34,13 +29,13 @@ class Test_PHP {
 		trace('===================================================== Files');
 		trace(Uploader.save([[1280, 720], [720, 480], [480, 360]]).list);
 		
-		Sirius.gate.open(Token.localhost('rimproject'), true);
+		Sirius.gate.open(Token.localhost('decorador'), true);
 		if (Sirius.gate.isOpen()){
 			trace('HANDSHAKE OK');
-			var t:IDataTable = Sirius.gate.table('test');
-			t.add({mystring:Key.GEN(32), mybool:Math.random() > .5, myint2:Std.int(Math.random() * 100)});
-			t.findAll(Clause.AND([Clause.NOT_NULL('mystring')])).each(cast function(o:Dynamic){
-				trace(o.data.mystring);
+			var t:IDataTable = Sirius.gate.table('project_review');
+			t.add({project_id:1, content:'test', content_alt:'another test', active:true, created_at:0, updated_at:0});
+			t.findAll().each(cast function(o:Dynamic){
+				trace(o.id);
 			});
 		}else{
 			trace(Sirius.gate.errors);
