@@ -1,8 +1,10 @@
 package sirius.css;
 import js.html.Element;
+import js.html.svg.SVGElement;
 import sirius.css.CSSGroup;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
+import sirius.dom.Svg;
 import sirius.math.ARGB;
 import sirius.Sirius;
 import sirius.tools.Utils;
@@ -20,6 +22,8 @@ class Automator {
 	static private var css:CSSGroup = new CSSGroup();
 	
 	static private var _dev:Bool = false;
+	
+	static private var _filters:Svg;
 	
 	static private var _inits:Dynamic = {
 		reset : false,
@@ -351,6 +355,21 @@ class Automator {
 		}else {
 			return null;
 		}
+	}
+	
+	static public function createFilter(id:String, a:Float, r:Float, g:Float, b:Float):Void {
+		if (_filters == null){
+			_filters = new Svg();
+			Sirius.document.head.addChild(_filters);
+		}
+		var filter:IDisplay = _filters.one('#' + id);
+		if (filter != null){
+			_filters.removeChild(filter);
+		}
+		var end:String = "<filter id=\"" + id + "\" color-interpolation-filters=\"sRGB\" x=\"0\" y=\"0\" height=\"100%\" width=\"100%\">";
+		end += "<feColorMatrix type=\"matrix\" values=\"" + r + " 0 0 0 0 0 " + g + " 0 0 0 0 0 " + b + " 0 0 0 0 0 " + a + " 0\"/>";
+		end += "</filter>";
+		_filters.appendHtml(end);
 	}
 	
 }

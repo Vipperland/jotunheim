@@ -74,6 +74,7 @@ import sirius.utils.IDiceRoll;
 	import sirius.dom.Source;
 	import sirius.dom.Span;
 	import sirius.dom.Style;
+	import sirius.dom.Svg;
 	import sirius.dom.Text;
 	import sirius.dom.TextArea;
 	import sirius.dom.Thead;
@@ -135,7 +136,7 @@ class Utils{
 			OBJECT:Object, OL:OL, OPTGROUP:OptGroup, OPTION:Option, OUTPUT:Output,
 			P:P, PARAM:Param, PICTURE:Picture, PRE:Pre, PROGRESS:Progress,
 			QUOTE:Quote,
-			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, STYLE:Style,
+			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, STYLE:Style, SVG:Svg,
 			TEXT:Text,TEXTAREA:TextArea,THEAD:Thead,TITLE:Title,TRACK:Track,
 			UL:UL,
 			VIDEO:Video,

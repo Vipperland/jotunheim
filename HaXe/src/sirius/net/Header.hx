@@ -83,8 +83,25 @@ class Header {
 	function writeData(data:String, encode:Bool) {
 		if(data != null){
 			if (encode == true) data = IOTools.encodeBase64(data);
+			var compress:String = getClientHeaders().ACCEPT_ENCODING;
+			if (compress.indexOf('x-gzip') != -1){
+				compress = 'x-gzip';
+			}else if (compress.indexOf('gzip') != -1){
+				compress = 'gzip';
+			}else {
+				compress = null;
+			}
+			var length:Int = data.length;
+			if(compress != null){
+				data = untyped __call__('gzcompress', data, 1);
+				Web.setHeader('Content-Encoding', compress);
+			}
 			Web.setHeader('Content-Length', Std.string(data.length));
-			Lib.print(data);
+			if(compress != null){
+				Lib.print("\x1f\x8b\x08\x00\x00\x00\x00\x00");
+			}
+			Lib.print(data.substr(0, length));
+			
 		}
 	}
 	

@@ -9,6 +9,7 @@ import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.Node;
 import sirius.Sirius;
+import sirius.css.Automator;
 import sirius.data.DataSet;
 import sirius.data.IDataSet;
 import sirius.dom.IDisplay;
@@ -482,6 +483,13 @@ class Display extends Push implements IDisplay {
 	
 	public function appendHtml(q:Dynamic):IDisplay {
 		element.innerHTML = element.innerHTML + q;
+		return this;
+	}
+	
+	public function colorTransform(r:UInt, g:UInt, b:UInt, a:UInt):IDisplay {
+		var name:String = 'auto-' + r + 'x' + g + 'x' + b + 'x' + a;
+		Automator.createFilter(name, a / 255, r / 255, g / 255, b / 255);
+		style('filter', 'url(#' + name + ')');
 		return this;
 	}
 	
