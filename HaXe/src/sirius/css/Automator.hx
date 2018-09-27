@@ -4,6 +4,7 @@ import js.html.svg.SVGElement;
 import sirius.css.CSSGroup;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
+import sirius.dom.Style;
 import sirius.dom.Svg;
 import sirius.math.ARGB;
 import sirius.Sirius;
@@ -24,6 +25,8 @@ class Automator {
 	static private var _dev:Bool = false;
 	
 	static private var _filters:Svg;
+	
+	static private var _motions:Style;
 	
 	static private var _inits:Dynamic = {
 		reset : false,
@@ -367,9 +370,40 @@ class Automator {
 			_filters.removeChild(filter);
 		}
 		var end:String = "<filter id=\"" + id + "\" color-interpolation-filters=\"sRGB\" x=\"0\" y=\"0\" height=\"100%\" width=\"100%\">";
-		end += "<feColorMatrix type=\"matrix\" values=\"" + r + " 0 0 0 0 0 " + g + " 0 0 0 0 0 " + b + " 0 0 0 0 0 " + a + " 0\"/>";
-		end += "</filter>";
+			end += "<feColorMatrix type=\"matrix\" values=\"" + r + " 0 0 0 0 0 " + g + " 0 0 0 0 0 " + b + " 0 0 0 0 0 " + a + " 0\"/>";
+			end += "</filter>";
 		_filters.appendHtml(end);
+	}
+	
+	static public function createDisplacement(id:String, freq:Float, octaves:Int, scale:Int):Void {
+		if (_filters == null){
+			_filters = new Svg();
+			Sirius.document.head.addChild(_filters);
+		}
+		var filter:IDisplay = _filters.one('#' + id);
+		if (filter != null){
+			_filters.removeChild(filter);
+		}
+		var end:String = "<filter id=\"" + id + "\">";
+			end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"0\"/>";
+			end += "<feDisplacementMap id=\"displacement\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
+			end += "</filter>";
+		_filters.appendHtml(end);
+	}
+	
+	static public function createMotionFor(name:String, time:Float, values:Array<String>):Void {
+		if (_motions == null){
+			_motions = new Style();
+			_motions.publish();
+		}
+		var css:String = '@keyframes ' + name + '{';
+		var len:Int = values.length;
+		Dice.All(values, function(p:String, v:Dynamic){
+			var i:Int = Std.int(Std.parseInt(p) / len);
+			css += i + '%{' + v + '}'; 
+		});
+		css += '} animation: ' + name + ' ' + time + 's linear infinite; /*EOF ' + name + '*/';
+		_motions.appendHtml(css);
 	}
 	
 }

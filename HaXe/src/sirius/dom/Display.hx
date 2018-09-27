@@ -493,6 +493,13 @@ class Display extends Push implements IDisplay {
 		return this;
 	}
 	
+	public function displacement(freq:Float, octaves:Int, scale:Int):IDisplay {
+		var name:String = 'auto-' + ((cast freq * 100) >> 0) + 'x' + octaves + 'x' + scale;
+		Automator.createDisplacement(name, freq, octaves, scale);
+		style('filter', 'url(#' + name + ')');
+		return this;
+	}
+	
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
 			if (Std.is(p, String)) {
