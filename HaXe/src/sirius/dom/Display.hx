@@ -486,16 +486,16 @@ class Display extends Push implements IDisplay {
 		return this;
 	}
 	
-	public function colorTransform(r:UInt, g:UInt, b:UInt, a:UInt):IDisplay {
+	public function colorTransform(r:UInt, g:UInt, b:UInt, ?a:UInt = 255):IDisplay {
 		var name:String = 'auto-' + r + 'x' + g + 'x' + b + 'x' + a;
-		Automator.createFilter(name, a / 255, r / 255, g / 255, b / 255);
+		Automator.createFilter(name, r / 255, g / 255, b / 255, a / 255);
 		style('filter', 'url(#' + name + ')');
 		return this;
 	}
 	
-	public function displacement(freq:Float, octaves:Int, scale:Int):IDisplay {
-		var name:String = 'auto-' + ((cast freq * 100) >> 0) + 'x' + octaves + 'x' + scale;
-		Automator.createDisplacement(name, freq, octaves, scale);
+	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay {
+		var name:String = 'auto-' + Std.int(freq * 10000) + 'x' + octaves + 'x' + scale + 'x' + seed;
+		Automator.createDisplacement(name, freq, octaves, scale, seed);
 		style('filter', 'url(#' + name + ')');
 		return this;
 	}

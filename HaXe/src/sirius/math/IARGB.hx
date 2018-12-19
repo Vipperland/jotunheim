@@ -30,12 +30,12 @@ interface IARGB {
 	public function invert () : IARGB;
 
 	/**
-	 * Raize or diminish color strength by range
+	 * Raize or diminish color brightnesss
 	 * @param	rate
 	 * @param	alpha
 	 * @return
 	 */
-	public function range (rate:Float, ?alpha:Float=0) : IARGB;
+	public function brightnesss (rate:Float, ?alpha:Float=0) : IARGB;
 
 	/**
 	 * Adds an ammount to each channel at max of 0xFF

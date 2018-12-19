@@ -10,6 +10,12 @@ class Logger{
 	
 	private var _events:Array<Dynamic->UInt->Void>;
 	
+	private var _level:UInt = 4;
+	
+	public function maxLvLog(i:Int):Void {
+		_level = i;
+	}
+	
 	public function new() {
 		_events = [];
 		#if js 
@@ -42,12 +48,16 @@ class Logger{
 	}
 	
 	public function query(q:Dynamic, type:UInt):Void {
+		if (type > _level){
+			return;
+		}
 		var t:String = switch(type) {
 			case 0 : "[MESSAGE] ";
 			case 1 : "[>SYSTEM] ";
 			case 2 : "[WARNING] ";
 			case 3 : "[!ERROR!] ";
 			case 4 : "[//TODO:] ";
+			case 5 : "[*QUERY:] ";
 			default : "";
 		}
 		#if js

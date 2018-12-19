@@ -6,6 +6,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
+@:expose("sru.data.DataSet")
 class DataSet implements IDataSet {
 	
 	private var _content:Dynamic;

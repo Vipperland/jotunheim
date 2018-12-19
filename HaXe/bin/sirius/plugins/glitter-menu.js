@@ -40,7 +40,7 @@
 			clearTimeout(_glitterTimer);
 			this.scanning = false;
 			var item = this.getMenu(menu);
-			item.initData();
+			item.data=new sru.data.DataSet();
 			item.glitterOptions = {
 				dimension:(item.attribute('glitter-size') || "150*150").split('*'), 
 				startAngle:180 + (parseInt(item.attribute('glitter-angle')) || 0), 
@@ -267,7 +267,7 @@
 			bottom:0,
 			transition:'opacity .3s ease-in-out',
 		});
-		Sirius.onInit(function(){
+		Sirius.run(function(){
 			Sirius.document.body.addChild(_layer);
 		});
 		Sirius.document.trackCursor();

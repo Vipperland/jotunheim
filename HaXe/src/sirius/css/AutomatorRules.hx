@@ -268,14 +268,14 @@ class AutomatorRules {
 			if (a % 90 == 0)
 				w = z;
 			w = Math.floor(cast z / w);
-			if (w <= 0)
+			if (w <= 0) 
 				w = 1;
 			while (y < z) {
 				y += w;
 				if (y > z) y = z;
 				tx = (cast cos * y);
 				ty = (cast sin * y);
-				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.range(.8 - (y/z*c)).hex();
+				r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.brightnesss(.8 - (y/z*c)).hex();
 			}
 			y = 0;
 			var oX:Float = cos * z;

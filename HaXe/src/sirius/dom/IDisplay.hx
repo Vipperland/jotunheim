@@ -454,6 +454,27 @@ interface IDisplay extends IPush implements Dynamic  {
 	public function transform():IDisplay;
 	
 	/**
+	 * Apply a SVG color transform
+	 * @param	r
+	 * @param	g
+	 * @param	b
+	 * @param	a
+	 * @return
+	 */
+	public function colorTransform(r:UInt, g:UInt, b:UInt, ?a:UInt = 255):IDisplay;
+	
+	/**
+	 * Apply a SVG displacement filter to element
+	 * @param	freq
+	 * @param	octaves
+	 * @param	scale
+	 * @param	seed
+	 * @return
+	 */
+	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay;
+	
+	
+	/**
 	 * Clear all object data
 	 */
 	public function dispose():Void;

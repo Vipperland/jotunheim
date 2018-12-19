@@ -160,7 +160,7 @@ class Sirius {
 			if (t != null)
 				t = Utils.displayFrom(t);
 			else
-				log("Find => No result on selector (" + q + ")", 2);
+				log("Find => No result on selector (" + q + ")", 5);
 			return t;
 		}
 		

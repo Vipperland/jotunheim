@@ -64,7 +64,7 @@ class ARGB implements IARGB {
 	}
 	
 	/**
-	 * ARGB Color format (4bytes/32bits)
+	 * ARGB Color format 24 bits
 	 * @return
 	 */
 	public function value32():Int {
@@ -72,7 +72,7 @@ class ARGB implements IARGB {
 	}
 	
 	/**
-	 * RGB Color format (3bytes/24bits)
+	 * RGB Color format 16 bits
 	 * @return
 	 */
 	public function value():Int {
@@ -88,12 +88,12 @@ class ARGB implements IARGB {
 	}
 	
 	/**
-	 * Raize or diminish color strength by range
+	 * Raize or diminish color brightnesss
 	 * @param	rate
 	 * @param	alpha
 	 * @return
 	 */
-	public function range(rate:Float, ?alpha:Float=0):IARGB {
+	public function brightnesss(rate:Float, ?alpha:Float=0):IARGB {
 		if (rate < .01) rate = .01;
 		var r2:Int = Std.int(r * rate);
 		var g2:Int = Std.int(g * rate);
@@ -101,7 +101,7 @@ class ARGB implements IARGB {
 		return new ARGB(r2 > 0xFF ? 0xFF : r2, g2 > 0xFF ? 0xFF : g2, b2 > 0xFF ? 0xFF : b2, alpha == 0 ? a : Std.int(alpha * a));
 	}
 	
-	/**
+	/*
 	 * Adds an ammount to each channel at max of 0xFF
 	 * @param	ammount
 	 * @return

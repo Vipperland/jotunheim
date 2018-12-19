@@ -41,12 +41,12 @@ class Automator {
 	static private function _createGrid():Void {
 		if (!_inits.grid){
 			/*
-				SHELf = [0,1,2,3,4]
+				SHELf = [0,1,2,3,4] 	== ROW
 				
-				HACK = [0,1,2,3,4
+				HACK = [0,1,2,3,4		== ROW + COLUMNS
 						5,6,7,8,9]
 				
-				DRAWER = 	[0,
+				DRAWER = 	[0,		== COLUMN
 							 1,
 							 2]
 			*/
@@ -375,7 +375,13 @@ class Automator {
 		_filters.appendHtml(end);
 	}
 	
-	static public function createDisplacement(id:String, freq:Float, octaves:Int, scale:Int):Void {
+	static public function clearDisplacements():Void {
+		if (_filters != null){
+			_filters.empty(true);
+		}
+	}
+	
+	static public function createDisplacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0):Void {
 		if (_filters == null){
 			_filters = new Svg();
 			Sirius.document.head.addChild(_filters);
@@ -385,7 +391,7 @@ class Automator {
 			_filters.removeChild(filter);
 		}
 		var end:String = "<filter id=\"" + id + "\">";
-			end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"0\"/>";
+			end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"" + seed + "\"/>";
 			end += "<feDisplacementMap id=\"displacement\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
 			end += "</filter>";
 		_filters.appendHtml(end);
