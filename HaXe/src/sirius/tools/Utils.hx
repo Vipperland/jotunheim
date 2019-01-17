@@ -82,6 +82,8 @@ import sirius.utils.IDiceRoll;
 	import sirius.dom.Track;
 	import sirius.dom.UL;
 	import sirius.dom.Video;
+	import sirius.draw.Book;
+	import sirius.draw.Paper;
 	
 #end
 

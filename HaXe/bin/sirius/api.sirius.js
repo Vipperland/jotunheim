@@ -6,6 +6,7 @@ $hx_exports["sru"]["utils"] = $hx_exports["sru"]["utils"] || {};
 ;$hx_exports["sru"]["tools"] = $hx_exports["sru"]["tools"] || {};
 ;$hx_exports["sru"]["seo"] = $hx_exports["sru"]["seo"] || {};
 ;$hx_exports["sru"]["math"] = $hx_exports["sru"]["math"] || {};
+;$hx_exports["sru"]["draw"] = $hx_exports["sru"]["draw"] || {};
 ;$hx_exports["sru"]["data"] = $hx_exports["sru"]["data"] || {};
 ;$hx_exports["sru"]["css"] = $hx_exports["sru"]["css"] || {};
 ;$hx_exports["sru"]["signals"] = $hx_exports["sru"]["signals"] || {};
@@ -6360,9 +6361,9 @@ sirius_dom_Span.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Span
 });
 var sirius_dom_Svg = $hx_exports["sru"]["dom"]["Svg"] = function(q) {
-	this.lineWidth = 1;
-	this.stroke = "#000000";
-	this.fill = "#000000";
+	this._tmp_width = 1;
+	this._tmp_stoke = "#CC0000";
+	this._tmp_fill = "#FF0000";
 	if(q == null) {
 		q = window.document.createElementNS("http://www.w3.org/2000/svg","svg");
 	}
@@ -6375,10 +6376,7 @@ sirius_dom_Svg.get = function(q) {
 };
 sirius_dom_Svg.__super__ = sirius_dom_Display;
 sirius_dom_Svg.prototype = $extend(sirius_dom_Display.prototype,{
-	_getBasis: function(f,id) {
-		return " " + (id != null ? "id=\"" + id + "\" " : "") + "stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\"" + (f ? " fill=\"" + this.fill + "\"" : "") + " ";
-	}
-	,hasAttribute: function(name) {
+	hasAttribute: function(name) {
 		if(!this.element.hasAttributeNS(null,name)) {
 			return Object.prototype.hasOwnProperty.call(this.element,name);
 		} else {
@@ -6418,45 +6416,8 @@ sirius_dom_Svg.prototype = $extend(sirius_dom_Display.prototype,{
 		}
 		return value;
 	}
-	,lineStyle: function(stroke,width) {
-		this.stroke = stroke;
-		this.lineWidth = width;
-	}
-	,drawPath: function(xA,yA,xB,yB,a,b,id) {
-		this.appendHtml("<path" + this._getBasis(false,id) + "d=\"M " + xA + " " + yA + " q " + a + " " + b + " " + xB + " " + yB + "\" stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\" fill=\"none\"></path>");
-	}
-	,drawLine: function(xA,yA,xB,yB,id) {
-		this.appendHtml("<path" + this._getBasis(false,id) + "d=\"M " + xA + " " + yA + " l " + xB + " " + yB + "\" stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\" fill=\"none\"></path>");
-	}
-	,drawCircle: function(x,y,r,id) {
-		this.appendHtml("<circle" + this._getBasis(true,id) + "\"cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + r + "\" />");
-	}
-	,connect: function(oA,oB) {
-		var fA = oA.getBounds();
-		var fB = oB.getBounds();
-		var xA = fA.left + fA.width * 0.5 | 0;
-		var yA = fA.top + fA.height * 0.5 | 0;
-		var xB = fB.left + fB.width * 0.5 | 0;
-		var yB = fB.top + fB.height * 0.5 | 0;
-		var fX = 0;
-		var fY = 0;
-		var tX = 0;
-		var tY = 0;
-		if(xA <= xB) {
-			fX = xA;
-			tX = xB;
-		} else {
-			fX = xB;
-			tX = xA;
-		}
-		if(yA <= yB) {
-			fY = yA;
-			tY = yB;
-		} else {
-			fY = yB;
-			tY = yA;
-		}
-		this.style({ position : "absolute", top : yA + "px", left : xA + "px", width : tX - fX + "px", height : tY - fY + "px"});
+	,draw: function(paper) {
+		this.appendHtml("<path d=\"" + paper.val() + "\" stroke=\"" + this._tmp_stoke + "\" stroke-width=\"" + this._tmp_width + "\" fill=\"none\"></path>");
 	}
 	,__class__: sirius_dom_Svg
 });
@@ -6570,6 +6531,68 @@ sirius_dom_Video.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,__class__: sirius_dom_Video
 });
+var sirius_draw_Book = $hx_exports["sru"]["draw"]["Book"] = function() {
+	this.pages = { };
+};
+sirius_draw_Book.__name__ = ["sirius","draw","Book"];
+sirius_draw_Book.prototype = {
+	create: function(name) {
+		return this.add(name,new sirius_draw_Paper());
+	}
+	,add: function(name,page) {
+		this.pages[name] = page;
+		return page;
+	}
+	,get: function(name) {
+		return Reflect.getProperty(this.pages,name);
+	}
+	,remove: function(name) {
+		var p = this.get(name);
+		Reflect.deleteField(this.pages,name);
+		return p;
+	}
+	,__class__: sirius_draw_Book
+};
+var sirius_draw_Paper = $hx_exports["sru"]["draw"]["Paper"] = function() {
+	this.erase();
+};
+sirius_draw_Paper.__name__ = ["sirius","draw","Paper"];
+sirius_draw_Paper.prototype = {
+	erase: function() {
+		this._tmp_path = "";
+	}
+	,m: function(x,y) {
+		this._tmp_path += "M " + x + "," + y + " ";
+	}
+	,l: function(x,y) {
+		this._tmp_path += "L " + x + "," + y + " ";
+	}
+	,c: function(coord) {
+		var _gthis = this;
+		sirius_utils_Dice.Values(coord,function(v) {
+			_gthis._tmp_path += "C " + v.join(",") + " ";
+		});
+	}
+	,q: function(a,b,x,y) {
+		this._tmp_path += "Q " + a + "," + b + " " + x + "," + y + " ";
+	}
+	,s: function(a,b,x,y) {
+		this._tmp_path += "S " + a + "," + b + " " + x + "," + y + " ";
+	}
+	,t: function(x,y) {
+		this._tmp_path += "T " + x + "," + y + " ";
+	}
+	,z: function() {
+		this._tmp_path += "Z ";
+	}
+	,dVal: function() {
+		return "d(" + this._tmp_path + ")";
+	}
+	,val: function() {
+		return this._tmp_path;
+	}
+	,__class__: sirius_draw_Paper
+};
 var sirius_errors_IError = function() { };
 sirius_errors_IError.__name__ = ["sirius","errors","IError"];
 sirius_errors_IError.prototype = {
