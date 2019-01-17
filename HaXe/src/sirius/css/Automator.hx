@@ -1,13 +1,12 @@
 package sirius.css;
 import js.html.Element;
-import js.html.svg.SVGElement;
+import sirius.Sirius;
 import sirius.css.CSSGroup;
 import sirius.css.IKey;
 import sirius.dom.IDisplay;
 import sirius.dom.Style;
 import sirius.dom.Svg;
 import sirius.math.ARGB;
-import sirius.Sirius;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 
@@ -41,14 +40,34 @@ class Automator {
 	static private function _createGrid():Void {
 		if (!_inits.grid){
 			/*
-				SHELf = [0,1,2,3,4] 	== ROW
+				SHELf = [0,1,2,3,4] 	== ROW, NO WRAP
+							+ o-stack  to reverse
+				|
 				
 				HACK = [0,1,2,3,4		== ROW + COLUMNS
-						5,6,7,8,9]
+				|		5,6,7,8,9]
+							+ o-stack  to reverse
 				
 				DRAWER = 	[0,		== COLUMN
-							 1,
-							 2]
+				|			 1,
+				|			 2]
+							+ o-stack  to reverse
+				
+				Placement
+				|	cel					AUTO width
+				|	cel-X (x = 1~12)
+				|	rcell-X (x = 1~12) 	Empty cell
+				|	tag-X (x = 1~12)		Cardinal count
+				
+				Distribuition
+				|	o-arrange		Space around
+				|	o-welfit			Space between
+				|
+				
+				Alignment:
+				|	o-top-left		o-top			o-top-right		
+				|	o-left			[h|v|o]-middle	o-right			
+				|	o-bottom-left		o-bottom			o-bottom-right	
 			*/
 			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;', '.shelf,.hack,.drawer');
 			omnibuild('-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;', '.shelf');
@@ -57,29 +76,28 @@ class Automator {
 			// Auto grow
 			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
 			// Pack will align left, center or right
-			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left');
-			omnibuild('-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;', '.o-center');
-			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right');
+			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left,.o-top-left,.o-bottom-left');
+			omnibuild('-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;', '.h-middle,.o-middle');
+			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right,.o-top-right,o-bottom-right');
 			// Lift will align top, middle and bottom
-			omnibuild('-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;','.o-top');
-			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.o-middle');
-			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom');
+			omnibuild('-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;','.o-top,.o-top-left,.o-top-right');
+			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.v-middle,.o-middle');
+			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom,.o-bottom-left,.o-bottom-right');
 			// Fill empty spaces around the cells
-			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-sort');
+			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-arrange');
 			// Fill empty spaces between the cells
-			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-organize');
+			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-wellfit');
 			// Order by right to left instead of left to right
-			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.shelf.o-reverse,.hack.o-reverse');
+			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.shelf.o-stack,.hack.o-stack');
 			omnibuild('-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;', '.drawer.o-stack');
 			// Wrap modes
 			omnibuild('-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;', '.hack.o-stack');
-			var i:Int = 1;
 			Dice.Count(0, 12, function(a:Int, b:Int, c:Bool) {
 				// Create order selectors, positive and negative (-12 to 12)
 				if(a > 0){
-					omnibuild('-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';', '.idx-' + a + 'n');
+					omnibuild('-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';', '.tag-' + a + 'n');
 				}
-				omnibuild('-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';', '.idx-' + a);
+				omnibuild('-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';', '.tag-' + a);
 				++a;
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
@@ -87,7 +105,7 @@ class Automator {
 				var s:String = "flex-basis:" + t + ";max-width:" + t;
 				omnibuild(s, '.cel-' + a);
 				if (a < b) {
-					omnibuild('margin-left:' + t, '.rcel-' + a);
+					omnibuild('margin-left:' + t, '.rcell-' + a);
 				}
 				return null;
 			});
@@ -243,7 +261,6 @@ class Automator {
 		var s:String;												// Final selector
 		var g:Bool = Utils.isValid(group);							// Is a valid group?
 		var r:String = ''; 	
-		var e:String = '';
 		// Group value, if available
 		if (g && group.length > 0) {
 			m = _screen(group.split("-"));	// Remove MediaQuery rule from group name
@@ -396,6 +413,8 @@ class Automator {
 			end += "</filter>";
 		_filters.appendHtml(end);
 	}
+	
+	
 	
 	static public function createMotionFor(name:String, time:Float, values:Array<String>):Void {
 		if (_motions == null){

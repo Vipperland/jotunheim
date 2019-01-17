@@ -10,6 +10,8 @@ class Pipe implements IPipe {
 	
 	public var name:String;
 	
+	public var host:ISignals;
+	
 	public var transfer:Bool = true;
 	
 	public var enabled:Bool = true;
@@ -21,6 +23,7 @@ class Pipe implements IPipe {
 	private var _l:Array<Dynamic>;
 	
 	public function new(name:String, host:Signals) {
+		this.host = host;
 		this.name = name;
 		reset();
 	}

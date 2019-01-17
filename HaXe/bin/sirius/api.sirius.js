@@ -3865,30 +3865,29 @@ sirius_css_Automator._createGrid = function() {
 		sirius_css_Automator.omnibuild("-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;",".hack,.drawer");
 		sirius_css_Automator.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;",".drawer");
 		sirius_css_Automator.omnibuild("-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;",".cel");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;",".o-left");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;",".o-center");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;",".o-right");
-		sirius_css_Automator.omnibuild("-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;",".o-top");
-		sirius_css_Automator.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".o-middle");
-		sirius_css_Automator.omnibuild("-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;",".o-bottom");
-		sirius_css_Automator.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-sort");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-organize");
-		sirius_css_Automator.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".shelf.o-reverse,.hack.o-reverse");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;",".o-left,.o-top-left,.o-bottom-left");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;",".h-middle,.o-middle");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;",".o-right,.o-top-right,o-bottom-right");
+		sirius_css_Automator.omnibuild("-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;",".o-top,.o-top-left,.o-top-right");
+		sirius_css_Automator.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".v-middle,.o-middle");
+		sirius_css_Automator.omnibuild("-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;",".o-bottom,.o-bottom-left,.o-bottom-right");
+		sirius_css_Automator.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-arrange");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-wellfit");
+		sirius_css_Automator.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".shelf.o-stack,.hack.o-stack");
 		sirius_css_Automator.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;",".drawer.o-stack");
 		sirius_css_Automator.omnibuild("-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;",".hack.o-stack");
-		var i = 1;
 		sirius_utils_Dice.Count(0,12,function(a,b,c) {
 			if(a > 0) {
-				sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".idx-" + a + "n");
+				sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".tag-" + a + "n");
 			}
-			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".idx-" + a);
+			sirius_css_Automator.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".tag-" + a);
 			++a;
 			var m = a / b * 100 - .001;
 			var t = m.toFixed(5) + "%";
 			var s = "flex-basis:" + t + ";max-width:" + t;
 			sirius_css_Automator.omnibuild(s,".cel-" + a);
 			if(a < b) {
-				sirius_css_Automator.omnibuild("margin-left:" + t,".rcel-" + a);
+				sirius_css_Automator.omnibuild("margin-left:" + t,".rcell-" + a);
 			}
 			return null;
 		});
@@ -4010,7 +4009,6 @@ sirius_css_Automator.build = function(query,group,silent) {
 	var s;
 	var g = sirius_tools_Utils.isValid(group);
 	var r = "";
-	var e = "";
 	if(g && group.length > 0) {
 		m = sirius_css_Automator._screen(group.split("-"));
 	}
@@ -6361,7 +6359,10 @@ sirius_dom_Span.__super__ = sirius_dom_Display;
 sirius_dom_Span.prototype = $extend(sirius_dom_Display.prototype,{
 	__class__: sirius_dom_Span
 });
-var sirius_dom_Svg = function(q) {
+var sirius_dom_Svg = $hx_exports["sru"]["dom"]["Svg"] = function(q) {
+	this.lineWidth = 1;
+	this.stroke = "#000000";
+	this.fill = "#000000";
 	if(q == null) {
 		q = window.document.createElementNS("http://www.w3.org/2000/svg","svg");
 	}
@@ -6374,7 +6375,10 @@ sirius_dom_Svg.get = function(q) {
 };
 sirius_dom_Svg.__super__ = sirius_dom_Display;
 sirius_dom_Svg.prototype = $extend(sirius_dom_Display.prototype,{
-	hasAttribute: function(name) {
+	_getBasis: function(f,id) {
+		return " " + (id != null ? "id=\"" + id + "\" " : "") + "stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\"" + (f ? " fill=\"" + this.fill + "\"" : "") + " ";
+	}
+	,hasAttribute: function(name) {
 		if(!this.element.hasAttributeNS(null,name)) {
 			return Object.prototype.hasOwnProperty.call(this.element,name);
 		} else {
@@ -6413,6 +6417,46 @@ sirius_dom_Svg.prototype = $extend(sirius_dom_Display.prototype,{
 			}
 		}
 		return value;
+	}
+	,lineStyle: function(stroke,width) {
+		this.stroke = stroke;
+		this.lineWidth = width;
+	}
+	,drawPath: function(xA,yA,xB,yB,a,b,id) {
+		this.appendHtml("<path" + this._getBasis(false,id) + "d=\"M " + xA + " " + yA + " q " + a + " " + b + " " + xB + " " + yB + "\" stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\" fill=\"none\"></path>");
+	}
+	,drawLine: function(xA,yA,xB,yB,id) {
+		this.appendHtml("<path" + this._getBasis(false,id) + "d=\"M " + xA + " " + yA + " l " + xB + " " + yB + "\" stroke=\"" + this.stroke + "\" stroke-width=\"" + this.lineWidth + "\" fill=\"none\"></path>");
+	}
+	,drawCircle: function(x,y,r,id) {
+		this.appendHtml("<circle" + this._getBasis(true,id) + "\"cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + r + "\" />");
+	}
+	,connect: function(oA,oB) {
+		var fA = oA.getBounds();
+		var fB = oB.getBounds();
+		var xA = fA.left + fA.width * 0.5 | 0;
+		var yA = fA.top + fA.height * 0.5 | 0;
+		var xB = fB.left + fB.width * 0.5 | 0;
+		var yB = fB.top + fB.height * 0.5 | 0;
+		var fX = 0;
+		var fY = 0;
+		var tX = 0;
+		var tY = 0;
+		if(xA <= xB) {
+			fX = xA;
+			tX = xB;
+		} else {
+			fX = xB;
+			tX = xA;
+		}
+		if(yA <= yB) {
+			fY = yA;
+			tY = yB;
+		} else {
+			fY = yB;
+			tY = yA;
+		}
+		this.style({ position : "absolute", top : yA + "px", left : xA + "px", width : tX - fX + "px", height : tY - fY + "px"});
 	}
 	,__class__: sirius_dom_Svg
 });
@@ -8024,6 +8068,7 @@ var sirius_signals_Pipe = function(name,host) {
 	this.calls = 0;
 	this.enabled = true;
 	this.transfer = true;
+	this.host = host;
 	this.name = name;
 	this.reset();
 };

@@ -8,6 +8,8 @@ interface IPipe {
   
 	public var name : String;
 	
+	public var host: ISignals;
+	
 	public var transfer : Bool;
 	
 	public var enabled : Bool;
