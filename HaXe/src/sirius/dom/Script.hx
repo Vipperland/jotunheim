@@ -8,7 +8,7 @@ import sirius.events.IEvent;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("sru.dom.Script")
-class Script extends Display{
+class Script extends Display {
 	
 	static public function get(q:String):Script {
 		return cast Sirius.one(q);
@@ -19,7 +19,10 @@ class Script extends Display{
 	 * @param	url
 	 * @param	handler
 	 */
-	static public function require(url:Array<String>, ?handler:Void->Void) {
+	static public function require(url:Dynamic, ?handler:Void->Void) {
+		if (!Std.is(url, Array)){
+			url = [url];
+		}
 		if (url.length > 0) {
 			var file:String = url.shift();
 			if (file != null) {

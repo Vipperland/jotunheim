@@ -13,41 +13,64 @@
 				height:100%;
 				font-family: Tahoma;
 				background-color:#000000;
-				/* font-family: 'Amatic SC', cursive; */
+				font-family: 'Amatic SC', cursive;
 			}
-			.block.cel-1 {
-				padding: 70px;
-				background-color: #0099cc;
-				border-radius: 15px;
-			}		
-			.block.cel {
-				padding: 70px;
-			}		
-			svg {
-				width: 100%;
-				height: 100%;
-			}		
+			.test3d {
+				width: 250px;
+				height: 400px;
+				margin-top: -100px;
+			}
+			
+			.test3d .text{
+				text-align: center;
+				color: #ffffff;
+				font-size: 48px;
+				width:100%;
+				margin-top: 20px;
+				display: block;
+			}
+			
+			.test3d .text .title{
+				font-weight: 700;
+			}
+		
 		</style>
 	</head>
 	<body automator>
-		<div class="shelf o-wellfit connect" connections="0,1/1,2">
-			<div link="0" class="block cel-1">A</div>
-			<div link="1" class="block cel-1">B</div>
-			<div link="2" class="block cel-1">C</div>
+		<div class="test3d">
+			<img src="http://techlab.gateofsirius.com/assets/img/sirius.png" />
+			<br/>
+			<div class="text">
+				<span class="title">SIRIUS</span><br/>
+				<div class="info" contenteditable>HEY, TYPE HERE!</div>
+			</div>
 		</div>
 		<script>
 			Sirius.run(function(){
-				Sirius.all('[connections]').each(function(o){
-					var svg = new sru.dom.Svg();
-					var points = o.attribute('connections').split('/');
-					for(var ps in points){
-						ps = points[ps].split(',');
-						var a = o.one('[link="' + ps[0] + '"]');
-						var b = o.one('[link="' + ps[0] + '"]');
-						svg.link();
-					}
-					o.addChild(svg);
+			
+				var e = Sirius.one('.test3d');
+				e.pin('c');
+				e.angle = 0;
+				e.rotateX(20);
+				
+				var dmf_a = 0;
+				var dmf_c = 0;
+				
+				e.activate(function(){
+					e.rotateY(Math.sin(e.angle*Math.PI/180) * 5);
+					e.rotateX(Math.cos(e.angle*Math.PI/180) * 5);
+					e.angle += 10;
+					e.transform();
+					Automator.clearDisplacements();
+					e.displacement(dmf_a, 45, dmf_c>>0);
+					dmf_a -= dmf_a * .03;
+					dmf_c -= dmf_c * .03;
 				});
+				Sirius.document.events.keyDown(function(e){
+					dmf_a += .03;
+					dmf_c += 3;
+				});
+				Ticker.start();
 			});
 		</script>
 	</body>                                                                               

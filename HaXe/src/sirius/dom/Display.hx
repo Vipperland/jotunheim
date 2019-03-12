@@ -738,9 +738,15 @@ class Display extends Push implements IDisplay {
 	}
 	
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void {
+		if (module != null){
+			if (Sirius.resources.exists(module)){
+				mount(module, data);
+				return;
+			}
+		}
 		Sirius.request(url, data, function(r:IRequest) {
 			if (r.success)
-				mount(module);
+				mount(module, data);
 			if (handler != null)
 				handler(r);
 		}, headers, progress);

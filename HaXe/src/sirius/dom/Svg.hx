@@ -64,15 +64,9 @@ class Svg extends Display {
 		}
 		return value;
 	}
-	//
-	//public function drawCircle(x:Int, y:Int, r:Int, ?id:String):Void {
-		//appendHtml('<circle' + _getBasis(true, id) +  '"cx="' + x + '" cy="' + y + '" r="' + r + '" />');
-	//}
-	//
-	
-	
-	public function draw(paper:Paper):Void {
-		appendHtml('<path d="' + paper.val() + '" stroke="' + _tmp_stoke + '" stroke-width="' + _tmp_width + '" fill="none"></path>');
+
+	public function draw(paper:Paper, ?stroke:String = "#000000", ?width:Int = 1, ?fill:String = "none"):Void {
+		appendHtml('<path d="' + paper.val() + '" stroke="' + stroke + '" stroke-width="' + width + '" fill="' + fill + '"></path>');
 	}
 	
 }

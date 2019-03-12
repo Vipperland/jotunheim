@@ -2169,9 +2169,15 @@ sirius_dom_Display.prototype = $extend(sirius_flow_Push.prototype,{
 	}
 	,load: function(url,module,data,handler,headers,progress) {
 		var _gthis = this;
+		if(module != null) {
+			if(sirius_Sirius.resources.exists(module)) {
+				this.mount(module,data);
+				return;
+			}
+		}
 		sirius_Sirius.request(url,data,null,function(r) {
 			if(r.success) {
-				_gthis.mount(module);
+				_gthis.mount(module,data);
 			}
 			if(handler != null) {
 				handler(r);
@@ -3826,6 +3832,9 @@ sirius_dom_Style.get = function(q) {
 	return sirius_Sirius.one(q);
 };
 sirius_dom_Style.require = function(url,handler) {
+	if(!((url instanceof Array) && url.__enum__ == null)) {
+		url = [url];
+	}
 	if(url.length > 0) {
 		var file = url.shift();
 		if(file != null) {
@@ -3841,10 +3850,7 @@ sirius_dom_Style.require = function(url,handler) {
 };
 sirius_dom_Style.__super__ = sirius_dom_Display;
 sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
-	publish: function() {
-		window.document.head.appendChild(this.element);
-	}
-	,mount: function(q,data,at) {
+	mount: function(q,data,at) {
 		if(at == null) {
 			at = -1;
 		}
@@ -3854,6 +3860,9 @@ sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
 			this.writeHtml("/* <!> mod:" + q + " not found */");
 		}
 		return this;
+	}
+	,publish: function() {
+		window.document.head.appendChild(this.element);
 	}
 	,__class__: sirius_dom_Style
 });
@@ -3867,10 +3876,10 @@ sirius_css_Automator._createGrid = function() {
 		sirius_css_Automator.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;",".drawer");
 		sirius_css_Automator.omnibuild("-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;",".cel");
 		sirius_css_Automator.omnibuild("-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;",".o-left,.o-top-left,.o-bottom-left");
-		sirius_css_Automator.omnibuild("-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;",".h-middle,.o-middle");
+		sirius_css_Automator.omnibuild("-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;",".v-middle,.o-middle");
 		sirius_css_Automator.omnibuild("-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;",".o-right,.o-top-right,o-bottom-right");
 		sirius_css_Automator.omnibuild("-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;",".o-top,.o-top-left,.o-top-right");
-		sirius_css_Automator.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".v-middle,.o-middle");
+		sirius_css_Automator.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".h-middle,.o-middle");
 		sirius_css_Automator.omnibuild("-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;",".o-bottom,.o-bottom-left,.o-bottom-right");
 		sirius_css_Automator.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-arrange");
 		sirius_css_Automator.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-wellfit");
@@ -4099,8 +4108,8 @@ sirius_css_Automator.getColor = function(r,x) {
 sirius_css_Automator.getMeasure = function(r,x) {
 	if(r == null) {
 		var l = x.length;
-		if(HxOverrides.substr(x,l - 2,2) == "pc") {
-			r = x.split("d").join(".").split("pc").join("%");
+		if(HxOverrides.substr(x,l - 1,1) == "p") {
+			r = x.split("d").join(".").split("p").join("%");
 		} else if(HxOverrides.substr(x,l - 1,1) == "n" && Std.parseInt(HxOverrides.substr(x,0,2)) != null) {
 			r = "-" + x.split("n").join("") + "px";
 		} else {
@@ -6176,6 +6185,9 @@ sirius_dom_Script.get = function(q) {
 	return sirius_Sirius.one(q);
 };
 sirius_dom_Script.require = function(url,handler) {
+	if(!((url instanceof Array) && url.__enum__ == null)) {
+		url = [url];
+	}
 	if(url.length > 0) {
 		var file = url.shift();
 		if(file != null) {
@@ -6416,8 +6428,17 @@ sirius_dom_Svg.prototype = $extend(sirius_dom_Display.prototype,{
 		}
 		return value;
 	}
-	,draw: function(paper) {
-		this.appendHtml("<path d=\"" + paper.val() + "\" stroke=\"" + this._tmp_stoke + "\" stroke-width=\"" + this._tmp_width + "\" fill=\"none\"></path>");
+	,draw: function(paper,stroke,width,fill) {
+		if(fill == null) {
+			fill = "none";
+		}
+		if(width == null) {
+			width = 1;
+		}
+		if(stroke == null) {
+			stroke = "#000000";
+		}
+		this.appendHtml("<path d=\"" + paper.val() + "\" stroke=\"" + stroke + "\" stroke-width=\"" + width + "\" fill=\"" + fill + "\"></path>");
 	}
 	,__class__: sirius_dom_Svg
 });
@@ -6545,6 +6566,22 @@ sirius_draw_Book.prototype = {
 	}
 	,get: function(name) {
 		return Reflect.getProperty(this.pages,name);
+	}
+	,getDVal: function(name) {
+		var p = this.get(name);
+		if(p != null) {
+			return p.dVal();
+		} else {
+			return "";
+		}
+	}
+	,getVal: function(name) {
+		var p = this.get(name);
+		if(p != null) {
+			return p.val();
+		} else {
+			return "";
+		}
 	}
 	,remove: function(name) {
 		var p = this.get(name);

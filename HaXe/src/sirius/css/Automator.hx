@@ -361,8 +361,8 @@ class Automator {
 	static public function getMeasure(r:String, x:String):String {
 		if(r == null){
 			var l:Int = x.length;
-			if (x.substr(l - 2, 2) == "pc") {
-				r = x.split("d").join(".").split("pc").join("%");
+			if (x.substr(l - 1, 1) == "p") {
+				r = x.split("d").join(".").split("p").join("%");
 			}else if (x.substr(l - 1, 1) == "n" && Std.parseInt(x.substr(0, 2)) != null) {
 				r = "-" + x.split("n").join("") + "px";
 			}else {

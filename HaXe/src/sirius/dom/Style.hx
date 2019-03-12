@@ -16,6 +16,9 @@ class Style extends Display {
 	}
 	
 	static public function require(url:Dynamic, handler:Dynamic) {
+		if (!Std.is(url, Array)){
+			url = [url];
+		}
 		if (url.length > 0) {
 			var file:String = url.shift();
 			if (file != null) {
@@ -30,6 +33,13 @@ class Style extends Display {
 		}
 	}
 	
+	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+		if (Sirius.resources.exists(q))
+			writeHtml(Sirius.resources.get(q, data));
+		else
+			writeHtml('/* <!> mod:' + q + ' not found */');
+		return this;
+	}
 	public var object:StyleElement;
 	
 	public function new(?q:Dynamic) {
@@ -41,14 +51,6 @@ class Style extends Display {
 	
 	public function publish():Void {
 		Browser.document.head.appendChild(cast element);
-	}
-	
-	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
-		if (Sirius.resources.exists(q))
-			writeHtml(Sirius.resources.get(q, data));
-		else
-			writeHtml('/* <!> mod:' + q + ' not found */');
-		return this;
 	}
 	
 }
