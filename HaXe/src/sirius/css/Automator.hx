@@ -77,11 +77,11 @@ class Automator {
 			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
 			// Pack will align left, center or right
 			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left,.o-top-left,.o-bottom-left');
-			omnibuild('-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;', '.h-middle,.o-middle');
+			omnibuild('-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;', '.v-middle,.o-middle');
 			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right,.o-top-right,o-bottom-right');
 			// Lift will align top, middle and bottom
 			omnibuild('-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;','.o-top,.o-top-left,.o-top-right');
-			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.v-middle,.o-middle');
+			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.h-middle,.o-middle');
 			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom,.o-bottom-left,.o-bottom-right');
 			// Fill empty spaces around the cells
 			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-arrange');
