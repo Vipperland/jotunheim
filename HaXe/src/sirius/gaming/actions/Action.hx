@@ -9,6 +9,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.Action")
 class Action extends Resolution {
 	
 	public static var commands:ActionQuery = new ActionQuery();
@@ -44,7 +45,7 @@ class Action extends Resolution {
 		});
 		--context.ident;
 		// resolution
-		var success:Bool = target == 0 || (target > 0 && resolution >= target) || (target < 0 && resolution <= target);
+		var success:Bool = (target == 0) || (target > 0 && resolution >= target) || (target < 0 && resolution <= target);
 		_log(this, context, success, resolution);
 		if (success){
 			if(Utils.isValid(query)){

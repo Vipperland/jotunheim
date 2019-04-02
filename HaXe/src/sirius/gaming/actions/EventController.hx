@@ -7,6 +7,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.EventController")
 class EventController implements Dynamic {
 	
 	public var events:Dynamic;

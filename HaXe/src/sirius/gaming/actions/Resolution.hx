@@ -5,6 +5,7 @@ import sirius.tools.Utils;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.Resolution")
 class Resolution {
 
 	private var _type:String;

@@ -6,6 +6,7 @@ import sirius.tools.Utils;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.RequirementQuery")
 class RequirementQuery extends Push {
 	
 	private function _isempty(value:String):Bool {
@@ -18,8 +19,11 @@ class RequirementQuery extends Push {
 	}
 	
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Bool {
-		if (r == null) r = ">=";
+		if (r == null) {
+			r = ">=";
+		}
 		switch(r){
+			case "=" : return a == v;
 			case "<" : return a < v;
 			case "<=" : return a <= v;
 			case ">" : return a > v;

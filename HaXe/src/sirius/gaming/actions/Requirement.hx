@@ -8,6 +8,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.Requirement")
 class Requirement extends Resolution {
 	
 	public static var commands:RequirementQuery = new RequirementQuery();

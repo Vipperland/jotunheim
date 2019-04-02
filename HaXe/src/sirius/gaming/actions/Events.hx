@@ -9,6 +9,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rim Project
  */
+@:expose("sru.game.Events")
 class Events {
 	
 	public static function patch(data:Dynamic, ?run:String, ?origin:Dynamic){
