@@ -8,6 +8,14 @@ import sirius.math.IPoint;
 @:expose('sru.math.point')
 class Point implements IPoint {
 	
+	static public function distance(x1:Float, y1:Float, x2:Float, y2:Float):Float {
+		var rx:Float = (x1 - x2);
+		var ry:Float = (y1 - y2);
+		rx = rx * rx;
+		ry = ry * ry;
+		return Math.sqrt(rx + ry);
+	}
+	
 	public var x:Float;
 	
 	public var y:Float;

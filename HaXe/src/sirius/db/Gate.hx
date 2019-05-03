@@ -1,7 +1,7 @@
 package sirius.db;
 import php.Lib;
 import sirius.data.IDataSet;
-import sirius.db.tools.SafeCommand;
+import sirius.db.tools.Command;
 import sirius.db.IGate;
 import sirius.db.objects.IDataTable;
 import sirius.db.objects.DataTable;
@@ -10,9 +10,10 @@ import sirius.db.pdo.Connection;
 import sirius.db.pdo.Statement;
 import sirius.db.Token;
 import sirius.db.tools.ICommand;
+import sirius.db.tools.IExtCommand;
 import sirius.db.tools.IQueryBuilder;
 import sirius.db.tools.QueryBuilder;
-import sirius.db.tools.UnsafeCommand;
+import sirius.db.tools.ExtCommand;
 import sirius.errors.Error;
 import sirius.errors.IError;
 import sirius.utils.Dice;
@@ -77,13 +78,13 @@ class Gate implements IGate {
 		if (isOpen()) {
 			pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
 		}
-		command = new SafeCommand(pdo, query, parameters, _errors, _logCommands ? _log : null);
+		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
 		return command;
 	}
 	
-	public function query(query:String, ?parameters:Dynamic = null):ICommand {
-		command = new UnsafeCommand(isOpen() ? _db : null, query, parameters, _errors, _logCommands ? _log : null);
-		return command;
+	public function query(query:String, ?parameters:Dynamic = null):IExtCommand {
+		command = new ExtCommand(isOpen() ? _db : null, query, parameters, _errors, _logCommands ? _log : null);
+		return cast command;
 	}
 	
 	public function schema(?table:Dynamic):ICommand {

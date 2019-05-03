@@ -2,6 +2,7 @@ package sirius.db;
 import sirius.db.tools.ICommand;
 import sirius.db.objects.IDataTable;
 import sirius.db.Token;
+import sirius.db.tools.IExtCommand;
 import sirius.db.tools.IQueryBuilder;
 import sirius.errors.IError;
 
@@ -60,7 +61,7 @@ interface IGate {
 	 * @param	parameters
 	 * @return
 	 */
-	public function query(query:String, ?parameters:Dynamic = null):ICommand;
+	public function query(query:String, ?parameters:Dynamic = null):IExtCommand;
 	
 	/**
 	 * Show all fields of a table

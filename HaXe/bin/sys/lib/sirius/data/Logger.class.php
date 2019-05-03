@@ -4,6 +4,7 @@
 class sirius_data_Logger {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
+		$this->_level = 4;
 		$this->_events = (new _hx_array(array()));
 		{
 			$o = $this->_events;
@@ -11,6 +12,10 @@ class sirius_data_Logger {
 		}
 	}}
 	public $_events;
+	public $_level;
+	public function maxLvLog($i) {
+		$this->_level = $i;
+	}
 	public function mute() {
 		if(Lambda::indexOf($this->_events, (property_exists($this, "query") ? $this->query: array($this, "query"))) !== -1) {
 			$this->_events->splice(0, 1);
@@ -28,6 +33,18 @@ class sirius_data_Logger {
 		sirius_utils_Dice::Values($this->_events, array(new _hx_lambda(array(&$q, &$type), "sirius_data_Logger_0"), 'execute'), null);
 	}
 	public function query($q, $type) {
+		$b = $this->_level;
+		$aNeg = $type < 0;
+		$bNeg = $b < 0;
+		$tmp = null;
+		if($aNeg !== $bNeg) {
+			$tmp = $aNeg;
+		} else {
+			$tmp = $type > $b;
+		}
+		if($tmp) {
+			return;
+		}
 		$t = null;
 		switch($type) {
 		case 0:{
@@ -44,6 +61,9 @@ class sirius_data_Logger {
 		}break;
 		case 4:{
 			$t = "[//TODO:] ";
+		}break;
+		case 5:{
+			$t = "[*QUERY:] ";
 		}break;
 		default:{
 			$t = "";

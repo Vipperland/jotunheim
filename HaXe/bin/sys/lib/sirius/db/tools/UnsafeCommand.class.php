@@ -33,6 +33,7 @@ class sirius_db_tools_UnsafeCommand implements sirius_db_tools_ICommand{
 				$p = php_Lib::toPhpArray($parameters);
 			}
 			try {
+				haxe_Log::trace($this->_query, _hx_anonymous(array("fileName" => "UnsafeCommand.hx", "lineNumber" => 59, "className" => "sirius.db.tools.UnsafeCommand", "methodName" => "execute")));
 				if($type !== null) {
 					if(!Std::is($type, _hx_qtype("String"))) {
 						$type = _hx_explode(".", Type::getClassName($type))->join("_");

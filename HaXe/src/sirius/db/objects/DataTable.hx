@@ -1,6 +1,7 @@
 package sirius.db.objects;
 import php.Lib;
 import sirius.db.tools.ICommand;
+import sirius.db.tools.IExtCommand;
 import sirius.tools.Utils;
 import sirius.utils.Dice;
 
@@ -125,7 +126,7 @@ class DataTable implements IDataTable {
 	}
 	
 	public function length(?clause:Dynamic=null, ?limit:String=null):UInt {
-		return _gate.builder.find('COUNT(*)', _name, clause, null, limit).execute().length();
+		return cast _gate.builder.find('COUNT(*)', _name, clause, null, limit).execute().length();
 	}
 	
 	public function exists(?clause:Dynamic=null):Bool {

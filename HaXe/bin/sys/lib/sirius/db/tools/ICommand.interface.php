@@ -9,8 +9,5 @@ interface sirius_db_tools_ICommand {
 	//;
 	function bind($arguments);
 	function execute($handler = null, $type = null, $parameters = null);
-	function fetch($handler);
-	function length($prop = null);
-	function find($param, $values, $limit = null);
 	function log();
 }

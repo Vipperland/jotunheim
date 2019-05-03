@@ -116,8 +116,10 @@ class QueryBuilder implements IQueryBuilder {
 		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset);
 	}
 	
-	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
-		if (Std.is(fields, Array)) fields = fields.join(",");
+	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
+		if (Std.is(fields, Array)) {
+			fields = fields.join(",");
+		}
 		var parameters:Dynamic = [];
 		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}

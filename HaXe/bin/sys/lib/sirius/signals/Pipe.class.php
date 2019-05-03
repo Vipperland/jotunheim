@@ -7,10 +7,12 @@ class sirius_signals_Pipe implements sirius_signals_IPipe{
 		$this->calls = 0;
 		$this->enabled = true;
 		$this->transfer = true;
+		$this->host = $host;
 		$this->name = $name;
 		$this->reset();
 	}}
 	public $name;
+	public $host;
 	public $transfer;
 	public $enabled;
 	public $calls;

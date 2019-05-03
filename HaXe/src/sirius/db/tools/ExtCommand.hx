@@ -2,6 +2,7 @@ package sirius.db.tools;
 import haxe.Json;
 import php.Lib;
 import php.NativeArray;
+import sirius.db.pdo.Connection;
 import sirius.db.pdo.Statement;
 import sirius.errors.Error;
 import sirius.errors.IError;
@@ -11,7 +12,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class SafeCommand implements ICommand {
+class ExtCommand implements IExtCommand {
 	
 	private var _query:String;
 	
@@ -26,6 +27,8 @@ class SafeCommand implements ICommand {
 	
 	public var success:Bool;
 	
+	public var conn:Connection;
+	
 	public var statement:Statement;
 	
 	public var result:Array<Dynamic>;
@@ -33,62 +36,45 @@ class SafeCommand implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(conn:Connection, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
-		this.statement = statement;
-		if (parameters != null) bind(parameters);
-	}
-	
-	private function _getType(v:Dynamic):Int {
-		if (Std.is(v, String)) 		return untyped __php__('PDO::PARAM_STR');
-		else if (Std.is(v, Float)) 	return untyped __php__('PDO::PARAM_INT');
-		else if (Std.is(v, Bool)) 	return untyped __php__('PDO::PARAM_INT');
-		else if (v == 'NULL') 		return untyped __php__('PDO::PARAM_NULL');
-		else						return untyped __php__('PDO::PARAM_STR');
+		this.conn = conn;
+		_parameters = parameters;
 	}
 	
 	public function bind(parameters:Dynamic):ICommand {
 		_parameters = parameters;
-		if(statement != null){
-			var isArray:Bool = Std.is(parameters, Array);
-			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
-				statement.bindValue(1+p, v, _getType(v));
-				Reflect.setField(_parameters, p, v);
-			});
-		}
 		return this;
 	}
 	
-	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):ICommand {
-		if (statement != null){
+	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):IExtCommand {
+		if (conn != null){
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
 			}
 			try {
-				success = statement.execute(p);
-				if (success) {
+				if (type != null){
+					if (!Std.is(type, String)){
+						type = Type.getClassName(type).split('.').join('_');
+					}
+				}else {
+					type = 'stdClass';
+				}
+				var statement:Statement = conn.query(log(), untyped __php__('PDO::FETCH_CLASS'), type);
+				if (statement != null) {
+					success = true;
 					var obj:Dynamic;
 					result = [];
-					if (type != null){
-						if (!Std.is(type, String)){
-							type = Type.getClassName(type).split('.').join('_');
-						}
-						//statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE'), type);
-					}else {
-						type = 'stdClass';
-					}
-					statement.setFetchMode(untyped __php__('PDO::FETCH_CLASS'), type);
-					//result = Lib.toHaxeArray(statement.fetchAll());
 					while ((obj = statement.fetchObject(type))){
 						result[result.length] = obj;
 						if (handler != null){
 							handler(obj);
 						}
 					}
-					
+					statement = null;
 				}else {
 					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
 				}
@@ -142,7 +128,7 @@ class SafeCommand implements ICommand {
 		Dice.All(r, function(p:Dynamic, v:String) {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
-				if (Std.is(e, String)){
+				if (Std.is(e, String)) {
 					e = '"' + e + '"';
 				}
 				r[p] = v + e;

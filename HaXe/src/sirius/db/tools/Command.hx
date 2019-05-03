@@ -2,7 +2,6 @@ package sirius.db.tools;
 import haxe.Json;
 import php.Lib;
 import php.NativeArray;
-import sirius.db.pdo.Connection;
 import sirius.db.pdo.Statement;
 import sirius.errors.Error;
 import sirius.errors.IError;
@@ -12,7 +11,7 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class UnsafeCommand implements ICommand {
+class Command implements ICommand {
 	
 	private var _query:String;
 	
@@ -27,8 +26,6 @@ class UnsafeCommand implements ICommand {
 	
 	public var success:Bool;
 	
-	public var conn:Connection;
-	
 	public var statement:Statement;
 	
 	public var result:Array<Dynamic>;
@@ -36,47 +33,47 @@ class UnsafeCommand implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(conn:Connection, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(statement:Statement, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
-		this.conn = conn;
-		_parameters = parameters;
+		this.statement = statement;
+		if (parameters != null) {
+			bind(parameters);
+		}
+	}
+	
+	private function _getType(v:Dynamic):Int {
+		if (Std.is(v, String)) 		return untyped __php__('PDO::PARAM_STR');
+		else if (Std.is(v, Float)) 	return untyped __php__('PDO::PARAM_INT');
+		else if (Std.is(v, Bool)) 	return untyped __php__('PDO::PARAM_INT');
+		else if (v == 'NULL') 		return untyped __php__('PDO::PARAM_NULL');
+		else						return untyped __php__('PDO::PARAM_STR');
 	}
 	
 	public function bind(parameters:Dynamic):ICommand {
 		_parameters = parameters;
+		if(statement != null){
+			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
+				statement.bindValue(1+p, v, _getType(v));
+				Reflect.setField(_parameters, p, v);
+			});
+		}
 		return this;
 	}
 	
 	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):ICommand {
-		if (conn != null){
+		if (statement != null){
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
 			}
 			try {
-				if (type != null){
-					if (!Std.is(type, String)){
-						type = Type.getClassName(type).split('.').join('_');
-					}
-				}else {
-					type = 'stdClass';
-				}
-				var statement:Statement = conn.query(log(), untyped __php__('PDO::FETCH_CLASS'), type);
-				if (statement != null) {
-					success = true;
-					var obj:Dynamic;
-					result = [];
-					while ((obj = statement.fetchObject(type))){
-						result[result.length] = obj;
-						if (handler != null){
-							handler(obj);
-						}
-					}
-				}else {
+				success = statement.execute(p);
+				if (!success) {
 					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
 				}
+				this.statement = null;
 			}catch (e:Dynamic) {
 				if (Std.is(e, String)) {
 					errors[errors.length] = new Error(0, e);
@@ -93,41 +90,14 @@ class UnsafeCommand implements ICommand {
 		return this;
 	}
 	
-	public function fetch(handler:Dynamic->Bool):ICommand {
-		Dice.Values(result, handler);
-		return this;
-	}
-	
-	public function find(param:String, values:Array<Dynamic>, ?limit:UInt = 0):Array<Dynamic> {
-		var filter:Array<Dynamic> = [];
-		Dice.Values(result, function(v:Dynamic) {
-			if (Dice.Match([Reflect.field(v, param)], values, 1) > 0) {
-				filter[filter.length] = v;
-				return limit > 0 && --limit == 0;
-			}
-			return false;
-		});
-		return filter;
-	}
-	
-	public function length(?prop:String = 'COUNT(*)'):UInt {
-		if (result != null && result.length > 0){
-			var r0:Dynamic = result[0];
-			if (Reflect.hasField(r0, prop)){
-				return Std.parseInt(Reflect.field(r0, prop));
-			}else{
-				return result.length;
-			}
-		}
-		return 0;
-	}
-	
 	public function log():String {
 		var r:Array<String>  = _query.split('?');
 		Dice.All(r, function(p:Dynamic, v:String) {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
-				if (Std.is(e, String)) e = '"' + e + '"';
+				if (Std.is(e, String)){
+					e = '"' + e + '"';
+				}
 				r[p] = v + e;
 			}
 		});

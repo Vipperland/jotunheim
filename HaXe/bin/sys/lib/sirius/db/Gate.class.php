@@ -75,7 +75,7 @@ class sirius_db_Gate implements sirius_db_IGate{
 		} else {
 			$tmp = null;
 		}
-		$this->command = new sirius_db_tools_SafeCommand($pdo, $query, $parameters, $this->_errors, $tmp);
+		$this->command = new sirius_db_tools_Command($pdo, $query, $parameters, $this->_errors, $tmp);
 		return $this->command;
 	}
 	public function query($query, $parameters = null) {
@@ -91,7 +91,7 @@ class sirius_db_Gate implements sirius_db_IGate{
 		} else {
 			$tmp1 = null;
 		}
-		$this->command = new sirius_db_tools_UnsafeCommand($tmp, $query, $parameters, $this->_errors, $tmp1);
+		$this->command = new sirius_db_tools_ExtCommand($tmp, $query, $parameters, $this->_errors, $tmp1);
 		return $this->command;
 	}
 	public function schema($table = null) {

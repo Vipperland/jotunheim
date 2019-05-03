@@ -11,7 +11,10 @@ import sirius.serial.IOTools;
 @:expose("sru.tools.Key")
 class Key {
 	
+	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";
+	
 	static private var _cts:Dynamic = {'global':0};
+	
 	public static function COUNTER(?id:String):Int {
 		if (id == null) 
 			id = 'global';
@@ -25,11 +28,11 @@ class Key {
 		return v;
 	}
 	
-	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";
-	
 	public static function GEN(?size:UInt=9, ?table:String = null, ?mixCase:Bool = true):String {
 		var s:String = "";
-		if (table == null) table = TABLE;
+		if (table == null) {
+			table = TABLE;
+		}
 		var l:UInt = table.length;
 		var c:String = null;
 		while (s.length < size) {
@@ -51,6 +54,20 @@ class Key {
 	public static function UUID():String {
 		_last_uuid = IOTools.md5Encode(Date.now() + '-' + GEN());
 		return _last_uuid;
+	}
+	
+	public static function TAG(value:Dynamic, ?prefix:String = '0', ?len:Int = 11):String {
+		if (!Std.is(value, String)){
+			value = Std.string(value);
+		}else if (value == null){
+			value = COUNTER('tag');
+		}
+		var k:Int = value.length;
+		while (k < len){
+			value = prefix + value;
+			++k;
+		}
+		return value;
 	}
 	
 	public static var VALIDATE_DATE:EReg = ~/\d{1,2}\/\d{1,2}\/\d{4}/;

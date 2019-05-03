@@ -27,7 +27,7 @@ interface IQueryBuilder {
 	 * @param	limit
 	 * @return
 	 */
-	public function find (fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
+	public function find (fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : IExtCommand;
 
 	/**
 	 * Update an entry
