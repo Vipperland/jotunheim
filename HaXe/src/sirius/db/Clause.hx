@@ -100,7 +100,7 @@ class Clause {
 	 * @return
 	 */
 	static public function IS_NULL(param:String):Dynamic {
-		return { param:param, condition:"{{p}} ?", value:"$IS NULL", i:_IDX++ };
+		return { param:param, condition:"{{p}} IS NULL", value:null, i:_IDX++ };
 	}
 	
 	/**
@@ -110,7 +110,7 @@ class Clause {
 	 * @return
 	 */
 	static public function NOT_NULL(param:String):Dynamic {
-		return { param:param, condition:"{{p}} != ?", value:"$NULL", i:_IDX++ };
+		return { param:param, condition:"{{p}} != NULL", value:null, i:_IDX++ };
 	}
 	
 	/**

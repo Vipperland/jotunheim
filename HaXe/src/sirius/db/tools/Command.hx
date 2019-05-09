@@ -44,11 +44,17 @@ class Command implements ICommand {
 	}
 	
 	private function _getType(v:Dynamic):Int {
-		if (Std.is(v, String)) 		return untyped __php__('PDO::PARAM_STR');
-		else if (Std.is(v, Float)) 	return untyped __php__('PDO::PARAM_INT');
-		else if (Std.is(v, Bool)) 	return untyped __php__('PDO::PARAM_INT');
-		else if (v == 'NULL') 		return untyped __php__('PDO::PARAM_NULL');
-		else						return untyped __php__('PDO::PARAM_STR');
+		if (Std.is(v, String)){
+			return untyped __php__('PDO::PARAM_STR');
+		} else if (Std.is(v, Float)){
+			return untyped __php__('PDO::PARAM_INT');
+		} else if (Std.is(v, Bool)){
+			return untyped __php__('PDO::PARAM_INT');
+		} else if (v == null){
+			return untyped __php__('PDO::PARAM_NULL');
+		}else{
+			return untyped __php__('PDO::PARAM_STR');
+		}
 	}
 	
 	public function bind(parameters:Dynamic):ICommand {

@@ -38,7 +38,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function add (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
+	public function add (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQuery;
 
 	/**
 	 * Select all entries
@@ -47,7 +47,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function findAll (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
+	public function findAll (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
 	
 	/**
 	 * Select a single entry
@@ -64,7 +64,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function update (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
+	public function update (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQuery;
 	
 	/**
 	 * Update ONE entry
@@ -73,7 +73,7 @@ interface IDataTable {
 	 * @param	order
 	 * @return
 	 */
-	public function updateOne (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult;
+	public function updateOne (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null) : IQuery;
 
 	/**
 	 * Delete an entry
@@ -82,7 +82,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function delete (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQueryResult;
+	public function delete (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQuery;
 	
 	/**
 	 * Delete ONE entry
@@ -91,7 +91,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function deleteOne (?clause:Dynamic = null, ?order:Dynamic = null) : IQueryResult;
+	public function deleteOne (?clause:Dynamic = null, ?order:Dynamic = null) : IQuery;
 	
 	/**
 	 * Copy entry to another table
@@ -101,7 +101,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function copy (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQueryResult;
+	public function copy (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQuery;
 	
 	/**
 	 * Copy ONE entry to another table
@@ -111,13 +111,13 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : IQueryResult;
+	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : IQuery;
 	
 	/**
 	 * Erase all table entries (TRUNCATE)
 	 * @return
 	 */
-	public function clear():IQueryResult;
+	public function clear():IQuery;
 	
 	/**
 	 * Sum field values and return its value

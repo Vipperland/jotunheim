@@ -77,7 +77,7 @@ class QueryBuilder implements IQueryBuilder {
 			});
 		}
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
-		else {
+		else if(obj != null) {
 			if (Std.is(obj.value, Array)){
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				Dice.All(obj.value, function(p:String, v:Dynamic){
@@ -134,13 +134,18 @@ class QueryBuilder implements IQueryBuilder {
 		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}
 	
-	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):ICommand {
+	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):Array<Dynamic> {
 		var entries:Dynamic = find("*", from, clause, null, limit).result;
+		var result:Array<Dynamic> = [];
 		Dice.Values(entries, function(v:Dynamic) { 
-			if (filter != null) v = filter(v);
-			add(to, null, v, null, null); 
+			if (filter != null) {
+				v = filter(v);
+			}
+			if (add(to, null, v, null, null).success){
+				result[result.length] = v;
+			}
 		});
-		return null;
+		return result;
 	}
 	
 	public function fKey(table:String, reference:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand {
@@ -152,11 +157,11 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	public function truncate(table:String):ICommand {
-		return _gate.query("TRUNCATE :table", {table:table});
+		return _gate.prepare("TRUNCATE :table", {table:table});
 	}
 	
 	public function rename(table:String, to:String):ICommand {
-		return _gate.query("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
+		return _gate.prepare("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
 	}
 	
 }

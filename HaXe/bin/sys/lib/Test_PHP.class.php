@@ -4,39 +4,31 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
-		haxe_Log::trace("===================================================== Parameters: GET/POST<br>", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 23, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace("===================================================== Parameters: GET/POST", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 23, "className" => "Test_PHP", "methodName" => "main")));
 		sirius_utils_Dice::All(sirius_Sirius::$domain->params, array(new _hx_lambda(array(), "Test_PHP_0"), 'execute'), null);
-		haxe_Log::trace("===================================================== APPLICATION/JSON Content-Type<br>", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 27, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace("===================================================== APPLICATION/JSON Content-Type", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 27, "className" => "Test_PHP", "methodName" => "main")));
 		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp1 = _hx_string_or_null(sirius_tools_Utils::sruString(sirius_Sirius::$domain->input)) . "<br>";
+		$tmp1 = sirius_tools_Utils::sruString(sirius_Sirius::$domain->input);
 		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 28, "className" => "Test_PHP", "methodName" => "main"))));
-		haxe_Log::trace("===================================================== Files<br>", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 30, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace("===================================================== Files", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 30, "className" => "Test_PHP", "methodName" => "main")));
 		$tmp2 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp3 = Std::string(sirius_php_file_Uploader::save((new _hx_array(array((new _hx_array(array(1280, 720))), (new _hx_array(array(720, 480))), (new _hx_array(array(480, 360)))))))->{"list"}) . "<br>";
-		call_user_func_array($tmp2, array($tmp3, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 31, "className" => "Test_PHP", "methodName" => "main"))));
-		$tmp4 = sirius_Sirius::$gate;
-		$tmp4->open(sirius_db_Token::localhost("decorador", null, null, null), true);
+		call_user_func_array($tmp2, array(sirius_php_file_Uploader::save((new _hx_array(array((new _hx_array(array(1280, 720))), (new _hx_array(array(720, 480))), (new _hx_array(array(480, 360)))))))->{"list"}, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 31, "className" => "Test_PHP", "methodName" => "main"))));
+		haxe_Log::trace("===================================================== Database Handshake", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 33, "className" => "Test_PHP", "methodName" => "main")));
+		$tmp3 = sirius_Sirius::$gate;
+		$tmp3->open(sirius_db_Token::localhost("decorador", null, null, null), true);
 		if(sirius_Sirius::$gate->isOpen()) {
 			sirius_Sirius::$gate->setPdoAttributes(true);
-			haxe_Log::trace("HANDSHAKE OK" . "<br>", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 36, "className" => "Test_PHP", "methodName" => "main")));
-			$t = sirius_Sirius::$gate->table("project_review");
-			$t->add(_hx_anonymous(array("project_id" => 1, "content" => "test", "content_alt" => "another test", "active" => true, "created_at" => 0, "updated_at" => 0)), null, null, null);
-			$tmp5 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-			$tmp6 = _hx_string_or_null(sirius_serial_JsonTool::stringfy(sirius_Sirius::$gate->get_log(), null, null)) . "<br>";
-			call_user_func_array($tmp5, array($tmp6, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 42, "className" => "Test_PHP", "methodName" => "main"))));
-			$tmp7 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-			$tmp8 = _hx_string_or_null(sirius_serial_JsonTool::stringfy(sirius_Sirius::$gate->get_errors(), null, null)) . "<br>";
-			call_user_func_array($tmp7, array($tmp8, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 43, "className" => "Test_PHP", "methodName" => "main"))));
+			haxe_Log::trace("Successful Handshake!", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 37, "className" => "Test_PHP", "methodName" => "main")));
 		} else {
-			$tmp9 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-			$tmp10 = sirius_Sirius::$gate->get_errors();
-			call_user_func_array($tmp9, array($tmp10, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 45, "className" => "Test_PHP", "methodName" => "main"))));
+			$tmp4 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
+			$tmp5 = sirius_Sirius::$gate->get_errors();
+			call_user_func_array($tmp4, array($tmp5, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 39, "className" => "Test_PHP", "methodName" => "main"))));
 		}
 	}
 	function __toString() { return 'Test_PHP'; }
 }
 function Test_PHP_0($p, $v) {
 	{
-		haxe_Log::trace(_hx_string_or_null($p) . ": " . _hx_string_or_null($v) . "<br>", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 25, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace(_hx_string_or_null($p) . ": " . _hx_string_or_null($v), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 25, "className" => "Test_PHP", "methodName" => "main")));
 	}
 }

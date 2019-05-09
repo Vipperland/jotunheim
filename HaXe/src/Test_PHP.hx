@@ -18,29 +18,23 @@ class Test_PHP {
 		//img.fit(300,300).save('../assets/img/test.jpg');
 		//trace('===================================================== Headers');
 		//Dice.All(Sirius.domain.data, function(p:String, v:String){
-			//trace(p + ': ' + v + '<br>');
+			//trace(p + ': ' + v);
 		//});
-		trace('===================================================== Parameters: GET/POST<br>');
+		trace('===================================================== Parameters: GET/POST');
 		Dice.All(Sirius.domain.params, function(p:String, v:String){
-			trace(p + ': ' + v + '<br>');
+			trace(p + ': ' + v);
 		});
-		trace('===================================================== APPLICATION/JSON Content-Type<br>');
-		trace(Utils.sruString(Sirius.domain.input) + '<br>');
+		trace('===================================================== APPLICATION/JSON Content-Type');
+		trace(Utils.sruString(Sirius.domain.input));
 		
-		trace('===================================================== Files<br>');
-		trace(Uploader.save([[1280, 720], [720, 480], [480, 360]]).list + '<br>');
+		trace('===================================================== Files');
+		trace(Uploader.save([[1280, 720], [720, 480], [480, 360]]).list);
 		
+		trace('===================================================== Database Handshake');
 		Sirius.gate.open(Token.localhost('decorador'), true);
 		if (Sirius.gate.isOpen()){
 			Sirius.gate.setPdoAttributes(true);
-			trace('HANDSHAKE OK' + '<br>');
-			var t:IDataTable = Sirius.gate.table('project_review');
-			t.add({project_id:1, content:'test', content_alt:'another test', active:true, created_at:0, updated_at:0});
-			//t.findAll().each(cast function(o:Dynamic){
-				//trace(o.id + '<br>');
-			//});
-			trace(JsonTool.stringfy(Sirius.gate.log)+ '<br>');
-			trace(JsonTool.stringfy(Sirius.gate.errors)+ '<br>');
+			trace('Successful Handshake!');
 		}else{
 			trace(Sirius.gate.errors);
 		}

@@ -20,11 +20,6 @@ interface ICommand {
 	public var statement : Statement;
 	
 	/**
-	 * An Array of all returned data
-	 */
-	public var result : Array<Dynamic>;
-	
-	/**
 	 * Running error on query
 	 */
 	public var errors(get, null):Array<IError>;

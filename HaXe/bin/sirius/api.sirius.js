@@ -6,6 +6,7 @@ $hx_exports["sru"]["utils"] = $hx_exports["sru"]["utils"] || {};
 ;$hx_exports["sru"]["tools"] = $hx_exports["sru"]["tools"] || {};
 ;$hx_exports["sru"]["seo"] = $hx_exports["sru"]["seo"] || {};
 ;$hx_exports["sru"]["math"] = $hx_exports["sru"]["math"] || {};
+;$hx_exports["sru"]["game"] = $hx_exports["sru"]["game"] || {};
 ;$hx_exports["sru"]["draw"] = $hx_exports["sru"]["draw"] || {};
 ;$hx_exports["sru"]["data"] = $hx_exports["sru"]["data"] || {};
 ;$hx_exports["sru"]["css"] = $hx_exports["sru"]["css"] || {};
@@ -6773,7 +6774,7 @@ sirius_events_EventGroup.prototype = {
 	}
 	,__class__: sirius_events_EventGroup
 };
-var sirius_gaming_actions_Resolution = function(type,data) {
+var sirius_gaming_actions_Resolution = $hx_exports["sru"]["game"]["Resolution"] = function(type,data) {
 	this._type = type;
 	if((data.query instanceof Array) && data.query.__enum__ == null) {
 		this.query = data.query;
@@ -6806,7 +6807,7 @@ sirius_gaming_actions_Resolution.prototype = {
 	}
 	,__class__: sirius_gaming_actions_Resolution
 };
-var sirius_gaming_actions_ActionQuery = function() {
+var sirius_gaming_actions_ActionQuery = $hx_exports["sru"]["game"]["ActionQuery"] = function() {
 	sirius_flow_Push.call(this);
 };
 sirius_gaming_actions_ActionQuery.__name__ = ["sirius","gaming","actions","ActionQuery"];
@@ -6822,27 +6823,29 @@ sirius_gaming_actions_ActionQuery._resolve = function(a,r,v) {
 	case "*":
 		return a * v;
 	case "+":
-		return ++a;
-	case "++":
 		return a + v;
+	case "++":
+		return a + 1;
 	case "-":
 		return a - v;
 	case "--":
-		return --a;
+		return a - 1;
 	case "/":
 		return a / v;
-	case "<":
-		return sirius_tools_Flag.FPut(a,1 << v);
+	case "<<":
+		return a << v;
 	case "=":
 		return v;
-	case ">":
-		return sirius_tools_Flag.FDrop(a,1 << v);
+	case ">>":
+		return a >> v;
 	case "^":
 		return Math.pow(a,v);
 	case "|":
 		return a | v;
+	case "~":
+		return a & ~v;
 	}
-	return a == v;
+	return a + v;
 };
 sirius_gaming_actions_ActionQuery.__super__ = sirius_flow_Push;
 sirius_gaming_actions_ActionQuery.prototype = $extend(sirius_flow_Push.prototype,{
@@ -6853,8 +6856,8 @@ sirius_gaming_actions_ActionQuery.prototype = $extend(sirius_flow_Push.prototype
 			return true;
 		}
 	}
-	,_getint: function(value) {
-		var o = Std.parseInt(value);
+	,_N: function(value) {
+		var o = parseFloat(value);
 		if(o != null) {
 			return o;
 		} else {
@@ -6863,7 +6866,7 @@ sirius_gaming_actions_ActionQuery.prototype = $extend(sirius_flow_Push.prototype
 	}
 	,__class__: sirius_gaming_actions_ActionQuery
 });
-var sirius_gaming_actions_Action = function(type,data) {
+var sirius_gaming_actions_Action = $hx_exports["sru"]["game"]["Action"] = function(type,data) {
 	var _gthis = this;
 	sirius_gaming_actions_Resolution.call(this,type,data);
 	this.requirements = [];
@@ -6906,7 +6909,7 @@ sirius_gaming_actions_Action.prototype = $extend(sirius_gaming_actions_Resolutio
 	}
 	,__class__: sirius_gaming_actions_Action
 });
-var sirius_gaming_actions_EventController = function(data) {
+var sirius_gaming_actions_EventController = $hx_exports["sru"]["game"]["EventController"] = function(data) {
 	var _gthis = this;
 	this.events = sirius_Sirius.resources.getObj("core.data.Events");
 	sirius_utils_Dice.All(this.events,function(p,v) {
@@ -6925,7 +6928,7 @@ sirius_gaming_actions_EventController.prototype = {
 	}
 	,__class__: sirius_gaming_actions_EventController
 };
-var sirius_gaming_actions_Events = function(type,data) {
+var sirius_gaming_actions_Events = $hx_exports["sru"]["game"]["Events"] = function(type,data) {
 	this._type = type;
 	this._init(data);
 };
@@ -6982,7 +6985,7 @@ sirius_gaming_actions_IEventContext.__name__ = ["sirius","gaming","actions","IEv
 sirius_gaming_actions_IEventContext.prototype = {
 	__class__: sirius_gaming_actions_IEventContext
 };
-var sirius_gaming_actions_RequirementQuery = function() {
+var sirius_gaming_actions_RequirementQuery = $hx_exports["sru"]["game"]["RequirementQuery"] = function() {
 	sirius_flow_Push.call(this);
 };
 sirius_gaming_actions_RequirementQuery.__name__ = ["sirius","gaming","actions","RequirementQuery"];
@@ -7016,6 +7019,8 @@ sirius_gaming_actions_RequirementQuery.prototype = $extend(sirius_flow_Push.prot
 			return a < v;
 		case "<=":
 			return a <= v;
+		case "=":
+			return a == v;
 		case ">":
 			return a > v;
 		case ">=":
@@ -7027,7 +7032,7 @@ sirius_gaming_actions_RequirementQuery.prototype = $extend(sirius_flow_Push.prot
 	}
 	,__class__: sirius_gaming_actions_RequirementQuery
 });
-var sirius_gaming_actions_Requirement = function(type,data) {
+var sirius_gaming_actions_Requirement = $hx_exports["sru"]["game"]["Requirement"] = function(type,data) {
 	sirius_gaming_actions_Resolution.call(this,type,data);
 	this.cancelOnSuccess = data.cancelOnSuccess == true;
 	this.cancelOnFail = data.cancelOnFail == true;
@@ -7180,6 +7185,13 @@ var sirius_math_Point = $hx_exports["sru"]["math"]["point"] = function(x,y) {
 };
 sirius_math_Point.__name__ = ["sirius","math","Point"];
 sirius_math_Point.__interfaces__ = [sirius_math_IPoint];
+sirius_math_Point.distance = function(x1,y1,x2,y2) {
+	var rx = x1 - x2;
+	var ry = y1 - y2;
+	rx *= rx;
+	ry *= ry;
+	return Math.sqrt(rx + ry);
+};
 sirius_math_Point.prototype = {
 	reset: function() {
 		this.x = this.y = 0;
@@ -8385,6 +8397,25 @@ sirius_tools_Key.UUID = function() {
 	sirius_tools_Key._last_uuid = sirius_serial_IOTools.md5Encode(Std.string(new Date()) + "-" + sirius_tools_Key.GEN());
 	return sirius_tools_Key._last_uuid;
 };
+sirius_tools_Key.TAG = function(value,prefix,len) {
+	if(len == null) {
+		len = 11;
+	}
+	if(prefix == null) {
+		prefix = "0";
+	}
+	if(typeof(value) != "string") {
+		value = Std.string(value);
+	} else if(value == null) {
+		value = sirius_tools_Key.COUNTER("tag");
+	}
+	var k = value.length;
+	while(k < len) {
+		value = prefix + Std.string(value);
+		++k;
+	}
+	return value;
+};
 var sirius_tools_Ticker = $hx_exports["Ticker"] = function() { };
 sirius_tools_Ticker.__name__ = ["sirius","tools","Ticker"];
 sirius_tools_Ticker._tickAll = function() {
@@ -9488,8 +9519,8 @@ sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;
 sirius_tools_Delayer.clearInterval = clearInterval;
 sirius_tools_Delayer._tks = { };
-sirius_tools_Key._cts = { "global" : 0};
 sirius_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
+sirius_tools_Key._cts = { "global" : 0};
 sirius_tools_Key.VALIDATE_DATE = new EReg("\\d{1,2}/\\d{1,2}/\\d{4}","");
 sirius_tools_Key.VALIDATE_URL = new EReg("https?://.+","");
 sirius_tools_Key.VALIDATE_IPV4 = new EReg("^\\d{1,3}d{1,3}.\\d{1,3}.\\d{1,3}","");

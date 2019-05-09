@@ -33,7 +33,7 @@ class sirius_db_tools_Command implements sirius_db_tools_ICommand{
 				if(Std::is($v, _hx_qtype("Bool"))) {
 					return PDO::PARAM_INT;
 				} else {
-					if(_hx_equal($v, "NULL")) {
+					if($v === null) {
 						return PDO::PARAM_NULL;
 					} else {
 						return PDO::PARAM_STR;

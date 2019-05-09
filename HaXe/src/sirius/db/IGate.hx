@@ -68,7 +68,7 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function schema (?table:Dynamic) : ICommand;
+	public function schema (?table:Dynamic) : IExtCommand;
 	
 	/**
 	 * Shotcut to table statements and methods

@@ -37,17 +37,19 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 			if(Std::is($obj, _hx_qtype("Array"))) {
 				sirius_utils_Dice::All($obj, array(new _hx_lambda(array(&$_gthis, &$joiner, &$props, &$r), "sirius_db_tools_QueryBuilder_4"), 'execute'), null);
 			} else {
-				if(Std::is(_hx_field($obj, "value"), _hx_qtype("Array"))) {
-					$r1 = $r->length;
-					$tmp = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
-					$r[$r1] = $tmp;
-					sirius_utils_Dice::All(_hx_field($obj, "value"), array(new _hx_lambda(array(&$props), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
-				} else {
-					$r2 = $r->length;
-					$tmp1 = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
-					$r[$r2] = $tmp1;
-					if(_hx_field($obj, "value") !== null) {
-						$props[_hx_field($props, "length")] = _hx_field($obj, "value");
+				if($obj !== null) {
+					if(Std::is(_hx_field($obj, "value"), _hx_qtype("Array"))) {
+						$r1 = $r->length;
+						$tmp = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
+						$r[$r1] = $tmp;
+						sirius_utils_Dice::All(_hx_field($obj, "value"), array(new _hx_lambda(array(&$props), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
+					} else {
+						$r2 = $r->length;
+						$tmp1 = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
+						$r[$r2] = $tmp1;
+						if(_hx_field($obj, "value") !== null) {
+							$props[_hx_field($props, "length")] = _hx_field($obj, "value");
+						}
 					}
 				}
 			}
@@ -114,8 +116,9 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 	public function copy($from, $to, $clause = null, $filter = null, $limit = null) {
 		$_gthis = $this;
 		$entries = $this->find("*", $from, $clause, null, $limit)->result;
-		sirius_utils_Dice::Values($entries, array(new _hx_lambda(array(&$_gthis, &$filter, &$to), "sirius_db_tools_QueryBuilder_6"), 'execute'), null);
-		return null;
+		$result = (new _hx_array(array()));
+		sirius_utils_Dice::Values($entries, array(new _hx_lambda(array(&$_gthis, &$filter, &$result, &$to), "sirius_db_tools_QueryBuilder_6"), 'execute'), null);
+		return $result;
 	}
 	public function fKey($table, $reference, $key = null, $target = null, $field = null, $delete = null, $update = null) {
 		if($update === null) {
@@ -133,10 +136,10 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 		}
 	}
 	public function truncate($table) {
-		return $this->_gate->query("TRUNCATE :table", _hx_anonymous(array("table" => $table)));
+		return $this->_gate->prepare("TRUNCATE :table", _hx_anonymous(array("table" => $table)), null);
 	}
 	public function rename($table, $to) {
-		return $this->_gate->query("RENAME TABLE :oldname TO :newname", _hx_anonymous(array("oldname" => $table, "newname" => $to)));
+		return $this->_gate->prepare("RENAME TABLE :oldname TO :newname", _hx_anonymous(array("oldname" => $table, "newname" => $to)), null);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -205,11 +208,13 @@ function sirius_db_tools_QueryBuilder_5(&$props, $p1, $v3) {
 		$props[_hx_field($props, "length")] = $v3;
 	}
 }
-function sirius_db_tools_QueryBuilder_6(&$_gthis, &$filter, &$to, $v) {
+function sirius_db_tools_QueryBuilder_6(&$_gthis, &$filter, &$result, &$to, $v) {
 	{
 		if($filter !== null) {
 			$v = call_user_func_array($filter, array($v));
 		}
-		$_gthis->add($to, null, $v, null, null);
+		if($_gthis->add($to, null, $v, null, null)->success) {
+			$result[$result->length] = $v;
+		}
 	}
 }

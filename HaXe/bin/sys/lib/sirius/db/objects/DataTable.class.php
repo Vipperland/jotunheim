@@ -84,43 +84,43 @@ class sirius_db_objects_DataTable implements sirius_db_objects_IDataTable{
 		return $r;
 	}
 	public function add($parameters = null, $clause = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->add($this->_name, $clause, $parameters, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->add($this->_name, $clause, $parameters, $order, $limit)->execute(null, null, null)->success);
 	}
 	public function findAll($clause = null, $order = null, $limit = null) {
 		$tmp = $this->_gate->builder;
 		$tmp1 = $this->_checkRestriction();
-		return new sirius_db_objects_QueryResult($this, $tmp->find($tmp1, $this->_name, $clause, $order, $limit)->execute(null, $this->_class, null)->result);
+		return new sirius_db_objects_ExtQuery($this, $tmp->find($tmp1, $this->_name, $clause, $order, $limit)->execute(null, $this->_class, null)->result);
 	}
 	public function findOne($clause = null, $order = null) {
 		$tmp = $this->_gate->builder;
 		$tmp1 = $this->_checkRestriction();
-		return _hx_deref(new sirius_db_objects_QueryResult($this, $tmp->find($tmp1, $this->_name, $clause, $order, sirius_db_Limit::$ONE)->execute(null, $this->_class, null)->result))->first();
+		return _hx_deref(new sirius_db_objects_ExtQuery($this, $tmp->find($tmp1, $this->_name, $clause, $order, sirius_db_Limit::$ONE)->execute(null, $this->_class, null)->result))->first();
 	}
 	public function update($parameters = null, $clause = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, $limit)->execute(null, null, null)->success);
 	}
 	public function updateOne($parameters = null, $clause = null, $order = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, sirius_db_Limit::$ONE)->execute(null, null, null)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, sirius_db_Limit::$ONE)->execute(null, null, null)->success);
 	}
 	public function delete($clause = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->delete($this->_name, $clause, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->delete($this->_name, $clause, $order, $limit)->execute(null, null, null)->success);
 	}
 	public function deleteOne($clause = null, $order = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->delete($this->_name, $clause, $order, sirius_db_Limit::$ONE)->execute(null, null, null)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->delete($this->_name, $clause, $order, sirius_db_Limit::$ONE)->execute(null, null, null)->success);
 	}
 	public function copy($toTable, $clause = null, $order = null, $limit = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->copy($this->_name, $toTable, $clause, $order, $limit)->execute(null, null, null)->result);
+		return new sirius_db_objects_ExtQuery($this, $this->_gate->builder->copy($this->_name, $toTable, $clause, $order, $limit));
 	}
 	public function copyOne($toTable, $clause = null, $order = null) {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->copy($this->_name, $toTable, $clause, $order, sirius_db_Limit::$ONE)->execute(null, null, null)->result);
+		return new sirius_db_objects_ExtQuery($this, _hx_array_get($this->_gate->builder->copy($this->_name, $toTable, $clause, $order, sirius_db_Limit::$ONE), 0));
 	}
 	public function clear() {
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->truncate($this->_name)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->truncate($this->_name)->success);
 	}
 	public function rename($to) {
 		$old = $this->_name;
 		$this->_name = $to;
-		return new sirius_db_objects_QueryResult($this, $this->_gate->builder->rename($old, $to)->result);
+		return new sirius_db_objects_Query($this, $this->_gate->builder->rename($old, $to)->success);
 	}
 	public function length($clause = null, $limit = null) {
 		return $this->_gate->builder->find("COUNT(*)", $this->_name, $clause, null, $limit)->execute(null, null, null)->length(null);

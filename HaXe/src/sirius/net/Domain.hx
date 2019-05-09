@@ -3,21 +3,21 @@ package sirius.net;
 #if js
 	import js.Browser;
 	import js.html.Location;
+	import sirius.data.DataCache;
+	import sirius.data.IDataCache;
 	import sirius.dom.Display;
+	import sirius.tools.Utils;
 #elseif php
 	import php.Lib;
 	import php.NativeArray;
 	import php.Web;
-	
 	import sirius.net.IDomainData;
 #end
+
 import haxe.Json;
 import haxe.io.Bytes;
-import sirius.data.DataCache;
 import sirius.data.Fragments;
-import sirius.data.IDataCache;
 import sirius.data.IFragments;
-import sirius.tools.Utils;
 import sirius.utils.Dice;
 
 /**
@@ -61,13 +61,16 @@ class Domain implements IDomain {
 	private function _parseURI():Void {
 		
 		#if js
+		
 			var l:Location = Browser.window.location;
 			var p:String = l.pathname;
 			host = l.hostname;
 			port = l.port;
 			hash = new Fragments(l.hash.substr(1), "/");
 			params = Utils.getQueryParams(l.href);
+		
 		#elseif php
+		
 			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
 			server = Web.getCwd();
 			host = Web.getHostName();
@@ -106,7 +109,7 @@ class Domain implements IDomain {
 		public function reload(?force:Bool=false):Void {
 			Browser.window.location.reload(force);
 		}
-		/* INTERFACE sirius.net.IDomain */
+		
 	#elseif php
 		
 		public function require(params:Array<String>):Bool {
@@ -149,25 +152,28 @@ class Domain implements IDomain {
 		 * @return
 		 */
 		private function _getRawData(boundary:String, ?data:Dynamic):Dynamic {
-			if (data == null) 
+			if (data == null) {
 				data = {};
+			}
 			var input:String = untyped __php__ ("file_get_contents('php://input')");
 			
 			var result:Array<String> = input.split(boundary);
 			Dice.Values(result, function(v:String) {
-				if (v == null || v.length == 0) 
+				if (v == null || v.length == 0) {
 					return;
+				}
 				if(v.indexOf("Content-Disposition: form-data;") < 30){
 					var point:Array<String> = v.split("Content-Disposition: form-data; name=")[1].split("\r\n\r\n");
 					var param:String = point[0].split("\"").join("");
 					if (param.indexOf("Content-Type:") == -1) {
 						var value:String = point[1].split("\r\n")[0];
 						if (param.length > 0 && value.length > 0 && value != "null") {
-							if(param.indexOf("[]") == -1)
+							if (param.indexOf("[]") == -1){
 								Reflect.setField(data, param, value);
-							else {
-								if (!Reflect.hasField(data, param)) 
+							} else {
+								if (!Reflect.hasField(data, param)) {
 									Reflect.setField(data, param, []);
+								}
 								Reflect.field(data, param).push(value);
 							}
 						}

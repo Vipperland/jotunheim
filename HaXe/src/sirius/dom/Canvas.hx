@@ -13,12 +13,12 @@ class Canvas extends Display {
 		return cast Sirius.one(q);
 	}
 	
-	public var paper:CanvasElement;
+	public var dom:CanvasElement;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createCanvasElement();
 		super(q, null);
-		paper = cast element;
+		dom = cast element;
 	}
 	
 }

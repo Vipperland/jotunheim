@@ -8,6 +8,11 @@ import sirius.data.IDataSet;
 interface IExtCommand extends ICommand {
 	
 	/**
+	 * An Array of all returned data
+	 */
+	public var result:Array<Dynamic>;
+	
+	/**
 	 * Execute the command
 	 * @param	handler
 	 * @param	type

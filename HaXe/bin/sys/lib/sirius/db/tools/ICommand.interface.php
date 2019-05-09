@@ -6,7 +6,6 @@ interface sirius_db_tools_ICommand {
 	//;
 	//;
 	//;
-	//;
 	function bind($arguments);
 	function execute($handler = null, $type = null, $parameters = null);
 	function log();

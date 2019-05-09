@@ -1,5 +1,8 @@
 package sirius.modules;
 import haxe.Json;
+import js.html.Image;
+import sirius.dom.Style;
+import sirius.serial.IOTools;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 import sirius.Sirius;
@@ -24,6 +27,10 @@ import sirius.Sirius;
 class ModLib {
 	
 	private static var CACHE:Dynamic = { };
+	
+	#if js
+		public var assets:IDisplay = cast new Display();
+	#end
 	
 	private var _predata:Array<String->Dynamic->Dynamic>;
 	
@@ -121,6 +128,9 @@ class ModLib {
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
 									Sirius.document.head.bind(content, mod.type, mod.id);
 									content = '';
+								}else if (mod.type.substring(0,6)  == 'image/') {
+									var img:Image = new Image();
+									img.src = "data:" + mod.type + "," + IOTools.encodeBase64(content);
 								}
 							}
 							if (mod.target != null) {
@@ -139,7 +149,36 @@ class ModLib {
 			}
 			});
 		}else {
-			Reflect.setField(CACHE, file.toLowerCase(), content);
+			#if js
+				var ext:String = file.split('.').pop();
+				switch(ext){
+					case 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico' : {
+						var img:Image = new Image();
+						img.setAttribute('data-url', file);
+						img.src = file;
+						assets.element.appendChild(img);
+					}
+					case 'css' : {
+						var dom:Style = new Style();
+						dom.attribute('data-url', file);
+						dom.writeHtml(content);
+						dom.publish();
+					}
+					case 'js' : {
+						var dom:Script = new Script();
+						dom.attribute('data-url', file);
+						dom.type('text/javascript');
+						dom.writeText(content);
+						dom.addToBody();
+					}
+					default : {
+						Reflect.setField(CACHE, file.toLowerCase(), content);
+					}
+				}
+			#else
+				Reflect.setField(CACHE, file.toLowerCase(), content);
+			#end
+			
 		}
 	}
 	
@@ -151,7 +190,9 @@ class ModLib {
 	 */
 	public function get(name:String, ?data:Dynamic):String {
 		name = name.toLowerCase();
-		if (!exists(name)) return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+		if (!exists(name)) {
+			return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+		}
 		var content:String = Reflect.field(CACHE, name);
 		data = _sanitize(name, data);
 		return (data != null) ? Filler.to(content, data) : content;

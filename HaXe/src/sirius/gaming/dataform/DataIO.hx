@@ -26,7 +26,7 @@ class DataIO {
 	}
 	
 	/**
-	   
+	   Data format to [n 0:a|1:b|2:c]
 	   @param	o
 	   @param	n
 	   @param	nfo

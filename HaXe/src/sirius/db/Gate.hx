@@ -87,7 +87,7 @@ class Gate implements IGate {
 		return cast command;
 	}
 	
-	public function schema(?table:Dynamic):ICommand {
+	public function schema(?table:Dynamic):IExtCommand {
 		var r:IDataSet = null;
 		if (!Std.is(table, Array)) table = [table];
 		

@@ -1,6 +1,7 @@
 package sirius.dom;
 import js.Browser;
 import js.html.ScriptElement;
+import sirius.dom.IDisplay;
 import sirius.events.IEvent;
 
 /**
@@ -45,13 +46,40 @@ class Script extends Display {
 		object = cast element;
 	}
 	
+	public function type(q:String):IDisplay {
+		object.type = q;
+		return this;
+	}
+	
 	public function src(url:String, ?handler:IEvent->Void):Void {
 		object.src = url;
-		if (handler != null) events.load(handler, 1);
+		if (handler != null) {
+			events.load(handler, 1);
+		}
 	}
 	
 	public function async():Void {
 		object.async = true;
+	}
+	
+	override public function writeText(q:Dynamic):IDisplay {
+		this.object.text = q;
+		return this;
+	}
+	
+	override public function appendText(q:Dynamic):IDisplay {
+		this.object.text = this.object.text + q;
+		return this;
+	}
+	
+	override public function writeHtml(q:Dynamic):IDisplay {
+		this.object.text = q;
+		return this;
+	}
+	
+	override public function appendHtml(q:Dynamic):IDisplay {
+		this.object.text = this.object.text + q;
+		return this;
 	}
 	
 }
