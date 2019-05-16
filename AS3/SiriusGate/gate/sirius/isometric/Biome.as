@@ -12,11 +12,10 @@ package gate.sirius.isometric {
 	import gate.sirius.isometric.signal.BiomeColliderSignal;
 	import gate.sirius.isometric.signal.BiomeMatterSignal;
 	import gate.sirius.isometric.signal.BiomeSignals;
+	import gate.sirius.isometric.timer.BiomeHeart;
 	import gate.sirius.isometric.tools.BiomeInteraction;
 	import gate.sirius.isometric.view.BiomeCommunity;
 	import gate.sirius.isometric.view.BiomeViewport;
-	import gate.sirius.timer.ActiveController;
-	import gate.sirius.timer.IActiveController;
 	
 	
 	/**
@@ -26,7 +25,7 @@ package gate.sirius.isometric {
 	public class Biome {
 		
 		/** @private */
-		private var _ticker:IActiveController;
+		private var _heart:BiomeHeart;
 		
 		/** @private */
 		private var _viewport:BiomeViewport;
@@ -120,7 +119,7 @@ package gate.sirius.isometric {
 			_matterByName = new Dictionary(true);
 			_matterLocation = new Dictionary(true);
 			_matterBounds = new Dictionary(true);
-			_ticker = new ActiveController(fps);
+			_heart = BiomeHeart.ME;
 			_signals = new BiomeSignals(this);
 			_viewport = new BiomeViewport(x, y, z, w, h, d, this);
 			_community = new BiomeCommunity(this);
@@ -190,7 +189,7 @@ package gate.sirius.isometric {
 			_addMatterOccupation(matter);
 			var omatter:OrganicBiomeMatter = matter as OrganicBiomeMatter;
 			if (omatter) {
-				_ticker.register(omatter, omatter.fps);
+				_heart.connect(omatter);
 			}
 			_signals.MATTER_ADDED.send(BiomeMatterSignal, true, matter);
 			matter.activate(BiomeActivations.ADDED, null, this);
@@ -215,7 +214,7 @@ package gate.sirius.isometric {
 				delete _matterBounds[matter.name];
 				var omatter:OrganicBiomeMatter = matter as OrganicBiomeMatter;
 				if (omatter) {
-					_ticker.unregister(omatter, false);
+					_heart.disconnect(omatter);
 				}
 			}
 			return matter;
@@ -424,10 +423,10 @@ package gate.sirius.isometric {
 		
 		
 		/**
-		 * Default Biome Ticker for render and behaviours
+		 * Default Biome Heart for alive objects and timed behaviours
 		 */
-		public function get ticker():IActiveController {
-			return _ticker;
+		public function get heart():BiomeHeart {
+			return _heart;
 		}
 		
 		

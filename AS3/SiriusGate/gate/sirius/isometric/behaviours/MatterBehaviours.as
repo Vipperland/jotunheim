@@ -1,8 +1,7 @@
 package gate.sirius.isometric.behaviours {
-	import gate.sirius.isometric.behaviours.action.Actions;
-	import gate.sirius.isometric.matter.BiomeMatter;
-	import gate.sirius.isometric.scenes.BiomeRoom;
-	import gate.sirius.timer.IActiveController;
+	import gate.sirius.isometric.behaviours.action.*;
+	import gate.sirius.isometric.matter.*;
+	import gate.sirius.isometric.scenes.*;
 	
 	
 	/**
@@ -30,7 +29,7 @@ package gate.sirius.isometric.behaviours {
 		private var _interact:Actions;
 		
 		/** @private */
-		private var _tick:Actions;
+		private var _pulse:Actions;
 		
 		
 		public function MatterBehaviours(origin:Object) {
@@ -41,7 +40,7 @@ package gate.sirius.isometric.behaviours {
 			_aproach = new Actions();
 			_deviate = new Actions();
 			_interact = new Actions();
-			_tick = new Actions();
+			_pulse = new Actions();
 		}
 		
 		
@@ -105,13 +104,13 @@ package gate.sirius.isometric.behaviours {
 		}
 		
 		
-		public function onTick(data:IActiveController):void {
-			_tick.execute(matter, null, null, null, data);
+		public function onPulse():void {
+			_pulse.execute(matter, null, null, null, null);
 		}
 		
 		
-		public function get tick():Actions {
-			return _tick;
+		public function get pulse():Actions {
+			return _pulse;
 		}
 		
 		
@@ -128,7 +127,7 @@ package gate.sirius.isometric.behaviours {
 			behaviour._aproach = _aproach;
 			behaviour._deviate = _deviate;
 			behaviour._interact = _interact;
-			behaviour._tick = _tick;
+			behaviour._pulse = _pulse;
 			return behaviour;
 		}
 	

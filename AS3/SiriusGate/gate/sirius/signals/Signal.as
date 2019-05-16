@@ -22,7 +22,7 @@ package gate.sirius.signals {
 		
 		/** @private */
 		protected final function _resolveHandler(... list:Array):Function {
-			for each (var entry:*in list) {
+			for each (var entry:* in list) {
 				if (entry is Function) {
 					return entry as Function;
 				}

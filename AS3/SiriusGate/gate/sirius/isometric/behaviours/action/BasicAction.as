@@ -18,7 +18,6 @@ package gate.sirius.isometric.behaviours.action {
 		
 		private var _verifiers:Verifiers;
 		
-		
 		public function BasicAction(id:String = null) {
 			_id = id || getQualifiedClassName(this).split("::").pop() + "#" + COUNT;
 			_verifiers = new Verifiers();

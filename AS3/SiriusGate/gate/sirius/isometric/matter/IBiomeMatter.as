@@ -1,14 +1,13 @@
 package gate.sirius.isometric.matter {
 	
 	import flash.display.DisplayObject;
-	import gate.sirius.isometric.behaviours.MatterBehaviours;
 	import gate.sirius.isometric.Biome;
+	import gate.sirius.isometric.behaviours.MatterBehaviours;
 	import gate.sirius.isometric.data.BiomeEntry;
 	import gate.sirius.isometric.math.BiomeAllocation;
 	import gate.sirius.isometric.math.BiomeBounds;
 	import gate.sirius.isometric.math.BiomeFlexPoint;
 	import gate.sirius.isometric.math.BiomePoint;
-	import gate.sirius.timer.IActiveObject;
 	
 	
 	/**

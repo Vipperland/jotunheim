@@ -115,8 +115,16 @@ package gate.sirius.isometric.behaviours.report {
 			return _author;
 		}
 		
+		public function get room():BiomeRoom {
+			return _room;
+		}
+		
 		public function get matter():BiomeMatter {
 			return _matter;
+		}
+		
+		public function getBlueprint():Report {
+			return new Report(_author, _location, _room, _matter, _carryData);
 		}
 	
 	}
