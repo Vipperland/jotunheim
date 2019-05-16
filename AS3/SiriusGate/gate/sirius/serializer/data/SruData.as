@@ -96,6 +96,9 @@ package gate.sirius.serializer.data {
 				case "false":  {
 					return false;
 				}
+				case "null":  {
+					return null;
+				}
 				default:  {
 					if (value.length < 22) {
 						if (!isNaN(Number(value)))

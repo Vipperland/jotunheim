@@ -14,11 +14,14 @@ package gate.sirius.modloader.signals {
 		
 		private var _on_file:SignalDispatcher;
 		
+		private var _on_mod_loaded:SignalDispatcher;
+		
 		
 		public function ResourceSignals(author:Object) {
 			_complete = new SignalDispatcher(author);
 			_error = new SignalDispatcher(author);
 			_on_file = new SignalDispatcher(author);
+			_on_mod_loaded = new SignalDispatcher(author);
 		}
 		
 		
@@ -31,9 +34,12 @@ package gate.sirius.modloader.signals {
 			return _error;
 		}
 		
-		
 		public function get ON_FILE():SignalDispatcher {
 			return _on_file;
+		}
+		
+		public function get ON_MOD_LOADED():SignalDispatcher {
+			return _on_mod_loaded;
 		}
 	
 	}

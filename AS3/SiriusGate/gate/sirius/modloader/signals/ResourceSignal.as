@@ -12,7 +12,6 @@ package gate.sirius.modloader.signals {
 		
 		private var _file:IFileInfo;
 		
-		
 		public function ResourceSignal() {
 			super(_constructor);
 		}
@@ -37,7 +36,7 @@ package gate.sirius.modloader.signals {
 			_file = null;
 			super.dispose(recyclable);
 		}
-	
+		
 	}
 
 }

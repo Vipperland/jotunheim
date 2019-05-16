@@ -38,6 +38,13 @@ package gate.sirius.isometric.behaviours.action {
 		}
 		
 		
+		private function _checkOverride(id:String, type:Class):void {
+			if (_INSTANCES[id]) {
+				ULog.GATE.pushWarning("CoreList::[" + id + "]. " + getQualifiedClassName(_INSTANCES[id]) + " overrided by " + getQualifiedClassName(type));
+			}
+		}
+		
+		
 		public function ActionList() {
 		}
 		
@@ -52,14 +59,6 @@ package gate.sirius.isometric.behaviours.action {
 		public function create(id:String, definition:String, ... args:Array):ICoreElement {
 			return create(id, definition, args);
 		}
-		
-		
-		private function _checkOverride(id:String, type:Class):void {
-			if (_INSTANCES[id]) {
-				ULog.GATE.pushWarning("CoreList::[" + id + "]. " + getQualifiedClassName(_INSTANCES[id]) + " overrided by " + getQualifiedClassName(type));
-			}
-		}
-		
 		
 		public function help(type:String):String {
 			var token:Token = (_AVAILABLE[type] as Token);

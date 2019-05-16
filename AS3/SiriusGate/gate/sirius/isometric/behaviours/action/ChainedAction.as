@@ -5,13 +5,13 @@ package gate.sirius.isometric.behaviours.action {
 	 * ...
 	 * @author Rafael moreira
 	 */
-	public class PullAction extends BasicAction {
+	public class ChainedAction extends BasicAction {
 		
 		private var _success:Actions;
 		
 		private var _fail:Actions;
 		
-		public function PullAction(id:String = null) {
+		public function ChainedAction(id:String = null) {
 			super(id);
 			_success = new Actions();
 			_fail = new Actions();

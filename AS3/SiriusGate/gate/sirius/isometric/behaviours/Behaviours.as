@@ -10,7 +10,6 @@ package gate.sirius.isometric.behaviours {
 		
 		internal var _targetOrigin:Object;
 		
-		
 		public function Behaviours(origin:Object = null) {
 			_targetOrigin = origin;
 		}

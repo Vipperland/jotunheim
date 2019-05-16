@@ -46,8 +46,9 @@ package gate.sirius.log {
 		
 		
 		public function add(level:uint, ... message:Array):void {
-			if (level > 3)
+			if (level > 3){
 				level = 3;
+			}
 			_lastMessage = ((_messages.length + 1) * 0.0001).toFixed(4).split(".").join("") + " &lt;" + _names[level] + "&gt; " + message.join("\n");
 			_signals.send(ULogSignal, true, level, _lastMessage);
 			_messages[_messages.length] = _lastMessage;

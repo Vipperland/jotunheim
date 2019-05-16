@@ -40,7 +40,7 @@ package gate.sirius.modloader.data {
 			var data:String;
 			var stream:FileStream = new FileStream();
 			if (!config.exists) {
-				data = "//SIRIUS CONFIG FILE\nloadorder{\n\t@add loader 1\n\t@add core 1\n}\nproperties{\n\t//statup properties\n}";
+				data = "//SIRIUS CONFIG FILE\nloadorder{\n\t@add loader 0\n\t@add core 1\n}\nproperties{\n\t//statup properties\n}";
 				stream.open(config, FileMode.WRITE);
 				stream.writeUTFBytes(data);
 			} else {

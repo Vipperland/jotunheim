@@ -1,6 +1,6 @@
 package gate.sirius.meta.link.controller {
 	
-	import alchemy.vipperland.utils.SWFExplorer;
+	import gate.sirius.utils.Explorer;
 	import flash.display.LoaderInfo;
 	import flash.display.Sprite;
 	import flash.system.ApplicationDomain;

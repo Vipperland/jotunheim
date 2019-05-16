@@ -43,7 +43,7 @@ package gate.sirius.isometric.behaviours.action {
 		}
 		
 		
-		public function construct(... args:Array):void {
+		public function construct(...args:Array):void {
 		
 		}
 		

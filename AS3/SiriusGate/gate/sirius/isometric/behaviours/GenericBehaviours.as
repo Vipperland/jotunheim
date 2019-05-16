@@ -29,7 +29,7 @@ package gate.sirius.isometric.behaviours {
 			if (actions) {
 				actions.execute(_targetOrigin, entryPoint);
 			} else {
-				// TODO : Actions behaviour not found signal
+				// TODO: Actions behaviour not found signal
 			}
 		}
 	

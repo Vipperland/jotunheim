@@ -2,11 +2,15 @@ package gate.sirius.modloader {
 	
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
+	import flash.display.MovieClip;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.system.ApplicationDomain;
+	import flash.system.ImageDecodingPolicy;
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
@@ -72,12 +76,13 @@ package gate.sirius.modloader {
 		
 		private var _context:LoaderContext;
 		
-		private var logger:ULog = ULog.GATE;
-		
 		private var _extension:*;
 		
 		private var _toParseData:Array;
 		
+		private var _shared:Object;
+		
+		private var logger:ULog = ULog.GATE;
 		
 		private function _scan(dir:File):void {
 			logger.pushMessage("Scanning Mods directory");
@@ -86,19 +91,23 @@ package gate.sirius.modloader {
 				if (!res_dir.exists) {
 					res_dir.createDirectory();
 				}
+				// Create /RESOURCE/DATA/
 				var config_dir:File = res_dir.resolvePath("data");
 				if (!config_dir.exists) {
 					config_dir.createDirectory();
 				}
+				// Create /RESOURCE/MODS/
 				var mods_dir:File = res_dir.resolvePath("mods");
 				if (!mods_dir.exists) {
 					mods_dir.createDirectory();
 				}
+				// Create /RESOURCE/MODS/LOADER/
 				var loader:File = mods_dir.resolvePath("loader");
 				if (!loader.exists) {
 					loader.createDirectory();
 					_config.createInfoFile(loader.resolvePath("info.sru"), "loader", "0.0.0", null, null, "UILoaderScreen");
 				}
+				// Create /RESOURCE/MODS/CORE/
 				var core:File = mods_dir.resolvePath("core");
 				if (!core.exists) {
 					core.createDirectory();
@@ -115,7 +124,7 @@ package gate.sirius.modloader {
 						_addCompreessedModInfo(file);
 					}
 				}
-				_startupConfig(config_dir);
+				_startupMain(config_dir);
 			} else {
 				logger.pushError("[LOAD] Critical: Game instalation directory not found.");
 			}
@@ -131,14 +140,7 @@ package gate.sirius.modloader {
 			_path = file.nativePath;
 			_compressedMod = new Zip();
 			_compressedMod.signals.FILE_LOADED.hold(_onCompressedModFileLoaded);
-			_compressedMod.signals.COMPLETE.hold(_disposeCompressedFile);
 			_compressedMod.loadBytes(zipData);
-		}
-		
-		
-		private function _disposeCompressedFile(zip:IZip):void {
-			zip.dispose();
-			_current.compressed == null;
 		}
 		
 		
@@ -147,7 +149,7 @@ package gate.sirius.modloader {
 			if (file.isDirectory) {
 				return;
 			} else if (file.filename == "info.sru") {
-				_parser.parse(file.getContentAsString(), _config, null, _sruParserError, file.filename);
+				_parser.parse(file.getContentAsString(), _parserTicket, null, _sruParserError, file.filename);
 			} else if (file.extension == "sru") {
 				_toParseData[_toParseData.length] = file;
 			} else {
@@ -166,7 +168,7 @@ package gate.sirius.modloader {
 		}
 		
 		
-		private function _startupConfig(config:File):void {
+		private function _startupMain(config:File):void {
 			var configData:String = _config.checkFile(config.resolvePath("config.sru"));
 			_parser.parse(configData, _config, null, _sruParserError, "config.sru");
 			for each (var file:File in config.getDirectoryListing()) {
@@ -178,11 +180,22 @@ package gate.sirius.modloader {
 		}
 		
 		
+		private function _scanDir(mod:Mod, dir:File, type:String, data:Object, count:int):int {
+			var list:Array = dir.getDirectoryListing();
+			for each (var file:File in list) {
+				if (file.isDirectory){
+					count += _scanDir(mod, file, type, data, count);
+				}else{
+					_syncLoader.addFile(mod.id + "=" + file.name, file.nativePath, type, data);
+					mod.files += 1;
+					count += 1;
+				}
+			}
+			return count;
+		}
+		
 		private function _scanMod(mod:Mod):Mod {
 			
-			var list:Array;
-			
-			var file:File;
 			var dir:File;
 			
 			if (mod.dependencies.length > 0) {
@@ -203,17 +216,18 @@ package gate.sirius.modloader {
 				
 				for each (var cfile:IZipFile in mod.compressed.files) {
 					
-					if (cfile.isDirectory)
+					if (cfile.isDirectory) 
 						continue;
 					
-					switch (cfile.directory) {
-						case "assets":  {
-							assets[assets.length] = [mod.id + "=" + cfile.filename, cfile.content, FileType.BINARY, {asset: false, data: true, mod: mod}];
+					switch(cfile.uri.split('/', 1)[0]){
+						case 'assets' : {
+							assets[assets.length] = [mod.id + "=" + cfile.filename, cfile.content, FileType.BINARY, {asset: true, data: true, mod: mod}];
 							break;
 						}
-						case "data":  {
+						case 'data' : {
 							++dataCount;
 							_syncLoader.addFile(mod.id + "=" + cfile.filename, cfile.uri, FileType.TEXT, {asset: false, data: true, mod: mod});
+							mod.files += 1;
 							break;
 						}
 					}
@@ -222,6 +236,7 @@ package gate.sirius.modloader {
 				
 				for each (var assetFile:Array in assets) {
 					++assetsCount;
+					mod.files += 1;
 					_syncLoader.addFile.apply(null, assetFile);
 				}
 				
@@ -231,32 +246,27 @@ package gate.sirius.modloader {
 			} else {
 				
 				var modlocation:File = new File(mod.path);
+				var flen:int;
 				
 				// data directory
 				dir = modlocation.resolvePath("data");
 				
 				if (!dir.exists) {
 					dir.createDirectory();
+				}else{
+					flen = _scanDir(mod, dir, FileType.TEXT, {asset: false, data: true, mod: mod}, 0);
+					logger.pushMessage("   Added mod/data/ files (" + flen + ")");
 				}
-				list = dir.getDirectoryListing();
-				for each (file in list) {
-					_syncLoader.addFile(mod.id + "=" + file.name, file.nativePath, FileType.TEXT, {asset: false, data: true, mod: mod});
-				}
-				logger.pushMessage("   Added mod/data/ files (" + list.length + ")");
 				
 				// assets directory
 				
 				dir = modlocation.resolvePath("assets");
 				if (!dir.exists) {
 					dir.createDirectory();
+				}else{
+					flen = _scanDir(mod, dir, FileType.BINARY, {asset: true, data: false, mod: mod}, 0);
+					logger.pushMessage("   Added mod/assets/ files (" + flen + ")");
 				}
-				
-				list = dir.getDirectoryListing();
-				for each (file in list) {
-					_syncLoader.addFile(mod.id + "=" + file.name, file.nativePath, FileType.BINARY, {asset: true, data: false, mod: mod});
-				}
-				
-				logger.pushMessage("   Added mod/assets/ files (" + list.length + ")");
 				
 			}
 			
@@ -274,15 +284,18 @@ package gate.sirius.modloader {
 		private function _onSyncFileLoaded(signal:LoaderSignal):void {
 			var file:IFileInfo = signal.loader.currentFile;
 			var isByteArray:Boolean = file.content is ByteArray;
+			var mod:Mod = file.extra.mod;
+			if (mod != null){
+				_current = mod;
+			}
 			if (!isByteArray) {
 				logger.pushMessage("   File " + file.name + " added (" + signal.loader.loadedFiles + "/" + signal.loader.length + ")");
 			}
-			if (_current !== file.extra.mod) {
-				_initMod(_current);
-				_current = file.extra.mod;
-			}
 			if (file.error) {
 				logger.pushWarning((file.error as IOErrorEvent).text);
+				if (mod != null){
+					mod.loaded += 1;
+				}
 			} else if (file.extra.asset) {
 				if (file.content is ByteArray) {
 					if ((file.content as ByteArray).length > 0) {
@@ -291,7 +304,7 @@ package gate.sirius.modloader {
 				} else {
 					switch (file.extension) {
 						case "swf":  {
-							_cache.register(file.extra.mod, (file.content as DisplayObject));
+							_cache.register(mod, (file.content as DisplayObject));
 							break;
 						}
 						case "jpg":  {
@@ -299,10 +312,20 @@ package gate.sirius.modloader {
 						case "bmp":  {
 						}
 						case "png":  {
-							_cache.registerImage(file.extra.mod, file.name, (file.content as Bitmap).bitmapData);
+							_cache.registerImage(mod, file.name, (file.content as Bitmap).bitmapData);
 							break;
 						}
 					}
+					if(mod != null){
+						mod.loaded += 1;
+						if (mod.isLoaded()) {
+							if (mod.compressed){
+								mod.compressed.dispose();
+							}
+							_initMod(mod);
+						}
+					}
+					
 				}
 			} else {
 				switch (file.extension) {
@@ -310,18 +333,30 @@ package gate.sirius.modloader {
 						if (!file.extra.skip) {
 							_toParseData[_toParseData.length] = file;
 						}
+						
+					}
+				}
+				if (mod != null){
+					mod.loaded += 1;
+					if (mod.isLoaded()) {
+						_initMod(mod);
 					}
 				}
 			}
-			_signals.ON_FILE.send(ResourceSignal, true, file);
 			++_parsedFileCount;
+			_signals.ON_FILE.send(ResourceSignal, true, file);
 		}
 		
 		
 		private function _initMod(mod:Mod):void {
-			if (mod) {
-				_cache.getInstance(mod.onload);
+			if (mod.onload != null){
+				mod.initialized = _cache.getInstance(_current.id + '=' + mod.onload);
+				try {
+					mod.initialized.Context = _shared;
+				}catch (e:Error){
+				}
 			}
+			_signals.ON_MOD_LOADED.send(ResourceSignal, true);
 		}
 		
 		
@@ -357,7 +392,7 @@ package gate.sirius.modloader {
 				}
 			}
 			
-			for each (var data:*in _toParseData) {
+			for each (var data:* in _toParseData) {
 				if (data is IFileInfo) {
 					fileInfo = (data as IFileInfo);
 					_parser.parse(fileInfo.content, _parserTicket, null, null, fileInfo.name);
@@ -397,7 +432,7 @@ package gate.sirius.modloader {
 			_parser = new SruDecoder(false);
 			_parser.signals.ERROR.hold(function(e:SruErrorSignal):void {
 					logger.pushError(e.message);
-				})
+				});
 		}
 		
 		
@@ -425,8 +460,9 @@ package gate.sirius.modloader {
 						}
 					}
 					_context = new LoaderContext(false, ApplicationDomain.currentDomain, null);
+					_context.allowLoadBytesCodeExecution = true;
 					_context.allowCodeImport = true;
-					_context.imageDecodingPolicy
+					_context.imageDecodingPolicy = ImageDecodingPolicy.ON_DEMAND;
 					logger.pushMessage("[LOAD] Loading resource files...");
 					_syncLoader.start(_context);
 					break;
@@ -460,7 +496,8 @@ package gate.sirius.modloader {
 		}
 		
 		
-		public function start(skipDomains:Array, useStorage:Boolean):ModLoader {
+		public function start(skipDomains:Array, useStorage:Boolean, parameters:Object):ModLoader {
+			_shared = parameters;
 			_loadPhase = 0;
 			_createTicket();
 			_cache.avoidDomains(skipDomains);
@@ -470,13 +507,25 @@ package gate.sirius.modloader {
 		
 		
 		private function _createTicket():void {
-			_parserTicket = {mod: {name: _register, author: function(... str:Array):void {
+			_parserTicket = {
+				mod: {
+					name: _register, 
+					author: function(... str:Array):void {
 						_current.setAuthor(str.join(" "));
-					}, description: function(... str:Array):void {
+					}, 
+					description: function(... str:Array):void {
 						_current.setDescription(str.join(" "));
-					}, onload: function(... str:Array):void {
+					}, 
+					onload: function(... str:Array):void {
 						_current.onload = str.join("");
-					}}, core: _extension, properties: _config.properties};
+						if (_current.onload == 'null' || _current.onload.length == 0){
+							_current.onload = null;
+						}
+					}
+				}, 
+				core: _extension, 
+				properties: _config.properties
+			};
 		}
 		
 		
@@ -507,6 +556,10 @@ package gate.sirius.modloader {
 		
 		public function get config():StartupData {
 			return _config;
+		}
+		
+		public function get progress():Number {
+			return _parsedFileCount / _syncLoader.length;
 		}
 	
 	}

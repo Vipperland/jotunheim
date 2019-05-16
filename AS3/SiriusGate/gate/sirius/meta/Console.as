@@ -686,8 +686,9 @@ package gate.sirius.meta {
 		
 		public function pushMessage(value:String):void {
 			_lines[_lines.length] = value;
-			if (_lines.length > 100)
+			if (_lines.length > 100){
 				_lines.shift();
+			}
 			_tf_output.htmlText = _lines.join("<br/>");
 			_tf_output.scrollV = _tf_output.maxScrollV;
 		}

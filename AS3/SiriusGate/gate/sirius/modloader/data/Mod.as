@@ -18,11 +18,17 @@ package gate.sirius.modloader.data {
 		
 		private var _id:String;
 		
+		public var files:int;
+		
+		public var loaded:int;
+		
 		private var _errors:Vector.<String>;
 		
 		private var _enabled:Boolean;
 		
 		public var onload:String;
+		
+		public var initialized:*;
 		
 		public var compressed:IZip;
 		
@@ -37,6 +43,8 @@ package gate.sirius.modloader.data {
 			_dependencies = dependencies;
 			_version = version || "0.0.0";
 			_id = id;
+			files = 0;
+			loaded = 0;
 			_errors = new Vector.<String>();
 			_info = new ModInfo();
 		}
@@ -125,6 +133,11 @@ package gate.sirius.modloader.data {
 		public function setStatus(access:Boolean):void {
 			_enabled = access;
 		}
+		
+		public function isLoaded():Boolean {
+			return files == loaded;
+		}
+		
 	}
 
 }

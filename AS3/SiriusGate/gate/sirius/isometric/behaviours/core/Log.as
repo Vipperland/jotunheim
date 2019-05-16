@@ -43,11 +43,15 @@ package gate.sirius.isometric.behaviours.core {
 		
 		
 		public function add(level:uint, ... message:Array):void {
-			if (level > 2)
+			if (level > 2){
 				level = 2;
+			}
 			_lastMessage = "&lt;" + _names[level] + "&gt; " + message.join("\n");
 			_signals.send(ULogSignal, true, level, _lastMessage);
 			_messages[_messages.length] = _lastMessage;
+			if (_messages.length > 100){
+				_messages.splice(0, 1);
+			}
 		}
 		
 		

@@ -251,14 +251,13 @@ package gate.sirius.isometric.scenes {
 		
 		
 		public function dispose(recycle:Boolean):void {
-			
 			for each (var matter:BiomeMatter in _objects) {
 				matter.dispose(recycle);
 			}
 			_map = null;
 			_behaviours.dispose();
 		}
-	
+		
 	}
 
 }
