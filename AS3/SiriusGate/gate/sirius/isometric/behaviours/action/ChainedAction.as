@@ -11,6 +11,10 @@ package gate.sirius.isometric.behaviours.action {
 		
 		private var _fail:Actions;
 		
+		/**
+		 * 
+		 * @param	id
+		 */
 		public function ChainedAction(id:String = null) {
 			super(id);
 			_success = new Actions();

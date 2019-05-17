@@ -3,8 +3,7 @@ package gate.sirius.isometric.behaviours.action {
 	import gate.sirius.isometric.behaviours.verifiers.Verifiers;
 	import gate.sirius.isometric.timer.BiomeHeart;
 	import gate.sirius.isometric.timer.IHeartbeat;
-	import gate.sirius.timer.IActiveController;
-	import gate.sirius.timer.IActiveObject;
+	
 	/**
 	 * ...
 	 * @author Rim Project
@@ -19,13 +18,16 @@ package gate.sirius.isometric.behaviours.action {
 		
 		
 		/**
-		 * If 1
-		 * 	Will trigger execute() until verifiers checked as FALSE
-		 * If -1
-		 * 	Will trigger execute() until verifiers checked as TRUE
+		 * Determine the diretion os heartbeat
+		 * If 1, will connect to the heart only if verifiers output false
+		 * If -1, will connect to the heart only if verifiers output true
 		 */
 		public function mode:int;
 		
+		/**
+		 * The PulseAction type will connect to the BiomeHeart and will run in a predetermined UPS
+		 * @param	id
+		 */
 		public function PulseAction(id:String = null) {
 			super(id);
 			mode = 1;
@@ -51,6 +53,10 @@ package gate.sirius.isometric.behaviours.action {
 			
 		}
 		
+		/**
+		 * Execute Procced actions chain. If mode is greater than 0, the action will connect to BiomeHeart until Avoid chain
+		 * @param	report
+		 */
 		override public function procced(report:Report):void {
 			if (mode < 0){
 				if (_report_self == null){

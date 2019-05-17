@@ -27,6 +27,7 @@ package gate.sirius.isometric.timer {
 			_objects = new Dictionary(true);
 			_timer = new Timer(16.666, 0);
 			_timer.addEventListener(TimerEvent.TIMER, _onBeat);
+			start();
 		}
 		
 		private function _onBeat(e:Event):void {
