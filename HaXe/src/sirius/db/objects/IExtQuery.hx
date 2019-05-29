@@ -1,14 +1,11 @@
 package sirius.db.objects;
 
 /**
- * @author Rafael Moreira
+ * @author Rim Project
  */
-
-interface IQueryResult {
+interface IExtQuery extends IQuery {
   
 	public var data:Array<Dynamic>;
-	
-	public var table:IDataTable;
 	
 	public function each(handler:Dynamic->Bool):Void;
 	

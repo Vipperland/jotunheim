@@ -5,16 +5,12 @@ import sirius.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class QueryResult implements IQueryResult {
+class ExtQuery extends Query implements IExtQuery {
 	
 	public var data:Array<Dynamic>;
 	
-	public var table:IDataTable;
-	
-	private var _index:UInt = 0;
-	
 	public function new(table:IDataTable, data:Array<Dynamic>) {
-		this.table = table;
+		super(table, true);
 		this.data = data != null ? data : [];	
 	}
 	

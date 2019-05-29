@@ -83,7 +83,7 @@ class QueryBuilder implements IQueryBuilder {
 				Dice.All(obj.value, function(p:String, v:Dynamic){
 					props[props.length] = v;
 				});
-			}else {
+			}else if(!obj.skip){
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				if (obj.value != null){
 					props[props.length] = obj.value;

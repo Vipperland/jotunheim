@@ -1,14 +1,14 @@
 package sirius.modules;
 import haxe.Json;
-import js.html.Image;
-import sirius.dom.Style;
 import sirius.serial.IOTools;
 import sirius.utils.Dice;
 import sirius.utils.Filler;
 import sirius.Sirius;
 
 #if js
+	import js.html.Image;
 	import sirius.css.Automator;
+	import sirius.dom.Style;
 	import sirius.dom.IDisplay;
 	import sirius.dom.Display;
 	import sirius.dom.Div;

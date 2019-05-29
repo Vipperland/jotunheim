@@ -44,11 +44,13 @@ class sirius_db_tools_QueryBuilder implements sirius_db_tools_IQueryBuilder{
 						$r[$r1] = $tmp;
 						sirius_utils_Dice::All(_hx_field($obj, "value"), array(new _hx_lambda(array(&$props), "sirius_db_tools_QueryBuilder_5"), 'execute'), null);
 					} else {
-						$r2 = $r->length;
-						$tmp1 = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
-						$r[$r2] = $tmp1;
-						if(_hx_field($obj, "value") !== null) {
-							$props[_hx_field($props, "length")] = _hx_field($obj, "value");
+						if(!_hx_field($obj, "skip")) {
+							$r2 = $r->length;
+							$tmp1 = sirius_utils_Filler::to(_hx_field($obj, "condition"), _hx_anonymous(array("p" => _hx_field($obj, "param"))), null);
+							$r[$r2] = $tmp1;
+							if(_hx_field($obj, "value") !== null) {
+								$props[_hx_field($props, "length")] = _hx_field($obj, "value");
+							}
 						}
 					}
 				}

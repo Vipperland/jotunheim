@@ -45,10 +45,10 @@ class sirius_db_Clause {
 		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}!=?", "value" => $value, "i" => sirius_db_Clause::$_IDX++));
 	}
 	static function IS_NULL($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IS NULL", "value" => null, "i" => sirius_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IS NULL", "value" => null, "i" => sirius_db_Clause::$_IDX++, "skip" => true));
 	}
 	static function NOT_NULL($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} != NULL", "value" => null, "i" => sirius_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} != NULL", "value" => null, "i" => sirius_db_Clause::$_IDX++, "skip" => true));
 	}
 	static function IN($param, $values) {
 		if(Std::is($values, _hx_qtype("Array"))) {
