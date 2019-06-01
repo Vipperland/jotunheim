@@ -310,6 +310,22 @@ StringTools.lpad = function(s,c,l) {
 	while(s.length < l) s = c + s;
 	return s;
 };
+var Test_$JS = function() { };
+Test_$JS.__name__ = ["Test_JS"];
+Test_$JS.main = function() {
+	sirius_gaming_dataform_DataCollection.register(sirius_gaming_dataform_DataObject,"test",["name","email"]);
+	sirius_gaming_dataform_DataCollection.register(sirius_gaming_dataform_DataObject,"info",["color"]);
+	var t = ["test 000001 0:alpha|1:user@alpha.com","@info 0:yellow","@info 0:blue","test 000002 0:beta|1:user@beta.com","@info 0:gray","test 000003 0:gama|1:user@gama.com","@info 0:cyan","test 000004 0:omega|1:user@omega.com"].join("\r");
+	var colA = new sirius_gaming_dataform_DataCollection();
+	var colB = new sirius_gaming_dataform_DataCollection();
+	var cA = colA.parse(t);
+	var rA = colA.stringify();
+	haxe_Log.trace("colA data(" + cA + ") \r\n\t" + rA.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 34, className : "Test_JS", methodName : "main"});
+	var cB = colB.parse(t);
+	var rB = colB.stringify();
+	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 38, className : "Test_JS", methodName : "main"});
+	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB && rA == rB),{ fileName : "Test_JS.hx", lineNumber : 40, className : "Test_JS", methodName : "main"});
+};
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -3412,6 +3428,7 @@ sirius_signals_Signals.prototype = {
 	,__class__: sirius_signals_Signals
 };
 var sirius_modules_ModLib = $hx_exports["sru"]["modules"]["ModLib"] = function() {
+	this.assets = new sirius_dom_Display();
 	this._predata = [];
 };
 sirius_modules_ModLib.__name__ = ["sirius","modules","ModLib"];
@@ -3490,6 +3507,9 @@ sirius_modules_ModLib.prototype = {
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
 								sirius_Sirius.document.head.bind(content,mod.type,mod.id);
 								content = "";
+							} else if(mod.type.substring(0,6) == "image/") {
+								var img = new Image();
+								img.src = "data:" + mod.type + "," + sirius_serial_IOTools.encodeBase64(content);
 							}
 						}
 						if(mod.target != null) {
@@ -3507,7 +3527,30 @@ sirius_modules_ModLib.prototype = {
 				}
 			});
 		} else {
-			sirius_modules_ModLib.CACHE[file.toLowerCase()] = content;
+			var ext = file.split(".").pop();
+			switch(ext) {
+			case "css":
+				var dom = new sirius_dom_Style();
+				dom.attribute("data-url",file);
+				dom.writeHtml(content);
+				dom.publish();
+				break;
+			case "bmp":case "gif":case "ico":case "jpeg":case "jpg":case "png":
+				var img1 = new Image();
+				img1.setAttribute("data-url",file);
+				img1.src = file;
+				this.assets.element.appendChild(img1);
+				break;
+			case "js":
+				var dom1 = new sirius_dom_Script();
+				dom1.attribute("data-url",file);
+				dom1.type("text/javascript");
+				dom1.writeText(content);
+				dom1.addToBody();
+				break;
+			default:
+				sirius_modules_ModLib.CACHE[file.toLowerCase()] = content;
+			}
 		}
 	}
 	,get: function(name,data) {
@@ -3529,7 +3572,7 @@ sirius_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( e ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 166, className : "sirius.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 207, className : "sirius.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
@@ -3864,6 +3907,10 @@ sirius_dom_Style.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,publish: function() {
 		window.document.head.appendChild(this.element);
+	}
+	,addToBody: function() {
+		this.publish();
+		return this;
 	}
 	,__class__: sirius_dom_Style
 });
@@ -5176,7 +5223,7 @@ var sirius_dom_Canvas = $hx_exports["sru"]["dom"]["Canvas"] = function(q) {
 		q = window.document.createElement("canvas");
 	}
 	sirius_dom_Display.call(this,q,null);
-	this.paper = this.element;
+	this.dom = this.element;
 };
 sirius_dom_Canvas.__name__ = ["sirius","dom","Canvas"];
 sirius_dom_Canvas.get = function(q) {
@@ -6204,7 +6251,11 @@ sirius_dom_Script.require = function(url,handler) {
 };
 sirius_dom_Script.__super__ = sirius_dom_Display;
 sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
-	src: function(url,handler) {
+	type: function(q) {
+		this.object.type = q;
+		return this;
+	}
+	,src: function(url,handler) {
 		this.object.src = url;
 		if(handler != null) {
 			this.events.load(handler,1);
@@ -6212,6 +6263,22 @@ sirius_dom_Script.prototype = $extend(sirius_dom_Display.prototype,{
 	}
 	,async: function() {
 		this.object.async = true;
+	}
+	,writeText: function(q) {
+		this.object.text = q;
+		return this;
+	}
+	,appendText: function(q) {
+		this.object.text += Std.string(q);
+		return this;
+	}
+	,writeHtml: function(q) {
+		this.object.text = q;
+		return this;
+	}
+	,appendHtml: function(q) {
+		this.object.text += Std.string(q);
+		return this;
 	}
 	,__class__: sirius_dom_Script
 });
@@ -7071,6 +7138,174 @@ sirius_gaming_actions_Requirement.prototype = $extend(sirius_gaming_actions_Reso
 	}
 	,__class__: sirius_gaming_actions_Requirement
 });
+var sirius_gaming_dataform_DataCollection = function() {
+	this._list = { };
+};
+sirius_gaming_dataform_DataCollection.__name__ = ["sirius","gaming","dataform","DataCollection"];
+sirius_gaming_dataform_DataCollection.register = function(o,name,props) {
+	sirius_gaming_dataform_DataCollection._dictio[name] = { "c" : o, n : name, p : props};
+};
+sirius_gaming_dataform_DataCollection.construct = function(name,r) {
+	var o = null;
+	if(Object.prototype.hasOwnProperty.call(sirius_gaming_dataform_DataCollection._dictio,name)) {
+		var d__ = Reflect.field(sirius_gaming_dataform_DataCollection._dictio,name);
+		var C__ = d__.c;
+		o = new C__(d__.n,d__.p);
+	}
+	if(o != null) {
+		if(r.length == 3) {
+			o.id = r[1];
+			o.merge(r[2]);
+		} else if(r.length == 2) {
+			o.merge(r[1]);
+		}
+	}
+	return o;
+};
+sirius_gaming_dataform_DataCollection.prototype = {
+	add: function(o) {
+		var ion = o.getION();
+		if(ion != null && ion.length > 0) {
+			if(!Object.prototype.hasOwnProperty.call(this._list,ion)) {
+				this._list[ion] = { };
+			}
+			if(o.id != null) {
+				var ls = Reflect.field(this._list,ion);
+				ls[o.id] = o;
+			} else {
+				o = null;
+			}
+		} else {
+			o = null;
+		}
+		return o != null;
+	}
+	,parse: function(data) {
+		var _gthis = this;
+		var len = 0;
+		var i = data.split("\r");
+		var l = null;
+		sirius_utils_Dice.Values(i,function(v) {
+			var r = v.split(" ");
+			if(r.length > 0) {
+				v = r[0];
+				var cmd = v.substring(0,1);
+				var o = null;
+				if(cmd == "@") {
+					if(l != null) {
+						v = v.substring(1,v.length);
+						o = sirius_gaming_dataform_DataCollection.construct(v,r);
+						if(l.insert(v,o)) {
+							len += 1;
+						}
+					}
+				} else {
+					o = sirius_gaming_dataform_DataCollection.construct(v,r);
+					if(_gthis.add(o)) {
+						l = o;
+						len += 1;
+					} else {
+						l = null;
+					}
+				}
+			}
+		});
+		return len;
+	}
+	,stringify: function(name) {
+		var r = "";
+		sirius_utils_Dice.Values(this.getList(name),function(v) {
+			sirius_utils_Dice.Values(v,function(v1) {
+				r += (r.length > 0 ? "\r" : "") + v1.stringify();
+			});
+		});
+		return r;
+	}
+	,getList: function(name) {
+		if(name != null) {
+			return Reflect.field(this._list,name);
+		} else {
+			return this._list;
+		}
+	}
+	,__class__: sirius_gaming_dataform_DataCollection
+};
+var sirius_gaming_dataform_DataIO = function() { };
+sirius_gaming_dataform_DataIO.__name__ = ["sirius","gaming","dataform","DataIO"];
+sirius_gaming_dataform_DataIO.parse = function(c,o,nfo) {
+	var obj = c;
+	sirius_utils_Dice.Values(o.split("|"),function(v) {
+		var tag = v.split(":");
+		var par = tag.shift();
+		var par1 = Reflect.field(nfo,par);
+		var value = tag.join(":").split("/_").join(" ");
+		obj[par1] = value;
+	});
+	obj.onUpdate();
+	return obj;
+};
+sirius_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
+	var result = [];
+	var count = 0;
+	sirius_utils_Dice.All(nfo,function(p,value) {
+		value = Reflect.field(o,value);
+		if(value != null) {
+			if(typeof(value) == "string") {
+				value = value.split(" ").join("/_");
+			}
+			result[count] = p + ":" + Std.string(value);
+			count += 1;
+		}
+	});
+	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join("|");
+};
+var sirius_gaming_dataform_DataObject = function(io_name,props) {
+	this._io_name = io_name;
+	this._io_props = props;
+};
+sirius_gaming_dataform_DataObject.__name__ = ["sirius","gaming","dataform","DataObject"];
+sirius_gaming_dataform_DataObject.prototype = {
+	getION: function() {
+		return this._io_name;
+	}
+	,stringify: function() {
+		var r = sirius_gaming_dataform_DataIO.stringify(this,this._io_name,this._io_props);
+		sirius_utils_Dice.Values(this._inserts,function(v) {
+			r += "\r@" + v.stringify();
+		});
+		return r;
+	}
+	,parse: function(data) {
+		var i = data.split(" ");
+		if(i[0] == this._io_name) {
+			if(i.length > 2) {
+				this.id = i[1];
+				data = i[2];
+			} else {
+				this.id = null;
+				data = i[1];
+			}
+			if(data != null) {
+				sirius_gaming_dataform_DataIO.parse(this,data,this._io_props);
+				return true;
+			}
+		}
+		return false;
+	}
+	,merge: function(data) {
+		sirius_gaming_dataform_DataIO.parse(this,data,this._io_props);
+	}
+	,insert: function(name,o) {
+		if(this._inserts == null) {
+			this._inserts = [];
+		}
+		this._inserts[this._inserts.length] = o;
+		return true;
+	}
+	,onUpdate: function() {
+	}
+	,__class__: sirius_gaming_dataform_DataObject
+};
 var sirius_math_IPoint = function() { };
 sirius_math_IPoint.__name__ = ["sirius","math","IPoint"];
 sirius_math_IPoint.prototype = {
@@ -9514,6 +9749,7 @@ sirius_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "cente
 sirius_dom_Input.icons = { };
 sirius_gaming_actions_Action.commands = new sirius_gaming_actions_ActionQuery();
 sirius_gaming_actions_Requirement.commands = new sirius_gaming_actions_RequirementQuery();
+sirius_gaming_dataform_DataCollection._dictio = { };
 sirius_tools_Delayer.setTimeout = setTimeout;
 sirius_tools_Delayer.clearTimeout = clearTimeout;
 sirius_tools_Delayer.setInterval = setInterval;
@@ -9538,5 +9774,5 @@ sirius_tools_Utils._typeOf = { A : sirius_dom_A, AREA : sirius_dom_Area, AUDIO :
 sirius_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 sirius_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 sirius_utils_Table._trash = [];
-sirius_Sirius.main();
+Test_$JS.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

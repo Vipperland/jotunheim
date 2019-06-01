@@ -45,7 +45,7 @@ class DataIO {
 				++count;
 			}
 		});
-		return n + " " + result.join('|');
+		return n + (o.id != null ? " " + o.id : "") + " " + result.join('|');
 	}
 	
 }

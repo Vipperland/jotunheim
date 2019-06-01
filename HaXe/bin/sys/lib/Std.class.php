@@ -53,12 +53,5 @@ class Std {
 			return intval($x, 10);
 		}
 	}
-	static function random($x) {
-		if($x <= 0) {
-			return 0;
-		} else {
-			return mt_rand(0, $x - 1);
-		}
-	}
 	function __toString() { return 'Std'; }
 }

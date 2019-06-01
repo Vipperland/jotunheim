@@ -57,12 +57,5 @@ class Reflect {
 			}
 		}
 	}
-	static function deleteField($o, $field) {
-		if(!_hx_has_field($o, $field)) {
-			return false;
-		}
-		if(isset($o->__dynamics[$field])) unset($o->__dynamics[$field]); else if($o instanceof _hx_anonymous) unset($o->$field); else $o->$field = null;
-		return true;
-	}
 	function __toString() { return 'Reflect'; }
 }

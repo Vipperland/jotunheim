@@ -1,10 +1,11 @@
 package sirius.gaming.dataform;
+import sirius.utils.Dice;
 
 /**
  * ...
  * @author Rim Project
  */
-class DataObject {
+class DataObject implements Dynamic {
 	
 	/**
 	   Properties to output
@@ -16,8 +17,17 @@ class DataObject {
 	**/
 	private var _io_name:String;
 	
-	public function new(io_name:String) {
-		_io_props = io_name;
+	private var _inserts:Array<Dynamic>;
+	
+	public var id:Dynamic;
+	
+	public function new(io_name:String, props:Array<String>) {
+		_io_name = io_name;
+		_io_props = props;
+	}
+	
+	public function getION():String {
+		return _io_name;
 	}
 	
 	/**
@@ -25,7 +35,11 @@ class DataObject {
 	   @return
 	**/
 	public function stringify():String {
-		return DataIO.stringify(this, _io_name, _io_props);
+		var r:String = DataIO.stringify(this, _io_name, _io_props);
+		Dice.Values(_inserts, function(v:DataObject){
+			r += '\r@' + v.stringify();
+		});
+		return r;
 	}
 	
 	/**
@@ -33,8 +47,34 @@ class DataObject {
 	   @param	data
 	   @return
 	**/
-	public function parse(data:Dynamic):DataObject {
-		return DataIO.parse(this, data, _io_props);
+	public function parse(data:String):Bool {
+		var i:Array<String> = data.split(' ');
+		if (i[0] == _io_name){
+			if (i.length > 2){
+				id = i[1];
+				data = i[2];
+			}else{
+				id = null;
+				data = i[1];
+			}
+			if (data != null){
+				DataIO.parse(this, data, _io_props);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public function merge(data:String):Void {
+		DataIO.parse(this, data, _io_props);
+	}
+	
+	public function insert(name:String, o:DataObject):Bool {
+		if (_inserts == null){
+			_inserts = [];
+		}
+		_inserts[_inserts.length] = o;
+		return true;
 	}
 	
 	public function onUpdate():Void {
