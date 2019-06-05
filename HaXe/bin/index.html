@@ -1,26 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta charset="utf-8"/>
-		<title>Sirius::Automator</title>
-		<meta name="description" content=""/>
-		<script type="text/javascript" src="sirius/api.sirius.js"></script>
-		<style>  
-			body,html {
-				width:100%;
-				height:100%;
-				font-family: Tahoma;
-				background-color:#000000;
-				font-family: 'Amatic SC', cursive;
+<html lang="pt-BR">
+<head class="marg-0">
+	<meta charset="utf-8"/>
+	<title>Sirius</title>
+	<meta name="description" content=""/>
+	<style>
+		body {
+			background-color: #000000;
+			color: #ffffff;
+		}
+		.video-container {
+			width: 100%;
+			max-height: 100%;
+			text-align: center;
+			overflow: hidden;
+			position: absolute;
+		}
+		.video {
+			min-width: 100%;
+			bottom: 50%;
+			right: 50%;
+			z-index: 0;
+		}
+		.panel {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 18px;
+		}
+		.logo {
+			pointer-events: none;
+			z-index: 100;
+		}
+		
+		.ref-bottom {
+			bottom: 0;
+		}
+		
+		.ref-bottom.hide {
+			bottom: -100px;
+		}
+		
+		.ref-hint {
+			position: fixed;
+			z-index: 1000;
+			width: 100%;
+			text-align: center;
+			transition: all .3s ease-out;
+		}
+		
+		.ref-index {
+			z-index: 100;
+			top: 0;
+			height: 100%;
+			padding: 8px;
+			position: fixed;
+		}
+		
+		.ref-index .dot{
+			padding-top: 2px;
+			margin: 4px 0;
+		}
+		
+	</style>
+</head>
+	
+<body automator>
+	
+	<div class="panel" style="backface-visibility:hidden">
+		<div class="video-container">
+			<video class="video" loop>
+			  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
+			</video>
+		</div>
+		<div class="logo">
+			<div sru-dom="display3d">
+				<img src="assets/img/sirius.png" /><br/><span class="txt-100 txt-xFFFFFF">sirius</span><br/><span class="txt-30 txt-xFFFFFF">dream makers</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="panel">
+		<span>1</span>
+	</div>
+	<div class="panel">
+		<span>2</span>
+	</div>
+	<div class="panel">
+		<san>3</san>
+	</div>
+	
+	<div id="hint" class="ref-hint ref-easing ref-bottom">
+		<img src="/assets/img/scroll.png" />
+	</div>
+	<script src="/sirius/api.sirius.js"> </script>
+	<script>
+		
+		var Div = sru.dom.Div;
+		var Sprite = sru.dom.Sprite;
+		var Sprite3D = sru.dom.Sprite3D;
+		var display3d = sru.dom.display3d;
+		var carousel3d = null;
+		
+		function _init3D(){
+			
+			var hint = Sirius.one('#hint');
+			var axys = Sirius.one('#axys');
+			var zoom = Sirius.one('#zoom');
+			
+			carousel3d = Sirius.plugins.Carousel3D('.panel', 20, 1000, true);
+			
+			if(carousel3d != null){
+				
+				// Control panel index highlight
+				function onFocusIn(e){
+					var panel = e.target;
+					panel.data.index.fit(4,4);
+					panel.data.index.style({opacity:.6});
+					tg = (panel.data.control.id == 0) ? 20 : 120;
+					if(panel.data.id == 0)
+						hint.css('/hide');
+					else
+						hint.css('hide');
+				}
+				
+				function onFocusOut(e){
+					var panel = e.target;
+					panel.data.index.fit(4,4);
+					panel.data.index.style({opacity:.3});
+					
+				}
+				
+				function onPinIn(e){
+					var panel = e.target;
+					panel.data.index.fit(4,4);
+					panel.data.index.style({opacity:1});
+				}
+				
+				function onPinOut(e){
+					var panel = e.target;
+					panel.data.index.fit(4,4);
+					panel.data.index.style({opacity:.6});
+				}
+				
+				// Create Index
+				
+				var index = new Div();
+				index.content = new Div();
+				index.addChild(index.content);
+				index.css('ref-index mouse-none');
+				index.style({width:'20px',height:'100%',display:'table'});
+				index.content.style({verticalAlign:'middle', display:'table-cell'});
+				index.addToBody();
+				Dice.All(carousel3d.panels, function(p, v){
+					var panel = new Div();
+					panel.fit(4,4);
+					panel.css('dot');
+					panel.style('backgroundColor','#ffffff');
+					panel.style({opacity:.3});
+					index.content.addChild(panel);
+					v.data.index = panel;
+					v.data.id = p;
+				});
+				
+				carousel3d.onFocusIn(onFocusIn);
+				carousel3d.onFocusOut(onFocusOut);
+				carousel3d.onPinIn(onPinIn);
+				carousel3d.onPinOut(onPinOut);
+				//carousel3d.onZoomIn(onZoomIn);
+				//carousel3d.onZoomOut(onZoomOut);
+				
+				var tg = 20;
+				var ap = 20;
+				var aperture = Sirius.one('#aperture');
+				
+				Ticker.add(function(){
+					if(ap != tg){
+						ap += (tg-ap) * .1;
+						carousel3d.setAperture(ap);
+					}
+				});
+				
 			}
 			
-		</style>
-	</head>
-	<body automator>
-		<script>
-			Sirius.run(function(){
+			// Config Video Player
+			var vid = Sirius.one('video');
+			vid.events.click(function(v){ v.target.togglePause(); });
+			Sirius.all('video').each(function(v){
+				v.play();
 			});
-		</script>
-	</body>                                                                               
+			function fitVideo(e){
+				vid.style({
+					minHeight : Utils.viewportHeight() + 'px',
+				});
+			}
+			Sirius.document.body.events.resize(fitVideo).call();
+		}
+		
+		Automator.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
+		
+		// Inject plugin
+		Sirius.inject('sirius/plugins/carousel3d.js', _init3D);
+		
+	</script>
+	
+</body>
 </html>

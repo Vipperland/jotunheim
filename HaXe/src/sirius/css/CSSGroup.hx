@@ -118,15 +118,19 @@ class CSSGroup{
 	public function exists(id:String, ?content:String, ?mode:String):Bool {
 		var k:String = mode != null ? mode.toUpperCase() : getMode(id);
 		id = (id.substr(0, 1) == "." ? "" : ".") + id + "{";
-		return _checkSelector(id, untyped __js__("this[k||'CM'].innerHTML + this['style'+k]"), content);
+		var a:String = Reflect.hasField(this, k) ? Reflect.field(this, k).innerHTML : CM.innerHTML;
+		var b:String = Reflect.field(this, 'style' + k);
+		return _checkSelector(id, a + b, content);
 	}
 	
 	public function add(css:String, ?mode:String):Void {
-		untyped __js__("this['style'+(mode?mode.toUpperCase():'')] += css");
+		var p:String = 'style' + (mode != null ? mode.toUpperCase() : '');
+		Reflect.setField(this, p, Reflect.field(this, p) + css);
 	}
 	
 	public function set(id:String, style:String, ?mode:String):Void {
-		untyped __js__("this['style'+(mode?mode.toUpperCase():'')] += this._add(id, style)");
+		var p:String = 'style' + (mode != null ? mode.toUpperCase() : '');
+		Reflect.setField(this, p, Reflect.field(this, p) + _add(id, style));
 	}
 	
 	public function build() {

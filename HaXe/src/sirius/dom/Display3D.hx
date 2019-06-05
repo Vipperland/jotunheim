@@ -67,10 +67,6 @@ class Display3D extends Display implements IDisplay3D {
 	public function rotationX(?value:Float, ?add:Bool):Float {
 		if (value != null) {
 			add ? transformData.rotation.x += value : transformData.rotation.x = value;
-			//if (transformData.rotation.x < -180)
-				//transformData.rotation.x += 360;
-			//else if (transformData.rotation.x > 180)
-				//transformData.rotation.x -= 360;
 		}
 		return transformData.rotation.x;
 	}
@@ -78,10 +74,6 @@ class Display3D extends Display implements IDisplay3D {
 	public function rotationY(?value:Float, ?add:Bool):Float {
 		if (value != null) {
 			add ? transformData.rotation.y += value : transformData.rotation.y = value;
-			//if (transformData.rotation.y < -180)
-				//transformData.rotation.y += 360;
-			//else if (transformData.rotation.y > 180)
-				//transformData.rotation.y -= 360;
 		}
 		return transformData.rotation.y;
 	}
@@ -89,10 +81,6 @@ class Display3D extends Display implements IDisplay3D {
 	public function rotationZ(?value:Float, ?add:Bool):Float {
 		if (value != null) {
 			add ? transformData.rotation.z += value : transformData.rotation.z = value;
-			//if (transformData.rotation.z < -180)
-				//transformData.rotation.z += 360;
-			//else if (transformData.rotation.z > 180)
-				//transformData.rotation.z -= 360;
 		}
 		return transformData.rotation.z;
 	}

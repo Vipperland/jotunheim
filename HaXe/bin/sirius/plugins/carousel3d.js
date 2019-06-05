@@ -24,7 +24,6 @@
 		
 		var Div = sru.dom.Div;
         var body = Sirius.document.body;
-		body.style( { 'overflow-x':'hidden' } );
 		var o = {
 			panels : [],
 			points : [],
@@ -53,8 +52,12 @@
 			direction : 1,
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
-				p.style({width:'100%',height:'100%'});
+				p.style({
+					width:'100%',
+					height:'100%',
+				});
 				panel.addChild(p);
+				panel.preserve3d();
 				panel.mainFace = p;
 				o.panels[o.panels.length] = panel;
 			},
@@ -71,7 +74,7 @@
 				while(o.points.length < o.panels.length){
 					var i = o.points.length * o.aperture;
 					var cp = o.panels[o.points.length];
-					cp.initData();
+					cp.data = cp.data || {};
 					var ctr = cp.data.control || {panel:cp,focus:false,pin:false,id:o.points.length};
 					ctr.a = i-o.snapping;
 					ctr.b = i+o.snapping;
@@ -81,9 +84,8 @@
 					ctr.f = i-hp;
 					ctr.g = i+hp;
 					cp.doubleSided(false);
-					cp.style({y:0,top:0,position:'absolute'});
-					cp.width("100%");
-					cp.data.set('rotation', o.points.length * -o.aperture);
+					cp.style({y:0,top:0,position:'absolute',width:'100%'});
+					cp.data.rotation = o.points.length * -o.aperture;
 					cp.setPerspective(null, '50% 50%');
 					cp.update();
 					cp.data.control = ctr;
@@ -108,7 +110,7 @@
 				if(o.index > 0) o.showPanel(o.index - 1);
 			},
 			nextPanel : function(){
-				if(o.index < o.panels.length) o.showPanel(o.index + 1);
+				if(o.index <= o.panels.length) o.showPanel(o.index + 1);
 			},
 			on : function(n,h,m){
 				m = m ? -1 : 1;
@@ -203,15 +205,15 @@
 					e.height(h);
 					e.locationZ(tz);
 					if(o.axys == 'x'){
-						e.rotationY(-(e.data.get('rotation') + o.scroll) * o.direction);
+						e.rotationY(-(e.data.rotation + o.scroll) * o.direction);
 						e.rotationX(0);
 					}else{
-						e.rotationX(e.data.get('rotation') + o.scroll * o.direction);
+						e.rotationX(e.data.rotation + o.scroll * o.direction);
 						e.rotationY(0);
 					}
 					e.update();
 				});
-				var th = (h*(o.panels.length-1))>>0;
+				var th = (h*(o.panels.length))>>0;
 				o.extra.style( { 'margin-top':th + 'px' } );
 				o.carousel.content.locationZ( -tz - o.offsetZFlex);
 				o.carousel.content.update();
@@ -244,15 +246,19 @@
 		}
 		
 		if(!Sirius.agent.mobile){
-			body.style( { 'overflow-y':'hidden' } );
 			Sirius.document.events.wheel(o.scrollEvent);
 			Sirius.document.events.keyDown(o.scrollEvent);
 		}
 		o.carousel.content.fit(100, 100, true);
-		o.carousel.overflow('hidden');
-		o.carousel.style({position:'fixed'});
-		o.carousel.width("100%");
-		o.carousel.content.height("100%");
+		o.carousel.style({
+			position:'fixed',
+			width:'100%',
+			overflow:'hidden',
+		});
+		o.carousel.content.style({
+			width:'100%',
+			height:'100%',
+		});
 		o.carousel.addToBody();
 		o.carousel.setPerspective(null, '50% 50%');
 		o.carousel.update();
@@ -271,7 +277,7 @@
 		//Automator.search(o.carousel);
 		
 		Ticker.add(o.render);
-		Ticker.init();
+		Ticker.start();
 		return o;
 		
 	}
