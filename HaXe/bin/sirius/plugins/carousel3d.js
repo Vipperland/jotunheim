@@ -6,16 +6,16 @@
 (function($exports) {
 	$exports.sru = $exports.sru || {};
 	$exports.sru.plugins = $exports.sru.plugins || {};
-	$exports.sru.plugins.Carousel3D = function(selector, aperture, zoom, keyboard){
+	$exports.sru.plugins.Carousel3D = function(aperture, zoom, keyboard, addto){
 		var Display3D = sru.dom.Display3D;
 		
 		function CreateContainer(){
 			var c = new Display3D();
 			c.setPerspective("1000px");
-			c.content = new Display3D();
+			c.content = new Display3D()
+			c.css('Carousel3D');
 			c.content.preserve3d().update();
 			c.addChild(c.content);
-			//c.content.setPerspective(null, '50% 50% 50%');
 			c.style({width:'100%',height:'100%',display:'table'});
 			c.content.style({verticalAlign:'middle', display:'table-cell'});
 			c.update();
@@ -27,7 +27,6 @@
 		var o = {
 			panels : [],
 			points : [],
-			extra : new Div(),
 			carousel : CreateContainer(),
 			keyboard : keyboard == null ? true : keyboard,
 			maxAperture : 0,
@@ -50,6 +49,12 @@
 			focused : false,
 			spacing : 0,
 			direction : 1,
+			addBySelector : function(q){
+				if(q != null && q.length > 0){
+					Sirius.all(q).each(o.addPanel);
+					o.update();
+				}
+			},
 			addPanel : function(p){
 				var panel = new Display3D().addTo(o.carousel.content);
 				p.style({
@@ -99,6 +104,12 @@
 			setZoom : function(x){
 				o.zoom = x;
 			},
+			setHorizontal:function(){
+				o.toggleAxys('x');
+			},
+			setVertical:function(){
+				o.toggleAxys('y');
+			},
 			toggleAxys : function(x){
 				if(x != null) 	o.axys = x;
 				else 			o.axys = o.axys == 'x' ? 'y' : 'x';
@@ -135,7 +146,10 @@
 				o.carousel.events.on('carouselZoomOut',h,m ? -1 : 1);
 			},
 			render : function() {
-				if(!o.enabled) return;
+				if(!o.enabled) {
+					return;
+				}
+				var disp = o.carousel.parent();
 				var h = Utils.viewportHeight();
 				var h2 = (o.axys == 'x' ? Utils.viewportWidth() : h) / 2;
 				var tz = h2/Math.tan(Math.PI/o.maxPanels) + o.spacing;
@@ -150,14 +164,17 @@
 							k.focus = true;
 							if(k.pin == true) {
 								k.pin = false;
+								k.panel.css('focused /pinned /active');
 								k.panel.events.on('carouselPinOut').call();
 							}
+							k.panel.css('focused /pinned /active');
 							k.panel.events.on('carouselFocusIn').call();
 							o.focus = j * 1;
 						}
 					}else{
 						if(k.focus == true){
 							k.focus = false;
+							k.panel.css('/focused /pinned /active');
 							k.panel.events.on('carouselFocusOut').call();
 						}
 					}
@@ -167,12 +184,14 @@
 							o.offsetZ = 0;
 							if(k.pin == false) {
 								k.pin = true;
+								k.panel.css('focused pinned active');
 								k.panel.events.on('carouselPinIn').call();
 								o.index = j * 1;
 							}
 						}else{
 							if(k.pin == true) {
 								k.pin = false;
+								k.panel.css('focused /pinned /active');
 								k.panel.events.on('carouselPinOut').call();
 							}
 						}
@@ -214,10 +233,14 @@
 					e.update();
 				});
 				var th = (h*(o.panels.length))>>0;
-				o.extra.style( { 'margin-top':th + 'px' } );
-				o.carousel.content.locationZ( -tz - o.offsetZFlex);
-				o.carousel.content.update();
-				o.carousel.height(h);
+				
+				if(disp != null){
+					disp.style( { 'height':th + 'px' } );
+					o.carousel.content.locationZ( -tz - o.offsetZFlex);
+					o.carousel.content.update();
+					o.carousel.height(h);
+				}
+				
 			},
 			scrollEvent : function(e){
 				if(Sirius.document.focus().is(['input','select','textarea'])) return;
@@ -264,22 +287,21 @@
 		o.carousel.update();
 		o.carousel.content.height("100%");
 		o.carousel.content.update();
-		o.carousel.width("100%");
-		o.carousel.style({top:0, height:0});
-		o.carousel.addToBody();
-		Sirius.all(selector).each(o.addPanel);
-		o.update();
+		o.carousel.style({width:'100%', top:0, height:0, marginBottom:0});
 		
-		o.extra.width("100%");
-		o.extra.style({top:0});
-		o.extra.addToBody();
-		
-		//Automator.search(o.carousel);
+		if(addto != null && addto.length > 0){
+			var cont = Sirius.one(addto);
+			if(cont != null){
+				cont.addChild(o.carousel);
+			}
+		}
 		
 		Ticker.add(o.render);
 		Ticker.start();
 		return o;
 		
 	}
-	if(Sirius != null) Sirius.updatePlugins();
+	if(Sirius != null) {
+		Sirius.updatePlugins();
+	}
 })(typeof window != "undefined" ? window : exports);

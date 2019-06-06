@@ -5,21 +5,25 @@
 	<title>Sirius</title>
 	<meta name="description" content=""/>
 	<style>
+		@import url('https://fonts.googleapis.com/css?family=Jura:400,700&display=swap');
 		body {
 			background-color: #000000;
 			color: #ffffff;
+			font-family: 'Jura', sans-serif;
+			background-image: url(assets/img/grid.png);
 		}
 		.video-container {
 			width: 100%;
-			max-height: 100%;
+			height: 100%;
 			text-align: center;
 			overflow: hidden;
 			position: absolute;
+			padding: 0px;
 		}
-		.video {
-			min-width: 100%;
-			bottom: 50%;
-			right: 50%;
+		video {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
 			z-index: 0;
 		}
 		.panel {
@@ -30,10 +34,22 @@
 			align-items: center;
 			justify-content: center;
 			font-size: 18px;
+			border: 1px solid #111111;
+		}
+		.panel .number {
+			font-size: 100vh;
 		}
 		.logo {
 			pointer-events: none;
 			z-index: 100;
+		}
+		
+		.logo .a {
+			font-size: 10vh;
+		}
+		
+		.logo .b {
+			font-size: 2vh;
 		}
 		
 		.ref-bottom {
@@ -63,6 +79,18 @@
 		.ref-index .dot{
 			padding-top: 2px;
 			margin: 4px 0;
+			transition: all .3s ease-out;
+		}
+		
+		.carousel-main {
+			overflow: hidden;
+		}
+		
+		.footer {
+			margin-top: 100px;
+			padding: 24px;
+			text-align: center;
+			border-top: 1px solid #ffffff;
 		}
 		
 	</style>
@@ -70,27 +98,51 @@
 	
 <body automator>
 	
-	<div class="panel" style="backface-visibility:hidden">
+	<div class="carousel-main"></div>
+	
+	<div class="panel">
 		<div class="video-container">
-			<video class="video" loop>
+			<video loop>
 			  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
 			</video>
 		</div>
 		<div class="logo">
-			<div sru-dom="display3d">
-				<img src="assets/img/sirius.png" /><br/><span class="txt-100 txt-xFFFFFF">sirius</span><br/><span class="txt-30 txt-xFFFFFF">dream makers</span>
+			<div>
+				<img src="assets/img/sirius.png" /><br/><span class="a">sirius</span><br/><span class="b">dream makers</span>
 			</div>
 		</div>
 	</div>
 	
 	<div class="panel">
-		<span>1</span>
+		<span class="number">1</span>
 	</div>
 	<div class="panel">
-		<span>2</span>
+		<span class="number">2</span>
 	</div>
 	<div class="panel">
-		<san>3</san>
+		<span class="number">3</span>
+	</div>
+	<div class="panel">
+		<span class="number">4</span>
+	</div>
+	<div class="panel">
+		<span class="number">5</span>
+	</div>
+	<div class="panel">
+		<span class="number">6</span>
+	</div>
+	<div class="panel">
+		<span class="number">7</span>
+	</div>
+	<div class="panel">
+		<span class="number">8</span>
+	</div>
+	<div class="panel">
+		<span class="number">9</span>
+	</div>
+	
+	<div class="footer">
+		This is not in Carousel3D Context
 	</div>
 	
 	<div id="hint" class="ref-hint ref-easing ref-bottom">
@@ -111,14 +163,16 @@
 			var axys = Sirius.one('#axys');
 			var zoom = Sirius.one('#zoom');
 			
-			carousel3d = Sirius.plugins.Carousel3D('.panel', 20, 1000, true);
+			carousel3d = Sirius.plugins.Carousel3D(20, 1000, true, '.carousel-main');
 			
 			if(carousel3d != null){
+				
+				carousel3d.addBySelector('.panel');
 				
 				// Control panel index highlight
 				function onFocusIn(e){
 					var panel = e.target;
-					panel.data.index.fit(4,4);
+					panel.data.index.fit(1,50);
 					panel.data.index.style({opacity:.6});
 					tg = (panel.data.control.id == 0) ? 20 : 120;
 					if(panel.data.id == 0)
@@ -129,20 +183,20 @@
 				
 				function onFocusOut(e){
 					var panel = e.target;
-					panel.data.index.fit(4,4);
+					panel.data.index.fit(1,10);
 					panel.data.index.style({opacity:.3});
 					
 				}
 				
 				function onPinIn(e){
 					var panel = e.target;
-					panel.data.index.fit(4,4);
+					panel.data.index.fit(1,50);
 					panel.data.index.style({opacity:1});
 				}
 				
 				function onPinOut(e){
 					var panel = e.target;
-					panel.data.index.fit(4,4);
+					panel.data.index.fit(1,10);
 					panel.data.index.style({opacity:.6});
 				}
 				
@@ -157,7 +211,7 @@
 				index.addToBody();
 				Dice.All(carousel3d.panels, function(p, v){
 					var panel = new Div();
-					panel.fit(4,4);
+					panel.fit(1,10);
 					panel.css('dot');
 					panel.style('backgroundColor','#ffffff');
 					panel.style({opacity:.3});
@@ -188,14 +242,20 @@
 			
 			// Config Video Player
 			var vid = Sirius.one('video');
-			vid.events.click(function(v){ v.target.togglePause(); });
-			Sirius.all('video').each(function(v){
-				v.play();
-			});
-			function fitVideo(e){
-				vid.style({
-					minHeight : Utils.viewportHeight() + 'px',
+			function _startVideo(e){
+				vid.events.click(function(v){ v.target.togglePause(); });
+				Sirius.all('video').each(function(v){
+					v.play();
 				});
+				Sirius.document.body.events.click(_startVideo, -1);
+			}
+			Sirius.document.body.events.click(_startVideo);
+			
+			function fitVideo(e){
+				//vid.style({
+				//	minHeight : Utils.viewportHeight() + 'px',
+				//	marginLeft: (((Utils.viewportWidth() - vid.width())*.5)>>0) + 'px',
+				//});
 			}
 			Sirius.document.body.events.resize(fitVideo).call();
 		}
