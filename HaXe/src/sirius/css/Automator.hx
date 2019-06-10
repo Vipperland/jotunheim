@@ -40,7 +40,7 @@ class Automator {
 	static private function _createGrid():Void {
 		if (!_inits.grid){
 			/*
-				SHELf = [0,1,2,3,4] 	== ROW, NO WRAP
+				SHELF = [0,1,2,3,4] 	== ROW, NO WRAP
 							+ o-stack  to reverse
 				|
 				

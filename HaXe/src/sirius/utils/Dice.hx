@@ -184,7 +184,7 @@ class Dice {
 	}
 	
 	/**
-	 * Concat all mixed data into one array
+	 * Return a random value from the array
 	 * @param	data
 	 * @return
 	 */
