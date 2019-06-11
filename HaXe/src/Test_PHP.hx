@@ -1,11 +1,11 @@
 package;
-import sirius.Sirius;
-import sirius.db.Token;
-import sirius.db.objects.IDataTable;
-import sirius.php.file.Uploader;
-import sirius.serial.JsonTool;
-import sirius.tools.Utils;
-import sirius.utils.Dice;
+import jotun.Jotun;
+import jotun.db.Token;
+import jotun.db.objects.IDataTable;
+import jotun.php.file.Uploader;
+import jotun.serial.JsonTool;
+import jotun.tools.Utils;
+import jotun.utils.Dice;
 
 /**
  * ...
@@ -21,22 +21,22 @@ class Test_PHP {
 			//trace(p + ': ' + v);
 		//});
 		trace('===================================================== Parameters: GET/POST');
-		Dice.All(Sirius.domain.params, function(p:String, v:String){
+		Dice.All(Jotun.domain.params, function(p:String, v:String){
 			trace(p + ': ' + v);
 		});
 		trace('===================================================== APPLICATION/JSON Content-Type');
-		trace(Utils.sruString(Sirius.domain.input));
+		trace(Utils.sruString(Jotun.domain.input));
 		
 		trace('===================================================== Files');
 		trace(Uploader.save([[1280, 720], [720, 480], [480, 360]]).list);
 		
 		trace('===================================================== Database Handshake');
-		Sirius.gate.open(Token.localhost('decorador'), true);
-		if (Sirius.gate.isOpen()){
-			Sirius.gate.setPdoAttributes(true);
+		Jotun.gate.open(Token.localhost('decorador'), true);
+		if (Jotun.gate.isOpen()){
+			Jotun.gate.setPdoAttributes(true);
 			trace('Successful Handshake!');
 		}else{
-			trace(Sirius.gate.errors);
+			trace(Jotun.gate.errors);
 		}
 		
 	}

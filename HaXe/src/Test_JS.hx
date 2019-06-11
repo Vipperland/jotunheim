@@ -1,8 +1,8 @@
 package;
 
-import sirius.gaming.dataform.DataCollection;
-import sirius.gaming.dataform.DataIO;
-import sirius.gaming.dataform.DataObject;
+import jotun.gaming.dataform.DataCollection;
+import jotun.gaming.dataform.DataIO;
+import jotun.gaming.dataform.DataObject;
 
 /**
  * ...

@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\sirius\api.sirius.js" />
+    <movie path="bin\jotun\api.jotun.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -22,7 +22,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="sirius.Sirius" />
+    <option mainClass="jotun.Jotun" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -34,6 +34,7 @@
   <compileTargets>
     <compile path="src\Main.hx" />
     <compile path="src\sirius\Sirius.hx" />
+    <compile path="src\jotun\Jotun.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

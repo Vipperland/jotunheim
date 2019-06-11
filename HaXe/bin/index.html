@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head class="marg-0">
 	<meta charset="utf-8"/>
-	<title>Sirius</title>
+	<title>Jotun</title>
 	<meta name="description" content=""/>
 	<style>
 		@import url('https://fonts.googleapis.com/css?family=Jura:400,700&display=swap');
@@ -107,73 +107,122 @@
 			padding: 10px;
 		}
 		
+		.item {
+			width: 50px;
+			height: 50px;
+			background-color: #000000;
+			border-radius: 1px;
+			color: #FFFFFF;
+			text-align: center;
+			padding-top: 15px;
+			cursor: pointer;
+			border-radius: 50%;
+		}
+		
+		.item:hover {
+			width: 50px;
+			height: 50px;
+		}
+		
 	</style>
 </head>
 	
 <body automator>
 	
-	<div class="carousel-main"></div>
+	<div class="glittermenu" 
+		 glitter-size="auto" 
+		 glitter-fov="360" 
+		 glitter-angle="0" 
+		 glitter-autoclose="true" 
+		 glitter-grow="0" 
+		 glitter-multiple="false" 
+		 glitter-time="30" 
+		 glitter-transition="all .3s ease-in-out" 
+		 glitter-transform="true" hidden>
+			<div value="0" class="item">0</div>
+			<div value="1" class="item">1</div>
+			<div value="2" class="item">2</div>
+			<div value="3" class="item">3</div>
+			<div value="4" class="item">4</div>
+			<div value="5" class="item">5</div>
+			<div value="6" class="item">6</div>
+			<div value="7" class="item">7</div>
+			<div value="8" class="item">8</div>
+			<div value="9" class="item">9</div>
+			<div value="10" class="item">10</div>
+			<div value="11" class="item">11</div>
+			<div value="12" class="item">12</div>
+			<div value="13" class="item">13</div>
+			<div value="14" class="item">14</div>
+			<div value="15" class="item">15</div>
+			<div value="16" class="item">16</div>
+			<div class="item">Close</div>
+	</div>
 	
-	<div class="panel" t-style="#111111">
-		<div class="video-container">
-			<video loop>
-			  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
-			</video>
-		</div>
-		<div class="logo">
-			<div>
-				<img src="assets/img/sirius.png" /><br/><span class="a">sirius</span><br/><span class="b">dream makers</span>
+	<div class="carousel-main" hidden>
+		
+		<div class="panel" t-style="#111111">
+			<div class="video-container">
+				<video loop>
+				  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class="logo">
+				<div>
+					<img src="assets/img/sirius.png" /><br/><span class="a">sirius</span><br/><span class="b">dream makers</span>
+				</div>
 			</div>
 		</div>
-	</div>
-	
-	<div class="panel" t-style="#992211">
-		<span class="number">1</span>
-	</div>
-	<div class="panel" t-style="#994411">
-		<span class="number">2</span>
-	</div>
-	<div class="panel" t-style="#998811">
-		<span class="number">3</span>
-	</div>
-	<div class="panel" t-style="#999911">
-		<span class="number">4</span>
-	</div>
-	<div class="panel" t-style="#889922">
-		<span class="number">5</span>
-	</div>
-	<div class="panel" t-style="#449944">
-		<span class="number">6</span>
-	</div>
-	<div class="panel" t-style="#229988">
-		<span class="number">7</span>
-	</div>
-	<div class="panel" t-style="#119999">
-		<span class="number">8</span>
-	</div>
-	<div class="panel" t-style="#118899">
-		<span class="number">9</span>
-	</div>
-	<div class="panel" t-style="#114499">
-		<span class="number">10</span>
-	</div>
-	<div class="panel" t-style="#112299">
-		<span class="number">11</span>
-	</div>
-	<div class="panel" t-style="#221199">
-		<span class="number">12</span>
-	</div>
-	<div class="panel" t-style="#551199">
-		<span class="number">13</span>
-	</div>
-	<div class="panel" t-style="#881199">
-		<span class="number">14</span>
-	</div>
-	<div class="panel" t-style="#881188">
-		<span class="number">15</span>
-	</div>
-	<div class="panel" t-style="#881144">
-		<span class="number">16</span>
+		
+		<div class="panel" t-style="#992211">
+			<span class="number">1</span>
+			<span class="text">Jotun</span>
+		</div>
+		<div class="panel" t-style="#994411">
+			<span class="number">2</span>
+		</div>
+		<div class="panel" t-style="#998811">
+			<span class="number">3</span>
+		</div>
+		<div class="panel" t-style="#999911">
+			<span class="number">4</span>
+		</div>
+		<div class="panel" t-style="#889922">
+			<span class="number">5</span>
+		</div>
+		<div class="panel" t-style="#449944">
+			<span class="number">6</span>
+		</div>
+		<div class="panel" t-style="#229988">
+			<span class="number">7</span>
+		</div>
+		<div class="panel" t-style="#119999">
+			<span class="number">8</span>
+		</div>
+		<div class="panel" t-style="#118899">
+			<span class="number">9</span>
+		</div>
+		<div class="panel" t-style="#114499">
+			<span class="number">10</span>
+		</div>
+		<div class="panel" t-style="#112299">
+			<span class="number">11</span>
+		</div>
+		<div class="panel" t-style="#221199">
+			<span class="number">12</span>
+		</div>
+		<div class="panel" t-style="#551199">
+			<span class="number">13</span>
+		</div>
+		<div class="panel" t-style="#881199">
+			<span class="number">14</span>
+		</div>
+		<div class="panel" t-style="#881188">
+			<span class="number">15</span>
+		</div>
+		<div class="panel" t-style="#881144">
+			<span class="number">16</span>
+		</div>
 	</div>
 	
 	<div class="footer hidden">
@@ -184,31 +233,33 @@
 		<img src="/assets/img/scroll.png" />
 	</div>
 	
-	<script src="/sirius/api.sirius.js"> </script>
+	<script src="/jotun/api.jotun.js"> </script>
 	<script>
 		
-		var Div = sru.dom.Div;
-		var Sprite = sru.dom.Sprite;
-		var Sprite3D = sru.dom.Sprite3D;
-		var display3d = sru.dom.display3d;
+		var Div = jtn.dom.Div;
+		var Sprite = jtn.dom.Sprite;
+		var Sprite3D = jtn.dom.Sprite3D;
+		var display3d = jtn.dom.display3d;
 		
 		function _init3D(){
 			
-			var hint = Sirius.one('#hint');
-			var axys = Sirius.one('#axys');
-			var zoom = Sirius.one('#zoom');
+			var hint = Jotun.one('#hint');
+			var axys = Jotun.one('#axys');
+			var zoom = Jotun.one('#zoom');
 			
-			var carousel3d = Sirius.plugins.Carousel3D(20, 1000, true, '.carousel-main');
+			var carousel3d = Jotun.plugins.Carousel3D(20, 1000, true, '.carousel-main');
 			
 			if(carousel3d != null){
-				
-				Sirius.all('.panel').each(function(o){
+				var i = 0;
+				Jotun.all('.panel').each(function(o){
 					var c = new ARGB(o.attribute('t-style'));
 					var b = c.brightnesss(.2);
 					o.attribute('o-style',b.css());
 					o.style({
 						backgroundColor:c.css(),
 					});
+					Jotun.one('.glittermenu .item[value="' + i + '"]').style('backgroundColor',c.css());
+					i += 1;
 				});
 				
 				var tg = 20;
@@ -222,7 +273,7 @@
 					panel.data.index.fit(25,1);
 					panel.data.index.style({opacity:.6});
 					tg = (panel.data.control.id == 0) ? 20 : 120;
-					Sirius.document.body.style({
+					Jotun.document.body.style({
 						backgroundColor: panel.one('.panel').attribute('o-style'),
 					});
 					if(panel.data.id == 0)
@@ -256,7 +307,7 @@
 				index.content = new Div();
 				index.addChild(index.content);
 				index.css('ref-index mouse-none');
-				index.style({width:'20px',height:'100%',display:'table'});
+				index.style({width:'20px',height:'100%',display:'table', cursor:'pointer'});
 				index.content.style({verticalAlign:'middle', display:'table-cell'});
 				index.addToBody();
 				Dice.All(carousel3d.panels, function(p, v){
@@ -268,6 +319,14 @@
 					index.content.addChild(panel);
 					v.data.index = panel;
 					v.data.id = p;
+				});
+				
+				index.events.click(function(e){
+					GlitterMenu.openMenu('.glittermenu', function(e, v){
+						if(v != null && v.length > 0){
+							carousel3d.showPanel(parseInt(v[0]));
+						}
+					});
 				});
 				
 				carousel3d.onFocusIn(onFocusIn);
@@ -284,27 +343,32 @@
 					}
 				});
 				
+				Jotun.one('.carousel-main').show();
+				
 			}
 			
 			// Config Video Player
-			var vid = Sirius.one('video');
-			function _startVideo(e){
+			var vid = Jotun.one('video');
+			//function _startVideo(e){
 				vid.events.click(function(v){ v.target.togglePause(); });
-				Sirius.all('video').each(function(v){
-					v.play();
+				Jotun.all('video').each(function(v){
+					//v.play();
 				});
-				Sirius.document.body.events.click(_startVideo, -1);
-			}
-			Sirius.document.body.events.click(_startVideo);
+				//Jotun.document.body.events.click(_startVideo, -1);
+			//}
+			//Jotun.document.body.events.click(_startVideo);
 			
 		}
 		
-		Automator.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
-		Automator.build('shadow-xFFFFFF-30-90-10-5', '.panel .number');
-		Automator.build('shadow-txt-xCCCCCC-10-90-10-5', '.panel .text');
+		XCode.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
+		XCode.build('shadow-xFFFFFF-30-90-10-5', '.panel .number');
+		XCode.build('shadow-txt-xCCCCCC-10-90-10-5', '.panel .text');
 		
 		// Inject plugin
-		Sirius.inject('sirius/plugins/carousel3d.js', _init3D);
+		Jotun.inject([
+			'jotun/plugins/glitter-menu.js',
+			'jotun/plugins/carousel3d.js',
+		], _init3D);
 		
 	</script>
 	
