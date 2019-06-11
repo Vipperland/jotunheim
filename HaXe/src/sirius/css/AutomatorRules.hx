@@ -241,7 +241,7 @@ class AutomatorRules {
 	}
 	
 	/**
-	 * Create a shadow selector for text or other elements
+	 * Create a shadow selector for text or other elements (shadow-[txt]-]color-distance-direction-draws-strength)
 	 * @param	d
 	 * @param	k
 	 * @param	n

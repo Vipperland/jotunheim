@@ -11,6 +11,7 @@
 			color: #ffffff;
 			font-family: 'Jura', sans-serif;
 			background-image: url(assets/img/grid.png);
+			transition: background-color .3s ease-in;
 		}
 		.video-container {
 			width: 100%;
@@ -34,10 +35,19 @@
 			align-items: center;
 			justify-content: center;
 			font-size: 18px;
-			border: 1px solid #111111;
+			border: 0px solid #111111;
 		}
 		.panel .number {
-			font-size: 50vh;
+			padding: 0 5vw;
+			margin-right: 5vw;
+			background-color: #ffffff;
+			color: #000000;
+			font-size: 30vh;
+			border-radius: 20px;
+			float: left;
+		}
+		.panel .text {
+			font-size: 10vh;
 		}
 		.logo {
 			pointer-events: none;
@@ -93,6 +103,10 @@
 			border-top: 1px solid #ffffff;
 		}
 		
+		#menu > div {
+			padding: 10px;
+		}
+		
 	</style>
 </head>
 	
@@ -100,7 +114,7 @@
 	
 	<div class="carousel-main"></div>
 	
-	<div class="panel">
+	<div class="panel" t-style="#111111">
 		<div class="video-container">
 			<video loop>
 			  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
@@ -113,52 +127,52 @@
 		</div>
 	</div>
 	
-	<div class="panel" style="background-color:#992211">
+	<div class="panel" t-style="#992211">
 		<span class="number">1</span>
 	</div>
-	<div class="panel" style="background-color:#994411">
+	<div class="panel" t-style="#994411">
 		<span class="number">2</span>
 	</div>
-	<div class="panel" style="background-color:#998811">
+	<div class="panel" t-style="#998811">
 		<span class="number">3</span>
 	</div>
-	<div class="panel" style="background-color:#999911">
+	<div class="panel" t-style="#999911">
 		<span class="number">4</span>
 	</div>
-	<div class="panel" style="background-color:#889922">
+	<div class="panel" t-style="#889922">
 		<span class="number">5</span>
 	</div>
-	<div class="panel" style="background-color:#449944">
+	<div class="panel" t-style="#449944">
 		<span class="number">6</span>
 	</div>
-	<div class="panel" style="background-color:#229988">
+	<div class="panel" t-style="#229988">
 		<span class="number">7</span>
 	</div>
-	<div class="panel" style="background-color:#119999">
+	<div class="panel" t-style="#119999">
 		<span class="number">8</span>
 	</div>
-	<div class="panel" style="background-color:#118899">
+	<div class="panel" t-style="#118899">
 		<span class="number">9</span>
 	</div>
-	<div class="panel" style="background-color:#114499">
+	<div class="panel" t-style="#114499">
 		<span class="number">10</span>
 	</div>
-	<div class="panel" style="background-color:#112299">
+	<div class="panel" t-style="#112299">
 		<span class="number">11</span>
 	</div>
-	<div class="panel" style="background-color:#221199">
+	<div class="panel" t-style="#221199">
 		<span class="number">12</span>
 	</div>
-	<div class="panel" style="background-color:#551199">
+	<div class="panel" t-style="#551199">
 		<span class="number">13</span>
 	</div>
-	<div class="panel" style="background-color:#881199">
+	<div class="panel" t-style="#881199">
 		<span class="number">14</span>
 	</div>
-	<div class="panel" style="background-color:#881188">
+	<div class="panel" t-style="#881188">
 		<span class="number">15</span>
 	</div>
-	<div class="panel" style="background-color:#881144">
+	<div class="panel" t-style="#881144">
 		<span class="number">16</span>
 	</div>
 	
@@ -169,6 +183,7 @@
 	<div id="hint" class="ref-hint ref-easing ref-bottom">
 		<img src="/assets/img/scroll.png" />
 	</div>
+	
 	<script src="/sirius/api.sirius.js"> </script>
 	<script>
 		
@@ -176,7 +191,6 @@
 		var Sprite = sru.dom.Sprite;
 		var Sprite3D = sru.dom.Sprite3D;
 		var display3d = sru.dom.display3d;
-		var carousel3d = null;
 		
 		function _init3D(){
 			
@@ -184,9 +198,18 @@
 			var axys = Sirius.one('#axys');
 			var zoom = Sirius.one('#zoom');
 			
-			carousel3d = Sirius.plugins.Carousel3D(20, 1000, true, '.carousel-main');
+			var carousel3d = Sirius.plugins.Carousel3D(20, 1000, true, '.carousel-main');
 			
 			if(carousel3d != null){
+				
+				Sirius.all('.panel').each(function(o){
+					var c = new ARGB(o.attribute('t-style'));
+					var b = c.brightnesss(.2);
+					o.attribute('o-style',b.css());
+					o.style({
+						backgroundColor:c.css(),
+					});
+				});
 				
 				var tg = 20;
 				var ap = 20;
@@ -199,6 +222,9 @@
 					panel.data.index.fit(25,1);
 					panel.data.index.style({opacity:.6});
 					tg = (panel.data.control.id == 0) ? 20 : 120;
+					Sirius.document.body.style({
+						backgroundColor: panel.one('.panel').attribute('o-style'),
+					});
 					if(panel.data.id == 0)
 						hint.css('/hide');
 					else
@@ -271,16 +297,11 @@
 			}
 			Sirius.document.body.events.click(_startVideo);
 			
-			function fitVideo(e){
-				//vid.style({
-				//	minHeight : Utils.viewportHeight() + 'px',
-				//	marginLeft: (((Utils.viewportWidth() - vid.width())*.5)>>0) + 'px',
-				//});
-			}
-			Sirius.document.body.events.resize(fitVideo).call();
 		}
 		
 		Automator.shadowConfig({distance:3, direction:90, strength:5, flex:.2});
+		Automator.build('shadow-xFFFFFF-30-90-10-5', '.panel .number');
+		Automator.build('shadow-txt-xCCCCCC-10-90-10-5', '.panel .text');
 		
 		// Inject plugin
 		Sirius.inject('sirius/plugins/carousel3d.js', _init3D);

@@ -12,7 +12,7 @@
 		function CreateContainer(){
 			var c = new Display3D();
 			c.setPerspective("1000px");
-			c.content = new Display3D()
+			c.content = new Display3D();
 			c.css('Carousel3D');
 			c.content.preserve3d().update();
 			c.addChild(c.content);
@@ -65,7 +65,8 @@
 				panel.addChild(p);
 				panel.preserve3d();
 				panel.css('Panel3D');
-				panel.mainFace = p;
+				panel.material = p;
+				panel.setPerspective("1000px");
 				o.panels[o.panels.length] = panel;
 			},
 			update : function(){
@@ -82,7 +83,7 @@
 					var i = o.points.length * o.aperture;
 					var cp = o.panels[o.points.length];
 					cp.data = cp.data || {};
-					var ctr = cp.data.control || {panel:cp,focus:false,pin:false,id:o.points.length};
+					var ctr = cp.data.control || {panel:cp,focus:false,pin:false,id:o.points.length,point:0};
 					ctr.a = i-o.snapping;
 					ctr.b = i+o.snapping;
 					ctr.c = i;
@@ -231,11 +232,12 @@
 					e.height(h);
 					e.locationZ(tz);
 					var tA = (e.data.rotation + o.scroll);
+					e.data.point = tA;
 					if(o.axys == 'x'){
 						e.rotationY(tA * -o.direction);
 						e.rotationX(0);
 						if(o.tilt!=0){
-							e.locationY(tA*o.tilt);
+							e.locationY(tA * o.tilt);
 						}
 					}else{
 						e.rotationX(tA * o.direction);
