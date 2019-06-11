@@ -17,22 +17,22 @@ Javascript sample:
 
 ```
 // Focus events for input
-Sirius.all('input').each(function(o){
-	input.events.focusIn(function(e){ e.target.css('active'); });
-	input.events.focusOut(function(e){ e.target.css('/active'); });
+Jotun.all('input').each(function(o){
+	o.events.focusIn(function(e){ e.target.css('active'); });
+	o.events.focusOut(function(e){ e.target.css('/active'); });
 });
 
 // Control event for send button
-Sirius.one('#form-send-bt').events.click(function(e){
+Jotun.one('#form-send-bt').events.click(function(e){
    var data = {};
-   Sirius.all('input[name]').each(function(o){
+   Jotun.all('input[name]').each(function(o){
    	data[o.attribute(name)] = o.hasFile() ? o.file() : o.value();
    });
-   Sirius.request('form.php', data, function(result){
+   Jotun.request('form.php', data, function(result){
    	if(result.success)
-		console.log(result.object()); //display json object in console
+		trace(result.object()); //display json object in console
 	else
-		console.log(result.error); //display error object in console
+		trace(result.error); //display error object in console
    }, 'POST');
 });
 ```
