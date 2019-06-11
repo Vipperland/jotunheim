@@ -5,8 +5,7 @@
 - [X] Work with JavaScript
 - [X] Work with HaXe
 - [X] Work with PHP
-- [X] Work with JQuery
-- [X] Work with GSAP
+- [X] Compatible with JQuery
 - [X] Modules and Plugins
 - [X] Modular CSS Generator
 - [ ] Api Samples **WIP**
