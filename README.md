@@ -1,6 +1,6 @@
-#Jotun Framework
+# Jotun Framework
 ======
-#####*A flexible framework to do simple and complex dreams come to reality with less headache and stress*
+##### *A flexible framework to do simple and complex dreams come to reality with less headache and stress*
 
 - [X] Work with JavaScript
 - [X] Work with Haxe
