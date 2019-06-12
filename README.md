@@ -3,7 +3,7 @@
 #####*A flexible framework to do simple and complex dreams come to reality with less headache and stress*
 
 - [X] Work with JavaScript
-- [X] Work with HaXe
+- [X] Work with Haxe
 - [X] Work with PHP
 - [X] Compatible with JQuery
 - [X] Modules and Plugins
