@@ -8,7 +8,7 @@ div.screen-fx>div.background{width:100%;height:100%;background-image:url(/assets
 div.screen-fx>div.fog{width:100%;height:100%;background-image:url(/assets/img/fog.png);background-repeat:repeat;background-size:cover;background-position:center center;position:absolute;top:0;left:0;}
 div.screen-fx>div.grid{width:100%;height:100%;background-image:url(/assets/img/grid.png);position:absolute;top:0;left:0;}
 div.screen-fx .scanline-fx{color:white;position:fixed;border-left:1px solid white;padding-left:16px;}
-.main-content{position:absolute;color:#CCCCCC;text-align:left;}
+.main-content{color:#CCCCCC;text-align:left;}
 .sirius-cell{float:left;}
 .sirius-cell>.logo{width:120px;height:120px;border-radius:50%;padding:20px;border-width:1px;border-color:#252530;border-style:dotted dotted solid;float:left;}
 .sirius-cell>.logo>div{width:100%;height:100%;background-image:url(/assets/img/sirius.png);background-repeat:no-repeat;background-size:contain;background-position:center center;}
@@ -26,7 +26,7 @@ div.screen-fx .scanline-fx{color:white;position:fixed;border-left:1px solid whit
 .fx-frame-a:before{position:absolute;width:calc(100%+3px);height:calc(100%+4px);top:-2px;left:-2px;background-image:url('/assets/img/ui-frame-1a.png'),url('/assets/img/ui-frame-1b.png'),url('/assets/img/ui-frame-1c.png'),url('/assets/img/ui-frame-1d.png');background-position:0 0,100% 0,100% 100%,1px 100%;background-repeat:no-repeat;content:'';pointer-events:none;}
 .fixer{clear:left;overflow:auto;}
 .fixer:after{clear:both;}
-.container{width:80%;}
+.container{width:100%;}
 .small-txt{font-size:7px;}
 .txt-alt{color:rgba(220,140,0,1);}
 .txt-focus{color:rgba(255,190,0,1);}

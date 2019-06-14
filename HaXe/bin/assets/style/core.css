@@ -77,7 +77,6 @@ div.screen-fx .scanline-fx {
 }
 
 .main-content {
-	position: absolute;
 	color: #CCCCCC;
 	text-align: left;
 }
@@ -214,7 +213,7 @@ div.screen-fx .scanline-fx {
 }
 
 .container {
-	width: 80%;
+	width: 100%;
 }
 
 .small-txt {

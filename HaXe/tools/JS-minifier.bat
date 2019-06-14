@@ -6,8 +6,8 @@ echo .  THIS TOOL WILL MINIFY ALL JS FILES
 echo . 
 echo . 
 
-call .\tools\minify bin\sirius
-call .\tools\minify bin\sirius\plugins
+call ..\tools\minify bin\jotun
+call ..\tools\minify bin\jotun\plugins
 
 echo . 
 echo . 

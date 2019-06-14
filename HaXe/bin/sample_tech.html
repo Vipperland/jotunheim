@@ -6,7 +6,7 @@
 		<base href="/"></base>
 		<title>Sirius::Papyrus();</title>
 		<meta name="description" content=""/>
-		<script type="text/javascript" src="sirius/api.sirius.js"></script>
+		<script type="text/javascript" src="jotun/api.jotun.js"></script>
 		<link rel="stylesheet" type="text/css" href="assets/style/core.css">
 		<link rel="stylesheet" type="text/css" href="assets/style/scanlines.min.css">
 		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/font-hack/2.020/css/hack-extended.min.css">
@@ -14,7 +14,7 @@
 	</head>
 
 	
-	<body>
+	<body automator>
 		
 		<style>
 		</style>
@@ -24,8 +24,8 @@
 			<div class="fog"></div>
 		</div>
 		
-		<div class="main-content" sru-dom="sprite">
-			<div>
+		<div class="main-content shelf o-middle">
+			<div style="max-width:900px;width:100%;">
 				<div class="content-head">
 					<div class="blink">
 						<div>
@@ -88,13 +88,13 @@
 		
 		<script>
 		
-			Automator.shadowConfig({
+			XCode.shadowConfig({
 				direction: 90,
 				distance: 3,
 			});
-			Automator.reset();
+			XCode.reset();
 			
-			Sirius.run(function(){
+			Jotun.run(function(){
 				
 				var options = {
 					fx : {
@@ -103,14 +103,14 @@
 					}
 				};
 				
-				var blink = Sirius.all('.blink');
-				var bg_fog = Sirius.one('div.screen-fx > div.fog');
+				var blink = Jotun.all('.blink');
+				var bg_fog = Jotun.one('div.screen-fx > div.fog');
 				var bg_fog_offset = 0;
 				
 				Ticker.add(function(){
 					if(options.fx.blink){
 						blink.each(function(o){
-							o.alpha(Math.random() * .1);
+							o.alpha(Math.random() * .1 + .9);
 						});
 					}
 					if(options.fx.animated_bg){
@@ -120,8 +120,6 @@
 				});
 				Ticker.start();
 			});
-			
-			Sirius.all('div[sru-dom=sprite]').css('sprite');
 			
 		</script>
 		
