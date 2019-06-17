@@ -313,6 +313,22 @@ StringTools.lpad = function(s,c,l) {
 	while(s.length < l) s = c + s;
 	return s;
 };
+var Test_$JS = function() { };
+Test_$JS.__name__ = ["Test_JS"];
+Test_$JS.main = function() {
+	jotun_gaming_dataform_DataCollection.map(jotun_gaming_dataform_DataObject,"test",["name","email"]);
+	jotun_gaming_dataform_DataCollection.map(jotun_gaming_dataform_DataObject,"info",["color"]);
+	var t = ["test 000001 0:alpha|1:user@alpha.com","@info 0:yellow","@info 0:blue","test 000002 0:beta|1:user@beta.com","@info 0:gray","test 000003 0:gama|1:user@gama.com","@info 0:cyan","test 000004 0:omega|1:user@omega.com"].join("\r");
+	var colA = new jotun_gaming_dataform_DataCollection();
+	var colB = new jotun_gaming_dataform_DataCollection();
+	var cA = colA.parse(t);
+	var rA = colA.stringify();
+	haxe_Log.trace("colA data(" + cA + ") \r\n\t" + rA.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 34, className : "Test_JS", methodName : "main"});
+	var cB = colB.parse(t);
+	var rB = colB.stringify();
+	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 38, className : "Test_JS", methodName : "main"});
+	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB && rA == rB),{ fileName : "Test_JS.hx", lineNumber : 40, className : "Test_JS", methodName : "main"});
+};
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -4849,20 +4865,6 @@ jotun_dom_Content.__super__ = jotun_dom_Display;
 jotun_dom_Content.prototype = $extend(jotun_dom_Display.prototype,{
 	__class__: jotun_dom_Content
 });
-var jotun_dom_DL = $hx_exports["jtn"]["dom"]["DL"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("dl");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_DL.__name__ = ["jotun","dom","DL"];
-jotun_dom_DL.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_DL.__super__ = jotun_dom_Display;
-jotun_dom_DL.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_DL
-});
 var jotun_dom_DataList = $hx_exports["jtn"]["dom"]["DataList"] = function(q) {
 	if(q == null) {
 		q = window.document.createElement("datalist");
@@ -5363,8 +5365,7 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		if(ftype == "image") {
 			if(this.fillTarget != null) {
 				if(this.fillTarget.typeOf() == "IMG") {
-					var img = this.fillTarget;
-					img.src(this.readFile(0));
+					this.fillTarget.src(this.readFile(0));
 				} else {
 					var tmp = "url(" + this.readFile(0);
 					jotun_dom_Input.fixer.backgroundImage = tmp + ")";
@@ -5417,9 +5418,22 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		if(q != null) {
 			this.object.value = q;
 		} else {
+			if(this.type() == "file") {
+				if(this.hasFile()) {
+					if(this.object.files.length > 0) {
+						return this.object.files;
+					} else if(q != null) {
+						return this.file(q);
+					} else {
+						return this.file(0);
+					}
+				} else {
+					return null;
+				}
+			}
 			q = this.object.value;
 			if(this.object.maxLength != null && this.object.maxLength > 0) {
-				q = HxOverrides.substr(q,0,this.object.maxLength);
+				q = q.substr(0,this.object.maxLength);
 			}
 			if(this._flt != null) {
 				var k = this._flt.split("");
@@ -5472,9 +5486,9 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 	,control: function(handler,target) {
 		this._ioHandler = handler;
 		this.fillTarget = target;
-		if(this.attribute("sr-control") != "ready") {
+		if(this.attribute("jotun-file") != "ready") {
 			this.type("file");
-			this.attribute("sr-control","ready");
+			this.attribute("jotun-file","ready");
 			this.events.change($bind(this,this._onFileSelected));
 		}
 	}
@@ -5956,7 +5970,7 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		return this;
 	}
 	,_refreshIO: function(e) {
-		var c = "" + this.value();
+		var c = "" + Std.string(this.value());
 		if(c != this.attribute("sru-option")) {
 			this.attribute("sru-option",c);
 			this._ioHandler(e);
@@ -5970,20 +5984,6 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		this.events.change($bind(this,this._refreshIO));
 	}
 	,__class__: jotun_dom_Select
-});
-var jotun_dom_Shadow = $hx_exports["jtn"]["dom"]["Shadow"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("shadow");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Shadow.__name__ = ["jotun","dom","Shadow"];
-jotun_dom_Shadow.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Shadow.__super__ = jotun_dom_Display;
-jotun_dom_Shadow.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Shadow
 });
 var jotun_dom_Source = $hx_exports["jtn"]["dom"]["Source"] = function(q) {
 	if(q == null) {
@@ -6109,20 +6109,6 @@ jotun_dom_TextArea.get = function(q) {
 jotun_dom_TextArea.__super__ = jotun_dom_Input;
 jotun_dom_TextArea.prototype = $extend(jotun_dom_Input.prototype,{
 	__class__: jotun_dom_TextArea
-});
-var jotun_dom_Thead = $hx_exports["jtn"]["dom"]["Thead"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("thead");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Thead.__name__ = ["jotun","dom","Thead"];
-jotun_dom_Thead.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Thead.__super__ = jotun_dom_Display;
-jotun_dom_Thead.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Thead
 });
 var jotun_dom_Title = $hx_exports["jtn"]["dom"]["Title"] = function(q) {
 	if(q == null) {
@@ -6712,6 +6698,182 @@ jotun_gaming_actions_Requirement.prototype = $extend(jotun_gaming_actions_Resolu
 	}
 	,__class__: jotun_gaming_actions_Requirement
 });
+var jotun_gaming_dataform_DataCollection = function() {
+	this._list = { };
+};
+jotun_gaming_dataform_DataCollection.__name__ = ["jotun","gaming","dataform","DataCollection"];
+jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
+	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o, n : name, p : props};
+};
+jotun_gaming_dataform_DataCollection.construct = function(name,r) {
+	var o = null;
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
+		var d__ = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
+		var C__ = d__.c;
+		o = new C__(d__.n,d__.p);
+	}
+	if(o != null) {
+		if(r.length == 3) {
+			o.id = r[1];
+			o.merge(r[2]);
+		} else if(r.length == 2) {
+			o.merge(r[1]);
+		}
+	}
+	return o;
+};
+jotun_gaming_dataform_DataCollection.prototype = {
+	add: function(o) {
+		var ion = o.getION();
+		if(ion != null && ion.length > 0) {
+			if(!Object.prototype.hasOwnProperty.call(this._list,ion)) {
+				this._list[ion] = { };
+			}
+			if(o.id != null) {
+				var ls = Reflect.field(this._list,ion);
+				ls[o.id] = o;
+			} else {
+				o = null;
+			}
+		} else {
+			o = null;
+		}
+		return o != null;
+	}
+	,parse: function(data) {
+		var _gthis = this;
+		var len = 0;
+		var i = data.split("\r");
+		var l = null;
+		jotun_utils_Dice.Values(i,function(v) {
+			var r = v.split(" ");
+			if(r.length > 0) {
+				v = r[0];
+				var cmd = v.substring(0,1);
+				var o = null;
+				if(cmd == "@") {
+					if(l != null) {
+						v = v.substring(1,v.length);
+						o = jotun_gaming_dataform_DataCollection.construct(v,r);
+						if(l.insert(v,o)) {
+							len += 1;
+						}
+					}
+				} else {
+					o = jotun_gaming_dataform_DataCollection.construct(v,r);
+					if(_gthis.add(o)) {
+						l = o;
+						len += 1;
+					} else {
+						l = null;
+					}
+				}
+			}
+		});
+		return len;
+	}
+	,stringify: function(name) {
+		var r = "";
+		jotun_utils_Dice.Values(this.getList(name),function(v) {
+			jotun_utils_Dice.Values(v,function(v1) {
+				r += (r.length > 0 ? "\r" : "") + v1.stringify();
+			});
+		});
+		return r;
+	}
+	,getList: function(name) {
+		if(name != null) {
+			return Reflect.field(this._list,name);
+		} else {
+			return this._list;
+		}
+	}
+	,__class__: jotun_gaming_dataform_DataCollection
+};
+var jotun_gaming_dataform_DataIO = function() { };
+jotun_gaming_dataform_DataIO.__name__ = ["jotun","gaming","dataform","DataIO"];
+jotun_gaming_dataform_DataIO.parse = function(c,o,nfo) {
+	var obj = c;
+	jotun_utils_Dice.Values(o.split("|"),function(v) {
+		var tag = v.split(":");
+		var par = tag.shift();
+		var par1 = Reflect.field(nfo,par);
+		var value = tag.join(":").split("/_").join(" ");
+		obj[par1] = value;
+	});
+	obj.onUpdate();
+	return obj;
+};
+jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
+	var result = [];
+	var count = 0;
+	jotun_utils_Dice.All(nfo,function(p,value) {
+		value = Reflect.field(o,value);
+		if(value != null) {
+			if(typeof(value) == "string") {
+				value = value.split(" ").join("/_");
+			}
+			result[count] = p + ":" + Std.string(value);
+			count += 1;
+		}
+	});
+	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join("|");
+};
+var jotun_gaming_dataform_DataObject = function(io_name,props) {
+	this._io_name = io_name;
+	this._io_props = props;
+};
+jotun_gaming_dataform_DataObject.__name__ = ["jotun","gaming","dataform","DataObject"];
+jotun_gaming_dataform_DataObject.prototype = {
+	getION: function() {
+		return this._io_name;
+	}
+	,stringify: function() {
+		var r = jotun_gaming_dataform_DataIO.stringify(this,this._io_name,this._io_props);
+		jotun_utils_Dice.Values(this._inserts,function(v) {
+			r += "\r@" + v.stringify();
+		});
+		return r;
+	}
+	,parse: function(data) {
+		var i = data.split(" ");
+		if(i[0] == this._io_name) {
+			if(i.length > 2) {
+				this.id = i[1];
+				data = i[2];
+			} else {
+				this.id = null;
+				data = i[1];
+			}
+			if(data != null) {
+				jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+				return true;
+			}
+		}
+		return false;
+	}
+	,merge: function(data) {
+		jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+	}
+	,insert: function(name,o) {
+		if(this._inserts == null) {
+			this._inserts = [];
+		}
+		if(this.canInsert(name,o)) {
+			this._inserts[this._inserts.length] = o;
+			this.onInsert(name,o);
+		}
+		return true;
+	}
+	,onUpdate: function() {
+	}
+	,canInsert: function(name,o) {
+		return true;
+	}
+	,onInsert: function(name,o) {
+	}
+	,__class__: jotun_gaming_dataform_DataObject
+};
 var jotun_math_IPoint = function() { };
 jotun_math_IPoint.__name__ = ["jotun","math","IPoint"];
 jotun_math_IPoint.prototype = {
@@ -8124,12 +8286,12 @@ jotun_tools_Utils.displayFrom = function(t) {
 	var id = null;
 	var type = null;
 	if($bind(t,t.hasAttribute) != null) {
-		id = t.getAttribute("sru-id");
+		id = t.getAttribute("jotun-id");
 		if(id == null) {
-			type = t.getAttribute("sru-dom");
+			type = t.getAttribute("jotun-dom");
 			if(type == null) {
 				type = t.tagName.toUpperCase();
-				t.setAttribute("sru-dom",type);
+				t.setAttribute("jotun-dom",type);
 			} else {
 				type = type.toUpperCase();
 			}
@@ -8145,7 +8307,7 @@ jotun_tools_Utils.displayFrom = function(t) {
 	}
 };
 jotun_tools_Utils.getDisplay = function(t) {
-	var id = $bind(t,t.hasAttribute) != null && t.hasAttribute("sru-id") ? Std.parseInt(t.getAttribute("sru-id")) : null;
+	var id = $bind(t,t.hasAttribute) != null && t.hasAttribute("jotun-id") ? Std.parseInt(t.getAttribute("jotun-id")) : null;
 	if(id != null) {
 		return jotun_dom_Display.fromGC(id);
 	}
@@ -9570,6 +9732,7 @@ jotun_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center
 jotun_dom_Input.icons = { };
 jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQuery();
 jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQuery();
+jotun_gaming_dataform_DataCollection._dictio = { };
 jotun_tools_Delayer.setTimeout = setTimeout;
 jotun_tools_Delayer.clearTimeout = clearTimeout;
 jotun_tools_Delayer.setInterval = setInterval;
@@ -9590,11 +9753,11 @@ jotun_tools_Key.VALIDATE_NON_URL = new EReg("^[A-Za-z0-9._-]{6,24}$","");
 jotun_tools_Key.VALIDATE_HASH = new EReg("^[A-Za-z0-9._-]{35}$","");
 jotun_tools_Key.VALIDATE_CARD = new EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}$","");
 jotun_tools_Ticker._pool = [];
-jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, CONTENT : jotun_dom_Content, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DISPLAY3D : jotun_dom_Display3D, DL : jotun_dom_DL, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SHADOW : jotun_dom_Shadow, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, THEAD : jotun_dom_Thead, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
+jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, CONTENT : jotun_dom_Content, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DISPLAY3D : jotun_dom_Display3D, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Table._trash = [];
 js_Boot.__toStr = ({ }).toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-jotun_Jotun.main();
+Test_$JS.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

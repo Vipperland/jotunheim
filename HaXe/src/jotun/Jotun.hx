@@ -354,8 +354,8 @@ class Jotun {
 	 * 
 	 * 
 	 * 		Sirius unique attributes:
-	 * 			sru-id				For unique or shared data, all elements with same sru-id share the same data.
-	 * 			sru-dom				For type idenfication and fast display conversion.
-	 * 			sru-load			Load and build an external module (sru="url#module")
+	 * 			jotun-id				For unique or shared data, all elements with same jotun-id share the same data.
+	 * 			jotun-dom			For type idenfication and fast display conversion.
+	 * 			jotun-load			Load and build an external module (sru="url#module")
 	 * 			
 	 */

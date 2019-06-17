@@ -65,19 +65,40 @@ class DataObject implements Dynamic {
 		return false;
 	}
 	
+	/**
+	   Merge any ION data to this object
+	   @param	data
+	**/
 	public function merge(data:String):Void {
 		DataIO.parse(this, data, _io_props);
 	}
 	
+	/**
+	   Insert ION sub data
+	   @param	name
+	   @param	o
+	   @return
+	**/
 	public function insert(name:String, o:DataObject):Bool {
 		if (_inserts == null){
 			_inserts = [];
 		}
-		_inserts[_inserts.length] = o;
+		if (canInsert(name, o)){
+			_inserts[_inserts.length] = o;
+			onInsert(name, o);
+		}
 		return true;
 	}
 	
 	public function onUpdate():Void {
+		
+	}
+	
+	public function canInsert(name:String, o:DataObject):Bool {
+		return true;
+	}
+	
+	public function onInsert(name:String, o:DataObject):Void {
 		
 	}
 	

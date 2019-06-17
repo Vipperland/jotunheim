@@ -17,9 +17,10 @@ class Test_PHP {
 		//var img:Image = new Image('../assets/img/image.jpg');
 		//img.fit(300,300).save('../assets/img/test.jpg');
 		//trace('===================================================== Headers');
-		//Dice.All(Sirius.domain.data, function(p:String, v:String){
-			//trace(p + ': ' + v);
-		//});
+		trace(Jotun.domain.data);
+		Dice.All(Jotun.domain.data, function(p:String, v:String){
+			trace(p + ': ' + v);
+		});
 		trace('===================================================== Parameters: GET/POST');
 		Dice.All(Jotun.domain.params, function(p:String, v:String){
 			trace(p + ': ' + v);

@@ -17,7 +17,7 @@ class Option extends Display {
 		object = cast element;
 	}
 	
-	override public function value(?q:String):String {
+	override public function value(?q:Dynamic):Dynamic {
 		return object.value;
 	}
 	

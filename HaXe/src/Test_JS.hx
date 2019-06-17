@@ -6,14 +6,14 @@ import jotun.gaming.dataform.DataObject;
 
 /**
  * ...
- * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
+ * @author Rafael Moreira <rafael@gateofsirius.com>
  */
 class Test_JS{
 	
 	static public function main() {
 		
-		DataCollection.register(DataObject, 'test', ['name', 'email']);
-		DataCollection.register(DataObject, 'info', ['color']);
+		DataCollection.map(DataObject, 'test', ['name', 'email']);
+		DataCollection.map(DataObject, 'info', ['color']);
 		
 		var t:String = [
 			"test 000001 0:alpha|1:user@alpha.com",

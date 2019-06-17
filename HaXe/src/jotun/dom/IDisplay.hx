@@ -15,6 +15,8 @@ import jotun.math.IPoint;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.utils.ITable;
+import js.html.File;
+import js.html.FileList;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -223,7 +225,10 @@ interface IDisplay extends IPush implements Dynamic  {
 	 * @param	q
 	 * @return
 	 */
-	public function value(?q:String):String;
+	@:overload(function(?q:Int):File{})
+	@:overload(function():FileList{})
+	@:overload(function(?q:String):String{})
+	public function value(?q:Dynamic):Dynamic;
 	
 	/**
 	 * Write or get style of the element

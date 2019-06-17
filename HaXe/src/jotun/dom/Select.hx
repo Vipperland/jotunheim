@@ -58,7 +58,7 @@ class Select extends Display {
 		events.change().call(true,true);
 	}
 	
-	override public function value(?q:String):String {
+	override public function value(?q:Dynamic):Dynamic {
 		if (q != null){
 			selectValue(q);
 		}

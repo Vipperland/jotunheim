@@ -9,7 +9,7 @@ class DataCollection {
 	
 	private static var _dictio:Dynamic = {};
 	
-	public static function register(o:Dynamic, name:String, props:Array<String>):Void {
+	public static function map(o:Dynamic, name:String, props:Array<String>):Void {
 		Reflect.setField(_dictio, name, {'c':o, n:name, p:props});
 	}
 	

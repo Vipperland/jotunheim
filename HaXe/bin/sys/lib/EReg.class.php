@@ -13,10 +13,43 @@ class EReg {
 		$this->options = $opt;
 		$this->re = '"' . str_replace('"','\\"',$r) . '"' . $opt;
 	}}
+	public $last;
 	public $global;
 	public $pattern;
 	public $options;
 	public $re;
+	public $matches;
+	public function match($s) {
+		$p = preg_match($this->re, $s, $this->matches, PREG_OFFSET_CAPTURE);
+		if($p > 0) {
+			$this->last = $s;
+		} else {
+			$this->last = null;
+		}
+		return $p > 0;
+	}
+	public function matched($n) {
+		$tmp = null;
+		if($this->matches !== null) {
+			$tmp = $n < 0;
+		} else {
+			$tmp = true;
+		}
+		if($tmp) {
+			throw new HException("EReg::matched");
+		}
+		if($n >= count($this->matches)) {
+			return null;
+		}
+		if($this->matches[$n][1] < 0) {
+			return null;
+		}
+		return $this->matches[$n][0];
+	}
+	public function matchedPos() {
+		$tmp = $this->matches[0][1];
+		return _hx_anonymous(array("pos" => $tmp, "len" => strlen($this->matches[0][0])));
+	}
 	public function replace($s, $by) {
 		$by = str_replace("\\\$", "\\\\\$", $by);
 		$by = str_replace("\$\$", "\\\$", $by);

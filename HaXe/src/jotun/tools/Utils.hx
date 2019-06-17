@@ -30,7 +30,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Display;
 	import jotun.dom.Display3D;
 	import jotun.dom.Div;
-	import jotun.dom.DL;
 	import jotun.dom.Document;
 	import jotun.dom.Embed;
 	import jotun.dom.FieldSet;
@@ -71,14 +70,12 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Quote;
 	import jotun.dom.Script;
 	import jotun.dom.Select;
-	import jotun.dom.Shadow;
 	import jotun.dom.Source;
 	import jotun.dom.Span;
 	import jotun.dom.Style;
 	import jotun.dom.Svg;
 	import jotun.dom.Text;
 	import jotun.dom.TextArea;
-	import jotun.dom.Thead;
 	import jotun.dom.Title;
 	import jotun.dom.Track;
 	import jotun.dom.UL;
@@ -129,7 +126,7 @@ class Utils{
 			A:A, AREA:Area, AUDIO:Audio,
 			B:B, BASE:Base, BODY:Body, BR:BR, BUTTON:Button,
 			CANVAS:Canvas, CAPTION:Caption, COL:Col, CONTENT:Content,
-			DATALIST:DataList, DIV:Div, DISPLAY:Display, DISPLAY3D:Display3D, DL:DL, DOCUMENT:Document,
+			DATALIST:DataList, DIV:Div, DISPLAY:Display, DISPLAY3D:Display3D, DOCUMENT:Document,
 			EMBED:Embed,
 			FIELDSET:FieldSet, FORM:Form,
 			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HR:HR, HTML:Html,
@@ -139,8 +136,8 @@ class Utils{
 			OBJECT:Object, OL:OL, OPTGROUP:OptGroup, OPTION:Option, OUTPUT:Output,
 			P:P, PARAM:Param, PICTURE:Picture, PRE:Pre, PROGRESS:Progress,
 			QUOTE:Quote,
-			SCRIPT:Script, SELECT:Select, SHADOW:Shadow, SOURCE:Source, SPAN:Span, STYLE:Style, SVG:Svg,
-			TEXT:Text,TEXTAREA:TextArea,THEAD:Thead,TITLE:Title,TRACK:Track,
+			SCRIPT:Script, SELECT:Select, SOURCE:Source, SPAN:Span, STYLE:Style, SVG:Svg,
+			TEXT:Text, TEXTAREA:TextArea, TITLE:Title, TRACK:Track,
 			UL:UL,
 			VIDEO:Video,
 		};
@@ -155,12 +152,12 @@ class Utils{
 			var id:UInt = null;
 			var type:String = null;
 			if (t.hasAttribute != null) {
-				id = (cast t.getAttribute('sru-id')) * 1;
+				id = (cast t.getAttribute('jotun-id')) * 1;
 				if (id == null) {
-					type = cast t.getAttribute('sru-dom');
+					type = cast t.getAttribute('jotun-dom');
 					if (type == null){
 						type = t.tagName.toUpperCase();
-						t.setAttribute('sru-dom', type);
+						t.setAttribute('jotun-dom', type);
 					}else{
 						type = type.toUpperCase();
 					}
@@ -184,7 +181,7 @@ class Utils{
 		 * @return
 		 */
 		static public function getDisplay(t:Element):IDisplay {
-			var id:UInt = t.hasAttribute != null && t.hasAttribute('sru-id') ? Std.parseInt(t.getAttribute('sru-id')) : null;
+			var id:UInt = t.hasAttribute != null && t.hasAttribute('jotun-id') ? Std.parseInt(t.getAttribute('jotun-id')) : null;
 			if (id != null)
 				return Display.fromGC(id);
 			return new Display(t);

@@ -7,6 +7,8 @@ import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
 import js.html.DOMTokenList;
 import js.html.Element;
+import js.html.File;
+import js.html.FileList;
 import js.html.Node;
 import jotun.Jotun;
 import jotun.css.XCode;
@@ -455,7 +457,10 @@ class Display extends Push implements IDisplay {
 		}
 	}
 	
-	public function value(?q:String):String {
+	@:overload(function(?q:Int):File{})
+	@:overload(function():FileList{})
+	@:overload(function(?q:String):String{})
+	public function value(?q:Dynamic):Dynamic {
 		if (q != null){
 			attribute('value', q);
 		}

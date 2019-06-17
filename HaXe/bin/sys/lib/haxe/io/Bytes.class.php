@@ -9,6 +9,80 @@ class haxe_io_Bytes {
 	}}
 	public $length;
 	public $b;
+	public function blit($pos, $src, $srcpos, $len) {
+		$tmp = null;
+		$tmp1 = null;
+		$tmp2 = null;
+		$tmp3 = null;
+		if($pos >= 0) {
+			$tmp3 = $srcpos < 0;
+		} else {
+			$tmp3 = true;
+		}
+		if(!$tmp3) {
+			$tmp2 = $len < 0;
+		} else {
+			$tmp2 = true;
+		}
+		if(!$tmp2) {
+			$tmp1 = $pos + $len > $this->length;
+		} else {
+			$tmp1 = true;
+		}
+		if(!$tmp1) {
+			$tmp = $srcpos + $len > $src->length;
+		} else {
+			$tmp = true;
+		}
+		if($tmp) {
+			throw new HException(haxe_io_Error::$OutsideBounds);
+		}
+		{
+			$this1 = $this->b;
+			$src1 = $src->b;
+			$this1->s = substr($this1->s, 0, $pos) . substr($src1->s, $srcpos, $len) . substr($this1->s, $pos+$len);
+		}
+	}
+	public function sub($pos, $len) {
+		$tmp = null;
+		$tmp1 = null;
+		if($pos >= 0) {
+			$tmp1 = $len < 0;
+		} else {
+			$tmp1 = true;
+		}
+		if(!$tmp1) {
+			$tmp = $pos + $len > $this->length;
+		} else {
+			$tmp = true;
+		}
+		if($tmp) {
+			throw new HException(haxe_io_Error::$OutsideBounds);
+		}
+		$this1 = $this->b;
+		$x = new php__BytesData_Wrapper(substr($this1->s, $pos, $len));
+		$this2 = $x;
+		return new haxe_io_Bytes($len, $this2);
+	}
+	public function getString($pos, $len) {
+		$tmp = null;
+		$tmp1 = null;
+		if($pos >= 0) {
+			$tmp1 = $len < 0;
+		} else {
+			$tmp1 = true;
+		}
+		if(!$tmp1) {
+			$tmp = $pos + $len > $this->length;
+		} else {
+			$tmp = true;
+		}
+		if($tmp) {
+			throw new HException(haxe_io_Error::$OutsideBounds);
+		}
+		$this1 = $this->b;
+		return substr($this1->s, $pos, $len);
+	}
 	public function toString() {
 		return $this->b->s;
 	}

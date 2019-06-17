@@ -15,6 +15,33 @@ class Lambda {
 		}
 		return $a;
 	}
+	static function exists($it, $f) {
+		{
+			$x = $it->iterator();
+			while($x->hasNext()) {
+				$x1 = $x->next();
+				if(call_user_func_array($f, array($x1))) {
+					return true;
+				}
+				unset($x1);
+			}
+		}
+		return false;
+	}
+	static function filter($it, $f) {
+		$l = new HList();
+		{
+			$x = $it->iterator();
+			while($x->hasNext()) {
+				$x1 = $x->next();
+				if(call_user_func_array($f, array($x1))) {
+					$l->add($x1);
+				}
+				unset($x1);
+			}
+		}
+		return $l;
+	}
 	static function indexOf($it, $v) {
 		$i = 0;
 		{

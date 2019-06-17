@@ -4,31 +4,38 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
-		haxe_Log::trace("===================================================== Parameters: GET/POST", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 23, "className" => "Test_PHP", "methodName" => "main")));
-		sirius_utils_Dice::All(sirius_Sirius::$domain->params, array(new _hx_lambda(array(), "Test_PHP_0"), 'execute'), null);
-		haxe_Log::trace("===================================================== APPLICATION/JSON Content-Type", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 27, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace(jotun_Jotun::$domain->data->HTTP_AUTHORIZATION, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 20, "className" => "Test_PHP", "methodName" => "main")));
+		jotun_utils_Dice::All(jotun_Jotun::$domain->data, array(new _hx_lambda(array(), "Test_PHP_0"), 'execute'), null);
+		haxe_Log::trace("===================================================== Parameters: GET/POST", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 24, "className" => "Test_PHP", "methodName" => "main")));
+		jotun_utils_Dice::All(jotun_Jotun::$domain->params, array(new _hx_lambda(array(), "Test_PHP_1"), 'execute'), null);
+		haxe_Log::trace("===================================================== APPLICATION/JSON Content-Type", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 28, "className" => "Test_PHP", "methodName" => "main")));
 		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp1 = sirius_tools_Utils::sruString(sirius_Sirius::$domain->input);
-		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 28, "className" => "Test_PHP", "methodName" => "main"))));
-		haxe_Log::trace("===================================================== Files", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 30, "className" => "Test_PHP", "methodName" => "main")));
+		$tmp1 = jotun_tools_Utils::sruString(jotun_Jotun::$domain->input);
+		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 29, "className" => "Test_PHP", "methodName" => "main"))));
+		haxe_Log::trace("===================================================== Files", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 31, "className" => "Test_PHP", "methodName" => "main")));
 		$tmp2 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		call_user_func_array($tmp2, array(sirius_php_file_Uploader::save((new _hx_array(array((new _hx_array(array(1280, 720))), (new _hx_array(array(720, 480))), (new _hx_array(array(480, 360)))))))->{"list"}, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 31, "className" => "Test_PHP", "methodName" => "main"))));
-		haxe_Log::trace("===================================================== Database Handshake", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 33, "className" => "Test_PHP", "methodName" => "main")));
-		$tmp3 = sirius_Sirius::$gate;
-		$tmp3->open(sirius_db_Token::localhost("decorador", null, null, null), true);
-		if(sirius_Sirius::$gate->isOpen()) {
-			sirius_Sirius::$gate->setPdoAttributes(true);
-			haxe_Log::trace("Successful Handshake!", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 37, "className" => "Test_PHP", "methodName" => "main")));
+		call_user_func_array($tmp2, array(jotun_php_file_Uploader::save((new _hx_array(array((new _hx_array(array(1280, 720))), (new _hx_array(array(720, 480))), (new _hx_array(array(480, 360)))))))->{"list"}, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 32, "className" => "Test_PHP", "methodName" => "main"))));
+		haxe_Log::trace("===================================================== Database Handshake", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 34, "className" => "Test_PHP", "methodName" => "main")));
+		$tmp3 = jotun_Jotun::$gate;
+		$tmp3->open(jotun_db_Token::localhost("decorador", null, null, null), true);
+		if(jotun_Jotun::$gate->isOpen()) {
+			jotun_Jotun::$gate->setPdoAttributes(true);
+			haxe_Log::trace("Successful Handshake!", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 38, "className" => "Test_PHP", "methodName" => "main")));
 		} else {
 			$tmp4 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-			$tmp5 = sirius_Sirius::$gate->get_errors();
-			call_user_func_array($tmp4, array($tmp5, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 39, "className" => "Test_PHP", "methodName" => "main"))));
+			$tmp5 = jotun_Jotun::$gate->get_errors();
+			call_user_func_array($tmp4, array($tmp5, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 40, "className" => "Test_PHP", "methodName" => "main"))));
 		}
 	}
 	function __toString() { return 'Test_PHP'; }
 }
 function Test_PHP_0($p, $v) {
 	{
-		haxe_Log::trace(_hx_string_or_null($p) . ": " . _hx_string_or_null($v), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 25, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace(_hx_string_or_null($p) . ": " . _hx_string_or_null($v), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 22, "className" => "Test_PHP", "methodName" => "main")));
+	}
+}
+function Test_PHP_1($p1, $v1) {
+	{
+		haxe_Log::trace(_hx_string_or_null($p1) . ": " . _hx_string_or_null($v1), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 26, "className" => "Test_PHP", "methodName" => "main")));
 	}
 }

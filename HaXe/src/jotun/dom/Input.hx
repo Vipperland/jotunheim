@@ -41,8 +41,7 @@ class Input extends Display {
 		if (ftype == 'image'){
 			if(fillTarget != null){
 				if (fillTarget.typeOf() == 'IMG'){
-					var img:Img = cast fillTarget;
-					img.src(readFile(0));
+					fillTarget.src(readFile(0));
 				}else{
 					fixer.backgroundImage = 'url(' + readFile(0) + ')';
 					fillTarget.style(fixer);
@@ -94,10 +93,26 @@ class Input extends Display {
 		_flt = filter;
 	}
 	
-	override public function value(?q:String):String {
+	@:overload(function(?q:Int):File{})
+	@:overload(function():FileList{})
+	@:overload(function(?q:String):String{})
+	override public function value(?q:Dynamic):Dynamic {
 		if (q != null) {
 			object.value = q;
 		}else{
+			if (type() == 'file'){
+				if (hasFile()){
+					if (object.files.length > 0){
+						return object.files;
+					}else if (q != null){
+						return file(q);
+					}else{
+						return file(0);
+					}
+				}else{
+					return null;
+				}
+			}
 			q = object.value;
 			if (object.maxLength != null && object.maxLength > 0)
 				q = q.substr(0, object.maxLength);
@@ -149,9 +164,9 @@ class Input extends Display {
 	public function control(handler:Input->Void, ?target:IDisplay):Void {
 		_ioHandler = handler;
 		fillTarget = target;
-		if (attribute('sr-control') != "ready"){
+		if (attribute('jotun-file') != "ready"){
 			type('file');
-			attribute('sr-control', "ready");
+			attribute('jotun-file', "ready");
 			this.events.change(_onFileSelected);
 		}
 	}

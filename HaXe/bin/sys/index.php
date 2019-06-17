@@ -8,6 +8,6 @@ if(version_compare(PHP_VERSION, '5.1.0', '<')) {
 ;
 require_once dirname(__FILE__).'/lib/php/Boot.class.php';
 
-Test_JS::main();
+Test_PHP::main();
 
 ?>

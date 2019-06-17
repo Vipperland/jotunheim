@@ -4,7 +4,7 @@ package jotun.net;
  * @author Rafael Moreira
  */
 
-interface IDomainData {
+interface IDomainData implements Dynamic {
 	public var HTTP_HOST:String;
 	public var HTTP_CONNECTION:String;
 	public var HTTP_ACCEPT:String;
@@ -14,6 +14,7 @@ interface IDomainData {
 	public var HTTP_AUTHORIZATION:String;
 	public var HTTP_ACCEPT_ENCODING:String;
 	public var HTTP_ACCEPT_LANGUAGE:String;
+	public var HTTP_BASIC_AUTHENTICATION:String;
 	public var HTTP_COOKIE:String;
 	public var CONTENT_TYPE:String;
 	public var CONTENT_LEGTH:String;
