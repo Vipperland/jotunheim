@@ -13,11 +13,11 @@
 			c.setPerspective("1000px");
 			c.content = new Display3D();
 			c.css('Carousel3D');
-			c.content.preserve3d().update();
+			c.content.preserve3d().render();
 			c.addChild(c.content);
 			c.style({width:'100%',height:'100%',display:'table'});
 			c.content.style({verticalAlign:'middle', display:'table-cell'});
-			c.update();
+			c.render();
 			return c;
 		}
 		
@@ -94,7 +94,7 @@
 					cp.style({y:0,top:0,position:'absolute',width:'100%'});
 					cp.data.rotation = o.points.length * -o.aperture;
 					cp.setPerspective(null, '50% 50%');
-					cp.update();
+					cp.render();
 					cp.data.control = ctr;
 					o.points[o.points.length] = ctr;
 				}
@@ -245,7 +245,7 @@
 							e.locationX(tA*o.tilt);
 						}
 					}
-					e.update();
+					e.render();
 				});
 				
 				var th = (h*(o.panels.length))>>0;
@@ -253,7 +253,7 @@
 				if(disp != null){
 					disp.style( { 'height':th + 'px' } );
 					o.carousel.content.locationZ( -tz - o.offsetZFlex);
-					o.carousel.content.update();
+					o.carousel.content.render();
 					o.carousel.height(h);
 				}
 				
@@ -300,9 +300,9 @@
 		});
 		o.carousel.addToBody();
 		o.carousel.setPerspective(null, '50% 50%');
-		o.carousel.update();
+		o.carousel.render();
 		o.carousel.content.height("100%");
-		o.carousel.content.update();
+		o.carousel.content.render();
 		o.carousel.style({width:'100%', top:0, height:0, marginBottom:0});
 		
 		if(addto != null && addto.length > 0){

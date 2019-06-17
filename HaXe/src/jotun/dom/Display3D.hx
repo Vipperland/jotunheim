@@ -41,7 +41,7 @@ class Display3D extends Display implements IDisplay3D {
 		if (q == null){
 			attribute('sru-dom', 'display3d');
 		}
-		update();
+		render();
 	}
 	
 	public function preserve3d():IDisplay3D {
@@ -146,7 +146,7 @@ class Display3D extends Display implements IDisplay3D {
 		return transformData.scale.z;
 	}
 	
-	public function update():IDisplay {
+	public function render():IDisplay {
 		if (transformData.perspective != null)
 			xcss.write("perspective", transformData.perspective);
 		if (transformData.transformOrigin != null)

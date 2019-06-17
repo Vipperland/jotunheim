@@ -41,12 +41,6 @@ interface IDisplay extends IPush implements Dynamic  {
 	public function exists(q:String):Bool;
 	
 	/**
-	 * Disable pointer events
-	 * @return
-	 */
-	public function disable():IDisplay;
-	
-	/**
 	 * Query select on children
 	 * @param	q
 	 * @return
@@ -396,67 +390,6 @@ interface IDisplay extends IPush implements Dynamic  {
 	 * @return
 	 */
 	public function getBounds():DOMRect;
-	
-	/**
-	 * Enable or Disable pointer interaction
-	 * @param	value
-	 * @return
-	 */
-	public function interactive(?value:Bool):Bool ;
-	
-	/**
-	 * Rotate X axys in 3D space
-	 * @param	x
-	 * @return
-	 */
-	public function rotateX(x:Float):IDisplay;
-	
-	/**
-	 * Rotate Y axys in 3D space
-	 * @param	y
-	 * @return
-	 */
-	public function rotateY(y:Float):IDisplay;
-	
-	/**
-	 * Rotate Z axys in 3D space
-	 * @param	z
-	 * @return
-	 */
-	public function rotateZ(z:Float):IDisplay;
-	
-	/**
-	 * Rotate all axys in 3D space
-	 * @param	x
-	 * @param	y
-	 * @param	z
-	 * @return
-	 */
-	public function rotate(x:Float, y:Float, z:Float):IDisplay;
-	
-	/**
-	 * Move element coordinates in 3D space
-	 * @param	x
-	 * @param	y
-	 * @param	z
-	 * @return
-	 */
-	public function translate(x:Float, y:Float, z:Float):IDisplay;
-	
-	/**
-	 * Scale element in 3D space
-	 * @param	x
-	 * @param	y
-	 * @param	z
-	 * @return
-	 */
-	public function scale(x:Float, y:Float, z:Float):IDisplay;
-	
-	/**
-	 * Apply all transform changes
-	 * @return
-	 */
-	public function transform():IDisplay;
 	
 	/**
 	 * Apply a SVG color transform

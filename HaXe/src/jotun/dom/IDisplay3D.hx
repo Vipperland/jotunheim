@@ -42,7 +42,7 @@ interface IDisplay3D extends IDisplay {
 	
 	public function transform3D(x:Float, y:Float, z:Float, x1:Float, y1:Float, z1:Float, w:Float, h:Float, d:Float):IDisplay;
 
-	public function update () : IDisplay;
+	public function render () : IDisplay;
 	
 	public function doubleSided(value:Bool):IDisplay3D;
 	

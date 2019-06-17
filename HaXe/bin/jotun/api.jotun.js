@@ -1099,7 +1099,7 @@ var jotun_dom_Display = $hx_exports["jtn"]["dom"]["Display"] = function(q,t) {
 	if(this.element != window.document) {
 		this._getattr = ($_=this.element,$bind($_,$_.getAttribute)) != null;
 		this._setattr = ($_=this.element,$bind($_,$_.setAttribute)) != null;
-		this._uid = this.hasAttribute("sru-id") ? this.attribute("sru-id") : this.attribute("sru-id",jotun_dom_Display._CNT++);
+		this._uid = this.hasAttribute("jotun-id") ? this.attribute("jotun-id") : this.attribute("jotun-id",jotun_dom_Display._CNT++);
 		jotun_dom_Display._DATA[this._uid] = this;
 	}
 	this.events = new jotun_events_Dispatcher(this);
@@ -1122,8 +1122,7 @@ jotun_dom_Display.gc = function(force) {
 	} else {
 		jotun_utils_Dice.Values(jotun_dom_Display._DATA,function(v) {
 			var id = v.id();
-			if(jotun_Jotun.one("[sru-id=" + Std.string(_$UInt_UInt_$Impl_$.toFloat(id)) + "]") == null) {
-				jotun_Jotun.log("Disposing object {" + Std.string(_$UInt_UInt_$Impl_$.toFloat(id)) + "}...");
+			if(jotun_Jotun.one("[jotun-id=" + Std.string(_$UInt_UInt_$Impl_$.toFloat(id)) + "]") == null) {
 				Reflect.deleteField(jotun_dom_Display._DATA,Std.string(_$UInt_UInt_$Impl_$.toFloat(id)) + "");
 			}
 		});
@@ -1148,7 +1147,7 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 			if(this.events != null) {
 				this.events.dispose();
 			}
-			this.all("[sru-id]").dispose();
+			this.all("[jotun-id]").dispose();
 			this.remove();
 			this.element = null;
 			this._uid = -1;
@@ -1160,10 +1159,6 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 		} else {
 			return false;
 		}
-	}
-	,disable: function() {
-		this.style({ pointerEvents : "none"});
-		return this;
 	}
 	,click: function() {
 		this.element.click();
@@ -1302,64 +1297,6 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 		this._parent = null;
 		if(this.element != null && this.element.parentElement != null) {
 			this.element.parentElement.removeChild(this.element);
-		}
-		return this;
-	}
-	,rotateX: function(x) {
-		this.__changed = true;
-		this.__rotationX = jotun_math_Matrix3D.rotateX(x);
-		return this;
-	}
-	,rotateY: function(x) {
-		this.__changed = true;
-		this.__rotationY = jotun_math_Matrix3D.rotateY(x);
-		return this;
-	}
-	,rotateZ: function(x) {
-		this.__changed = true;
-		this.__rotationZ = jotun_math_Matrix3D.rotateZ(x);
-		return this;
-	}
-	,rotate: function(x,y,z) {
-		if(x != null) {
-			this.rotateX(x);
-		}
-		if(y != null) {
-			this.rotateY(y);
-		}
-		if(z != null) {
-			this.rotateZ(z);
-		}
-		return this;
-	}
-	,translate: function(x,y,z) {
-		this.__changed = true;
-		this.__translation = jotun_math_Matrix3D.translate(x,y,z);
-		return this;
-	}
-	,scale: function(x,y,z) {
-		this.__changed = true;
-		this.__scale = jotun_math_Matrix3D.scale(x,y,z);
-		return this;
-	}
-	,backface: function(visible) {
-		this.style("backfaceVisibility",visible ? "visible" : "hidden");
-	}
-	,transform: function() {
-		if(this.__changed) {
-			if(this.__transform == null) {
-				this.__transform = [];
-				this.style("transformStyle","preserve-3d");
-				this.style("transformOrigin","50% 50% 0");
-				this.css("element3d");
-			}
-			this.__changed = false;
-			this.__transform[0] = this.__rotationX;
-			this.__transform[1] = this.__rotationY;
-			this.__transform[2] = this.__rotationZ;
-			this.__transform[3] = this.__scale;
-			this.__transform[4] = this.__translation;
-			this.style("transform","matrix3d(" + jotun_math_Matrix3D.transform(this.__transform).join(",") + ")");
 		}
 		return this;
 	}
@@ -1758,18 +1695,6 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 	,id: function() {
 		return this._uid;
 	}
-	,interactive: function(value) {
-		if(value != null) {
-			if(value) {
-				this.style({ pointerEvents : "all"});
-			} else {
-				this.style({ pointerEvents : "none"});
-			}
-			return value;
-		} else {
-			return this.style().pointerEvents != "none";
-		}
-	}
 	,load: function(url,module,data,handler,headers,progress) {
 		var _gthis = this;
 		if(module != null) {
@@ -1815,7 +1740,7 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 	}
 	,toString: function() {
 		var v = this.element != null && ($_=this.element,$bind($_,$_.getBoundingClientRect)) != null;
-		var data = { id : this.element.id, "sru-id" : $bind(this,this.id), "class" : this.element.className, index : this.index(), length : this.length(), attributes : jotun_tools_Utils.getAttributes(this)};
+		var data = { id : this.element.id, "jotun-id" : $bind(this,this.id), "class" : this.element.className, index : this.index(), length : this.length(), attributes : jotun_tools_Utils.getAttributes(this)};
 		if(v) {
 			var r = this.element.getBoundingClientRect();
 			data.visibility = this.getVisibility();
@@ -4893,7 +4818,7 @@ var jotun_dom_Display3D = $hx_exports["jtn"]["dom"]["Display3D"] = function(q) {
 	if(q == null) {
 		this.attribute("sru-dom","display3d");
 	}
-	this.update();
+	this.render();
 };
 jotun_dom_Display3D.__name__ = ["jotun","dom","Display3D"];
 jotun_dom_Display3D.__interfaces__ = [jotun_dom_IDisplay3D];
@@ -5042,7 +4967,7 @@ jotun_dom_Display3D.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return this.transformData.scale.z;
 	}
-	,update: function() {
+	,render: function() {
 		if(this.transformData.perspective != null) {
 			this.xcss.write("perspective",this.transformData.perspective);
 		}

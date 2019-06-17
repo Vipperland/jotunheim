@@ -73,8 +73,7 @@ class Display extends Push implements IDisplay {
 		}else{
 			Dice.Values(_DATA, function(v:IDisplay) {
 				var id:UInt = v.id();
-				if (Jotun.one('[sru-id=' + id + ']') == null) {
-					Jotun.log('Disposing object {' + id + '}...');
+				if (Jotun.one('[jotun-id=' + id + ']') == null) {
 					Reflect.deleteField(_DATA, id + '');
 				}
 			});
@@ -117,7 +116,7 @@ class Display extends Push implements IDisplay {
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
-			_uid = hasAttribute("sru-id") ? attribute("sru-id") : attribute("sru-id", _CNT++);
+			_uid = hasAttribute("jotun-id") ? attribute("jotun-id") : attribute("jotun-id", _CNT++);
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
@@ -133,13 +132,12 @@ class Display extends Push implements IDisplay {
 	
 	public function dispose():Void {
 		if(_uid != -1 && element != null){
-			//Sirius.log('Disposing object {' + _uid + '}...');
 			Reflect.deleteField(_DATA, _uid + '');
 			if(_children != null)
 				_children.dispose();
 			if(events != null)
 				events.dispose();
-			all('[sru-id]').dispose();
+			all('[jotun-id]').dispose();
 			remove();
 			element = null;
 			_uid = -1;
@@ -148,11 +146,6 @@ class Display extends Push implements IDisplay {
 	
 	public function exists(q:String):Bool {
 		return element != null && element.querySelector(q) != null;
-	}
-	
-	public function disable():IDisplay {
-		this.style({pointerEvents:'none'});
-		return this;
 	}
 	
 	public function click():IDisplay {
@@ -293,72 +286,6 @@ class Display extends Push implements IDisplay {
 	public function remove():IDisplay {
 		this._parent = null;
 		if (element != null && element.parentElement != null) element.parentElement.removeChild(element);
-		return this;
-	}
-	
-	public function rotateX(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationX = Matrix3D.rotateX(x);
-		return this;
-	}
-	
-	public function rotateY(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationY = Matrix3D.rotateY(x);
-		return this;
-	}
-	
-	public function rotateZ(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationZ = Matrix3D.rotateZ(x);
-		return this;
-	}
-	
-	public function rotate(x:Float, y:Float, z:Float):IDisplay {
-		if (x != null) {
-			rotateX(x);
-		}
-		if (y != null) {
-			rotateY(y);
-		}
-		if (z != null) {
-			rotateZ(z);
-		}
-		return this;
-	}
-	
-	public function translate(x:Float, y:Float, z:Float):IDisplay {
-		this.__changed = true;
-		this.__translation = Matrix3D.translate(x, y, z);
-		return this;
-	}
-	
-	public function scale(x:Float, y:Float, z:Float):IDisplay {
-		this.__changed = true;
-		this.__scale = Matrix3D.scale(x, y, z);
-		return this;
-	}
-	
-	public function backface(visible:Bool):Void {
-		style('backfaceVisibility', visible ? 'visible' : 'hidden');
-	}
-	
-	public function transform():IDisplay {
-		if (this.__changed){
-			if (this.__transform == null) {
-				this.__transform = [];
-				style('transformStyle', 'preserve-3d');
-				style('transformOrigin', '50% 50% 0');
-				css('element3d');
-			}
-			this.__changed = false;
-			this.__transform[0] = this.__rotationX;
-			this.__transform[1] = this.__rotationY;
-			this.__transform[2] = this.__rotationZ;
-			this.__transform[3] = this.__scale;
-			this.__transform[4] = this.__translation;
-			style('transform', 'matrix3d(' + Matrix3D.transform(this.__transform).join(',') + ')');
-		}
 		return this;
 	}
 	
@@ -728,18 +655,6 @@ class Display extends Push implements IDisplay {
 		return _uid;
 	}
 	
-	public function interactive(?value:Bool):Bool {
-		if (value != null) {
-			if (value)
-				style({pointerEvents:'all'});
-			else
-				style({pointerEvents:'none'});
-			return value;
-		}else {
-			return style().pointerEvents != 'none';
-		}
-	}
-	
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void {
 		if (module != null){
 			if (Jotun.resources.exists(module)){
@@ -787,7 +702,7 @@ class Display extends Push implements IDisplay {
 		var v:Bool = element != null && element.getBoundingClientRect != null;
 		var data:Dynamic = {
 			id:element.id, 
-			'sru-id': id,
+			'jotun-id': id,
 			'class':element.className,
 			index:index(),
 			length:length(),
