@@ -1,20 +1,16 @@
 package jotun.dom;
 
-import haxe.Constraints.Function;
 import haxe.ds.Either;
-import js.html.CSSStyleDeclaration;
-import js.html.DOMRect;
-import js.html.Element;
-import js.JQuery;
-import jotun.data.IDataSet;
 import jotun.dom.IDisplay;
 import jotun.events.IDispatcher;
 import jotun.flow.IPush;
-import jotun.math.IARGB;
 import jotun.math.IPoint;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.utils.ITable;
+import js.html.CSSStyleDeclaration;
+import js.html.DOMRect;
+import js.html.Element;
 import js.html.File;
 import js.html.FileList;
 

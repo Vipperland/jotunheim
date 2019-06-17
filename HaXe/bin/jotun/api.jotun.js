@@ -4828,7 +4828,7 @@ jotun_dom_Display3D.get = function(q) {
 jotun_dom_Display3D._backface_fix = function() {
 	if(!jotun_dom_Display3D._fixed) {
 		jotun_dom_Display3D._fixed = true;
-		jotun_css_XCode.style("[sru-dom=\"display3d\"]","transform-style:inherit;backface-visibility:inherit;");
+		jotun_css_XCode.style("[sru-dom=\"display3d\"]","transform-style:" + (jotun_Jotun.agent.edge ? "flat" : "preserve-3d") + ";backface-visibility:inherit;");
 		jotun_css_XCode.apply();
 	}
 };
@@ -6813,99 +6813,6 @@ var jotun_math_ITransform3D = function() { };
 jotun_math_ITransform3D.__name__ = ["jotun","math","ITransform3D"];
 jotun_math_ITransform3D.prototype = {
 	__class__: jotun_math_ITransform3D
-};
-var jotun_math_Matrix3D = function() { };
-jotun_math_Matrix3D.__name__ = ["jotun","math","Matrix3D"];
-jotun_math_Matrix3D.rotateX = function(r) {
-	r *= .017453292519943295;
-	return [1,0,0,0,0,Math.cos(r),-Math.sin(r),0,0,Math.sin(r),Math.cos(r),0,0,0,0,1];
-};
-jotun_math_Matrix3D.rotateY = function(r) {
-	r *= .017453292519943295;
-	return [Math.cos(r),0,Math.sin(r),0,0,1,0,0,-Math.sin(r),0,Math.cos(r),0,0,0,0,1];
-};
-jotun_math_Matrix3D.rotateZ = function(r) {
-	r *= .017453292519943295;
-	return [Math.cos(r),-Math.sin(r),0,0,Math.sin(r),Math.cos(r),0,0,0,0,1,0,0,0,0,1];
-};
-jotun_math_Matrix3D.scale = function(x,y,z) {
-	return [x,0,0,0,0,y,0,0,0,0,z,0,0,0,0,1];
-};
-jotun_math_Matrix3D.translate = function(x,y,z) {
-	return [1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1];
-};
-jotun_math_Matrix3D._multiply = function(a,b) {
-	var result = [];
-	var a00 = a[0];
-	var a10 = a[1];
-	var a20 = a[2];
-	var a30 = a[3];
-	var a01 = a[4];
-	var a11 = a[5];
-	var a21 = a[6];
-	var a31 = a[7];
-	var a02 = a[8];
-	var a12 = a[9];
-	var a22 = a[10];
-	var a32 = a[11];
-	var a03 = a[12];
-	var a13 = a[13];
-	var a23 = a[14];
-	var a33 = a[15];
-	var b0 = b[0];
-	var b1 = b[1];
-	var b2 = b[2];
-	var b3 = b[3];
-	result[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-	result[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-	result[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-	result[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-	b0 = b[4];
-	b1 = b[5];
-	b2 = b[6];
-	b3 = b[7];
-	result[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-	result[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-	result[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-	result[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-	b0 = b[8];
-	b1 = b[9];
-	b2 = b[10];
-	b3 = b[11];
-	result[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-	result[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-	result[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-	result[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-	b0 = b[12];
-	b1 = b[13];
-	b2 = b[14];
-	b3 = b[15];
-	result[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
-	result[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
-	result[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
-	result[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
-	return result;
-};
-jotun_math_Matrix3D.transform = function(data) {
-	var res = null;
-	var idx = 0;
-	var len = data.length;
-	var mx;
-	while(idx < len) {
-		mx = data[idx];
-		if(mx != null) {
-			if(res == null) {
-				res = mx;
-			} else {
-				res = jotun_math_Matrix3D._multiply(res,mx);
-			}
-		}
-		++idx;
-	}
-	return res;
-};
-jotun_math_Matrix3D.toCss = function(matrix) {
-	return "matrix3d(" + matrix.join(",") + ")";
 };
 var jotun_math_Point = $hx_exports["sru"]["math"]["point"] = function(x,y) {
 	this.x = x;

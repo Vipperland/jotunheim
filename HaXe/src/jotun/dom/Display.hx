@@ -1,15 +1,6 @@
 package jotun.dom;
 
 import haxe.Json;
-import haxe.ds.Either;
-import js.Browser;
-import js.html.CSSStyleDeclaration;
-import js.html.DOMRect;
-import js.html.DOMTokenList;
-import js.html.Element;
-import js.html.File;
-import js.html.FileList;
-import js.html.Node;
 import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.dom.IDisplay;
@@ -19,18 +10,22 @@ import jotun.flow.Push;
 import jotun.math.ARGB;
 import jotun.math.IARGB;
 import jotun.math.IPoint;
-import jotun.math.IPoint3D;
-import jotun.math.Matrix3D;
 import jotun.math.Point;
-import jotun.math.Point3D;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.tools.Ticker;
 import jotun.tools.Utils;
-import jotun.transitions.Animator;
 import jotun.utils.Dice;
 import jotun.utils.IDiceRoll;
 import jotun.utils.ITable;
+import js.Browser;
+import js.html.CSSStyleDeclaration;
+import js.html.DOMRect;
+import js.html.DOMTokenList;
+import js.html.Element;
+import js.html.File;
+import js.html.FileList;
+import js.html.Node;
 
 /**
  * ...

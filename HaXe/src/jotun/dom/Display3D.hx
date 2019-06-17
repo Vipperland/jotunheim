@@ -22,7 +22,7 @@ class Display3D extends Display implements IDisplay3D {
 	static private function _backface_fix():Void {
 		if(!_fixed){
 			_fixed = true;
-			XCode.style('[sru-dom="display3d"]', 'transform-style:inherit;backface-visibility:inherit;');
+			XCode.style('[sru-dom="display3d"]', 'transform-style:' + (Jotun.agent.edge ? 'flat' : 'preserve-3d') + ';backface-visibility:inherit;');
 			XCode.apply();
 		}
 	}

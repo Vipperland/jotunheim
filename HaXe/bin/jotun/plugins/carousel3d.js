@@ -10,10 +10,11 @@
 		var Display3D = jtn.dom.Display3D;
 		function CreateContainer(){
 			var c = new Display3D();
-			c.setPerspective("1000px");
+			c.setPerspective('1000px');
 			c.content = new Display3D();
 			c.css('Carousel3D');
-			c.content.preserve3d().render();
+			c.content.preserve3d();
+			c.content.render();
 			c.addChild(c.content);
 			c.style({width:'100%',height:'100%',display:'table'});
 			c.content.style({verticalAlign:'middle', display:'table-cell'});
