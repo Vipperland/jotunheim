@@ -55,7 +55,7 @@ class Header {
 	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
 		content(JSON);
 		if (data != null) {
-			data = JsonTool.stringfy(data, null, '\t');
+			data = JsonTool.stringify(data, null, '\t');
 			writeData(data, encode);
 		}
 	}

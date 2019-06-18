@@ -165,34 +165,40 @@ class Image implements IImage {
 		return this;
 	}
 	
+	public function isOutBounds(width:Int, height:Int):Bool {
+		return (this.width <= width && this.height <= height) == false;
+	}
+	
 	/**
 	 * Save modified file
 	 * @param	name
 	 * @param	type
 	 * @return
 	 */
-	public function save(?name:String, ?type:UInt):Bool {
+	public function save(?name:String, ?type:UInt, ?qty:Int):Bool {
 		if(isValid()){
-			var dir:String = untyped __call__('dirname', name);
-			if (!FileSystem.isDirectory(dir))
-				FileSystem.createDirectory(dir);
-			if (type == null)
+			if (type == null){
 				type = this.type;
-			if (name == null)
+			}
+			if (name == null){
 				name = this.name;
+			}
 			try {
 				switch(type) {
 					case 1 : untyped __call__('imagegif', _res, name);
 					case 3 : untyped __call__('imagepng', _res, name);
 					case 6 : untyped __call__('imagewbmp', _res, name);
-					default : untyped __call__('imagejpeg', _res, name, 95);
+					default : untyped __call__('imagejpeg', _res, name, qty != null ? qty : 80);
 				}
 				return true;
 			} catch (e:Dynamic) {
-				//Lib.dump(e);
 			}
 		}
 		return false;
+	}
+	
+	public function delete():Void {
+		FileSystem.deleteFile(name);
 	}
 	
 	public function dispose():Void {

@@ -206,7 +206,7 @@ class DataCache implements IDataCache {
 	}
 	
 	public function json(?print:Bool):String {
-		var result:String = JsonTool.stringfy(_DB, null, " ");
+		var result:String = JsonTool.stringify(_DB, null, " ");
 		if (print) #if php Lib.print(result); #elseif js if (print) Log.trace(result); #end
 		return result;
 	}

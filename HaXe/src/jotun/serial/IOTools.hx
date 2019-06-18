@@ -45,7 +45,7 @@ class IOTools {
 	 * @return
 	 */
 	public static function jsonEncode(o:Dynamic, ?rep:Dynamic->Dynamic->Dynamic, ?space:String):String {
-		return JsonTool.stringfy(o, rep, space);
+		return JsonTool.stringify(o, rep, space);
 	}
 	
 	/**

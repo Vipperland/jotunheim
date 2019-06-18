@@ -377,7 +377,7 @@ class jotun_serial_JsonTool {
 	}
 	static function customReplacer($a, $b) { return call_user_func_array(self::$customReplacer, array($a, $b)); }
 	public static $customReplacer = null;
-	static function stringfy($o, $replacer = null, $space = null) {
+	static function stringify($o, $replacer = null, $space = null) {
 		$printer = null;
 		if($replacer !== null) {
 			$printer = $replacer;

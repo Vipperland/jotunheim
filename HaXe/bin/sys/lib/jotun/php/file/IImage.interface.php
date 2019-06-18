@@ -6,7 +6,9 @@ interface jotun_php_file_IImage {
 	function resample($width, $height, $ratio = null);
 	function crop($x, $y, $width, $height);
 	function fit($width, $height);
-	function save($name = null, $type = null);
+	function isOutBounds($width, $height);
+	function save($name = null, $type = null, $qty = null);
 	function dispose();
+	function delete();
 	function isValid();
 }

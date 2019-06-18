@@ -13,9 +13,13 @@ interface IImage {
 	
 	function fit(width:UInt, height:UInt):IImage;
 	
-	function save(?name:String, ?type:UInt):Bool;
+	function isOutBounds(width:Int, height:Int):Bool;
+	
+	function save(?name:String, ?type:UInt, ?qty:Int):Bool;
 	
 	function dispose():Void;
+	
+	function delete():Void;
 	
 	function isValid():Bool;
 }

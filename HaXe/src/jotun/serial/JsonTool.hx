@@ -17,7 +17,7 @@ class JsonTool {
 		return (b == null) ? null : b; 
 	};
 	
-	static public function stringfy(o:Dynamic, ?replacer:Dynamic -> Dynamic -> Dynamic, ?space:String) : String {
+	static public function stringify(o:Dynamic, ?replacer:Dynamic -> Dynamic -> Dynamic, ?space:String) : String {
 		var printer = new JsonTool(replacer != null ? replacer : customReplacer, space);
 		printer.write("", o);
 		return printer.buf.toString();

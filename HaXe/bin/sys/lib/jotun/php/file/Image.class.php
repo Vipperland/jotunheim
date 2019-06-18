@@ -250,39 +250,33 @@ class jotun_php_file_Image implements jotun_php_file_IImage{
 		}
 		return $this;
 	}
-	public function save($name = null, $type = null) {
-		if($this->isValid()) {
-			$dir = dirname($name);
-			if(!is_dir($dir)) {
-				$path = haxe_io_Path::addTrailingSlash($dir);
-				$_p = null;
-				$parts = (new _hx_array(array()));
-				while(true) {
-					$_p = haxe_io_Path::directory($path);
-					if(!($path !== $_p)) {
-						break;
-					}
-					$parts->unshift($path);
-					$path = $_p;
-				}
-				{
-					$_g = 0;
-					while($_g < $parts->length) {
-						$part = $parts[$_g];
-						$_g = $_g + 1;
-						$tmp = null;
-						if(_hx_char_code_at($part, strlen($part) - 1) !== 58) {
-							$tmp = !file_exists($part);
-						} else {
-							$tmp = false;
-						}
-						if($tmp) {
-							@mkdir($part, 493);
-						}
-						unset($tmp,$part);
-					}
-				}
+	public function isOutBounds($width, $height) {
+		$tmp = null;
+		$a = $this->width;
+		$aNeg = $width < 0;
+		$bNeg = $a < 0;
+		$tmp1 = null;
+		if($aNeg !== $bNeg) {
+			$tmp1 = $aNeg;
+		} else {
+			$tmp1 = $width >= $a;
+		}
+		if($tmp1) {
+			$a1 = $this->height;
+			$aNeg1 = $height < 0;
+			$bNeg1 = $a1 < 0;
+			if($aNeg1 !== $bNeg1) {
+				$tmp = $aNeg1;
+			} else {
+				$tmp = $height >= $a1;
 			}
+		} else {
+			$tmp = false;
+		}
+		return $tmp === false;
+	}
+	public function save($name = null, $type = null, $qty = null) {
+		if($this->isValid()) {
 			if($type === null) {
 				$type = $this->type;
 			}
@@ -291,7 +285,7 @@ class jotun_php_file_Image implements jotun_php_file_IImage{
 			}
 			try {
 				if($type === null) {
-					imagejpeg($this->_res, $name, 95);
+					imagejpeg($this->_res, $name, (($qty !== null) ? $qty : 80));
 				} else {
 					switch($type) {
 					case 1:{
@@ -304,7 +298,7 @@ class jotun_php_file_Image implements jotun_php_file_IImage{
 						imagewbmp($this->_res, $name);
 					}break;
 					default:{
-						imagejpeg($this->_res, $name, 95);
+						imagejpeg($this->_res, $name, (($qty !== null) ? $qty : 80));
 					}break;
 					}
 				}
@@ -317,6 +311,10 @@ class jotun_php_file_Image implements jotun_php_file_IImage{
 			}
 		}
 		return false;
+	}
+	public function delete() {
+		$path = $this->name;
+		unlink($path);
 	}
 	public function dispose() {
 		if(_hx_field($this, "_res") !== null) {

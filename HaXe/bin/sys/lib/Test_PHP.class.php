@@ -4,39 +4,37 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
-		jotun_utils_Dice::All(jotun_Jotun::$header->getClientHeaders(), array(new _hx_lambda(array(), "Test_PHP_0"), 'execute'), null);
-		$tmp = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp1 = "===================================================== Parameters: (Method:" . _hx_string_or_null(jotun_Jotun::$domain->getRequestMethod()) . ")";
-		call_user_func_array($tmp, array($tmp1, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 21, "className" => "Test_PHP", "methodName" => "main"))));
-		jotun_utils_Dice::All(jotun_Jotun::$domain->params, array(new _hx_lambda(array(), "Test_PHP_1"), 'execute'), null);
-		haxe_Log::trace("===================================================== APPLICATION/JSON Content-Type", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 25, "className" => "Test_PHP", "methodName" => "main")));
-		$tmp2 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		$tmp3 = jotun_tools_Utils::sruString(jotun_Jotun::$domain->input);
-		call_user_func_array($tmp2, array($tmp3, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 26, "className" => "Test_PHP", "methodName" => "main"))));
-		haxe_Log::trace("===================================================== Files", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 28, "className" => "Test_PHP", "methodName" => "main")));
-		$tmp4 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-		call_user_func_array($tmp4, array(jotun_php_file_Uploader::save((new _hx_array(array((new _hx_array(array(1280, 720))), (new _hx_array(array(720, 480))), (new _hx_array(array(480, 360)))))))->{"list"}, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 29, "className" => "Test_PHP", "methodName" => "main"))));
-		haxe_Log::trace("===================================================== Database Handshake", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 31, "className" => "Test_PHP", "methodName" => "main")));
-		$tmp5 = jotun_Jotun::$gate;
-		$tmp5->open(jotun_db_Token::localhost("decorador", null, null, null), true);
+		$buff = (new _hx_array(array()));
+		jotun_utils_Dice::All(jotun_Jotun::$header->getClientHeaders(), array(new _hx_lambda(array(&$buff), "Test_PHP_0"), 'execute'), null);
+		$tmp = "===================================================== Parameters: (Method:" . _hx_string_or_null(jotun_Jotun::$domain->getRequestMethod()) . ")";
+		$buff->push($tmp);
+		jotun_utils_Dice::All(jotun_Jotun::$domain->params, array(new _hx_lambda(array(&$buff), "Test_PHP_1"), 'execute'), null);
+		$buff->push("===================================================== APPLICATION/JSON Content-Type");
+		$tmp1 = jotun_tools_Utils::sruString(jotun_Jotun::$domain->input);
+		$buff->push($tmp1);
+		$buff->push("===================================================== Files");
+		$buff->push(jotun_php_file_Uploader::save("./uploads/", _hx_anonymous(array("thumb" => _hx_anonymous(array("width" => 240, "height" => 160, "create" => true)), "small" => _hx_anonymous(array("width" => 480, "height" => 320, "create" => true)), "medium" => _hx_anonymous(array("width" => 960, "height" => 640, "create" => true)), "large" => _hx_anonymous(array("width" => 1920, "height" => 1280, "create" => true)))))->{"list"});
+		$buff->push("===================================================== Database Handshake");
+		$tmp2 = jotun_Jotun::$gate;
+		$tmp2->open(jotun_db_Token::localhost("decorador", null, null, null), true);
 		if(jotun_Jotun::$gate->isOpen()) {
 			jotun_Jotun::$gate->setPdoAttributes(true);
-			haxe_Log::trace("Successful Handshake!", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 35, "className" => "Test_PHP", "methodName" => "main")));
+			$buff->push("Successful Handshake!");
 		} else {
-			$tmp6 = (property_exists("haxe_Log", "trace") ? haxe_Log::$trace: array("haxe_Log", "trace"));
-			$tmp7 = jotun_Jotun::$gate->get_errors();
-			call_user_func_array($tmp6, array($tmp7, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 37, "className" => "Test_PHP", "methodName" => "main"))));
+			$tmp3 = jotun_Jotun::$gate->get_errors();
+			$buff->push($tmp3);
 		}
+		jotun_Jotun::$header->setJSON($buff, null);
 	}
 	function __toString() { return 'Test_PHP'; }
 }
-function Test_PHP_0($p, $v) {
+function Test_PHP_0(&$buff, $p, $v) {
 	{
-		haxe_Log::trace(_hx_string_or_null($p) . ": " . _hx_string_or_null($v), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 19, "className" => "Test_PHP", "methodName" => "main")));
+		$buff->push(_hx_string_or_null($p) . ": " . _hx_string_or_null($v));
 	}
 }
-function Test_PHP_1($p1, $v1) {
+function Test_PHP_1(&$buff, $p1, $v1) {
 	{
-		haxe_Log::trace(_hx_string_or_null($p1) . ": " . _hx_string_or_null($v1), _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 23, "className" => "Test_PHP", "methodName" => "main")));
+		$buff->push(_hx_string_or_null($p1) . ": " . _hx_string_or_null($v1));
 	}
 }

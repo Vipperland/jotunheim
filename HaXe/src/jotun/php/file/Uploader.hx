@@ -6,6 +6,7 @@ import php.Web;
 import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import sys.FileSystem;
 import sys.io.File;
 import sys.io.FileOutput;
 
@@ -16,24 +17,34 @@ import sys.io.FileOutput;
 class Uploader {
 	
 	public static var files:FileCollection = new FileCollection();
+
+	private static var _sizes:Dynamic;
 	
-	public static var savePathImg:String = 'upload/images/';
+	private static var _path:String = '/';
+
 	
-	public static var savePathDoc:String = 'upload/documents/';
-	
-	public static var sizes:Dynamic = [];
-	
-	public static function set(imgPath:String, ?docPath:String):Void {
-		savePathImg = imgPath;
-		if (docPath != null)
-			savePathDoc = docPath;
+	public static function createPath(q:String):Void {
+		var p:String = '';
+		Dice.Values(q.split('/'), function(v:String){
+			if(v.length > 0){
+				p += v;
+				if (!FileSystem.exists(p) || !FileSystem.isDirectory(p)){
+					untyped __call__("mkdir", p, untyped __php__('0777'));
+				}
+				p += '/';
+			}
+		});
 	}
 	
-	public static function save(?optSizes:Array<Dynamic>):FileCollection {
-		if (optSizes != null){
-			Dice.Values(optSizes, function(v:Dynamic){
-				sizes[sizes.length] = Std.is(v, Array) ? {w:v[0],h:v.length==1?v[0]:v[1]} : {w:v,h:v};
-			});
+	public static function save(path:String, ?sizes:Dynamic):FileCollection {
+		
+		if (_path != path){
+			createPath(path);
+			_path = path;
+		}
+		
+		if (sizes != null){
+			_sizes = sizes;
 		}
 		_verify();
 		return files;
@@ -44,13 +55,6 @@ class Uploader {
 		switch (ext) {
 			case "jpg", "jpeg", "png", "gif" : return "image";
 			default : return "document";
-		}
-	}
-	
-	static private function _getSavePath(type:String, sufix:String = ''):String {
-		switch(type) {
-			case 'image' : return savePathImg + sufix;
-			default : return savePathDoc + sufix;
 		}
 	}
 	
@@ -77,7 +81,7 @@ class Uploader {
 							// Generate new filename
 							var nName:String = Jotun.tick + '_' + Key.GEN(8) + '.' + name.split(".").pop();
 							// save file to disk
-							fileStream = File.write(_getSavePath(type, nName), true);
+							fileStream = File.write(_path + nName, true);
 							files.add(part, new FileInfo(type, name, nName));
 						}
 					}
@@ -97,29 +101,41 @@ class Uploader {
 			fileStream.close();
 		
 		// Iterate all "image" type files
-		if (sizes.length > 0){
-			var image:Image = new Image();
+		if (_sizes != null){
+			var image:IImage = new Image();
 			Dice.Values(files.list, function(v:FileInfo) {
 				if (v.type == "image") {
-					//try {
-						// Generate THUMB for image
-						Dice.Values(sizes, function(s:Dynamic){
-							var p:String = savePathImg + v.output;
-							image.open(p);
-							image.save();
-							image.fit(s.w, s.h);
-							var nname:Array<String> = v.output.split('.');
-							var ext:String = nname.pop();
-							ext = nname.join('.') + '_' + s.w + 'x' + s.h + '.' + ext;
-							image.save(savePathImg + ext);
-						});
-					//}catch(e:Dynamic){
-						//v.error = e;
-					//}
+					v.sizes = [];
+					Dice.All(_sizes, function(p:String, s:Dynamic){
+						var o:String = _path + v.output;
+						image.open(o);
+						if (image.isOutBounds(s.width, s.height)){
+							// Create a copy with new size
+							image.fit(s.width, s.height);
+							o = _rename(o, p);
+							image.save(o);
+							v.sizes.push(o);
+						}else if (s.create){
+							// Create a copy if size is smaller
+							o = _rename(o, p);
+							image.save(o);
+							v.sizes.push(o);
+						}
+					});
+					if (v.sizes != null){
+						v.output = null;
+						image.delete();
+					}
 				}
 			});
 		}
 		
+	}
+	
+	private static function _rename(o:String, p:String):String {
+		var n:Array<String> = o.split('.');
+		n[n.length - 1] = p + '.' + n.pop();
+		return n.join('.');
 	}
 	
 }

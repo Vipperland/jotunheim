@@ -4,19 +4,20 @@
 class jotun_php_file_Uploader {
 	public function __construct(){}
 	static $files;
-	static $savePathImg = "upload/images/";
-	static $savePathDoc = "upload/documents/";
-	static function sizes() { $args = func_get_args(); return call_user_func_array(self::$sizes, $args); }
-	static $sizes;
-	static function set($imgPath, $docPath = null) {
-		jotun_php_file_Uploader::$savePathImg = $imgPath;
-		if($docPath !== null) {
-			jotun_php_file_Uploader::$savePathDoc = $docPath;
-		}
+	static function _sizes() { $args = func_get_args(); return call_user_func_array(self::$_sizes, $args); }
+	static $_sizes;
+	static $_path = "/";
+	static function createPath($q) {
+		$p = "";
+		jotun_utils_Dice::Values(_hx_explode("/", $q), array(new _hx_lambda(array(&$p), "jotun_php_file_Uploader_0"), 'execute'), null);
 	}
-	static function save($optSizes = null) {
-		if($optSizes !== null) {
-			jotun_utils_Dice::Values($optSizes, array(new _hx_lambda(array(), "jotun_php_file_Uploader_0"), 'execute'), null);
+	static function save($path, $sizes = null) {
+		if(jotun_php_file_Uploader::$_path !== $path) {
+			jotun_php_file_Uploader::createPath($path);
+			jotun_php_file_Uploader::$_path = $path;
+		}
+		if($sizes !== null) {
+			jotun_php_file_Uploader::$_sizes = $sizes;
 		}
 		jotun_php_file_Uploader::_verify();
 		return jotun_php_file_Uploader::$files;
@@ -32,16 +33,6 @@ class jotun_php_file_Uploader {
 		}break;
 		}
 	}
-	static function _getSavePath($type, $sufix = null) {
-		if($sufix === null) {
-			$sufix = "";
-		}
-		if($type === "image") {
-			return _hx_string_or_null(jotun_php_file_Uploader::$savePathImg) . _hx_string_or_null($sufix);
-		} else {
-			return _hx_string_or_null(jotun_php_file_Uploader::$savePathDoc) . _hx_string_or_null($sufix);
-		}
-	}
 	static function _verify() {
 		$partName = null;
 		$lastFile = null;
@@ -50,32 +41,34 @@ class jotun_php_file_Uploader {
 		if($fileStream !== null) {
 			$fileStream->close();
 		}
-		if(_hx_field(jotun_php_file_Uploader::$sizes, "length") > 0) {
+		if(_hx_field(_hx_qtype("jotun.php.file.Uploader"), "_sizes") !== null) {
 			$image = new jotun_php_file_Image(null);
 			jotun_utils_Dice::Values(jotun_php_file_Uploader::$files->{"list"}, array(new _hx_lambda(array(&$image), "jotun_php_file_Uploader_3"), 'execute'), null);
 		}
 	}
+	static function _rename($o, $p) {
+		$n = _hx_explode(".", $o);
+		$n[$n->length - 1] = _hx_string_or_null($p) . "." . _hx_string_or_null($n->pop());
+		return $n->join(".");
+	}
 	function __toString() { return 'jotun.php.file.Uploader'; }
 }
 jotun_php_file_Uploader::$files = new jotun_php_file_FileCollection();
-jotun_php_file_Uploader::$sizes = (new _hx_array(array()));
-function jotun_php_file_Uploader_0($v) {
+function jotun_php_file_Uploader_0(&$p, $v) {
 	{
-		$tmp = jotun_php_file_Uploader::$sizes;
-		$tmp1 = _hx_field(jotun_php_file_Uploader::$sizes, "length");
-		$tmp2 = null;
-		if(Std::is($v, _hx_qtype("Array"))) {
-			$tmp3 = null;
-			if(_hx_equal(_hx_field($v, "length"), 1)) {
-				$tmp3 = $v[0];
+		if(strlen($v) > 0) {
+			$p = _hx_string_or_null($p) . _hx_string_or_null($v);
+			$tmp = null;
+			if(!(!file_exists($p))) {
+				$tmp = !is_dir($p);
 			} else {
-				$tmp3 = $v[1];
+				$tmp = true;
 			}
-			$tmp2 = _hx_anonymous(array("w" => $v[0], "h" => $tmp3));
-		} else {
-			$tmp2 = _hx_anonymous(array("w" => $v, "h" => $v));
+			if($tmp) {
+				mkdir($p, 0777);
+			}
+			$p = _hx_string_or_null($p) . "/";
 		}
-		$tmp[$tmp1] = $tmp2;
 	}
 }
 function jotun_php_file_Uploader_1(&$fileStream, &$lastFile, &$partName, $part, $name) {
@@ -105,7 +98,7 @@ function jotun_php_file_Uploader_1(&$fileStream, &$lastFile, &$partName, $part, 
 					$nName1 = Std::string($nName) . "_";
 					$nName2 = _hx_string_or_null($nName1) . _hx_string_or_null(jotun_tools_Key::GEN(8, null, null)) . ".";
 					$nName3 = _hx_string_or_null($nName2) . _hx_string_or_null(_hx_explode(".", $name)->pop());
-					$fileStream = sys_io_File::write(jotun_php_file_Uploader::_getSavePath($type, $nName3), true);
+					$fileStream = sys_io_File::write(_hx_string_or_null(jotun_php_file_Uploader::$_path) . _hx_string_or_null($nName3), true);
 					$tmp1 = jotun_php_file_Uploader::$files;
 					$tmp1->add($part, new jotun_php_file_FileInfo($type, $name, $nName3));
 				}
@@ -125,21 +118,29 @@ function jotun_php_file_Uploader_2(&$fileStream, $bytes, $pos, $len) {
 function jotun_php_file_Uploader_3(&$image, $v) {
 	{
 		if($v->type === "image") {
-			jotun_utils_Dice::Values(jotun_php_file_Uploader::$sizes, array(new _hx_lambda(array(&$image, &$v), "jotun_php_file_Uploader_4"), 'execute'), null);
+			$v->sizes = (new _hx_array(array()));
+			jotun_utils_Dice::All(jotun_php_file_Uploader::$_sizes, array(new _hx_lambda(array(&$image, &$v), "jotun_php_file_Uploader_4"), 'execute'), null);
+			if($v->sizes !== null) {
+				$v->output = null;
+				$image->delete();
+			}
 		}
 	}
 }
-function jotun_php_file_Uploader_4(&$image, &$v, $s) {
+function jotun_php_file_Uploader_4(&$image, &$v, $p, $s) {
 	{
-		$p = _hx_string_or_null(jotun_php_file_Uploader::$savePathImg) . _hx_string_or_null($v->output);
-		$image->open($p);
-		$image->save(null, null);
-		$image->fit(_hx_field($s, "w"), _hx_field($s, "h"));
-		$nname = _hx_explode(".", $v->output);
-		$ext = $nname->pop();
-		$ext1 = _hx_string_or_null($nname->join(".")) . "_";
-		$ext2 = _hx_string_or_null($ext1) . Std::string(_hx_field($s, "w")) . "x";
-		$ext = _hx_string_or_null($ext2) . Std::string(_hx_field($s, "h")) . "." . _hx_string_or_null($ext);
-		$image->save(_hx_string_or_null(jotun_php_file_Uploader::$savePathImg) . _hx_string_or_null($ext), null);
+		$o = _hx_string_or_null(jotun_php_file_Uploader::$_path) . _hx_string_or_null($v->output);
+		$image->open($o);
+		if($image->isOutBounds(_hx_field($s, "width"), _hx_field($s, "height"))) {
+			$image->fit(_hx_field($s, "width"), _hx_field($s, "height"));
+			$o = jotun_php_file_Uploader::_rename($o, $p);
+			$image->save($o, null, null);
+			$v->sizes->push($o);
+		} else {
+			if(_hx_field($s, "create")) {
+				$o = jotun_php_file_Uploader::_rename($o, $p);
+				$image->save($o, null, null);
+			}
+		}
 	}
 }

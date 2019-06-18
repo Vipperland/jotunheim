@@ -43,7 +43,7 @@ class jotun_net_Header {
 	public function setJSON($data = null, $encode = null) {
 		$this->content(jotun_net_Header::$JSON);
 		if($data !== null) {
-			$data = jotun_serial_JsonTool::stringfy($data, null, "\x09");
+			$data = jotun_serial_JsonTool::stringify($data, null, "\x09");
 			$this->writeData($data, $encode);
 		}
 	}

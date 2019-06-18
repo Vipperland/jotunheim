@@ -35,7 +35,7 @@ class jotun_serial_IOTools {
 		}
 	}
 	static function jsonEncode($o, $rep = null, $space = null) {
-		return jotun_serial_JsonTool::stringfy($o, $rep, $space);
+		return jotun_serial_JsonTool::stringify($o, $rep, $space);
 	}
 	static function jsonDecode($q) {
 		return haxe_Json::phpJsonDecode($q);

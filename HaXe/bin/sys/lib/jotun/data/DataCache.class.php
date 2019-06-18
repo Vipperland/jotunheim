@@ -199,7 +199,7 @@ class jotun_data_DataCache implements jotun_data_IDataCache{
 		return $this;
 	}
 	public function json($print = null) {
-		$result = jotun_serial_JsonTool::stringfy($this->_DB, null, " ");
+		$result = jotun_serial_JsonTool::stringify($this->_DB, null, " ");
 		if($print) {
 			php_Lib::hprint($result);
 		}
