@@ -1,9 +1,7 @@
 package;
 import jotun.Jotun;
 import jotun.db.Token;
-import jotun.db.objects.IDataTable;
 import jotun.php.file.Uploader;
-import jotun.serial.JsonTool;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -17,11 +15,10 @@ class Test_PHP {
 		//var img:Image = new Image('../assets/img/image.jpg');
 		//img.fit(300,300).save('../assets/img/test.jpg');
 		//trace('===================================================== Headers');
-		trace(Jotun.domain.data);
-		Dice.All(Jotun.domain.data, function(p:String, v:String){
+		Dice.All(Jotun.header.getClientHeaders(), function(p:String, v:String){
 			trace(p + ': ' + v);
 		});
-		trace('===================================================== Parameters: GET/POST');
+		trace('===================================================== Parameters: (Method:' + Jotun.domain.getRequestMethod() + ')');
 		Dice.All(Jotun.domain.params, function(p:String, v:String){
 			trace(p + ': ' + v);
 		});

@@ -15,7 +15,7 @@ extern class Connection
 	public function getAvailableDrivers() : NativeArray;
 	public function lastInsertId(?name : String) : String;
 	public function prepare(statement : String, driver_options : NativeArray) : Statement;
-	public function query(statement : String, mode : Int, classObj:Dynamic) : Statement;
+	public function query(statement : String, mode : Int, ?classObj:Dynamic) : Statement;
 	public function quote(String : String, ?parameter_type : Int = 2) : String;
 	public function rollBack() : Bool;
 	public function setAttribute(attribute : Int, value : Dynamic) : Bool;

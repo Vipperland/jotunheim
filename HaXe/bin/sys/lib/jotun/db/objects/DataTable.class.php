@@ -11,9 +11,9 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 	}}
 	public $_name;
 	public $_gate;
-	public $_description;
 	public $_fields;
 	public $_class;
+	public $_info;
 	public $_restrict;
 	public function _checkRestriction() {
 		$r = $this->_fields;
@@ -37,26 +37,34 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 		}
 		return $r;
 	}
-	public $description;
-	public function get_description() {
+	public function getInfo() {
 		$_gthis = $this;
-		if(_hx_field($this, "_description") === null) {
-			$this->_description = _hx_anonymous(array());
-			$r = $this->_gate->schema($this->_name)->execute(null, null, null)->result;
+		haxe_Log::trace(1, _hx_anonymous(array("fileName" => "DataTable.hx", "lineNumber" => 33, "className" => "jotun.db.objects.DataTable", "methodName" => "getInfo")));
+		if(_hx_field($this, "_info") === null) {
+			$this->_info = _hx_anonymous(array());
+			$r = $this->_gate->schema($this->_name);
 			jotun_utils_Dice::Values($r, array(new _hx_lambda(array(&$_gthis), "jotun_db_objects_DataTable_0"), 'execute'), null);
 		}
-		return $this->_description;
+		return $this->_info;
 	}
 	public $name;
 	public function get_name() {
 		return $this->_name;
 	}
-	public $autoIncrement;
-	public function get_autoIncrement() {
+	public function getAutoIncrement() {
 		$cmd = $this->_gate->builder;
-		$cmd1 = $cmd->find("AUTO_INCREMENT", "INFORMATION_SCHEMA.TABLES", jotun_db_Clause::EQUAL("TABLE_NAME", $this->_name), null, null);
-		if($cmd1->result->length > 0) {
-			return Std::parseInt(_hx_field($cmd1->result[0], "AUTO_INCREMENT"));
+		$cmd1 = jotun_db_Clause::EQUAL("TABLE_SCHEMA", $this->_gate->getName());
+		$cmd2 = jotun_db_Clause::hAND((new _hx_array(array($cmd1, jotun_db_Clause::EQUAL("TABLE_NAME", $this->_name)))));
+		$cmd3 = jotun_db_Limit::MAX(1);
+		$cmd4 = $cmd->find("AUTO_INCREMENT", "INFORMATION_SCHEMA.TABLES", $cmd2, null, $cmd3)->execute(null, null, null);
+		$tmp = null;
+		if($cmd4->result !== null) {
+			$tmp = $cmd4->result->length > 0;
+		} else {
+			$tmp = false;
+		}
+		if($tmp) {
+			return Std::parseInt(_hx_field($cmd4->result[0], "AUTO_INCREMENT"));
 		} else {
 			return 0;
 		}
@@ -146,7 +154,7 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 		return jotun_tools_Utils::getValidOne($tmp, 0);
 	}
 	public function optimize($paramaters) {
-		$desc = $this->get_description();
+		$desc = $this->getInfo();
 		jotun_utils_Dice::All($paramaters, array(new _hx_lambda(array(&$desc, &$paramaters), "jotun_db_objects_DataTable_2"), 'execute'), null);
 		return $paramaters;
 	}
@@ -163,12 +171,12 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 		return $this->_gate->builder->fKey($this->_name, $id, null, null, null, null, null)->execute(null, null, null);
 	}
 	public function hasColumn($name) {
-		$d = $this->get_description();
-		return _hx_has_field($d, $name);
+		$o = $this->getInfo();
+		return _hx_has_field($o, $name);
 	}
 	public function getColumn($name) {
 		if($this->hasColumn($name)) {
-			return Reflect::field($this->_description, $name);
+			return Reflect::field($this->getInfo(), $name);
 		} else {
 			return null;
 		}
@@ -186,12 +194,12 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
-	static $__properties__ = array("get_autoIncrement" => "get_autoIncrement","get_name" => "get_name","get_description" => "get_description");
+	static $__properties__ = array("get_name" => "get_name");
 	function __toString() { return 'jotun.db.objects.DataTable'; }
 }
 function jotun_db_objects_DataTable_0(&$_gthis, $v) {
 	{
-		$o = $_gthis->_description;
+		$o = $_gthis->_info;
 		$field = _hx_field($v, "COLUMN_NAME");
 		$value = new jotun_db_objects_Column($v);
 		$o->{$field} = $value;

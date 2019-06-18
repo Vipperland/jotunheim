@@ -1,7 +1,7 @@
 package jotun.db;
-import jotun.db.tools.ICommand;
-import jotun.db.objects.IDataTable;
 import jotun.db.Token;
+import jotun.db.objects.IDataTable;
+import jotun.db.tools.ICommand;
 import jotun.db.tools.IExtCommand;
 import jotun.db.tools.IQueryBuilder;
 import jotun.errors.IError;
@@ -39,6 +39,12 @@ interface IGate {
 	public function isOpen () : Bool;
 	
 	/**
+	   Name of Selected database
+	   @return
+	**/
+	public function getName():String;
+	
+	/**
 	 * Open a connection
 	 * @param	token
 	 * @return
@@ -68,7 +74,7 @@ interface IGate {
 	 * @param	table
 	 * @return
 	 */
-	public function schema (?table:Dynamic) : IExtCommand;
+	public function schema (?table:Dynamic) : Array<Dynamic>;
 	
 	/**
 	 * Shotcut to table statements and methods
@@ -97,5 +103,16 @@ interface IGate {
 	 */
 	public function ifTableExists(table:String):Bool;
 	
+	/**
+	   Get name of all tables in the selected database
+	   @return
+	**/
+	public function getTableNames():Array<String>;
+	
+	/**
+	   Get all DataTable objects from the selected database
+	   @return
+	**/
+	public function getTables():Dynamic;
 	
 }

@@ -26,6 +26,9 @@ class jotun_db_Gate implements jotun_db_IGate{
 	public function get_log() {
 		return $this->_log;
 	}
+	public function getName() {
+		return $this->_token->db;
+	}
 	public function isOpen() {
 		if($this->_db !== null) {
 			return $this->get_errors()->length === 0;
@@ -103,7 +106,7 @@ class jotun_db_Gate implements jotun_db_IGate{
 		$clausule = jotun_db_Clause::EQUAL("TABLE_SCHEMA", $this->_token->db);
 		$clausule1 = jotun_db_Clause::hAND((new _hx_array(array($clausule, jotun_db_Clause::hOR($tables)))));
 		jotun_utils_Dice::Values($table, array(new _hx_lambda(array(&$tables), "jotun_db_Gate_0"), 'execute'), null);
-		return $this->builder->find("*", "INFORMATION_SCHEMA.COLUMNS", $clausule1, null, null)->execute(null, null, null);
+		return $this->builder->find("*", "INFORMATION_SCHEMA.COLUMNS", $clausule1, null, null)->execute(null, null, null)->result;
 	}
 	public function insertedId() {
 		return Std::parseInt($this->_db->lastInsertId(null));
@@ -129,10 +132,19 @@ class jotun_db_Gate implements jotun_db_IGate{
 		}
 		return Reflect::field($this->_tables, $table);
 	}
+	public function getTableNames() {
+		$r = (new _hx_array(array()));
+		jotun_utils_Dice::Values($this->query("show tables", null)->execute(null, null, null)->result, array(new _hx_lambda(array(&$r), "jotun_db_Gate_1"), 'execute'), null);
+		return $r;
+	}
+	public function getTables() {
+		$_gthis = $this;
+		$r = _hx_anonymous(array());
+		jotun_utils_Dice::Values($this->getTableNames(), array(new _hx_lambda(array(&$_gthis, &$r), "jotun_db_Gate_2"), 'execute'), null);
+		return $r;
+	}
 	public function ifTableExists($table) {
-		$a = $this->builder;
-		$a1 = jotun_db_Clause::EQUAL("TABLE_NAME", $table);
-		return $a->find("COUNT(*)", "information_schema.TABLES", $a1, null, jotun_db_Limit::$ONE)->execute(null, null, null)->length(null) === 1;
+		return $this->getTableNames()->indexOf($table, null) !== -1;
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))
@@ -152,5 +164,16 @@ function jotun_db_Gate_0(&$tables, $v) {
 		$tables1 = $tables->length;
 		$tmp = jotun_db_Clause::EQUAL("TABLE_NAME", $v);
 		$tables[$tables1] = $tmp;
+	}
+}
+function jotun_db_Gate_1(&$r, $v) {
+	{
+		jotun_utils_Dice::Values($v, (property_exists($r, "push") ? $r->push: array($r, "push")), null);
+	}
+}
+function jotun_db_Gate_2(&$_gthis, &$r, $v) {
+	{
+		$value = $_gthis->table($v);
+		$r->{$v} = $value;
 	}
 }

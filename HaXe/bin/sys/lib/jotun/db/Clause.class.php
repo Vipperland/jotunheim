@@ -22,7 +22,6 @@ class jotun_db_Clause {
 		else
 			throw new HException('Unable to call <'.$m.'>');
 	}
-	static $_IDX = 0;
 	static function hOR($conditions) {
 		return new jotun_db_Clause($conditions, " || ");
 	}
@@ -30,69 +29,70 @@ class jotun_db_Clause {
 		return new jotun_db_Clause($conditions, " && ");
 	}
 	static function LIKE($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} LIKE ?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} LIKE ?", "value" => $value));
 	}
 	static function NOT_LIKE($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} NOT LIKE ?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} NOT LIKE ?", "value" => $value));
 	}
 	static function ID($value) {
-		return _hx_anonymous(array("param" => "id", "condition" => "{{p}}=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => "id", "condition" => "{{p}}=?", "value" => $value));
 	}
 	static function EQUAL($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => $value));
 	}
 	static function DIFFERENT($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}!=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}!=?", "value" => $value));
+	}
+	static function CUSTOM($condition) {
+		return _hx_anonymous(array("param" => "", "condition" => $condition, "value" => null, "skip" => true));
 	}
 	static function IS_NULL($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IS NULL", "value" => null, "i" => jotun_db_Clause::$_IDX++, "skip" => true));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IS NULL", "value" => null, "skip" => true));
 	}
 	static function NOT_NULL($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} != NULL", "value" => null, "i" => jotun_db_Clause::$_IDX++, "skip" => true));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} != NULL", "value" => null, "skip" => true));
 	}
 	static function IN($param, $values) {
 		if(Std::is($values, _hx_qtype("Array"))) {
 			$q = (new _hx_array(array()));
 			jotun_utils_Dice::All($values, array(new _hx_lambda(array(&$q), "jotun_db_Clause_0"), 'execute'), null);
-			$tmp = "{{p}} IN (" . _hx_string_or_null($q->join(",")) . ")";
-			return _hx_anonymous(array("param" => $param, "condition" => $tmp, "value" => $values, "i" => jotun_db_Clause::$_IDX++));
+			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IN (" . _hx_string_or_null($q->join(",")) . ")", "value" => $values));
 		} else {
-			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IN (?)", "value" => $values, "i" => jotun_db_Clause::$_IDX++));
+			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} IN (?)", "value" => $values));
 		}
 	}
 	static function NOT_IN($param, $values) {
 		if(Std::is($values, _hx_qtype("Array"))) {
 			$q = (new _hx_array(array()));
 			jotun_utils_Dice::All($values, array(new _hx_lambda(array(&$q), "jotun_db_Clause_1"), 'execute'), null);
-			$tmp = "{{p}} NOT IN (" . _hx_string_or_null($q->join(",")) . ")";
-			return _hx_anonymous(array("param" => $param, "condition" => $tmp, "value" => $values, "i" => jotun_db_Clause::$_IDX++));
+			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} NOT IN (" . _hx_string_or_null($q->join(",")) . ")", "value" => $values));
 		} else {
-			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} NOT IN (?)", "value" => $values, "i" => jotun_db_Clause::$_IDX++));
+			return _hx_anonymous(array("param" => $param, "condition" => "{{p}} NOT IN (?)", "value" => $values));
 		}
 	}
 	static function REGEXP($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} REGEXP ?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} REGEXP ?", "value" => $value));
 	}
 	static function TRUE($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => true, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => true));
 	}
 	static function FALSE($param) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => false, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}=?", "value" => false));
 	}
 	static function DIFF($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}!=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}!=?", "value" => $value));
 	}
 	static function LESS($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}<?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}<?", "value" => $value));
 	}
 	static function LESS_OR($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}<=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}<=?", "value" => $value));
 	}
 	static function GREATER($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}>?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}>?", "value" => $value));
 	}
 	static function GREATER_OR($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}>=?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}}>=?", "value" => $value));
 	}
 	static function IN_RANGE($param, $from, $to) {
 		$tmp = jotun_db_Clause::GREATER($param, $from);
@@ -115,10 +115,10 @@ class jotun_db_Clause {
 		}
 	}
 	static function BIT($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} & ?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "{{p}} & ?", "value" => $value));
 	}
 	static function BIT_NOT($param, $value) {
-		return _hx_anonymous(array("param" => $param, "condition" => "~{{p}} & ?", "value" => $value, "i" => jotun_db_Clause::$_IDX++));
+		return _hx_anonymous(array("param" => $param, "condition" => "~{{p}} & ?", "value" => $value));
 	}
 	function __toString() { return 'jotun.db.Clause'; }
 }

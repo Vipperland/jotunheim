@@ -63,19 +63,19 @@ class Domain implements IDomain {
 		#if js
 		
 			var l:Location = Browser.window.location;
-			var p:String = l.pathname;
 			host = l.hostname;
 			port = l.port;
 			hash = new Fragments(l.hash.substr(1), "/");
 			params = Utils.getQueryParams(l.href);
+			url = new Fragments(l.pathname, "/");
 		
 		#elseif php
 		
 			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
+			port = data.SERVER_PORT;
 			server = Web.getCwd();
 			host = Web.getHostName();
 			client = Web.getClientIP();
-			port = untyped __php__("$_SERVER['SERVER_PORT']");
 			
 			var boundary:String = _getMultipartKey();
 			
@@ -90,11 +90,9 @@ class Domain implements IDomain {
 				_getRawData(boundary, params);
 			}
 			
-			var p:String = untyped __php__("$_SERVER['SCRIPT_NAME']");
+			url = new Fragments(data.SCRIPT_NAME, "/");
 			
 		#end
-		
-		url = new Fragments(p, "/");
 		
 	}
 	
@@ -111,6 +109,14 @@ class Domain implements IDomain {
 		}
 		
 	#elseif php
+		
+		public function getRequestMethod():String {
+			return data.REQUEST_METHOD.toUpperCase();
+		}
+		
+		public function isRequestMethod(q:String):Bool {
+			return getRequestMethod() == q.toUpperCase();
+		}
 		
 		public function require(params:Array<String>):Bool {
 			var r:Bool = true;
@@ -156,7 +162,6 @@ class Domain implements IDomain {
 				data = {};
 			}
 			var input:String = untyped __php__ ("file_get_contents('php://input')");
-			
 			var result:Array<String> = input.split(boundary);
 			Dice.Values(result, function(v:String) {
 				if (v == null || v.length == 0) {
@@ -186,13 +191,15 @@ class Domain implements IDomain {
 		}
 		
 		private function _getMultipartKey() : String {
-			var a : NativeArray = untyped __php__("$_POST");
-			if(untyped __call__("get_magic_quotes_gpc"))
-				untyped __php__("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
-			var post = Lib.hashOfAssociativeArray(a);
-			for (key in post.keys()) {
-				if (key.indexOf("Content-Disposition:_form-data;_name") != -1)
-					return key;
+			if(isRequestMethod('POST')){
+				var a : NativeArray = untyped __php__("$_POST");
+				if(untyped __call__("get_magic_quotes_gpc"))
+					untyped __php__("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+				var post = Lib.hashOfAssociativeArray(a);
+				for (key in post.keys()) {
+					if (key.indexOf("Content-Disposition:_form-data;_name") != -1)
+						return key;
+				}
 			}
 			return null;
 		}

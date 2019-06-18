@@ -52,6 +52,10 @@ interface IDomain {
 		
 		public function require(params:Array<String>):Bool;
 		
+		public function getRequestMethod():String;
+		
+		public function isRequestMethod(q:String):Bool;
+		
 	#end
 	
 }

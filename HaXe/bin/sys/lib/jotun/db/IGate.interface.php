@@ -9,6 +9,7 @@ interface jotun_db_IGate {
 	//;
 	//;
 	function isOpen();
+	function getName();
 	function open($token, $log = null);
 	function prepare($query, $parameters = null, $options = null);
 	function query($query, $parameters = null);
@@ -17,4 +18,6 @@ interface jotun_db_IGate {
 	function setPdoAttributes($value);
 	function insertedId();
 	function ifTableExists($table);
+	function getTableNames();
+	function getTables();
 }

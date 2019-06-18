@@ -16,12 +16,12 @@ interface IDataTable {
 	/**
 	 * Current AUTO_INCREMENT value for table
 	 */
-	public var autoIncrement(get, null):UInt;
+	public function getAutoIncrement():Int;
 	
 	/**
 	 * All table fields description
 	 */
-	public var description(get_description, null):Dynamic;
+	public function getInfo():Dynamic;
 	
 	/**
 	 * Default Constructor Object for SELECT

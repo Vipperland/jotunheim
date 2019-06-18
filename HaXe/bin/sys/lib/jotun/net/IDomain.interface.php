@@ -12,4 +12,6 @@ interface jotun_net_IDomain {
 	//;
 	//;
 	function hrequire($params);
+	function getRequestMethod();
+	function isRequestMethod($q);
 }

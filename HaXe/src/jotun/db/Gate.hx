@@ -1,22 +1,22 @@
 package jotun.db;
-import php.Lib;
 import jotun.data.IDataSet;
-import jotun.db.tools.Command;
 import jotun.db.IGate;
-import jotun.db.objects.IDataTable;
-import jotun.db.objects.DataTable;
-import jotun.db.pdo.Database;
-import jotun.db.pdo.Connection;
-import jotun.db.pdo.Statement;
 import jotun.db.Token;
+import jotun.db.objects.DataTable;
+import jotun.db.objects.IDataTable;
+import jotun.db.pdo.Connection;
+import jotun.db.pdo.Database;
+import jotun.db.pdo.Statement;
+import jotun.db.tools.Command;
+import jotun.db.tools.ExtCommand;
 import jotun.db.tools.ICommand;
 import jotun.db.tools.IExtCommand;
 import jotun.db.tools.IQueryBuilder;
 import jotun.db.tools.QueryBuilder;
-import jotun.db.tools.ExtCommand;
 import jotun.errors.Error;
 import jotun.errors.IError;
 import jotun.utils.Dice;
+import php.Lib;
 
 /**
  * ...
@@ -45,6 +45,10 @@ class Gate implements IGate {
 	
 	public var log(get, null):Array<String>;
 	public function get_log():Array<String> { return _log; }
+	
+	public function getName():String {
+		return _token.db;
+	}
 	
 	public function new() {
 		_errors = [];
@@ -87,10 +91,11 @@ class Gate implements IGate {
 		return cast command;
 	}
 	
-	public function schema(?table:Dynamic):IExtCommand {
+	public function schema(?table:Dynamic):Array<Dynamic> {
 		var r:IDataSet = null;
-		if (!Std.is(table, Array)) table = [table];
-		
+		if (!Std.is(table, Array)) {
+			table = [table];
+		}
 		var tables:Array<Dynamic> = [];
 		var clausule:Clause = Clause.AND([
 			Clause.EQUAL('TABLE_SCHEMA', _token.db),
@@ -99,7 +104,7 @@ class Gate implements IGate {
 		Dice.Values(table, function(v:String) {
 			tables[tables.length] = Clause.EQUAL('TABLE_NAME', v);
 		});
-		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute();
+		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute().result;
 	}
 	
 	public function insertedId():UInt {
@@ -115,12 +120,30 @@ class Gate implements IGate {
 	}
 	
 	public function table(table:String):IDataTable {
-		if (!Reflect.hasField(_tables, table)) Reflect.setField(_tables, table, new DataTable(table, this));
+		if (!Reflect.hasField(_tables, table)) {
+			Reflect.setField(_tables, table, new DataTable(table, this));
+		}
 		return Reflect.field(_tables, table);
 	}
 	
+	public function getTableNames():Array<String> {
+		var r:Array<String> = [];
+		Dice.Values(query("show tables").execute().result, function(v:Dynamic){
+			Dice.Values(v, r.push);
+		});
+		return r;
+	}
+	
+	public function getTables():Dynamic {
+		var r:Dynamic = {};
+		Dice.Values(getTableNames(), function(v:String){
+			Reflect.setField(r, v, table(v));
+		});
+		return r;
+	}
+	
 	public function ifTableExists(table:String):Bool {
-		return builder.find("COUNT(*)", "information_schema.TABLES", Clause.EQUAL("TABLE_NAME", table), null, Limit.ONE).execute().length() == 1;
+		return getTableNames().indexOf(table) != -1;
 	}
 	
 }

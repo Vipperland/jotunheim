@@ -57,7 +57,7 @@ class ExtCommand implements IExtCommand {
 			}
 			try {
 				if (type != null){
-					if (!Std.is(type, String)){
+					if (!Std.is(type, Float) && !Std.is(type, String)){
 						type = Type.getClassName(type).split('.').join('_');
 					}
 				}else {

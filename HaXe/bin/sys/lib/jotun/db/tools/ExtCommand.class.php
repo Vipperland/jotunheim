@@ -34,7 +34,13 @@ class jotun_db_tools_ExtCommand implements jotun_db_tools_IExtCommand{
 			}
 			try {
 				if($type !== null) {
-					if(!Std::is($type, _hx_qtype("String"))) {
+					$tmp = null;
+					if(!Std::is($type, _hx_qtype("Float"))) {
+						$tmp = !Std::is($type, _hx_qtype("String"));
+					} else {
+						$tmp = false;
+					}
+					if($tmp) {
 						$type = _hx_explode(".", Type::getClassName($type))->join("_");
 					}
 				} else {
@@ -59,10 +65,10 @@ class jotun_db_tools_ExtCommand implements jotun_db_tools_IExtCommand{
 					}
 					$statement2 = null;
 				} else {
-					$tmp = $this->get_errors();
-					$tmp1 = $this->get_errors()->length;
-					$tmp2 = $statement2->errorCode();
-					$tmp[$tmp1] = new jotun_errors_Error($tmp2, haxe_Json::phpJsonEncode($statement2->errorInfo(), null, null), null);
+					$tmp1 = $this->get_errors();
+					$tmp2 = $this->get_errors()->length;
+					$tmp3 = $statement2->errorCode();
+					$tmp1[$tmp2] = new jotun_errors_Error($tmp3, haxe_Json::phpJsonEncode($statement2->errorInfo(), null, null), null);
 				}
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) && $__hx__e->getCode() == null ? $__hx__e->e : $__hx__e;
@@ -71,21 +77,21 @@ class jotun_db_tools_ExtCommand implements jotun_db_tools_IExtCommand{
 					if(Std::is($e, _hx_qtype("String"))) {
 						_hx_array_assign($this->get_errors(), $this->get_errors()->length, new jotun_errors_Error(0, $e, null));
 					} else {
-						$tmp3 = $this->get_errors();
-						$tmp4 = $this->get_errors()->length;
-						$tmp5 = $e->getCode();
-						$tmp3[$tmp4] = new jotun_errors_Error($tmp5, $e->getMessage(), null);
+						$tmp4 = $this->get_errors();
+						$tmp5 = $this->get_errors()->length;
+						$tmp6 = $e->getCode();
+						$tmp4[$tmp5] = new jotun_errors_Error($tmp6, $e->getMessage(), null);
 					}
 				}
 			}
 			if($this->_log !== null) {
-				$tmp6 = null;
+				$tmp7 = null;
 				if($this->success) {
-					$tmp6 = "[1]";
+					$tmp7 = "[1]";
 				} else {
-					$tmp6 = "[0]";
+					$tmp7 = "[0]";
 				}
-				$this->_log[$this->_log->length] = _hx_string_or_null($tmp6) . " " . _hx_string_or_null($this->log());
+				$this->_log[$this->_log->length] = _hx_string_or_null($tmp7) . " " . _hx_string_or_null($this->log());
 			}
 		} else {
 			_hx_array_assign($this->get_errors(), $this->get_errors()->length, new jotun_errors_Error(0, "A connection with database is required.", null));

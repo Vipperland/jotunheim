@@ -17,10 +17,10 @@ class jotun_net_Domain implements jotun_net_IDomain{
 	public $params;
 	public function _parseURI() {
 		$this->data = php_Lib::objectOfAssociativeArray($_SERVER);
+		$this->port = $this->data->SERVER_PORT;
 		$this->server = _hx_string_or_null(dirname($_SERVER["SCRIPT_FILENAME"])) . "/";
 		$this->host = $_SERVER['SERVER_NAME'];
 		$this->client = $_SERVER['REMOTE_ADDR'];
-		$this->port = $_SERVER['SERVER_PORT'];
 		$boundary = $this->_getMultipartKey();
 		if($this->data->CONTENT_TYPE === "application/json") {
 			$this->input = haxe_Json::phpJsonDecode(file_get_contents('php://input'));
@@ -31,8 +31,14 @@ class jotun_net_Domain implements jotun_net_IDomain{
 			$boundary = _hx_array_get(_hx_explode("\x0D\x0A", $boundary), 0);
 			$this->_getRawData($boundary, $this->params);
 		}
-		$p = $_SERVER['SCRIPT_NAME'];
-		$this->url = new jotun_data_Fragments($p, "/");
+		$this->url = new jotun_data_Fragments($this->data->SCRIPT_NAME, "/");
+	}
+	public function getRequestMethod() {
+		return strtoupper($this->data->REQUEST_METHOD);
+	}
+	public function isRequestMethod($q) {
+		$tmp = $this->getRequestMethod();
+		return $tmp === strtoupper($q);
 	}
 	public function hrequire($params) {
 		$_gthis = $this;
@@ -57,19 +63,21 @@ class jotun_net_Domain implements jotun_net_IDomain{
 		return $data;
 	}
 	public function _getMultipartKey() {
-		$a = $_POST;
-		if(get_magic_quotes_gpc()) {
-			reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v);
-		}
-		$post = php_Lib::hashOfAssociativeArray($a);
-		{
-			$key = $post->keys();
-			while($key->hasNext()) {
-				$key1 = $key->next();
-				if(_hx_index_of($key1, "Content-Disposition:_form-data;_name", null) !== -1) {
-					return $key1;
+		if($this->isRequestMethod("POST")) {
+			$a = $_POST;
+			if(get_magic_quotes_gpc()) {
+				reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v);
+			}
+			$post = php_Lib::hashOfAssociativeArray($a);
+			{
+				$key = $post->keys();
+				while($key->hasNext()) {
+					$key1 = $key->next();
+					if(_hx_index_of($key1, "Content-Disposition:_form-data;_name", null) !== -1) {
+						return $key1;
+					}
+					unset($key1);
 				}
-				unset($key1);
 			}
 		}
 		return null;
