@@ -4,7 +4,7 @@
 class Test_PHP {
 	public function __construct(){}
 	static function main() {
-		haxe_Log::trace(jotun_Jotun::$domain->data->HTTP_AUTHORIZATION, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 20, "className" => "Test_PHP", "methodName" => "main")));
+		haxe_Log::trace(jotun_Jotun::$domain->data, _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 20, "className" => "Test_PHP", "methodName" => "main")));
 		jotun_utils_Dice::All(jotun_Jotun::$domain->data, array(new _hx_lambda(array(), "Test_PHP_0"), 'execute'), null);
 		haxe_Log::trace("===================================================== Parameters: GET/POST", _hx_anonymous(array("fileName" => "Test_PHP.hx", "lineNumber" => 24, "className" => "Test_PHP", "methodName" => "main")));
 		jotun_utils_Dice::All(jotun_Jotun::$domain->params, array(new _hx_lambda(array(), "Test_PHP_1"), 'execute'), null);
