@@ -2666,12 +2666,11 @@ jotun_net_Domain.__interfaces__ = [jotun_net_IDomain];
 jotun_net_Domain.prototype = {
 	_parseURI: function() {
 		var l = window.location;
-		var p = l.pathname;
 		this.host = l.hostname;
 		this.port = l.port;
 		this.hash = new jotun_data_Fragments(HxOverrides.substr(l.hash,1,null),"/");
 		this.params = jotun_tools_Utils.getQueryParams(l.href);
-		this.url = new jotun_data_Fragments(p,"/");
+		this.url = new jotun_data_Fragments(l.pathname,"/");
 	}
 	,allocate: function(expire) {
 		if(expire == null) {
@@ -4253,7 +4252,7 @@ jotun_data_DataCache.prototype = {
 		return this;
 	}
 	,json: function(print) {
-		var result = jotun_serial_JsonTool.stringfy(this._DB,null," ");
+		var result = jotun_serial_JsonTool.stringify(this._DB,null," ");
 		if(print) {
 			if(print) {
 				haxe_Log.trace(result,{ fileName : "DataCache.hx", lineNumber : 210, className : "jotun.data.DataCache", methodName : "json"});
@@ -7519,7 +7518,7 @@ jotun_serial_IOTools.decodeBase64 = function(q,json) {
 	}
 };
 jotun_serial_IOTools.jsonEncode = function(o,rep,space) {
-	return jotun_serial_JsonTool.stringfy(o,rep,space);
+	return jotun_serial_JsonTool.stringify(o,rep,space);
 };
 jotun_serial_IOTools.jsonDecode = function(q) {
 	return JSON.parse(q);
@@ -7554,7 +7553,7 @@ jotun_serial_JsonTool.customReplacer = function(a,b) {
 		return b;
 	}
 };
-jotun_serial_JsonTool.stringfy = function(o,replacer,space) {
+jotun_serial_JsonTool.stringify = function(o,replacer,space) {
 	var printer = new jotun_serial_JsonTool(replacer != null ? replacer : jotun_serial_JsonTool.customReplacer,space);
 	printer.write("",o);
 	return printer.buf.b;

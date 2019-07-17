@@ -122,7 +122,8 @@ class Jotun {
 				//Automator._init();
 				log("Jotun => LOADING...", 1);
 				Reflect.deleteField(Jotun, '_preInit');
-				if (Browser.document.readyState == 'complete'){
+				var state:String = Browser.document.readyState;
+				if (state == 'complete' || state == 'interactive'){
 					_loadController(null);
 				}
 			}

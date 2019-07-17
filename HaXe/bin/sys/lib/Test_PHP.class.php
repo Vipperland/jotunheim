@@ -13,13 +13,13 @@ class Test_PHP {
 		$tmp1 = jotun_tools_Utils::sruString(jotun_Jotun::$domain->input);
 		$buff->push($tmp1);
 		$buff->push("===================================================== Files");
-		$buff->push(jotun_php_file_Uploader::save("./uploads/", _hx_anonymous(array("thumb" => _hx_anonymous(array("width" => 240, "height" => 160, "create" => true)), "small" => _hx_anonymous(array("width" => 480, "height" => 320, "create" => true)), "medium" => _hx_anonymous(array("width" => 960, "height" => 640, "create" => true)), "large" => _hx_anonymous(array("width" => 1920, "height" => 1280, "create" => true)))))->{"list"});
-		$buff->push("===================================================== Database Handshake");
+		$buff->push(jotun_php_file_Uploader::save("./uploads/", _hx_anonymous(array("thumb" => _hx_anonymous(array("width" => 240, "height" => 160, "create" => true)), "small" => _hx_anonymous(array("width" => 480, "height" => 320, "create" => true)), "medium" => _hx_anonymous(array("width" => 960, "height" => 640, "create" => true)), "large" => _hx_anonymous(array("width" => 1280, "height" => 960, "create" => true)))))->{"list"});
+		$buff->push("===================================================== Database Connect");
 		$tmp2 = jotun_Jotun::$gate;
-		$tmp2->open(jotun_db_Token::localhost("decorador", null, null, null), true);
+		$tmp2->open(jotun_db_Token::localhost("rp_afterfall", null, null, null), true);
 		if(jotun_Jotun::$gate->isOpen()) {
 			jotun_Jotun::$gate->setPdoAttributes(true);
-			$buff->push("Successful Handshake!");
+			$buff->push("Successful!");
 		} else {
 			$tmp3 = jotun_Jotun::$gate->get_errors();
 			$buff->push($tmp3);

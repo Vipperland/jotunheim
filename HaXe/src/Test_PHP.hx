@@ -45,17 +45,17 @@ class Test_PHP {
 				create:true,
 			},
 			large:{
-				width:1920,
-				height:1280,
+				width:1280,
+				height:960,
 				create:true,
 			},
 		}).list);
 		
-		buff.push('===================================================== Database Handshake');
-		Jotun.gate.open(Token.localhost('decorador'), true);
+		buff.push('===================================================== Database Connect');
+		Jotun.gate.open(Token.localhost('rp_afterfall'), true);
 		if (Jotun.gate.isOpen()){
 			Jotun.gate.setPdoAttributes(true);
-			buff.push('Successful Handshake!');
+			buff.push('Successful!');
 		}else{
 			buff.push(Jotun.gate.errors);
 		}

@@ -140,6 +140,7 @@ function jotun_php_file_Uploader_4(&$image, &$v, $p, $s) {
 			if(_hx_field($s, "create")) {
 				$o = jotun_php_file_Uploader::_rename($o, $p);
 				$image->save($o, null, null);
+				$v->sizes->push($o);
 			}
 		}
 	}
