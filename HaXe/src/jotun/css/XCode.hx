@@ -213,8 +213,15 @@ class XCode {
 		css.build(); // Apply changes / Append to ScriptElement
 	}
 	
-	static public function style(group:String, value:String):Void {
-		css.add(group + '{' + value + '}');
+	static public function style(selector:String, value:Dynamic, ?mode:String):Void {
+		if (!Std.is(value, String)){
+			var r:String = '';
+			Dice.All(value, function(p:String, v:Dynamic) {
+				r += (r == '' ? '' : ';') + (p + ': ' + v);
+			});
+			value = r;
+		}
+		css.add(selector + '{' + value + '}', mode);
 	}
 	
 	static public function apply():Void {

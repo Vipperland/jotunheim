@@ -316,18 +316,6 @@ StringTools.lpad = function(s,c,l) {
 var Test_$JS = function() { };
 Test_$JS.__name__ = ["Test_JS"];
 Test_$JS.main = function() {
-	jotun_gaming_dataform_DataCollection.map(jotun_gaming_dataform_DataObject,"test",["name","email"]);
-	jotun_gaming_dataform_DataCollection.map(jotun_gaming_dataform_DataObject,"info",["color"]);
-	var t = ["test 000001 0:alpha|1:user@alpha.com","@info 0:yellow","@info 0:blue","test 000002 0:beta|1:user@beta.com","@info 0:gray","test 000003 0:gama|1:user@gama.com","@info 0:cyan","test 000004 0:omega|1:user@omega.com"].join("\r");
-	var colA = new jotun_gaming_dataform_DataCollection();
-	var colB = new jotun_gaming_dataform_DataCollection();
-	var cA = colA.parse(t);
-	var rA = colA.stringify();
-	haxe_Log.trace("colA data(" + cA + ") \r\n\t" + rA.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 34, className : "Test_JS", methodName : "main"});
-	var cB = colB.parse(t);
-	var rB = colB.stringify();
-	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 38, className : "Test_JS", methodName : "main"});
-	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB && rA == rB),{ fileName : "Test_JS.hx", lineNumber : 40, className : "Test_JS", methodName : "main"});
 };
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
@@ -3082,7 +3070,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( e ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 207, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 212, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
@@ -3200,7 +3188,8 @@ jotun_Jotun._preInit = function() {
 		window.document.addEventListener("DOMContentLoaded",jotun_Jotun._loadController);
 		jotun_Jotun.log("Jotun => LOADING...",1);
 		Reflect.deleteField(jotun_Jotun,"_preInit");
-		if(window.document.readyState == "complete") {
+		var state = window.document.readyState;
+		if(state == "complete" || state == "interactive") {
 			jotun_Jotun._loadController(null);
 		}
 	}
@@ -3665,8 +3654,15 @@ jotun_css_XCode.search = function(t) {
 	});
 	jotun_css_XCode.css.build();
 };
-jotun_css_XCode.style = function(group,value) {
-	jotun_css_XCode.css.add(group + "{" + value + "}");
+jotun_css_XCode.style = function(selector,value,mode) {
+	if(typeof(value) != "string") {
+		var r = "";
+		jotun_utils_Dice.All(value,function(p,v) {
+			r += (r == "" ? "" : ";") + (p + ": " + Std.string(v));
+		});
+		value = r;
+	}
+	jotun_css_XCode.css.add(selector + "{" + Std.string(value) + "}",mode);
 };
 jotun_css_XCode.apply = function() {
 	jotun_css_XCode.css.build();

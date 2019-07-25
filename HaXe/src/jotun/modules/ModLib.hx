@@ -91,26 +91,30 @@ class ModLib {
 							path += '#' + mod.name;
 							Jotun.log("		ModLib => NAME " + path, 1);
 						}
-						if (exists(mod.name))
+						if (exists(mod.name)){
 							Jotun.log("	ModLib => OVERRIDE " + path, 2);
+						}
 						var end:Int = v.indexOf("/EOF;");
 						content = v.substring(i + 2, end == -1 ? v.length : end);
 						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
 							content = content.split('\r\n').join('\r').split('\n').join('\r');
-							while (content.substr(0, 1) == '\r')
+							while (content.substr(0, 1) == '\r'){
 								content = content.substring(1, content.length);
-							while (content.substr( -1) == '\r')
+							}
+							while (content.substr( -1) == '\r'){
 								content = content.substring(0, content.length - 1);
+							}
 						}
 						if (mod.require != null) {
 							var dependencies:Array<String> = mod.require.split(";");
 							Jotun.log("	ModLib => " + path + " VERIFYING...", 1);
 							Dice.Values(dependencies, function(v:String) {
 								var set:String = Reflect.field(CACHE, v.toLowerCase());
-								if (set == null) 
+								if (set == null){
 									Jotun.log("		ModLib => REQUIRED " + v, 2);
-								else
+								} else{
 									content = content.split("{{@include:" + v + "}}").join(set);
+								}
 							});
 						}
 						if (mod.data != null){
@@ -135,8 +139,9 @@ class ModLib {
 							}
 							if (mod.target != null) {
 								var t:IDisplay = Jotun.one(mod.target);
-								if (t != null)
+								if (t != null){
 									t.addChild(build(mod.name));
+								}
 							}
 							// ***
 						#end
@@ -287,8 +292,9 @@ class ModLib {
 		
 		public function buildIn(module:String, target:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
 			var display:IDisplay = Jotun.one(target);
-			if (display != null)
+			if (display != null){
 				display.addChild(build(module, data, each));
+			}
 			return display;
 		}
 		
