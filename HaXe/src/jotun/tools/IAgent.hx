@@ -27,18 +27,19 @@ interface IAgent {
 	public var animator:Bool;
 	// Display info
 	public var display:String;
-	// Is eXtra Small resolution
-	public var xs:Bool;
-	// Is SMall resolution
-	public var sm:Bool;
-	// Is MeDium resolution
-	public var md:Bool;
-	// Is LarGe resolution
-	public var lg:Bool;
-	// Screen size level (0 to 4)
-	public var screen:Int;
 	// User Operating System name
 	public var os:String;
+	
+	public function isXS():Bool;
+	
+	public function isSM():Bool;
+	
+	public function isMD():Bool;
+	
+	public function isLG():Bool;
+	
+	public function isXL():Bool;
+	
 	// Update all definitions
 	public function update():IAgent;
 	

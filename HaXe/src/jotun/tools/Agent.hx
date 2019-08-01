@@ -27,14 +27,6 @@ class Agent implements IAgent {
 	
 	public var cookies:Bool;
 	
-	public var xs:Bool;
-	
-	public var sm:Bool;
-	
-	public var md:Bool;
-	
-	public var lg:Bool;
-	
 	public var screen:Int;
 	
 	public var jQuery:Bool;
@@ -71,22 +63,7 @@ class Agent implements IAgent {
 		this.safari = safari && !chrome && !chromium; 
 		this.chrome = (chrome || chromium) && !opera;
 		this.mobile = ~/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.match(ua);
-		if (Utils.matchMedia(CSSGroup.MEDIA_XS)) { 		
-			this.xs = true; 
-			this.screen = 1; 
-		}else if (Utils.matchMedia(CSSGroup.MEDIA_SM)) { 
-			this.sm = true; 
-			this.screen = 2; 
-		}else if (Utils.matchMedia(CSSGroup.MEDIA_MD)) { 
-			this.md = true; 
-			this.screen = 3; 
-		}else if (Utils.matchMedia(CSSGroup.MEDIA_LG)) { 
-			this.lg = true; 
-			this.screen = 4; 
-		}else {
-			this.screen = 0; 
-		}
-		this.cookies = Browser.navigator.cookieEnabled == true;
+		this.cookies = (Browser.navigator.cookieEnabled == true);
 		if (!this.cookies){
 			Browser.document.cookie = '#validating#';
 			this.cookies = (Browser.document.cookie.indexOf('#validating#') != -1);
@@ -115,6 +92,26 @@ class Agent implements IAgent {
 	
 	public function value():String {
 		return 'OS:' + Browser.navigator.oscpu + '/Browser:' + Browser.navigator.userAgent + '/Mobile:' + mobile;
+	}
+	
+	public function isXS():Bool {
+		return Utils.matchMedia(CSSGroup.MEDIA_XS);
+	}
+	
+	public function isSM():Bool {
+		return Utils.matchMedia(CSSGroup.MEDIA_SM);
+	}
+	
+	public function isMD():Bool {
+		return Utils.matchMedia(CSSGroup.MEDIA_MD);
+	}
+	
+	public function isLG():Bool {
+		return Utils.matchMedia(CSSGroup.MEDIA_LG);
+	}
+	
+	public function isXL():Bool {
+		return Utils.matchMedia(CSSGroup.MEDIA_XL);
 	}
 	
 }
