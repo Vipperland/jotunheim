@@ -27,16 +27,19 @@ class jotun_net_Loader implements jotun_net_ILoader{
 		return $this->totalLoaded / $this->totalFiles;
 	}
 	public function add($files) {
+		if(!Std::is($files, _hx_qtype("Array"))) {
+			$files = (new _hx_array(array($files)));
+		}
 		$tmp = null;
 		if($files !== null) {
-			$tmp = $files->length > 0;
+			$tmp = _hx_field($files, "length") > 0;
 		} else {
 			$tmp = false;
 		}
 		if($tmp) {
 			$this->_toload = $this->_toload->concat($files);
 			$tmp1 = $this;
-			$tmp1->totalFiles = $tmp1->totalFiles + $files->length;
+			$tmp1->totalFiles = $tmp1->totalFiles + _hx_field($files, "length");
 		}
 		return $this;
 	}

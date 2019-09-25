@@ -9,6 +9,7 @@ interface jotun_signals_IPipe {
 	//;
 	//;
 	function add($handler);
+	function disconnect();
 	function remove($handler);
 	function call($data = null);
 	function stop();

@@ -8,7 +8,7 @@ import jotun.utils.Dice;
 class DataIO {
 	
 	/**
-	   
+	   Object construct by property index
 	   @param	c
 	   @param	o
 	   @param	nfo

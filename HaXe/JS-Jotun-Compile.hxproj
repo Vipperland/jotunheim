@@ -22,7 +22,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="jotun.Jotun" />
+    <option mainClass="Test_JS" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -34,7 +34,7 @@
   <compileTargets>
     <compile path="src\Main.hx" />
     <compile path="src\sirius\Sirius.hx" />
-    <compile path="src\jotun\Jotun.hx" />
+    <compile path="src\Test_JS.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

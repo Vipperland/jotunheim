@@ -18,6 +18,7 @@ class jotun_signals_Pipe implements jotun_signals_IPipe{
 	public $calls;
 	public $current;
 	public $_l;
+	public $_v;
 	public function add($handler) {
 		if(Lambda::indexOf($this->_l, $handler) === -1) {
 			$this->_l->push($handler);
@@ -31,6 +32,13 @@ class jotun_signals_Pipe implements jotun_signals_IPipe{
 		}
 		return $this;
 	}
+	public function disconnect() {
+		if($this->_v !== null) {
+			$this->remove((property_exists($this, "_v") ? $this->_v: array($this, "_v")));
+			$this->_v = null;
+		}
+		return $this;
+	}
 	public function call($data = null) {
 		$_gthis = $this;
 		if($this->enabled) {
@@ -38,6 +46,7 @@ class jotun_signals_Pipe implements jotun_signals_IPipe{
 			$this->current = new jotun_signals_Flow($this, $data);
 			$this->transfer = true;
 			jotun_utils_Dice::Values($this->_l, array(new _hx_lambda(array(&$_gthis), "jotun_signals_Pipe_0"), 'execute'), null);
+			$this->_v = null;
 		}
 		$this->current = null;
 		return $this;
@@ -62,6 +71,7 @@ class jotun_signals_Pipe implements jotun_signals_IPipe{
 }
 function jotun_signals_Pipe_0(&$_gthis, $v) {
 	{
+		$_gthis->_v = $v;
 		call_user_func_array($v, array($_gthis->current));
 		return !$_gthis->transfer;
 	}

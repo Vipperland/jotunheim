@@ -73,8 +73,9 @@ class Uploader {
 						partName = part;
 						lastFile = name;
 						// Close current stream
-						if (fileStream != null)
+						if (fileStream != null){
 							fileStream.close();
+						}
 						// Get file type
 						var type:String = _getType(name);
 						if (type != null) {
@@ -91,14 +92,16 @@ class Uploader {
 			},
 			function(bytes:Bytes, pos:Int, len:Int):Void {
 				// Write current file bytes
-				if (fileStream != null)
+				if (fileStream != null){
 					fileStream.writeBytes(bytes, 0, bytes.length);
+				}
 			}
 		);
 		
 		// Close any stream
-		if (fileStream != null)
+		if (fileStream != null){
 			fileStream.close();
+		}
 		
 		// Iterate all "image" type files
 		if (_sizes != null){
