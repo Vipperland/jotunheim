@@ -126,7 +126,7 @@ class ModLib {
 						#if js
 							// ============================= JS ONLY =============================
 							if (mod.type != null) {
-								if (mod.type == 'cssx') {
+								if (mod.type == 'xcode') {
 									XCode.build(content);
 									content = '';
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {

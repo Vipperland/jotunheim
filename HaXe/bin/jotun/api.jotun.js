@@ -313,10 +313,6 @@ StringTools.lpad = function(s,c,l) {
 	while(s.length < l) s = c + s;
 	return s;
 };
-var Test_$JS = function() { };
-Test_$JS.__name__ = ["Test_JS"];
-Test_$JS.main = function() {
-};
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
@@ -2302,21 +2298,6 @@ jotun_tools_Agent.prototype = {
 		this.safari = safari && !chrome && !chromium;
 		this.chrome = (chrome || chromium) && !opera;
 		this.mobile = new EReg("Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini","i").match(ua);
-		if(jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XS)) {
-			this.xs = true;
-			this.screen = 1;
-		} else if(jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_SM)) {
-			this.sm = true;
-			this.screen = 2;
-		} else if(jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_MD)) {
-			this.md = true;
-			this.screen = 3;
-		} else if(jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_LG)) {
-			this.lg = true;
-			this.screen = 4;
-		} else {
-			this.screen = 0;
-		}
 		this.cookies = window.navigator.cookieEnabled == true;
 		if(!this.cookies) {
 			window.document.cookie = "#validating#";
@@ -2343,6 +2324,21 @@ jotun_tools_Agent.prototype = {
 	}
 	,value: function() {
 		return "OS:" + window.navigator.oscpu + "/Browser:" + window.navigator.userAgent + "/Mobile:" + Std.string(this.mobile);
+	}
+	,isXS: function() {
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XS);
+	}
+	,isSM: function() {
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_SM);
+	}
+	,isMD: function() {
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_MD);
+	}
+	,isLG: function() {
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_LG);
+	}
+	,isXL: function() {
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XL);
 	}
 	,__class__: jotun_tools_Agent
 };
@@ -2703,6 +2699,9 @@ jotun_net_Loader.prototype = {
 		return (this.totalLoaded + (this._fileProgress < 1 ? this._fileProgress : 0)) / this.totalFiles;
 	}
 	,add: function(files) {
+		if(!((files instanceof Array) && files.__enum__ == null)) {
+			files = [files];
+		}
 		if(files != null && files.length > 0) {
 			this._toload = this._toload.concat(files);
 			this.totalFiles += files.length;
@@ -2999,7 +2998,7 @@ jotun_modules_ModLib.prototype = {
 							content = content.split("\r\n").join(mod.wrap).split("\n").join(mod.wrap).split("\r").join(mod.wrap);
 						}
 						if(mod.type != null) {
-							if(mod.type == "cssx") {
+							if(mod.type == "xcode") {
 								jotun_css_XCode.build(content);
 								content = "";
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
@@ -3176,6 +3175,7 @@ jotun_Jotun._loadController = function(e) {
 		window.document.removeEventListener("DOMContentLoaded",jotun_Jotun._loadController);
 		Reflect.deleteField(jotun_Jotun,"_loadController");
 		Reflect.deleteField(jotun_Jotun,"_loadPool");
+		Reflect.deleteField(jotun_Jotun,"main");
 		jotun_Jotun.document.body.autoLoad();
 	}
 };
@@ -3613,7 +3613,7 @@ jotun_css_XCode.unmute = function() {
 jotun_css_XCode.mute = function() {
 	jotun_css_XCode._dev = false;
 };
-jotun_css_XCode.shadowConfig = function(data) {
+jotun_css_XCode.shadow = function(data) {
 	jotun_utils_Dice.All(data,function(p,v) {
 		jotun_css_XCodeRules.shadowConfig[p] = v;
 	});
@@ -3700,9 +3700,6 @@ jotun_css_XCode.build = function(query,group,silent) {
 			v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
 			c = v.split("-");
 			if(c.length > 0) {
-				if(c[0] == "ref") {
-					return;
-				}
 				if(g) {
 					jotun_css_XCode._screen(c);
 					var en = jotun_css_XCode._parse(c);
@@ -4074,7 +4071,7 @@ jotun_css_XCodeRules.shadowKey = function(d,k,n) {
 		var a = x[1] == null ? jotun_css_XCodeRules.shadowConfig.direction : Std.parseInt(x[1]);
 		var w = x[2] == null ? jotun_css_XCodeRules.shadowConfig.draws : Std.parseInt(x[2]);
 		var u = x[3] == null ? jotun_css_XCodeRules.shadowConfig.strength : Std.parseInt(x[3]);
-		var c = jotun_css_XCodeRules.shadowConfig.flex;
+		var c = jotun_css_XCodeRules.shadowConfig.multiply;
 		var cos = Math.cos(.017453 * a);
 		var sin = Math.sin(.017453 * a);
 		var r = [];
@@ -4374,10 +4371,9 @@ jotun_data_FormData.prototype = {
 		return this;
 	}
 	,valueOf: function(p) {
-		var res = jotun_utils_Dice.Values(this.params,function(v) {
+		return jotun_utils_Dice.Values(this.params,function(v) {
 			return v.getName() == p;
-		});
-		return res.value;
+		}).value;
 	}
 	,isValid: function(needAll) {
 		var _gthis = this;
@@ -4390,20 +4386,21 @@ jotun_data_FormData.prototype = {
 		return this.errors.length == 0;
 	}
 	,getParam: function(p) {
-		var res = jotun_utils_Dice.Values(this.params,function(v) {
+		return jotun_utils_Dice.Values(this.params,function(v) {
 			return v.getName() == p;
-		});
-		return res.value;
+		}).value;
 	}
-	,getData: function(append) {
-		var d = append == null ? { } : append;
+	,getData: function(feed) {
+		if(feed == null) {
+			feed = { };
+		}
 		jotun_utils_Dice.Values(this.params,function(v) {
 			var field = v.getName();
 			var value = v.getValue();
-			d[field] = value;
+			feed[field] = value;
 			return;
 		});
-		return d;
+		return feed;
 	}
 	,clear: function() {
 		jotun_utils_Dice.Values(this.params,function(v) {
@@ -4417,8 +4414,8 @@ jotun_data_FormData.prototype = {
 		}
 		jotun_Jotun.request(url,this.getData(),null,handler,method);
 	}
-	,match: function(a,b) {
-		return this.getParam(a).getValue() == this.getParam(b).getValue();
+	,match: function(paramA,paramB) {
+		return this.getParam(paramA).getValue() == this.getParam(paramB).getValue();
 	}
 	,__class__: jotun_data_FormData
 };
@@ -4452,8 +4449,8 @@ jotun_data_FormParam.prototype = {
 		}
 		return this._e.attribute("value");
 	}
-	,isValid: function(require) {
-		if(!(!require && !this.isRequired())) {
+	,isValid: function(required) {
+		if(!(!required && !this.isRequired())) {
 			return jotun_tools_Utils.isValid(this.getValue());
 		} else {
 			return true;
@@ -5035,7 +5032,7 @@ jotun_dom_Form.get = function(q) {
 jotun_dom_Form.__super__ = jotun_dom_Display;
 jotun_dom_Form.prototype = $extend(jotun_dom_Display.prototype,{
 	validate: function() {
-		this.checkSubmit().object.click();
+		this.checkSubmit().click();
 		return this.object.checkValidity();
 	}
 	,checkSubmit: function() {
@@ -5873,7 +5870,7 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		return true;
 	}
 	,addOption: function(label,value,selected,disabled) {
-		this.writeHtml("<option value=\"" + Std.string(value) + "\"" + (disabled == true ? " disabled" : "") + (selected == true ? " selected" : "") + ">" + label + "</options>");
+		this.appendHtml("<option value=\"" + Std.string(value) + "\"" + (disabled == true ? " disabled" : "") + (selected == true ? " selected" : "") + ">" + label + "</options>");
 		if(selected) {
 			this.attribute("sru-option",this.value());
 			this.selectValue(value);
@@ -6618,182 +6615,6 @@ jotun_gaming_actions_Requirement.prototype = $extend(jotun_gaming_actions_Resolu
 	}
 	,__class__: jotun_gaming_actions_Requirement
 });
-var jotun_gaming_dataform_DataCollection = function() {
-	this._list = { };
-};
-jotun_gaming_dataform_DataCollection.__name__ = ["jotun","gaming","dataform","DataCollection"];
-jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
-	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o, n : name, p : props};
-};
-jotun_gaming_dataform_DataCollection.construct = function(name,r) {
-	var o = null;
-	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
-		var d__ = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
-		var C__ = d__.c;
-		o = new C__(d__.n,d__.p);
-	}
-	if(o != null) {
-		if(r.length == 3) {
-			o.id = r[1];
-			o.merge(r[2]);
-		} else if(r.length == 2) {
-			o.merge(r[1]);
-		}
-	}
-	return o;
-};
-jotun_gaming_dataform_DataCollection.prototype = {
-	add: function(o) {
-		var ion = o.getION();
-		if(ion != null && ion.length > 0) {
-			if(!Object.prototype.hasOwnProperty.call(this._list,ion)) {
-				this._list[ion] = { };
-			}
-			if(o.id != null) {
-				var ls = Reflect.field(this._list,ion);
-				ls[o.id] = o;
-			} else {
-				o = null;
-			}
-		} else {
-			o = null;
-		}
-		return o != null;
-	}
-	,parse: function(data) {
-		var _gthis = this;
-		var len = 0;
-		var i = data.split("\r");
-		var l = null;
-		jotun_utils_Dice.Values(i,function(v) {
-			var r = v.split(" ");
-			if(r.length > 0) {
-				v = r[0];
-				var cmd = v.substring(0,1);
-				var o = null;
-				if(cmd == "@") {
-					if(l != null) {
-						v = v.substring(1,v.length);
-						o = jotun_gaming_dataform_DataCollection.construct(v,r);
-						if(l.insert(v,o)) {
-							len += 1;
-						}
-					}
-				} else {
-					o = jotun_gaming_dataform_DataCollection.construct(v,r);
-					if(_gthis.add(o)) {
-						l = o;
-						len += 1;
-					} else {
-						l = null;
-					}
-				}
-			}
-		});
-		return len;
-	}
-	,stringify: function(name) {
-		var r = "";
-		jotun_utils_Dice.Values(this.getList(name),function(v) {
-			jotun_utils_Dice.Values(v,function(v1) {
-				r += (r.length > 0 ? "\r" : "") + v1.stringify();
-			});
-		});
-		return r;
-	}
-	,getList: function(name) {
-		if(name != null) {
-			return Reflect.field(this._list,name);
-		} else {
-			return this._list;
-		}
-	}
-	,__class__: jotun_gaming_dataform_DataCollection
-};
-var jotun_gaming_dataform_DataIO = function() { };
-jotun_gaming_dataform_DataIO.__name__ = ["jotun","gaming","dataform","DataIO"];
-jotun_gaming_dataform_DataIO.parse = function(c,o,nfo) {
-	var obj = c;
-	jotun_utils_Dice.Values(o.split("|"),function(v) {
-		var tag = v.split(":");
-		var par = tag.shift();
-		var par1 = Reflect.field(nfo,par);
-		var value = tag.join(":").split("/_").join(" ");
-		obj[par1] = value;
-	});
-	obj.onUpdate();
-	return obj;
-};
-jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
-	var result = [];
-	var count = 0;
-	jotun_utils_Dice.All(nfo,function(p,value) {
-		value = Reflect.field(o,value);
-		if(value != null) {
-			if(typeof(value) == "string") {
-				value = value.split(" ").join("/_");
-			}
-			result[count] = p + ":" + Std.string(value);
-			count += 1;
-		}
-	});
-	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join("|");
-};
-var jotun_gaming_dataform_DataObject = function(io_name,props) {
-	this._io_name = io_name;
-	this._io_props = props;
-};
-jotun_gaming_dataform_DataObject.__name__ = ["jotun","gaming","dataform","DataObject"];
-jotun_gaming_dataform_DataObject.prototype = {
-	getION: function() {
-		return this._io_name;
-	}
-	,stringify: function() {
-		var r = jotun_gaming_dataform_DataIO.stringify(this,this._io_name,this._io_props);
-		jotun_utils_Dice.Values(this._inserts,function(v) {
-			r += "\r@" + v.stringify();
-		});
-		return r;
-	}
-	,parse: function(data) {
-		var i = data.split(" ");
-		if(i[0] == this._io_name) {
-			if(i.length > 2) {
-				this.id = i[1];
-				data = i[2];
-			} else {
-				this.id = null;
-				data = i[1];
-			}
-			if(data != null) {
-				jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
-				return true;
-			}
-		}
-		return false;
-	}
-	,merge: function(data) {
-		jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
-	}
-	,insert: function(name,o) {
-		if(this._inserts == null) {
-			this._inserts = [];
-		}
-		if(this.canInsert(name,o)) {
-			this._inserts[this._inserts.length] = o;
-			this.onInsert(name,o);
-		}
-		return true;
-	}
-	,onUpdate: function() {
-	}
-	,canInsert: function(name,o) {
-		return true;
-	}
-	,onInsert: function(name,o) {
-	}
-	,__class__: jotun_gaming_dataform_DataObject
-};
 var jotun_math_IPoint = function() { };
 jotun_math_IPoint.__name__ = ["jotun","math","IPoint"];
 jotun_math_IPoint.prototype = {
@@ -7790,6 +7611,13 @@ jotun_signals_Pipe.prototype = {
 		}
 		return this;
 	}
+	,disconnect: function() {
+		if(this._v != null) {
+			this.remove(this._v);
+			this._v = null;
+		}
+		return this;
+	}
 	,call: function(data) {
 		var _gthis = this;
 		if(this.enabled) {
@@ -7797,9 +7625,11 @@ jotun_signals_Pipe.prototype = {
 			this.current = new jotun_signals_Flow(this,data);
 			this.transfer = true;
 			jotun_utils_Dice.Values(this._l,function(v) {
+				_gthis._v = v;
 				v(_gthis.current);
 				return !_gthis.transfer;
 			});
+			this._v = null;
 		}
 		this.current = null;
 		return this;
@@ -9547,19 +9377,19 @@ jotun_css_CSSGroup.MEDIA_XS = "(min-width:1px)";
 jotun_css_CSSGroup.MEDIA_SM = "(min-width:768px)";
 jotun_css_CSSGroup.MEDIA_MD = "(min-width:992px)";
 jotun_css_CSSGroup.MEDIA_LG = "(min-width:1200px)";
+jotun_css_CSSGroup.MEDIA_XL = "(min-width:1480px)";
 jotun_css_XCSS.enabled = false;
 jotun_css_XCode._scx = "#xs#sm#md#lg#pr#";
 jotun_css_XCode.css = new jotun_css_CSSGroup();
 jotun_css_XCode._dev = false;
 jotun_css_XCode._inits = { reset : false, grid : false};
-jotun_css_XCodeRules.shadowConfig = { distance : 1, direction : 45, flex : .1, draws : 1, strength : 3};
+jotun_css_XCodeRules.shadowConfig = { distance : 5, direction : 45, multiply : .5, draws : 5, strength : 10};
 jotun_css_XCodeRules._KEYS = { 'void' : { value : "\"\"", verifier : jotun_css_XCodeRules.commonKey}, glass : { value : "background-color:transparent", verifier : jotun_css_XCodeRules.colorKey}, b : { value : "bottom", verifier : jotun_css_XCodeRules.numericKey}, t : { value : "top", verifier : jotun_css_XCodeRules.numericKey}, l : { value : "left", verifier : jotun_css_XCodeRules.numericKey}, r : { value : "right", verifier : jotun_css_XCodeRules.numericKey}, m : { value : "middle", verifier : jotun_css_XCodeRules.commonKey}, j : { value : "justify", verifier : jotun_css_XCodeRules.commonKey}, c : { value : "center", verifier : jotun_css_XCodeRules.commonKey}, n : { value : "none", verifier : jotun_css_XCodeRules.commonKey}, line : { value : "line", verifier : jotun_css_XCodeRules.pushKey}, mar : { value : "margin", verifier : jotun_css_XCodeRules.numericKey}, pad : { value : "padding", verifier : jotun_css_XCodeRules.numericKey}, bor : { value : "border", verifier : jotun_css_XCodeRules.numericKey}, w : { value : "width", verifier : jotun_css_XCodeRules.valueKey}, h : { value : "height", verifier : jotun_css_XCodeRules.valueKey}, o : { value : "outline", verifier : jotun_css_XCodeRules.valueKey}, disp : { value : "display", verifier : jotun_css_XCodeRules.valueKey}, vert : { value : "vertical-align", verifier : jotun_css_XCodeRules.valueKey}, blk : { value : "block", verifier : jotun_css_XCodeRules.commonKey}, "inline" : { value : "inline", verifier : jotun_css_XCodeRules.appendKey}, bg : { value : "background", verifier : jotun_css_XCodeRules.numericKey}, txt : { value : "", verifier : jotun_css_XCodeRules.textKey}, dec : { value : "", verifier : jotun_css_XCodeRules.valueKey}, sub : { value : "sub", verifier : jotun_css_XCodeRules.commonKey}, sup : { value : "super", verifier : jotun_css_XCodeRules.commonKey}, pos : { value : "position", verifier : jotun_css_XCodeRules.valueKey}, abs : { value : "absolute", verifier : jotun_css_XCodeRules.positionKey}, rel : { value : "relative", verifier : jotun_css_XCodeRules.positionKey}, fix : { value : "fixed", verifier : jotun_css_XCodeRules.positionKey}, pull : { value : "float", verifier : jotun_css_XCodeRules.valueKey}, 'float' : { value : "float", verifier : jotun_css_XCodeRules.valueKey}, over : { value : "overflow", verifier : jotun_css_XCodeRules.valueKey}, hide : { value : "display:none", verifier : jotun_css_XCodeRules.commonKey}, scroll : { value : "scroll", verifier : jotun_css_XCodeRules.scrollKey}, crop : { value : "overflow:hidden", verifier : jotun_css_XCodeRules.commonKey}, x : { value : "x", verifier : jotun_css_XCodeRules.scrollKey}, y : { value : "y", verifier : jotun_css_XCodeRules.scrollKey}, z : { value : "z-index", verifier : jotun_css_XCodeRules.indexKey}, bold : { value : "font-weight:bold", verifier : jotun_css_XCodeRules.commonKey}, regular : { value : "font-weight:regular", verifier : jotun_css_XCodeRules.commonKey}, underline : { value : "font-weight:underline", verifier : jotun_css_XCodeRules.commonKey}, italic : { value : "font-weight:italic", verifier : jotun_css_XCodeRules.commonKey}, thin : { value : "font-weight:100", verifier : jotun_css_XCodeRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : jotun_css_XCodeRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : jotun_css_XCodeRules.commonKey}, cursor : { value : "cursor", verifier : jotun_css_XCodeRules.valueKey}, load : { value : "loading", verifier : jotun_css_XCodeRules.valueKey}, arial : { value : "font-family:arial", verifier : jotun_css_XCodeRules.commonKey}, verdana : { value : "font-family:verdana", verifier : jotun_css_XCodeRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : jotun_css_XCodeRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : jotun_css_XCodeRules.commonKey}, georgia : { value : "font-family:georgia", verifier : jotun_css_XCodeRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : jotun_css_XCodeRules.commonKey}, table : { value : "table", verifier : jotun_css_XCodeRules.appendKey}, rad : { value : "radius", verifier : jotun_css_XCodeRules.valueKey}, solid : { value : "solid", verifier : jotun_css_XCodeRules.commonKey}, dashed : { value : "dashed", verifier : jotun_css_XCodeRules.commonKey}, 'double' : { value : "double", verifier : jotun_css_XCodeRules.commonKey}, dotted : { value : "dotted", verifier : jotun_css_XCodeRules.commonKey}, alpha : { value : "opacity", verifier : jotun_css_XCodeRules.alphaKey}, hidden : { value : "", verifier : jotun_css_XCodeRules.displayKey}, shadow : { value : "", verifier : jotun_css_XCodeRules.shadowKey}, stroke : { value : "", verifier : jotun_css_XCodeRules.strokeKey}, cell : { value : "cell", verifier : jotun_css_XCodeRules.commonKey}, mouse : { value : "pointer-events", verifier : jotun_css_XCodeRules.commonKey}, btn : { value : "cursor:pointer", verifier : jotun_css_XCodeRules.commonKey}, ease : { value : "transition", verifier : jotun_css_XCodeRules.commonArray}};
 jotun_dom_Display3D._fixed = false;
 jotun_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center center"};
 jotun_dom_Input.icons = { };
 jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQuery();
 jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQuery();
-jotun_gaming_dataform_DataCollection._dictio = { };
 jotun_tools_Delayer.setTimeout = setTimeout;
 jotun_tools_Delayer.clearTimeout = clearTimeout;
 jotun_tools_Delayer.setInterval = setInterval;
@@ -9586,5 +9416,5 @@ jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Table._trash = [];
 js_Boot.__toStr = ({ }).toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-Test_$JS.main();
+jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

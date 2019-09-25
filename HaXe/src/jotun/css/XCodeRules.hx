@@ -9,7 +9,7 @@ import jotun.utils.Dice;
 @:expose('XCodeRules')
 class XCodeRules {
 	
-	static public var shadowConfig:Dynamic = { distance:1, direction:45, flex:.1, draws:1, strength:3 };
+	static public var shadowConfig:Dynamic = { distance:5, direction:45, multiply:.5, draws:5, strength:10 };
 	
 	/**
 	 * Fix any numeric key value or key name
@@ -259,7 +259,7 @@ class XCodeRules {
 			var a:Int = x[1] == null ? shadowConfig.direction 	: Std.parseInt(x[1]);
 			var w:Int = x[2] == null ? shadowConfig.draws 		: Std.parseInt(x[2]);
 			var u:Int = x[3] == null ? shadowConfig.strength	: Std.parseInt(x[3]);
-			var c:Float = 	shadowConfig.flex;
+			var c:Float = 	shadowConfig.multiply;
 			var cos:Float = Math.cos(.017453 * a);
 			var sin:Float = Math.sin(.017453 * a);
 			var r:Array<String> = [];

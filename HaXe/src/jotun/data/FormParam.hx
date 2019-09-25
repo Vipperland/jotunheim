@@ -40,8 +40,8 @@ class FormParam {
 		return _e.attribute("value");
 	}
 	
-	public function isValid(?require:Bool):Bool {
-		return (!require && !isRequired()) || Utils.isValid(getValue());
+	public function isValid(?required:Bool):Bool {
+		return (!required && !isRequired()) || Utils.isValid(getValue());
 	}
 	
 	public function clear():Void {

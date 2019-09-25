@@ -29,7 +29,7 @@ class Form extends Display {
 	}
 	
 	public function validate():Bool {
-		checkSubmit().object.click();
+		checkSubmit().click();
 		return object.checkValidity();
 	}
 	

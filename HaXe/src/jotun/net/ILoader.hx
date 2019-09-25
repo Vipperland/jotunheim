@@ -83,7 +83,7 @@ interface ILoader {
 	 * @param	error
 	 * @return
 	 */
-	public function add (files:Array<String>):ILoader;
+	public function add (files:Dynamic):ILoader;
 	
 	/**
 	 * Init Loader proccess

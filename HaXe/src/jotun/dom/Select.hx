@@ -102,7 +102,7 @@ class Select extends Display {
 	}
 	
 	public function addOption(label:String, value:Dynamic, ?selected:Bool, ?disabled:Bool):Select {
-		writeHtml('<option value="' + value + '"' + (disabled == true ? ' disabled' : '') + (selected == true ? ' selected' : '') + '>' + label + '</options>');
+		appendHtml('<option value="' + value + '"' + (disabled == true ? ' disabled' : '') + (selected == true ? ' selected' : '') + '>' + label + '</options>');
 		if (selected) {
 			attribute('sru-option', this.value());
 			selectValue(value);

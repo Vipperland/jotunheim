@@ -22,6 +22,8 @@ class Pipe implements IPipe {
 	
 	private var _l:Array<Dynamic>;
 	
+	private var _v:IFlow->Void;
+	
 	public function new(name:String, host:Signals) {
 		this.host = host;
 		this.name = name;
@@ -29,15 +31,25 @@ class Pipe implements IPipe {
 	}
 	
 	public function add(handler:IFlow->Void):IPipe {
-		if (Lambda.indexOf(_l, handler) == -1)
+		if (Lambda.indexOf(_l, handler) == -1){
 			_l.push(handler);
+		}
 		return this;
 	}
 	
 	public function remove(handler:IFlow->Void):IPipe {
 		var i:Int = Lambda.indexOf(_l, handler);
-		if (i != -1)
+		if (i != -1){
 			_l.splice(i, 1);
+		}
+		return this;
+	}
+	
+	public function disconnect():IPipe {
+		if (_v != null){
+			remove(_v);
+			_v = null;
+		}
 		return this;
 	}
 	
@@ -47,9 +59,11 @@ class Pipe implements IPipe {
 			current = new Flow(this, data);
 			transfer = true;
 			Dice.Values(_l, function(v:IFlow->Void){
+				_v = v;
 				v(current);
 				return !transfer;
 			});
+			_v = null;
 		}
 		current = null;
 		return this;

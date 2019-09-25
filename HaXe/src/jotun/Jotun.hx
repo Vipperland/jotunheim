@@ -108,6 +108,7 @@ class Jotun {
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				Reflect.deleteField(Jotun, '_loadController');
 				Reflect.deleteField(Jotun, '_loadPool');
+				Reflect.deleteField(Jotun, 'main');
 				document.body.autoLoad();
 			}
 		}

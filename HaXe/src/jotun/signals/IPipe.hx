@@ -19,6 +19,8 @@ interface IPipe {
 	public var current : IFlow;
 
 	public function add (handler:IFlow->Void) : IPipe;
+	
+	public function disconnect () : IPipe;
 
 	public function remove (handler:IFlow->Void) : IPipe;
 

@@ -171,7 +171,7 @@ class XCode {
 		_dev = false;
 	}
 	
-	static public function shadowConfig(data:Dynamic):Void {
+	static public function shadow(data:Dynamic):Void {
 		Dice.All(data, function(p:String, v:UInt) {	Reflect.setField(XCodeRules.shadowConfig, p, v); } );
 	}
 	
@@ -201,7 +201,7 @@ class XCode {
 			t.shift();
 		}
 		Dice.Values(t, function(v:String) {
-			var i:String = v.substr(0, 1);	// class=["] (string start)
+			var i:String = v.substr(0, 1);	// class=["]" (string start)
 			var j:Int = v.indexOf(i, 1);	// class="["] (string end)
 			if (j > 1) {
 				v = v.substring(1, j);		// Remove quotes (single & double)
@@ -278,9 +278,6 @@ class XCode {
 				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
 				c = v.split("-"); // create sections
 				if (c.length > 0) {
-					if (c[0] == 'ref') {
-						return;
-					}
 					if (g) { // Rule for groups
 						_screen(c); // Remove @media signature
 						var en:Entry = _parse(c);

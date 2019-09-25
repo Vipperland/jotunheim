@@ -61,7 +61,10 @@ class Loader implements ILoader {
 		#end
 	}
 	
-	public function add(files:Array<String>):ILoader {
+	public function add(files:Dynamic):ILoader {
+		if (!Std.is(files, Array)){
+			files = [files];
+		}
 		if (files != null && files.length > 0) {
 			_toload = _toload.concat(files);
 			totalFiles += files.length;

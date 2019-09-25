@@ -7,160 +7,47 @@
 	<style>
 		@import url('https://fonts.googleapis.com/css?family=Jura:400,700&display=swap');
 		body {
-			font-size: 24px;
+			font-size: 48px;
 			color: #FFFFFF;
-			background-color: #000000;
+			background-color: #333333;
+			min-height: 100%;
+			width: 100vw;
+			height: 100vh;
 		}
-		.title {
-			padding: 24px;
-			font-family: 'Jura', sans-serif;
+		.drawer {
+			height: 100%;
 		}
-		.container {
-			padding: 10px;
+		.text {
+			text-align:center;
 		}
-		.dot {
-			width:1vw;
-			height:1vw;
-			max-width: 10px;
-			max-height: 10px;
-			margin-left:1px;
-			margin-bottom:1px;
-			background-color:#efefef;
-			float:left;
-		}
-		
-		.dot:last-child {
-			background-color:#FF0000;
-		}
-		
-		.dot.dead {
-			background-color:#FF5555;
-		}
-		
-		.title input {
-			border-bottom: 1px solid #efefef;
-			padding: 10px 0;
-			margin-left: 10px;
-			text-align: center;
-		}
-		
-		.life-start {
-			padding-left: 10px;
-		}
-		
-		.life-end {
-			display: inline-block;
-			margin-top: 20px;
-		}
-		
-		.label-start {
-			padding: 12px;
-			background-color: #009966;
-			color: #FFFFFF;
-			font-size: 14px;
-			border-radius: 10px 10px 10px 0;
-			display: inline-block;
-		}
-		.label-end {
-			padding: 12px;
-			background-color: #993333;
-			color: #FFFFFF;
-			font-size: 14px;
-			border-radius: 10px 0 10px 10px;
-			margin-left: -100%;
-			display: inline;
-		}
-		.flat-border-tl {
-			width: 0;
-			height: 0;
-			border-style: solid;
-			border-width: 10px 10px 0 0;
-			border-color: #009966 transparent transparent transparent;
-		}
-		.flat-border-tr {
-			width: 0;
-			height: 0;
-			border-style: solid;
-			border-width: 0 0 10px 10px;
-			margin-left: -10px;
-			margin-bottom: 3px;
-			border-color: transparent transparent #993333 transparent;
-		}
-		.fix {
-			clear: both;
-			margin-bottom: 50px;
+		.content {
+			padding: 12px 24px 18px 24px;
+			background-color: #444444;
+			border-radius: 28px;
+			border: 2px solid #333333;
 		}
 	</style>
 </head>
 	
 <body automator>
-	
-	<div class="title">
-		<div hidden>
-			Life Spectance: 
-			<input class="years" type="number" min="30" max="120" value="85"/>
-		</div>
-		Your Birthdate: <input class="birthdate" type="date" />
-	</div>
-	
-	<div>
-		<div class="life-start hidden" hidden>
-			<div class="label-start">You were born here.</div>
-			<div class="flat-border-tl"></div>
-		</div>
-		<div class="container">
-		</div>
-		<div class="life-end hidden" hidden>
-			<div class="flat-border-tr"></div>
-			<div class="label-end">You will die here.</div>
+	<div class="drawer o-arrange o-middle">
+		<div class="content shadow-x444444">
+			<div class="text shadow-txt-xFFFFFF">
+				RIM PROJECT
+			</div>
 		</div>
 	</div>
-	
-	<div class="fix"></div>
-	
-	<script src="/jotun/api.jotun.js"></script>
+	<script src="jotun/api.jotun.js"></script>
 	<script>
-		
-		function render(){
-			
-			var years = Jotun.one('input.years').value();
-			
-			var days = years * 365;
-			var weeks = days / 7;
-			var lifespan = weeks; 
-			
-			var current = Jotun.one('input.birthdate').value();
-			var now = new Date().getTime();
-			var birth = new Date(current).getTime();
-			
-			if(birth > -2208977612000){
-				
-				Jotun.one('input.years').show();
-				Jotun.one('.life-start').show();
-				Jotun.one('.life-end').show();
-				
-				if(current && birth < now){
-					current = (now - birth)/1000/60/60/24/7;
-				}else {
-					current = 0;
-				}
-				var res = '';
-				Dice.Count(0, lifespan, function(a, b, c){
-					res += '<div class="dot' + (a < current ? ' dead' : '') + '"></div>';
-				});
-				Jotun.one('.container').writeHtml(res);
-			}
-			
-		}
-		Jotun.run(function(){
-			Jotun.one('input.years').events.change(function(e){
-				render();
-			});
-			Jotun.one('input.birthdate').events.change(function(e){
-				render();
-			});
+		XCode.shadow({
+			distance: 5,
+			direction: 45,
+			multiply:.5,
+			draws:5,
+			strength: 15,
 		});
+		XCode.build('shadow-x444444');
+		XCode.build('shadow-txt-xFFFFFF');
 	</script>
-	
 </body>
 </html>

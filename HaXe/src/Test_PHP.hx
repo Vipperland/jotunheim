@@ -5,6 +5,8 @@ import jotun.php.file.Uploader;
 import jotun.serial.JsonTool;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import sys.FileSystem;
+import sys.io.File;
 
 /**
  * ...

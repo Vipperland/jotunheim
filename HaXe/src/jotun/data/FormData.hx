@@ -4,6 +4,7 @@ import jotun.data.FormParam;
 import jotun.data.IFormData;
 import jotun.dom.IDisplay;
 import jotun.net.IRequest;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.IDiceRoll;
 
@@ -30,8 +31,12 @@ class FormData implements IFormData {
 	 */
 	public function new(?target:Dynamic) {
 		if (target != null) {
-			if(Std.is(target, String))		scan(Jotun.one(target));
-			if(Std.is(target, IDisplay))	scan(target);
+			if (Std.is(target, String)){
+				scan(Jotun.one(target));
+			}
+			if (Std.is(target, IDisplay)){
+				scan(target);
+			}
 		}
 	}
 	
@@ -43,34 +48,48 @@ class FormData implements IFormData {
 	public function scan(?target:IDisplay):IFormData {
 		reset();
 		_form = target == null ? Jotun.document.body : target;
-		target.all("[form-data]").each(function(o:IDisplay) { params[params.length] = new FormParam(o); });
+		target.all("[form-data]").each(function(o:IDisplay) {
+			params[params.length] = new FormParam(o);
+		});
 		return this;
 	}
 	
 	public function valueOf(p:String):FormParam {
-		var res:IDiceRoll = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; } );
-		return cast res.value; 
+		return cast Dice.Values(params, function(v:FormParam) {
+			return v.getName() == p;
+		}).value; 
 	}
 	
 	public function isValid(?needAll:Bool):Bool {
 		errors = [];
-		Dice.Values(params, function(v:FormParam) {	if (!v.isValid(needAll)) errors[errors.length] = v; });
+		Dice.Values(params, function(v:FormParam) {
+			if (!v.isValid(needAll)) {
+				errors[errors.length] = v;
+			}
+		});
 		return errors.length == 0;
 	}
 	
 	public function getParam(p:String):FormParam {
-		var res:IDiceRoll = Dice.Values(params, function(v:FormParam) {	return v.getName() == p; });
-		return cast res.value;
+		return cast Dice.Values(params, function(v:FormParam) {
+			return v.getName() == p; 
+		}).value;
 	}
 	
-	public function getData(?append:Dynamic):Dynamic {
-		var d:Dynamic = append == null ? {} : append;
-		Dice.Values(params, function(v:FormParam) {	return Reflect.setField(d, v.getName(), v.getValue()); } );
-		return d;
+	public function getData(?feed:Dynamic):Dynamic {
+		if (feed == null){
+			feed = {};
+		}
+		Dice.Values(params, function(v:FormParam) {
+			return Reflect.setField(feed, v.getName(), v.getValue());
+		});
+		return feed;
 	}
 	
 	public function clear():IFormData {
-		Dice.Values(params, function(v:FormParam) {	v.clear(); });
+		Dice.Values(params, function(v:FormParam) {
+			v.clear();
+		});
 		return this;
 	}
 	
@@ -78,8 +97,8 @@ class FormData implements IFormData {
 		Jotun.request(url, getData(), handler, method);
 	}
 	
-	public function match(a:String, b:String):Bool {
-		return getParam(a).getValue() == getParam(b).getValue();
+	public function match(paramA:String, paramB:String):Bool {
+		return getParam(paramA).getValue() == getParam(paramB).getValue();
 	}
 	
 }
