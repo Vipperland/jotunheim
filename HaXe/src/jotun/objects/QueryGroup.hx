@@ -1,26 +1,26 @@
-package jotun.gaming.actions;
-import jotun.flow.IPush;
+package jotun.objects;
+import jotun.objects.IQuery;
 import jotun.utils.Dice;
 
 /**
  * ...
  * @author Rim Project
  */
-class PushProc {
+class QueryGroup {
 
-	public var units:Array<IPush>;
+	public var units:Array<IQuery>;
 	
 	public function new(){
 		clear();
 	}
 	
-	public function add(o:IPush):Void {
+	public function add(o:IQuery):Void {
 		if (units.indexOf(o) == -1){
 			units[units.length] = o;
 		}
 	}
 	
-	public function remove(o:IPush):Void {
+	public function remove(o:IQuery):Void {
 		var iof:Int = units.indexOf(o);
 		if (iof != -1){
 			units.splice(iof, 1);
@@ -33,7 +33,7 @@ class PushProc {
 	
 	public function run(query:Dynamic):Dynamic {
 		var result:Dynamic = {};
-		Dice.Values(units, function(o:IPush){
+		Dice.Values(units, function(o:IQuery){
 			o.proc(query, result);
 			o.flush();
 		});

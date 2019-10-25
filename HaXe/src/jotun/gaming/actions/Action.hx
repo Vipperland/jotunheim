@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import jotun.objects.QueryGroup;
 import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.Requirement;
 import jotun.tools.Key;
@@ -12,7 +13,7 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Action")
 class Action extends Resolution {
 	
-	public static var commands:PushProc = new PushProc();
+	public static var commands:QueryGroup = new QueryGroup();
 	
 	public var requirements:Array<Requirement>;
 	

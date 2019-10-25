@@ -13,7 +13,7 @@ import jotun.utils.IDiceRoll;
 	import js.html.Element;
 	import js.html.File;
 	import js.html.NamedNodeMap;
-	import jotun.flow.Push;
+	import jotun.objects.Query;
 	import jotun.dom.A;
 	import jotun.dom.Area;
 	import jotun.dom.Audio;

@@ -3,7 +3,7 @@ package jotun.dom;
 import haxe.ds.Either;
 import jotun.dom.IDisplay;
 import jotun.events.IDispatcher;
-import jotun.flow.IPush;
+import jotun.objects.IQuery;
 import jotun.math.IPoint;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
@@ -18,7 +18,7 @@ import js.html.FileList;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
-interface IDisplay extends IPush implements Dynamic  {
+interface IDisplay extends IQuery implements Dynamic  {
 	
 	/**
 	 * Default target element

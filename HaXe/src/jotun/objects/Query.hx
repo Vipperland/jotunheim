@@ -1,4 +1,4 @@
-package jotun.flow;
+package jotun.objects;
 import jotun.utils.Dice;
 
 /**
@@ -6,7 +6,7 @@ import jotun.utils.Dice;
  * @author Rafael Moreira
  */
 @:expose('sru.flow.Push')
-class Push implements IPush implements Dynamic {
+class Query implements IQuery implements Dynamic {
 	
 	private var _log:Array<String>;
 	private var _buffer:Dynamic;

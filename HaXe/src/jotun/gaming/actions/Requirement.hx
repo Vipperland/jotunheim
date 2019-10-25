@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import jotun.objects.QueryGroup;
 import js.html.Event;
 import jotun.gaming.actions.RequirementQuery;
 import jotun.tools.Utils;
@@ -11,7 +12,7 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Requirement")
 class Requirement extends Resolution {
 	
-	public static var commands:PushProc = new PushProc();
+	public static var commands:QueryGroup = new QueryGroup();
 	
 	public var cancelOnSuccess:Bool;
 	public var cancelOnFail:Bool;

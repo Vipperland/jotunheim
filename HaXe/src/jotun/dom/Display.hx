@@ -6,7 +6,7 @@ import jotun.css.XCode;
 import jotun.dom.IDisplay;
 import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
-import jotun.flow.Push;
+import jotun.objects.Query;
 import jotun.math.ARGB;
 import jotun.math.IARGB;
 import jotun.math.IPoint;
@@ -32,7 +32,7 @@ import js.html.Node;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("jtn.dom.Display")
-class Display extends Push implements IDisplay {
+class Display extends Query implements IDisplay {
 	
 	private static var _CNT:UInt = 0;
 	

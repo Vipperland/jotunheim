@@ -1,5 +1,5 @@
 package jotun.gaming.actions;
-import jotun.flow.Push;
+import jotun.objects.Query;
 import jotun.tools.Utils;
 
 /**
@@ -7,7 +7,7 @@ import jotun.tools.Utils;
  * @author Rim Project
  */
 @:expose("jtn.game.RequirementQuery")
-class RequirementQuery extends Push {
+class RequirementQuery extends Query {
 	
 	private function _isempty(value:String):Bool {
 		return value == null || value == "";

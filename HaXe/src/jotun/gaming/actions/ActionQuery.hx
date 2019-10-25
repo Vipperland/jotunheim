@@ -1,12 +1,12 @@
 package jotun.gaming.actions;
-import jotun.flow.Push;
+import jotun.objects.Query;
 
 /**
  * ...
  * @author Rim Project
  */
 @:expose("jtn.game.ActionQuery")
-class ActionQuery extends Push {
+class ActionQuery extends Query {
 
 	private function _isempty(value:String):Bool {
 		return value == null || value == "";

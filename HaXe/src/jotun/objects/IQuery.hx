@@ -1,9 +1,9 @@
-package jotun.flow;
+package jotun.objects;
 
 /**
  * @author Rim Project
  */
-interface IPush implements Dynamic {
+interface IQuery implements Dynamic {
 	
 	public function log():Array<String>;
 	
