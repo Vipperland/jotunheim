@@ -54,7 +54,9 @@ class Dice {
 			}
 		}
 		var r:IDiceRoll = cast { param:p, value:v, completed:i, object:q, keys:k };
-		if (complete != null) complete(r);
+		if (complete != null) {
+			complete(r);
+		}
 		return r;
 		
 	}

@@ -8,9 +8,9 @@ import jotun.utils.Dice;
  */
 class Logger{
 	
-	private var _events:Array<Dynamic->UInt->Void>;
+	private var _events:Array<Dynamic->Int->Void>;
 	
-	private var _level:UInt = 4;
+	private var _level:Int = 4;
 	
 	public function maxLvLog(i:Int):Void {
 		_level = i;
@@ -39,15 +39,23 @@ class Logger{
 		if (Lambda.indexOf(_events, query) == -1) _events.unshift(query);
 	}
 	
-	public function listen(handler:Dynamic->UInt->Void):Void {
+	public function listen(handler:Dynamic->Int->Void):Void {
 		_events[_events.length] = handler;
 	}
 	
-	public function push(q:Dynamic, type:UInt) {
-		Dice.Values(_events, function(v:Dynamic->UInt->Void) { 	v(q, type); });
+	public function push(q:Dynamic, type:Int) {
+		Dice.Values(_events, function(v:Dynamic->Int->Void) { 	v(q, type); });
 	}
 	
-	public function query(q:Dynamic, type:UInt):Void {
+	public function dump(q:Dynamic):Void {
+		#if js
+			untyped __js__("console.log")(q);
+		#elseif php
+			php.Lib.dump(q);
+		#end
+	}
+	
+	public function query(q:Dynamic, type:Int):Void {
 		if (type > _level){
 			return;
 		}
@@ -61,9 +69,9 @@ class Logger{
 			default : "";
 		}
 		#if js
-			untyped __js__("console.log")(t + q);
+			dump(t + q);
 		#elseif php
-			php.Lib.dump(q);
+			dump(q);
 		#end
 	}
 	

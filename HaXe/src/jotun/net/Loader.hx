@@ -93,14 +93,14 @@ class Loader implements ILoader {
 				r.async = true;
 			#end
 			r.onError = function(e) {
-				_changed(f, 'error', e, r);
 				++totalLoaded;
+				_changed(f, 'error', e, r);
 				_loadNext();
 			}
 			r.onData = function(d) {
-				_changed(f, 'loaded', d, r);
 				++totalLoaded;
 				Jotun.resources.register(f, d);
+				_changed(f, 'loaded', d, r);
 				_loadNext();
 			}
 			#if js
@@ -150,8 +150,8 @@ class Loader implements ILoader {
 		#end
 		_changed(file, 'started', data, r);
 		r.onData = function(d) {
-			_changed(file, 'loaded', d, r);
 			Jotun.resources.register(file, d);
+			_changed(file, 'loaded', d, r);
 			#if js
 				if (target != null) {
 					if(Std.is(target, String)) {

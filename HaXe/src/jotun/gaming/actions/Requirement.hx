@@ -11,7 +11,7 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Requirement")
 class Requirement extends Resolution {
 	
-	public static var commands:RequirementQuery = new RequirementQuery();
+	public static var commands:PushProc = new PushProc();
 	
 	public var cancelOnSuccess:Bool;
 	public var cancelOnFail:Bool;
@@ -30,7 +30,7 @@ class Requirement extends Resolution {
 		var res:Bool = true;
 		var score:UInt = 0;
 		if (Utils.isValid(query)){
-			var sec:Dynamic = commands.proc(query).result;
+			var sec:Dynamic = commands.run(query).result;
 			if(sec != null){
 				Dice.Values(sec, function(v:Dynamic){
 					if (Utils.boolean(v)){
@@ -38,13 +38,14 @@ class Requirement extends Resolution {
 					}
 				});
 			}
-			commands.flush();
 			res = score >= target;
 			if (reverse)
 				res = !res;
 		}
 		resolve(res, context);
-		_log(this, context, res, score, reverse);
+		if (context.debug){
+			_log(this, context, res, score, reverse);
+		}
 		return res;
 	}
 	
@@ -53,7 +54,7 @@ class Requirement extends Resolution {
 		while (s.length < context.ident){
 			s += '	';
 		}
-		context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + '/' + evt.target);
+		context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + " of " + evt.target);
 	}
 	
 	

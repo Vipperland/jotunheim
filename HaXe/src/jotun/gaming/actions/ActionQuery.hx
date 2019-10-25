@@ -12,12 +12,17 @@ class ActionQuery extends Push {
 		return value == null || value == "";
 	}
 	
-	private function _N(value:String):Float {
+	private function _INT(value:String):Int {
+		var o:Int = Std.parseInt(value);
+		return o != null ? o : 0;
+	}
+	
+	private function _FLOAT(value:String):Float {
 		var o:Float = Std.parseFloat(value);
 		return o != null ? o : 0;
 	}
 	
-	private static function _resolve(a:Dynamic, r:String, v:Dynamic):Dynamic {
+	private function _resolve(a:Dynamic, r:String, v:Dynamic):Dynamic {
 		if (r == null) {
 			r = "=";
 		}

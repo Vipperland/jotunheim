@@ -13,7 +13,7 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Events")
 class Events {
 	
-	public static function patch(data:Dynamic, ?run:String, ?origin:Dynamic){
+	public static function patch(data:Dynamic, ?run:String, ?origin:Dynamic, ?debug:Bool, ?feedback:IEventContext->Void){
 		if (data.events != null){
 			if (!data.events.patched){
 				data.events.patched = true;
@@ -25,7 +25,7 @@ class Events {
 		if (run != null){
 			if (Reflect.hasField(data.events, run)){
 				var events:Events = Reflect.field(data.events, run);
-				events.run(EventController.CONTEXT(data));
+				events.run(EventController.CONTEXT(data, debug, feedback));
 			}
 		}
 	}
@@ -42,7 +42,11 @@ class Events {
 		_data = [];
 		var i:UInt = 0;
 		Dice.All(data, function(p:String, v:Dynamic){
-			_data[i] = new Action(_type + '[' + p + ']', v);
+			if (Std.is(v, Action)){
+				_data[i] = v;
+			}else{
+				_data[i] = new Action(_type + '[' + p + ']', v);
+			}
 			++i;
 		});
 	}
@@ -54,10 +58,14 @@ class Events {
 			return !a.run(context);
 		});
 		--context.ident;
-		_log(this, context);
+		if (context.debug){
+			_log(this, context);
+		}
 		if (context.ident == 0){
 			context.log.reverse();
-			Jotun.log(context.log.join("\r\n\t\t\t\t|"));
+			if (context.feedback != null){
+				context.feedback(context);
+			}
 		}
 	}
 	
@@ -67,7 +75,7 @@ class Events {
 			s += '	';
 		}
 		var a:Int = evt._data.length;
-		context.log.push(s + "≈ EVENT " + evt._type + (a == 0 ? " <!>EMPTY" : " @" + a));
+		context.log.push(s + "≈ EVENT " + evt._type + (a == 0 ? " [!] No Actions" : " @" + a));
 	}
 	
 }

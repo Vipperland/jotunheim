@@ -9,6 +9,6 @@ interface IPush implements Dynamic {
 	
 	public function flush():Void;
 	
-	public function proc(data:Dynamic):Dynamic;
+	public function proc(data:Dynamic, ?result:Dynamic):Dynamic;
 	
 }

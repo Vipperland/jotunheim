@@ -13,8 +13,13 @@ class RequirementQuery extends Push {
 		return value == null || value == "";
 	}
 	
-	private function _getint(value:String):Int {
+	private function _INT(value:String):Int {
 		var o:Int = Std.parseInt(value);
+		return o != null ? o : 0;
+	}
+	
+	private function _FLOAT(value:String):Float {
+		var o:Float = Std.parseFloat(value);
 		return o != null ? o : 0;
 	}
 	

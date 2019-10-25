@@ -32,8 +32,8 @@ class Push implements IPush implements Dynamic {
 	 * 			myFunct	prop1	prop2
 	 * @param	data
 	 */
-	public function proc(data:Dynamic):Dynamic {
-		_buffer = {};
+	public function proc(data:Dynamic, ?result:Dynamic):Dynamic {
+		_buffer = result != null ? result : {};
 		_now = null;
 		_batchExec(data);
 		return _buffer;

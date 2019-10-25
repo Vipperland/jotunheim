@@ -12,7 +12,7 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Action")
 class Action extends Resolution {
 	
-	public static var commands:ActionQuery = new ActionQuery();
+	public static var commands:PushProc = new PushProc();
 	
 	public var requirements:Array<Requirement>;
 	
@@ -22,8 +22,14 @@ class Action extends Resolution {
 		super(type, data);
 		// Construct Requirement Objects
 		requirements = [];
+		var i:Int = 0;
 		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic){
-			requirements[requirements.length] = new Requirement(type + '[' + p + ']', v);
+			if (Std.is(v, Requirement)){
+				requirements[i] = cast v;
+			}else{
+				requirements[i] = new Requirement(type + '[' + p + ']', v);
+			}
+			++i;
 		});
 		// Required condition resolution
 		target = Utils.isValid(data.target) ? Std.int(data.target) : (requirements.length == 0 ? 0 : 1);
@@ -46,11 +52,12 @@ class Action extends Resolution {
 		--context.ident;
 		// resolution
 		var success:Bool = (target == 0) || (target > 0 && resolution >= target) || (target < 0 && resolution <= target);
-		_log(this, context, success, resolution);
+		if (context.debug){
+			_log(this, context, success, resolution);
+		}
 		if (success){
 			if(Utils.isValid(query)){
-				commands.proc(query);
-				commands.flush();
+				commands.run(query);
 			}
 		}
 		return resolve(success, context);

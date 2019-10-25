@@ -36,7 +36,7 @@ class Test_JS{
 		var rB:String = colB.stringify();
 		trace('colB data(' + cB + ') \r\n\t' + rB.split('\r').join('\r\n\t'));
 		
-		trace('Data Match? \r\n\t' + (t == rA && t == rB && rA == rB));
+		trace('Data Match? \r\n\t' + (t == rA && t == rB));
 		
 	}
 	
