@@ -28,21 +28,35 @@ class RequirementQuery extends Query {
 			r = ">=";
 		}
 		switch(r){
+			// if a is equal b
 			case "=" : return a == v;
+			// if a is different of b
 			case "!=" : return a != v;
+			// if a lesser than v
 			case "<" : return a < v;
+			// if a lesser than or equal v
 			case "<=" : return a <= v;
+			// if a greater than v
 			case ">" : return a > v;
+			// if a greater than or equal v
 			case ">=" : return a >= v;
+			// if a contain bit v
 			case "&" : return (a & v) == v;
+			// if a don't contain bit v
 			case "!&" : return (~a & v) == v;
+			// if a contain b
 			case "*=" : return a.indexOf(v) != -1;
+			// if b contain a
 			case "~=" : return v.indexOf(a) != -1;
-			// Random check
+			// if random * a is equal b
 			case "#=" : return Std.int(Math.random() * a) == v;
+			// if random * a is different b
 			case "#!" : return Std.int(Math.random() * a) != v;
+			// if random * a greater then or equal  b
 			case "#>" : return Std.int(Math.random() * a) >= v;
+			// if random * a lesser then or equal  b
 			case "#<" : return Std.int(Math.random() * a) <= v;
+			// if a is equal b
 			default : return a == v;
 		}
 	}

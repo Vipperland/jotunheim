@@ -27,22 +27,38 @@ class ActionQuery extends Query {
 			r = "=";
 		}
 		switch(r){
+			// return v
 			case "=" : return v;
+			// return a plus v
 			case "+" : return a + v;
+			// return a minus v
 			case "-" : return a - v;
+			// return a plus 1
 			case "++" : return a + 1;
+			// return a minus 1
 			case "--" : return a - 1;
+			// return a times 1
 			case "*" : return a * v;
+			// return a divided v
 			case "/" : return a / v;
+			// return a module v
 			case "%" : return a % v;
+			// return a shift left
 			case "<<" : return a << v;
+			// return a shift right
 			case ">>" : return a >> v;
+			// return a whithout v
 			case "~" : return a & ~(v >> 0);
+			// return a OR v
 			case "|" : return a | v;
+			// return a AND v
 			case "&" : return a & v;
+			// return a power of v
 			case "^" : return Math.pow(a, v);
+			// return random a plus v
 			case "#" : return a + Std.int(Math.random() * v);
-			default : return a + v;
+			// return a equal v
+			default : return v;
 		}
 	}
 	

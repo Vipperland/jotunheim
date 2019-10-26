@@ -56,7 +56,7 @@ class Requirement extends Resolution {
 		while (s.length < context.ident){
 			s += '	';
 		}
-		context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + " of " + evt.target);
+		context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 	

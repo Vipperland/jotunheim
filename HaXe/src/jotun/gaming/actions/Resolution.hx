@@ -20,11 +20,9 @@ class Resolution {
 		_type = type;
 		if (Std.is(data.query, Array)){
 			query = data.query;
-		}else if (Utils.isValid(data.query)){
-			query = [data.query];
-		}
-		if (query != null){
 			query.unshift('@result');
+		}else if (Utils.isValid(data.query)){
+			query = ['@result', data.query];
 		}
 		if (data.onSuccess != null) 
 			onSuccess = new Events(_type + ".onSuccess", data.onSuccess);
@@ -43,6 +41,10 @@ class Resolution {
 		}
 		--context.ident;
 		return result;
+	}
+	
+	public function length():Int {
+		return query != null ? query.length - 1 : 0;
 	}
 	
 }

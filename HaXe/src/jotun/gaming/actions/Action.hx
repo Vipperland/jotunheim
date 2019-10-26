@@ -69,7 +69,7 @@ class Action extends Resolution {
 		while (s.length < context.ident){
 			s += '	';
 		}
-		context.log.push(s + "↑ ACTION " + evt._type + " " + (success ? "SUCCESS" : "FAIL") + " score:" + score + '/' + evt.target);
+		context.log.push(s + "↑ ACTION " + evt._type + " " + (success ? "SUCCESS" : "FAIL") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 }
