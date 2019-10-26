@@ -6,6 +6,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
+@:expose('sru.objects.QueryGroup')
 class QueryGroup {
 
 	public var units:Array<IQuery>;

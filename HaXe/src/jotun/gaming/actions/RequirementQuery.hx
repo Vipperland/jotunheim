@@ -29,15 +29,22 @@ class RequirementQuery extends Query {
 		}
 		switch(r){
 			case "=" : return a == v;
+			case "!=" : return a != v;
 			case "<" : return a < v;
 			case "<=" : return a <= v;
 			case ">" : return a > v;
 			case ">=" : return a >= v;
-			case "!=" : return a != v;
+			case "&" : return (a & v) == v;
+			case "!&" : return (~a & v) == v;
 			case "*=" : return a.indexOf(v) != -1;
 			case "~=" : return v.indexOf(a) != -1;
+			// Random check
+			case "#=" : return Std.int(Math.random() * a) == v;
+			case "#!" : return Std.int(Math.random() * a) != v;
+			case "#>" : return Std.int(Math.random() * a) >= v;
+			case "#<" : return Std.int(Math.random() * a) <= v;
+			default : return a == v;
 		}
-		return a == v;
 	}
 	
 	public function new() {

@@ -41,8 +41,9 @@ class ActionQuery extends Query {
 			case "|" : return a | v;
 			case "&" : return a & v;
 			case "^" : return Math.pow(a, v);
+			case "#" : return a + Std.int(Math.random() * v);
+			default : return a + v;
 		}
-		return a + v;
 	}
 	
 	public function new() {

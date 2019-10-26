@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:expose('sru.flow.Push')
+@:expose('sru.objects.Query')
 class Query implements IQuery implements Dynamic {
 	
 	private var _log:Array<String>;

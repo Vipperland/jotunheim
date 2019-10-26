@@ -40,8 +40,9 @@ class Requirement extends Resolution {
 				});
 			}
 			res = score >= target;
-			if (reverse)
+			if (reverse){
 				res = !res;
+			}
 		}
 		resolve(res, context);
 		if (context.debug){
