@@ -28,6 +28,8 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
+	private static var DATA:Dynamic = { };
+	
 	#if js
 		public var assets:IDisplay = cast new Display();
 	#end
@@ -39,7 +41,10 @@ class ModLib {
 		return data;
 	}
 	
+	public var data:Dynamic;
+	
 	public function new() {
+		data = DATA;
 		_predata = [];
 	}
 	
@@ -126,7 +131,11 @@ class ModLib {
 						#if js
 							// ============================= JS ONLY =============================
 							if (mod.type != null) {
-								if (mod.type == 'xcode') {
+								if (mod.type == 'data'){
+									try {
+										Reflect.setField(data, mod.name, Json.parse(content));
+									}catch (e:Dynamic){ }
+								}else if (mod.type == 'xcode') {
 									XCode.build(content);
 									content = '';
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
