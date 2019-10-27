@@ -23,6 +23,10 @@ class RequirementQuery extends Query {
 		return o != null ? o : 0;
 	}
 	
+	public function rng():Float {
+		return Math.random();
+	}
+	
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Bool {
 		if (r == null) {
 			r = ">=";
@@ -49,13 +53,13 @@ class RequirementQuery extends Query {
 			// if b contain a
 			case "~=" : return v.indexOf(a) != -1;
 			// if random * a is equal b
-			case "#=" : return Std.int(Math.random() * a) == v;
+			case "#=" : return Std.int(rng() * a) == (v >> 0);
 			// if random * a is different b
-			case "#!" : return Std.int(Math.random() * a) != v;
+			case "#!" : return Std.int(rng() * a) != (v >> 0);
 			// if random * a greater then or equal  b
-			case "#>" : return Std.int(Math.random() * a) >= v;
+			case "#>" : return (rng() * a) >= v;
 			// if random * a lesser then or equal  b
-			case "#<" : return Std.int(Math.random() * a) <= v;
+			case "#<" : return (rng() * a) <= v;
 			// if a is equal b
 			default : return a == v;
 		}

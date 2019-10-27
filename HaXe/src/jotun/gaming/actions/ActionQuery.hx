@@ -22,6 +22,10 @@ class ActionQuery extends Query {
 		return o != null ? o : 0;
 	}
 	
+	public function rng():Float {
+		return Math.random();
+	}
+	
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Dynamic {
 		if (r == null) {
 			r = "=";
@@ -56,7 +60,7 @@ class ActionQuery extends Query {
 			// return a power of v
 			case "^" : return Math.pow(a, v);
 			// return random a plus v
-			case "#" : return a + Std.int(Math.random() * v);
+			case "#" : return a + rng() * v;
 			// return a equal v
 			default : return v;
 		}
