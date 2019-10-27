@@ -31,7 +31,21 @@ class ModLib {
 	private static var DATA:Dynamic = { };
 	
 	#if js
+		
 		public var assets:IDisplay = cast new Display();
+		
+		private var _onMount:Array<IDisplay->String->Void> = [];
+		
+		private function _afterMount(object:IDisplay, module:String):Void {
+			Dice.Values(_onMount, function(v:IDisplay->String->Void) { v(object, module); } );
+		}
+		
+		public function onMount(handler:IDisplay->String->Void):Void {
+			if (Lambda.indexOf(_onMount, handler) == -1){
+				_onMount[_onMount.length] = handler;
+			}
+		}
+		
 	#end
 	
 	private var _predata:Array<String->Dynamic->Dynamic>;
@@ -53,8 +67,9 @@ class ModLib {
 	 * @param	handler
 	 */
 	public function onModuleRequest(handler:String->Dynamic->Dynamic):Void {
-		if (Lambda.indexOf(_predata, handler) == -1)
+		if (Lambda.indexOf(_predata, handler) == -1){
 			_predata[_predata.length] = handler;
+		}
 	}
 	
 	/**
@@ -296,6 +311,7 @@ class ModLib {
 				d = new Display().writeHtml(get(module, data));
 				d.children().attribute('sru-mod', signature);
 			}
+			_afterMount(d, module);
 			return d;
 		}
 		
