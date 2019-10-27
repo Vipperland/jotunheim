@@ -8,7 +8,10 @@ class RNG {
 	
 	private var _s:Float;
 	
-	public function new(?seed:Float=0) {
+	public function new(?seed:Float) {
+		if (seed == null){
+			seed = Math.random();
+		}
 		set(seed);
 	}
 	
@@ -23,6 +26,16 @@ class RNG {
 			_s -= _s;
 		}
 		return x - Math.floor(x);
+	}
+	
+	public function between(a:Int, b:Int):Int {
+		++b;
+		return Std.int(get() * (b - a) + a);
+	}
+	
+	public function max(a:Int):Int {
+		++a;
+		return Std.int(get() * a);
 	}
 	
 	public function seed():Float {
