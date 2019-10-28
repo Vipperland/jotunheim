@@ -13,19 +13,13 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Events")
 class Events {
 	
-	public static function patch(data:Dynamic, ?run:String, ?origin:Dynamic, ?debug:Bool, ?feedback:IEventContext->Void){
+	public static function patch(data:Dynamic, ?origin:Dynamic){
 		if (data.events != null){
 			if (!data.events.patched){
 				data.events.patched = true;
 				Dice.All(data.events, function(p:Dynamic, v:Dynamic){
 					(cast data.events)[p] = new Events(p, v);
 				});
-			}
-		}
-		if (run != null){
-			if (Reflect.hasField(data.events, run)){
-				var events:Events = Reflect.field(data.events, run);
-				events.run(EventController.CONTEXT(data, debug, feedback));
 			}
 		}
 	}
@@ -58,13 +52,10 @@ class Events {
 			return !a.run(context);
 		});
 		--context.ident;
-		if (context.debug){
-			_log(this, context);
-		}
 		if (context.ident == 0){
-			context.log.reverse();
-			if (context.feedback != null){
-				context.feedback(context);
+			if (context.debug){
+				_log(this, context);
+				context.log.reverse();
 			}
 		}
 	}

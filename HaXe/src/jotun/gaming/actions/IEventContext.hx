@@ -9,5 +9,4 @@ interface IEventContext implements Dynamic {
 	public var ident:Int;
 	public var ticks:Int;
 	public var origin:Dynamic;
-	public var feedback:IEventContext->Void;
 }
