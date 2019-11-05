@@ -18,8 +18,11 @@ class Test_PHP {
 		$tmp2 = jotun_Jotun::$gate;
 		$tmp2->open(jotun_db_Token::localhost("rp_afterfall", null, null, null), true);
 		if(jotun_Jotun::$gate->isOpen()) {
-			jotun_Jotun::$gate->setPdoAttributes(true);
 			$buff->push("Successful!");
+			$buff->push("users: ");
+			jotun_Jotun::$gate->table("rp_users")->setClassObj(_hx_qtype("User"));
+			$u = jotun_Jotun::$gate->table("rp_users")->findAll(null, null, null)->data[0];
+			$buff->push($u);
 		} else {
 			$tmp3 = jotun_Jotun::$gate->get_errors();
 			$buff->push($tmp3);

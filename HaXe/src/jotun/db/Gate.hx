@@ -68,7 +68,7 @@ class Gate implements IGate {
 			_token = token;
 			try {
 				_db = Database.connect(token.host, token.user, token.pass, token.options);
-				setPdoAttributes(false);
+				setPdoAttributes(true);
 			}catch (e:Dynamic) {
 				errors[errors.length] = new Error(e.getCode(), e.getMessage());
 			}

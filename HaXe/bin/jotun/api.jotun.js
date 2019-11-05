@@ -323,10 +323,10 @@ Test_$JS.main = function() {
 	var colB = new jotun_gaming_dataform_DataCollection();
 	var cA = colA.parse(t);
 	var rA = colA.stringify();
-	haxe_Log.trace("colA data(" + cA + ") \r\n\t" + rA.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 33, className : "Test_JS", methodName : "main", customParams : [colA]});
+	haxe_Log.trace("colA data(" + cA + ") \r\n\t" + rA.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 33, className : "Test_JS", methodName : "main"});
 	var cB = colB.parse(t);
 	var rB = colB.stringify();
-	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 37, className : "Test_JS", methodName : "main", customParams : [colB]});
+	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 37, className : "Test_JS", methodName : "main"});
 	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB && rA == rB),{ fileName : "Test_JS.hx", lineNumber : 39, className : "Test_JS", methodName : "main"});
 };
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };

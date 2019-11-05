@@ -114,6 +114,14 @@ interface IDataTable {
 	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : IQuery;
 	
 	/**
+	   Run a custom query
+	   @param	data
+	   @param	params
+	   @return
+	**/
+	public function query(data:String, ?params:Dynamic):IQuery;
+	
+	/**
 	 * Erase all table entries (TRUNCATE)
 	 * @return
 	 */

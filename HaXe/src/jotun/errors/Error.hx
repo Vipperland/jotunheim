@@ -9,11 +9,11 @@ class Error implements IError {
 	
 	public var object:Dynamic;
 	
-	public var message:String;
+	public var message:Dynamic;
 	
 	public var code:Dynamic;
 
-	public function new(code:Dynamic, message:String, ?object:Dynamic) {
+	public function new(code:Dynamic, message:Dynamic, ?object:Dynamic) {
 		this.object = object;
 		this.message = message;
 		this.code = code;

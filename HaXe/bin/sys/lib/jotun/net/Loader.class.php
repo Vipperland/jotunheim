@@ -169,23 +169,23 @@ class jotun_net_Loader implements jotun_net_ILoader{
 jotun_net_Loader::$FILES = _hx_anonymous(array());
 function jotun_net_Loader_0(&$_gthis, &$f, &$r, $e) {
 	{
-		$_gthis->_changed($f, "error", $e, $r);
 		++$_gthis->totalLoaded;
+		$_gthis->_changed($f, "error", $e, $r);
 		$_gthis->_loadNext();
 	}
 }
 function jotun_net_Loader_1(&$_gthis, &$f, &$r, $d) {
 	{
-		$_gthis->_changed($f, "loaded", $d, $r);
 		++$_gthis->totalLoaded;
 		jotun_Jotun::$resources->register($f, $d);
+		$_gthis->_changed($f, "loaded", $d, $r);
 		$_gthis->_loadNext();
 	}
 }
 function jotun_net_Loader_2(&$_gthis, &$file, &$handler, &$r, $d) {
 	{
-		$_gthis->_changed($file, "loaded", $d, $r);
 		jotun_Jotun::$resources->register($file, $d);
+		$_gthis->_changed($file, "loaded", $d, $r);
 		if($handler !== null) {
 			call_user_func_array($handler, array(new jotun_net_Request(true, $d, null, $file, null)));
 		}

@@ -39,7 +39,7 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 	}
 	public function getInfo() {
 		$_gthis = $this;
-		haxe_Log::trace(1, _hx_anonymous(array("fileName" => "DataTable.hx", "lineNumber" => 33, "className" => "jotun.db.objects.DataTable", "methodName" => "getInfo")));
+		haxe_Log::trace(1, _hx_anonymous(array("fileName" => "DataTable.hx", "lineNumber" => 34, "className" => "jotun.db.objects.DataTable", "methodName" => "getInfo")));
 		if(_hx_field($this, "_info") === null) {
 			$this->_info = _hx_anonymous(array());
 			$r = $this->_gate->schema($this->_name);
@@ -124,6 +124,27 @@ class jotun_db_objects_DataTable implements jotun_db_objects_IDataTable{
 	}
 	public function clear() {
 		return new jotun_db_objects_Query($this, $this->_gate->builder->truncate($this->_name)->success);
+	}
+	public function query($data, $params = null) {
+		$data = jotun_utils_Filler::to($data, _hx_anonymous(array("table" => $this->_name)), null);
+		$iof = _hx_index_of($data, "SELECT", null);
+		$tmp = null;
+		$tmp1 = null;
+		if($iof !== -1) {
+			$tmp1 = $iof < 6;
+		} else {
+			$tmp1 = false;
+		}
+		if($tmp1) {
+			$tmp = _hx_index_of($data, "FROM", $iof + 1) !== -1;
+		} else {
+			$tmp = false;
+		}
+		if($tmp) {
+			return new jotun_db_objects_ExtQuery($this, $this->_gate->query($data, $params)->execute(null, null, null)->result);
+		} else {
+			return new jotun_db_objects_Query($this, $this->_gate->prepare($data, $params, null)->execute(null, null, null)->success);
+		}
 	}
 	public function rename($to) {
 		$old = $this->_name;

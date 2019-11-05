@@ -77,7 +77,7 @@ class Command implements ICommand {
 			try {
 				success = statement.execute(p);
 				if (!success) {
-					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
+					errors[errors.length] = new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo()));
 				}
 				this.statement = null;
 			}catch (e:Dynamic) {

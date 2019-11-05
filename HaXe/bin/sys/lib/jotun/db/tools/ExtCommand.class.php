@@ -68,7 +68,8 @@ class jotun_db_tools_ExtCommand implements jotun_db_tools_IExtCommand{
 					$tmp1 = $this->get_errors();
 					$tmp2 = $this->get_errors()->length;
 					$tmp3 = $statement2->errorCode();
-					$tmp1[$tmp2] = new jotun_errors_Error($tmp3, haxe_Json::phpJsonEncode($statement2->errorInfo(), null, null), null);
+					$a = $statement2->errorInfo();
+					$tmp1[$tmp2] = new jotun_errors_Error($tmp3, new _hx_array($a), null);
 				}
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) && $__hx__e->getCode() == null ? $__hx__e->e : $__hx__e;

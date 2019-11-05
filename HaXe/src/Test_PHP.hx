@@ -3,6 +3,7 @@ import jotun.Jotun;
 import jotun.db.Token;
 import jotun.php.file.Uploader;
 import jotun.serial.JsonTool;
+import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import sys.FileSystem;
@@ -56,8 +57,14 @@ class Test_PHP {
 		buff.push('===================================================== Database Connect');
 		Jotun.gate.open(Token.localhost('rp_afterfall'), true);
 		if (Jotun.gate.isOpen()){
-			Jotun.gate.setPdoAttributes(true);
 			buff.push('Successful!');
+			buff.push('users: ');
+			
+			Jotun.gate.table('rp_users').setClassObj(User);
+			Jotun.gate.table('rp_users').query
+			var u:User = Jotun.gate.table('rp_users').findAll().data[0];
+			buff.push(u);
+			
 		}else{
 			buff.push(Jotun.gate.errors);
 		}
@@ -66,4 +73,10 @@ class Test_PHP {
 		
 	}
 	
+}
+class User {
+	var key:String;
+	public function new(){
+		key = Key.GEN();
+	}
 }

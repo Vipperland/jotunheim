@@ -4,6 +4,7 @@
 class jotun_modules_ModLib {
 	public function __construct() {
 		if(!php_Boot::$skip_constructor) {
+		$this->data = jotun_modules_ModLib::$DATA;
 		$this->_predata = (new _hx_array(array()));
 	}}
 	public $_predata;
@@ -11,6 +12,7 @@ class jotun_modules_ModLib {
 		jotun_utils_Dice::Values($this->_predata, array(new _hx_lambda(array(&$data, &$name), "jotun_modules_ModLib_0"), 'execute'), null);
 		return $data;
 	}
+	public $data;
 	public function onModuleRequest($handler) {
 		if(Lambda::indexOf($this->_predata, $handler) === -1) {
 			$this->_predata[$this->_predata->length] = $handler;
@@ -62,7 +64,7 @@ class jotun_modules_ModLib {
 				$_ex_ = ($__hx__e instanceof HException) && $__hx__e->getCode() == null ? $__hx__e->e : $__hx__e;
 				$e = $_ex_;
 				{
-					haxe_Log::trace("Parsing error for MOD:[" . _hx_string_or_null($name) . "]", _hx_anonymous(array("fileName" => "ModLib.hx", "lineNumber" => 212, "className" => "jotun.modules.ModLib", "methodName" => "getObj")));
+					haxe_Log::trace("Parsing error for MOD:[" . _hx_string_or_null($name) . "]", _hx_anonymous(array("fileName" => "ModLib.hx", "lineNumber" => 236, "className" => "jotun.modules.ModLib", "methodName" => "getObj")));
 				}
 			}
 		}
@@ -104,9 +106,12 @@ class jotun_modules_ModLib {
 	}
 	static function CACHE() { $args = func_get_args(); return call_user_func_array(self::$CACHE, $args); }
 	static $CACHE;
+	static function DATA() { $args = func_get_args(); return call_user_func_array(self::$DATA, $args); }
+	static $DATA;
 	function __toString() { return 'jotun.modules.ModLib'; }
 }
 jotun_modules_ModLib::$CACHE = _hx_anonymous(array());
+jotun_modules_ModLib::$DATA = _hx_anonymous(array());
 function jotun_modules_ModLib_0(&$data, &$name, $v) {
 	{
 		$data = call_user_func_array($v, array($name, $data));

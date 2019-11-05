@@ -4,6 +4,7 @@ import jotun.db.tools.ICommand;
 import jotun.db.tools.IExtCommand;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import jotun.utils.Filler;
 
 /**
  * ...
@@ -119,6 +120,16 @@ class DataTable implements IDataTable {
 	
 	public function clear():IQuery {
 		return new Query(this, _gate.builder.truncate(_name).success);
+	}
+	
+	public function query(data:String, ?params:Dynamic):IQuery {
+		data = Filler.to(data, {table :_name});
+		var iof:Int = data.indexOf('SELECT');
+		if (iof != -1 && iof < 6 && data.indexOf('FROM', iof+1) != -1){
+			return new ExtQuery(this, _gate.query(data, params).execute().result);
+		}else{
+			return new Query(this, _gate.prepare(data, params).execute().success);
+		}
 	}
 	
 	public function rename(to:String):IQuery {

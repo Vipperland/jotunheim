@@ -76,7 +76,7 @@ class ExtCommand implements IExtCommand {
 					}
 					statement = null;
 				}else {
-					errors[errors.length] = new Error(statement.errorCode(), Json.stringify(statement.errorInfo()));
+					errors[errors.length] = new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo()));
 				}
 			}catch (e:Dynamic) {
 				if (Std.is(e, String)) {

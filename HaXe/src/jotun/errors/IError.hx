@@ -8,7 +8,7 @@ interface IError {
   
 	public var object:Dynamic;
 	
-	public var message:String;
+	public var message:Dynamic;
 	
 	public var code:Dynamic;
 	

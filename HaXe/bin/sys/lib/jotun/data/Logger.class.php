@@ -32,17 +32,11 @@ class jotun_data_Logger {
 	public function push($q, $type) {
 		jotun_utils_Dice::Values($this->_events, array(new _hx_lambda(array(&$q, &$type), "jotun_data_Logger_0"), 'execute'), null);
 	}
+	public function dump($q) {
+		php_Lib::dump($q);
+	}
 	public function query($q, $type) {
-		$b = $this->_level;
-		$aNeg = $type < 0;
-		$bNeg = $b < 0;
-		$tmp = null;
-		if($aNeg !== $bNeg) {
-			$tmp = $aNeg;
-		} else {
-			$tmp = $type > $b;
-		}
-		if($tmp) {
+		if($type > $this->_level) {
 			return;
 		}
 		$t = null;
@@ -69,7 +63,7 @@ class jotun_data_Logger {
 			$t = "";
 		}break;
 		}
-		php_Lib::dump($q);
+		$this->dump($q);
 	}
 	public function __call($m, $a) {
 		if(isset($this->$m) && is_callable($this->$m))

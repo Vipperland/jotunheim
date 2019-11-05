@@ -45,7 +45,7 @@ class jotun_db_Gate implements jotun_db_IGate{
 			$this->_token = $token;
 			try {
 				$this->_db = jotun_db_pdo_Database::connect($token->host, $token->user, $token->pass, $token->options);
-				$this->setPdoAttributes(false);
+				$this->setPdoAttributes(true);
 			}catch(Exception $__hx__e) {
 				$_ex_ = ($__hx__e instanceof HException) && $__hx__e->getCode() == null ? $__hx__e->e : $__hx__e;
 				$e = $_ex_;

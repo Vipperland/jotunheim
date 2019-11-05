@@ -62,7 +62,8 @@ class jotun_db_tools_Command implements jotun_db_tools_ICommand{
 					$tmp = $this->get_errors();
 					$tmp1 = $this->get_errors()->length;
 					$tmp2 = $this->statement->errorCode();
-					$tmp[$tmp1] = new jotun_errors_Error($tmp2, haxe_Json::phpJsonEncode($this->statement->errorInfo(), null, null), null);
+					$a = $this->statement->errorInfo();
+					$tmp[$tmp1] = new jotun_errors_Error($tmp2, new _hx_array($a), null);
 				}
 				$this->statement = null;
 			}catch(Exception $__hx__e) {
