@@ -10,13 +10,10 @@ interface IQueryBuilder {
 	/**
 	 * Add a new entry to the table
 	 * @param	table
-	 * @param	clause
 	 * @param	parameters
-	 * @param	order
-	 * @param	limit
 	 * @return
 	 */
-	public function add (table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String) : ICommand;
+	public function add (table:String, ?parameters:Dynamic) : ICommand;
 
 	/**
 	 * Find any value in any table

@@ -111,9 +111,9 @@ class QueryBuilder implements IQueryBuilder {
 		return q;
 	}
 	
-	public function add(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
+	public function add(table:String, ?parameters:Dynamic):ICommand {
 		var dataset:Array<Dynamic> = [];
-		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset);
+		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(null, dataset) + ";", dataset);
 	}
 	
 	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
@@ -141,7 +141,7 @@ class QueryBuilder implements IQueryBuilder {
 			if (filter != null) {
 				v = filter(v);
 			}
-			if (add(to, null, v, null, null).success){
+			if (add(to, v).success){
 				result[result.length] = v;
 			}
 		});

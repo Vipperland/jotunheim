@@ -15,6 +15,7 @@ import jotun.db.tools.IQueryBuilder;
 import jotun.db.tools.QueryBuilder;
 import jotun.errors.Error;
 import jotun.errors.IError;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 import php.Lib;
 
@@ -48,6 +49,16 @@ class Gate implements IGate {
 	
 	public function getName():String {
 		return _token.db;
+	}
+	
+	public function getInsertedID(?field:String, ?mode:String):Dynamic {
+		var r:Dynamic = field != null ? _db.lastInsertId(field) : _db.lastInsertId();
+		switch(mode){
+			case 'int' : return Std.parseInt(r);
+			case 'float' : return Std.parseFloat(r);
+			case 'bool' : return Utils.boolean(r);
+			default : return r;
+		}
 	}
 	
 	public function new() {
@@ -105,10 +116,6 @@ class Gate implements IGate {
 			tables[tables.length] = Clause.EQUAL('TABLE_NAME', v);
 		});
 		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute().result;
-	}
-	
-	public function insertedId():UInt {
-		return Std.parseInt(_db.lastInsertId());
 	}
 	
 	public function setPdoAttributes(value:Bool):IGate {

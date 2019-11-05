@@ -31,14 +31,18 @@ interface IDataTable {
 	public function setClassObj(value:Dynamic):IDataTable;
 	
 	/**
-	 * Insert a new entry
+	 * Insert a new object
 	 * @param	parameters
-	 * @param	clause
-	 * @param	order
-	 * @param	limit
 	 * @return
 	 */
-	public function add (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQuery;
+	public function add (?parameters:Dynamic = null) : IQuery;
+	
+	/**
+	   Insert multiples objects
+	   @param	parameters
+	   @return
+	**/
+	public function addAll (?parameters:Dynamic = null) : Array<IQuery>;
 
 	/**
 	 * Select all entries
@@ -47,7 +51,7 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function findAll (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
+	public function find (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
 	
 	/**
 	 * Select a single entry

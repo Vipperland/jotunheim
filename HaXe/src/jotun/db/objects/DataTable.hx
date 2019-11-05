@@ -31,7 +31,6 @@ class DataTable implements IDataTable {
 	}
 	
 	public function getInfo():Dynamic {
-		trace(1);
 		if (_info == null) {
 			_info = { };
 			var r:Array<Dynamic> = _gate.schema(_name);
@@ -74,19 +73,19 @@ class DataTable implements IDataTable {
 		return this;
 	}
 	
-	public function addAll (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : Array<IQuery> {
+	public function addAll (?parameters:Dynamic = null) : Array<IQuery> {
 		var r:Array<IQuery> = [];
 		Dice.All(parameters, function(v:Dynamic){
-			r[r.length] = add(parameters, clause, order, limit);
+			r[r.length] = add(parameters);
 		});
 		return r;
 	}
 
-	public function add (?parameters:Dynamic = null, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IQuery {
-		return new Query(this, _gate.builder.add(_name, clause, parameters, order, limit).execute().success);
+	public function add (?parameters:Dynamic = null) : IQuery {
+		return new Query(this, _gate.builder.add(_name, parameters).execute().success);
 	}
 
-	public function findAll (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
+	public function find (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
 		return new ExtQuery(this, _gate.builder.find(_checkRestriction(), _name, clause, order, limit).execute(null, _class).result);
 	}
 

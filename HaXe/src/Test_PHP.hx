@@ -6,6 +6,7 @@ import jotun.serial.JsonTool;
 import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import php.Session;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -18,8 +19,16 @@ class Test_PHP {
 	static public function main() {
 		//var img:Image = new Image('../assets/img/image.jpg');
 		//img.fit(300,300).save('../assets/img/test.jpg');
+		//Session.setCookieParams(600, '/sys/', Jotun.domain.host, false, true);
+		//Session.setName('JOTUNHEIM');
+		//Session.start();
+		//
+		
 		//trace('===================================================== Headers');
 		var buff:Array<Dynamic> = [];
+		
+		//buff.push('SESSION: ' + Session.getId());
+		
 		Dice.All(Jotun.header.getClientHeaders(), function(p:String, v:String){
 			buff.push(p + ': ' + v);
 		});
@@ -61,8 +70,7 @@ class Test_PHP {
 			buff.push('users: ');
 			
 			Jotun.gate.table('rp_users').setClassObj(User);
-			Jotun.gate.table('rp_users').query
-			var u:User = Jotun.gate.table('rp_users').findAll().data[0];
+			var u:User = Jotun.gate.table('rp_users').find().data[0];
 			buff.push(u);
 			
 		}else{

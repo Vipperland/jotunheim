@@ -91,10 +91,12 @@ interface IGate {
 	public function setPdoAttributes(value:Bool):IGate;
 	
 	/**
-	 * Last row affected
-	 * @return
-	 */
-	public function insertedId ():UInt;
+	   LAst inserted column value
+	   @param	field
+	   @param	mode
+	   @return
+	**/
+	public function getInsertedID(?field:String, ?mode:String):Dynamic;
 	
 	/**
 	 * Verify if table exists
