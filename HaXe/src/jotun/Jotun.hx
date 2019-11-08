@@ -122,7 +122,7 @@ class Jotun {
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
 				//Automator._init();
-				log("Jotun => LOADING...", 1);
+				//log("Jotun => LOADING...", 1);
 				Reflect.deleteField(Jotun, '_preInit');
 				var state:String = Browser.document.readyState;
 				if (state == 'complete' || state == 'interactive'){

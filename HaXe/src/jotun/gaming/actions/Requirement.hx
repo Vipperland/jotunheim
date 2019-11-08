@@ -12,6 +12,11 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Requirement")
 class Requirement extends Resolution {
 	
+	public static var cache:Dynamic = {};
+	public static function get(id:String):Resolution {
+		return cast Reflect.field(cache, id);
+	}
+	
 	public static var commands:QueryGroup = new QueryGroup();
 	
 	public var cancelOnSuccess:Bool;
@@ -21,13 +26,19 @@ class Requirement extends Resolution {
 	
 	public function new(type:String, data:Dynamic) {
 		super(type, data);
-		cancelOnSuccess = data.cancelOnSuccess == true;
-		cancelOnFail = data.cancelOnFail == true;
-		reverse = data.reverse == true;
-		target = Utils.isValid(data.target) ? Std.int(data.target) : (query != null ? query.length-1 : 0);
+		cancelOnSuccess = Utils.boolean(data.cancelOnSuccess);
+		cancelOnFail = Utils.boolean(data.cancelOnFail);
+		reverse = Utils.boolean(data.reverse);
+		target = Std.int(data.target);
+		if (target == null){
+			target = (query != null ? query.length - 1 : 0);
+		}
+		if (Utils.isValid(data.id)){
+			Reflect.setField(cache, data.id, this);
+		}
 	}
 	
-	public function verify(context:IEventContext):Bool {
+	public function verify(context:IEventContext, position:Int):Bool {
 		var res:Bool = true;
 		var score:UInt = 0;
 		if (Utils.isValid(query)){
@@ -46,17 +57,17 @@ class Requirement extends Resolution {
 		}
 		resolve(res, context);
 		if (context.debug){
-			_log(this, context, res, score, reverse);
+			_log(this, context, res, score, reverse, position);
 		}
 		return res;
 	}
 	
-	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool):Void {
+	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
 		var s:String = "";
 		while (s.length < context.ident){
 			s += '	';
 		}
-		context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+		context.log.push(s + "↓ " + (success ? "SUCCESS" : "FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': ' ') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 	

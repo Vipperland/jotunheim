@@ -13,6 +13,11 @@ import jotun.utils.Dice;
 @:expose("jtn.game.Action")
 class Action extends Resolution {
 	
+	public static var cache:Dynamic = {};
+	public static function get(id:String):Action {
+		return cast Reflect.field(cache, id);
+	}
+	
 	public static var commands:QueryGroup = new QueryGroup();
 	
 	public var requirements:Array<Requirement>;
@@ -25,23 +30,34 @@ class Action extends Resolution {
 		requirements = [];
 		var i:Int = 0;
 		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic){
-			if (Std.is(v, Requirement)){
-				requirements[i] = cast v;
-			}else{
-				requirements[i] = new Requirement(type + '[' + p + ']', v);
+			if (Std.is(v, String)){
+				v = Requirement.get(v);
 			}
-			++i;
+			if(v != null){
+				if (Std.is(v, Requirement)){
+					requirements[i] = cast v;
+				}else{
+					requirements[i] = new Requirement(type + '[' + p + ']', v);
+				}
+				++i;
+			}
 		});
 		// Required condition resolution
-		target = Utils.isValid(data.target) ? Std.int(data.target) : (requirements.length == 0 ? 0 : 1);
+		target = Std.int(data.target);
+		if (target == null){
+			target = requirements.length;
+		}
+		if (Utils.isValid(data.id)){
+			Reflect.setField(cache, data.id, this);
+		}
 	}
 	
-	public function run(context:IEventContext):Bool {
+	public function run(context:IEventContext, position:Int):Bool {
 		// Check requirements
 		var resolution:Int = 0;
 		++context.ident;
-		Dice.Values(requirements, function(r:Requirement){
-			var result:Bool = r.verify(context);
+		Dice.All(requirements, function(p:Int, r:Requirement){
+			var result:Bool = r.verify(context, p);
 			if (result){
 				++resolution;
 				return r.cancelOnSuccess;
@@ -54,7 +70,7 @@ class Action extends Resolution {
 		// resolution
 		var success:Bool = (target == 0) || (target > 0 && resolution >= target) || (target < 0 && resolution <= target);
 		if (context.debug){
-			_log(this, context, success, resolution);
+			_log(this, context, success, resolution, position);
 		}
 		if (success){
 			if(Utils.isValid(query)){
@@ -64,12 +80,12 @@ class Action extends Resolution {
 		return resolve(success, context);
 	}
 
-	private static function _log(evt:Action, context:IEventContext, success:Bool, score:Int):Void {
+	private static function _log(evt:Action, context:IEventContext, success:Bool, score:Int, position:Int):Void {
 		var s:String = "";
 		while (s.length < context.ident){
 			s += '	';
 		}
-		context.log.push(s + "↑ ACTION " + evt._type + " " + (success ? "SUCCESS" : "FAIL") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+		context.log.push(s + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 }

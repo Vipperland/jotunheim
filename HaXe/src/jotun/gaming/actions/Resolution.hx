@@ -7,9 +7,11 @@ import jotun.tools.Utils;
  */
 @:expose("jtn.game.Resolution")
 class Resolution {
-
+	
 	private var _type:String;
-		
+	
+	public var id:String;
+	
 	public var query:Array<String>;
 	
 	public var onSuccess:Events;
@@ -24,10 +26,13 @@ class Resolution {
 		}else if (Utils.isValid(data.query)){
 			query = ['@result', data.query];
 		}
-		if (data.onSuccess != null) 
+		if (data.onSuccess != null) {
 			onSuccess = new Events(_type + ".onSuccess", data.onSuccess);
-		if (data.onFail != null) 
+		}
+		if (data.onFail != null) {
 			onFail = new Events(_type + ".onFail", data.onFail);
+		}
+		id = data.id;
 	}
 	
 	public function resolve(result:Bool, context:IEventContext):Bool {

@@ -36,20 +36,25 @@ class Events {
 		_data = [];
 		var i:UInt = 0;
 		Dice.All(data, function(p:String, v:Dynamic){
-			if (Std.is(v, Action)){
-				_data[i] = v;
-			}else{
-				_data[i] = new Action(_type + '[' + p + ']', v);
+			if (Std.is(v, String)){
+				v = Action.get(v);
 			}
-			++i;
+			if(v != null){
+				if (Std.is(v, Action)){
+					_data[i] = v;
+				}else{
+					_data[i] = new Action(_type + '[' + p + ']', v);
+				}
+				++i;
+			}
 		});
 	}
 	
 	public function run(context:IEventContext) {
 		var l:UInt = context.log.length;
 		++context.ident;
-		Dice.Values(_data, function(a:Action):Bool{
-			return !a.run(context);
+		Dice.All(_data, function(p:Int, a:Action):Bool{
+			return !a.run(context, p);
 		});
 		--context.ident;
 		if (context.ident == 0){
