@@ -2,7 +2,6 @@ package jotun.gaming.actions;
 import jotun.Jotun;
 import jotun.gaming.actions.IEventContext;
 import jotun.utils.Dice;
-import rim.data.helpers.IEventDispatcher;
 
 /**
  * ...

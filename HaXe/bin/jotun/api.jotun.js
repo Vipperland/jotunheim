@@ -17,7 +17,7 @@ $hx_exports["sru"] = $hx_exports["sru"] || {};
 $hx_exports["sru"]["math"] = $hx_exports["sru"]["math"] || {};
 ;$hx_exports["sru"]["data"] = $hx_exports["sru"]["data"] || {};
 ;$hx_exports["sru"]["modules"] = $hx_exports["sru"]["modules"] || {};
-;$hx_exports["sru"]["flow"] = $hx_exports["sru"]["flow"] || {};
+;$hx_exports["sru"]["objects"] = $hx_exports["sru"]["objects"] || {};
 var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -327,7 +327,7 @@ Test_$JS.main = function() {
 	var cB = colB.parse(t);
 	var rB = colB.stringify();
 	haxe_Log.trace("colB data(" + cB + ") \r\n\t" + rB.split("\r").join("\r\n\t"),{ fileName : "Test_JS.hx", lineNumber : 37, className : "Test_JS", methodName : "main"});
-	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB && rA == rB),{ fileName : "Test_JS.hx", lineNumber : 39, className : "Test_JS", methodName : "main"});
+	haxe_Log.trace("Data Match? \r\n\t" + Std.string(t == rA && t == rB),{ fileName : "Test_JS.hx", lineNumber : 39, className : "Test_JS", methodName : "main"});
 };
 var ValueType = { __ename__ : true, __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] };
 ValueType.TNull = ["TNull",0];
@@ -1010,17 +1010,17 @@ haxe_io_Error.OutsideBounds = ["OutsideBounds",2];
 haxe_io_Error.OutsideBounds.toString = $estr;
 haxe_io_Error.OutsideBounds.__enum__ = haxe_io_Error;
 haxe_io_Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe_io_Error; $x.toString = $estr; return $x; };
-var jotun_flow_IPush = function() { };
-jotun_flow_IPush.__name__ = ["jotun","flow","IPush"];
-jotun_flow_IPush.prototype = {
-	__class__: jotun_flow_IPush
+var jotun_objects_IQuery = function() { };
+jotun_objects_IQuery.__name__ = ["jotun","objects","IQuery"];
+jotun_objects_IQuery.prototype = {
+	__class__: jotun_objects_IQuery
 };
-var jotun_flow_Push = $hx_exports["sru"]["flow"]["Push"] = function() {
+var jotun_objects_Query = $hx_exports["sru"]["objects"]["Query"] = function() {
 	this._log = [];
 };
-jotun_flow_Push.__name__ = ["jotun","flow","Push"];
-jotun_flow_Push.__interfaces__ = [jotun_flow_IPush];
-jotun_flow_Push.prototype = {
+jotun_objects_Query.__name__ = ["jotun","objects","Query"];
+jotun_objects_Query.__interfaces__ = [jotun_objects_IQuery];
+jotun_objects_Query.prototype = {
 	log: function() {
 		return this._log;
 	}
@@ -1028,8 +1028,8 @@ jotun_flow_Push.prototype = {
 		this._log = [];
 		this._now = [];
 	}
-	,proc: function(data) {
-		this._buffer = { };
+	,proc: function(data,result) {
+		this._buffer = result != null ? result : { };
 		this._now = null;
 		this._batchExec(data);
 		return this._buffer;
@@ -1079,11 +1079,11 @@ jotun_flow_Push.prototype = {
 			}
 		}
 	}
-	,__class__: jotun_flow_Push
+	,__class__: jotun_objects_Query
 };
 var jotun_dom_IDisplay = function() { };
 jotun_dom_IDisplay.__name__ = ["jotun","dom","IDisplay"];
-jotun_dom_IDisplay.__interfaces__ = [jotun_flow_IPush];
+jotun_dom_IDisplay.__interfaces__ = [jotun_objects_IQuery];
 jotun_dom_IDisplay.prototype = {
 	__class__: jotun_dom_IDisplay
 };
@@ -1103,7 +1103,7 @@ var jotun_dom_Display = $hx_exports["jtn"]["dom"]["Display"] = function(q,t) {
 		jotun_dom_Display._DATA[this._uid] = this;
 	}
 	this.events = new jotun_events_Dispatcher(this);
-	jotun_flow_Push.call(this);
+	jotun_objects_Query.call(this);
 };
 jotun_dom_Display.__name__ = ["jotun","dom","Display"];
 jotun_dom_Display.__interfaces__ = [jotun_dom_IDisplay];
@@ -1133,8 +1133,8 @@ jotun_dom_Display.getPosition = function(target) {
 	var b = target.getBoundingClientRect();
 	return new jotun_math_Point(b.left - a.left,b.top - a.top);
 };
-jotun_dom_Display.__super__ = jotun_flow_Push;
-jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
+jotun_dom_Display.__super__ = jotun_objects_Query;
+jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	enablePerspective: function() {
 		this.style({ perspective : "1000px", transformOrigin : "50% 50% 0"});
 	}
@@ -1716,7 +1716,7 @@ jotun_dom_Display.prototype = $extend(jotun_flow_Push.prototype,{
 		jotun_Jotun.document.scrollTo(this,time,ease,x,y);
 		return this;
 	}
-	,autoInject: function() {
+	,redoScripts: function() {
 		var _gthis = this;
 		this.all("script").each(function(o) {
 			o.remove();
@@ -2622,8 +2622,11 @@ jotun_data_Logger.prototype = {
 			v(q,type);
 		});
 	}
+	,dump: function(q) {
+		console.log(q);
+	}
 	,query: function(q,type) {
-		if(_$UInt_UInt_$Impl_$.gt(type,this._level)) {
+		if(type > this._level) {
 			return;
 		}
 		var t;
@@ -2649,7 +2652,30 @@ jotun_data_Logger.prototype = {
 		default:
 			t = "";
 		}
-		console.log(t + Std.string(q));
+		this.dump(t + Std.string(q));
+	}
+	,showConsole: function(url) {
+		if(url == null) {
+			url = "modules/dev/console.html";
+		}
+		jotun_Jotun.module(url,"jotun-console",null,function(r) {
+			var ui = jotun_Jotun.one("jotun-console");
+			if(ui == null) {
+				ui = jotun_Jotun.resources.build("jotun-console");
+				if(ui != null) {
+					ui.addToBody();
+				}
+			}
+			if(ui != null) {
+				ui.show();
+			}
+		});
+	}
+	,hideConsole: function() {
+		var ui = jotun_Jotun.one("jotun-console");
+		if(ui != null) {
+			ui.hide();
+		}
 	}
 	,__class__: jotun_data_Logger
 };
@@ -2694,12 +2720,8 @@ jotun_net_ILoader.__name__ = ["jotun","net","ILoader"];
 jotun_net_ILoader.prototype = {
 	__class__: jotun_net_ILoader
 };
-var jotun_net_Loader = $hx_exports["jtn"]["modules"]["Loader"] = function(noCache) {
-	if(noCache == null) {
-		noCache = false;
-	}
+var jotun_net_Loader = $hx_exports["jtn"]["modules"]["Loader"] = function() {
 	this._toload = [];
-	this._noCache = noCache;
 	this.signals = new jotun_signals_Signals(this);
 	this.totalLoaded = 0;
 	this.totalFiles = 0;
@@ -2742,14 +2764,14 @@ jotun_net_Loader.prototype = {
 			this._changed(f,"started",null,r);
 			r.async = true;
 			r.onError = function(e) {
-				_gthis._changed(f,"error",e,r);
 				++_gthis.totalLoaded;
+				_gthis._changed(f,"error",e,r);
 				_gthis._loadNext();
 			};
 			r.onData = function(d) {
-				_gthis._changed(f,"loaded",d,r);
 				++_gthis.totalLoaded;
 				jotun_Jotun.resources.register(f,d);
+				_gthis._changed(f,"loaded",d,r);
 				_gthis._loadNext();
 			};
 			r.request("GET",null,$bind(this,this._onLoadProgress));
@@ -2769,36 +2791,14 @@ jotun_net_Loader.prototype = {
 	,_complete: function() {
 		this.signals.call("completed");
 	}
-	,build: function(module,data,each) {
-		return jotun_Jotun.resources.build(module,data,each);
-	}
-	,async: function(file,target,data,handler,progress) {
+	,module: function(file,data,handler,progress) {
 		var _gthis = this;
-		var h = file.indexOf("#") != -1 ? file.split("#") : [file];
-		var r = this._getReq(h[0]);
+		var r = this._getReq(file);
 		r.async = true;
 		this._changed(file,"started",data,r);
 		r.onData = function(d) {
-			_gthis._changed(file,"loaded",d,r);
 			jotun_Jotun.resources.register(file,d);
-			if(target != null) {
-				if(typeof(target) == "string") {
-					var e = jotun_Jotun.one(target,null);
-					if(e != null) {
-						if(!((data instanceof Array) && data.__enum__ == null)) {
-							data = [data];
-						}
-						e.addChild(_gthis.build(file,data));
-					}
-				} else {
-					try {
-						_gthis.build(file,data,target);
-					} catch( e1 ) {
-						if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
-						jotun_Jotun.log(e1,3);
-					}
-				}
-			}
+			_gthis._changed(file,"loaded",d,r);
 			if(handler != null) {
 				handler(new jotun_net_Request(true,d,null,file));
 			}
@@ -2826,22 +2826,14 @@ jotun_net_Loader.prototype = {
 			method = "POST";
 		}
 		var _gthis = this;
-		if(method == null || method == "") {
-			method = "POST";
-		} else {
+		if(method != null) {
 			method = method.toUpperCase();
 		}
 		var is_post = method == "POST";
 		var is_get = method == "GET";
 		var is_data = typeof(data) == "string";
-		if(method == "GET") {
-			var ps = url.split("?");
-			if(ps.length == 1 || ps[1].length == 0) {
-				ps[1] = jotun_tools_Utils.paramsOf(data);
-			} else {
-				ps[1] += "&" + jotun_tools_Utils.paramsOf(data);
-			}
-			url = ps.join("?");
+		if(is_get && data != null) {
+			url += (url.indexOf("?") == -1 ? "?" : "&") + jotun_tools_Utils.paramsOf(data);
 		}
 		var r = this._getReq(url);
 		this._changed(url,"started",data,r);
@@ -2941,18 +2933,30 @@ jotun_signals_Signals.prototype = {
 	,__class__: jotun_signals_Signals
 };
 var jotun_modules_ModLib = $hx_exports["sru"]["modules"]["ModLib"] = function() {
+	this._onMount = [];
 	this.assets = new jotun_dom_Display();
+	this.data = jotun_modules_ModLib.DATA;
 	this._predata = [];
 };
 jotun_modules_ModLib.__name__ = ["jotun","modules","ModLib"];
 jotun_modules_ModLib.prototype = {
-	_sanitize: function(name,data) {
+	_afterMount: function(object,module) {
+		jotun_utils_Dice.Values(this._onMount,function(v) {
+			v(object,module);
+		});
+	}
+	,onMount: function(handler) {
+		if(Lambda.indexOf(this._onMount,handler) == -1) {
+			this._onMount[this._onMount.length] = handler;
+		}
+	}
+	,_sanitize: function(name,data) {
 		jotun_utils_Dice.Values(this._predata,function(v) {
 			data = v(name,data);
 		});
 		return data;
 	}
-	,onModuleRequest: function(handler) {
+	,onDataOut: function(handler) {
 		if(Lambda.indexOf(this._predata,handler) == -1) {
 			this._predata[this._predata.length] = handler;
 		}
@@ -3014,9 +3018,11 @@ jotun_modules_ModLib.prototype = {
 							content = content.split("\r\n").join(mod.wrap).split("\n").join(mod.wrap).split("\r").join(mod.wrap);
 						}
 						if(mod.type != null) {
-							if(mod.type == "xcode") {
-								jotun_css_XCode.build(content);
-								content = "";
+							if(mod.type == "data") {
+								try {
+									_gthis.data[mod.name] = JSON.parse(content);
+								} catch( e ) {
+								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
 								jotun_Jotun.document.head.bind(content,mod.type,mod.id);
 								content = "";
@@ -3085,7 +3091,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( e ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 212, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "ModLib.hx", lineNumber : 234, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
@@ -3111,14 +3117,8 @@ jotun_modules_ModLib.prototype = {
 			d = new jotun_dom_Display().writeHtml(this.get(module,data));
 			d.children().attribute("sru-mod",signature);
 		}
+		this._afterMount(d,module);
 		return d;
-	}
-	,buildIn: function(module,target,data,each) {
-		var display = jotun_Jotun.one(target);
-		if(display != null) {
-			display.addChild(this.build(module,data,each));
-		}
-		return display;
 	}
 	,__class__: jotun_modules_ModLib
 };
@@ -3202,7 +3202,6 @@ jotun_Jotun._preInit = function() {
 		jotun_Jotun._loadPool = [];
 		jotun_Jotun.document = jotun_dom_Document.ME();
 		window.document.addEventListener("DOMContentLoaded",jotun_Jotun._loadController);
-		jotun_Jotun.log("Jotun => LOADING...",1);
 		Reflect.deleteField(jotun_Jotun,"_preInit");
 		var state = window.document.readyState;
 		if(state == "complete" || state == "interactive") {
@@ -3278,11 +3277,6 @@ jotun_Jotun.status = function() {
 	jotun_Jotun.log("Jotun => STATUS " + (jotun_Jotun._initialized ? "READY " : "") + jotun_tools_Utils.toString(jotun_Jotun.agent,true),1);
 	return jotun_Jotun.agent;
 };
-jotun_Jotun.module = function(file,target,content,handler,progress) {
-	jotun_Jotun.run(function() {
-		jotun_Jotun.loader.async(file,target,content,handler,progress);
-	});
-};
 jotun_Jotun.request = function(url,data,method,handler,headers,progress,options) {
 	if(method == null) {
 		method = "POST";
@@ -3290,6 +3284,13 @@ jotun_Jotun.request = function(url,data,method,handler,headers,progress,options)
 	jotun_Jotun.run(function() {
 		jotun_Jotun.loader.request(url,data,method,handler,headers,progress,options);
 	});
+};
+jotun_Jotun.module = function(file,name,data,handler) {
+	if(!jotun_Jotun.resources.exists(name)) {
+		jotun_Jotun.loader.module(file,data,handler);
+	} else {
+		handler(null);
+	}
 };
 jotun_Jotun.log = function(q,type) {
 	if(type == null) {
@@ -3381,77 +3382,6 @@ jotun_css_CSSGroup.prototype = {
 		this.style = this.styleXS = this.styleSM = this.styleMD = this.styleLG = this.stylePR = "";
 	}
 	,__class__: jotun_css_CSSGroup
-};
-var jotun_css_Entry = function(keys,dict,i) {
-	this.important = i;
-	this.keys = keys;
-	this.head = keys[0];
-	this.tail = keys[keys.length - 1];
-	this.missing = 0;
-	this.canceled = false;
-};
-jotun_css_Entry.__name__ = ["jotun","css","Entry"];
-jotun_css_Entry.prototype = {
-	build: function() {
-		var _gthis = this;
-		var r = null;
-		if(this.head != null) {
-			r = "";
-			var c = 0;
-			var t = this.keys.length;
-			jotun_utils_Dice.Values(this.keys,function(v) {
-				if(!v.skip) {
-					var tmp = c += 1;
-					_gthis.next = _gthis.keys[tmp];
-					r += v.entry != null ? v.entry.verifier(_gthis,v,_gthis.next) : _gthis._valueOf(v,t,c);
-				}
-				return _gthis.canceled;
-			});
-		}
-		return r + (this.important ? " !important" : "");
-	}
-	,cancel: function() {
-		this.canceled = true;
-	}
-	,_valueOf: function(v,t,c) {
-		if(v.color != null) {
-			return v.color;
-		}
-		if(v.measure != null) {
-			return v.measure;
-		}
-		++this.missing;
-		return v.key + (t == c ? "" : t - 1 == c ? ":" : "-");
-	}
-	,get: function(i) {
-		if(i < this.keys.length) {
-			return this.keys[i];
-		} else {
-			return null;
-		}
-	}
-	,hasKey: function(s,i,e) {
-		var _gthis = this;
-		if(e == null) {
-			e = this.keys.length;
-		}
-		return !jotun_utils_Dice.Count(i,e,function(a,b,c) {
-			return _gthis.keys[a].key == s;
-		}).completed;
-	}
-	,compile: function(s,e) {
-		var _gthis = this;
-		var r = [];
-		if(e == null) {
-			e = this.keys.length;
-		}
-		jotun_utils_Dice.Count(s,e,function(a,b,c) {
-			r[r.length] = _gthis.keys[a].key;
-			return false;
-		});
-		return r;
-	}
-	,__class__: jotun_css_Entry
 };
 var jotun_css_IEntry = function() { };
 jotun_css_IEntry.__name__ = ["jotun","css","IEntry"];
@@ -3552,123 +3482,48 @@ var jotun_css_XCode = $hx_exports["XCode"] = function() { };
 jotun_css_XCode.__name__ = ["jotun","css","XCode"];
 jotun_css_XCode._createGrid = function() {
 	if(!jotun_css_XCode._inits.grid) {
-		jotun_css_XCode.omnibuild("display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;",".shelf,.hack,.drawer");
-		jotun_css_XCode.omnibuild("-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;",".shelf");
-		jotun_css_XCode.omnibuild("-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;",".hack,.drawer");
-		jotun_css_XCode.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;",".drawer");
-		jotun_css_XCode.omnibuild("-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;",".cel");
-		jotun_css_XCode.omnibuild("-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;",".o-left,.o-top-left,.o-bottom-left");
-		jotun_css_XCode.omnibuild("-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;",".v-middle,.o-middle");
-		jotun_css_XCode.omnibuild("-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;",".o-right,.o-top-right,o-bottom-right");
-		jotun_css_XCode.omnibuild("-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;",".o-top,.o-top-left,.o-top-right");
-		jotun_css_XCode.omnibuild("-webkit-box-align:center;-ms-flex-align:center;align-items:center;",".h-middle,.o-middle");
-		jotun_css_XCode.omnibuild("-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;",".o-bottom,.o-bottom-left,.o-bottom-right");
-		jotun_css_XCode.omnibuild("-ms-flex-pack:distribute;justify-content: space-around;",".o-arrange");
-		jotun_css_XCode.omnibuild("-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;",".o-wellfit");
-		jotun_css_XCode.omnibuild("-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;",".shelf.o-stack,.hack.o-stack");
-		jotun_css_XCode.omnibuild("-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;",".drawer.o-stack");
-		jotun_css_XCode.omnibuild("-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;",".hack.o-stack");
+		jotun_css_XCode.omnibuild(".shelf,.hack,.drawer","display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;");
+		jotun_css_XCode.omnibuild(".shelf","-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;");
+		jotun_css_XCode.omnibuild(".hack,.drawer","-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;");
+		jotun_css_XCode.omnibuild(".drawer","-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;");
+		jotun_css_XCode.omnibuild(".cel","-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;");
+		jotun_css_XCode.omnibuild(".o-left,.o-top-left,.o-bottom-left","-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;");
+		jotun_css_XCode.omnibuild(".v-middle,.o-middle","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
+		jotun_css_XCode.omnibuild(".o-right,.o-top-right,o-bottom-right","-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;");
+		jotun_css_XCode.omnibuild(".o-top,.o-top-left,.o-top-right","-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;");
+		jotun_css_XCode.omnibuild(".h-middle,.o-middle","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
+		jotun_css_XCode.omnibuild(".o-bottom,.o-bottom-left,.o-bottom-right","-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;");
+		jotun_css_XCode.omnibuild(".o-arrange","-ms-flex-pack:distribute;justify-content: space-around;");
+		jotun_css_XCode.omnibuild(".o-wellfit","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
+		jotun_css_XCode.omnibuild(".shelf.o-stack,.hack.o-stack","-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;");
+		jotun_css_XCode.omnibuild(".drawer.o-stack","-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;");
+		jotun_css_XCode.omnibuild(".hack.o-stack","-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;");
 		jotun_utils_Dice.Count(0,12,function(a,b,c) {
 			if(a > 0) {
-				jotun_css_XCode.omnibuild("-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";",".tag-" + a + "n");
+				jotun_css_XCode.omnibuild(".tag-" + a + "n","-webkit-box-ordinal-group:-" + a + ";-ms-flex-order:-" + a + ";order:-" + a + ";");
 			}
-			jotun_css_XCode.omnibuild("-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";",".tag-" + a);
+			jotun_css_XCode.omnibuild(".tag-" + a,"-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";");
 			++a;
 			var m = a / b * 100 - .001;
 			var t = m.toFixed(5) + "%";
 			var s = "flex-basis:" + t + ";max-width:" + t;
-			jotun_css_XCode.omnibuild(s,".cel-" + a);
+			jotun_css_XCode.omnibuild(".cel-" + a,s);
 			if(a < b) {
-				jotun_css_XCode.omnibuild("margin-left:" + t,".rcell-" + a);
+				jotun_css_XCode.omnibuild(".rcell-" + a,"margin-left:" + t);
 			}
 			return null;
 		});
 		jotun_css_XCode._inits.grid = true;
 	}
 };
-jotun_css_XCode._screen = function(args) {
-	if(jotun_css_XCode._scx.indexOf("#" + args[args.length - 1] + "#") != -1) {
-		return args.pop();
-	} else {
-		return null;
-	}
-};
-jotun_css_XCode._parse = function(args) {
-	var r = [];
-	var i = false;
-	if(args[args.length - 1] == "i") {
-		i = true;
-		args.pop();
-	}
-	jotun_utils_Dice.All(args,function(p,v) {
-		if(v.length > 0) {
-			var val = jotun_css_XCodeRules.get(v);
-			var v2 = val != null ? val.value : null;
-			var tmp = jotun_css_XCode.getPosition(v2,v);
-			var tmp1 = jotun_css_XCode.getMeasure(v2,v);
-			var tmp2 = jotun_css_XCode.getColor(v2,v);
-			r[p] = { index : p, key : v, entry : val, position : tmp, measure : tmp1, color : tmp2};
-		}
-	});
-	var tmp3 = jotun_css_XCodeRules.keys();
-	return new jotun_css_Entry(r,tmp3,i);
-};
 jotun_css_XCode.reset = function() {
 	if(!jotun_css_XCode._inits.reset) {
 		jotun_css_XCode._inits.reset = true;
 		jotun_css_XCode.css.add("html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type=\"button\"],[type=\"reset\"],[type=\"submit\"]{-webkit-appearance:button;}button::-moz-focus-inner,[type=\"button\"]::-moz-focus-inner,[type=\"reset\"]::-moz-focus-inner,[type=\"submit\"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type=\"button\"]:-moz-focusring,[type=\"reset\"]:-moz-focusring,[type=\"submit\"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type=\"checkbox\"],[type=\"radio\"]{box-sizing:border-box;padding:0;}[type=\"number\"]::-webkit-inner-spin-button,[type=\"number\"]::-webkit-outer-spin-button{height:auto;}[type=\"search\"]{-webkit-appearance:textfield;outline-offset:-2px;}[type=\"search\"]::-webkit-search-cancel-button,[type=\"search\"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}");
-		jotun_css_XCode.omnibuild("display:none !important;",".hidden");
+		jotun_css_XCode.omnibuild(".hidden","display:none !important;");
 		jotun_css_XCode._createGrid();
 		jotun_css_XCode.css.build();
-		jotun_Jotun.run(jotun_css_XCode.scan);
 	}
-};
-jotun_css_XCode.unmute = function() {
-	jotun_css_XCode._dev = true;
-};
-jotun_css_XCode.mute = function() {
-	jotun_css_XCode._dev = false;
-};
-jotun_css_XCode.shadow = function(data) {
-	jotun_utils_Dice.All(data,function(p,v) {
-		jotun_css_XCodeRules.shadowConfig[p] = v;
-	});
-};
-jotun_css_XCode.scan = function() {
-	jotun_Jotun.all("noscript[automator]").each(function(o) {
-		jotun_css_XCode.parse(o.element.innerText,o.attribute("automator").toLowerCase() == "all");
-		o.dispose();
-	});
-	jotun_css_XCode.css.build();
-};
-jotun_css_XCode.search = function(t) {
-	if(t == null) {
-		return;
-	}
-	if(typeof(t) != "string") {
-		if(js_Boot.__instanceof(t,jotun_dom_IDisplay)) {
-			t = t.element.outerHTML;
-		} else if(js_Boot.__instanceof(t,HTMLElement)) {
-			t = t.outerHTML;
-		} else {
-			t = Std.string(t);
-		}
-	}
-	var t1 = t.split("class=");
-	if(t1.length > 0) {
-		t1.shift();
-	}
-	jotun_utils_Dice.Values(t1,function(v) {
-		var i = HxOverrides.substr(v,0,1);
-		var j = v.indexOf(i,1);
-		if(j > 1) {
-			v = v.substring(1,j);
-			if(v.length > 0) {
-				jotun_css_XCode.build(v,null,true);
-			}
-		}
-	});
-	jotun_css_XCode.css.build();
 };
 jotun_css_XCode.style = function(selector,value,mode) {
 	if(typeof(value) != "string") {
@@ -3683,131 +3538,16 @@ jotun_css_XCode.style = function(selector,value,mode) {
 jotun_css_XCode.apply = function() {
 	jotun_css_XCode.css.build();
 };
-jotun_css_XCode.omnibuild = function(query,group) {
-	var g = group != null && group.length > 0;
-	if(query.indexOf(":") == -1) {
-		query = jotun_css_XCode.build(query,group,true).style;
-	} else if(g) {
-		jotun_css_XCode.css.add(group + "{" + query + "}",null);
-	}
-	if(g) {
-		jotun_css_XCode.css.styleXS += group.split(",").join("-xs,") + "-xs" + "{" + query + "}";
-		jotun_css_XCode.css.styleSM += group.split(",").join("-sm,") + "-sm" + "{" + query + "}";
-		jotun_css_XCode.css.styleMD += group.split(",").join("-md,") + "-md" + "{" + query + "}";
-		jotun_css_XCode.css.styleLG += group.split(",").join("-lg,") + "-lg" + "{" + query + "}";
-		jotun_css_XCode.css.stylePR += group.split(",").join("-pr,") + "-pr" + "{" + query + "}";
-	}
+jotun_css_XCode.omnibuild = function(selector,query) {
+	jotun_css_XCode.build(selector,query);
+	jotun_css_XCode.css.styleXS += selector.split(",").join("-xs,") + "-xs" + "{" + query + "}";
+	jotun_css_XCode.css.styleSM += selector.split(",").join("-sm,") + "-sm" + "{" + query + "}";
+	jotun_css_XCode.css.styleMD += selector.split(",").join("-md,") + "-md" + "{" + query + "}";
+	jotun_css_XCode.css.styleLG += selector.split(",").join("-lg,") + "-lg" + "{" + query + "}";
+	jotun_css_XCode.css.stylePR += selector.split(",").join("-pr,") + "-pr" + "{" + query + "}";
 };
-jotun_css_XCode.build = function(query,group,silent) {
-	if(query == null || query == "") {
-		jotun_css_XCode.css.build();
-		return null;
-	}
-	var c = query.split(" ");
-	var m = null;
-	var s;
-	var g = jotun_tools_Utils.isValid(group);
-	var r = "";
-	if(g && group.length > 0) {
-		m = jotun_css_XCode._screen(group.split("-"));
-	}
-	jotun_utils_Dice.Values(c,function(v) {
-		if(v.length > 1) {
-			v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" ");
-			c = v.split("-");
-			if(c.length > 0) {
-				if(g) {
-					jotun_css_XCode._screen(c);
-					var en = jotun_css_XCode._parse(c);
-					s = en.build();
-					if(jotun_tools_Utils.isValid(s)) {
-						r += s + ";";
-					} else if(jotun_css_XCode._dev == true) {
-						jotun_Jotun.log("XCode => ERROR (" + Std.string(en) + ")");
-					}
-				} else {
-					m = jotun_css_XCode._screen(c);
-					if(!jotun_css_XCode.css.exists(v,m)) {
-						s = jotun_css_XCode._parse(c).build();
-						if(jotun_tools_Utils.isValid(s)) {
-							if(jotun_css_XCode._dev == true) {
-								jotun_Jotun.log("XCode => ." + v + " {" + s + ";}",1);
-							}
-							jotun_css_XCode.css.set("." + v,s,m);
-							r += s + ";";
-						}
-					}
-				}
-			}
-		}
-	});
-	if(g && jotun_tools_Utils.isValid(r)) {
-		if(jotun_css_XCode._dev == true) {
-			jotun_Jotun.log("XCode => " + group + " {" + r + "}",1);
-		}
-		jotun_css_XCode.css.set(group,r,m);
-	}
-	if(silent == null || silent == false) {
-		jotun_css_XCode.css.build();
-	}
-	return { style : r, group : group, media : m};
-};
-jotun_css_XCode.parse = function(data,omni) {
-	jotun_utils_Dice.Values(data.split(";"),function(v) {
-		var set = v.split("\r\n").join(" ").split("\r").join(" ").split("\n").join(" ").split("=");
-		if(set.length == 2) {
-			if(omni) {
-				jotun_css_XCode.omnibuild(set[1],set[0]);
-			} else {
-				jotun_css_XCode.build(set[1],set[0],true);
-			}
-		} else if(set.length == 1) {
-			if(omni) {
-				jotun_css_XCode.omnibuild(set[0],null);
-			} else {
-				jotun_css_XCode.build(set[0],null,true);
-			}
-		}
-	});
-};
-jotun_css_XCode.getPosition = function(r,x) {
-	if("tblrcm".indexOf(x) == -1) {
-		return "#top#bottom#left#right#center#middle#".indexOf(x) != -1;
-	} else {
-		return true;
-	}
-};
-jotun_css_XCode.getColor = function(r,x) {
-	var argb = x.length == 9;
-	if(HxOverrides.substr(x,0,1) == "x" && (x.length == 4 || x.length == 7 || argb)) {
-		x = "#" + x.substring(1,x.length);
-		if(argb) {
-			return new jotun_math_ARGB(x).css();
-		} else {
-			return x;
-		}
-	} else if(jotun_tools_Utils.isValid(r) && HxOverrides.substr(r,0,1) == "#") {
-		return r;
-	}
-	return null;
-};
-jotun_css_XCode.getMeasure = function(r,x) {
-	if(r == null) {
-		var l = x.length;
-		if(HxOverrides.substr(x,l - 1,1) == "p") {
-			r = x.split("d").join(".").split("p").join("%");
-		} else if(HxOverrides.substr(x,l - 1,1) == "n" && Std.parseInt(HxOverrides.substr(x,0,2)) != null) {
-			r = "-" + x.split("n").join("") + "px";
-		} else {
-			var n = Std.parseInt(x);
-			if(n != null) {
-				r = n + (n > 0 ? "px" : "");
-			}
-		}
-		return r;
-	} else {
-		return null;
-	}
+jotun_css_XCode.build = function(selector,query) {
+	jotun_css_XCode.css.style += selector + "{" + query + "}";
 };
 jotun_css_XCode.createFilter = function(id,a,r,g,b) {
 	if(jotun_css_XCode._filters == null) {
@@ -3846,6 +3586,74 @@ jotun_css_XCode.createDisplacement = function(id,freq,octaves,scale,seed) {
 	end += "</filter>";
 	jotun_css_XCode._filters.appendHtml(end);
 };
+jotun_css_XCode.createStroke = function(id,text,color,strenght,blur) {
+	var c = new jotun_math_ARGB(color).hex();
+	var l = jotun_tools_Utils.getValidOne(strenght,1);
+	var b = jotun_tools_Utils.getValidOne(blur,1);
+	var x = 0;
+	var s = [];
+	var t = Std.string(jotun_tools_Utils.getValidOne(blur,1)) + "px " + c;
+	while(x < l) {
+		++x;
+		if(x != 0) {
+			var xs = x + "px";
+			s[s.length] = "-" + xs + " 0 " + t;
+			s[s.length] = "0 " + xs + " " + t;
+			s[s.length] = "" + xs + " 0 " + t;
+			s[s.length] = "0 -" + xs + " " + t;
+			if(x % 2 == 0) {
+				s[s.length] = "-" + xs + " -" + xs + " " + t;
+				s[s.length] = "" + xs + " -" + xs + " " + t;
+				s[s.length] = "-" + xs + " " + xs + " " + t;
+				s[s.length] = "" + xs + " " + xs + " " + t;
+			}
+		}
+	}
+	jotun_css_XCode.omnibuild(id,(text ? "text-shadow" : "box-shadow") + ":" + s.join(","));
+	return id;
+};
+jotun_css_XCode.createShadow = function(id,text,color,distance,direction,quality,strenght,multiplier) {
+	var t = new jotun_math_ARGB(color);
+	var y = 0;
+	var z = jotun_tools_Utils.getValidOne(distance,5);
+	var a = jotun_tools_Utils.getValidOne(direction,45);
+	var w = jotun_tools_Utils.getValidOne(strenght,5);
+	var u = jotun_tools_Utils.getValidOne(quality,10);
+	var c = jotun_tools_Utils.getValidOne(multiplier,.5);
+	var cos = Math.cos(.017453 * a);
+	var sin = Math.sin(.017453 * a);
+	var r = [];
+	var tx = 0;
+	var ty = 0;
+	if(a % 90 == 0) {
+		w = z;
+	}
+	w = Math.floor(z / w);
+	if(w <= 0) {
+		w = 1;
+	}
+	while(y < z) {
+		y += w;
+		if(y > z) {
+			y = z;
+		}
+		tx = cos * y;
+		ty = sin * y;
+		r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 " + t.brightnesss(.8 - y / z * c).hex();
+	}
+	y = 0;
+	var oX = cos * z;
+	var oY = sin * z;
+	while(y < u) {
+		++y;
+		tx = cos * y + oX;
+		ty = sin * y + oY;
+		r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 rgba(0,0,0,.1)";
+	}
+	var q = (text ? "text-shadow" : "box-shadow") + ":" + r.join(",");
+	jotun_css_XCode.omnibuild(id,q);
+	return id;
+};
 jotun_css_XCode.createMotionFor = function(name,time,values) {
 	if(jotun_css_XCode._motions == null) {
 		jotun_css_XCode._motions = new jotun_dom_Style();
@@ -3859,304 +3667,6 @@ jotun_css_XCode.createMotionFor = function(name,time,values) {
 	});
 	css += "} animation: " + name + " " + time + "s linear infinite; /*EOF " + name + "*/";
 	jotun_css_XCode._motions.appendHtml(css);
-};
-var jotun_math_IARGB = function() { };
-jotun_math_IARGB.__name__ = ["jotun","math","IARGB"];
-jotun_math_IARGB.prototype = {
-	__class__: jotun_math_IARGB
-};
-var jotun_math_ARGB = $hx_exports["ARGB"] = function(q,g,b,a) {
-	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
-	if(s && q.substr(0,3) == "rgb") {
-		s = false;
-		q = q.split(q.substr(0,4) == "rgba" ? "rgba" : "rgb")[1].split("(").join("").split(")").join("").split(" ").join("");
-		q = q.split(",");
-		if(q.length == 4) {
-			a = Std.parseInt(q[3]);
-		}
-		b = Std.parseInt(q[2]);
-		g = Std.parseInt(q[1]);
-		q = Std.parseInt(q[0]);
-	}
-	if(!s && q <= 255 && g != null) {
-		this.a = a <= 255 ? a < 0 ? 0 : a : 255;
-		this.r = q <= 255 ? q < 0 ? 0 : q : 255;
-		this.g = g <= 255 ? g < 0 ? 0 : g : 255;
-		this.b = b <= 255 ? b < 0 ? 0 : b : 255;
-	} else {
-		var x;
-		if(s) {
-			q = q.split("#").join("0x");
-			x = Std.parseInt(q);
-			if(q.length < 10) {
-				x |= -16777216;
-			}
-		} else {
-			x = q;
-		}
-		this.a = x >> 24 & 255;
-		this.r = x >> 16 & 255;
-		this.g = x >> 8 & 255;
-		this.b = x & 255;
-	}
-};
-jotun_math_ARGB.__name__ = ["jotun","math","ARGB"];
-jotun_math_ARGB.__interfaces__ = [jotun_math_IARGB];
-jotun_math_ARGB.from = function(q,g,b,a) {
-	return new jotun_math_ARGB(q,g,b,a);
-};
-jotun_math_ARGB.prototype = {
-	_v16: function(v) {
-		var a = v.toString(16);
-		if(a.length == 1) {
-			return "0" + a;
-		} else {
-			return a;
-		}
-	}
-	,value32: function() {
-		return this.a << 24 | this.r << 16 | this.g << 8 | this.b;
-	}
-	,value: function() {
-		return this.r << 16 | this.g << 8 | this.b;
-	}
-	,invert: function() {
-		return new jotun_math_ARGB(255 - this.r,255 - this.g,255 - this.b,this.a);
-	}
-	,brightnesss: function(rate,alpha) {
-		if(alpha == null) {
-			alpha = 0;
-		}
-		if(rate < .01) {
-			rate = .01;
-		}
-		var r2 = this.r * rate | 0;
-		var g2 = this.g * rate | 0;
-		var b2 = this.b * rate | 0;
-		return new jotun_math_ARGB(r2 > 255 ? 255 : r2,g2 > 255 ? 255 : g2,b2 > 255 ? 255 : b2,alpha == 0 ? this.a : alpha * this.a | 0);
-	}
-	,change: function(ammount) {
-		var r2 = this.r + ammount;
-		var g2 = this.g + ammount;
-		var b2 = this.b + ammount;
-		return new jotun_math_ARGB(r2 > 255 ? 255 : r2,g2 > 255 ? 255 : g2,b2 > 255 ? 255 : b2,this.a);
-	}
-	,hex: function() {
-		var r = this.value().toString(16);
-		while(r.length < 6) r = "0" + r;
-		return "#" + r;
-	}
-	,css: function() {
-		if(this.a == 255 || this.a == null) {
-			return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
-		} else {
-			return "rgba(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed(2) + ")";
-		}
-	}
-	,xcss: function() {
-		return "x" + this._v16(this.a) + this._v16(this.r) + this._v16(this.g) + this._v16(this.b);
-	}
-	,__class__: jotun_math_ARGB
-};
-var jotun_css_XCodeRules = $hx_exports["XCodeRules"] = function() { };
-jotun_css_XCodeRules.__name__ = ["jotun","css","XCodeRules"];
-jotun_css_XCodeRules.numericKey = function(d,k,n) {
-	var v = k.entry.value;
-	if(n != null) {
-		if(!n.position) {
-			if(n.color != null) {
-				return v + "-color:";
-			}
-			if(d.head.key == "bord") {
-				return jotun_css_XCodeRules.borderFix(v,d,k,n);
-			}
-			if(n.measure != null) {
-				return v + ":";
-			}
-			return v + ":";
-		} else {
-			return v + "-";
-		}
-	}
-	return v + (k.index == 0 ? "-" : "");
-};
-jotun_css_XCodeRules.borderFix = function(v,d,k,n) {
-	if(n.measure != null) {
-		return v + "-width:";
-	}
-	return v + (d.hasKey("rad",1) ? "-" : "-style:");
-};
-jotun_css_XCodeRules.shiftKey = function(d,k,n) {
-	return "-" + k.entry.value;
-};
-jotun_css_XCodeRules.commonKey = function(d,k,n) {
-	return k.entry.value + (n != null ? ":" : "");
-};
-jotun_css_XCodeRules.commonArray = function(d,k,n) {
-	d.cancel();
-	return k.entry.value + ":" + d.compile(1).join(" ").split("_").join("-");
-};
-jotun_css_XCodeRules.colorKey = function(d,k,n) {
-	if(n != null && n.measure != null) {
-		n.skip = true;
-		var v = Std.parseInt(n.measure) / 100 * 255;
-		return new jotun_math_ARGB("0x" + k.entry.value.split("#").join((v >> 0).toString(16))).css();
-	}
-	return k.entry.value;
-};
-jotun_css_XCodeRules.positionKey = function(d,k,n) {
-	return (k.index == 0 ? "position:" : "") + jotun_css_XCodeRules.commonKey(d,k,n);
-};
-jotun_css_XCodeRules.pushKey = function(d,k,n) {
-	return k.entry.value + "-";
-};
-jotun_css_XCodeRules.valueKey = function(d,k,n) {
-	return k.entry.value + ":";
-};
-jotun_css_XCodeRules.alphaKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var o = Std.parseInt(n.key);
-		if(o > 100) {
-			o = 100;
-		} else if(o < 0) {
-			o = 0;
-		}
-		return k.entry.value + ":" + (o/100).toFixed(2);
-	} else {
-		return jotun_css_XCodeRules.valueKey(d,k,n);
-	}
-};
-jotun_css_XCodeRules.appendKey = function(d,k,n) {
-	return k.entry.value + (n != null ? "-" : "");
-};
-jotun_css_XCodeRules.displayKey = function(d,k,n) {
-	if(d.head == k) {
-		return "display:" + (k.key == "hidden" ? "none" : "block");
-	} else {
-		return k.entry.value;
-	}
-};
-jotun_css_XCodeRules.indexKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		return "z-index:" + n.key;
-	}
-	return k.key;
-};
-jotun_css_XCodeRules.scrollKey = function(d,k,n) {
-	var v = k.entry.value;
-	if(d.head.key == "scroll") {
-		if(n != null && n.key == "none") {
-			d.cancel();
-			return "overflow:hidden";
-		}
-		if(k.index == 0) {
-			return "";
-		}
-		return "overflow" + (v == "x" ? "-x" : "-y") + ":scroll;overflow" + (v == "x" ? "-y" : "-x") + ":hidden";
-	}
-	return jotun_css_XCodeRules.commonKey(d,k,n);
-};
-jotun_css_XCodeRules.strokeKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var c = new jotun_math_ARGB(d.keys[1].color).hex();
-		n = d.get(2);
-		var l = n != null ? Std.parseInt(n.measure) : 1;
-		var x = l;
-		var s = [];
-		var xs = x + (x == 0 ? "" : "px");
-		s[s.length] = "-" + xs + " 0 1px " + c;
-		s[s.length] = "0 " + xs + " 1px " + c;
-		s[s.length] = "" + xs + " 0 1px " + c;
-		s[s.length] = "0 -" + xs + " 1px " + c;
-		return "text-shadow:" + s.join(",");
-	}
-	return jotun_css_XCodeRules.commonKey(d,k,n);
-};
-jotun_css_XCodeRules.shadowKey = function(d,k,n) {
-	if(d.head == k) {
-		d.cancel();
-		var i = d.tail.key == "i";
-		var s = n.key == "txt";
-		var t = new jotun_math_ARGB(d.keys[s ? 2 : 1].color);
-		var x = d.compile(s ? 3 : 2);
-		var y = 0;
-		var z = x[0] == null ? jotun_css_XCodeRules.shadowConfig.distance : Std.parseInt(x[0]);
-		var a = x[1] == null ? jotun_css_XCodeRules.shadowConfig.direction : Std.parseInt(x[1]);
-		var w = x[2] == null ? jotun_css_XCodeRules.shadowConfig.draws : Std.parseInt(x[2]);
-		var u = x[3] == null ? jotun_css_XCodeRules.shadowConfig.strength : Std.parseInt(x[3]);
-		var c = jotun_css_XCodeRules.shadowConfig.multiply;
-		var cos = Math.cos(.017453 * a);
-		var sin = Math.sin(.017453 * a);
-		var r = [];
-		var tx = 0;
-		var ty = 0;
-		if(a % 90 == 0) {
-			w = z;
-		}
-		w = Math.floor(z / w);
-		if(w <= 0) {
-			w = 1;
-		}
-		while(y < z) {
-			y += w;
-			if(y > z) {
-				y = z;
-			}
-			tx = cos * y;
-			ty = sin * y;
-			r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 " + t.brightnesss(.8 - y / z * c).hex();
-		}
-		y = 0;
-		var oX = cos * z;
-		var oY = sin * z;
-		while(y < u) {
-			++y;
-			tx = cos * y + oX;
-			ty = sin * y + oY;
-			r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 rgba(0,0,0,.1)";
-		}
-		return (s ? "text-shadow" : "box-shadow") + ":" + r.join(",") + (i ? " !important" : "");
-	}
-	return "shadow";
-};
-jotun_css_XCodeRules.textKey = function(d,k,n) {
-	if(k.index == 0) {
-		if(n != null && !n.position) {
-			if(n.measure != null) {
-				return "font-size:";
-			} else if(n.key != "j") {
-				return "color:";
-			}
-		}
-		if(n.key != "dec") {
-			return "text-align:";
-		}
-	}
-	return "text-";
-};
-jotun_css_XCodeRules.set = function(rule,value) {
-	if((rule instanceof Array) && rule.__enum__ == null) {
-		jotun_utils_Dice.All(rule,function(p,v) {
-			jotun_css_XCodeRules._KEYS[p] = v;
-		});
-	} else if(value != null) {
-		jotun_css_XCodeRules._KEYS[rule] = value;
-	}
-};
-jotun_css_XCodeRules.get = function(name) {
-	var e = Reflect.field(jotun_css_XCodeRules._KEYS,name);
-	return e;
-};
-jotun_css_XCodeRules.blank = function(name) {
-	var e = { value : name, verifier : jotun_css_XCodeRules.commonKey};
-	jotun_css_XCodeRules._KEYS[name] = e;
-	return e;
-};
-jotun_css_XCodeRules.keys = function() {
-	return jotun_css_XCodeRules._KEYS;
 };
 var jotun_data_IDataCache = function() { };
 jotun_data_IDataCache.__name__ = ["jotun","data","IDataCache"];
@@ -6338,11 +5848,9 @@ var jotun_gaming_actions_Resolution = $hx_exports["jtn"]["game"]["Resolution"] =
 	this._type = type;
 	if((data.query instanceof Array) && data.query.__enum__ == null) {
 		this.query = data.query;
-	} else if(jotun_tools_Utils.isValid(data.query)) {
-		this.query = [data.query];
-	}
-	if(this.query != null) {
 		this.query.unshift("@result");
+	} else if(jotun_tools_Utils.isValid(data.query)) {
+		this.query = ["@result",data.query];
 	}
 	if(data.onSuccess != null) {
 		this.onSuccess = new jotun_gaming_actions_Events(this._type + ".onSuccess",data.onSuccess);
@@ -6350,6 +5858,7 @@ var jotun_gaming_actions_Resolution = $hx_exports["jtn"]["game"]["Resolution"] =
 	if(data.onFail != null) {
 		this.onFail = new jotun_gaming_actions_Events(this._type + ".onFail",data.onFail);
 	}
+	this.id = data.id;
 };
 jotun_gaming_actions_Resolution.__name__ = ["jotun","gaming","actions","Resolution"];
 jotun_gaming_actions_Resolution.prototype = {
@@ -6365,89 +5874,88 @@ jotun_gaming_actions_Resolution.prototype = {
 		--context.ident;
 		return result;
 	}
-	,__class__: jotun_gaming_actions_Resolution
-};
-var jotun_gaming_actions_ActionQuery = $hx_exports["jtn"]["game"]["ActionQuery"] = function() {
-	jotun_flow_Push.call(this);
-};
-jotun_gaming_actions_ActionQuery.__name__ = ["jotun","gaming","actions","ActionQuery"];
-jotun_gaming_actions_ActionQuery._resolve = function(a,r,v) {
-	if(r == null) {
-		r = "=";
-	}
-	switch(r) {
-	case "%":
-		return a % v;
-	case "&":
-		return a & v;
-	case "*":
-		return a * v;
-	case "+":
-		return a + v;
-	case "++":
-		return a + 1;
-	case "-":
-		return a - v;
-	case "--":
-		return a - 1;
-	case "/":
-		return a / v;
-	case "<<":
-		return a << v;
-	case "=":
-		return v;
-	case ">>":
-		return a >> v;
-	case "^":
-		return Math.pow(a,v);
-	case "|":
-		return a | v;
-	case "~":
-		return a & ~v;
-	}
-	return a + v;
-};
-jotun_gaming_actions_ActionQuery.__super__ = jotun_flow_Push;
-jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_flow_Push.prototype,{
-	_isempty: function(value) {
-		if(value != null) {
-			return value == "";
-		} else {
-			return true;
-		}
-	}
-	,_N: function(value) {
-		var o = parseFloat(value);
-		if(o != null) {
-			return o;
+	,length: function() {
+		if(this.query != null) {
+			return this.query.length - 1;
 		} else {
 			return 0;
 		}
 	}
-	,__class__: jotun_gaming_actions_ActionQuery
-});
+	,__class__: jotun_gaming_actions_Resolution
+};
+var jotun_objects_QueryGroup = $hx_exports["sru"]["objects"]["QueryGroup"] = function() {
+	this.clear();
+};
+jotun_objects_QueryGroup.__name__ = ["jotun","objects","QueryGroup"];
+jotun_objects_QueryGroup.prototype = {
+	add: function(o) {
+		if(this.units.indexOf(o) == -1) {
+			this.units[this.units.length] = o;
+		}
+	}
+	,remove: function(o) {
+		var iof = this.units.indexOf(o);
+		if(iof != -1) {
+			this.units.splice(iof,1);
+		}
+	}
+	,clear: function() {
+		this.units = [];
+	}
+	,run: function(query) {
+		var result = { };
+		jotun_utils_Dice.Values(this.units,function(o) {
+			o.proc(query,result);
+			o.flush();
+		});
+		return result;
+	}
+	,__class__: jotun_objects_QueryGroup
+};
 var jotun_gaming_actions_Action = $hx_exports["jtn"]["game"]["Action"] = function(type,data) {
 	var _gthis = this;
 	jotun_gaming_actions_Resolution.call(this,type,data);
 	this.requirements = [];
+	var i = 0;
 	jotun_utils_Dice.All(data.requirements,function(p,v) {
-		_gthis.requirements[_gthis.requirements.length] = new jotun_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v);
+		if(typeof(v) == "string") {
+			v = jotun_gaming_actions_Requirement.get(v);
+		}
+		if(v != null) {
+			if(js_Boot.__instanceof(v,jotun_gaming_actions_Requirement)) {
+				_gthis.requirements[i] = v;
+			} else {
+				_gthis.requirements[i] = new jotun_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v);
+			}
+			i += 1;
+		}
 	});
-	this.target = jotun_tools_Utils.isValid(data.target) ? data.target | 0 : this.requirements.length == 0 ? 0 : 1;
+	this.target = data.target | 0;
+	if(this.target == null) {
+		this.target = this.requirements.length;
+	}
+	if(jotun_tools_Utils.isValid(data.id)) {
+		jotun_gaming_actions_Action.cache[data.id] = this;
+	}
 };
 jotun_gaming_actions_Action.__name__ = ["jotun","gaming","actions","Action"];
-jotun_gaming_actions_Action._log = function(evt,context,success,score) {
+jotun_gaming_actions_Action.get = function(id) {
+	return Reflect.field(jotun_gaming_actions_Action.cache,id);
+};
+jotun_gaming_actions_Action._log = function(evt,context,success,score,position) {
 	var s = "";
 	while(s.length < context.ident) s += "\t";
-	context.log.push(s + "↑ ACTION " + evt._type + " " + (success ? "SUCCESS" : "FAIL") + " score:" + score + "/" + evt.target);
+	var context1 = context.log;
+	var tmp = jotun_tools_Utils.isValid(evt.id) ? "#{" + evt.id + "} " : "";
+	context1.push(s + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + tmp + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 };
 jotun_gaming_actions_Action.__super__ = jotun_gaming_actions_Resolution;
 jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.prototype,{
-	run: function(context) {
+	run: function(context,position) {
 		var resolution = 0;
 		++context.ident;
-		jotun_utils_Dice.Values(this.requirements,function(r) {
-			var result = r.verify(context);
+		jotun_utils_Dice.All(this.requirements,function(p,r) {
+			var result = r.verify(context,p);
 			if(result) {
 				resolution += 1;
 				return r.cancelOnSuccess;
@@ -6458,32 +5966,128 @@ jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.
 		});
 		--context.ident;
 		var success = this.target == 0 || this.target > 0 && resolution >= this.target || this.target < 0 && resolution <= this.target;
-		jotun_gaming_actions_Action._log(this,context,success,resolution);
+		if(context.debug) {
+			jotun_gaming_actions_Action._log(this,context,success,resolution,position);
+		}
 		if(success) {
 			if(jotun_tools_Utils.isValid(this.query)) {
-				jotun_gaming_actions_Action.commands.proc(this.query);
-				jotun_gaming_actions_Action.commands.flush();
+				jotun_gaming_actions_Action.commands.run(this.query);
 			}
 		}
 		return this.resolve(success,context);
 	}
 	,__class__: jotun_gaming_actions_Action
 });
-var jotun_gaming_actions_EventController = $hx_exports["jtn"]["game"]["EventController"] = function(data) {
+var jotun_gaming_actions_ActionQuery = $hx_exports["jtn"]["game"]["ActionQuery"] = function() {
+	jotun_objects_Query.call(this);
+};
+jotun_gaming_actions_ActionQuery.__name__ = ["jotun","gaming","actions","ActionQuery"];
+jotun_gaming_actions_ActionQuery.__super__ = jotun_objects_Query;
+jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototype,{
+	_isempty: function(value) {
+		if(value != null) {
+			return value == "";
+		} else {
+			return true;
+		}
+	}
+	,_INT: function(value) {
+		var o = Std.parseInt(value);
+		if(o != null) {
+			return o;
+		} else {
+			return 0;
+		}
+	}
+	,_FLOAT: function(value) {
+		var o = parseFloat(value);
+		if(o != null) {
+			return o;
+		} else {
+			return 0;
+		}
+	}
+	,rng: function() {
+		return Math.random();
+	}
+	,_resolve: function(a,r,v) {
+		if(r == null) {
+			r = "=";
+		}
+		switch(r) {
+		case "#":
+			return a + this.rng() * v;
+		case "%":
+			return a % v;
+		case "&":
+			return a & v;
+		case "*":
+			return a * v;
+		case "+":
+			return a + v;
+		case "++":
+			return a + 1;
+		case "-":
+			return a - v;
+		case "--":
+			return a - 1;
+		case "/":
+			return a / v;
+		case "<<":
+			return a << v;
+		case "=":
+			return v;
+		case ">>":
+			return a >> v;
+		case "^":
+			return Math.pow(a,v);
+		case "|":
+			return a | v;
+		case "~":
+			return a & ~v;
+		default:
+			return v;
+		}
+	}
+	,__class__: jotun_gaming_actions_ActionQuery
+});
+var jotun_gaming_actions_IEventDispatcher = function() { };
+jotun_gaming_actions_IEventDispatcher.__name__ = ["jotun","gaming","actions","IEventDispatcher"];
+jotun_gaming_actions_IEventDispatcher.prototype = {
+	__class__: jotun_gaming_actions_IEventDispatcher
+};
+var jotun_gaming_actions_EventController = $hx_exports["jtn"]["game"]["EventController"] = function(data,debug) {
 	var _gthis = this;
-	this.events = jotun_Jotun.resources.getObj("core.data.Events");
-	jotun_utils_Dice.All(this.events,function(p,v) {
-		jotun_gaming_actions_Events.patch(_gthis);
-	});
+	this._debug = debug == true;
+	if(data != null) {
+		this.events = data;
+		jotun_utils_Dice.All(this.events,function(p,v) {
+			jotun_gaming_actions_Events.patch(_gthis);
+		});
+	}
 };
 jotun_gaming_actions_EventController.__name__ = ["jotun","gaming","actions","EventController"];
-jotun_gaming_actions_EventController.CONTEXT = function(data) {
-	return { log : [], ident : 0, ticks : 0, origin : data};
-};
+jotun_gaming_actions_EventController.__interfaces__ = [jotun_gaming_actions_IEventDispatcher];
 jotun_gaming_actions_EventController.prototype = {
-	call: function(name,data) {
+	_onCallBefore: function(context) {
+	}
+	,_onCallAfter: function(context) {
+	}
+	,_createContext: function(data) {
+		return { debug : this._debug, log : [], ident : 0, ticks : 0, origin : data};
+	}
+	,setDebug: function(mode) {
+		this._debug = mode;
+	}
+	,call: function(name,data) {
 		if(Object.prototype.hasOwnProperty.call(this.events,name)) {
-			Reflect.field(this.events,name).run(jotun_gaming_actions_EventController.CONTEXT(data));
+			var context = this._createContext(data);
+			this._onCallBefore(context);
+			Reflect.field(this.events,name).run(context);
+			this._onCallAfter(context);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	,__class__: jotun_gaming_actions_EventController
@@ -6493,7 +6097,7 @@ var jotun_gaming_actions_Events = $hx_exports["jtn"]["game"]["Events"] = functio
 	this._init(data);
 };
 jotun_gaming_actions_Events.__name__ = ["jotun","gaming","actions","Events"];
-jotun_gaming_actions_Events.patch = function(data,run,origin) {
+jotun_gaming_actions_Events.patch = function(data,origin) {
 	if(data.events != null) {
 		if(!data.events.patched) {
 			data.events.patched = true;
@@ -6502,18 +6106,12 @@ jotun_gaming_actions_Events.patch = function(data,run,origin) {
 			});
 		}
 	}
-	if(run != null) {
-		if(Object.prototype.hasOwnProperty.call(data.events,run)) {
-			var events = Reflect.field(data.events,run);
-			events.run(jotun_gaming_actions_EventController.CONTEXT(data));
-		}
-	}
 };
 jotun_gaming_actions_Events._log = function(evt,context) {
 	var s = "";
 	while(s.length < context.ident) s += "\t";
 	var a = evt._data.length;
-	context.log.push(s + "≈ EVENT " + evt._type + (a == 0 ? " <!>EMPTY" : " @" + a));
+	context.log.push(s + "≈ EVENT " + evt._type + (a == 0 ? " [!] No Actions" : " @" + a));
 };
 jotun_gaming_actions_Events.prototype = {
 	_init: function(data) {
@@ -6521,21 +6119,31 @@ jotun_gaming_actions_Events.prototype = {
 		this._data = [];
 		var i = 0;
 		jotun_utils_Dice.All(data,function(p,v) {
-			_gthis._data[i] = new jotun_gaming_actions_Action(_gthis._type + "[" + p + "]",v);
-			i += 1;
+			if(typeof(v) == "string") {
+				v = jotun_gaming_actions_Action.get(v);
+			}
+			if(v != null) {
+				if(js_Boot.__instanceof(v,jotun_gaming_actions_Action)) {
+					_gthis._data[i] = v;
+				} else {
+					_gthis._data[i] = new jotun_gaming_actions_Action(_gthis._type + "[" + p + "]",v);
+				}
+				i += 1;
+			}
 		});
 	}
 	,run: function(context) {
 		var l = context.log.length;
 		++context.ident;
-		jotun_utils_Dice.Values(this._data,function(a) {
-			return !a.run(context);
+		jotun_utils_Dice.All(this._data,function(p,a) {
+			return !a.run(context,p);
 		});
 		--context.ident;
-		jotun_gaming_actions_Events._log(this,context);
 		if(context.ident == 0) {
-			context.log.reverse();
-			jotun_Jotun.log(context.log.join("\r\n\t\t\t\t|"));
+			if(context.debug) {
+				jotun_gaming_actions_Events._log(this,context);
+				context.log.reverse();
+			}
 		}
 	}
 	,__class__: jotun_gaming_actions_Events
@@ -6545,12 +6153,63 @@ jotun_gaming_actions_IEventContext.__name__ = ["jotun","gaming","actions","IEven
 jotun_gaming_actions_IEventContext.prototype = {
 	__class__: jotun_gaming_actions_IEventContext
 };
+var jotun_gaming_actions_Requirement = $hx_exports["jtn"]["game"]["Requirement"] = function(type,data) {
+	jotun_gaming_actions_Resolution.call(this,type,data);
+	this.cancelOnSuccess = jotun_tools_Utils["boolean"](data.cancelOnSuccess);
+	this.cancelOnFail = jotun_tools_Utils["boolean"](data.cancelOnFail);
+	this.reverse = jotun_tools_Utils["boolean"](data.reverse);
+	this.target = data.target | 0;
+	if(this.target == null) {
+		this.target = this.query != null ? this.query.length - 1 : 0;
+	}
+	if(jotun_tools_Utils.isValid(data.id)) {
+		jotun_gaming_actions_Requirement.cache[data.id] = this;
+	}
+};
+jotun_gaming_actions_Requirement.__name__ = ["jotun","gaming","actions","Requirement"];
+jotun_gaming_actions_Requirement.get = function(id) {
+	return Reflect.field(jotun_gaming_actions_Requirement.cache,id);
+};
+jotun_gaming_actions_Requirement._log = function(evt,context,success,score,reversed,position) {
+	var s = "";
+	while(s.length < context.ident) s += "\t";
+	var context1 = context.log;
+	var tmp = jotun_tools_Utils.isValid(evt.id) ? "#{" + evt.id + "} " : " ";
+	context1.push(s + "↓ " + (success ? "SUCCESS" : "FAIL") + " REQUIREMENT " + tmp + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+};
+jotun_gaming_actions_Requirement.__super__ = jotun_gaming_actions_Resolution;
+jotun_gaming_actions_Requirement.prototype = $extend(jotun_gaming_actions_Resolution.prototype,{
+	verify: function(context,position) {
+		var res = true;
+		var score = 0;
+		if(jotun_tools_Utils.isValid(this.query)) {
+			var sec = jotun_gaming_actions_Requirement.commands.run(this.query).result;
+			if(sec != null) {
+				jotun_utils_Dice.Values(sec,function(v) {
+					if(jotun_tools_Utils["boolean"](v)) {
+						score += 1;
+					}
+				});
+			}
+			res = _$UInt_UInt_$Impl_$.gte(score,this.target);
+			if(this.reverse) {
+				res = !res;
+			}
+		}
+		this.resolve(res,context);
+		if(context.debug) {
+			jotun_gaming_actions_Requirement._log(this,context,res,score,this.reverse,position);
+		}
+		return res;
+	}
+	,__class__: jotun_gaming_actions_Requirement
+});
 var jotun_gaming_actions_RequirementQuery = $hx_exports["jtn"]["game"]["RequirementQuery"] = function() {
-	jotun_flow_Push.call(this);
+	jotun_objects_Query.call(this);
 };
 jotun_gaming_actions_RequirementQuery.__name__ = ["jotun","gaming","actions","RequirementQuery"];
-jotun_gaming_actions_RequirementQuery.__super__ = jotun_flow_Push;
-jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_flow_Push.prototype,{
+jotun_gaming_actions_RequirementQuery.__super__ = jotun_objects_Query;
+jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.prototype,{
 	_isempty: function(value) {
 		if(value != null) {
 			return value == "";
@@ -6558,7 +6217,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_flow_Push.protot
 			return true;
 		}
 	}
-	,_getint: function(value) {
+	,_INT: function(value) {
 		var o = Std.parseInt(value);
 		if(o != null) {
 			return o;
@@ -6566,13 +6225,36 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_flow_Push.protot
 			return 0;
 		}
 	}
+	,_FLOAT: function(value) {
+		var o = parseFloat(value);
+		if(o != null) {
+			return o;
+		} else {
+			return 0;
+		}
+	}
+	,rng: function() {
+		return Math.random();
+	}
 	,_resolve: function(a,r,v) {
 		if(r == null) {
 			r = ">=";
 		}
 		switch(r) {
+		case "!&":
+			return (~a & v) == v;
 		case "!=":
 			return a != v;
+		case "#!":
+			return (this.rng() * a | 0) != v;
+		case "#<":
+			return this.rng() * a <= v;
+		case "#=":
+			return (this.rng() * a | 0) == v;
+		case "#>":
+			return this.rng() * a >= v;
+		case "&":
+			return (a & v) == v;
 		case "*=":
 			return a.indexOf(v) != -1;
 		case "<":
@@ -6587,49 +6269,11 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_flow_Push.protot
 			return a >= v;
 		case "~=":
 			return v.indexOf(a) != -1;
+		default:
+			return a == v;
 		}
-		return a == v;
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
-});
-var jotun_gaming_actions_Requirement = $hx_exports["jtn"]["game"]["Requirement"] = function(type,data) {
-	jotun_gaming_actions_Resolution.call(this,type,data);
-	this.cancelOnSuccess = data.cancelOnSuccess == true;
-	this.cancelOnFail = data.cancelOnFail == true;
-	this.reverse = data.reverse == true;
-	this.target = jotun_tools_Utils.isValid(data.target) ? data.target | 0 : this.query != null ? this.query.length - 1 : 0;
-};
-jotun_gaming_actions_Requirement.__name__ = ["jotun","gaming","actions","Requirement"];
-jotun_gaming_actions_Requirement._log = function(evt,context,success,score,reversed) {
-	var s = "";
-	while(s.length < context.ident) s += "\t";
-	context.log.push(s + "↓ REQUIREMENT " + evt._type + " @" + (success ? "SUCCESS" : "FAIL") + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target);
-};
-jotun_gaming_actions_Requirement.__super__ = jotun_gaming_actions_Resolution;
-jotun_gaming_actions_Requirement.prototype = $extend(jotun_gaming_actions_Resolution.prototype,{
-	verify: function(context) {
-		var res = true;
-		var score = 0;
-		if(jotun_tools_Utils.isValid(this.query)) {
-			var sec = jotun_gaming_actions_Requirement.commands.proc(this.query).result;
-			if(sec != null) {
-				jotun_utils_Dice.Values(sec,function(v) {
-					if(jotun_tools_Utils["boolean"](v)) {
-						score += 1;
-					}
-				});
-			}
-			jotun_gaming_actions_Requirement.commands.flush();
-			res = _$UInt_UInt_$Impl_$.gte(score,this.target);
-			if(this.reverse) {
-				res = !res;
-			}
-		}
-		this.resolve(res,context);
-		jotun_gaming_actions_Requirement._log(this,context,res,score,this.reverse);
-		return res;
-	}
-	,__class__: jotun_gaming_actions_Requirement
 });
 var jotun_gaming_dataform_DataCollection = function() {
 	this._list = { };
@@ -6806,6 +6450,104 @@ jotun_gaming_dataform_DataObject.prototype = {
 	,onInsert: function(name,o) {
 	}
 	,__class__: jotun_gaming_dataform_DataObject
+};
+var jotun_math_IARGB = function() { };
+jotun_math_IARGB.__name__ = ["jotun","math","IARGB"];
+jotun_math_IARGB.prototype = {
+	__class__: jotun_math_IARGB
+};
+var jotun_math_ARGB = $hx_exports["ARGB"] = function(q,g,b,a) {
+	var s = typeof(q) == "string" && (q.substr(0,3) == "rgb" || q.substr(0,2) == "0x" || q.substr(0,1) == "#");
+	if(s && q.substr(0,3) == "rgb") {
+		s = false;
+		q = q.split(q.substr(0,4) == "rgba" ? "rgba" : "rgb")[1].split("(").join("").split(")").join("").split(" ").join("");
+		q = q.split(",");
+		if(q.length == 4) {
+			a = Std.parseInt(q[3]);
+		}
+		b = Std.parseInt(q[2]);
+		g = Std.parseInt(q[1]);
+		q = Std.parseInt(q[0]);
+	}
+	if(!s && q <= 255 && g != null) {
+		this.a = a <= 255 ? a < 0 ? 0 : a : 255;
+		this.r = q <= 255 ? q < 0 ? 0 : q : 255;
+		this.g = g <= 255 ? g < 0 ? 0 : g : 255;
+		this.b = b <= 255 ? b < 0 ? 0 : b : 255;
+	} else {
+		var x;
+		if(s) {
+			q = q.split("#").join("0x");
+			x = Std.parseInt(q);
+			if(q.length < 10) {
+				x |= -16777216;
+			}
+		} else {
+			x = q;
+		}
+		this.a = x >> 24 & 255;
+		this.r = x >> 16 & 255;
+		this.g = x >> 8 & 255;
+		this.b = x & 255;
+	}
+};
+jotun_math_ARGB.__name__ = ["jotun","math","ARGB"];
+jotun_math_ARGB.__interfaces__ = [jotun_math_IARGB];
+jotun_math_ARGB.from = function(q,g,b,a) {
+	return new jotun_math_ARGB(q,g,b,a);
+};
+jotun_math_ARGB.prototype = {
+	_v16: function(v) {
+		var a = v.toString(16);
+		if(a.length == 1) {
+			return "0" + a;
+		} else {
+			return a;
+		}
+	}
+	,value32: function() {
+		return this.a << 24 | this.r << 16 | this.g << 8 | this.b;
+	}
+	,value: function() {
+		return this.r << 16 | this.g << 8 | this.b;
+	}
+	,invert: function() {
+		return new jotun_math_ARGB(255 - this.r,255 - this.g,255 - this.b,this.a);
+	}
+	,brightnesss: function(rate,alpha) {
+		if(alpha == null) {
+			alpha = 0;
+		}
+		if(rate < .01) {
+			rate = .01;
+		}
+		var r2 = this.r * rate | 0;
+		var g2 = this.g * rate | 0;
+		var b2 = this.b * rate | 0;
+		return new jotun_math_ARGB(r2 > 255 ? 255 : r2,g2 > 255 ? 255 : g2,b2 > 255 ? 255 : b2,alpha == 0 ? this.a : alpha * this.a | 0);
+	}
+	,change: function(ammount) {
+		var r2 = this.r + ammount;
+		var g2 = this.g + ammount;
+		var b2 = this.b + ammount;
+		return new jotun_math_ARGB(r2 > 255 ? 255 : r2,g2 > 255 ? 255 : g2,b2 > 255 ? 255 : b2,this.a);
+	}
+	,hex: function() {
+		var r = this.value().toString(16);
+		while(r.length < 6) r = "0" + r;
+		return "#" + r;
+	}
+	,css: function() {
+		if(this.a == 255 || this.a == null) {
+			return "rgb(" + this.r + "," + this.g + "," + this.b + ")";
+		} else {
+			return "rgba(" + this.r + "," + this.g + "," + this.b + "," + (this.a / 255).toFixed(2) + ")";
+		}
+	}
+	,xcss: function() {
+		return "x" + this._v16(this.a) + this._v16(this.r) + this._v16(this.g) + this._v16(this.b);
+	}
+	,__class__: jotun_math_ARGB
 };
 var jotun_math_IPoint = function() { };
 jotun_math_IPoint.__name__ = ["jotun","math","IPoint"];
@@ -9545,8 +9287,8 @@ haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 jotun_dom_Display._CNT = 0;
 jotun_dom_Display._DATA = [];
-jotun_net_Loader.FILES = { };
 jotun_modules_ModLib.CACHE = { };
+jotun_modules_ModLib.DATA = { };
 jotun_seo_SEOTool.WEBSITE = 1;
 jotun_seo_SEOTool.BREADCRUMBS = 2;
 jotun_seo_SEOTool.PRODUCT = 4;
@@ -9571,17 +9313,15 @@ jotun_css_CSSGroup.MEDIA_MD = "(min-width:992px)";
 jotun_css_CSSGroup.MEDIA_LG = "(min-width:1200px)";
 jotun_css_CSSGroup.MEDIA_XL = "(min-width:1480px)";
 jotun_css_XCSS.enabled = false;
-jotun_css_XCode._scx = "#xs#sm#md#lg#pr#";
 jotun_css_XCode.css = new jotun_css_CSSGroup();
-jotun_css_XCode._dev = false;
 jotun_css_XCode._inits = { reset : false, grid : false};
-jotun_css_XCodeRules.shadowConfig = { distance : 5, direction : 45, multiply : .5, draws : 5, strength : 10};
-jotun_css_XCodeRules._KEYS = { 'void' : { value : "\"\"", verifier : jotun_css_XCodeRules.commonKey}, glass : { value : "background-color:transparent", verifier : jotun_css_XCodeRules.colorKey}, b : { value : "bottom", verifier : jotun_css_XCodeRules.numericKey}, t : { value : "top", verifier : jotun_css_XCodeRules.numericKey}, l : { value : "left", verifier : jotun_css_XCodeRules.numericKey}, r : { value : "right", verifier : jotun_css_XCodeRules.numericKey}, m : { value : "middle", verifier : jotun_css_XCodeRules.commonKey}, j : { value : "justify", verifier : jotun_css_XCodeRules.commonKey}, c : { value : "center", verifier : jotun_css_XCodeRules.commonKey}, n : { value : "none", verifier : jotun_css_XCodeRules.commonKey}, line : { value : "line", verifier : jotun_css_XCodeRules.pushKey}, mar : { value : "margin", verifier : jotun_css_XCodeRules.numericKey}, pad : { value : "padding", verifier : jotun_css_XCodeRules.numericKey}, bor : { value : "border", verifier : jotun_css_XCodeRules.numericKey}, w : { value : "width", verifier : jotun_css_XCodeRules.valueKey}, h : { value : "height", verifier : jotun_css_XCodeRules.valueKey}, o : { value : "outline", verifier : jotun_css_XCodeRules.valueKey}, disp : { value : "display", verifier : jotun_css_XCodeRules.valueKey}, vert : { value : "vertical-align", verifier : jotun_css_XCodeRules.valueKey}, blk : { value : "block", verifier : jotun_css_XCodeRules.commonKey}, "inline" : { value : "inline", verifier : jotun_css_XCodeRules.appendKey}, bg : { value : "background", verifier : jotun_css_XCodeRules.numericKey}, txt : { value : "", verifier : jotun_css_XCodeRules.textKey}, dec : { value : "", verifier : jotun_css_XCodeRules.valueKey}, sub : { value : "sub", verifier : jotun_css_XCodeRules.commonKey}, sup : { value : "super", verifier : jotun_css_XCodeRules.commonKey}, pos : { value : "position", verifier : jotun_css_XCodeRules.valueKey}, abs : { value : "absolute", verifier : jotun_css_XCodeRules.positionKey}, rel : { value : "relative", verifier : jotun_css_XCodeRules.positionKey}, fix : { value : "fixed", verifier : jotun_css_XCodeRules.positionKey}, pull : { value : "float", verifier : jotun_css_XCodeRules.valueKey}, 'float' : { value : "float", verifier : jotun_css_XCodeRules.valueKey}, over : { value : "overflow", verifier : jotun_css_XCodeRules.valueKey}, hide : { value : "display:none", verifier : jotun_css_XCodeRules.commonKey}, scroll : { value : "scroll", verifier : jotun_css_XCodeRules.scrollKey}, crop : { value : "overflow:hidden", verifier : jotun_css_XCodeRules.commonKey}, x : { value : "x", verifier : jotun_css_XCodeRules.scrollKey}, y : { value : "y", verifier : jotun_css_XCodeRules.scrollKey}, z : { value : "z-index", verifier : jotun_css_XCodeRules.indexKey}, bold : { value : "font-weight:bold", verifier : jotun_css_XCodeRules.commonKey}, regular : { value : "font-weight:regular", verifier : jotun_css_XCodeRules.commonKey}, underline : { value : "font-weight:underline", verifier : jotun_css_XCodeRules.commonKey}, italic : { value : "font-weight:italic", verifier : jotun_css_XCodeRules.commonKey}, thin : { value : "font-weight:100", verifier : jotun_css_XCodeRules.commonKey}, upcase : { value : "font-transform:uppercase", verifier : jotun_css_XCodeRules.commonKey}, locase : { value : "font-transform:lowercase", verifier : jotun_css_XCodeRules.commonKey}, cursor : { value : "cursor", verifier : jotun_css_XCodeRules.valueKey}, load : { value : "loading", verifier : jotun_css_XCodeRules.valueKey}, arial : { value : "font-family:arial", verifier : jotun_css_XCodeRules.commonKey}, verdana : { value : "font-family:verdana", verifier : jotun_css_XCodeRules.commonKey}, tahoma : { value : "font-family:tahoma", verifier : jotun_css_XCodeRules.commonKey}, lucida : { value : "font-family:lucida console", verifier : jotun_css_XCodeRules.commonKey}, georgia : { value : "font-family:georgia", verifier : jotun_css_XCodeRules.commonKey}, trebuchet : { value : "font-family:trebuchet", verifier : jotun_css_XCodeRules.commonKey}, table : { value : "table", verifier : jotun_css_XCodeRules.appendKey}, rad : { value : "radius", verifier : jotun_css_XCodeRules.valueKey}, solid : { value : "solid", verifier : jotun_css_XCodeRules.commonKey}, dashed : { value : "dashed", verifier : jotun_css_XCodeRules.commonKey}, 'double' : { value : "double", verifier : jotun_css_XCodeRules.commonKey}, dotted : { value : "dotted", verifier : jotun_css_XCodeRules.commonKey}, alpha : { value : "opacity", verifier : jotun_css_XCodeRules.alphaKey}, hidden : { value : "", verifier : jotun_css_XCodeRules.displayKey}, shadow : { value : "", verifier : jotun_css_XCodeRules.shadowKey}, stroke : { value : "", verifier : jotun_css_XCodeRules.strokeKey}, cell : { value : "cell", verifier : jotun_css_XCodeRules.commonKey}, mouse : { value : "pointer-events", verifier : jotun_css_XCodeRules.commonKey}, btn : { value : "cursor:pointer", verifier : jotun_css_XCodeRules.commonKey}, ease : { value : "transition", verifier : jotun_css_XCodeRules.commonArray}};
 jotun_dom_Display3D._fixed = false;
 jotun_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center center"};
 jotun_dom_Input.icons = { };
-jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQuery();
-jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQuery();
+jotun_gaming_actions_Action.cache = { };
+jotun_gaming_actions_Action.commands = new jotun_objects_QueryGroup();
+jotun_gaming_actions_Requirement.cache = { };
+jotun_gaming_actions_Requirement.commands = new jotun_objects_QueryGroup();
 jotun_gaming_dataform_DataCollection._dictio = { };
 jotun_tools_Delayer.setTimeout = setTimeout;
 jotun_tools_Delayer.clearTimeout = clearTimeout;

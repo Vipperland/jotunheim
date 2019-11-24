@@ -17,11 +17,7 @@ import jotun.utils.Dice;
 @:expose('XCode')
 class XCode {
 	
-	static private var _scx:String = "#xs#sm#md#lg#pr#";
-	
 	static private var css:CSSGroup = new CSSGroup();
-	
-	static private var _dev:Bool = false;
 	
 	static private var _filters:Svg;
 	
@@ -69,43 +65,43 @@ class XCode {
 				|	o-left			[h|v|o]-middle	o-right			
 				|	o-bottom-left		o-bottom			o-bottom-right	
 			*/
-			omnibuild('display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;', '.shelf,.hack,.drawer');
-			omnibuild('-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;', '.shelf');
-			omnibuild('-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;', '.hack,.drawer');
-			omnibuild('-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;', '.drawer');
+			omnibuild('.shelf,.hack,.drawer', 'display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;');
+			omnibuild('.shelf', '-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;');
+			omnibuild('.hack,.drawer', '-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;');
+			omnibuild('.drawer', '-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;');
 			// Auto grow
-			omnibuild('-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;', '.cel');
+			omnibuild('.cel', '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;');
 			// Pack will align left, center or right
-			omnibuild('-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;', '.o-left,.o-top-left,.o-bottom-left');
-			omnibuild('-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;', '.v-middle,.o-middle');
-			omnibuild('-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;', '.o-right,.o-top-right,o-bottom-right');
+			omnibuild('.o-left,.o-top-left,.o-bottom-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
+			omnibuild('.v-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
+			omnibuild('.o-right,.o-top-right,o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
 			// Lift will align top, middle and bottom
-			omnibuild('-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;','.o-top,.o-top-left,.o-top-right');
-			omnibuild('-webkit-box-align:center;-ms-flex-align:center;align-items:center;','.h-middle,.o-middle');
-			omnibuild('-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;', '.o-bottom,.o-bottom-left,.o-bottom-right');
+			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
+			omnibuild('.h-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
+			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', '-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;');
 			// Fill empty spaces around the cells
-			omnibuild('-ms-flex-pack:distribute;justify-content: space-around;', '.o-arrange');
+			omnibuild('.o-arrange', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
-			omnibuild('-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;', '.o-wellfit');
+			omnibuild('.o-wellfit', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
 			// Order by right to left instead of left to right
-			omnibuild('-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;', '.shelf.o-stack,.hack.o-stack');
-			omnibuild('-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;', '.drawer.o-stack');
+			omnibuild('.shelf.o-stack,.hack.o-stack', '-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;');
+			omnibuild('.drawer.o-stack', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');
 			// Wrap modes
-			omnibuild('-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;', '.hack.o-stack');
+			omnibuild('.hack.o-stack', '-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;');
 			Dice.Count(0, 12, function(a:Int, b:Int, c:Bool) {
 				// Create order selectors, positive and negative (-12 to 12)
 				if(a > 0){
-					omnibuild('-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';', '.tag-' + a + 'n');
+					omnibuild('.tag-' + a + 'n', '-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';');
 				}
-				omnibuild('-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';', '.tag-' + a);
+				omnibuild('.tag-' + a, '-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';');
 				++a;
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
 				var t:String = (cast m).toFixed(5) + '%';
 				var s:String = "flex-basis:" + t + ";max-width:" + t;
-				omnibuild(s, '.cel-' + a);
+				omnibuild('.cel-' + a, s);
 				if (a < b) {
-					omnibuild('margin-left:' + t, '.rcell-' + a);
+					omnibuild('.rcell-' + a, 'margin-left:' + t);
 				}
 				return null;
 			});
@@ -113,104 +109,14 @@ class XCode {
 		}
 	}
 	
-	/**
-	 * If a screen related selector will be applied
-	 * @param	args
-	 * @return
-	 */
-	static private function _screen(args:Array<String>):String {
-		return _scx.indexOf('#' + args[args.length - 1] + '#') != -1 ? args.pop() : null;
-	}
-	
-	/**
-	 * First pass, create the selector structure
-	 * @param	args
-	 * @return
-	 */
-	static private function _parse(args:Array<String>):Entry {
-		var r:Array<IKey> = [];
-		var i:Bool = false;
-		if (args[args.length-1] == 'i') {
-			i = true;
-			args.pop();
-		}
-		Dice.All(args, function(p:Int, v:String) {
-			if(v.length > 0){
-				var val:IEntry = XCodeRules.get(v);
-				var v2:String = val != null ? val.value : null;
-				// create a Entry for the group
-				// Index: Entry point
-				// key: property shortcut
-				// entry: property parser method
-				// position: css common direction values (top,left,bottom and right)
-				// measure: CSS position value (positive or negative, pixels or percent)
-				// color: css Color value in formar #RRGGBB
-				r[p] = cast { index:p, key:v, entry:val, position:getPosition(v2, v), measure:getMeasure(v2, v), color:getColor(v2, v) };
-			}
-		});
-		// return all Entry structure
-		return new Entry(r,XCodeRules.keys(),i);
-	}
-	
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
 			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
-			omnibuild('display:none !important;', '.hidden');
+			omnibuild('.hidden', 'display:none !important;');
 			_createGrid();
 			css.build();
-			Jotun.run(scan);
 		}
-	}
-	
-	static public function unmute():Void {
-		_dev = true;
-	}
-	
-	static public function mute():Void {
-		_dev = false;
-	}
-	
-	static public function shadow(data:Dynamic):Void {
-		Dice.All(data, function(p:String, v:UInt) {	Reflect.setField(XCodeRules.shadowConfig, p, v); } );
-	}
-	
-	static public function scan():Void {
-		Jotun.all('noscript[automator]').each(function(o:IDisplay){
-			parse(o.element.innerText, o.attribute('automator').toLowerCase() == 'all');
-			o.dispose();
-		});
-		css.build(); // Apply changes + Append to ScriptElement
-	}
-	
-	static public function search(t:Dynamic):Void {
-		if (t == null) {
-			return;
-		}
-		if(!Std.is(t,String)){
-			if (Std.is(t, IDisplay)) {
-				t = t.element.outerHTML;
-			}else if (Std.is(t, Element)){
-				t = t.outerHTML;
-			}else {
-				t = Std.string(t);
-			}
-		}
-		var t:Array<String> = t.split("class=");	// Search all class entries
-		if (t.length > 0) {
-			t.shift();
-		}
-		Dice.Values(t, function(v:String) {
-			var i:String = v.substr(0, 1);	// class=["]" (string start)
-			var j:Int = v.indexOf(i, 1);	// class="["] (string end)
-			if (j > 1) {
-				v = v.substring(1, j);		// Remove quotes (single & double)
-				if (v.length > 0) {
-					build(v,null,true);	// If result is not empty
-				}
-			}
-		});
-		css.build(); // Apply changes / Append to ScriptElement
 	}
 	
 	static public function style(selector:String, value:Dynamic, ?mode:String):Void {
@@ -234,151 +140,17 @@ class XCode {
 	 * @param	group
 	 * @param	silent
 	 */
-	static public function omnibuild(query:String, ?group:String):Void {
-		var g:Bool = group != null && group.length > 0;
-		if (query.indexOf(':') == -1){
-			query = build(query, group, true).style;
-		}else if (g){
-			css.add(group + '{' + query + '}', null);
-		}
-		if (g){
-			css.styleXS += (group.split(',').join('-xs,') + '-xs' + '{' + query + '}');
-			css.styleSM += (group.split(',').join('-sm,') + '-sm' + '{' + query + '}');
-			css.styleMD += (group.split(',').join('-md,') + '-md' + '{' + query + '}');
-			css.styleLG += (group.split(',').join('-lg,') + '-lg' + '{' + query + '}');
-			css.stylePR += (group.split(',').join('-pr,') + '-pr' + '{' + query + '}');
-		}
-		
+	static public function omnibuild(selector:String, query:String):Void {
+		build(selector, query);
+		css.styleXS += (selector.split(',').join('-xs,') + '-xs' + '{' + query + '}');
+		css.styleSM += (selector.split(',').join('-sm,') + '-sm' + '{' + query + '}');
+		css.styleMD += (selector.split(',').join('-md,') + '-md' + '{' + query + '}');
+		css.styleLG += (selector.split(',').join('-lg,') + '-lg' + '{' + query + '}');
+		//css.styleXL += (selector.split(',').join('-xl,') + '-xl' + '{' + query + '}');
+		css.stylePR += (selector.split(',').join('-pr,') + '-pr' + '{' + query + '}');
 	}
-	
-	/**
-	 * Create selectors from string
-	 * @param	query
-	 * @param	group
-	 */
-	static public function build(?query:String, ?group:String, ?silent:Bool):Dynamic {
-		
-		if (query == null || query == ''){
-			css.build();
-			return null;
-		}
-		
-		var c:Array<String> = query.split(" ");						// Split class names
-		var m:String = null;										// MediaQueries rule
-		var s:String;												// Final selector
-		var g:Bool = Utils.isValid(group);							// Is a valid group?
-		var r:String = ''; 	
-		// Group value, if available
-		if (g && group.length > 0) {
-			m = _screen(group.split("-"));	// Remove MediaQuery rule from group name
-		}
-		
-		Dice.Values(c, function(v:String) {
-			if (v.length > 1) {
-				v = v.split("\r").join(" ").split("\n").join(" ").split("\t").join(" "); // Remove linebreaks invalid characters from class names
-				c = v.split("-"); // create sections
-				if (c.length > 0) {
-					if (g) { // Rule for groups
-						_screen(c); // Remove @media signature
-						var en:Entry = _parse(c);
-						s = en.build(); // Create class for selector
-						if (Utils.isValid(s)) {
-							r += s + ";";
-						} else if (_dev == true) {
-							Jotun.log("XCode => ERROR (" + en + ")");
-						}
-					}else { // Rule for single class name
-						m = _screen(c); // Target @media
-						if (!css.exists(v, m)) { // Check if selector exists
-							s = _parse(c).build(); // Create class for selector
-							if (Utils.isValid(s)) { // Check if value is valid
-								if (_dev == true) {
-									Jotun.log("XCode => ." + v + " {" + s + ";}", 1);
-								}
-								css.set('.' + v, s, m); // Add selector to correspondent @media group
-								r += s + ";";
-							}
-						}
-					}
-				}
-			}
-		});
-		if (g && Utils.isValid(r)) { // If is a group, register all classes to correspondent group and @media value
-			if (_dev == true) {
-				Jotun.log("XCode => " + group + " {" + r + "}", 1);
-			}
-			css.set(group, r, m);
-		}
-		if (silent == null || silent == false) {
-			css.build();
-		}
-		return {style:r, group:group, media:m};
-	}
-	
-	/**
-	 * Build from custom text (selector: automator css-syntax;)
-	 * @param	data
-	 */
-	static public function parse(data:String, ?omni:Bool):Void {
-		Dice.Values(data.split(';'), function(v:String) {
-			var set:Array<String> = v.split('\r\n').join(' ').split('\r').join(' ').split('\n').join(' ').split('=');
-			if(set.length==2)
-				omni ? omnibuild(set[1], set[0]) : build(set[1], set[0], true);
-			else if(set.length == 1)
-				omni ? omnibuild(set[0], null) : build(set[0], null, true);
-		});
-	}
-	
-	/**
-	 * Check if value is one of any edge position
-	 * @param	r
-	 * @param	x
-	 * @return
-	 */
-	static public function getPosition(r:String, x:String):Bool {
-		return "tblrcm".indexOf(x) != -1 || "#top#bottom#left#right#center#middle#".indexOf(x) != -1;
-	}
-	
-	/**
-	 * Convert value to color (#RRGGBB)
-	 * @param	r
-	 * @param	x
-	 * @return
-	 */
-	static public function getColor(r:String, x:String):String {
-		var argb:Bool = x.length == 9;
-		if (x.substr(0, 1) == "x" && (x.length == 4 || x.length == 7 || argb)) {
-			x = "#" + x.substring(1, x.length);
-			return argb ? new ARGB(x).css() : x;
-		}else if (Utils.isValid(r) && r.substr(0, 1) == "#") {
-			return r;
-		}
-		return null;
-	}
-	
-	/**
-	 * Convert value to numeric (Int|Float)
-	 * @param	r
-	 * @param	x
-	 * @return
-	 */
-	static public function getMeasure(r:String, x:String):String {
-		if(r == null){
-			var l:Int = x.length;
-			if (x.substr(l - 1, 1) == "p") {
-				r = x.split("d").join(".").split("p").join("%");
-			}else if (x.substr(l - 1, 1) == "n" && Std.parseInt(x.substr(0, 2)) != null) {
-				r = "-" + x.split("n").join("") + "px";
-			}else {
-				var n:Int = Std.parseInt(x);
-				if (n != null) {
-					r = n + (n > 0 ? "px" : "");
-				}
-			}
-			return r;
-		}else {
-			return null;
-		}
+	static public function build(selector:String, query:String):Void {
+		css.style += (selector + '{' + query + '}');
 	}
 	
 	static public function createFilter(id:String, a:Float, r:Float, g:Float, b:Float):Void {
@@ -418,7 +190,76 @@ class XCode {
 		_filters.appendHtml(end);
 	}
 	
+	static public function createStroke(id:String, text:Bool, color:Dynamic, ?strenght:Int, ?blur:Int):String {
+		var c:String = new ARGB(color).hex();
+		var l:Int = Utils.getValidOne(strenght, 1);
+		var b:Int = Utils.getValidOne(blur, 1);
+		var x:Int = 0;
+		var s:Array<String> = [];
+		var t:String = Utils.getValidOne(blur, 1) + 'px ' + c;
+		while (x < l) {
+			++x;
+			if(x != 0){
+				var xs:String = x + 'px';
+				s[s.length] = '-' + xs + ' 0 ' + t;
+				s[s.length] = '0 ' + xs + ' ' + t;
+				s[s.length] = '' + xs + ' 0 ' + t;
+				s[s.length] = '0 -' + xs + ' ' + t;
+				if (x % 2 == 0){
+					//xs = Std.int(x/2) + 'px';
+					s[s.length] = '-' + xs + ' -' + xs + ' ' + t;
+					s[s.length] = '' + xs + ' -' + xs + ' ' + t;
+					s[s.length] = '-' + xs + ' ' + xs + ' ' + t;
+					s[s.length] = '' + xs + ' ' + xs + ' ' + t;
+				}
+			}
+		}
+		omnibuild(id, (text ? 'text-shadow' : 'box-shadow') + ':' + s.join(','));
+		return id;
+	}
 	
+	static public function createShadow(id:String, text:Bool, color:Dynamic, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
+		var t:ARGB = new ARGB(color);
+		var y:Int = 0;
+		var z:Int = Utils.getValidOne(distance, 5);
+		var a:Int = Utils.getValidOne(direction, 45);
+		var w:Int = Utils.getValidOne(strenght, 5);
+		var u:Int = Utils.getValidOne(quality, 10);
+		var c:Float = Utils.getValidOne(multiplier, .5);
+		var cos:Float = Math.cos(.017453 * a);
+		var sin:Float = Math.sin(.017453 * a);
+		var r:Array<String> = [];
+		var tx:Int = 0;
+		var ty:Int = 0;
+		if (a % 90 == 0){
+			w = z;
+		}
+		w = Math.floor(cast z / w);
+		if (w <= 0) {
+			w = 1;
+		}
+		while (y < z) {
+			y += w;
+			if (y > z) {
+				y = z;
+			}
+			tx = (cast cos * y);
+			ty = (cast sin * y);
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.brightnesss(.8 - (y/z*c)).hex();
+		}
+		y = 0;
+		var oX:Float = cos * z;
+		var oY:Float = sin * z;
+		while (y < u) {
+			++y;
+			tx = (cast cos * y + oX);
+			ty = (cast sin * y + oY);
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgba(0,0,0,.1)';
+		}
+		var q:String = (text ? 'text-shadow' : 'box-shadow') + ':' + r.join(',');
+		omnibuild(id, q);
+		return id;
+	}
 	
 	static public function createMotionFor(name:String, time:Float, values:Array<String>):Void {
 		if (_motions == null){

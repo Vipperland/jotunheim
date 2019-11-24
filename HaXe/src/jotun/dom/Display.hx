@@ -670,7 +670,7 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function autoInject():IDisplay {
+	public function redoScripts():IDisplay {
 		all('script').each(cast function(o:Script){
 			o.remove();
 			var u:String = o.attribute('src');

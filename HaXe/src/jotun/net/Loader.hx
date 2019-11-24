@@ -23,11 +23,8 @@ import jotun.utils.Dice;
 @:expose("jtn.modules.Loader")
 class Loader implements ILoader {
 	
-	private static var FILES:Dynamic = { };
-	
 	private var _toload:Array<String> = [];
 	private var _isBusy:Bool;
-	private var _noCache:Bool;
 	#if js
 	private var _fileProgress:Float;
 	#end
@@ -43,8 +40,7 @@ class Loader implements ILoader {
 		return new HttpRequest(u);
 	}
 	
-	public function new(?noCache:Bool = false){
-		_noCache = noCache;
+	public function new(){
 		signals = new Signals(this);
 		totalLoaded = 0;
 		totalFiles = 0;
@@ -130,21 +126,12 @@ class Loader implements ILoader {
 		signals.call('completed');
 	}
 	
-	#if js
-	
-		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
-			return Jotun.resources.build(module, data, each);
-		}
-	
-	#end
-	
 	#if js 
-	public function async(file:String, #if js ?target:Dynamic, #end ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
+	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
 	#elseif php
-	public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 	#end
-		var h:Array<String> = file.indexOf("#") != -1 ? file.split("#") : [file];
-		var r:HttpRequest = _getReq(h[0]);
+		var r:HttpRequest = _getReq(file);
 		#if js 
 			r.async = true; 
 		#end
@@ -152,31 +139,15 @@ class Loader implements ILoader {
 		r.onData = function(d) {
 			Jotun.resources.register(file, d);
 			_changed(file, 'loaded', d, r);
-			#if js
-				if (target != null) {
-					if(Std.is(target, String)) {
-						var e:IDisplay = Jotun.one(target, null);
-						if (e != null) {
-							if (!Std.is(data, Array)) 
-								data = [data];
-							e.addChild(build(file, data));
-						}
-					}else {
-						try {
-							build(file, data, target);
-						}catch (e:Dynamic) {
-							Jotun.log(e, 3);
-						}
-					}
-				}
-			#end
-			if (handler != null) 
+			if (handler != null) {
 				handler(new Request(true, d, null, file)); 
+			}
 		}
 		r.onError = function(d) {
 			_changed(file, 'error', d, r);
-			if (handler != null) 
+			if (handler != null) {
 				handler(new Request(false, null, new Error(-1, d), file)); 
+			}
 		}
 		#if js
 			if (progress == null){
@@ -200,24 +171,15 @@ class Loader implements ILoader {
 	#elseif php
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
-		if (method == null || method == '') {
-			method = 'POST';
-		}else{
+		if (method != null){
 			method = method.toUpperCase();
 		}
-		
 		var is_post:Bool = method == 'POST';
 		var is_get:Bool = method == 'GET';
 		var is_data:Bool = Std.is(data, String);
 		// Build URL for GET parameters 
-		if (method == 'GET'){
-			var ps:Array<String> = url.split('?');
-			if (ps.length == 1 || ps[1].length == 0){
-				ps[1] = Utils.paramsOf(data);
-			}else{
-				ps[1] += '&' + Utils.paramsOf(data);
-			}
-			url = ps.join('?');
+		if (is_get && data != null){
+			url += ((url.indexOf('?') == -1) ? '?' : '&') + Utils.paramsOf(data);
 		}
 		// Create request object
 		var r:HttpRequest = _getReq(url);
@@ -264,8 +226,9 @@ class Loader implements ILoader {
 		}
 		r.onError = function(d) { 
 			_changed(url, 'error', d, r);
-			if (handler != null) 
+			if (handler != null) {
 				handler(new Request(false, null, new Error(-1, d))); 
+			}
 		}
 		#if js
 			var pro:IProgress = cast {loaded:0,total:0,file:url};

@@ -435,7 +435,7 @@ interface IDisplay extends IQuery implements Dynamic  {
 	/**
 	 * Re-run all external loaded scripts
 	 */
-	public function autoInject():IDisplay;
+	public function redoScripts():IDisplay;
 	
 	/**
 	 * Load and build external modules spefified by the attribute 'sru-load'

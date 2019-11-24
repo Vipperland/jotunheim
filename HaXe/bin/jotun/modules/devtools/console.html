@@ -1,0 +1,31 @@
+[Module:{"name":"jotun-console"}]
+	<div class="jotun console-window"></div>
+		JOTUNHEIM CONSOLE
+	</div>
+[Module:{"version":1.0,"type":"style"}]
+	<style>
+		.jotun.console-window {
+		}
+	</style>
+[Module:{"version":1.0,"type":"script"}]
+	<script>
+		(function(){
+			function _onLoadStart(e){
+			}
+			function _onLoadComplete(e){
+			}
+			function _onLoadProgress(e){
+			}
+			function _onLoadError(e){
+			}
+			function _onLogMessage(message,level){
+			}
+			Jotun.logger.mute();
+			Jotun.loader.signals.add('started',_onLoadStart);
+			Jotun.loader.signals.add('loaded',_onLoadComplete);
+			Jotun.loader.signals.add('loaded',_onLoadProgress);
+			Jotun.loader.signals.add('error',_onLoadError);
+			Jotun.logger.listen(_onLogMessage);
+		})();
+	</script>
+/EOF;

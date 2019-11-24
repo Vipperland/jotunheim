@@ -1,5 +1,6 @@
 package jotun.modules;
 import haxe.Json;
+import jotun.net.IRequest;
 import jotun.serial.IOTools;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -66,7 +67,7 @@ class ModLib {
 	 * Pre filter input data
 	 * @param	handler
 	 */
-	public function onModuleRequest(handler:String->Dynamic->Dynamic):Void {
+	public function onDataOut(handler:String->Dynamic->Dynamic):Void {
 		if (Lambda.indexOf(_predata, handler) == -1){
 			_predata[_predata.length] = handler;
 		}
@@ -150,9 +151,6 @@ class ModLib {
 									try {
 										Reflect.setField(data, mod.name, Json.parse(content));
 									}catch (e:Dynamic){ }
-								}else if (mod.type == 'xcode') {
-									XCode.build(content);
-									content = '';
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
 									Jotun.document.head.bind(content, mod.type, mod.id);
 									content = '';
@@ -313,14 +311,6 @@ class ModLib {
 			}
 			_afterMount(d, module);
 			return d;
-		}
-		
-		public function buildIn(module:String, target:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
-			var display:IDisplay = Jotun.one(target);
-			if (display != null){
-				display.addChild(build(module, data, each));
-			}
-			return display;
 		}
 		
 	#end;

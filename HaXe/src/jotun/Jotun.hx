@@ -183,7 +183,7 @@ class Jotun {
 		 * @param	q
 		 * @return
 		 */
-		static public function jQuery(?q:Dynamic = "*"):JQuery {
+		static public function jQuery(?q:Dynamic = "*"):Dynamic {
 			return untyped __js__("$(q);");
 		}
 		
@@ -219,19 +219,6 @@ class Jotun {
 		}
 		
 		/**
-		 * Load and prepare modules for post usage
-		 * @param	file
-		 * @param	target
-		 * @param	content
-		 * @param	handler
-		 */
-		static public function module(file:String, ?target:Dynamic, ?content:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
-			run(function() { loader.async(file, target, content, handler, progress); } );
-		}
-		
-		
-		
-		/**
 		 * Call a URL with POST/GET/BINARY capabilities
 		 * @param	url
 		 * @param	data
@@ -241,6 +228,21 @@ class Jotun {
 		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic):Void {
 			run(function() { loader.request(url, data, method, handler, headers, progress, options); } );
 		}
+		
+		/**
+		 * Load an external or internal module content
+		 * @param	file
+		 * @param	content
+		 * @param	handler
+		 */
+		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+			if (!resources.exists(name)){
+				loader.module(file, data, handler);
+			}else{
+				handler(null);
+			}
+		}
+		
 		
 	#elseif php
 		
@@ -268,7 +270,7 @@ class Jotun {
 			if (file.indexOf("http") == -1) {
 				resources.prepare(file);
 			}else {
-				loader.async(file, content, handler);
+				loader.module(file, content, handler);
 			}
 		}
 		

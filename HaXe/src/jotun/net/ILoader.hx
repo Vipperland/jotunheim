@@ -45,18 +45,6 @@ interface ILoader {
 	 */
 	public function get (module:String, ?data:Dynamic = null) : String;
 	
-	#if js
-		
-		/**
-		 * Draws a module in a DOMElement
-		 * @param	module
-		 * @param	data
-		 * @return
-		 */
-		public function build (module:String, ?data:Dynamic = null, ?each:IDisplay->IDisplay = null) : IDisplay;
-		
-	#end
-	
 	#if js 
 		/**
 		 * Load a module not in queue
@@ -65,7 +53,8 @@ interface ILoader {
 		 * @param	handler
 		 * @param	progress
 		 */
-		public function async(file:String, ?target:Dynamic, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void ):Void;
+		public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void;
+	
 	#elseif php
 		/**
 		 * Load a module not in queue
@@ -73,7 +62,7 @@ interface ILoader {
 		 * @param	data
 		 * @param	handler
 		 */
-		public function async(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
+		public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void;
 	#end
 	
 	/**
