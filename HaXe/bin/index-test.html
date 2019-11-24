@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head class="marg-0">
+	<meta charset="utf-8"/>
+	<title>Jotun</title>
+	<meta name="description" content=""/>
+	<style>
+		@import url('assets/icons/pro.min.css');
+		@import url('https://fonts.googleapis.com/css?family=Jura:400,700&display=swap');
+		html {
+			font-size: 48px;
+		}
+		body {
+			color: #000000;
+			background-color: #000000;
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+		}
+		.bg {
+			width: 100vw;
+			height: 100%;
+			min-height:100vh;
+			left: 0;
+			background-image: url(assets/img/bg-make.jpg);
+			background-size: cover;
+			bakcground-position: 50% 50%;
+			opacity: .3;
+			position: absolute;
+			top: 0;
+			z-index: -1;
+		}
+		.drawer {
+			height: 100%;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+		.content .lines {
+			width: 0;
+			height: 0;
+			position: relative;
+		}
+		.content .lines .line-1 {
+			width: 110vw;
+			height: 200px;
+			left: -55vw;
+			position: absolute;
+			background-color: rgba(255,0,255,.5);
+			transform: rotate(12deg);
+			z-index: -1;
+		}
+		.content .lines .line-2 {
+			width: 110vw;
+			height: 200px;
+			left: -55vw;
+			position: absolute;
+			background-color: rgba(255,0,255,.5);
+			transform: rotate(10deg);
+			z-index: -1;
+		}
+		.content .lines .line-3 {
+			width: 110vw;
+			height: 200px;
+			left: -55vw;
+			position: absolute;
+			background-color: #FF00FF;
+			transform: rotate(4deg);
+			z-index: -1;
+		}
+		.content .lines .line-3 .topic {
+			z-index: 1;
+		}
+	</style>
+</head>
+	
+<body automator>
+	<div class="drawer o-arrange o-middle">
+		<div class="content">
+			<div class="bg"></div>
+			<div class="lines">
+				<div class="line-1"></div>
+				<div class="line-2"></div>
+				<div class="line-3"></div>
+				<div class="topic">
+					<div>PIMPUXINHA</div>
+					<div><span>MAKE-UP</span></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<script src="jotun/api.jotun.js"></script>
+	<script>
+		
+	</script>
+</body>
+</html>
