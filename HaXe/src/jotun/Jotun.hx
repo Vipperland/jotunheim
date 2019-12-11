@@ -1,17 +1,14 @@
 package jotun;
 
-import haxe.Log;
 import jotun.data.Logger;
-import jotun.errors.IError;
-import jotun.net.IProgress;
-import jotun.net.IRequest;
+import jotun.dom.Style;
 import jotun.modules.ModLib;
-import jotun.net.ILoader;
-import jotun.net.Loader;
 import jotun.net.Domain;
 import jotun.net.IDomain;
-import jotun.signals.IFlow;
-import jotun.signals.ISignals;
+import jotun.net.ILoader;
+import jotun.net.IProgress;
+import jotun.net.IRequest;
+import jotun.net.Loader;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -200,14 +197,20 @@ class Jotun {
 			}
 		}
 		
-		static public function inject(url:Dynamic, ?handler:Void->Void):Void {
-			if (!Std.is(url, Array)) url = [url];
-			Script.require(url, handler);
+		static public function inject(value:Dynamic, ?data:Dynamic, ?handler:Script->Void):Void {
+			if (value.indexOf('.js') == -1){
+				Script.fromString(value, data);
+			}else{
+				Script.fromUrl(value, data, handler);
+			}
 		}
 		
-		static public function stylish(url:Dynamic, ?handler:Void->Void):Void {
-			if (!Std.is(url, Array)) url = [url];
-			//Style.require(url, handler);
+		static public function stylish(value:String, ?data:Dynamic, ?handler:Style->Void):Void {
+			if (value.indexOf('.css') == -1){
+				Style.fromString(value, data);
+			}else{
+				Style.fromUrl(value, data, handler);
+			}
 		}
 		
 		/**

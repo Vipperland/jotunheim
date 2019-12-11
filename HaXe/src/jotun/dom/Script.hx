@@ -1,9 +1,11 @@
 package jotun.dom;
 import jotun.Jotun;
-import js.Browser;
-import js.html.ScriptElement;
 import jotun.dom.IDisplay;
 import jotun.events.IEvent;
+import jotun.net.IRequest;
+import jotun.utils.Filler;
+import js.Browser;
+import js.html.ScriptElement;
 
 /**
  * ...
@@ -14,6 +16,24 @@ class Script extends Display {
 	
 	static public function get(q:String):Script {
 		return cast Jotun.one(q);
+	}
+	
+	static public function fromUrl(q:String, ?data:Dynamic, ?handler:Script->Void):Void {
+		Jotun.request(q, null, 'GET', function(r:IRequest){
+			var js:Script = null;
+			if(r.success){
+				js = fromString(r.data).publish();
+			}
+			if (handler != null){
+				handler(js);
+			}
+		});
+	}
+	
+	static public function fromString(q:String, ?data:Dynamic):Script {
+		var js:Script = new Script();
+		js.writeHtml(Filler.to(q, data));
+		return js;
 	}
 	
 	/**
@@ -29,7 +49,7 @@ class Script extends Display {
 			var file:String = url.shift();
 			if (file != null) {
 				var s:Script = new Script();
-				Jotun.document.head.addChild(s);
+				s.publish();
 				s.src(file, function(e:IEvent) {
 					Script.require(url, handler);
 				});
@@ -80,6 +100,11 @@ class Script extends Display {
 	
 	override public function appendHtml(q:Dynamic):IDisplay {
 		this.object.text = this.object.text + q;
+		return this;
+	}
+	
+	public function publish():Script {
+		Jotun.document.head.addChild(this);
 		return this;
 	}
 	

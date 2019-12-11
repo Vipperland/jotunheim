@@ -116,7 +116,7 @@ class ModLib {
 							Jotun.log("	ModLib => OVERRIDE " + path, 2);
 						}
 						var end:Int = v.indexOf("/EOF;");
-						content = v.substring(i + 2, end == -1 ? v.length : end);
+						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
 						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
 							content = content.split('\r\n').join('\r').split('\n').join('\r');
 							while (content.substr(0, 1) == '\r'){

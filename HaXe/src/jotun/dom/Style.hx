@@ -1,5 +1,7 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.net.IRequest;
+import jotun.utils.Filler;
 import js.Browser;
 import js.html.StyleElement;
 import jotun.dom.IDisplay;
@@ -14,6 +16,24 @@ class Style extends Display {
 	
 	static public function get(q:String):Style {
 		return cast Jotun.one(q);
+	}
+	
+	static public function fromUrl(q:String, ?data:Dynamic, ?handler:Style->Void):Void {
+		Jotun.request(q, null, 'GET', function(r:IRequest){
+			var css:Style = null;
+			if(r.success){
+				css = fromString(r.data).publish();
+			}
+			if (handler != null){
+				handler(css);
+			}
+		});
+	}
+	
+	static public function fromString(q:String, ?data:Dynamic):Style {
+		var css:Style = new Style();
+		css.writeHtml(Filler.to(q, data));
+		return css;
 	}
 	
 	static public function require(url:Dynamic, handler:Dynamic) {
@@ -51,8 +71,9 @@ class Style extends Display {
 		object.type = "text/css";
 	}
 	
-	public function publish():Void {
+	public function publish():Style {
 		Browser.document.head.appendChild(cast element);
+		return this;
 	}
 	
 	override public function addToBody():IDisplay {

@@ -54,18 +54,18 @@ class Table implements ITable {
 		reset();
 		if (q == null)
 			q = "*";
-		var is3D:Bool = false;
 		if (t == null)
 			t = cast Browser.document.body;
 		var result:NodeList = q != "*" ? t.querySelectorAll(q) : t.childNodes;
 		var element:Element = null;
 		var obj:IDisplay = null;
 		var len:UInt = result.length;
+		
 		if(len > 0){
 			var ind:UInt = 0;
 			while(ind < len){
 				element = cast result.item(ind);
-				if(element.tagName != null){
+				if (element != null){
 					obj = Utils.displayFrom(element);
 					content[ind] = obj;
 					elements[ind] = element;

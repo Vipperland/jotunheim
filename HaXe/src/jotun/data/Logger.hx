@@ -66,8 +66,8 @@ class Logger{
 			case 1 : "[>SYSTEM] ";
 			case 2 : "[WARNING] ";
 			case 3 : "[!ERROR!] ";
-			case 4 : "[//TODO:] ";
-			case 5 : "[*QUERY:] ";
+			case 4 : "[//TODO*] ";
+			case 5 : "[$QUERY*] ";
 			default : "";
 		}
 		#if js
