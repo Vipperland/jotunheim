@@ -15,7 +15,6 @@ package gate.sirius.meta {
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
 	import gate.sirius.meta.core.EIDConsole;
-	import gate.sirius.meta.core.EIDConsole;
 	import gate.sirius.serializer.SruDecoder;
 	import gate.sirius.serializer.SruEncoder;
 	import gate.sirius.serializer.data.SruRules;
@@ -64,8 +63,9 @@ package gate.sirius.meta {
 		
 		
 		static public function init(stage:Stage, TargetObject:* = null, ... classes:Array):void {
-			if (_stage) 
+			if (_stage) {
 				return;
+			}
 			_stage = stage;
 			_console = new Console();
 			_TargetObject = new EIDConsole(stage, TargetObject);
@@ -79,8 +79,9 @@ package gate.sirius.meta {
 		
 		
 		static protected function _onResize(e:Event):void {
-			if (_console._tf_output.parent)
+			if (_console._tf_output.parent){
 				_console._updatePosition();
+			}
 		}
 		
 		
@@ -105,8 +106,9 @@ package gate.sirius.meta {
 			
 			switch (e.keyCode) {
 				case Keyboard.ENTER: {
-					if (e.shiftKey)
+					if (e.shiftKey){
 						commit();
+					}
 					break;
 				}
 				case Keyboard.SPACE:  {
@@ -131,8 +133,9 @@ package gate.sirius.meta {
 				}
 				
 				case Keyboard.LEFTBRACKET : {
-					if (e.shiftKey)
+					if (e.shiftKey){
 						setTimeout(_addBrackets, 1);
+					}
 				}
 			}
 		}
@@ -151,8 +154,9 @@ package gate.sirius.meta {
 		
 		
 		public static function listenEvents(handler:Function):void {
-			if (_listenners.indexOf(handler) == -1)
+			if (_listenners.indexOf(handler) == -1){
 				_listenners.push(handler);
+			}
 		}
 		
 		
@@ -164,8 +168,9 @@ package gate.sirius.meta {
 			if (_altValueTarget > 0 && value.indexOf("a href='event:") !== -1) {
 				value = value.split("a href='event:")[1];
 				value = value.split("'>")[0];
-				if (_tf_input.text.substr(_altValueStart, value.length) !== value)
+				if (_tf_input.text.substr(_altValueStart, value.length) !== value){
 					_tf_input.text = _tf_input.text.substr(0, _altValueStart) + value + _tf_input.text.substr(_altValueCursor, _tf_input.length - _altValueCursor);
+				}
 				e.preventDefault();
 				e.stopImmediatePropagation();
 				_tf_input.setSelection(_altValueStart + value.length, _altValueStart + value.length);
@@ -184,10 +189,11 @@ package gate.sirius.meta {
 
 			_altValueTarget += target;
 			var values:Array = (_altValue || "").split("\n");
-			if (_altValueTarget < 0)
+			if (_altValueTarget < 0){
 				_altValueTarget = 0;
-			else if (_altValueTarget >= values.length)
+			} else if (_altValueTarget >= values.length){
 				_altValueTarget = values.length - 1;
+			}
 			if (_altValue.length > 0) {
 				var tvalue:String = values[_altValueTarget];
 				if (tvalue) {
@@ -262,24 +268,28 @@ package gate.sirius.meta {
 		
 		
 		static public function pushObjMsg(handler:Function = null, ... values:Array):void {
-			if (handler == null)
+			if (handler == null){
 				handler = pushLowMsg;
+			}
 			handler(SruEncoder.encode(values));
 		}
 		
 		
 		static public function pushQuery(value:String, execute:Boolean):void {
 			_console.pushQuery(value);
-			if (execute) _console.commit();
+			if (execute){
+				_console.commit();
+			}
 		}
 		
 		
 		static public function registerAliases(... values:Array):void {
 			for each (var value:*in values) {
-				if (value is Class)
+				if (value is Class){
 					SruDecoder.allowClasses(value);
-				else
+				} else {
 					_aliases[getQualifiedClassName(value).split("::").pop()] = value;
+				}
 			}
 		}
 		
@@ -341,6 +351,7 @@ package gate.sirius.meta {
 		static public function setLogMode():void {
 			_console.setLogMode();
 		}
+		
 		
 		static public function setDevMode():void {
 			_console.setDevMode();
@@ -406,8 +417,9 @@ package gate.sirius.meta {
 		
 		
 		protected function _runListenners(e:TextEvent):void {
-			for each (var callback:Function in _listenners)
+			for each (var callback:Function in _listenners){
 				callback(e.text);
+			}
 		}
 		
 		
@@ -416,9 +428,9 @@ package gate.sirius.meta {
 			var cmd:Array = e.text.split("^&");
 			
 			var alias:String = cmd[0];
-		
+			
 			//_tf_input.text = _tf_input.text.split(cmd[3]).join(result);
-		
+			
 		}
 		
 		protected var _runAliases:Object = {};
@@ -510,8 +522,9 @@ package gate.sirius.meta {
 			
 			for each (var section:String in command) {
 				
-				if (!section)
+				if (!section){
 					continue;
+				}
 				
 				if (targetObject) {
 					if (targetObject.hasOwnProperty(section)) {
@@ -537,8 +550,9 @@ package gate.sirius.meta {
 				var combined:String = "";
 				for each (var subsect:String in params) {
 					combined = "";
-					if (subsect == "prototype")
+					if (subsect == "prototype"){
 						continue;
+					}
 					if (section.length == 0 || subsect.indexOf(section) !== -1) {
 						combined = subsect + ":<font color='#0066CC'>" + (eobject.types[subsect] || "*").split("::").pop() + "</font>";
 						if (!(targetParams is Class)) {
@@ -560,16 +574,19 @@ package gate.sirius.meta {
 				
 				if (displayMethods) {
 					for each (var subsecta:Array in methods) {
-						if (srules && !srules.isVisible(subsecta[0]))
+						if (srules && !srules.isVisible(subsecta[0])){
 							continue;
+						}
 						var paramSet:Array = [];
 						if (subsecta.length > 2) {
 							paramSet = subsecta.splice(2, subsecta.length - 2);
-							for (var i:String in paramSet)
+							for (var i:String in paramSet){
 								paramSet[i] = "<font color='#0066CC'>" + paramSet[i].split("::").pop() + "</font>";
+							}
 						}
-						if (section.length == 0 || subsecta[0].indexOf(section) !== -1)
+						if (section.length == 0 || subsecta[0].indexOf(section) !== -1){
 							endValue += " ~" + subsecta[0] + "(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
+						}
 						if (++counter == 30) {
 							counter = 0;
 							break;
@@ -610,7 +627,7 @@ package gate.sirius.meta {
 			} else if ((!_altValue || _altValue.length == 0) && _tf_alt.parent) {
 				removeChild(_tf_alt);
 			}
-		
+			
 		}
 		
 		
@@ -645,8 +662,9 @@ package gate.sirius.meta {
 		
 		protected function commit():void {
 			
-			if (!_tf_input.length)
+			if (!_tf_input.length){
 				return;
+			}
 			
 			var tgo:EIDConsole = _TargetObject;
 			
@@ -678,8 +696,9 @@ package gate.sirius.meta {
 			var ad:ApplicationDomain = _stage.loaderInfo.applicationDomain;
 			for each (var c:String in ad.getQualifiedDefinitionNames()) {
 				var def:String = c.split("::").join(".");
-				if (ad.hasDefinition(def))
+				if (ad.hasDefinition(def)){
 					SruDecoder.allowClasses(ad.getDefinition(def) as Class);
+				}
 			}
 		}
 		

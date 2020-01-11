@@ -224,18 +224,22 @@ package gate.sirius.serializer.data {
 			return command == CALL_METHOD;
 		}
 		
-		
-		// )
-		public function isMethodEnd():Boolean {
-			return lineClear.indexOf(")") == lineLength - 1;
-		}
-		
-		
 		// @
 		public function isQuery():Boolean {
 			return command == QUERY;
 		}
 		
+		// (
+		public function isMethodStart():Boolean {
+			indexBuffer = lineClear.indexOf(CALL_METHOD_START);
+			return indexBuffer > 0;
+		}
+		
+		
+		// )
+		public function isMethodEnd():Boolean {
+			return lineClear.indexOf(CALL_METHOD_END) == lineLength - 1;
+		}
 		
 		// 
 		public function isBufferEmpty():Boolean {
@@ -293,7 +297,6 @@ package gate.sirius.serializer.data {
 				splitCommand = OBJECT_TYPE;
 				return lineClear.indexOf(OBJECT_TYPE) !== -1;
 			}
-		
 		}
 		
 		
@@ -322,8 +325,9 @@ package gate.sirius.serializer.data {
 		public function getInlineMethodArgs():Array {
 			indexBuffer = lineValue.indexOf(CALL_METHOD_START);
 			paramValueBuffer = lineValue.substring(indexBuffer + 1, lineValue.length - 1).split(",");
-			for (var p:String in paramValueBuffer)
+			for (var p:String in paramValueBuffer){
 				paramValueBuffer[p] = _getLineValue(paramValueBuffer[p]);
+			}
 			return paramValueBuffer;
 		}
 		
@@ -357,9 +361,8 @@ package gate.sirius.serializer.data {
 		}
 		
 		
-		// ~[callFooBar]
+		// ~[callFooBar](
 		public function getMethodName():String {
-			indexBuffer = lineClear.indexOf(CALL_METHOD_START);
 			return lineClear.substring(1, indexBuffer);
 		}
 		

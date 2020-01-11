@@ -25,7 +25,7 @@ package gate.sirius.utils {
 				}
 			}
 		}
-	
+		
 		public static function register(from:Array, ... values:Array):void {
 			var iof:int;
 			for each (var v:*in values) {

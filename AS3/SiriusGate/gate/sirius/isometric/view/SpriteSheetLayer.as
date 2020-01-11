@@ -27,6 +27,13 @@ package gate.sirius.isometric.view {
 		}
 		
 		
+		public function addFrames(textures:Vector.<BitmapData>):SpriteSheetLayer {
+			for each(var frame:BitmapData in textures){
+				addFrame(frame);
+			}
+			return this;
+		}
+		
 		public function addFrame(texture:BitmapData):SpriteSheetLayer {
 			_frames[_frames.length] = texture;
 			if (texture.width > _width) {

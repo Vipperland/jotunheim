@@ -95,6 +95,10 @@ package gate.sirius.isometric.view {
 		}
 		
 		
+		public function hideAllLayers():void {
+			_visible.splice(0, _visible.length);
+		}
+		
 		public function hideLayer(id:uint):void {
 			var layer:SpriteSheetLayer;
 			if (id in _layers) {
@@ -215,7 +219,6 @@ package gate.sirius.isometric.view {
 			copy.update();
 			_signals.start.share(copy._signals.start);
 			_signals.complete.share(copy._signals.complete);
-			
 			return copy;
 		}
 		
@@ -230,6 +233,9 @@ package gate.sirius.isometric.view {
 		
 		public function addAnimation(id:uint, start:uint, end:uint, repeat:Boolean):void {
 			_motions[id] = new SpriteSheetAnimation(id, start, end, repeat);
+			if (_currentMotion == null){
+				setAnimation(id);
+			}
 		}
 		
 		

@@ -83,8 +83,9 @@ package gate.sirius.meta.core {
 				}
 			}
 			
-			if (r != null)
+			if (r != null){
 				Console.pushObjMsg(Console.pushMedMsg, r);
+			}
 			return r;
 		}
 		

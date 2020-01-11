@@ -37,10 +37,7 @@ package gate.sirius.isometric.timer {
 		}
 		
 		public function BiomeHeart() {
-			if (_ME == null){
-				_ME = this;
-				_init();
-			}
+			_init();
 		}
 		
 		public function start():void {
@@ -82,7 +79,7 @@ class ObjData {
 	}
 	public function tick():void {
 		if (++count > this.ups){
-			object.pulse(0);
+			object.pulse(count);
 			count = 0;
 		}
 	}

@@ -15,7 +15,6 @@ package gate.sirius.isometric.view {
 		
 		private var _repeat:Boolean;
 		
-		
 		public function SpriteSheetAnimation(id:uint, start:uint, end:uint, repeat:Boolean) {
 			_repeat = repeat;
 			_end = end;

@@ -56,7 +56,7 @@ package gate.sirius.serializer {
 	 * 					~addChild(
 	 * 						#Loader {
 	 * 							~load(
-	 * 								#UrlRequest(foobar.jpg)
+	 * 								#URLRequest(foobar.jpg)
 	 * 							)
 	 * 						}
 	 * 					)
@@ -65,7 +65,7 @@ package gate.sirius.serializer {
 	 * 				}
 	 * 
 	 *
-	 * * //	Queries
+	 * //	Queries
 	 * @ methodName						Equal to myFunction();
 	 * @ prop.methodName				Equal to myObject.myFunction();
 	 * @ methodName a b c d e			Equal to myFunction(a,b,c,d,e);
@@ -317,8 +317,9 @@ package gate.sirius.serializer {
 		 */
 		private function _resetPath():void {
 			_currentObject = _targetObject;
-			for each (var str:String in _targetPath)
+			for each (var str:String in _targetPath){
 				_expand(_currentObject, str);
+			}
 		}
 		
 		
@@ -435,24 +436,49 @@ package gate.sirius.serializer {
 					continue;
 				
 				// check if function call and create arguments buffer
+				// ~method
 				if (_data.isMethod()) {
-					_addMethodTicket(_data.getMethodName());
-					if (_data.hasInlineArguments())
-						_lastMethodTicket.target = _data.getInlineMethodArgs();
-					else if (!_data.isMethodEnd())
-						continue;
+					if(_data.isMethodStart()){
+						_addMethodTicket(_data.getMethodName());
+						if (_data.isFreeExecution()){
+							/**
+							 * ~method()
+							 */
+							_releaseMethodTicket();
+							continue;
+						} else if (_data.hasInlineArguments()){
+							/**
+							 * ~method(
+							 * )
+							 */
+							_lastMethodTicket.target = _data.getInlineMethodArgs();
+							_releaseMethodTicket();
+							continue;
+						} else if (!_data.isMethodEnd()){
+							/**
+							 * ~method(
+							 * ...
+							 */
+							continue;
+						}
+					}else{
+						_signals.ERROR.send(SruErrorSignal, true, 'Error on call [' + _data.lineValue + '] missing function end.', _data.currentLine, _data.lineValue, 2004, '', _data.fileName);
+					}
 				}
 				
-				if (_lastMethodTicket && _data.isMethodEnd()) {
-					_releaseMethodTicket();
-					continue;
+				if (_lastMethodTicket) {
+					if (_data.isMethodEnd()){
+						_releaseMethodTicket();
+						continue;
+					}
 				}
 				
 				if (_data.isQuery()) {
 					//try {
 					ticket = ParseTicket.GATE.search(_data.getQueryName());
-					if (!ticket.run(_currentObject, _data.getQueryArguments()))
+					if (!ticket.run(_currentObject, _data.getQueryArguments())){
 						_signals.ERROR.send(SruErrorSignal, true, ticket.error, _data.currentLine, _data.lineValue, 2003, ticket.stack, _data.fileName);
+					}
 					continue;
 				}
 				
@@ -513,8 +539,9 @@ package gate.sirius.serializer {
 		 * @private
 		 */
 		private function _releaseMethodTicket():void {
-			if (!_handlerPath.pop().call())
+			if (!_handlerPath.pop().call()){
 				_signals.ERROR.send(SruErrorSignal, true, ParseTicket.GATE.error, _data.currentLine, _data.lineValue, 2003, ParseTicket.GATE.stack, _data.fileName);
+			}
 			if (_handlerPath.length > 0) {
 				_lastMethodTicket = _handlerPath[_handlerPath.length - 1];
 				_updatePaths(_lastMethodTicket.target);
@@ -575,10 +602,12 @@ package gate.sirius.serializer {
 			_currentObject = _mainObject;
 			_resetTargets();
 			_data.push(value);
-			if (onComplete !== null)
+			if (onComplete !== null){
 				_signals.PARSED.hold(onComplete);
-			if (onError !== null)
+			}
+			if (onError !== null){
 				_signals.ERROR.hold(onError);
+			}
 			return _parseData();
 		}
 		
@@ -613,6 +642,16 @@ package gate.sirius.serializer {
 			_signals.ERROR.dispose();
 			_signals.CANCEL.dispose();
 			_signals.PARSED.dispose();
+		}
+		
+		/**
+		 * 
+		 * @param	val
+		 * @return
+		 */
+		private function _coTrace(val:*):* {
+			trace(val);
+			return val;
 		}
 	
 	}
@@ -655,7 +694,7 @@ class ParseTicket {
 		if (obj && param in obj) {
 			lastArgsLength = args.length;
 			try {
-				(getEnd(to)[param] as Function).apply(to, args);
+				(obj[param] as Function).apply(to, args);
 			} catch (e:Error) {
 				error = "Error on call " + lastQueryName + "(args:" + lastArgsLength + ")";
 				stack = e.getStackTrace();
