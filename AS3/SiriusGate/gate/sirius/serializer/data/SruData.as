@@ -78,6 +78,8 @@ package gate.sirius.serializer.data {
 		
 		public var paramValueBuffer:Array;
 		
+		public var argumentBuffer:Array;
+		
 		public var splitCommand:String;
 		
 		public var pathOpen:Boolean;
@@ -85,7 +87,6 @@ package gate.sirius.serializer.data {
 		public var skippedLines:String;
 		
 		public var fileName:String;
-		
 		
 		private function _parseValue(value:String):* {
 			value = _getLineValue(value);
@@ -295,7 +296,8 @@ package gate.sirius.serializer.data {
 				return true;
 			} else {
 				splitCommand = OBJECT_TYPE;
-				return lineClear.indexOf(OBJECT_TYPE) !== -1;
+				indexBuffer = lineClear.indexOf(OBJECT_TYPE);
+				return indexBuffer !== -1;
 			}
 		}
 		
@@ -303,6 +305,7 @@ package gate.sirius.serializer.data {
 		// [#]ObjectType
 		public function isObjectPush():Boolean {
 			_extractObjectProps();
+			prepareArguments();
 			return splitCommand == OBJECT_PUSH;
 		}
 		
@@ -316,8 +319,8 @@ package gate.sirius.serializer.data {
 		
 		// ~callFooBar([arg1,arg2,...,argN])
 		public function hasInlineArguments():Boolean {
-			indexBuffer = lineClear.lastIndexOf(CALL_METHOD_END, lineLength - 1);
-			return indexBuffer !== -1 && (indexBuffer - lineClear.indexOf(CALL_METHOD_START)) > 1;
+			indexBuffer = lineClear.lastIndexOf(CALL_METHOD_END, lineLength);
+			return indexBuffer !== -1 && (indexBuffer > lineClear.indexOf(CALL_METHOD_START));
 		}
 		
 		
@@ -341,6 +344,20 @@ package gate.sirius.serializer.data {
 		// myObject : [ObjectType] | #[ObjectType]
 		public function getObjectType():String {
 			return paramValueBuffer[1];
+		}
+		
+		// myObject([...args])
+		public function prepareArguments():void {
+			if (hasInlineArguments()){
+				indexBuffer = paramValueBuffer[1].indexOf(CALL_METHOD_START);
+				argumentBuffer = paramValueBuffer[1].substring(indexBuffer + 1, paramValueBuffer[1].length - 1).split(",");
+				for (var p:String in argumentBuffer){
+					argumentBuffer[p] = _getLineValue(argumentBuffer[p]);
+				}
+				paramValueBuffer[1] = paramValueBuffer[1].substring(0, indexBuffer);
+			}else{
+				argumentBuffer = null;
+			}
 		}
 		
 		
@@ -409,8 +426,9 @@ package gate.sirius.serializer.data {
 			paramPath = getParamName().split(".");
 			if (paramPath.length > 1) {
 				paramValueBuffer[0] = paramPath.pop();
-				for each (currentPath in paramPath)
+				for each (currentPath in paramPath){
 					target = target[currentPath];
+				}
 			}
 			target[getParamName()] = getParamValue();
 		}

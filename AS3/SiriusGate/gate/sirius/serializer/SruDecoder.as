@@ -59,6 +59,7 @@ package gate.sirius.serializer {
 	 * 								#URLRequest(foobar.jpg)
 	 * 							)
 	 * 						}
+	 * 						rotationY = 3
 	 * 					)
 	 * 					x = 10
 	 * 					y = 10
@@ -326,16 +327,17 @@ package gate.sirius.serializer {
 		/**
 		 * @private
 		 */
-		private function _pushObject(currentObject:Object, objectType:String, open:Boolean):void {
+		private function _pushObject(currentObject:Object, objectType:String, open:Boolean, classArgs:Array):void {
 			var index:uint;
 			var CType:Class = getClass(objectType, _enableDefaultObjects);
 			if (CType) {
 				try {
-					index = currentObject.push(new CType);
+					index = currentObject.push(_endCreate(CType, classArgs));
 					if (open)
 						_buildPath(index - 1);
 					return;
 				} catch (e:Error) {
+					trace(e.getStackTrace());
 					_signals.ERROR.send(SruErrorSignal, true, ("Can´t push " + objectType + " at index #" + index + " in " + getQualifiedClassName(currentObject)), _data.currentLine, _data.lineValue, 2002, e.getStackTrace(), _data.fileName);
 				}
 			} else {
@@ -349,11 +351,11 @@ package gate.sirius.serializer {
 		/**
 		 * @private
 		 */
-		private function _createObject(currentObject:Object, objectType:String, paramName:String, open:Boolean):void {
+		private function _createObject(currentObject:Object, objectType:String, paramName:String, open:Boolean, classArgs:Array):void {
 			var CType:Class = getClass(objectType, _enableDefaultObjects);
 			if (CType) {
 				try {
-					currentObject[paramName] = new CType();
+					currentObject[paramName] = _endCreate(CType, classArgs);
 					if (open)
 						_buildPath(paramName);
 					return;
@@ -365,6 +367,26 @@ package gate.sirius.serializer {
 			}
 			if (open)
 				++_missingObjects;
+		}
+		
+		private function _endCreate(CType:Class, a:Array):* {
+			if (a == null){
+				return new CType();
+			}else{
+				switch(a.length){
+					case  0 : return new CType();
+					case  1 : return new CType(a[0]);
+					case  2 : return new CType(a[0],a[1]);
+					case  3 : return new CType(a[0],a[1],a[2]);
+					case  4 : return new CType(a[0],a[1],a[2],a[3]);
+					case  5 : return new CType(a[0],a[1],a[2],a[3],a[4]);
+					case  6 : return new CType(a[0],a[1],a[2],a[3],a[4],a[5]);
+					case  7 : return new CType(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);
+					case  8 : return new CType(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
+					case  9 : return new CType(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8]);
+					default : return new CType(a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9]);
+				}
+			}
 		}
 		
 		
@@ -456,7 +478,7 @@ package gate.sirius.serializer {
 				}
 				
 				if (_lastMethodTicket) {
-					if (_data.isMethodEnd()){
+					if (!_data.isMethodStart() && _data.isMethodEnd()){
 						_releaseMethodTicket();
 						continue;
 					}
@@ -473,10 +495,11 @@ package gate.sirius.serializer {
 				
 				if (_data.isObjectKey()) {
 					// Check if param:Class or #Class
-					if (_data.isObjectPush()) 	// Check if [#] (push)
-						_pushObject(_currentObject, _data.getObjectType(), _data.pathOpen);
-					else 						// Create parameter for [param]:Class or [param] {
-						_createObject(_currentObject, _data.getObjectType(), _data.getParamName(), _data.pathOpen);
+					if (_data.isObjectPush()) {	// Check if [#] (push)
+						_pushObject(_currentObject, _data.getObjectType(), _data.pathOpen, _data.argumentBuffer);
+					} else {				// Create parameter for [param]:Class or [param] {
+						_createObject(_currentObject, _data.getObjectType(), _data.getParamName(), _data.pathOpen, _data.argumentBuffer);
+					}
 					continue;
 				}
 				
@@ -487,11 +510,7 @@ package gate.sirius.serializer {
 				
 				if (_data.isValueSet()) { // default value
 					try {
-						//if (_currentObject is IList) {
-						//_currentObject.set(_data.getParamName(), _data.getParamValue());
-						//} else {
 						_data.writeProperty(_currentObject);
-						//}
 					} catch (e:Error) {
 						_signals.ERROR.send(SruErrorSignal, true, e.message, _data.currentLine, _data.lineValue, 2001, e.getStackTrace(), _data.fileName);
 					}
@@ -747,6 +766,7 @@ class MethodTicket {
 	
 	
 	public function call():Boolean {
+		trace('MAIN>', path, openPath, target.length);
 		_result = ParseTicket.GATE.search(path).run(to, target);
 		this.to = null;
 		this.openPath = null;
