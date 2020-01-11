@@ -441,24 +441,13 @@ package gate.sirius.serializer {
 					if(_data.isMethodStart()){
 						_addMethodTicket(_data.getMethodName());
 						if (_data.isFreeExecution()){
-							/**
-							 * ~method()
-							 */
 							_releaseMethodTicket();
 							continue;
 						} else if (_data.hasInlineArguments()){
-							/**
-							 * ~method(
-							 * )
-							 */
 							_lastMethodTicket.target = _data.getInlineMethodArgs();
 							_releaseMethodTicket();
 							continue;
 						} else if (!_data.isMethodEnd()){
-							/**
-							 * ~method(
-							 * ...
-							 */
 							continue;
 						}
 					}else{
