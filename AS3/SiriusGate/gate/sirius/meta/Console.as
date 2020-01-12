@@ -158,8 +158,9 @@ package gate.sirius.meta {
 		
 		
 		protected function _clearAlt(e:KeyboardEvent):void {
-			if (!_altValue)
+			if (!_altValue){
 				return;
+			}
 			var values:Array = _altValue.split("\n");
 			var value:String = values[_altValueTarget];
 			if (_altValueTarget > 0 && value.indexOf("a href='event:") !== -1) {
@@ -470,6 +471,7 @@ package gate.sirius.meta {
 			}
 			
 			var code:String = valueOf.substr(codeStart, codeEnd - codeStart);
+			code = code.split("@").join("");
 			
 			var command:Array = code.split(".");
 			var endValue:String = "";
@@ -508,7 +510,6 @@ package gate.sirius.meta {
 					}
 				}
 				targetObject = _aliases[fsec] || SruDecoder.CLASS_COLLECTION[fsec];
-				//path += fsec;
 				if (targetObject) {
 					fsec = fsec.toLowerCase();
 					_runAliases[fsec] = targetObject;
@@ -589,7 +590,7 @@ package gate.sirius.meta {
 							}
 						}
 						if (section.length == 0 || subsecta[0].indexOf(section) !== -1){
-							endValue += " ~" + subsecta[0] + "(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
+							endValue += " <a href='event:@" + subsecta[0] + "'>@" + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
 						}
 						if (++counter == 30) {
 							counter = 0;
