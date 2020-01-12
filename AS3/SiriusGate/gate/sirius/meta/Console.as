@@ -14,7 +14,6 @@ package gate.sirius.meta {
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.setTimeout;
-	import gate.sirius.meta.core.EIDConsole;
 	import gate.sirius.serializer.SruDecoder;
 	import gate.sirius.serializer.SruEncoder;
 	import gate.sirius.serializer.data.SruRules;
@@ -36,7 +35,7 @@ package gate.sirius.meta {
 		
 		static private var _console:Console;
 		
-		static private var _TargetObject:EIDConsole;
+		static private var _TargetObject:*;
 		
 		public static var displayMethods:Boolean = true;
 		
@@ -62,13 +61,13 @@ package gate.sirius.meta {
 		}
 		
 		
-		static public function init(stage:Stage, TargetObject:* = null, ... classes:Array):void {
+		static public function init(stage:Stage, allowCommands:Boolean, TargetObject:* = null, ... classes:Array):void {
 			if (_stage) {
 				return;
 			}
 			_stage = stage;
-			_console = new Console();
-			_TargetObject = new EIDConsole(stage, TargetObject);
+			_console = new Console(allowCommands);
+			_TargetObject = TargetObject || _console;
 			_stage.addEventListener(Event.RESIZE, _onResize);
 			SruDecoder.allowClasses.apply(null, classes);
 		}
@@ -87,16 +86,24 @@ package gate.sirius.meta {
 		
 		protected function _onKeyDown(e:KeyboardEvent):void {
 			
+			if (e.keyCode == Keyboard.ESCAPE){
+				if (isVisible()){
+					hide();
+					return;
+				}
+			}
 			if (e.keyCode == Keyboard.BACKQUOTE) {
-				if (!_stage.focus) {
-					show();
-				} else if (stage) {
-					if(!e.shiftKey){
-						e.preventDefault();
-						e.stopPropagation();
-						e.stopImmediatePropagation();
+				if (isVisible()){
+					if (!isDevMode()){
 						hide();
+						return;
 					}
+				}else{
+					show();
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+					return;
 				}
 			}
 			
@@ -131,17 +138,7 @@ package gate.sirius.meta {
 					}
 					break;
 				}
-				
-				case Keyboard.LEFTBRACKET : {
-					if (e.shiftKey){
-						setTimeout(_addBrackets, 1);
-					}
-				}
 			}
-		}
-		
-		private function _addBrackets():void {
-			_addEntryInPoint("\n	[CODE]\n}\n", 1, 7);
 		}
 		
 		private function _addEntryInPoint(value:String, sS:int = 0, sE:int = 0):void {
@@ -186,7 +183,7 @@ package gate.sirius.meta {
 		
 		
 		protected function _altPoint(target:int):void {
-
+			
 			_altValueTarget += target;
 			var values:Array = (_altValue || "").split("\n");
 			if (_altValueTarget < 0){
@@ -211,6 +208,11 @@ package gate.sirius.meta {
 		static public function newLine():void {
 			_console.pushMessage("");
 			_console._updateConsole();
+		}
+		
+		static public function clear():void {
+			_console._tf_output.text = '';
+			_console._tf_input.text = '';
 		}
 		
 		
@@ -369,7 +371,7 @@ package gate.sirius.meta {
 		}
 		
 		
-		public function Console() {
+		public function Console(dev:Boolean) {
 			
 			_lines = new Vector.<String>();
 			
@@ -399,6 +401,8 @@ package gate.sirius.meta {
 			_command.signals.PARSED.hold(_onParseComplete);
 			
 			_stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
+			
+			_tf_input.visible = dev;
 			
 			addChild(_tf_output);
 			addChild(_tf_input);
@@ -666,7 +670,7 @@ package gate.sirius.meta {
 				return;
 			}
 			
-			var tgo:EIDConsole = _TargetObject;
+			var tgo:* = _TargetObject;
 			
 			for (var alias:String in _runAliases) {
 				if (tgo.hasOwnProperty(alias)) {
@@ -722,7 +726,7 @@ package gate.sirius.meta {
 			mouseEnabled = false;
 			mouseChildren = false;
 			_updatePosition();
-			pushHighMsg("!== CONSOLE :: DEBUG MODE ==");
+			pushHighMsg("!== CONSOLE :: LOG MODE ==");
 			pushHighMsg("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.language, "/DEBUG:", Capabilities.isDebugger);
 		}
 		
@@ -733,6 +737,14 @@ package gate.sirius.meta {
 			_updatePosition();
 			pushHighMsg("!== CONSOLE :: DEV MODE ==");
 			pushHighMsg("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.language, "/DEBUG:", Capabilities.isDebugger);
+		}
+		
+		public function isDevMode():Boolean {
+			return _tf_input.visible;
+		}
+		
+		public function isVisible():Boolean {
+			return _console.parent;
 		}
 		
 		protected function _setFocus():void {
