@@ -25,6 +25,7 @@ package gate.sirius.modloader {
 	import gate.sirius.file.zip.signals.ZipSignal;
 	import gate.sirius.file.zip.Zip;
 	import gate.sirius.log.ULog;
+	import gate.sirius.meta.Console;
 	import gate.sirius.modloader.AssetCache;
 	import gate.sirius.modloader.data.Mod;
 	import gate.sirius.modloader.data.StartupData;
@@ -85,7 +86,7 @@ package gate.sirius.modloader {
 		
 		private var _shared:Object;
 		
-		private var logger:ULog = ULog.GATE;
+		private var _logger:ULog = ULog.GATE;
 		
 		private function _initMobile():void {
 			var dir:File = new File(File.applicationDirectory.resolvePath('data').nativePath);
@@ -93,7 +94,7 @@ package gate.sirius.modloader {
 		}
 		
 		private function _preScan():void {
-			logger.pushMessage("Scanning Mods directory");
+			_logger.pushMessage("[LOAD] Scanning Mods directory");
 			var dir:File = new File(File.applicationDirectory.nativePath);
 			if (dir.exists) {
 				var res_dir:File = dir.resolvePath("resources");
@@ -137,7 +138,7 @@ package gate.sirius.modloader {
 				_startupMain(config_dir);
 				
 			} else {
-				logger.pushError("[LOAD] Critical: Game instalation directory not found.");
+				_logger.pushError("[LOAD] Critical: Game instalation directory not found.");
 			}
 		}
 		
@@ -212,9 +213,9 @@ package gate.sirius.modloader {
 			if (mod.dependencies.length > 0) {
 				for each (var dependency:String in mod.dependencies) {
 					if (_scannedMods.indexOf(dependency) == -1) {
-						logger.pushWarning("Mod [" + mod.id + "] should be load after [" + dependency + "]");
+						_logger.pushWarning("Mod [" + mod.id + "] should be load after [" + dependency + "]");
 					} else {
-						logger.pushMessage("   Dependency Mod @" + dependency + " found.");
+						_logger.pushMessage("   Dependency Mod @" + dependency + " found.");
 					}
 				}
 			}
@@ -251,8 +252,8 @@ package gate.sirius.modloader {
 					_syncLoader.addFile.apply(null, assetFile);
 				}
 				
-				logger.pushMessage("   Getting mod/assets/ files (" + assetsCount + ")");
-				logger.pushMessage("   Getting mod/data/ files (" + dataCount + ")");
+				_logger.pushMessage("   Getting mod/assets/ files (" + assetsCount + ")");
+				_logger.pushMessage("   Getting mod/data/ files (" + dataCount + ")");
 				
 			} else {
 				
@@ -266,7 +267,7 @@ package gate.sirius.modloader {
 					dir.createDirectory();
 				}else{
 					flen = _scanDir(mod, dir, FileType.TEXT, {asset: false, data: true, mod: mod}, 0);
-					logger.pushMessage("   Added mod/data/ files (" + flen + ")");
+					_logger.pushMessage("   Added mod/data/ files (" + flen + ")");
 				}
 				
 				// assets directory
@@ -276,7 +277,7 @@ package gate.sirius.modloader {
 					dir.createDirectory();
 				}else{
 					flen = _scanDir(mod, dir, FileType.BINARY, {asset: true, data: false, mod: mod}, 0);
-					logger.pushMessage("   Added mod/assets/ files (" + flen + ")");
+					_logger.pushMessage("   Added mod/assets/ files (" + flen + ")");
 				}
 				
 			}
@@ -288,7 +289,7 @@ package gate.sirius.modloader {
 		
 		
 		private function _sruParserError(signal:SruErrorSignal):void {
-			logger.pushError(signal.message);
+			_logger.pushError(signal.message);
 		}
 		
 		
@@ -300,10 +301,10 @@ package gate.sirius.modloader {
 				_current = mod;
 			}
 			if (!isByteArray) {
-				logger.pushMessage("   File " + file.name + " added (" + signal.loader.loadedFiles + "/" + signal.loader.length + ")");
+				_logger.pushMessage("   File " + file.name + " added (" + signal.loader.loadedFiles + "/" + signal.loader.length + ")");
 			}
 			if (file.error) {
-				logger.pushWarning((file.error as IOErrorEvent).text);
+				_logger.pushWarning((file.error as IOErrorEvent).text);
 				if (mod != null){
 					mod.loaded += 1;
 				}
@@ -385,7 +386,8 @@ package gate.sirius.modloader {
 						mod.initialized.OnInit();
 					}
 				}catch (e:Error){
-					trace(e);
+					_logger.pushError('Error Dectected on Mod:[' + mod.id + ']');
+					_logger.pushError(e.getStackTrace());
 				}
 			}
 			_signals.ON_MOD_LOADED.send(ResourceSignal, true);
@@ -400,7 +402,7 @@ package gate.sirius.modloader {
 		
 		private function _checkResourcesCompletion():void {
 			if (_parsedFileCount == _syncLoader.length && _syncLoader.isComplete) {
-				logger.pushMessage("[LOAD] Mod resources loaded");
+				_logger.pushMessage("[LOAD] Mod resources loaded");
 				_validateModResources();
 				_syncLoader.clear();
 			}
@@ -418,7 +420,7 @@ package gate.sirius.modloader {
 				for each (var dependency:String in mod.dependencies) {
 					targetMod = _mods[dependency];
 					if (!targetMod || !targetMod.enabled) {
-						logger.pushWarning("[LOAD] Mod dependency [" + dependency + "] is required by [" + mod.id + "]");
+						_logger.pushWarning("[LOAD] Mod dependency [" + dependency + "] is required by [" + mod.id + "]");
 						missing[missing.length] = dependency;
 					}
 				}
@@ -436,7 +438,7 @@ package gate.sirius.modloader {
 				}
 			}
 			if (data) {
-				logger.pushMessage("[SIRIUS] Total of " + _toParseData.length + " files initialized");
+				_logger.pushMessage("[SIRIUS] Total of " + _toParseData.length + " files initialized");
 			}
 			
 			_toParseData = [];
@@ -464,7 +466,7 @@ package gate.sirius.modloader {
 			_parsedFileCount = 0;
 			_parser = new SruDecoder(false);
 			_parser.signals.ERROR.hold(function(e:SruErrorSignal):void {
-					logger.pushError(e.message);
+					_logger.pushError(e.message);
 				});
 		}
 		
@@ -481,26 +483,26 @@ package gate.sirius.modloader {
 					_config.loadorder.iterate(function(name:String, enabled:Boolean):void {
 							mod = _mods[name];
 							if (enabled && mod) {
-								logger.pushMessage("[LOAD] Mod @" + name + " enabled=TRUE");
+								_logger.pushMessage("[LOAD] Mod @" + name + " enabled=TRUE");
 								_scanMod(mod);
 							} else if (!mod) {
-								logger.pushWarning("[LOAD] Mod @" + name + " not found.");
+								_logger.pushWarning("[LOAD] Mod @" + name + " not found.");
 							} else if (!enabled) {
-								logger.pushMessage("[LOAD] Mod @" + name + " enabled=FALSE");
+								_logger.pushMessage("[LOAD] Mod @" + name + " enabled=FALSE");
 							}
 						});
 					for each (var id:String in _config.loadorder.unlisted) {
 						// List disabled mods
 						mod = _mods[id];
 						if (!mod) {
-							logger.pushWarning("[LOAD] Mod @" + id + " can't be loaded. Wrong NAME or inexistent");
+							_logger.pushWarning("[LOAD] Mod @" + id + " can't be loaded. Wrong NAME or inexistent");
 						}
 					}
 					_context = new LoaderContext(false, ApplicationDomain.currentDomain, null);
 					_context.allowLoadBytesCodeExecution = true;
 					_context.allowCodeImport = true;
 					_context.imageDecodingPolicy = ImageDecodingPolicy.ON_DEMAND;
-					logger.pushMessage("[LOAD] Loading resource files...");
+					_logger.pushMessage("[LOAD] Loading resource files...");
 					_syncLoader.start(_context);
 					break;
 				}
@@ -518,9 +520,9 @@ package gate.sirius.modloader {
 			var mod:Mod = _mods[id];
 			if (mod) {
 				if (mod.compare(version, dependencies, _path)) {
-					logger.pushWarning("Mod [" + id + "] already registered. Game will use the version [" + version + "]");
+					_logger.pushWarning("Mod [" + id + "] already registered. Game will use the version [" + version + "]");
 				} else {
-					logger.pushError("Mod [" + id + "] already registered.");
+					_logger.pushError("Mod [" + id + "] already registered.");
 				}
 			} else {
 				mod = new Mod(id, version, dependencies, _path, _cache);
@@ -533,13 +535,13 @@ package gate.sirius.modloader {
 		}
 		
 		
-		public function start(skipDomains:Array, parameters:Object):ModLoader {
+		public function start(skipDomains:Array, desktop:Boolean, parameters:Object):ModLoader {
 			_shared = parameters;
 			_loadPhase = 0;
 			_createTicket();
 			_cache.avoidDomains(skipDomains);
-			_IS_DESKTOP = Capabilities.os.toUpperCase().indexOf('WIN') != -1;
-			logger.pushMessage("[LOAD] " + (_IS_DESKTOP ? "DESKTOP" : "MOBILE") + " MODE ENABLED");
+			_IS_DESKTOP = desktop;
+			_logger.pushMessage("[LOAD] " + (_IS_DESKTOP ? "DESKTOP" : "MOBILE") + " MODE ENABLED");
 			if (_IS_DESKTOP){
 				_preScan();
 			}else{
