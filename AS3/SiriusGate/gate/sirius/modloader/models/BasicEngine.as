@@ -1,5 +1,6 @@
 package gate.sirius.modloader.models {
 	import flash.display.Sprite;
+	import flash.system.Capabilities;
 	import gate.sirius.isometric.Biome;
 	import gate.sirius.log.ULog;
 	import gate.sirius.log.signals.ULogSignal;
@@ -13,21 +14,11 @@ package gate.sirius.modloader.models {
 	 */
 	public class BasicEngine {
 		
-		private static var _ME:BasicEngine;
-		
-		public static function get ME():BasicEngine {
-			if (_ME == null){
-				_ME = new BasicEngine(Key);
-			}
-			return _ME;
-		}
-		
 		private var _viewport:BasicViewport;
 		
 		private var _mods:ModLoader;
 		
 		private var _biome:Biome;
-		
 		
 		private function _on_allModsLoaded(ticket:ResourceSignal):void {
 		}
@@ -36,12 +27,7 @@ package gate.sirius.modloader.models {
 		private function _on_singleModLoaded(ticket:ResourceSignal):void {
 		}
 		
-		
-		public function BasicEngine(key:Class) {
-			
-			if (key != Key) {
-				throw new Error("Can't init Singleton Class. Use Engine.ME instead.");
-			}
+		public function BasicEngine(viewport:Sprite, console:Boolean) {
 			
 			ULog.GATE.ON_NEW_ENTRY.hold(function(ticket:ULogSignal):void{
 				switch(ticket.level){
@@ -64,23 +50,14 @@ package gate.sirius.modloader.models {
 			_mods.signals.ON_MOD_LOADED.hold(_on_singleModLoaded);
 			_mods.signals.COMPLETE.hold(_on_allModsLoaded);
 			
-		}
-		
-		
-		public function init(viewport:Sprite, console:Boolean):BasicEngine {
-			
-			if (_viewport == null){
-				_viewport = new BasicViewport(viewport);
-				if (console){
-					Console.init(viewport.stage, this);
-					Console.expand();
-					Console.show();
-				}
-				_mods.start([], false, new SharedBridge(Key, this, _viewport, Console));
-				_biome = new Biome(0, 0, 0, 0, 0, 0, false, 60);
+			_viewport = new BasicViewport(viewport);
+			if (console){
+				Console.init(viewport.stage, true, this);
+				Console.expand();
+				Console.show();
 			}
-			
-			return this;
+			_mods.start([], new SharedBridge(this, _viewport, Console));
+			_biome = new Biome(0, 0, 0, 0, 0, 0, false, 60);
 			
 		}
 		
@@ -100,13 +77,7 @@ package gate.sirius.modloader.models {
 
 }
 
-class Key {
-	
-}
-
 class SharedBridge {
-	
-	private static var _ME:SharedBridge;
 	
 	private var _Engine:Object;
 	public function get Engine():Object {
@@ -123,14 +94,9 @@ class SharedBridge {
 		return _Console;
 	}
 	
-	public function SharedBridge(key:Object, engine:Object, viewport:Object, console:Object){
-		if (key != Key || _ME != null){
-			throw new Error('You need a unique Key to create a instance of SharedBridge');
-		}else{
-			_ME = this;
-			_Engine = engine;
-			_Viewport = viewport;
-			_Console = console;
-		}
+	public function SharedBridge(engine:Object, viewport:Object, console:Object){
+		_Engine = engine;
+		_Viewport = viewport;
+		_Console = console;
 	}
 }

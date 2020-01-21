@@ -11,14 +11,16 @@ package gate.sirius.modloader.signals {
 	public class ResourceSignal extends Signal {
 		
 		private var _file:IFileInfo;
+		private var _progress:Number;
 		
 		public function ResourceSignal() {
 			super(_constructor);
 		}
 		
 		
-		private function _constructor(file:IFileInfo = null):void {
+		private function _constructor(file:IFileInfo = null, progress:Number = 0):void {
 			_file = file;
+			_progress = progress;
 		}
 		
 		
@@ -26,6 +28,10 @@ package gate.sirius.modloader.signals {
 			return dispatcher.author as ModLoader;
 		}
 		
+		
+		public function get progress():Number {
+			return _progress;
+		}
 		
 		public function get file():IFileInfo {
 			return _file;

@@ -18,7 +18,7 @@ package gate.sirius.file {
 		/**
 		 * Progresso do carregamento de todos os arquivos
 		 */
-		function get loadCircleProgress():Number;
+		function get loadCicleProgress():Number;
 		
 		/**
 		 * Total de arquivos

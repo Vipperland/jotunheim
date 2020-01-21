@@ -25,7 +25,6 @@ package gate.sirius.modloader.data {
 		
 		
 		public function add(id:String, enabled:String):void {
-			
 			var mod:Mod = _resources.getMod(id);
 			if (!mod) {
 				ULog.GATE.pushWarning("Can't resolve Mod [" + id + "]");
@@ -49,7 +48,9 @@ package gate.sirius.modloader.data {
 		
 		
 		public function register(mod:Mod):void {
-			_ids[_ids.length] = mod.id;
+			if (_ids.indexOf(mod.id) == -1){
+				_ids[_ids.length] = mod.id;
+			}
 		}
 		
 		

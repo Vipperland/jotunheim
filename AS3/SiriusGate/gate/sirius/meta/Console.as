@@ -493,18 +493,21 @@ package gate.sirius.meta {
 						if (alias.indexOf(fsec) !== -1) {
 							endValue += "<font color='#00CC66'><a href='event:" + alias + "'>" + alias + "</a></font>\n";
 						}
-						if (++counter == 30) {
+						if (++counter == 15) {
 							counter = 0;
 							break;
 						}
 					}
 					alias = null;
+					var fseclc:String = fsec.toLowerCase();
 					for (var className:String in SruDecoder.CLASS_COLLECTION) {
-						if (className.indexOf(".") == -1 && !_aliases[className] && className.indexOf(fsec) !== -1) {
-							endValue += "<font color='#0066CC'><a href='event:" + className + "'>" + className + "</a></font>\n";
-							if (++counter == 30) {
-								counter = 0;
-								break;
+						if (className.indexOf(".") == -1){
+							if (!_aliases[className] && className.toLowerCase().indexOf(fseclc) == 0) {
+								endValue += "<font color='#0066CC'><a href='event:" + className + "'>" + className + "</a></font>\n";
+								if (++counter == 15) {
+									counter = 0;
+									break;
+								}
 							}
 						}
 					}
@@ -563,7 +566,7 @@ package gate.sirius.meta {
 						if (!(targetParams is Class)) {
 							combined += "=" + _getValueOf(targetParams[subsect]);
 						}
-						if (++counter == 30) {
+						if (++counter == 15) {
 							counter = 0;
 							break;
 						}
@@ -583,16 +586,24 @@ package gate.sirius.meta {
 							continue;
 						}
 						var paramSet:Array = [];
+						var emode:String = '@';
+						var vname:String;
 						if (subsecta.length > 2) {
 							paramSet = subsecta.splice(2, subsecta.length - 2);
 							for (var i:String in paramSet){
-								paramSet[i] = "<font color='#0066CC'>" + paramSet[i].split("::").pop() + "</font>";
+								vname = paramSet[i];
+								if (emode == '@'){
+									if (vname != 'String' && vname != 'Boolean' && vname != 'int' && vname != 'uint'){
+										emode = '~';
+									}
+								}
+								paramSet[i] = "<font color='#0066CC'>" + vname.split("::").pop() + "</font>";
 							}
 						}
 						if (section.length == 0 || subsecta[0].indexOf(section) !== -1){
-							endValue += " <a href='event:@" + subsecta[0] + "'>@" + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
+							endValue += " <a href='event:@" + subsecta[0] + "'>" + emode + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
 						}
-						if (++counter == 30) {
+						if (++counter == 15) {
 							counter = 0;
 							break;
 						}
@@ -745,7 +756,7 @@ package gate.sirius.meta {
 		}
 		
 		public function isVisible():Boolean {
-			return _console.parent;
+			return _console.parent != null;
 		}
 		
 		protected function _setFocus():void {

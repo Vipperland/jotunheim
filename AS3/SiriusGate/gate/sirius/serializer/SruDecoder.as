@@ -108,8 +108,9 @@ package gate.sirius.serializer {
 		static public function extractClasses(target:ApplicationDomain):void {
 			var names:Vector.<String> = target.getQualifiedDefinitionNames();
 			var collection:Vector.<Class> = new Vector.<Class>();
-			for each (var name:String in names)
+			for each (var name:String in names){
 				collection[collection.length] = target.getDefinition(name) as Class;
+			}
 			allowClasses.apply(null, collection);
 		}
 		

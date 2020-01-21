@@ -10,6 +10,7 @@ package gate.sirius.modloader {
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.system.ApplicationDomain;
+	import flash.system.Capabilities;
 	import flash.system.ImageDecodingPolicy;
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
@@ -45,6 +46,8 @@ package gate.sirius.modloader {
 		static public const MOD_DATA:uint = 1;
 		
 		static public const RESOLVE_DATA:uint = 2;
+		
+		private var _IS_DESKTOP:Boolean;
 		
 		private var _cache:AssetCache;
 		
@@ -84,8 +87,14 @@ package gate.sirius.modloader {
 		
 		private var logger:ULog = ULog.GATE;
 		
-		private function _scan(dir:File):void {
+		private function _initMobile():void {
+			var dir:File = new File(File.applicationDirectory.resolvePath('data').nativePath);
+			_startupMain(dir);
+		}
+		
+		private function _preScan():void {
 			logger.pushMessage("Scanning Mods directory");
+			var dir:File = new File(File.applicationDirectory.nativePath);
 			if (dir.exists) {
 				var res_dir:File = dir.resolvePath("resources");
 				if (!res_dir.exists) {
@@ -124,7 +133,9 @@ package gate.sirius.modloader {
 						_addCompreessedModInfo(file);
 					}
 				}
+				
 				_startupMain(config_dir);
+				
 			} else {
 				logger.pushError("[LOAD] Critical: Game instalation directory not found.");
 			}
@@ -353,7 +364,28 @@ package gate.sirius.modloader {
 				mod.initialized = _cache.getInstance(_current.id + '=' + mod.onload);
 				try {
 					mod.initialized.Context = _shared;
+					mod.initialized.Self = {
+						_main:mod,
+						show:function():void {
+							_shared.viewport.ui.addChild(this._main.initialized);
+						},
+						hide:function():void {
+							if (this._main.initialized.parent != null){
+								this._main.initialized.parent.removeChild(this._main.initialized);
+							}
+						},
+						dispose:function():void{
+							this.hide();
+							this._main.initialized.Context = null;
+							this._main.initialized.Self = null;
+							this._main.initialized = null;
+						}
+					};
+					if (mod.initialized.OnInit != null){
+						mod.initialized.OnInit();
+					}
 				}catch (e:Error){
+					trace(e);
 				}
 			}
 			_signals.ON_MOD_LOADED.send(ResourceSignal, true);
@@ -428,11 +460,16 @@ package gate.sirius.modloader {
 			_asyncAssetFileLoad = new Dictionary(true);
 			_syncLoader.signals.FILE_LOADED.hold(_onSyncFileLoaded);
 			_syncLoader.signals.LOAD_COMPLETE.hold(_onSyncLoadComplete);
+			_syncLoader.signals.LOAD_PROGRESS.hold(_onSyncProgress);
 			_parsedFileCount = 0;
 			_parser = new SruDecoder(false);
 			_parser.signals.ERROR.hold(function(e:SruErrorSignal):void {
 					logger.pushError(e.message);
 				});
+		}
+		
+		private function _onSyncProgress(signal:LoaderSignal):void {
+			_signals.ON_PROGRESS.send(ResourceSignal, true, signal.file, signal.loader.loadCicleProgress);
 		}
 		
 		
@@ -496,12 +533,18 @@ package gate.sirius.modloader {
 		}
 		
 		
-		public function start(skipDomains:Array, useStorage:Boolean, parameters:Object):ModLoader {
+		public function start(skipDomains:Array, parameters:Object):ModLoader {
 			_shared = parameters;
 			_loadPhase = 0;
 			_createTicket();
 			_cache.avoidDomains(skipDomains);
-			_scan(new File(useStorage ? File.applicationStorageDirectory.nativePath : File.applicationDirectory.nativePath));
+			_IS_DESKTOP = Capabilities.os.toUpperCase().indexOf('WIN') != -1;
+			logger.pushMessage("[LOAD] " + (_IS_DESKTOP ? "DESKTOP" : "MOBILE") + " MODE ENABLED");
+			if (_IS_DESKTOP){
+				_preScan();
+			}else{
+				
+			}
 			return this;
 		}
 		

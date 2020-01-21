@@ -327,9 +327,7 @@ package gate.sirius.file {
 		}
 		
 		public function SequentialLoader() {
-			
 			_init();
-		
 		}
 		
 		/**
@@ -575,7 +573,7 @@ package gate.sirius.file {
 		/**
 		 * Progresso do carregamento de todos os arquivos
 		 */
-		public function get loadCircleProgress():Number {
+		public function get loadCicleProgress():Number {
 			return _overallProgress;
 		}
 		
