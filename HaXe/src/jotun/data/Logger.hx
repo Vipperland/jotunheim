@@ -1,6 +1,8 @@
 package jotun.data;
 import haxe.Log;
-import jotun.dom.IDisplay;
+#if js
+	import jotun.dom.IDisplay;
+#end
 import jotun.net.IRequest;
 import jotun.utils.Dice;
 
@@ -77,26 +79,28 @@ class Logger{
 		#end
 	}
 	
-	public function showConsole(?url:String = 'modules/dev/console.html'):Void {
-		Jotun.module(url, 'jotun-console', null, function(r:IRequest){
-			var ui:IDisplay = Jotun.one('jotun-console');
-			if (ui == null){
-				ui = Jotun.resources.build('jotun-console');
-				if (ui != null){
-					ui.addToBody();
+	#if js
+		public function showConsole(?url:String = 'modules/dev/console.html'):Void {
+			Jotun.module(url, 'jotun-console', null, function(r:IRequest){
+				var ui:IDisplay = Jotun.one('jotun-console');
+				if (ui == null){
+					ui = Jotun.resources.build('jotun-console');
+					if (ui != null){
+						ui.addToBody();
+					}
 				}
-			}
-			if (ui != null){
-				ui.show();
-			}
-		});
-	}
-	
-	public function hideConsole():Void {
-		var ui:IDisplay = Jotun.one('jotun-console');
-		if (ui != null){
-			ui.hide();
+				if (ui != null){
+					ui.show();
+				}
+			});
 		}
-	}
+		
+		public function hideConsole():Void {
+			var ui:IDisplay = Jotun.one('jotun-console');
+			if (ui != null){
+				ui.hide();
+			}
+		}
+	#end
 	
 }

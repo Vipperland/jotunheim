@@ -1,7 +1,6 @@
 package jotun;
 
 import jotun.data.Logger;
-import jotun.dom.Style;
 import jotun.modules.ModLib;
 import jotun.net.Domain;
 import jotun.net.IDomain;
@@ -11,7 +10,6 @@ import jotun.net.IRequest;
 import jotun.net.Loader;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
-import jotun.utils.Filler;
 
 #if js
 	import js.Browser;
@@ -25,6 +23,7 @@ import jotun.utils.Filler;
 	import jotun.dom.Document;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Script;
+	import jotun.dom.Style;
 	import jotun.seo.SEOTool;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;

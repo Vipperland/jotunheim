@@ -1,6 +1,7 @@
 package jotun.db.objects;
 import jotun.db.objects.IDataTable;
 import jotun.db.tools.ICommand;
+import sirius.db.objects.IQueryResult;
 
 /**
  * @author Rafael Moreira
