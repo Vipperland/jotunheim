@@ -1,8 +1,8 @@
-package jotun.db.tools;
+package jotun.php.db.tools;
 import haxe.Json;
 import php.Lib;
 import php.NativeArray;
-import jotun.db.pdo.Statement;
+import jotun.php.db.pdo.Statement;
 import jotun.errors.Error;
 import jotun.errors.IError;
 import jotun.utils.Dice;

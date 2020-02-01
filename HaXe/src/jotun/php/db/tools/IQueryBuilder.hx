@@ -1,5 +1,5 @@
-package jotun.db.tools;
-import jotun.db.tools.ICommand;
+package jotun.php.db.tools;
+import jotun.php.db.tools.ICommand;
 
 /**
  * @author Rafael Moreira

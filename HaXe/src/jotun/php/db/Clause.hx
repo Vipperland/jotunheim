@@ -1,4 +1,4 @@
-package jotun.db;
+package jotun.php.db;
 import jotun.utils.Dice;
 
 /**

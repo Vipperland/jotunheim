@@ -48,6 +48,9 @@ class Vault {
 				}
 			}
 		}catch (e:Dynamic){}
+		if (data == null){
+			data = {};
+		}
 		if (session == null){
 			session = new VaultObject(data);
 		}else{

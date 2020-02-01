@@ -25,12 +25,10 @@ class Head extends Display{
 			if (content.length > 1) {
 				switch(type) {
 					case 'css', 'style': { 
-						s = new Style(); 
-						content = content.split("<style>").join("").split("</style>").join("");
+						s = Style.fromString(content.split("<style>").join("").split("</style>").join(""));
 					}
 					case 'javascript', 'script': { 
-						s = new Script(); 
-						content = content.split("<script>").join("").split("</script>").join("");
+						s = Script.fromString(content.split("<script>").join("").split("</script>").join(""));
 					}
 					default : {
 						s = null;
@@ -38,7 +36,6 @@ class Head extends Display{
 				}
 				if (s != null) {
 					s.attribute('module-id', Utils.isValid(id) ? id : '');
-					s.writeHtml(content);
 					addChild(s);
 					return s;
 				}

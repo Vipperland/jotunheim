@@ -1,7 +1,7 @@
-package jotun.db.tools;
+package jotun.php.db.tools;
 import haxe.Json;
 import php.Lib;
-import jotun.db.tools.ICommand;
+import jotun.php.db.tools.ICommand;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
 

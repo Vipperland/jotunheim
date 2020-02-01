@@ -37,8 +37,8 @@ import jotun.utils.Dice;
 #elseif php
 	import php.Lib;
 	import jotun.data.DataCache;
-	import jotun.db.Gate;
-	import jotun.db.IGate;
+	import jotun.php.db.Gate;
+	import jotun.php.db.IGate;
 	import jotun.php.data.Cache;
 	import jotun.net.Header;
 #end

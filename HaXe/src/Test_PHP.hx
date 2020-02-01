@@ -1,6 +1,7 @@
 package;
 import jotun.Jotun;
-import jotun.db.Token;
+import jotun.php.db.Clause;
+import jotun.php.db.Token;
 import jotun.php.file.Uploader;
 import jotun.serial.JsonTool;
 import jotun.tools.Key;
@@ -64,13 +65,13 @@ class Test_PHP {
 		}).list);
 		
 		buff.push('===================================================== Database Connect');
-		Jotun.gate.open(Token.localhost('rp_afterfall'), true);
+		Jotun.gate.open(Token.localhost('decorador'), true);
 		if (Jotun.gate.isOpen()){
 			buff.push('Successful!');
 			buff.push('users: ');
 			
-			Jotun.gate.table('rp_users').setClassObj(User);
-			var u:User = Jotun.gate.table('rp_users').find().data[0];
+			Jotun.gate.table('users').setClassObj(User);
+			var u:User = Jotun.gate.table('users').findOne(Clause.ID(2));
 			buff.push(u);
 			
 		}else{
@@ -83,6 +84,7 @@ class Test_PHP {
 	
 }
 class User {
+	public var name:String;
 	var key:String;
 	public function new(){
 		key = Key.GEN();

@@ -1,7 +1,6 @@
-package jotun.db.objects;
-import jotun.db.objects.IDataTable;
-import jotun.db.tools.ICommand;
-import sirius.db.objects.IQueryResult;
+package jotun.php.db.objects;
+import jotun.php.db.objects.IDataTable;
+import jotun.php.db.tools.ICommand;
 
 /**
  * @author Rafael Moreira

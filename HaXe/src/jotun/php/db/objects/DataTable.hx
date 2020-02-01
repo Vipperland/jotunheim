@@ -1,7 +1,7 @@
-package jotun.db.objects;
-import jotun.db.objects.ExtQuery;
-import jotun.db.tools.ICommand;
-import jotun.db.tools.IExtCommand;
+package jotun.php.db.objects;
+import jotun.php.db.objects.ExtQuery;
+import jotun.php.db.tools.ICommand;
+import jotun.php.db.tools.IExtCommand;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.Filler;

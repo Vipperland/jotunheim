@@ -1,6 +1,6 @@
-package jotun.db.tools;
+package jotun.php.db.tools;
 import jotun.data.IDataSet;
-import jotun.db.pdo.Statement;
+import jotun.php.db.pdo.Statement;
 import jotun.errors.IError;
 
 /**

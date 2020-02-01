@@ -1,4 +1,4 @@
-package jotun.db.pdo;
+package jotun.php.db.pdo;
 
 import php.NativeArray;
 

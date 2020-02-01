@@ -1,4 +1,4 @@
-package jotun.db.tools;
+package jotun.php.db.tools;
 import jotun.data.IDataSet;
 
 /**

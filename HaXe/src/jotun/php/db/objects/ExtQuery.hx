@@ -1,4 +1,4 @@
-package jotun.db.objects;
+package jotun.php.db.objects;
 import jotun.utils.Dice;
 
 /**
