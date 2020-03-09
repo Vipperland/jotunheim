@@ -86,7 +86,9 @@ class Key {
 	
 	public static var VALIDATE_LETTER:EReg = ~/^[a-zA-Z]{6,}$/;
 	
-	public static var VALIDATE_NAME:EReg = ~/^[a-zA-Z ]{6,}$/;
+	public static var VALIDATE_USER_NAME:EReg = ~/^[a-zA-Z ]{8,100}$/;
+	
+	public static var VALIDATE_CHAR_NAME:EReg = ~/^[a-zA-Z ]{8,32}$/;
 	
 	public static var VALIDATE_NON_URL:EReg = ~/^[A-Za-z0-9._-]{6,24}$/;
 	

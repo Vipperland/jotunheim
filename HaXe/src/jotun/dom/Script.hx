@@ -19,7 +19,7 @@ class Script extends Display {
 	}
 	
 	static public function fromUrl(q:String, ?data:Dynamic, ?handler:Script->Void):Void {
-		Jotun.request(q, null, 'GET', function(r:IRequest){
+		Jotun.request(q, data, 'GET', function(r:IRequest){
 			var js:Script = null;
 			if(r.success){
 				js = fromString(r.data).publish();

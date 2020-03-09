@@ -197,11 +197,19 @@ class Jotun {
 		}
 		
 		static public function inject(value:Dynamic, ?data:Dynamic, ?handler:Script->Void):Void {
-			if (value.indexOf('.js') == -1){
-				Script.fromString(value, data);
-			}else{
-				Script.fromUrl(value, data, handler);
+			if (!Std.is(value, Array)){
+				value = [value];
 			}
+			Dice.Values(value, function(v:String){
+				if (v.indexOf('.js') == -1){
+					var o:Script = Script.fromString(v, data);
+					if (handler != null){
+						handler(o);
+					}
+				}else{
+					Script.fromUrl(v, data, handler);
+				}
+			});
 		}
 		
 		static public function stylish(value:String, ?data:Dynamic, ?handler:Style->Void):Void {
@@ -238,7 +246,7 @@ class Jotun {
 		 * @param	handler
 		 */
 		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
-			if (!resources.exists(name)){
+			if (name == null || !resources.exists(name)){
 				loader.module(file, data, handler);
 			}else{
 				handler(null);

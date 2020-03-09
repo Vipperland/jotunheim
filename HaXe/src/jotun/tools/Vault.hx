@@ -4,11 +4,13 @@ import jotun.serial.IOTools;
 #if js
 	import js.Browser;
 #end
+import jotun.utils.Dice;
 
 /**
  * ...
  * @author Rim Project
  */
+@:expose('Vault')
 class Vault {
 	
 	/**
@@ -47,15 +49,19 @@ class Vault {
 					}
 				}
 			}
-		}catch (e:Dynamic){}
+		}catch (e:Dynamic){trace(e); }
 		if (data == null){
 			data = {};
 		}
 		if (session == null){
 			session = new VaultObject(data);
 		}else{
-			session.data = data;
+			Dice.All(data, function(p:Dynamic, v:Dynamic){
+				Reflect.setField(session.data, p, v);
+			});
 		}
+		session._kA = keyA;
+		session._kB = keyB;
 		session.time = time;
 		return session;
 	}

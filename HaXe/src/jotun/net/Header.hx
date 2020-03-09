@@ -52,37 +52,57 @@ class Header {
 		}
 	}
 	
-	public function setJSON(?data:Dynamic, ?encode:Bool):Void {
+	public function setJSON(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
 		content(JSON);
 		if (data != null) {
 			data = JsonTool.stringify(data, null, '\t');
-			writeData(data, encode);
+			writeData(data, encode, chunk);
 		}
 	}
 	
-	public function setTEXT(?data:Dynamic, ?encode:Bool):Void {
+	public function setTEXT(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
 		content(TEXT);
 		if (data != null){
 			if (Std.is(data, Array)){
 				data = data.join('\r');
 			}
-			writeData(data, encode);
+			writeData(data, encode, chunk);
 		}
 	}
 	
-	public function setSRU(?data:Dynamic, ?encode:Bool):Void {
+	public function setSRU(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
 		content(TEXT);
 		if (data != null){
 			if (Std.is(data, Array)){
 				data = data.join('\r');
 			}
-			writeData(data, encode);
+			writeData(data, encode, chunk);
 		}
 	}
 	
-	function writeData(data:String, encode:Bool) {
+	function _createPieces(data:String, chunk:Int){
+		var f:Int = 0;
+		var t:Int = data.length;
+		var copy:String = "";
+		while (f < t){
+			copy += data.substr(f, chunk);
+			f += chunk;
+			if (f < t){
+				copy += '\r';
+			}
+		}
+		return copy;
+	}
+	
+	function writeData(data:String, encode:Bool, ?chunk:Int) {
 		if(data != null){
-			if (encode == true) data = IOTools.encodeBase64(data);
+			if (encode == true) {
+				data = IOTools.encodeBase64(data);
+				if (chunk != null && chunk >= 40){
+					Web.setHeader('Content-Chunk', ''+chunk);
+					data = _createPieces(data, chunk);
+				}
+			}
 			var compress:String = getClientHeaders().ACCEPT_ENCODING;
 			if (compress.indexOf('x-gzip') != -1){
 				compress = 'x-gzip';

@@ -6,7 +6,6 @@ package jotun.net;
 import jotun.data.IDataCache;
 import jotun.data.IFragments;
 import jotun.net.IDomainData;
-import jotun.utils.Dice;
 
 /**
  * @author Rafael Moreira
@@ -57,5 +56,7 @@ interface IDomain {
 		public function isRequestMethod(q:String):Bool;
 		
 	#end
+	
+	public function getFQDN(?len:Int = 2):String;
 	
 }

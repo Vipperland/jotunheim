@@ -6,7 +6,7 @@ import jotun.math.Point3D;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
-interface IDisplay3D extends IDisplay {
+interface IDisplay3D extends IDisplay implements Dynamic {
   
 	public var transformData : ITransform3D;
 	

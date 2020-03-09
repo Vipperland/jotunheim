@@ -1,8 +1,5 @@
 package jotun.gaming.actions;
-import haxe.Json;
-import jotun.Jotun;
 import jotun.gaming.actions.Action;
-import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.IEventContext;
 import jotun.utils.Dice;
 

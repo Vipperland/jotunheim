@@ -13,6 +13,14 @@ import jotun.math.Transform3D;
 @:expose("jtn.dom.Display3D")
 class Display3D extends Display implements IDisplay3D {
 	
+	static public function from(q:Dynamic):Display3D {
+		if (Std.is(q, Display)){
+			return new Display3D(q.element);
+		}else{
+			return cast Jotun.one(q);
+		}
+	}
+	
 	static public function get(q:String):Display3D {
 		return cast Jotun.one(q);
 	}
@@ -22,7 +30,7 @@ class Display3D extends Display implements IDisplay3D {
 	static private function _backface_fix():Void {
 		if(!_fixed){
 			_fixed = true;
-			XCode.style('[sru-dom="display3d"]', 'transform-style:' + (Jotun.agent.edge ? 'flat' : 'preserve-3d') + ';backface-visibility:inherit;');
+			XCode.style('[jotun-dom="display3d"]', 'transform-style:' + (Jotun.agent.edge ? 'flat' : 'preserve-3d') + ';backface-visibility:inherit;');
 			XCode.apply();
 		}
 	}
@@ -39,7 +47,7 @@ class Display3D extends Display implements IDisplay3D {
 		xcss = new XCSS();
 		transformData = new Transform3D();
 		if (q == null){
-			attribute('sru-dom', 'display3d');
+			attribute('jotun-dom', 'display3d');
 		}
 		render();
 	}

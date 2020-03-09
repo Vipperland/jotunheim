@@ -56,6 +56,10 @@ interface IDisplay extends IQuery implements Dynamic  {
 	 */
 	public function children():ITable;
 	
+	public function enable():Void;
+	
+	public function disable():Void;
+	
 	/**
 	 * Add custom classes from string
 	 * @param	styles

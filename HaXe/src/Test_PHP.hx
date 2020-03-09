@@ -3,10 +3,13 @@ import jotun.Jotun;
 import jotun.php.db.Clause;
 import jotun.php.db.Token;
 import jotun.php.file.Uploader;
+import jotun.php.net.PHPMailer;
 import jotun.serial.JsonTool;
 import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import php.Lib;
+import php.NativeArray;
 import php.Session;
 import sys.FileSystem;
 import sys.io.File;
@@ -78,11 +81,49 @@ class Test_PHP {
 			buff.push(Jotun.gate.errors);
 		}
 		
-		Jotun.header.setJSON(buff);
+		_testMail(buff);
+		
+		//Jotun.header.setJSON(buff);
 		
 	}
 	
+	
+	static private var _mailer:PHPMailer;
+	
+	private static function _testMail(buff:Array<Dynamic>) {
+		Jotun.require('includes/PHPMailer/_loader.php');
+		
+		_mailer = new PHPMailer();
+		
+		_mailer.SMTPDebug = 3;
+		_mailer.isSMTP();
+		_mailer.Port = 25;
+		_mailer.Host = 'rimproject.com';
+		_mailer.SMTPSecure = '';
+		_mailer.SMTPAuth = true;
+		_mailer.CharSet = 'UTF-8';
+		_mailer.AuthType = 'PLAIN';
+		_mailer.Username  = 'hi@rimproject.com';
+		_mailer.Password = '@HornyGirl69';
+		
+		_mailer.setFrom('hi@rimproject.com', 'Rim Project');
+		_mailer.addReplyTo('hi@rimproject.com', 'Rim Project');
+		
+		_mailer.addCustomHeader('Return-Path',"global-bouncer-x@rimproject.com");
+		_mailer.addCustomHeader('Organization', "RimProject");
+		_mailer.addAddress('vipperland@live.com', 'Rafael Moreira');
+		_mailer.addAddress('coldzone@gmail.com', 'Rafael Moreira');
+		_mailer.Subject = "[TEST] Alliance Security PIN Request";
+		var key:String = Key.GEN(4, '0123456789');
+		_mailer.isHTML(true);
+		_mailer.Body = "Hello Citizen of the Alliance<br/><font style='font-size:24px;'><b>Rafael Moreira</b></font><br/><br/>Your security <b>PIN</b>:<br/><font style='font-size:36px;'><b># " + key + "</b><font>";
+		_mailer.AltBody = "Hello Citizen of the Alliance\r\nYour security PIN: " + key;
+		//buff.push('SEND MAIL? ' + _mailer.send());
+		trace(_mailer.send());
+		trace(_mailer.ErrorInfo);
+	}
 }
+
 class User {
 	public var name:String;
 	var key:String;

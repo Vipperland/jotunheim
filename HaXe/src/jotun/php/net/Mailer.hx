@@ -1,12 +1,6 @@
 package jotun.php.net;
-import haxe.Json;
-import haxe.Utf8;
 import jotun.Jotun;
-import php.Boot;
-import php.Lib;
-import php.Web;
 import jotun.tools.Utils;
-import jotun.serial.IOTools;
 import jotun.utils.Dice;
 
 /**
@@ -23,7 +17,7 @@ class Mailer {
 	public var output(get, null):PHPMailer;
 	
 	public function new(url:String, user:String, password:String, ?secure:String = null, ?port:UInt = 587) {
-		Jotun.require('PHPMailer/PHPMailerAutoload.php');
+		Jotun.require('includes/PHPMailer/PHPMailerAutoload.php');
 		output = new PHPMailer();
 		output.CharSet = 'UTF-8';
 		output.isSMTP();
@@ -46,7 +40,9 @@ class Mailer {
 		output.Username = user;
 		output.Password = password;
 		output.Port = port;
-		if (secure != null) output.SMTPSecure = secure;
+		if (secure != null) {
+			output.SMTPSecure = secure;
+		}
 	}
 	
 	public function targets(to:Array<Dynamic>, ?cc:Array<Dynamic>, ?bbc:Array<Dynamic>):Void {

@@ -5,6 +5,7 @@ import jotun.Jotun;
 import js.Browser;
 import js.Error;
 import js.html.AnimationEvent;
+import js.html.BeforeUnloadEvent;
 import js.html.DOMRect;
 import js.html.Element;
 import js.html.Event;
@@ -60,6 +61,20 @@ class Document extends Display {
 	function __init__() {
 		events.wheel(stopScroll, true);
 		Browser.window.addEventListener('scroll', _hookScroll);
+	}
+	
+	public function preventClose(mode:Bool):Void {
+		(mode ? Browser.window.addEventListener : Browser.window.removeEventListener)('beforeunload', _onCloseWindow);
+	}
+	
+	function _onCloseWindow(e:BeforeUnloadEvent):String {
+		if (e == null) e = untyped __js__ ("window.event");
+		e.returnValue = '1';
+		if (e.stopPropagation != null) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
+		return e.returnValue;
 	}
 	
 	public function checkBody():Void {

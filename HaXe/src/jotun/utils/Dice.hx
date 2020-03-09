@@ -88,6 +88,23 @@ class Dice {
 	}
 	
 	/**
+	 * Extract properties from a object and return a new object with then
+	 * @param	q		A valid object
+	 * @param	fields	Named fields to extract
+	 * @return
+	 */
+	public static function Extract(q:Dynamic, fields:Array<String>):Dynamic {
+		var r:Dynamic = {};
+		Values(
+			fields, 
+			function(v:String){
+				Reflect.setField(r, v, Reflect.field(q, v));
+			}
+		);
+		return r;
+	}
+	
+	/**
 	 * Execute the method in all object list (obj.method(...args))
 	 * @param	q		Target object
 	 * @param	method	Function name

@@ -96,6 +96,11 @@ class Domain implements IDomain {
 		
 	}
 	
+	public function getFQDN(?len:Int = 2):String {
+		var h:Array<String> = host.split('.');
+		return h.splice(h.length - len, len).join('.');
+	}
+	
 	#if js
 		
 		public function allocate(?expire:UInt = 30):IDataCache {

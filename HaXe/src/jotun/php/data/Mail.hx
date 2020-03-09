@@ -2,6 +2,7 @@ package jotun.php.data;
 import php.Lib;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
+import sys.io.File;
 
 /**
  * ...
@@ -13,46 +14,72 @@ class Mail {
 	
 	private var _from_email:String;
 	
-	private var _headers:String;
+	private var _bounce_to:String;
+	
+	private var _organization:String;
 	
 	private var _total:UInt;
 	
 	private var _errors:UInt;
+	
+	private var _host:String;
 
-	private function _sendRaw(subject:String, target:Dynamic, message:String):Void {
-		if (!Lib.mail(target.name + ' <' + target.email + '>', subject, Filler.to(message, target), _headers)){
+	private function _sendRaw(subject:String, target:Dynamic, html:String, plain:String):Void {
+		var boundary:String = "_Part_" + untyped __php__("md5(uniqid(rand()))");
+		var header:String = _genHeader(boundary);
+		var message:String = _genMessage(boundary, html, plain);
+		if (!Lib.mail(target.name + ' <' + target.email + '>', subject, Filler.to(message, target), header, '-f ' + _from_email)){
 			++_errors;
 		}else{
 			++_total;
 		}
 	}
 	
-	public function new() { }
+	function _genMessage(boundary:String, html:String, plain:String):String {
+		return [
+			"--" + boundary,
+			"Content-Type: text/plain; charset=utf-8",
+			"Content-Transfer-Encoding: 7bit",
+			"",
+			plain,
+			"",
+			"--" + boundary,
+			"Content-Type: text/html; charset=utf-8",
+			"Content-Transfer-Encoding: 7bit",
+			"",
+			"<html>" + html + "</html>",
+			"",
+			"--" + boundary + "--",
+		].join("\r\n");
+	}
 	
-	public function init(from:String, email:String, organizaion:String, html:Bool = true, charset:String = "utf-8"):Mail {
-		_from_name = from;
-		_from_email = email;
-		_headers = [
-			"Reply-To: " + from  + " <" + email + ">",
-			"Return-Path: " + from + " <" + email + ">",
-			"From: " + from  + " <" + email + ">",
-			"Organization: " + organizaion,
+	private function _genHeader(boundary:String):String {
+		return [
+			"Message-ID: <" + untyped __php__("sha1(microtime(true))") + "@" + _host + ">",
+			"From: " + _from_name  + " <" + _from_email + ">",
+			"X-Sender: " + _from_name  + " <" + _from_email + ">",
+			"Reply-To: " + _from_name  + " <" + _from_email+ ">",
+			"Return-Path: " + _from_name + " <" + _bounce_to + ">",
+			"Organization: " + _organization,
 			"MIME-Version: 1.0",
 			"Date: " + untyped __php__("date('r')"),
-			"Message-ID: <" + untyped __php__("sha1(microtime(true))") + "@rimproject.com>",
-			"Content-type: text/" + (html ? "html" : "plain") + "; charset=" + charset,
 			"X-Priority: 3",
 			"X-Mailer: PHP " + untyped __php__("phpversion()"),
-		].join("\r\n") + "\r\n";
-		resetCounters();
-		return this;
+			"Content-Type: multipart/alternative; boundary=\"" + boundary + "\"",
+		].join("\r\n");
 	}
 	
-	public function getHeaders():String {
-		return _headers;
-	}
-	public function setHeaders(value:String):Mail {
-		_headers = value;
+	public function new() { }
+	
+	public function init(host:String, from:String, email:String, organizaion:String, ?bounce:String):Mail {
+		_host = host;
+		_from_name = from;
+		_from_email = email;
+		_organization = organizaion;
+		if (_bounce_to == null){
+			_bounce_to = email;
+		}
+		resetCounters();
 		return this;
 	}
 	
@@ -74,13 +101,13 @@ class Mail {
 		return this;
 	}
 	
-	public function send(subject:String, target:Dynamic, message:String):Bool {
+	public function send(subject:String, target:Dynamic, html:String, plain:String):Bool {
 		if (Std.is(target, Array)){
 			Dice.Values(target, function(v:Dynamic){
-				_sendRaw(subject, v, message);
+				_sendRaw(subject, v, html, plain);
 			});
 		}else{
-			_sendRaw(subject, target, message);
+			_sendRaw(subject, target, html, plain);
 		}
 		return hasErrors();
 	}

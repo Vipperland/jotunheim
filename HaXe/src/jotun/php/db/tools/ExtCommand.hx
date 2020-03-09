@@ -54,6 +54,8 @@ class ExtCommand implements IExtCommand {
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
+			}else if (_parameters){
+				p = Lib.toPhpArray(_parameters);
 			}
 			try {
 				if (type != null){
@@ -129,7 +131,7 @@ class ExtCommand implements IExtCommand {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
 				if (Std.is(e, String)) {
-					e = '"' + e + '"';
+					e = conn.quote(e);
 				}
 				r[p] = v + e;
 			}

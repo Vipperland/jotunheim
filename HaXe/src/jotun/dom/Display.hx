@@ -32,7 +32,7 @@ import js.html.Node;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("jtn.dom.Display")
-class Display extends Query implements IDisplay {
+class Display extends Query implements IDisplay implements Dynamic {
 	
 	private static var _CNT:UInt = 0;
 	
@@ -111,7 +111,7 @@ class Display extends Query implements IDisplay {
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
-			_uid = hasAttribute("jotun-id") ? attribute("jotun-id") : attribute("jotun-id", _CNT++);
+			_uid = Std.int(hasAttribute("jotun-id") ? attribute("jotun-id") : attribute("jotun-id", _CNT++));
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
@@ -282,6 +282,14 @@ class Display extends Query implements IDisplay {
 		this._parent = null;
 		if (element != null && element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
+	}
+	
+	public function enable():Void {
+		style('pointerEvents', 'all');
+	}
+	
+	public function disable():Void {
+		style('pointerEvents', 'none');
 	}
 	
 	public function css(?styles:String):String {
