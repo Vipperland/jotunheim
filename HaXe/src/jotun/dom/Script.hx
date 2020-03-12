@@ -23,6 +23,7 @@ class Script extends Display {
 			var js:Script = null;
 			if(r.success){
 				js = fromString(r.data).publish();
+				js.attribute('source', q);
 			}
 			if (handler != null){
 				handler(js);

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head class="marg-0">
+	<meta charset="utf-8"/>
+	<title>Jotun</title>
+	<meta name="description" content=""/>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Jura:400,700&display=swap');
+		body {
+			background-color: #000000;
+			color: #ffffff;
+			font-family: 'Jura', sans-serif;
+			transition: background-color .3s ease-in;
+		}
+		.video-container {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			overflow: hidden;
+			position: absolute;
+			padding: 0px;
+		}
+		video {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			z-index: 0;
+		}
+		.panel {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 18px;
+			border: 0px solid #111111;
+		}
+		.panel .number {
+			color: #000000;
+			font-size: 30vh;
+		}
+		.panel .text {
+			font-size: 10vh;
+		}
+		.logo {
+			pointer-events: none;
+			z-index: 100;
+		}
+		
+		.logo .a {
+			font-size: 10vh;
+		}
+		
+		.logo .b {
+			font-size: 2vh;
+		}
+		
+		.ref-bottom {
+			bottom: 0;
+		}
+		
+		.ref-bottom.hide {
+			bottom: -100px;
+		}
+		
+		.ref-hint {
+			position: fixed;
+			z-index: 1000;
+			width: 100%;
+			text-align: center;
+			transition: all .3s ease-out;
+		}
+		
+		.ref-index {
+			z-index: 100;
+			top: 0;
+			height: 100%;
+			padding: 8px;
+			position: fixed;
+		}
+		
+		.ref-index .dot{
+			padding-top: 2px;
+			margin: 4px 0;
+			transition: all .3s ease-out;
+		}
+		
+		.carousel-main {
+			overflow: hidden;
+		}
+		
+		.footer {
+			margin-top: 100px;
+			padding: 24px;
+			text-align: center;
+			border-top: 1px solid #ffffff;
+		}
+		
+		#menu > div {
+			padding: 10px;
+		}
+		
+		.item {
+			width: 50px;
+			height: 50px;
+			background-color: #000000;
+			border-radius: 1px;
+			color: #FFFFFF;
+			text-align: center;
+			padding-top: 15px;
+			cursor: pointer;
+			border-radius: 50%;
+		}
+		
+		.item:hover {
+			width: 50px;
+			height: 50px;
+		}
+		
+	</style>
+</head>
+	
+<body automator>
+	
+	<div class="glittermenu" 
+		 glitter-size="auto" 
+		 glitter-fov="360" 
+		 glitter-angle="0" 
+		 glitter-autoclose="true" 
+		 glitter-grow="0" 
+		 glitter-multiple="false" 
+		 glitter-time="30" 
+		 glitter-transition="all .3s ease-in-out" 
+		 glitter-transform="true" hidden>
+			<div value="0" class="item">0</div>
+			<div value="1" class="item">1</div>
+			<div value="2" class="item">2</div>
+			<div value="3" class="item">3</div>
+			<div value="4" class="item">4</div>
+			<div value="5" class="item">5</div>
+			<div value="6" class="item">6</div>
+			<div value="7" class="item">7</div>
+			<div value="8" class="item">8</div>
+			<div value="9" class="item">9</div>
+			<div value="10" class="item">10</div>
+			<div value="11" class="item">11</div>
+			<div value="12" class="item">12</div>
+			<div value="13" class="item">13</div>
+			<div value="14" class="item">14</div>
+			<div value="15" class="item">15</div>
+			<div value="16" class="item">16</div>
+			<div class="item">Close</div>
+	</div>
+	
+	<div class="carousel-main" hidden>
+		
+		<div class="panel" t-style="#111111">
+			<div class="video-container">
+				<video loop>
+				  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class="logo">
+				<div>
+					<img src="assets/img/sirius.png" /><br/><span class="a">sirius</span><br/><span class="b">dream makers</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="panel" t-style="#992211">
+			<span class="text">Jotun</span>
+		</div>
+		<div class="panel" t-style="#994411">
+			<span class="number">2</span>
+		</div>
+		<div class="panel" t-style="#998811">
+			<span class="number">3</span>
+		</div>
+		<div class="panel" t-style="#999911">
+			<span class="number">4</span>
+		</div>
+		<div class="panel" t-style="#889922">
+			<span class="number">5</span>
+		</div>
+		<div class="panel" t-style="#449944">
+			<span class="number">6</span>
+		</div>
+		<div class="panel" t-style="#229988">
+			<span class="number">7</span>
+		</div>
+		<div class="panel" t-style="#119999">
+			<span class="number">8</span>
+		</div>
+		<div class="panel" t-style="#118899">
+			<span class="number">9</span>
+		</div>
+		<div class="panel" t-style="#114499">
+			<span class="number">10</span>
+		</div>
+		<div class="panel" t-style="#112299">
+			<span class="number">11</span>
+		</div>
+		<div class="panel" t-style="#221199">
+			<span class="number">12</span>
+		</div>
+		<div class="panel" t-style="#551199">
+			<span class="number">13</span>
+		</div>
+		<div class="panel" t-style="#881199">
+			<span class="number">14</span>
+		</div>
+		<div class="panel" t-style="#881188">
+			<span class="number">15</span>
+		</div>
+		<div class="panel" t-style="#881144">
+			<span class="number">16</span>
+		</div>
+	</div>
+	
+	<div class="footer hidden">
+		This is not in Carousel3D Context
+	</div>
+	
+	<div id="hint" class="ref-hint ref-easing ref-bottom">
+		<img src="/assets/img/scroll.png" />
+	</div>
+	
+	<script src="/jotun/api.jotun.js"> </script>
+	<script>
+		
+		var Div = jtn.dom.Div;
+		var Sprite = jtn.dom.Sprite;
+		var Sprite3D = jtn.dom.Sprite3D;
+		var display3d = jtn.dom.display3d;
+		
+		var ctn = 0;
+		function _init3D(){
+			
+			if(++ctn < 2) return;
+			
+			var hint = Jotun.one('#hint');
+			var axys = Jotun.one('#axys');
+			var zoom = Jotun.one('#zoom');
+			
+			var carousel3d = Jotun.plugins.Carousel3D(20, 1000, true, '.carousel-main');
+			
+			if(carousel3d != null){
+				var i = 0;
+				Jotun.all('.panel').each(function(o){
+					var c = new ARGB(o.attribute('t-style'));
+					var b = c.brightnesss(.2);
+					o.attribute('o-style',b.css());
+					o.style({
+						backgroundColor:c.css(),
+					});
+					Jotun.one('.glittermenu .item[value="' + i + '"]').style('backgroundColor',c.css());
+					i += 1;
+				});
+				
+				var tg = 20;
+				var ap = 20;
+				
+				carousel3d.addBySelector('.panel');
+				
+				// Control panel index highlight
+				function onFocusIn(e){
+					var panel = e.target;
+					panel.data.index.fit(25,1);
+					panel.data.index.style({opacity:.6});
+					tg = (panel.data.control.id == 0) ? 20 : 120;
+					Jotun.document.body.style({
+						backgroundColor: panel.one('.panel').attribute('o-style'),
+					});
+					if(panel.data.id == 0)
+						hint.css('/hide');
+					else
+						hint.css('hide');
+				}
+				
+				function onFocusOut(e){
+					var panel = e.target;
+					panel.data.index.fit(10,1);
+					panel.data.index.style({opacity:.3});
+					
+				}
+				
+				function onPinIn(e){
+					var panel = e.target;
+					panel.data.index.fit(50,1);
+					panel.data.index.style({opacity:1});
+				}
+				
+				function onPinOut(e){
+					var panel = e.target;
+					panel.data.index.fit(25,1);
+					panel.data.index.style({opacity:.6});
+				}
+				
+				// Create Index
+				
+				var index = new Div();
+				index.content = new Div();
+				index.addChild(index.content);
+				index.css('ref-index mouse-none');
+				index.style({width:'20px',height:'100%',display:'table', cursor:'pointer'});
+				index.content.style({verticalAlign:'middle', display:'table-cell'});
+				index.addToBody();
+				Dice.All(carousel3d.panels, function(p, v){
+					var panel = new Div();
+					panel.fit(10,1);
+					panel.css('dot');
+					panel.style('backgroundColor','#ffffff');
+					panel.style({opacity:.3});
+					index.content.addChild(panel);
+					v.data.index = panel;
+					v.data.id = p;
+				});
+				
+				index.events.click(function(e){
+					GlitterMenu.openMenu('.glittermenu', function(e, v){
+						if(v != null && v.length > 0){
+							carousel3d.showPanel(parseInt(v[0]));
+						}
+					});
+				});
+				
+				carousel3d.onFocusIn(onFocusIn);
+				carousel3d.onFocusOut(onFocusOut);
+				carousel3d.onPinIn(onPinIn);
+				carousel3d.onPinOut(onPinOut);
+				//carousel3d.onZoomIn(onZoomIn);
+				//carousel3d.onZoomOut(onZoomOut);
+				
+				Ticker.add(function(){
+					if(ap != tg){
+						ap += (tg-ap) * .1;
+						carousel3d.setAperture(ap);
+					}
+				});
+				
+				Jotun.one('.carousel-main').show();
+				
+			}
+			
+			// Config Video Player
+			var vid = Jotun.one('video');
+			//function _startVideo(e){
+				vid.events.click(function(v){ v.target.togglePause(); });
+				Jotun.all('video').each(function(v){
+					//v.play();
+				});
+				//Jotun.document.body.events.click(_startVideo, -1);
+			//}
+			//Jotun.document.body.events.click(_startVideo);
+			
+		}
+		
+		XCode.createStroke('.panel .number', true, '#FFFFFF', 2);
+		
+		// Inject plugin
+		Jotun.inject([
+			'jotun/plugins/glitter-menu.js',
+			'jotun/plugins/carousel3d.js',
+		], null, _init3D);
+		
+	</script>
+	
+</body>
+</html>

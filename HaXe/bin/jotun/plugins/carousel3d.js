@@ -7,18 +7,17 @@
 	$exports.jtn = $exports.jtn || {};
 	$exports.jtn.plugins = $exports.jtn.plugins || {};
 	$exports.jtn.plugins.Carousel3D = function(aperture, zoom, keyboard, addto){
-		var Display3D = jtn.dom.Display3D;
+		var Display = jtn.dom.Display;
 		function CreateContainer(){
-			var c = new Display3D();
-			c.setPerspective('1000px');
-			c.content = new Display3D();
-			c.css('Carousel3D');
-			c.content.preserve3d();
-			c.content.render();
+			var c = new Display();
+			c.enablePerspective();
+			c.content = new Display();
+			c.css('Carousel3D no-backface');
+			c.content.transform();
 			c.addChild(c.content);
 			c.style({width:'100%',height:'100%',display:'table'});
 			c.content.style({verticalAlign:'middle', display:'table-cell'});
-			c.render();
+			c.transform();
 			return c;
 		}
 		
@@ -39,7 +38,7 @@
 			snapping : 0,
 			minSnapping : 2,
 			maxSnapping : 16,
-			snapEasing : .9,
+			snapEasing : .99,
 			zoomEasing : .1,
 			scroll : 0,
 			axys : 'y',
@@ -48,6 +47,8 @@
 			tilt : 0,
 			enabled : true,
 			focused : false,
+			backface : false,
+			clipping : true,
 			spacing : 0,
 			direction : 1,
 			addBySelector : function(q){
@@ -56,27 +57,39 @@
 					o.update();
 				}
 			},
+			setSpacing : function(q){
+				this.spacing = q;
+			},
 			addPanel : function(p){
-				var panel = new Display3D().addTo(o.carousel.content);
+				var panel = new Display().addTo(o.carousel.content);
 				p.style({
 					width:'100%',
 					height:'100%',
 				});
 				panel.addChild(p);
-				panel.preserve3d();
 				panel.css('Panel3D');
 				panel.material = p;
-				panel.setPerspective("1000px");
+				panel.enablePerspective();
 				o.panels[o.panels.length] = panel;
 			},
+			setBackface: function(q){
+				this.carousel.css((q ? '' : '/') + 'no-backface');
+				this.backface = q;
+			},
+			setClipping: function(q){
+				this.clipping = q;
+			},
 			update : function(){
-				if(o.aperture < 10) o.aperture = 10;
-				else if(o.aperture > 160) o.aperture = 160;
+				if(o.aperture < 10) 
+					o.aperture = 10;
+				else if(o.aperture > 160) 
+					o.aperture = 160;
 				o.maxAperture = o.aperture * o.panels.length;
 				o.maxPanels = 360/o.aperture;
 				o.points.splice(0, o.points.length);
 				o.snapping = (o.aperture/180) * o.maxSnapping + o.minSnapping;
-				if(o.snapping > o.maxSnapping) o.snapping = o.maxSnapping;
+				if(o.snapping > o.maxSnapping) 
+					o.snapping = o.maxSnapping;
 				var ap = o.aperture*1.50;
 				var hp = o.aperture*.50;
 				while(o.points.length < o.panels.length){
@@ -91,11 +104,15 @@
 					ctr.e = i+ap;
 					ctr.f = i-hp;
 					ctr.g = i+hp;
-					cp.doubleSided(false);
-					cp.style({y:0,top:0,position:'absolute',width:'100%'});
+					cp.style({
+						y:0,
+						top:0,
+						position:'absolute',
+						width:'100%'
+					});
 					cp.data.rotation = o.points.length * -o.aperture;
-					cp.setPerspective(null, '50% 50%');
-					cp.render();
+					//cp.enablePerspective();
+					cp.transform();
 					cp.data.control = ctr;
 					o.points[o.points.length] = ctr;
 				}
@@ -111,6 +128,7 @@
 				if(z != null){
 					o.tilt = z;
 				}
+				return o.tilt;
 			},
 			setHorizontal:function(){
 				o.toggleAxys('x');
@@ -119,21 +137,29 @@
 				o.toggleAxys('y');
 			},
 			toggleAxys : function(x){
-				if(x != null) 	o.axys = x;
-				else 			o.axys = o.axys == 'x' ? 'y' : 'x';
+				if(x != null){
+					o.axys = x;
+				}else{
+					o.axys = o.axys == 'x' ? 'y' : 'x';
+				}
+				return o.axys;
 			},
 			showPanel : function(i){
 				Jotun.document.scroll(0,i*Utils.viewportHeight());
 			},
 			prevPanel : function(){
-				if(o.index > 0) o.showPanel(o.index - 1);
+				if(o.index > 0) 
+					o.showPanel(o.index - 1);
 			},
 			nextPanel : function(){
-				if(o.index <= o.panels.length) o.showPanel(o.index + 1);
+				if(o.index <= o.panels.length) 
+					o.showPanel(o.index + 1);
 			},
 			on : function(n,h,m){
 				m = m ? -1 : 1;
-				Dice.Values(o.panels, function(v){ v.on(n,h,m); });
+				Dice.Values(o.panels, function(v){
+					v.on(n,h,m); 
+				});
 			},
 			onPinIn : function(h,m){
 				o.on('carouselPinIn',h,m);
@@ -154,17 +180,14 @@
 				o.carousel.events.on('carouselZoomOut',h,m ? -1 : 1);
 			},
 			render : function() {
-				if(!o.enabled) {
+				if(!o.enabled)
 					return;
-				}
 				var disp = o.carousel.parent();
 				var h = Utils.viewportHeight();
-				var h2 = ((o.axys == 'x' ? Utils.viewportWidth() : h) / 2);
-				var tz = h2/Math.tan(Math.PI/o.maxPanels) + o.spacing;
+				var h2 = ((o.axys == 'x' ? disp.width() : h) / 2);
+				var tz = h2 / Math.tan(Math.PI/o.maxPanels) + o.spacing;
 				var y = Jotun.document.getScroll().y;
-				var sy = y / (h * o.panels.length);
-				sy = sy * o.maxAperture;
-				o.offsetZ = o.zoom;
+				var sy = y / (h * o.panels.length) * o.maxAperture;
 				for(j in o.points){
 					var k = o.points[j];
 					if(sy > k.f && sy < k.g){
@@ -189,18 +212,24 @@
 					if(k.focus){
 						if(sy > k.a && sy < k.b){
 							sy = k.c;
-							o.offsetZ = 0;
 							if(k.pin == false) {
+								o.pinDelay = 4;
 								k.pin = true;
 								k.panel.css('focused pinned /inactive');
 								k.panel.events.on('carouselPinIn').call();
 								o.index = j * 1;
+							}else{
+								--o.pinDelay;
+								if(o.pinDelay == 0){
+									o.offsetZ = 0;
+								}
 							}
 						}else{
 							if(k.pin == true) {
 								k.pin = false;
 								k.panel.css('focused /pinned /inactive');
 								k.panel.events.on('carouselPinOut').call();
+								o.offsetZ = o.zoom;
 							}
 						}
 					}
@@ -223,38 +252,47 @@
 				}
 				Dice.All(o.panels, function(p, e) {
 					ctr = e.data.control;
-					if(o.scroll < ctr.d || o.scroll > ctr.e){
+					if(o.clipping && (o.scroll < ctr.d || o.scroll > ctr.e)){
 						e.hide();
-						return;
 					}else{
 						e.show();
 					}
 					e.height(h);
-					e.locationZ(tz);
+					
 					var tA = (e.data.rotation + o.scroll);
 					e.data.point = tA;
 					if(o.axys == 'x'){
-						e.rotationY(tA * -o.direction);
-						e.rotationX(0);
-						if(o.tilt!=0){
-							e.locationY(tA * o.tilt);
-						}
+						e.rotate(
+							o.tilt != 0 ? tA * o.tilt : 0,
+							tA * o.direction,
+							0
+						);
+						e.translate(
+							0, 
+							0,
+							tz
+						);
 					}else{
-						e.rotationX(tA * o.direction);
-						e.rotationY(0);
-						if(o.tilt!=0){
-							e.locationX(tA*o.tilt);
-						}
+						e.rotate(
+							tA * o.direction,
+							o.tilt != 0 ? tA * o.tilt : 0,
+							0
+						);
+						e.translate(
+							0,
+							0, 
+							tz
+						);
 					}
-					e.render();
+					e.transform();
 				});
 				
 				var th = (h*(o.panels.length))>>0;
 				
 				if(disp != null){
 					disp.style( { 'height':th + 'px' } );
-					o.carousel.content.locationZ( -tz - o.offsetZFlex);
-					o.carousel.content.render();
+					o.carousel.content.translate(0,0, -tz - o.offsetZFlex);
+					o.carousel.content.transform();
 					o.carousel.height(h);
 				}
 				
@@ -263,11 +301,13 @@
 				if(Jotun.document.focus().is(['input','select','textarea'])) return;
 				if(e.event.type == 'wheel')	{
 					var delta = 0;
-					if(Jotun.agent.firefox) 	delta = e.event.deltaY * -40;
-					else						delta = e.event.wheelDelta;
+					if(Jotun.agent.firefox){
+						delta = e.event.deltaY * -40;
+					} else {
+						delta = e.event.wheelDelta;
+					}
 					Jotun.document.addScroll(0, -delta);
 				}else if(o.keyboard) {
-					console.log(e.event.keyCode);
 					switch(e.event.keyCode){
 						case 38 : {}
 						case 33 : {
@@ -300,10 +340,10 @@
 			height:'100%',
 		});
 		o.carousel.addToBody();
-		o.carousel.setPerspective(null, '50% 50%');
-		o.carousel.render();
+		o.carousel.enablePerspective();
+		o.carousel.transform();
 		o.carousel.content.height("100%");
-		o.carousel.content.render();
+		o.carousel.content.transform();
 		o.carousel.style({width:'100%', top:0, height:0, marginBottom:0});
 		
 		if(addto != null && addto.length > 0){
@@ -316,6 +356,7 @@
 		XCode.css.add('.Panel3D.pinned.focused{z-index:100000;}');
 		XCode.css.add('.Panel3D.focused{z-index:10000;}');
 		XCode.css.add('.Panel3D.inactive{z-index:1000;}');
+		XCode.css.add('.Carousel3D.no-backface .Panel3D{backface-visibility: hidden;}');
 		XCode.css.build();
 		
 		Ticker.add(o.render);

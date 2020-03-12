@@ -1,6 +1,5 @@
 package jotun.events;
 import jotun.dom.IDisplay;
-import jotun.dom.IDisplay3D;
 
 /**
  * ...
@@ -18,9 +17,6 @@ class Event implements IEvent {
 	/** Current Target */
 	public var target:IDisplay;
 	
-	/** Current Target */
-	public var target3d:IDisplay3D;
-	
 	/** Original object Event */
 	public var event:js.html.Event;
 	
@@ -36,7 +32,6 @@ class Event implements IEvent {
 		this.ticket = ticket;
 		this.from = from;
 		this.target = from.target;
-		this.target3d = Std.is(from.target, IDisplay3D) ? cast from.target : null;
 	}
 	
 	public function cancel():Void {

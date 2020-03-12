@@ -1,6 +1,5 @@
 package jotun.events;
 import jotun.dom.IDisplay;
-import jotun.dom.IDisplay3D;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -16,9 +15,6 @@ interface IEvent {
 	
 	// Current Target
 	public var target : IDisplay;
-
-	// Current Target
-	public var target3d : IDisplay3D;
 
 	/// Original object Event
 	public var event : js.html.Event;

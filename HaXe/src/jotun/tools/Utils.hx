@@ -28,7 +28,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Content;
 	import jotun.dom.DataList;
 	import jotun.dom.Display;
-	import jotun.dom.Display3D;
 	import jotun.dom.Div;
 	import jotun.dom.Document;
 	import jotun.dom.Embed;
@@ -126,7 +125,7 @@ class Utils{
 			A:A, AREA:Area, AUDIO:Audio,
 			B:B, BASE:Base, BODY:Body, BR:BR, BUTTON:Button,
 			CANVAS:Canvas, CAPTION:Caption, COL:Col, CONTENT:Content,
-			DATALIST:DataList, DIV:Div, DISPLAY:Display, DISPLAY3D:Display3D, DOCUMENT:Document,
+			DATALIST:DataList, DIV:Div, DISPLAY:Display, DOCUMENT:Document,
 			EMBED:Embed,
 			FIELDSET:FieldSet, FORM:Form,
 			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HR:HR, HTML:Html,

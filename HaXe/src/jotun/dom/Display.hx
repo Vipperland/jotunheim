@@ -6,6 +6,7 @@ import jotun.css.XCode;
 import jotun.dom.IDisplay;
 import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
+import jotun.math.Matrix3D;
 import jotun.objects.Query;
 import jotun.math.ARGB;
 import jotun.math.IARGB;
@@ -161,7 +162,7 @@ class Display extends Query implements IDisplay implements Dynamic {
 		return _children;
 	}
 	
-	public function getScroll(?o:IPoint = null):IPoint {
+	public function getScrollBounds(?o:IPoint = null):IPoint {
 		if (o == null){
 			o = new Point(element.scrollWidth, element.scrollHeight);
 		}else{
@@ -171,12 +172,29 @@ class Display extends Query implements IDisplay implements Dynamic {
 		return o;
 	}
 	
-	public function setScroll(y:UInt = null, x:UInt = null):Void {
+	public function getScroll(?o:IPoint = null):IPoint {
+		if (o == null){
+			o = new Point(element.scrollLeft, element.scrollTop);
+		}else{
+			o.x = element.scrollLeft;
+			o.y = element.scrollTop;
+		}
+		return o;
+	}
+	
+	
+	public function addScroll(x:Float, y:Float):Void {
+		var current:IPoint = getScroll();
+		setScroll(Std.int(current.x + x), Std.int(current.y + y));
+	}
+	
+	
+	public function setScroll(x:Int, y:Int):Void {
 		if (y != null){
-			element.scrollTop = y < 0 ? 0 : element.scrollHeight;
+			element.scrollTop = y;
 		}
 		if (x != null){
-			element.scrollLeft = x < 0 ? 0 : element.scrollWidth;
+			element.scrollLeft = x;
 		}
 	}
 	
@@ -281,6 +299,68 @@ class Display extends Query implements IDisplay implements Dynamic {
 	public function remove():IDisplay {
 		this._parent = null;
 		if (element != null && element.parentElement != null) element.parentElement.removeChild(element);
+		return this;
+	}
+	
+	public function rotateX(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationX = Matrix3D.rotateX(x);
+		return this;
+	}
+	
+	public function rotateY(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationY = Matrix3D.rotateY(x);
+		return this;
+	}
+	
+	public function rotateZ(x:Float):IDisplay {
+		this.__changed = true;
+		this.__rotationZ = Matrix3D.rotateZ(x);
+		return this;
+	}
+	
+	public function rotate(x:Float, y:Float, z:Float):IDisplay {
+		if (x != null) {
+			rotateX(x);
+		}
+		if (y != null) {
+			rotateY(y);
+		}
+		if (z != null) {
+			rotateZ(z);
+		}
+		return this;
+	}
+	
+	public function translate(x:Float, y:Float, z:Float):IDisplay {
+		this.__changed = true;
+		this.__translation = Matrix3D.translate(x, y, z);
+		return this;
+	}
+	
+	public function scale(x:Float, y:Float, z:Float):IDisplay {
+		this.__changed = true;
+		this.__scale = Matrix3D.scale(x, y, z);
+		return this;
+	}
+	
+	public function transform():IDisplay {
+		if (this.__changed){
+			if (this.__transform == null) {
+				this.__transform = [];
+				style('transformStyle', 'preserve-3d');
+				style('transformOrigin', '50% 50% 1');
+				css('element3d');
+			}
+			this.__changed = false;
+			this.__transform[0] = this.__rotationX;
+			this.__transform[1] = this.__rotationY;
+			this.__transform[2] = this.__rotationZ;
+			this.__transform[3] = this.__scale;
+			this.__transform[4] = this.__translation;
+			style('transform', 'matrix3d(' + Matrix3D.transform(this.__transform).join(',') + ')');
+		}
 		return this;
 	}
 	
@@ -490,16 +570,6 @@ class Display extends Query implements IDisplay implements Dynamic {
 			return _parent;
 	}
 	
-	public function activate(handler:Dynamic):IDisplay {
-		Ticker.add(handler);
-		return this;
-	}
-	
-	public function deactivate(handler:Dynamic):IDisplay {
-		Ticker.remove(handler);
-		return this;
-	}
-	
 	public function x(?value:Dynamic):Int {
 		if (value != null)
 			element.style.left = Std.is(value, String) ? value : value + "px";
@@ -515,6 +585,10 @@ class Display extends Query implements IDisplay implements Dynamic {
 	public function width(?value:Dynamic):Int {
 		if (value != null)
 			element.style.width = Std.is(value, String) ? value : value + "px";
+		return element.clientWidth;
+	}
+	
+	public function fullWidth():Int {
 		return element.clientWidth;
 	}
 	

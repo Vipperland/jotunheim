@@ -139,6 +139,20 @@ interface IDisplay extends IQuery implements Dynamic  {
 	 */
 	public function remove():IDisplay;
 	
+	public function rotateX(x:Float):IDisplay;
+	
+	public function rotateY(x:Float):IDisplay;
+	
+	public function rotateZ(x:Float):IDisplay;
+	
+	public function rotate(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function translate(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function scale(x:Float, y:Float, z:Float):IDisplay;
+	
+	public function transform():IDisplay;
+	
 	/**
 	 * Parent container, can go up to any available level until reach document element
 	 * @param	levels
@@ -159,8 +173,9 @@ interface IDisplay extends IQuery implements Dynamic  {
 	
 	public function getScroll(?o:IPoint = null):IPoint;
 	
-	public function setScroll(y:UInt = null, x:UInt = null):Void;
+	public function setScroll(x:Int, y:Int):Void;
 	
+	public function addScroll(x:Int, y:Int):Void;
 	
 	/**
 	 * Current element scroll offset
@@ -270,20 +285,6 @@ interface IDisplay extends IQuery implements Dynamic  {
 	 * @return
 	 */
 	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay;
-	
-	/**
-	 * Add a 30FPS call handler
-	 * @param	handler
-	 * @return
-	 */
-	public function activate(handler:Dynamic):IDisplay;
-	
-	/**
-	 * Remove a 30FPS call handler
-	 * @param	handler
-	 * @return
-	 */
-	public function deactivate(handler:Dynamic):IDisplay;
 	
 	/**
 	 * 

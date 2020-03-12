@@ -92,7 +92,7 @@ class Document extends Display {
 		Browser.window.scroll(x, y);
 	}
 	
-	public function addScroll(x:Float, y:Float):Void {
+	override public function addScroll(x:Float, y:Float):Void {
 		var current:IPoint = getScroll();
 		Browser.window.scroll(current.x + x, current.y + y);
 	}
