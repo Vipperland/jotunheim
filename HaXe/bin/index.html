@@ -301,15 +301,22 @@
 		<div class="panel" t-style="#881144">
 			<span class="title">Download</span>
 			<span class="content">
-				<a href="jotum_carousel3d.zip" target="_blank">Carousel3D Source code and Jotum Framework</a>
+				<div class="shelf" action-trigger="download">
+					<div class="cel"><a href="jotum_carousel3d.zip" target="_blank">Carousel3D Source code and Jotum Framework</a></div>
+				</div>
+				
 				<hr/>
-				<div class="shelf" action-trigger="axys" on-key-trigger="a">
-					<div class="cel-9">Toggle Horizontal/Vertical Axys (Press A)</div>
+				<div class="shelf" action-trigger="axys" on-key-trigger="q">
+					<div class="cel-9">Toggle Horizontal/Vertical Axys (Press Q)</div>
 					<div class="value cel-3">y</div>
 				</div>
 				<hr/>
-				<div class="shelf" action-trigger="tilt" on-key-trigger=",.">
-					<div class="cel-9">Tilt (Press &lt; or &gt;)</div>
+				<div class="shelf" action-trigger="index">
+					<div class="cel">Next/Previous Panel (Press UP or DOWN)</div>
+				</div>
+				<hr/>
+				<div class="shelf" action-trigger="angle" on-key-trigger="ws">
+					<div class="cel-9">Angle (Press W or S)</div>
 					<div class="value cel-3">0</div>
 				</div>
 			</span>
@@ -351,38 +358,36 @@
 					i += 1;
 				});
 				
-				var tilt = 0;
-				var ap = 20;
-				
-				var tt = 0;
-				var tg = 20;
+				var angle = 120;
+				var targetAngle = 20;
+				var endAngle = 20;
 				
 				carousel3d.addBySelector('.panel');
 				
 				// ================== Control panel index highlight ==================
 				
 				var hint = Jotun.one('#hint');
-			
+				
 				function onFocusIn(e){
 					var panel = e.target;
 					panel.data.index.fit(25,1);
 					panel.data.index.style({opacity:.6});
-					tg = (panel.data.control.id == 0) ? 20 : 120;
 					Jotun.document.body.style({
 						backgroundColor: panel.one('.panel').attribute('o-style'),
 					});
+					endAngle = (panel.data.control.id == 0) ? 20 : angle;
 					// show/hide sroll label
-					if(panel.data.id == 0)
+					if(panel.data.id == 0){
 						hint.css('/hide');
-					else
+					}else{
 						hint.css('hide');
+					}
 				}
 				
 				function onFocusOut(e){
 					var panel = e.target;
 					panel.data.index.fit(10,1);
 					panel.data.index.style({opacity:.3});
-					tt = (panel.data.control.id == 0) ? 0 : tilt;
 				}
 				
 				function onPinIn(e){
@@ -429,11 +434,9 @@
 				// ================== Fold/Unfold effect between panels 0 and 1 ==================
 				
 				Ticker.add(function(){
-					if(ap != tg){
-						ap += (tg-ap) * .1;
-						tt += (tilt-tt) * .1;
-						carousel3d.setAperture(ap);
-						carousel3d.setTilt(tt);
+					if(targetAngle != endAngle){
+						targetAngle += (endAngle - targetAngle) * .1;
+						carousel3d.setAngle(targetAngle);
 					}
 				});
 				
@@ -458,14 +461,15 @@
 								e.target.one('.value').writeHtml(x);
 								break;
 							}
-							case 'tilt' : {
+							case 'angle' : {
 								var y = e.target.attribute('key-event');
-								if(y == '<' || y == ','){
-									tilt -= .01;
+								if(y == 'w'){
+									angle -= 1;
 								}else{
-									tilt += .01;
+									angle += 1;
 								}
-								e.target.one('.value').writeHtml(tilt.toFixed(2));
+								endAngle = angle;
+								e.target.one('.value').writeHtml(angle.toFixed(2));
 								break;
 							}
 						}
