@@ -161,7 +161,8 @@ class JsonTool {
 
 	function quote( s : String ) {
 		#if (neko || php || cpp)
-		if( s.length != haxe.Utf8.length(s) ) {
+		var us:UnicodeString = new UnicodeString(s);
+		if( s.length != us.length ) {
 			quoteUtf8(s);
 			return;
 		}
@@ -192,18 +193,7 @@ class JsonTool {
 
 	#if (neko || php || cpp)
 	function quoteUtf8( s : String ) {
-		var u = new haxe.Utf8();
-		haxe.Utf8.iter(s,function(c) {
-			switch( c ) {
-			case '\\'.code, '"'.code: u.addChar('\\'.code); u.addChar(c);
-			case '\n'.code: u.addChar('\\'.code); u.addChar('n'.code);
-			case '\r'.code: u.addChar('\\'.code); u.addChar('r'.code);
-			case '\t'.code: u.addChar('\\'.code); u.addChar('t'.code);
-			case 8: u.addChar('\\'.code); u.addChar('b'.code);
-			case 12: u.addChar('\\'.code); u.addChar('f'.code);
-			default: u.addChar(c);
-			}
-		});
+		var u:UnicodeString = new UnicodeString(s);
 		buf.add('"');
 		buf.add(u.toString());
 		buf.add('"');

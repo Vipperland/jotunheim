@@ -13,7 +13,6 @@ import jotun.utils.Dice;
 
 #if js
 	import js.Browser;
-	import js.JQuery;
 	import js.html.Element;
 	import js.html.Event;
 	import jotun.css.XCode;
@@ -27,10 +26,8 @@ import jotun.utils.Dice;
 	import jotun.seo.SEOTool;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;
-	import jotun.transitions.Animator;
 	import jotun.transitions.Ease;
 	import jotun.utils.ITable;
-	import jotun.utils.Pixel;
 	import jotun.utils.SearchTag;
 	import jotun.utils.Table;
 	import jotun.gaming.actions.Events;
@@ -112,7 +109,7 @@ class Jotun {
 		
 		static private function _preInit():Bool {
 			if (!_initialized) {
-				(cast Browser.window).trace = untyped __js__("console.log");
+				(cast Browser.window).trace = js.Syntax.code("console.log");
 				_initialized = true;
 				_loadPool = [];
 				document = Document.ME();
@@ -130,7 +127,7 @@ class Jotun {
 		
 		static public function updatePlugins():Void {
 			if(_loaded){
-				var plist:Dynamic = untyped __js__("window.jtn ? window.jtn.plugins : null");
+				var plist:Dynamic = js.Syntax.code("window.jtn ? window.jtn.plugins : null");
 				Dice.All(plist, function(p:String, v:Dynamic) {
 					Reflect.setField(plugins, p, v);
 					Reflect.deleteField(plist, p);
@@ -173,16 +170,7 @@ class Jotun {
 		static public function all(?q:String = "*", ?t:Dynamic = null):ITable {
 			return Table.recycle(q, t);
 		}
-		
-		/**
-		 * JQuery integration
-		 * @param	q
-		 * @return
-		 */
-		static public function jQuery(?q:Dynamic = "*"):Dynamic {
-			return untyped __js__("$(q);");
-		}
-		
+
 		/**
 		 * Run method only if framework is Ready and DOM is loaded
 		 * @param	handler
@@ -264,10 +252,10 @@ class Jotun {
 		
 		static public var loader:ILoader = new Loader();
 		
-		static public var tick:UInt = untyped __php__('time()');
+		static public var tick:UInt = php.Syntax.codeDeref('time()');
 		
 		static public function require(file:String):Void {
-			untyped __call__('require_once', file);
+			php.Syntax.codeDeref('require_once({0})', file);
 		}
 		
 		/**

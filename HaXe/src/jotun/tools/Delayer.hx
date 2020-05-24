@@ -10,11 +10,11 @@ import jotun.tools.Key;
 @:expose("jtn.tools.Delayer")
 class Delayer {
 	
-	static public var setTimeout:Dynamic->UInt->Array<Dynamic>->Int = untyped __js__('setTimeout');
-	static public var clearTimeout:UInt->Void = untyped __js__('clearTimeout');
+	static public var setTimeout:Dynamic->UInt->Array<Dynamic>->Int = js.Syntax.code('setTimeout');
+	static public var clearTimeout:UInt->Void = js.Syntax.code('clearTimeout');
 	
-	static public var setInterval:Dynamic->UInt->Array<Dynamic>->Int = untyped __js__('setInterval');
-	static public var clearInterval:UInt->Void = untyped __js__('clearInterval');
+	static public var setInterval:Dynamic->UInt->Array<Dynamic>->Int = js.Syntax.code('setInterval');
+	static public var clearInterval:UInt->Void = js.Syntax.code('clearInterval');
 	
 	static private var _tks:Dynamic = { };
 	

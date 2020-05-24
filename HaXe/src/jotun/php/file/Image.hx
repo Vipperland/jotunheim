@@ -23,23 +23,23 @@ class Image implements IImage {
 	/**
 	 * Current image width
 	 */
-	public var width:UInt;
+	public var width:Int;
 	
 	/**
 	 * Current image height
 	 */
-	public var height:UInt;
+	public var height:Int;
 	
 	/**
 	 * File Type
 	 */
-	public var type:UInt;
+	public var type:Int;
 	
 	private function _update(resource:Dynamic):Void {
 		dispose();
 		_res = resource;
-		width = untyped __call__('imagesx', _res);
-		height = untyped __call__('imagesy', _res);
+		width = php.Syntax.codeDeref('imagesx({0})', _res);
+		height = php.Syntax.codeDeref('imagesy({0})', _res);
 	}
 	
 	/**
@@ -47,8 +47,9 @@ class Image implements IImage {
 	 * @param	file
 	 */
 	public function new(?file:Dynamic) {
-		if (file != null)
+		if (file != null){
 			open(file);
+		}
 	}
 	
 	/**
@@ -59,25 +60,25 @@ class Image implements IImage {
 	public function open(file:Dynamic):IImage {
 		dispose();
 		if (file != null) {
-			// Check if is file	
-			var isFile:Bool = untyped __call__('is_file', file);
+			// Check if is file
+			var isFile:Bool = php.Syntax.codeDeref('is_file({0})', file);
 			var img:Dynamic = null;
 			if (isFile) {
 				name = file;
-				var info:NativeArray = untyped __call__('getimagesize', file);
+				var info:NativeArray = php.Syntax.codeDeref('getimagesize({0})', file);
 				width = info[0];
 				height = info[1];
 				type = info[2];
 				switch(type) {
-					case 1 : img = untyped __call__('imagecreatefromgif', file);
-					case 2 : img = untyped __call__('imagecreatefromjpeg', file);
-					case 3 : img = untyped __call__('imagecreatefrompng', file);
-					case 6 : img = untyped __call__('imagecreatefromwbmp', file);
+					case 1 : img = php.Syntax.codeDeref('imagecreatefromgif({0})', file);
+					case 2 : img = php.Syntax.codeDeref('imagecreatefromjpeg({0})', file);
+					case 3 : img = php.Syntax.codeDeref('imagecreatefrompng({0})', file);
+					case 6 : img = php.Syntax.codeDeref('imagecreatefromwbmp({0})', file);
 				}
 			}else {
-				img = untyped __call__('imagecreatefromstring', file);
-				width = untyped __call__('imagesx', _res);
-				height = untyped __call__('imagesy', _res);
+				img = php.Syntax.codeDeref('imagecreatefromstring({0})', file);
+				width = php.Syntax.codeDeref('imagesx({0})', _res);
+				height = php.Syntax.codeDeref('imagesy({0})', _res);
 			}
 			_res = img;
 		}
@@ -91,22 +92,23 @@ class Image implements IImage {
 	 * @param	ratio
 	 * @return
 	 */
-	public function resample(width:UInt, height:UInt, ?ratio:Bool = true):IImage {
+	public function resample(width:Int, height:Int, ?ratio:Bool = true):IImage {
 		if (isValid()) {
 			if (ratio) {
-				if (height >= width)
+				if (height >= width){
 					width = Math.round(height / this.height * this.width);
-				else
+				} else{
 					height = Math.round(width / this.width * this.height);
+				}
 			}
-			var newimg:Dynamic = untyped __call__('imagecreatetruecolor', width, height);
+			var newimg:Dynamic = php.Syntax.codeDeref('imagecreatetruecolor', width, height);
 			// Transparency
 			if (newimg != null) {
-				untyped __call__('imagealphablending', newimg, false);
-				untyped __call__('imagesavealpha', newimg, true);
-				var alpha:Dynamic = untyped __call__('imagecolorallocatealpha', newimg, 255, 255, 255, 127);
-				untyped __call__('imagefilledrectangle', newimg, 0, 0, width, height, alpha);
-				untyped __call__('imagecopyresampled', newimg, _res, 0, 0, 0, 0, width, height, this.width, this.height);
+				php.Syntax.codeDeref('imagealphablending({0},{1})', newimg, false);
+				php.Syntax.codeDeref('imagesavealpha({0},{1})', newimg, true);
+				var alpha:Dynamic = php.Syntax.codeDeref('imagecolorallocatealpha({0},{1},{2},{3},{4})', newimg, 255, 255, 255, 127);
+				php.Syntax.codeDeref('imagefilledrectangle({0},{1},{2},{3},{4})', newimg, 0, 0, width, height, alpha);
+				php.Syntax.codeDeref('imagecopyresampled({0},{1},{2},{3},{4},{5},{6},{7},{8},{9})', newimg, _res, 0, 0, 0, 0, width, height, this.width, this.height);
 				_update(newimg);
 			}
 		}
@@ -121,25 +123,29 @@ class Image implements IImage {
 	 * @param	height
 	 * @return
 	 */
-	public function crop(x:UInt, y:UInt, width:UInt, height:UInt):IImage {
+	public function crop(x:Int, y:Int, width:Int, height:Int):IImage {
 		if(isValid()){
 			// Check position
-			if (x < 0)
+			if (x < 0){
 				x = 0;
-			if (y < 0)
+			}
+			if (y < 0){
 				y = 0;
-			var tx:UInt = x + width;
-			var ty:UInt = y + width;
+			}
+			var tx:Int = x + width;
+			var ty:Int = y + width;
 			// Check dimension
-			if (tx > this.width)
+			if (tx > this.width){
 				tx = this.width;
-			if (ty > this.height)
+			}
+			if (ty > this.height){
 				ty = this.height;
+			}
 			// Apply crop to image
 			//trace(x, y, width, height);
-			var newimg:Dynamic = untyped __call__('imagecreatetruecolor', width, height);
+			var newimg:Dynamic = php.Syntax.codeDeref('imagecreatetruecolor({0},{1})', width, height);
 			if (newimg != null) {
-				untyped __call__('imagecopy', newimg, _res, x, y, 0, 0, tx, ty);
+				php.Syntax.codeDeref('imagecopy({0},{1},{2},{3},{4},{5},{6},{7})', newimg, _res, x, y, 0, 0, tx, ty);
 				_update(newimg);
 			}
 		}
@@ -152,15 +158,16 @@ class Image implements IImage {
 	 * @param	height
 	 * @return
 	 */
-	public function fit(width:UInt, height:UInt):IImage {
+	public function fit(width:Int, height:Int):IImage {
 		if (isValid()) {
-			var ow:UInt = this.width;
-			var oh:UInt = this.height;
+			var ow:Int = this.width;
+			var oh:Int = this.height;
 			// Resample to min scale
-			if (ow >= oh)
+			if (ow >= oh){
 				resample(Math.round(width/ow * height), height, true);
-			else
+			} else{
 				resample(width, Math.round(height/oh * width), true);
+			}
 		}
 		return this;
 	}
@@ -175,7 +182,7 @@ class Image implements IImage {
 	 * @param	type
 	 * @return
 	 */
-	public function save(?name:String, ?type:UInt, ?qty:Int):Bool {
+	public function save(?name:String, ?type:Int, ?qty:Int):Bool {
 		if(isValid()){
 			if (type == null){
 				type = this.type;
@@ -185,10 +192,10 @@ class Image implements IImage {
 			}
 			try {
 				switch(type) {
-					case 1 : untyped __call__('imagegif', _res, name);
-					case 3 : untyped __call__('imagepng', _res, name);
-					case 6 : untyped __call__('imagewbmp', _res, name);
-					default : untyped __call__('imagejpeg', _res, name, qty != null ? qty : 80);
+					case 1 : php.Syntax.codeDeref('imagegif({0},{1})', _res, name);
+					case 3 : php.Syntax.codeDeref('imagepng({0},{1})', _res, name);
+					case 6 : php.Syntax.codeDeref('imagewbmp({0},{1})', _res, name);
+					default : php.Syntax.codeDeref('imagejpeg({0},{1},{2})', _res, name, qty != null ? qty : 80);
 				}
 				return true;
 			} catch (e:Dynamic) {
@@ -202,8 +209,9 @@ class Image implements IImage {
 	}
 	
 	public function dispose():Void {
-		if (_res != null)
-			untyped __call__('imagedestroy', _res);
+		if (_res != null){
+			php.Syntax.codeDeref('imagedestroy({0})', _res);
+		}
 		_res = null;
 	}
 	

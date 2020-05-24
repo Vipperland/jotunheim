@@ -1,5 +1,6 @@
 package jotun.net;
 #if php
+	import haxe.io.Bytes;
 	import php.Lib;
 	import php.NativeArray;
 #end
@@ -34,6 +35,8 @@ interface IDomain {
 		public var server:String;
 		
 		public var client:String;
+		
+		public function parseFiles( onPart : String -> String -> Void, onData : Bytes -> Int -> Int -> Void ) : Void ;
 		
 	#end
 	

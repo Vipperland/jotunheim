@@ -23,8 +23,6 @@ interface IAgent {
 	public var cookies:Bool;
 	// Is JQuery available?
 	public var jQuery:Bool;
-	// Is any tween framework (GSAP like) active?
-	public var animator:Bool;
 	// Display info
 	public var display:String;
 	// User Operating System name

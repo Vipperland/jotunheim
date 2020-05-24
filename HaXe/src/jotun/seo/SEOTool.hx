@@ -40,7 +40,7 @@ class SEOTool{
 	
 	private function _create(t:String, O:Dynamic):Void {
 		if (Reflect.field(this, t) == null) {
-			O = untyped __js__("new O()");
+			O = js.Syntax.construct(O);
 			Reflect.setField(this, t, O);
 			_publish[_publish.length] = O;
 		}

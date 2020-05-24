@@ -32,9 +32,13 @@ class Cache {
 	}
 	
 	public function json(?print:Bool = true, ?encoding:Dynamic = null):String {
-		var result:String = untyped __php__("json_encode($this,256)");
-		if (encoding != null) result = encoding(result);
-		if (print) Lib.print(result);
+		var result:String = php.Syntax.codeDeref("json_encode({0},{1})", this, 256);
+		if (encoding != null) {
+			result = encoding(result);
+		}
+		if (print) {
+			Lib.print(result);
+		}
 		return result;
 	}
 	

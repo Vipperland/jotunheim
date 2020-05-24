@@ -11,7 +11,7 @@ interface IDataTable {
 	/**
 	 * Table Name
 	 */
-	public var name(get_name, null):String;
+	public var name(get, null):String;
 	
 	/**
 	 * Current AUTO_INCREMENT value for table

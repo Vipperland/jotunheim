@@ -71,7 +71,7 @@ class Domain implements IDomain {
 		
 		#elseif php
 		
-			data = cast Lib.objectOfAssociativeArray(untyped __php__("$_SERVER"));
+			data = cast Lib.objectOfAssociativeArray(php.Syntax.codeDeref("$_SERVER"));
 			port = data.SERVER_PORT;
 			server = Web.getCwd();
 			host = Web.getHostName();
@@ -80,7 +80,7 @@ class Domain implements IDomain {
 			var boundary:String = _getMultipartKey();
 			
 			if (data.CONTENT_TYPE == 'application/json'){
-				input = Json.parse(untyped __php__ ("file_get_contents('php://input')"));
+				input = Json.parse(php.Syntax.codeDeref("file_get_contents('php://input')"));
 			}
 			params = _getParams();
 			
@@ -137,9 +137,10 @@ class Domain implements IDomain {
 		 * @return
 		 */
 		private function _getParams():Dynamic {
-			var a : NativeArray = untyped __php__("array_merge($_GET, $_POST)");
-			if(untyped __call__("get_magic_quotes_gpc"))
-				untyped __php__("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+			var a : NativeArray = php.Syntax.codeDeref("array_merge($_GET, $_POST)");
+			if (php.Syntax.codeDeref("get_magic_quotes_gpc()")){
+				php.Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+			}
 			#if force_std_separator
 				var h = Lib.objectOfAssociativeArray(a);
 				var params = Web.getParamsString();
@@ -166,7 +167,7 @@ class Domain implements IDomain {
 			if (data == null) {
 				data = {};
 			}
-			var input:String = untyped __php__ ("file_get_contents('php://input')");
+			var input:String = php.Syntax.codeDeref("file_get_contents('php://input')");
 			var result:Array<String> = input.split(boundary);
 			Dice.Values(result, function(v:String) {
 				if (v == null || v.length == 0) {
@@ -195,11 +196,12 @@ class Domain implements IDomain {
 			
 		}
 		
-		private function _getMultipartKey() : String {
+		private function _getMultipartKey():String {
 			if(isRequestMethod('POST')){
-				var a : NativeArray = untyped __php__("$_POST");
-				if(untyped __call__("get_magic_quotes_gpc"))
-					untyped __php__("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+				var a : NativeArray = php.Syntax.codeDeref("$_POST");
+				if (php.Syntax.codeDeref("get_magic_quotes_gpc()")){
+					php.Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+				}
 				var post = Lib.hashOfAssociativeArray(a);
 				for (key in post.keys()) {
 					if (key.indexOf("Content-Disposition:_form-data;_name") != -1)
@@ -210,18 +212,21 @@ class Domain implements IDomain {
 		}
 		
 		public function parseFiles( onPart : String -> String -> Void, onData : Bytes -> Int -> Int -> Void ) : Void {
-			
-			if(!untyped __call__("isset", __php__("$_FILES"))) return;
-			var parts : Array<String> = untyped __call__("new _hx_array",__call__("array_keys", __php__("$_FILES")));
+			var files:Dynamic = php.Syntax.codeDeref("$_FILES");
+			if (!php.Syntax.codeDeref("isset({0})", files)){
+				return;
+			}
+			var keys:Dynamic = php.Syntax.codeDeref("array_keys({0})", files);
+			var parts : Array<String> = Lib.toHaxeArray(keys);
 			for(part in parts) {
-				var info : Dynamic = untyped __php__("$_FILES[$part]");
+				var info : Dynamic = php.Syntax.codeDeref("$_FILES[$part]");
 				var tmp : String = untyped info['tmp_name'];
 				var file : String = untyped info['name'];
 				var err : Int = untyped info['error'];
 				if(err > 0) {
 					switch(err) {
-						case 1: throw "The uploaded file exceeds the max size of " + untyped __call__('ini_get', 'upload_max_filesize');
-						case 2: throw "The uploaded file exceeds the max file size directive specified in the HTML form (max is" + untyped __call__('ini_get', 'post_max_size') + ")";
+						case 1: throw "The uploaded file exceeds the max size of " + php.Syntax.codeDeref('ini_get({0})', 'upload_max_filesize');
+						case 2: throw "The uploaded file exceeds the max file size directive specified in the HTML form (max is" + php.Syntax.codeDeref('ini_get({0})', 'post_max_size') + ")";
 						case 3: throw "The uploaded file was only partially uploaded";
 						case 4: continue; // No file was uploaded
 						case 6: throw "Missing a temporary folder";
@@ -231,14 +236,14 @@ class Domain implements IDomain {
 				}
 				onPart(part, file);
 				if ("" != file)	{
-					var h = untyped __call__("fopen", tmp, "r");
+					var h = php.Syntax.codeDeref("fopen({0},{1})", tmp, "r");
 					var bsize = 8192;
-					while (!untyped __call__("feof", h)) {
-						var buf : String = untyped __call__("fread", h, bsize);
-						var size : Int = untyped __call__("strlen", buf);
+					while (!php.Syntax.codeDeref("feof({0})", h)) {
+						var buf : String = php.Syntax.codeDeref("fread({0},{1})", h, bsize);
+						var size : Int = php.Syntax.codeDeref("strlen({0})", buf);
 						onData(Bytes.ofString(buf), 0, size);
 					}
-					untyped __call__("fclose", h);
+					php.Syntax.codeDeref("fclose({0})", h);
 				}
 			}
 			

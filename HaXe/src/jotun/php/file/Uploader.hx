@@ -1,7 +1,9 @@
 package jotun.php.file;
 import haxe.io.Bytes;
 import jotun.Jotun;
+import php.Global;
 import php.Lib;
+import php.SuperGlobal;
 import php.Web;
 import jotun.tools.Key;
 import jotun.tools.Utils;
@@ -29,7 +31,7 @@ class Uploader {
 			if(v.length > 0){
 				p += v;
 				if (!FileSystem.exists(p) || !FileSystem.isDirectory(p)){
-					untyped __call__("mkdir", p, untyped __php__('0777'));
+					php.Syntax.codeDeref("mkdir({0},{1})", p, php.Syntax.codeDeref('0777'));
 				}
 				p += '/';
 			}
@@ -65,7 +67,7 @@ class Uploader {
 		var fileStream:FileOutput = null;
 		
 		// Get all form data
-		Web.parseMultipart(
+		Jotun.domain.parseFiles(
 			function(part:String, name:String):Void {
 				// Save only specified files to disk and skip form params
 				if (Utils.isValid(name)) {

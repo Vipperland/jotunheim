@@ -104,13 +104,6 @@ interface ITable {
 	public function remove () : ITable;
 
 	/**
-	 * Set the cursor of all elements
-	 * @param	value
-	 * @return
-	 */
-	public function cursor (value:String) : ITable;
-	
-	/**
 	 * Remove all children from all elements in table
 	 * @param	fast
 	 * @return

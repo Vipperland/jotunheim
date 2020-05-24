@@ -7,6 +7,7 @@ import jotun.math.IPoint;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.objects.IQuery;
+import jotun.objects.IResolve;
 import jotun.utils.ITable;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
@@ -18,7 +19,7 @@ import js.html.FileList;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 
-interface IDisplay extends IQuery implements Dynamic  {
+interface IDisplay extends IQuery {
 	
 	/**
 	 * Default target element

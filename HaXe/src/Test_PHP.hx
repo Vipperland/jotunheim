@@ -1,9 +1,12 @@
 package;
+import haxe.Utf8;
+import haxe.io.Bytes;
 import jotun.Jotun;
 import jotun.php.db.Clause;
 import jotun.php.db.Token;
 import jotun.php.file.Uploader;
 import jotun.php.net.PHPMailer;
+import jotun.serial.IOTools;
 import jotun.serial.JsonTool;
 import jotun.tools.Key;
 import jotun.tools.Utils;
@@ -11,6 +14,7 @@ import jotun.utils.Dice;
 import php.Lib;
 import php.NativeArray;
 import php.Session;
+import php.Syntax;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -72,18 +76,14 @@ class Test_PHP {
 		if (Jotun.gate.isOpen()){
 			buff.push('Successful!');
 			buff.push('users: ');
-			
 			Jotun.gate.table('users').setClassObj(User);
 			var u:User = Jotun.gate.table('users').findOne(Clause.ID(2));
 			buff.push(u);
-			
 		}else{
 			buff.push(Jotun.gate.errors);
 		}
 		
-		_testMail(buff);
-		
-		//Jotun.header.setJSON(buff);
+		Jotun.header.setJSON(buff);
 		
 	}
 	
@@ -91,9 +91,10 @@ class Test_PHP {
 	static private var _mailer:PHPMailer;
 	
 	private static function _testMail(buff:Array<Dynamic>) {
+		
 		Jotun.require('includes/PHPMailer/_loader.php');
 		
-		_mailer = new PHPMailer();
+		_mailer = Syntax.construct('PHPMailer');
 		
 		_mailer.SMTPDebug = 3;
 		_mailer.isSMTP();

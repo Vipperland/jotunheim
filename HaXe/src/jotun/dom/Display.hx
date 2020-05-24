@@ -33,7 +33,7 @@ import js.html.Node;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("jtn.dom.Display")
-class Display extends Query implements IDisplay implements Dynamic {
+class Display extends Query implements IDisplay {
 	
 	private static var _CNT:UInt = 0;
 	
@@ -303,20 +303,20 @@ class Display extends Query implements IDisplay implements Dynamic {
 	}
 	
 	public function rotateX(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationX = Matrix3D.rotateX(x);
+		setProp('__changed', true);
+		setProp('__rotationX', Matrix3D.rotateX(x));
 		return this;
 	}
 	
 	public function rotateY(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationY = Matrix3D.rotateY(x);
+		setProp('__changed', true);
+		setProp('__rotationY', Matrix3D.rotateY(x));
 		return this;
 	}
 	
 	public function rotateZ(x:Float):IDisplay {
-		this.__changed = true;
-		this.__rotationZ = Matrix3D.rotateZ(x);
+		setProp('__changed', true);
+		setProp('__rotationZ', Matrix3D.rotateZ(x));
 		return this;
 	}
 	
@@ -334,32 +334,34 @@ class Display extends Query implements IDisplay implements Dynamic {
 	}
 	
 	public function translate(x:Float, y:Float, z:Float):IDisplay {
-		this.__changed = true;
-		this.__translation = Matrix3D.translate(x, y, z);
+		setProp('__changed', true);
+		setProp('__translation', Matrix3D.translate(x, y, z));
 		return this;
 	}
 	
 	public function scale(x:Float, y:Float, z:Float):IDisplay {
-		this.__changed = true;
-		this.__scale = Matrix3D.scale(x, y, z);
+		setProp('__changed', true);
+		setProp('__scale', Matrix3D.scale(x, y, z));
 		return this;
 	}
 	
 	public function transform():IDisplay {
-		if (this.__changed){
-			if (this.__transform == null) {
-				this.__transform = [];
+		if (getProp('__changed')){
+			var t:Array<Array<Float>> = getProp('__transform');
+			if (t == null) {
+				t = [];
+				setProp('__transform', t);
 				style('transformStyle', 'preserve-3d');
-				style('transformOrigin', '50% 50% 1');
+				style('transformOrigin', '50% 50% 0');
 				css('element3d');
 			}
-			this.__changed = false;
-			this.__transform[0] = this.__rotationX;
-			this.__transform[1] = this.__rotationY;
-			this.__transform[2] = this.__rotationZ;
-			this.__transform[3] = this.__scale;
-			this.__transform[4] = this.__translation;
-			style('transform', 'matrix3d(' + Matrix3D.transform(this.__transform).join(',') + ')');
+			setProp('__changed', false);
+			t[0] = getProp('__rotationX');
+			t[1] = getProp('__rotationY');
+			t[2] = getProp('__rotationZ');
+			t[3] = getProp('__scale');
+			t[4] = getProp('__translation');
+			style('transform', 'matrix3d(' + Matrix3D.transform(t).join(',') + ')');
 		}
 		return this;
 	}

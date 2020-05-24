@@ -115,7 +115,7 @@ class Dice {
 		return All(q,
 			function(p:Dynamic, v:Dynamic) {
 				#if js
-					untyped __js__("v[method].apply(q,args)");
+					js.Syntax.code("v[method].apply({0},{1})", q, args);
 				#elseif php
 					Reflect.callMethod(v, Reflect.field(v, method), args); 
 				#end

@@ -29,12 +29,6 @@ class Logger{
 		#end
 	}
 	
-	#if js
-		public function clear():Void {
-			Log.clear();
-		}
-	#end
-	
 	public function mute():Void {
 		if (Lambda.indexOf(_events, query) != -1) _events.splice(0, 1);
 	}
@@ -53,7 +47,7 @@ class Logger{
 	
 	public function dump(q:Dynamic):Void {
 		#if js
-			untyped __js__("console.log")(q);
+			js.Syntax.code("console.log")(q);
 		#elseif php
 			php.Lib.dump(q);
 		#end

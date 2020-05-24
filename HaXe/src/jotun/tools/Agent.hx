@@ -3,7 +3,6 @@ import js.Browser;
 import jotun.css.CSSGroup;
 import jotun.tools.IAgent;
 import jotun.tools.Utils;
-import jotun.transitions.Animator;
 
 /**
  * ...
@@ -32,8 +31,6 @@ class Agent implements IAgent {
 	public var jQuery:Bool;
 	
 	public var display:String;
-	
-	public var animator:Bool;
 	
 	public var os:String;
 
@@ -69,7 +66,6 @@ class Agent implements IAgent {
 			this.cookies = (Browser.document.cookie.indexOf('#validating#') != -1);
 		}
 		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
-		this.animator = Animator.available();
 		this.display = Utils.screenOrientation();
 		
 		var platform:String = Browser.navigator.platform.toLowerCase();

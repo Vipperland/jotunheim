@@ -6,7 +6,7 @@ import jotun.utils.Dice;
  * @author Rafael Moreira
  */
 @:expose('sru.objects.Query')
-class Query implements IQuery implements Dynamic {
+class Query extends Resolve implements IQuery {
 	
 	private var _log:Array<String>;
 	private var _buffer:Dynamic;

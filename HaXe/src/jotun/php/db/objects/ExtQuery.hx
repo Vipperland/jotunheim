@@ -11,7 +11,7 @@ class ExtQuery extends Query implements IExtQuery {
 	
 	public function new(table:IDataTable, data:Array<Dynamic>) {
 		super(table, true);
-		this.data = data != null ? data : [];	
+		this.data = data != null ? data : [];
 	}
 	
 	public function each(handler:Dynamic->Bool):Void {

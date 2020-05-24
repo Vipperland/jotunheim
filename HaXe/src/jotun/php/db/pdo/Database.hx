@@ -7,12 +7,13 @@ class Database {
 	static public function connect(dsn : String, ?user : String, ?password : String, ?options : Dynamic):Connection {
 		var pdo:Connection = null;
 		if (null == options) {
-			pdo = untyped __call__("new PDO", dsn, user, password);
+			pdo = php.Syntax.code("new \\PDO({0},{1},{2})", dsn, user, password);
 		}else {
-			var arr : NativeArray = untyped __call__("array");
-			for (key in Reflect.fields(options))
+			var arr : NativeArray = php.Syntax.codeDeref("array()");
+			for (key in Reflect.fields(options)){
 				arr[untyped key] = Reflect.field(options, key);
-			pdo = untyped __call__("new PDO", dsn, user, password, arr);
+			}
+			pdo = php.Syntax.code("new \\PDO({0},{1},{2},{3})", dsn, user, password, arr);
 		}
 		return pdo;
 	}

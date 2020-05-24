@@ -19,7 +19,7 @@ class ARGB implements IARGB {
 	public var b:Int;
 	
 	private function _v16(v:Int):String {
-		var a:String = untyped __js__('v.toString(16)');
+		var a:String = js.Syntax.code('v.toString({0})', 16);
 		return a.length == 1 ? '0' + a : a;
 	}
 	
@@ -119,7 +119,7 @@ class ARGB implements IARGB {
 	 * @return
 	 */
 	public function hex():String {
-		var r:String = untyped __js__("this.value().toString(16)");
+		var r:String = _v16(value());
 		while (r.length < 6) r = "0" + r;
 		return "#" + r;
 	}

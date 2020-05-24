@@ -13,7 +13,6 @@ import jotun.utils.IDiceRoll;
 	import js.html.Element;
 	import js.html.File;
 	import js.html.NamedNodeMap;
-	import jotun.objects.Query;
 	import jotun.dom.A;
 	import jotun.dom.Area;
 	import jotun.dom.Audio;
@@ -25,7 +24,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Canvas;
 	import jotun.dom.Caption;
 	import jotun.dom.Col;
-	import jotun.dom.Content;
 	import jotun.dom.DataList;
 	import jotun.dom.Display;
 	import jotun.dom.Div;
@@ -105,11 +103,11 @@ class Utils{
 		}
 		
 		public static function viewportWidth():Int {
-			return untyped __js__("window.innerWidth || document.documentElement.clientWidth");
+			return js.Syntax.code("window.innerWidth || document.documentElement.clientWidth");
 		}
 		
 		public static function viewportHeight():Int {
-			return untyped __js__("window.innerHeight || document.documentElement.clientHeight");
+			return js.Syntax.code("window.innerHeight || document.documentElement.clientHeight");
 		}
 		
 		public static function mathLocation(uri:String):Bool {
@@ -124,7 +122,7 @@ class Utils{
 		static private var _typeOf:Dynamic = { 
 			A:A, AREA:Area, AUDIO:Audio,
 			B:B, BASE:Base, BODY:Body, BR:BR, BUTTON:Button,
-			CANVAS:Canvas, CAPTION:Caption, COL:Col, CONTENT:Content,
+			CANVAS:Canvas, CAPTION:Caption, COL:Col,
 			DATALIST:DataList, DIV:Div, DISPLAY:Display, DOCUMENT:Document,
 			EMBED:Embed,
 			FIELDSET:FieldSet, FORM:Form,
@@ -167,10 +165,11 @@ class Utils{
 			}
 			
 			var OC:Dynamic = Reflect.field(_typeOf, type);
-			if (OC == null)
+			if (OC == null){
 				return new Display(t);
-			else
-				return untyped __js__('new OC(t)');
+			}else{
+				return js.Syntax.construct(OC, t);
+			}
 		}
 		
 		/**

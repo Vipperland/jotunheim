@@ -3,7 +3,7 @@ package jotun.objects;
 /**
  * @author Rim Project
  */
-interface IQuery implements Dynamic {
+interface IQuery extends IResolve {
 	
 	public function log():Array<String>;
 	

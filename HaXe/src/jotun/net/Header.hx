@@ -94,12 +94,12 @@ class Header {
 		return copy;
 	}
 	
-	function writeData(data:String, encode:Bool, ?chunk:Int) {
+	function writeData(data:String, ?encode:Bool, ?chunk:Int) {
 		if(data != null){
 			if (encode == true) {
 				data = IOTools.encodeBase64(data);
 				if (chunk != null && chunk >= 40){
-					Web.setHeader('Content-Chunk', ''+chunk);
+					Web.setHeader('Content-Chunk', '' + chunk);
 					data = _createPieces(data, chunk);
 				}
 			}
@@ -113,15 +113,14 @@ class Header {
 			}
 			var length:Int = data.length;
 			if(compress != null){
-				data = untyped __call__('gzcompress', data, 1);
+				data = php.Syntax.codeDeref('gzcompress({0},{1})', data, 1);
 				Web.setHeader('Content-Encoding', compress);
 			}
 			Web.setHeader('Content-Length', Std.string(data.length));
-			if(compress != null){
-				Lib.print("\x1f\x8b\x08\x00\x00\x00\x00\x00");
+			if (compress != null){
+				Lib.print('\x1f' + php.Syntax.codeDeref('chr({0})', 139) + '\x08\x00\x00\x00\x00\x00');
 			}
 			Lib.print(data.substr(0, length));
-			
 		}
 	}
 	
@@ -144,7 +143,7 @@ class Header {
 	public function getClientHeaders():Dynamic {
 		if(_client_headers == null) {
 			_client_headers = {};
-			var h = Lib.hashOfAssociativeArray(untyped __php__("$_SERVER"));
+			var h = Lib.hashOfAssociativeArray(php.Syntax.codeDeref("$_SERVER"));
 			for (k in h.keys()) {
 				var sk:String = k.toUpperCase();
 				if (sk.substr(0, 5) == "HTTP_") {

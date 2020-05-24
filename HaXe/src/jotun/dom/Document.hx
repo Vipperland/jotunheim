@@ -3,7 +3,7 @@ import haxe.Json;
 import haxe.Log;
 import jotun.Jotun;
 import js.Browser;
-import js.Error;
+import js.lib.Error;
 import js.html.AnimationEvent;
 import js.html.BeforeUnloadEvent;
 import js.html.DOMRect;
@@ -17,7 +17,6 @@ import jotun.events.IEvent;
 import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.tools.Utils;
-import jotun.transitions.Animator;
 import jotun.utils.ITable;
 
 /**
@@ -54,22 +53,27 @@ class Document extends Display {
 			__doc__ = this;
 			__init__();
 		}else {
-			throw new Error("Document is a singleton, use Document.ME() instead of new");
+			throw new js.lib.Error("Document is a singleton, use Document.ME() instead of new");
 		}
 	}
 	
 	function __init__() {
-		events.wheel(stopScroll, true);
 		Browser.window.addEventListener('scroll', _hookScroll);
 	}
 	
 	public function preventClose(mode:Bool):Void {
-		(mode ? Browser.window.addEventListener : Browser.window.removeEventListener)('beforeunload', _onCloseWindow);
+		if (mode){
+			Browser.window.addEventListener('beforeunload', _onCloseWindow);
+		}else{
+			Browser.window.removeEventListener('beforeunload', _onCloseWindow);
+		}
 	}
 	
-	function _onCloseWindow(e:BeforeUnloadEvent):String {
-		if (e == null) e = untyped __js__ ("window.event");
-		e.returnValue = '1';
+	function _onCloseWindow(e:BeforeUnloadEvent):Bool {
+		if (e == null) {
+			e = js.Syntax.code("window.event");
+		}
+		e.returnValue = true;
 		if (e.stopPropagation != null) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -78,7 +82,7 @@ class Document extends Display {
 	}
 	
 	public function checkBody():Void {
-		body = new Body(untyped __js__("document.body"));
+		body = new Body(js.Syntax.code("document.body"));
 		if (body.hasAttribute('automator')){
 			XCode.reset();
 		}
@@ -129,25 +133,11 @@ class Document extends Display {
 		return o;
 	}
 	
-	public function easeScroll(x:Float, y:Float, time:Float = 1, ease:Dynamic = null):Void {
-		stopScroll();
-		getScroll(__scroll__);
-		Animator.to(__scroll__, time, { x:x, y:y, ease:ease, onUpdate:_applyScroll } );
-	}
-	
-	public function stopScroll(?e:IEvent) {
-		Animator.stop(__scroll__);
-	}
-	
 	public function scrollTo(target:Dynamic, time:Float = 1, ease:Dynamic = null, offX:Int = 0, offY:Int = 0):Void {
 		if (Std.is(target, String)) 	target = Jotun.one(target).element;
 		if (Std.is(target, IDisplay)) 	target = target.element;
 		var pos:IPoint = Display.getPosition(target);
-		if (Animator.available()) {
-			easeScroll(pos.x - offX, pos.y - offY, time, ease);
-		}else {
-			scroll(pos.x - offX, pos.y - offY);
-		}
+		scroll(pos.x - offX, pos.y - offY);
 	}
 	
 	public function trackCursor():Void {

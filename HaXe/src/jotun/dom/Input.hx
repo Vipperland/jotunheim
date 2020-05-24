@@ -41,7 +41,7 @@ class Input extends Display {
 		if (ftype == 'image'){
 			if(fillTarget != null){
 				if (fillTarget.typeOf() == 'IMG'){
-					fillTarget.src(readFile(0));
+					fillTarget.attribute('src', readFile(0));
 				}else{
 					fixer.backgroundImage = 'url(' + readFile(0) + ')';
 					fillTarget.style(fixer);

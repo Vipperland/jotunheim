@@ -7,7 +7,7 @@ import php.NativeArray;
  */
 extern class PHPMailer {
 
-	public function new() { }
+	public function new();
 	
 	public var SMTPDebug:UInt;
 	public var ErrorInfo:Dynamic;

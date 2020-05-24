@@ -119,10 +119,10 @@ class Gate implements IGate {
 	}
 	
 	public function setPdoAttributes(value:Bool):IGate {
-		_db.setAttribute(untyped __php__('PDO::ATTR_STRINGIFY_FETCHES'), value);
-		_db.setAttribute(untyped __php__('PDO::ATTR_EMULATE_PREPARES'), value);
-		_db.setAttribute(untyped __php__('PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
-		_db.setAttribute(untyped __php__('PDO::ATTR_ERRMODE'), untyped __php__('PDO::ERRMODE_EXCEPTION'));
+		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_STRINGIFY_FETCHES'), value);
+		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_EMULATE_PREPARES'), value);
+		_db.setAttribute(php.Syntax.code('\\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
+		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_ERRMODE'), php.Syntax.code('\\PDO::ERRMODE_EXCEPTION'));
 		return this;
 	}
 	

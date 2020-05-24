@@ -1,10 +1,11 @@
 package jotun.net;
+import jotun.objects.IResolve;
 
 /**
  * @author Rafael Moreira
  */
 
-interface IDomainData implements Dynamic {
+interface IDomainData extends IResolve {
 	public var HTTP_HOST:String;
 	public var HTTP_CONNECTION:String;
 	public var HTTP_ACCEPT:String;

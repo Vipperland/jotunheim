@@ -10,7 +10,7 @@ interface IDataCache {
 	 * All data access
 	 * @return
 	 */	
-	public var data(get_data, null):Dynamic;
+	public var data(get, null):Dynamic;
 	
 	/**
 	 * Convert data to JSON

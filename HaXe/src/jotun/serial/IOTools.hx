@@ -69,6 +69,7 @@ class IOTools {
 		else
 			return Md5.encode(base64 ? encodeBase64(o) : jsonEncode(o));
 	}
+	
 	//
 	//public static function sruCode(o:Dynamic):String {
 		///*

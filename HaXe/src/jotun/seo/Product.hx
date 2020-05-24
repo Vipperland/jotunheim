@@ -43,8 +43,12 @@ class Product extends SEO {
 			reviewOf = cast { "@type":"AggregateRating", ratingValue:"0,0", reviewCount:0 };
 			Reflect.setField(data, "aggregateRating", reviewOf);
 		}
-		if (value != null) reviewOf.ratingValue = untyped __js__("value.toFixed(1).split('.').join(',')");
-		if (reviews != null) reviewOf.reviewCount = Std.string(reviews);
+		if (value != null) {
+			reviewOf.ratingValue = js.Syntax.code("value.toFixed(1).split('.').join(',')");
+		}
+		if (reviews != null) {
+			reviewOf.reviewCount = Std.string(reviews);
+		}
 		return reviewOf;
 	}
 	

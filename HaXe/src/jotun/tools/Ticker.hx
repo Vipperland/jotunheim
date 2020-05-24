@@ -21,24 +21,30 @@ class Ticker {
 	public static function start():Void {
 		stop();
 		var t:Dynamic = _tickAll;
-		_uid = untyped __js__("setInterval(t,33)");
+		_uid = js.Syntax.code("setInterval({0},{1})", t, 33);
 	}
 	
 	public static function stop():Void {
 		var uid:Int = _uid;
-		untyped __js__("clearInterval(uid)");
+		js.Syntax.code("clearInterval({0})", uid);
 	}
 	
 	public static function add(handler:Dynamic):Void {
-		if (handler == null) return;
+		if (handler == null) {
+			return;
+		}
 		var iof:Int = _pool.indexOf(handler);
-		if (iof == -1) _pool[_pool.length] = handler;
+		if (iof == -1) {
+			_pool[_pool.length] = handler;
+		}
 	}
 	
 	public static function remove(handler:Dynamic):Void {
 		if (handler == null) return;
 		var iof:Int = _pool.indexOf(handler);
-		if (iof != -1) _pool.splice(iof, 1);
+		if (iof != -1){
+			_pool.splice(iof, 1);
+		}
 	}
 	
 	public static function delay(handler:Dynamic, time:Float, ?args:Array<Dynamic>):Delayer {

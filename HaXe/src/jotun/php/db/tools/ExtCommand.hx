@@ -63,9 +63,9 @@ class ExtCommand implements IExtCommand {
 						type = Type.getClassName(type).split('.').join('_');
 					}
 				}else {
-					type = 'stdClass';
+					type = '\\stdClass';
 				}
-				var statement:Statement = conn.query(log(), untyped __php__('PDO::FETCH_CLASS'), type);
+				var statement:Statement = conn.query(log(), php.Syntax.code('\\PDO::FETCH_CLASS'), type);
 				if (statement != null) {
 					success = true;
 					var obj:Dynamic;

@@ -114,7 +114,7 @@ class HttpRequest {
 		cnxTimeout = 10;
 		#end
 		#if php
-		noShutdown = ! untyped __call__('function_exists', 'stream_socket_shutdown');
+		noShutdown = !php.Syntax.codeDeref('function_exists({0})', 'stream_socket_shutdown');
 		#end
 	}
 
@@ -126,7 +126,6 @@ class HttpRequest {
 		This method provides a fluent interface.
 	**/
 	public function setHeader( header : String, value : String ):HttpRequest {
-		headers = Lambda.filter(headers, function(h) return h.header != header);
 		headers.push({ header:header, value:value });
 		return this;
 	}
@@ -145,7 +144,6 @@ class HttpRequest {
 			This method provides a fluent interface.
 		**/
 		public function setParameter( param : String, value : String ):HttpRequest {
-			params = Lambda.filter(params, function(p) return p.param != param);
 			params.push({ param:param, value:value });
 			return this;
 		}
@@ -243,7 +241,7 @@ class HttpRequest {
 						s = _getData(r) != null ? 200 : 404;
 					}
 				}
-				if( s == untyped __js__("undefined") )
+				if( s == js.Syntax.code("undefined") )
 					s = null;
 				if( s != null )
 					me.onStatus(s);

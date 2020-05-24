@@ -133,10 +133,6 @@ class Table implements ITable {
 		return each(function(v:IDisplay) { v.remove(); } );
 	}
 	
-	public function cursor(value:String):ITable {
-		return each(function(v:IDisplay) { v.cursor(value); } );
-	}
-	
 	public function clear(?fast:Bool):ITable {
 		return each(function(v:IDisplay) { v.empty(fast); } );
 	}

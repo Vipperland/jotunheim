@@ -45,15 +45,15 @@ class Command implements ICommand {
 	
 	private function _getType(v:Dynamic):Int {
 		if (Std.is(v, String)){
-			return untyped __php__('PDO::PARAM_STR');
+			return php.Syntax.code('\\PDO::PARAM_STR');
 		} else if (Std.is(v, Float)){
-			return untyped __php__('PDO::PARAM_INT');
+			return php.Syntax.code('\\PDO::PARAM_INT');
 		} else if (Std.is(v, Bool)){
-			return untyped __php__('PDO::PARAM_INT');
+			return php.Syntax.code('\\PDO::PARAM_INT');
 		} else if (v == null){
-			return untyped __php__('PDO::PARAM_NULL');
+			return php.Syntax.code('\\PDO::PARAM_NULL');
 		}else{
-			return untyped __php__('PDO::PARAM_STR');
+			return php.Syntax.code('\\PDO::PARAM_STR');
 		}
 	}
 	

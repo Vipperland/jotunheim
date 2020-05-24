@@ -9,7 +9,7 @@ package jotun.transitions;
 class Ease {
 	
 	private static function _F(n:Dynamic):IEasing {
-		n = untyped __js__("window[n];");
+		n = js.Syntax.code("window[n];");
 		return cast n != null ? { x:n.easeNone, I:n.easeIn, O:n.easeOut, IO:n.easeInOut, OI:n.easeOutIn } : { };
 	}
 	

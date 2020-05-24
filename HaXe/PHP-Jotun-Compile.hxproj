@@ -12,6 +12,7 @@
     <movie minorVersion="0" />
     <movie platform="PHP" />
     <movie background="#FCFCFC" />
+    <movie preferredSDK="Haxe 4.1.0;4.1.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
