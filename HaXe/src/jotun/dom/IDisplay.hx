@@ -455,4 +455,9 @@ interface IDisplay extends IQuery {
 	 */
 	public function toString():String;
 	
+	/**
+	 * Common data holder
+	 */
+	public var data:Dynamic;
+	
 }

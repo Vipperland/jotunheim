@@ -102,6 +102,8 @@ class Display extends Query implements IDisplay {
 	
 	private var _setattr:Bool;
 	
+	public var data:Dynamic;
+	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
 		if (q == null)
 			q = Browser.document.createDivElement();
@@ -116,6 +118,7 @@ class Display extends Query implements IDisplay {
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
+		data = {id:_uid};
 		super();
 	}
 	
@@ -303,20 +306,20 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function rotateX(x:Float):IDisplay {
-		setProp('__changed', true);
-		setProp('__rotationX', Matrix3D.rotateX(x));
+		data.__changed = true;
+		data.__rotationX = Matrix3D.rotateX(x);
 		return this;
 	}
 	
 	public function rotateY(x:Float):IDisplay {
-		setProp('__changed', true);
-		setProp('__rotationY', Matrix3D.rotateY(x));
+		data.__changed = true;
+		data.__rotationY = Matrix3D.rotateY(x);
 		return this;
 	}
 	
 	public function rotateZ(x:Float):IDisplay {
-		setProp('__changed', true);
-		setProp('__rotationZ', Matrix3D.rotateZ(x));
+		data.__changed = true;
+		data.__rotationZ = Matrix3D.rotateZ(x);
 		return this;
 	}
 	
@@ -334,33 +337,33 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function translate(x:Float, y:Float, z:Float):IDisplay {
-		setProp('__changed', true);
-		setProp('__translation', Matrix3D.translate(x, y, z));
+		data.__changed = true;
+		data.__translation = Matrix3D.translate(x, y, z);
 		return this;
 	}
 	
 	public function scale(x:Float, y:Float, z:Float):IDisplay {
-		setProp('__changed', true);
-		setProp('__scale', Matrix3D.scale(x, y, z));
+		data.__changed = true;
+		data.__scale = Matrix3D.translate(x, y, z);
 		return this;
 	}
 	
 	public function transform():IDisplay {
-		if (getProp('__changed')){
-			var t:Array<Array<Float>> = getProp('__transform');
+		if (data.__changed){
+			var t:Array<Array<Float>> = data.__transform;
 			if (t == null) {
 				t = [];
-				setProp('__transform', t);
+				data.__transform = t;
 				style('transformStyle', 'preserve-3d');
 				style('transformOrigin', '50% 50% 0');
 				css('element3d');
 			}
-			setProp('__changed', false);
-			t[0] = getProp('__rotationX');
-			t[1] = getProp('__rotationY');
-			t[2] = getProp('__rotationZ');
-			t[3] = getProp('__scale');
-			t[4] = getProp('__translation');
+			data.__changed = false;
+			t[0] = data.__rotationX;
+			t[1] = data.__rotationY;
+			t[2] = data.__rotationZ;
+			t[3] = data.__scale;
+			t[4] = data.__translation;
 			style('transform', 'matrix3d(' + Matrix3D.transform(t).join(',') + ')');
 		}
 		return this;
