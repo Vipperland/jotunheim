@@ -270,6 +270,7 @@ interface IDisplay extends IQuery {
 	
 	public function appendHtml(q:Dynamic):IDisplay;
 	
+	public function react(data:Dynamic):Void;
 	
 	/**
 	 * Remove all elements or set innerHTML to empty

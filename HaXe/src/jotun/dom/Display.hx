@@ -104,6 +104,48 @@ class Display extends Query implements IDisplay {
 	
 	public var data:Dynamic;
 	
+	private function _rect_fill(data:Dynamic, path:String){
+		if (Std.is(data, String) || Std.is(data, Float) || Std.is(data, Bool)){
+			// Simple write content
+			all('[set-data="' + path + '"]').each(function(o:IDisplay){
+				o.writeHtml(data);
+			});
+			// Write object attributes
+			all('[set-attr="' + path + '"]').each(function(o:IDisplay){
+				if (o.hasAttribute('set-attr-name')){
+					if (data != null){
+						o.attribute(o.attribute('set-attr-name'), data);
+					}else{
+						o.attribute(o.attribute('set-attr-name'), "");
+					}
+				}
+			});
+			
+			// Write object styles
+			all('[set-style="' + path + '"]').each(function(o:IDisplay){
+				if (o.hasAttribute('set-style-name')){
+					o.style(o.attribute('set-style-name'), data);
+				}else{
+					if (data != null){
+						o.attribute('style', data);
+					}else{
+						o.clearAttribute('style');
+					}
+				}
+			});
+			// Write object classes
+			all('[set-class="' + path + '"]').each(function(o:IDisplay){
+				o.clearAttribute('class');
+				o.css(data);
+			});
+		}else {
+			path = path == '' ? '' : path + '.';
+			Dice.All(data, function(p:String, v:Dynamic){
+				_rect_fill(v, path + p);
+			});
+		}
+	}
+	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
 		if (q == null)
 			q = Browser.document.createDivElement();
@@ -778,6 +820,13 @@ class Display extends Query implements IDisplay {
 			o.clearAttribute('sru-load');
 			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, null, progress);
 		});
+	}
+	
+	public function react(data:Dynamic):Void {
+		if (Std.is(data, String)){
+			data = Json.parse(data);
+		}
+		_rect_fill(data, '');
 	}
 	
 	public function toString():String {

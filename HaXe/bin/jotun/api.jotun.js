@@ -1134,6 +1134,7 @@ var jotun_dom_Display = $hx_exports["jtn"]["dom"]["Display"] = function(q,t) {
 		jotun_dom_Display._DATA[this._uid] = this;
 	}
 	this.events = new jotun_events_Dispatcher(this);
+	this.data = { id : this._uid};
 	jotun_objects_Query.call(this);
 };
 jotun_dom_Display.__name__ = "jotun.dom.Display";
@@ -1166,7 +1167,46 @@ jotun_dom_Display.getPosition = function(target) {
 };
 jotun_dom_Display.__super__ = jotun_objects_Query;
 jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
-	enablePerspective: function() {
+	_rect_fill: function(data,path) {
+		var _gthis = this;
+		if(typeof(data) == "string" || typeof(data) == "number" || typeof(data) == "boolean") {
+			this.all("[set-data=\"" + path + "\"]").each(function(o) {
+				o.writeHtml(data);
+			});
+			this.all("[set-attr=\"" + path + "\"]").each(function(o) {
+				if(o.hasAttribute("set-attr-name")) {
+					if(data != null) {
+						o.attribute(o.attribute("set-attr-name"),data);
+					} else {
+						o.attribute(o.attribute("set-attr-name"),"");
+					}
+				}
+			});
+			this.all("[set-style=\"" + path + "\"]").each(function(o) {
+				if(o.hasAttribute("set-style-name")) {
+					o.style(o.attribute("set-style-name"),data);
+				} else if(data != null) {
+					o.attribute("style",data);
+				} else {
+					o.clearAttribute("style");
+				}
+			});
+			this.all("[set-class=\"" + path + "\"]").each(function(o) {
+				o.clearAttribute("class");
+				o.css(data);
+			});
+		} else {
+			if(path == "") {
+				path = "";
+			} else {
+				path += ".";
+			}
+			jotun_utils_Dice.All(data,function(p,v) {
+				_gthis._rect_fill(v,path + p);
+			});
+		}
+	}
+	,enablePerspective: function() {
 		this.style({ perspective : "1000px", transformOrigin : "50% 50% 0"});
 	}
 	,dispose: function() {
@@ -1343,18 +1383,18 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this;
 	}
 	,rotateX: function(x) {
-		this.setProp("__changed",true);
-		this.setProp("__rotationX",jotun_math_Matrix3D.rotateX(x));
+		this.data.__changed = true;
+		this.data.__rotationX = jotun_math_Matrix3D.rotateX(x);
 		return this;
 	}
 	,rotateY: function(x) {
-		this.setProp("__changed",true);
-		this.setProp("__rotationY",jotun_math_Matrix3D.rotateY(x));
+		this.data.__changed = true;
+		this.data.__rotationY = jotun_math_Matrix3D.rotateY(x);
 		return this;
 	}
 	,rotateZ: function(x) {
-		this.setProp("__changed",true);
-		this.setProp("__rotationZ",jotun_math_Matrix3D.rotateZ(x));
+		this.data.__changed = true;
+		this.data.__rotationZ = jotun_math_Matrix3D.rotateZ(x);
 		return this;
 	}
 	,rotate: function(x,y,z) {
@@ -1370,31 +1410,31 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this;
 	}
 	,translate: function(x,y,z) {
-		this.setProp("__changed",true);
-		this.setProp("__translation",jotun_math_Matrix3D.translate(x,y,z));
+		this.data.__changed = true;
+		this.data.__translation = jotun_math_Matrix3D.translate(x,y,z);
 		return this;
 	}
 	,scale: function(x,y,z) {
-		this.setProp("__changed",true);
-		this.setProp("__scale",jotun_math_Matrix3D.scale(x,y,z));
+		this.data.__changed = true;
+		this.data.__scale = jotun_math_Matrix3D.translate(x,y,z);
 		return this;
 	}
 	,transform: function() {
-		if(this.getProp("__changed")) {
-			var t = this.getProp("__transform");
+		if(this.data.__changed) {
+			var t = this.data.__transform;
 			if(t == null) {
 				t = [];
-				this.setProp("__transform",t);
+				this.data.__transform = t;
 				this.style("transformStyle","preserve-3d");
 				this.style("transformOrigin","50% 50% 0");
 				this.css("element3d");
 			}
-			this.setProp("__changed",false);
-			t[0] = this.getProp("__rotationX");
-			t[1] = this.getProp("__rotationY");
-			t[2] = this.getProp("__rotationZ");
-			t[3] = this.getProp("__scale");
-			t[4] = this.getProp("__translation");
+			this.data.__changed = false;
+			t[0] = this.data.__rotationX;
+			t[1] = this.data.__rotationY;
+			t[2] = this.data.__rotationZ;
+			t[3] = this.data.__scale;
+			t[4] = this.data.__translation;
 			this.style("transform","matrix3d(" + jotun_math_Matrix3D.transform(t).join(",") + ")");
 		}
 		return this;
@@ -1832,6 +1872,12 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 			o.clearAttribute("sru-load");
 			o.load(d[0],d.length == 1 ? d[0] : d[1],null,null,null,progress);
 		});
+	}
+	,react: function(data) {
+		if(typeof(data) == "string") {
+			data = JSON.parse(data);
+		}
+		this._rect_fill(data,"");
 	}
 	,toString: function() {
 		var v = this.element != null && this.element.getBoundingClientRect != null;
