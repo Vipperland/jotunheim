@@ -1,4 +1,5 @@
 package jotun.objects;
+import api.rimproject.db.RPData;
 import jotun.utils.Dice;
 
 /**
@@ -78,7 +79,7 @@ class Query extends Resolve implements IQuery {
 					o = Reflect.getProperty(this, method);
 					isMethod = Reflect.isFunction(o);
 				#elseif php
-					if (untyped __call__("method_exists", this, method)){
+					if (php.Syntax.codeDeref("method_exists({0}, {1})", this, method)){
 						o = method;
 						isMethod = true;
 					}
@@ -87,6 +88,7 @@ class Query extends Resolve implements IQuery {
 					_log[_log.length] = q;
 					// Call method, if is a function and use the argument array, recursive call if result is a string and result the last one
 					if (isMethod){
+						o = Reflect.field(this, o);
 						o = Reflect.callMethod(this, o, tk);
 						if (o != null && Std.is(o, String)){
 							_batchExec(o);
