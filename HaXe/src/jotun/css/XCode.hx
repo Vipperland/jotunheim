@@ -23,10 +23,13 @@ class XCode {
 	
 	static private var _motions:Style;
 	
+	static private var _morph_rules:Array<Array<String>>;
+	
 	static private var _inits:Dynamic = {
 		reset : false,
 		grid: false,
 	};
+	
 	
 	
 	/**
@@ -130,6 +133,35 @@ class XCode {
 		css.add(selector + '{' + value + '}', mode);
 	}
 	
+	static public function morph(q:String):String {
+		if(_morph_rules == null){
+			var e:String = ' and ';
+			var m:String = '@media ';
+			_morph_rules = [
+				// FROM MIN TO MAX
+				['~@XS', e + CSSGroup.MEDIA_XS_MAX],
+				['~@SM', e + CSSGroup.MEDIA_SM_MAX],
+				['~@MD', e + CSSGroup.MEDIA_MD_MAX],
+				['~@LG', e + CSSGroup.MEDIA_LG_MAX],
+				// LESS OR
+				['@XS-', m + CSSGroup.MEDIA_XS_MAX],
+				['@SM-', m + CSSGroup.MEDIA_SM_MAX],
+				['@MD-', m + CSSGroup.MEDIA_MD_MAX],
+				['@LG-', m + CSSGroup.MEDIA_LG_MAX],
+				// GREATER OR
+				['@XS', m + CSSGroup.MEDIA_XS],
+				['@SM', m + CSSGroup.MEDIA_SM],
+				['@MD', m + CSSGroup.MEDIA_MD],
+				['@LG', m + CSSGroup.MEDIA_LG],
+				['@XL', m + CSSGroup.MEDIA_XL],
+			];
+		}
+		Dice.Values(_morph_rules, function(v:Array<String>){
+			q = q.split(v[0]).join(v[1]);
+		});
+		return q;
+	}
+	
 	static public function apply():Void {
 		css.build();
 	}
@@ -146,7 +178,7 @@ class XCode {
 		css.styleSM += (selector.split(',').join('-sm,') + '-sm' + '{' + query + '}');
 		css.styleMD += (selector.split(',').join('-md,') + '-md' + '{' + query + '}');
 		css.styleLG += (selector.split(',').join('-lg,') + '-lg' + '{' + query + '}');
-		//css.styleXL += (selector.split(',').join('-xl,') + '-xl' + '{' + query + '}');
+		css.styleXL += (selector.split(',').join('-xl,') + '-xl' + '{' + query + '}');
 		css.stylePR += (selector.split(',').join('-pr,') + '-pr' + '{' + query + '}');
 	}
 	static public function build(selector:String, query:String):Void {

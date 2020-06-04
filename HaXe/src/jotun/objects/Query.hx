@@ -1,5 +1,4 @@
 package jotun.objects;
-import api.rimproject.db.RPData;
 import jotun.utils.Dice;
 
 /**

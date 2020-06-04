@@ -21,11 +21,19 @@ class CSSGroup{
 	
 	public static var MEDIA_XS:String = "(min-width:1px)";
 	
+	public static var MEDIA_XS_MAX:String = "(max-width:767px)";
+	
 	public static var MEDIA_SM:String = "(min-width:768px)";
+	
+	public static var MEDIA_SM_MAX:String = "(max-width:991px)";
 	
 	public static var MEDIA_MD:String = "(min-width:992px)";
 	
+	public static var MEDIA_MD_MAX:String = "(max-width:1199px)";
+	
 	public static var MEDIA_LG:String = "(min-width:1200px)";
+	
+	public static var MEDIA_LG_MAX:String = "(max-width:1479px)";
 	
 	public static var MEDIA_XL:String = "(min-width:1480px)";
 	
@@ -39,6 +47,8 @@ class CSSGroup{
 	
 	public var LG:StyleElement;
 	
+	public var XL:StyleElement;
+	
 	public var PR:StyleElement;
 	
 	public var style:String;
@@ -50,6 +60,8 @@ class CSSGroup{
 	public var styleMD:String;
 	
 	public var styleLG:String;
+	
+	public var styleXL:String;
 	
 	public var stylePR:String;
 	
@@ -101,6 +113,7 @@ class CSSGroup{
 			SM = _style('sm');
 			MD = _style('md');
 			LG = _style('lg');
+			XL = _style('xl');
 			PR = _style('pr');
 			Browser.document.head.appendChild(cast container.element);
 		}
@@ -141,12 +154,13 @@ class CSSGroup{
 		_write(SM, styleSM, SOF + MEDIA_SM + "{");
 		_write(MD, styleMD, SOF + MEDIA_MD + "{");
 		_write(LG, styleLG, SOF + MEDIA_LG + "{");
+		_write(XL, styleXL, SOF + MEDIA_XL + "{");
 		_write(PR, stylePR, SOF + MEDIA_PR + "{");
 		reset();
 	}
 	
 	public function reset() {
-		style = styleXS = styleSM = styleMD = styleLG = stylePR = "";
+		style = styleXS = styleSM = styleMD = styleLG = styleXL = stylePR = "";
 	}
 	
 	
