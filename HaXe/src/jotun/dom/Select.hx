@@ -1,5 +1,6 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.tools.Utils;
 import js.Browser;
 import js.html.BaseElement;
 import js.html.OptionElement;
@@ -15,20 +16,35 @@ import jotun.utils.ITable;
 @:expose("jtn.dom.Select")
 class Select extends Display {
 	
+	static private var _themes:Dynamic;
+	
 	static public function get(q:String):Select {
 		return cast Jotun.one(q);
 	}
 	
 	public var object:SelectElement;
 	
-	private var _default:String;
-	
 	private var _ioHandler:IEvent->Void;
 	
+	private function _refreshIO(e:IEvent):Void {
+		var c:String = '' + value();
+		var p:String = attribute('current-value');
+		if (c != p) {
+			attribute('previous-value', p);
+			attribute('current-value', c);
+			if (_ioHandler != null){
+				_ioHandler(e);
+			}
+		}
+	}
+	
 	public function new(?q:Dynamic) {
-		if (q == null) q = Browser.document.createSelectElement();
+		if (q == null) {
+			q = Browser.document.createSelectElement();
+		}
 		super(q, null);
 		object = cast element;
+		events.change(_refreshIO);
 	}
 	
 	public function getAllSelected():ITable {
@@ -55,9 +71,11 @@ class Select extends Display {
 		all('option').each(cast function(o:Option) {
 			o.object.selected = o.value() == value;
 		});
-		events.change().call(true,true);
+		events.change().call(true, true);
 	}
 	
+	@:overload(function():String{})
+	@:overload(function():Array<String>{})
 	override public function value(?q:Dynamic):Dynamic {
 		if (q != null){
 			selectValue(q);
@@ -70,7 +88,7 @@ class Select extends Display {
 				r[r.length] = o.value();
 			});
 		}
-		return r.join(";");
+		return r.length <= 1 ? r[0] : r;
 	}
 	
 	public function hasValue():Bool {
@@ -78,63 +96,44 @@ class Select extends Display {
 		if(object.selectedOptions != null){
 			while (i < object.selectedOptions.length) {
 				var o:OptionElement = cast object.selectedOptions.item(i++);
-				if (!o.disabled)
+				if (!o.disabled){
 					return true;
+				}
 			}
 		}else{
 			while (i < object.options.length) {
 				var o:OptionElement = cast object.options[i++];
-				if (o.selected && !o.disabled)
+				if (o.selected && !o.disabled){
 					return true;
+				}
 			}
 		}
 		return false;
 	}
 	
-	public function hasChanged():Bool {
-		if (!hasValue())
-			return false;
-		var v:String = value();
-		if (attribute('tmp-data') == v)
-			return false;
-		attribute('tmp-data', v);
-		return true;
-	}
-	
 	public function addOption(label:String, value:Dynamic, ?selected:Bool, ?disabled:Bool):Select {
 		appendHtml('<option value="' + value + '"' + (disabled == true ? ' disabled' : '') + (selected == true ? ' selected' : '') + '>' + label + '</options>');
 		if (selected) {
-			attribute('sru-option', this.value());
+			attribute('current-value', this.value());
 			selectValue(value);
 		}
 		return this;
 	}
 	
-	public function makeDefault():Select {
-		_default = element.innerHTML;
-		return this;
-	}
-	
-	public function resetToDefault():Select {
-		element.innerHTML = _default;
-		events.change().call();
-		return this;
-	}
-	
-	private function _refreshIO(e:IEvent):Void {
-		var c:String = '' + value();
-		if (c != attribute('sru-option')) {
-			attribute('sru-option', c);
-			_ioHandler(e);
+	public function saveTheme(?name:String, ?content:String):Void {
+		if (_themes == null){
+			_themes = {};
 		}
+		Reflect.setField(_themes, Utils.getValidOne(name, 'default_' + id()), Utils.getValidOne(content, element.innerHTML));
 	}
 	
-	public function baseIO(handler:IEvent->Void):Void {
+	public function loadTheme(?name:String):Void {
+		element.innerHTML = Reflect.field(_themes, Utils.getValidOne(name, 'default' + id()));
+		events.change().call();
+	}
+	
+	public function control(handler:IEvent->Void):Void {
 		_ioHandler = handler;
-		attribute('sru-option', value());
-		events.click(_refreshIO);
-		events.keyPress(_refreshIO);
-		events.change(_refreshIO);
 	}
 	
 }

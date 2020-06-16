@@ -387,7 +387,7 @@ class Utils{
 	}
 	
 	static public function boolean(q:Dynamic):Bool {
-		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok";
+		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok" || q == "selected";
 	}
 	
 	static public function money(val:Dynamic, s:String = '$', a:String = ',', b:String = '.'):String {

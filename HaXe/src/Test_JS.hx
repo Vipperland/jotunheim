@@ -14,6 +14,7 @@ class Test_JS{
 	static private var _db:WebDB;
 	
 	static public function main() {
+		// https://www.facebook.com/pegadinhasdaredetv/videos/380892232600044/?t=132
 		
 		DataCollection.map(DataObject, 'test', ['name', 'email']);
 		DataCollection.map(DataObject, 'info', ['color']);

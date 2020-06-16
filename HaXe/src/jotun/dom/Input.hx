@@ -1,6 +1,8 @@
 package jotun.dom;
 import haxe.Log;
 import jotun.Jotun;
+import jotun.tools.Utils;
+import jotun.utils.IDiceRoll;
 import js.Browser;
 import js.html.File;
 import js.html.FileList;
@@ -22,8 +24,6 @@ class Input extends Display {
 		return cast Jotun.one(q);
 	}
 	
-	static public var fixer:Dynamic = { backgroundSize : 'cover', backgroundPosition : 'center center' };
-	
 	static public var icons:Dynamic = { }
 	
 	public var object:InputElement;
@@ -37,33 +37,36 @@ class Input extends Display {
 	private var _ioHandler:Input->Void;
 	
 	private function _onFileSelected(e:Dynamic) {
-		var ftype:String = file(0).type.substr(0, 5);
-		if (ftype == 'image'){
-			if(fillTarget != null){
-				if (fillTarget.typeOf() == 'IMG'){
-					fillTarget.attribute('src', readFile(0));
-				}else{
-					fixer.backgroundImage = 'url(' + readFile(0) + ')';
-					fillTarget.style(fixer);
-					Reflect.deleteField(fixer, 'backgroundImage');
-				}
-			}
-			if(_ioHandler != null)
-				_ioHandler(this);
+		var bg:String = null;
+		var ftype:Array<String> = file(0).type.split('/');
+		if (ftype[0] == 'image'){
+			bg = readFile(0);
 		}else{
-			var bg:String = Reflect.hasField(icons, ftype) ? Reflect.field(icons, ftype) : icons.common;
-			if(bg != null && fillTarget != null){
+			bg = Reflect.hasField(icons, ftype[1]) ? Reflect.field(icons,  ftype[1]) : icons.common;
+		}
+		if(bg != null && fillTarget != null){
+			if (fillTarget.typeOf() == 'IMG'){
+				fillTarget.attribute('src', bg);
+			}else{
 				fillTarget.style({backgroundImage : 'url(' + bg + ')'});
 			}
-			if(_ioHandler != null)
-				_ioHandler(this);
+		}
+		if (_ioHandler != null){
+			_ioHandler(this);
 		}
 	}
 	
 	public function new(?q:Dynamic) {
-		if (q == null) q = Browser.document.createInputElement();
+		if (q == null) {
+			q = Browser.document.createInputElement();
+		}
 		super(q, null);
 		object = cast element;
+		if (type() == 'file'){
+			if (hasAttribute('display-on')){
+				fillTarget = Jotun.one(attribute('display-on'));
+			}
+		}
 	}
 	
 	public function type(?q:String):String {
@@ -88,8 +91,6 @@ class Input extends Display {
 	
 	public function restrict(q:EReg, ?filter:String):Void {
 		_rgx = q;
-		// phone: "() -"
-		// Number " "
 		_flt = filter;
 	}
 	
@@ -97,15 +98,15 @@ class Input extends Display {
 	@:overload(function():FileList{})
 	@:overload(function(?q:String):String{})
 	override public function value(?q:Dynamic):Dynamic {
-		if (q != null) {
-			object.value = q;
-		}else{
-			if (type() == 'file'){
+		switch(type()){
+			case 'file' : {
 				if (hasFile()){
 					if (object.files.length > 0){
 						return object.files;
 					}else if (q != null){
-						return file(q);
+						if (q != ''){
+							return file(q);
+						}
 					}else{
 						return file(0);
 					}
@@ -113,6 +114,17 @@ class Input extends Display {
 					return null;
 				}
 			}
+			case 'checkbox' : {
+				if (q != null){
+					check(Utils.boolean(q));
+				}else{
+					return isChecked();
+				}
+			}
+		}
+		if (q != null) {
+			object.value = q;
+		}else{
 			q = object.value;
 			if (object.maxLength != null && object.maxLength > 0)
 				q = q.substr(0, object.maxLength);
@@ -125,15 +137,32 @@ class Input extends Display {
 	}
 	
 	public function clear(?background:String):Void {
-		value("");
+		value('');
 		if (fillTarget != null){
 			fillTarget.style("backgroundImage", background);
 		}
 	}
 	
 	public function isValid():Bool {
-		var v:String = object.value;
-		return v.length == 0 ? false :  _rgx != null ? _rgx.match(v) : true;
+		switch(type()){
+			case 'file' : {
+				if (hasFile()){
+					var mime:Array<String> = attribute('accept').split(', ');
+					var roll:IDiceRoll = Dice.Values(files(), function(f:File){
+						return mime.indexOf(f.type) == -1;
+					});
+					return roll.completed;
+				}
+			}
+			case 'checkbox' : {
+				return true;
+			}
+			default : {
+				var v:String = object.value;
+				return v.length == 0 ? false :  _rgx != null ? _rgx.match(v) : true;
+			}
+		}
+		return false;
 	}
 	
 	public function isEmpty():Bool {
@@ -158,17 +187,27 @@ class Input extends Display {
 	
 	/**
 	 * After file selected, show loaded image in any target background
-	 * @param	target
 	 * @param	handler
+	 * @param	target
+	 * @param	filter
 	 */
-	public function control(handler:Input->Void, ?target:IDisplay):Void {
+	public function control(handler:Input->Void, ?display:IDisplay, ?mime:Array<String>):Void {
 		_ioHandler = handler;
-		fillTarget = target;
-		if (attribute('jotun-file') != "ready"){
+		if (display != null){
+			fillTarget = display;
+		}
+		if (mime != null){
+			acceptOnly(mime);
+		}
+		if (attribute('jotun-control') != "ready"){
 			type('file');
-			attribute('jotun-file', "ready");
+			attribute('jotun-control', "ready");
 			this.events.change(_onFileSelected);
 		}
+	}
+	
+	public function acceptOnly(mime:Array<String>):Void {
+		attribute('accept', mime.join(', '));
 	}
 	
 	public function check(?toggle:Dynamic = true):Void {

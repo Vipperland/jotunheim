@@ -4738,6 +4738,11 @@ var jotun_dom_Input = $hx_exports["jtn"]["dom"]["Input"] = function(q) {
 	}
 	jotun_dom_Display.call(this,q,null);
 	this.object = this.element;
+	if(this.type() == "file") {
+		if(this.hasAttribute("display-on")) {
+			this.fillTarget = jotun_Jotun.one(this.attribute("display-on"));
+		}
+	}
 };
 jotun_dom_Input.__name__ = "jotun.dom.Input";
 jotun_dom_Input.get = function(q) {
@@ -4746,29 +4751,22 @@ jotun_dom_Input.get = function(q) {
 jotun_dom_Input.__super__ = jotun_dom_Display;
 jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 	_onFileSelected: function(e) {
-		var ftype = HxOverrides.substr(this.file(0).type,0,5);
-		if(ftype == "image") {
-			if(this.fillTarget != null) {
-				if(this.fillTarget.typeOf() == "IMG") {
-					this.fillTarget.attribute("src",this.readFile(0));
-				} else {
-					var tmp = "url(" + this.readFile(0);
-					jotun_dom_Input.fixer.backgroundImage = tmp + ")";
-					this.fillTarget.style(jotun_dom_Input.fixer);
-					Reflect.deleteField(jotun_dom_Input.fixer,"backgroundImage");
-				}
-			}
-			if(this._ioHandler != null) {
-				this._ioHandler(this);
-			}
+		var bg = null;
+		var ftype = this.file(0).type.split("/");
+		if(ftype[0] == "image") {
+			bg = this.readFile(0);
 		} else {
-			var bg = Object.prototype.hasOwnProperty.call(jotun_dom_Input.icons,ftype) ? Reflect.field(jotun_dom_Input.icons,ftype) : jotun_dom_Input.icons.common;
-			if(bg != null && this.fillTarget != null) {
+			bg = Object.prototype.hasOwnProperty.call(jotun_dom_Input.icons,ftype[1]) ? Reflect.field(jotun_dom_Input.icons,ftype[1]) : jotun_dom_Input.icons.common;
+		}
+		if(bg != null && this.fillTarget != null) {
+			if(this.fillTarget.typeOf() == "IMG") {
+				this.fillTarget.attribute("src",bg);
+			} else {
 				this.fillTarget.style({ backgroundImage : "url(" + bg + ")"});
 			}
-			if(this._ioHandler != null) {
-				this._ioHandler(this);
-			}
+		}
+		if(this._ioHandler != null) {
+			this._ioHandler(this);
 		}
 	}
 	,type: function(q) {
@@ -4800,22 +4798,33 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		this._flt = filter;
 	}
 	,value: function(q) {
+		switch(this.type()) {
+		case "checkbox":
+			if(q != null) {
+				this.check(jotun_tools_Utils.boolean(q));
+			} else {
+				return this.isChecked();
+			}
+			break;
+		case "file":
+			if(this.hasFile()) {
+				if(this.object.files.length > 0) {
+					return this.object.files;
+				} else if(q != null) {
+					if(q != "") {
+						return this.file(q);
+					}
+				} else {
+					return this.file(0);
+				}
+			} else {
+				return null;
+			}
+			break;
+		}
 		if(q != null) {
 			this.object.value = q;
 		} else {
-			if(this.type() == "file") {
-				if(this.hasFile()) {
-					if(this.object.files.length > 0) {
-						return this.object.files;
-					} else if(q != null) {
-						return this.file(q);
-					} else {
-						return this.file(0);
-					}
-				} else {
-					return null;
-				}
-			}
 			q = this.object.value;
 			if(this.object.maxLength != null && this.object.maxLength > 0) {
 				q = q.substr(0,this.object.maxLength);
@@ -4836,13 +4845,20 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 	}
 	,isValid: function() {
-		var v = this.object.value;
-		if(v.length == 0) {
-			return false;
-		} else if(this._rgx != null) {
-			return this._rgx.match(v);
-		} else {
+		switch(this.type()) {
+		case "checkbox":
 			return true;
+		case "file":
+			return this.hasFile();
+		default:
+			var v = this.object.value;
+			if(v.length == 0) {
+				return false;
+			} else if(this._rgx != null) {
+				return this._rgx.match(v);
+			} else {
+				return true;
+			}
 		}
 	}
 	,isEmpty: function() {
@@ -4868,14 +4884,22 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		var tmp1 = this.file();
 		return tmp.createObjectURL(tmp1);
 	}
-	,control: function(handler,target) {
+	,control: function(handler,display,mime) {
 		this._ioHandler = handler;
-		this.fillTarget = target;
+		if(display != null) {
+			this.fillTarget = display;
+		}
+		if(mime != null) {
+			this.acceptOnly(mime);
+		}
 		if(this.attribute("jotun-file") != "ready") {
 			this.type("file");
 			this.attribute("jotun-file","ready");
 			this.events.change($bind(this,this._onFileSelected));
 		}
+	}
+	,acceptOnly: function(mime) {
+		this.attribute("accept",mime.join(", "));
 	}
 	,check: function(toggle) {
 		if(toggle == null) {
@@ -5282,6 +5306,7 @@ var jotun_dom_Select = $hx_exports["jtn"]["dom"]["Select"] = function(q) {
 	}
 	jotun_dom_Display.call(this,q,null);
 	this.object = this.element;
+	this.events.change($bind(this,this._refreshIO));
 };
 jotun_dom_Select.__name__ = "jotun.dom.Select";
 jotun_dom_Select.get = function(q) {
@@ -5289,7 +5314,18 @@ jotun_dom_Select.get = function(q) {
 };
 jotun_dom_Select.__super__ = jotun_dom_Display;
 jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
-	getAllSelected: function() {
+	_refreshIO: function(e) {
+		var c = "" + Std.string(this.value());
+		var p = this.attribute("current-value");
+		if(c != p) {
+			this.attribute("previous-value",p);
+			this.attribute("current-value",c);
+			if(this._ioHandler != null) {
+				this._ioHandler(e);
+			}
+		}
+	}
+	,getAllSelected: function() {
 		return this.all("option:checked");
 	}
 	,getSelected: function() {
@@ -5324,7 +5360,11 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 				r[r.length] = o.value();
 			});
 		}
-		return r.join(";");
+		if(r.length <= 1) {
+			return r[0];
+		} else {
+			return r;
+		}
 	}
 	,hasValue: function() {
 		var i = 0;
@@ -5345,47 +5385,31 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return false;
 	}
-	,hasChanged: function() {
-		if(!this.hasValue()) {
-			return false;
-		}
-		var v = this.value();
-		if(this.attribute("tmp-data") == v) {
-			return false;
-		}
-		this.attribute("tmp-data",v);
-		return true;
-	}
 	,addOption: function(label,value,selected,disabled) {
 		this.appendHtml("<option value=\"" + Std.string(value) + "\"" + (disabled == true ? " disabled" : "") + (selected == true ? " selected" : "") + ">" + label + "</options>");
 		if(selected) {
-			this.attribute("sru-option",this.value());
+			this.attribute("current-value",this.value());
 			this.selectValue(value);
 		}
 		return this;
 	}
-	,makeDefault: function() {
-		this._default = this.element.innerHTML;
-		return this;
-	}
-	,resetToDefault: function() {
-		this.element.innerHTML = this._default;
-		this.events.change().call();
-		return this;
-	}
-	,_refreshIO: function(e) {
-		var c = "" + Std.string(this.value());
-		if(c != this.attribute("sru-option")) {
-			this.attribute("sru-option",c);
-			this._ioHandler(e);
+	,saveTheme: function(name,content) {
+		if(jotun_dom_Select._themes == null) {
+			jotun_dom_Select._themes = { };
 		}
+		var o = jotun_dom_Select._themes;
+		var tmp = this.id();
+		o[jotun_tools_Utils.getValidOne(name,"default_" + (tmp == null ? "null" : Std.string(UInt.toFloat(tmp))))] = jotun_tools_Utils.getValidOne(content,this.element.innerHTML);
 	}
-	,baseIO: function(handler) {
+	,loadTheme: function(name) {
+		var tmp = jotun_dom_Select._themes;
+		var tmp1 = this.id();
+		var tmp2 = jotun_tools_Utils.getValidOne(name,"default" + (tmp1 == null ? "null" : Std.string(UInt.toFloat(tmp1))));
+		this.element.innerHTML = Reflect.field(tmp,tmp2);
+		this.events.change().call();
+	}
+	,control: function(handler) {
 		this._ioHandler = handler;
-		this.attribute("sru-option",this.value());
-		this.events.click($bind(this,this._refreshIO));
-		this.events.keyPress($bind(this,this._refreshIO));
-		this.events.change($bind(this,this._refreshIO));
 	}
 	,__class__: jotun_dom_Select
 });
@@ -7843,8 +7867,8 @@ jotun_tools_Utils.typeof = function(o) {
 	return null;
 };
 jotun_tools_Utils.boolean = function(q) {
-	if(!(q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept")) {
-		return q == "ok";
+	if(!(q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok")) {
+		return q == "selected";
 	} else {
 		return true;
 	}
@@ -8673,7 +8697,6 @@ jotun_css_CSSGroup.MEDIA_LG_MAX = "(max-width:1479px)";
 jotun_css_CSSGroup.MEDIA_XL = "(min-width:1480px)";
 jotun_css_XCode.css = new jotun_css_CSSGroup();
 jotun_css_XCode._inits = { reset : false, grid : false};
-jotun_dom_Input.fixer = { backgroundSize : "cover", backgroundPosition : "center center"};
 jotun_dom_Input.icons = { };
 jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.commands = new jotun_objects_QueryGroup();
