@@ -2620,7 +2620,7 @@ jotun_utils_Dice.One = function(from,alt) {
 };
 jotun_utils_Dice.Match = function(table,values,limit) {
 	if(limit == null) {
-		limit = 0;
+		limit = 1;
 	}
 	if(!((values) instanceof Array)) {
 		values = [values];
@@ -2630,11 +2630,7 @@ jotun_utils_Dice.Match = function(table,values,limit) {
 		if(Lambda.indexOf(table,v) != -1) {
 			r += 1;
 		}
-		if(UInt.gt(limit,0)) {
-			limit -= 1;
-			return limit == 0;
-		}
-		return false;
+		return (limit -= 1) == 0;
 	});
 	return r;
 };
@@ -4849,7 +4845,14 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		case "checkbox":
 			return true;
 		case "file":
-			return this.hasFile();
+			if(this.hasFile()) {
+				var mime = this.attribute("accept").split(", ");
+				var roll = jotun_utils_Dice.Values(this.files(),function(f) {
+					return mime.indexOf(f.type) == -1;
+				});
+				return roll.completed;
+			}
+			break;
 		default:
 			var v = this.object.value;
 			if(v.length == 0) {
@@ -4860,6 +4863,7 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 				return true;
 			}
 		}
+		return false;
 	}
 	,isEmpty: function() {
 		return this.value() == "";
@@ -4892,9 +4896,9 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		if(mime != null) {
 			this.acceptOnly(mime);
 		}
-		if(this.attribute("jotun-file") != "ready") {
+		if(this.attribute("jotun-control") != "ready") {
 			this.type("file");
-			this.attribute("jotun-file","ready");
+			this.attribute("jotun-control","ready");
 			this.events.change($bind(this,this._onFileSelected));
 		}
 	}
@@ -7780,23 +7784,23 @@ jotun_tools_Utils.toString = function(o,json) {
 	}
 };
 jotun_tools_Utils.sruString = function(o) {
-	return jotun_tools_Utils._sruFy(o,"","");
+	return jotun_tools_Utils._sruFly(o,"","");
 };
-jotun_tools_Utils._sruFy = function(o,i,b) {
+jotun_tools_Utils._sruFly = function(o,i,b) {
 	i += "  ";
 	jotun_utils_Dice.All(o,function(p,v) {
 		if(v == null) {
 			b += i + p + ":* = NULL\r";
 		} else if(typeof(v) == "string") {
 			b += i + p + ":String = " + Std.string(v) + "\r";
-		} else if(typeof(v) == "boolean") {
+		} else if(typeof(v) == "boolean" || v == "true" || v == "false" || v == true || v == false) {
 			b += i + p + ":Bool = " + Std.string(v) + "\r";
 		} else if(typeof(v) == "number" && ((v | 0) === v) || typeof(v) == "number") {
 			b += i + p + ":Number = " + Std.string(v) + "\r";
 		} else if(((v) instanceof Array)) {
-			b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + jotun_tools_Utils._sruFy(v,i,"") + i + "]\r";
+			b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "]\r";
 		} else {
-			b += i + p + ":Object {\r" + jotun_tools_Utils._sruFy(v,i,"") + i + "}\r";
+			b += i + p + ":Object {\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "}\r";
 		}
 	});
 	return b;

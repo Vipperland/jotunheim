@@ -34,14 +34,17 @@ class Dice {
 		if (q != null) {
 			#if php
 				// ==== Workaround with PHP Arrays
-				if (Std.is(q, NativeArray) || Std.is(q, Array)) q = Lib.objectOfAssociativeArray(q);
-				//Lib.dump(q);
+				if (Std.is(q, NativeArray) || Std.is(q, Array)) {
+					q = Lib.objectOfAssociativeArray(q);
+				}
 			#end
 			for (p in Reflect.fields(q)) {
 				v = Reflect.field(q, p);
 				#if php
 					// ==== Skip object methods in PHP object
-					if (Reflect.isFunction(v)) continue;
+					if (Reflect.isFunction(v)) {
+						continue;
+					}
 				#end
 				if (each(p, v) == true) {
 					i = false;
@@ -136,12 +139,15 @@ class Dice {
 		var b:Float = Math.max(from, to);
 		if (increment == null || increment < 1) increment = 1;
 		while (a < b) {
-			if (each(cast a, cast b, (a += increment) == b) == true)
+			if (each(cast a, cast b, (a += increment) == b) == true){
 				break;
+			}
 		}
 		var c:Bool = a == b;
 		var r:IDiceRoll = cast { from:from, to:b, completed:c, value:a-increment };
-		if (complete != null) complete(r);
+		if (complete != null) {
+			complete(r);
+		}
 		return r;
 	}
 	
@@ -167,13 +173,16 @@ class Dice {
 	 * @param	values
 	 * @return
 	 */
-	public static function Match(table:Array<Dynamic>, values:Dynamic, ?limit:UInt = 0):Int {
-		if (!Std.is(values, Array)) values = [values];
+	public static function Match(table:Array<Dynamic>, values:Dynamic, ?limit:Int = 1):Int {
+		if (!Std.is(values, Array)) {
+			values = [values];
+		}
 		var r:Int = 0;
 		Dice.Values(values, function(v:Dynamic) {
-			if (Lambda.indexOf(table, v) != -1) ++r;
-			if (limit > 0) return --limit == 0;
-			return false;
+			if (Lambda.indexOf(table, v) != -1) {
+				++r;
+			}
+			return (--limit == 0);
 		});
 		return r;
 	}
@@ -187,7 +196,9 @@ class Dice {
 		if (!Std.is(values, Array)) values = [values];
 		Dice.Values(values, function(v:Dynamic) {
 			var i:Int = Lambda.indexOf(table, v);
-			if (i != -1) table.remove(v);
+			if (i != -1) {
+				table.remove(v);
+			}
 		});
 	}
 	
@@ -251,7 +262,9 @@ class Dice {
 		if (b == null) b = data.length;
 		if(a < b){
 			while (a < b){
-				if (a >= len) break;
+				if (a >= len) {
+					break;
+				}
 				copy[copy.length] = data[a];
 				++a;
 			}
@@ -278,7 +291,9 @@ class Dice {
 			var l:Int = 0;
 			var c:Element;
 			if (of != null) {
-				if (Std.is(of, IDisplay)) of = of.element;
+				if (Std.is(of, IDisplay)) {
+					of = of.element;
+				}
 				Count(0, of.childNodes.length, function(i:Int,j:Int,k:Bool) {
 					c = cast of.childNodes.item(i);
 					r.children[l] = c;
