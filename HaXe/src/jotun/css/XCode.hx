@@ -2,7 +2,6 @@ package jotun.css;
 import js.html.Element;
 import jotun.Jotun;
 import jotun.css.CSSGroup;
-import jotun.css.IKey;
 import jotun.dom.IDisplay;
 import jotun.dom.Style;
 import jotun.dom.Svg;

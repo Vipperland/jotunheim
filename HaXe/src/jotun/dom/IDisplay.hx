@@ -57,8 +57,14 @@ interface IDisplay extends IQuery {
 	 */
 	public function children():ITable;
 	
+	/**
+	 * Enable Interactions
+	 */
 	public function enable():Void;
 	
+	/**
+	 * Disable Interactions
+	 */
 	public function disable():Void;
 	
 	/**

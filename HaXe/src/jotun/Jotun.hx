@@ -23,7 +23,6 @@ import jotun.utils.Dice;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Script;
 	import jotun.dom.Style;
-	import jotun.seo.SEOTool;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;
 	import jotun.transitions.Ease;
@@ -78,9 +77,6 @@ class Jotun {
 		
 		/// Browser information
 		static public var agent:IAgent = new Agent();
-		
-		/// SEO Tools
-		static public var seo:SEOTool = new SEOTool();
 		
 		/// External Plugins
 		static public var plugins:Dynamic = { };
