@@ -15,6 +15,7 @@ import jotun.utils.Dice;
 	import js.Browser;
 	import js.html.Element;
 	import js.html.Event;
+	//import jotun.ai.Thinker;
 	import jotun.css.XCode;
 	import jotun.css.CSSGroup;
 	import jotun.dom.Body;
@@ -78,9 +79,6 @@ class Jotun {
 		/// Browser information
 		static public var agent:IAgent = new Agent();
 		
-		/// External Plugins
-		static public var plugins:Dynamic = { };
-		
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;
 		
@@ -93,7 +91,6 @@ class Jotun {
 				Ease.update();
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
-				updatePlugins();
 				log("Jotun => READY", 1);
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				Reflect.deleteField(Jotun, '_loadController');
@@ -119,22 +116,6 @@ class Jotun {
 				}
 			}
 			return true;
-		}
-		
-		static public function updatePlugins():Void {
-			if(_loaded){
-				var plist:Dynamic = js.Syntax.code("window.jtn ? window.jtn.plugins : null");
-				Dice.All(plist, function(p:String, v:Dynamic) {
-					Reflect.setField(plugins, p, v);
-					Reflect.deleteField(plist, p);
-					if (Reflect.hasField(v, 'onload')) {
-						v.onload();
-						log("Plugin => " + p + "::onload()", 1);
-					}else{
-						log("Plugin => " + p + " ADDED", 1);
-					}
-				});
-			}
 		}
 		
 		/**

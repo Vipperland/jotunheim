@@ -7,6 +7,16 @@ import jotun.math.IPoint3D;
  */
 class Point3D implements IPoint3D {
 	
+	static public function distance(x1:Float, y1:Float, z1:Float, x2:Float, y2:Float, z2:Float):Float {
+		x1 = (x1 - x2);
+		y1 = (y1 - y2);
+		z1 = (z1 - z2);
+		x1 = x1 * x1;
+		y1 = y1 * y1;
+		z1 = z1 * z1;
+		return Math.sqrt(x1 + y1 + z1);
+	}
+	
 	public var x:Float;
 	
 	public var y:Float;
@@ -33,6 +43,14 @@ class Point3D implements IPoint3D {
 		this.y = y;
 		this.z = z;
 		return this;
+	}
+	
+	public function magnitude():Float {
+		return Math.sqrt(x * x + y * y + z * z);
+	}
+	
+	public function distanceOf(point:Point3D):Float {
+		return distance(point.x, point.y, point.z, x, y, z);
 	}
 	
 }

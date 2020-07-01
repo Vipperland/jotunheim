@@ -359,7 +359,4 @@
 		return o;
 		
 	}
-	if(Jotun != null) {
-		Jotun.updatePlugins();
-	}
 })(typeof window != "undefined" ? window : exports);

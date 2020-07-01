@@ -256,6 +256,4 @@
 		Jotun.document.trackCursor();
 		window.GlitterMenu = this;
 	})();
-	
-	if(Jotun != null) Jotun.updatePlugins();
 })(typeof window != "undefined" ? window : exports);

@@ -14,7 +14,6 @@ $hx_exports["jtn"]["modules"] = $hx_exports["jtn"]["modules"] || {};
 ;$hx_exports["jtn"]["draw"] = $hx_exports["jtn"]["draw"] || {};
 ;$hx_exports["jtn"]["events"] = $hx_exports["jtn"]["events"] || {};
 ;$hx_exports["jtn"]["game"] = $hx_exports["jtn"]["game"] || {};
-;$hx_exports["jtn"]["seo"] = $hx_exports["jtn"]["seo"] || {};
 ;$hx_exports["jtn"]["tools"] = $hx_exports["jtn"]["tools"] || {};
 ;$hx_exports["jtn"]["utils"] = $hx_exports["jtn"]["utils"] || {};
 var $estr = function() { return js_Boot.__string_rec(this,''); },$hxEnums = $hxEnums || {},$_;
@@ -3270,49 +3269,6 @@ jotun_modules_ModLib.prototype = {
 	}
 	,__class__: jotun_modules_ModLib
 };
-var jotun_seo_SEOTool = $hx_exports["SEO"] = function() {
-	this._publish = [];
-};
-jotun_seo_SEOTool.__name__ = "jotun.seo.SEOTool";
-jotun_seo_SEOTool.prototype = {
-	_create: function(t,O) {
-		if(Reflect.field(this,t) == null) {
-			O = new O();
-			this[t] = O;
-			this._publish[this._publish.length] = O;
-		}
-	}
-	,init: function(types) {
-		if(types == null) {
-			types = 0;
-		}
-		if(types == 0 || jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.WEBSITE)) {
-			this._create("website",jotun_seo_WebSite);
-		}
-		if(jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.BREADCRUMBS)) {
-			this._create("breadcrumbs",jotun_seo_Breadcrumbs);
-		}
-		if(jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.PRODUCT)) {
-			this._create("product",jotun_seo_Product);
-		}
-		if(jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.ORGANIZATION)) {
-			this._create("organization",jotun_seo_Organization);
-		}
-		if(jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.PERSON)) {
-			this._create("person",jotun_seo_Person);
-		}
-		if(jotun_tools_Flag.FTest(types,jotun_seo_SEOTool.SEARCH)) {
-			this._create("search",jotun_seo_Search);
-		}
-		return this;
-	}
-	,publish: function() {
-		jotun_utils_Dice.Values(this._publish,function(seo) {
-			seo.publish();
-		});
-	}
-	,__class__: jotun_seo_SEOTool
-};
 var jotun_Jotun = $hx_exports["Jotun"] = function() { };
 jotun_Jotun.__name__ = "jotun.Jotun";
 jotun_Jotun.main = function() {
@@ -3537,16 +3493,6 @@ jotun_css_CSSGroup.prototype = {
 		this.style = this.styleXS = this.styleSM = this.styleMD = this.styleLG = this.styleXL = this.stylePR = "";
 	}
 	,__class__: jotun_css_CSSGroup
-};
-var jotun_css_IEntry = function() { };
-jotun_css_IEntry.__name__ = "jotun.css.IEntry";
-jotun_css_IEntry.prototype = {
-	__class__: jotun_css_IEntry
-};
-var jotun_css_IKey = function() { };
-jotun_css_IKey.__name__ = "jotun.css.IKey";
-jotun_css_IKey.prototype = {
-	__class__: jotun_css_IKey
 };
 var jotun_dom_Style = $hx_exports["jtn"]["dom"]["Style"] = function(q) {
 	if(q == null) {
@@ -6425,11 +6371,37 @@ var jotun_math_Point = $hx_exports["sru"]["math"]["point"] = function(x,y) {
 jotun_math_Point.__name__ = "jotun.math.Point";
 jotun_math_Point.__interfaces__ = [jotun_math_IPoint];
 jotun_math_Point.distance = function(x1,y1,x2,y2) {
-	var rx = x1 - x2;
-	var ry = y1 - y2;
-	rx *= rx;
-	ry *= ry;
-	return Math.sqrt(rx + ry);
+	x1 -= x2;
+	y1 -= y2;
+	x1 *= x1;
+	y1 *= y1;
+	return Math.sqrt(x1 + y1);
+};
+jotun_math_Point.hilbert = function(n,d) {
+	var rx;
+	var ry;
+	var t = d;
+	var x = 0;
+	var y = 0;
+	var s = 0;
+	while(s < n) {
+		rx = 1 & t / 2;
+		ry = 1 & (t ^ rx);
+		if(ry == 0) {
+			if(rx == 1) {
+				x = s - 1 - x;
+				y = s - 1 - y;
+			}
+			var tmp = x;
+			x = y;
+			y = tmp;
+		}
+		x += s * rx;
+		y += s * ry;
+		t /= 4;
+		s *= 2;
+	}
+	return new jotun_math_Point(x,y);
 };
 jotun_math_Point.prototype = {
 	reset: function() {
@@ -6452,6 +6424,12 @@ jotun_math_Point.prototype = {
 		this.x += q.x;
 		this.y += q.y;
 		return this;
+	}
+	,length: function() {
+		return Math.sqrt(this.x * this.x + this.y * this.y);
+	}
+	,distanceOf: function(point) {
+		return jotun_math_Point.distance(point.x,point.y,this.x,this.y);
 	}
 	,__class__: jotun_math_Point
 };
@@ -6685,374 +6663,6 @@ jotun_net_Request.prototype = {
 	}
 	,__class__: jotun_net_Request
 };
-var jotun_seo_SEO = function(type) {
-	this.data = { };
-	this.data["@context"] = "http://schema.org/";
-	this.data["@type"] = type;
-	this.object = window.document.createElement("script");
-	this.object.type = "application/ld+json";
-};
-jotun_seo_SEO.__name__ = "jotun.seo.SEO";
-jotun_seo_SEO.sign = function(o,type,context) {
-	if(context == null) {
-		context = true;
-	}
-	if(context) {
-		o["@context"] = "http://schema.org";
-	}
-	o["@type"] = type;
-	return o;
-};
-jotun_seo_SEO.prototype = {
-	publish: function() {
-		this.object.innerHTML = JSON.stringify(this.data);
-		if(this.object.parentElement == null) {
-			window.document.head.appendChild(this.object);
-		}
-	}
-	,typeOf: function() {
-		return Reflect.field(this.data,"@type");
-	}
-	,__class__: jotun_seo_SEO
-};
-var jotun_seo_Breadcrumbs = function() {
-	jotun_seo_SEO.call(this,"BreadcrumbList");
-	this._setup();
-};
-jotun_seo_Breadcrumbs.__name__ = "jotun.seo.Breadcrumbs";
-jotun_seo_Breadcrumbs.__super__ = jotun_seo_SEO;
-jotun_seo_Breadcrumbs.prototype = $extend(jotun_seo_SEO.prototype,{
-	_setup: function() {
-		this.elements = [];
-		this.data["itemListElement"] = this.elements;
-	}
-	,add: function(name,url) {
-		this.elements[this.elements.length] = { "@type" : "ListItem", position : this.elements.length, item : { "@id" : url, name : name}};
-	}
-	,reset: function() {
-		this.elements.splice(0,this.elements.length);
-		return this;
-	}
-	,__class__: jotun_seo_Breadcrumbs
-});
-var jotun_seo_Descriptor = function(q) {
-	jotun_seo_SEO.call(this,q);
-	this._d = this.data;
-};
-jotun_seo_Descriptor.__name__ = "jotun.seo.Descriptor";
-jotun_seo_Descriptor.__super__ = jotun_seo_SEO;
-jotun_seo_Descriptor.prototype = $extend(jotun_seo_SEO.prototype,{
-	name: function(q) {
-		if(q != null) {
-			this._d.name = q;
-		}
-		return this._d.name;
-	}
-	,url: function(q) {
-		if(q != null) {
-			this._d.url = q;
-		}
-		return this._d.url;
-	}
-	,logo: function(q) {
-		if(q != null) {
-			this._d.logo = q;
-		}
-		return this._d.logo;
-	}
-	,email: function(v) {
-		if(v != null) {
-			this._d.email = v;
-		}
-		return this._d.email;
-	}
-	,address: function(country,state,city,street,code) {
-		if(this._d.address == null) {
-			this._d.address = jotun_seo_SEO.sign({ },"PostalAddress",false);
-		}
-		if(country != null) {
-			this._d.address.addressCountry = country;
-		}
-		if(state != null) {
-			this._d.address.addressRegion = state;
-		}
-		if(city != null) {
-			this._d.address.addressLocality = city;
-		}
-		if(street != null) {
-			this._d.address.streetAddress = street;
-		}
-		if(code != null) {
-			this._d.address.postalCode = code;
-		}
-		return this._d.address;
-	}
-	,social: function(q) {
-		var _gthis = this;
-		if(q != null) {
-			if(this._d.sameAs == null) {
-				this._d.sameAs = [];
-			}
-			jotun_utils_Dice.Values(q,function(v) {
-				if(_gthis._d.sameAs.indexOf(v) == -1) {
-					_gthis._d.sameAs[_gthis._d.sameAs.length] = v;
-				}
-			});
-		}
-		return this._d.sameAs;
-	}
-	,__class__: jotun_seo_Descriptor
-});
-var jotun_seo_IAddress = function() { };
-jotun_seo_IAddress.__name__ = "jotun.seo.IAddress";
-jotun_seo_IAddress.prototype = {
-	__class__: jotun_seo_IAddress
-};
-var jotun_seo_IBrand = function() { };
-jotun_seo_IBrand.__name__ = "jotun.seo.IBrand";
-jotun_seo_IBrand.prototype = {
-	__class__: jotun_seo_IBrand
-};
-var jotun_seo_IContact = function() { };
-jotun_seo_IContact.__name__ = "jotun.seo.IContact";
-jotun_seo_IContact.prototype = {
-	__class__: jotun_seo_IContact
-};
-var jotun_seo_IDescriptor = function() { };
-jotun_seo_IDescriptor.__name__ = "jotun.seo.IDescriptor";
-jotun_seo_IDescriptor.prototype = {
-	__class__: jotun_seo_IDescriptor
-};
-var jotun_seo_IItem = function() { };
-jotun_seo_IItem.__name__ = "jotun.seo.IItem";
-jotun_seo_IItem.prototype = {
-	__class__: jotun_seo_IItem
-};
-var jotun_seo_IOffer = function() { };
-jotun_seo_IOffer.__name__ = "jotun.seo.IOffer";
-jotun_seo_IOffer.prototype = {
-	__class__: jotun_seo_IOffer
-};
-var jotun_seo_IOrgDescriptor = function() { };
-jotun_seo_IOrgDescriptor.__name__ = "jotun.seo.IOrgDescriptor";
-jotun_seo_IOrgDescriptor.__interfaces__ = [jotun_seo_IDescriptor];
-jotun_seo_IOrgDescriptor.prototype = {
-	__class__: jotun_seo_IOrgDescriptor
-};
-var jotun_seo_IReview = function() { };
-jotun_seo_IReview.__name__ = "jotun.seo.IReview";
-jotun_seo_IReview.prototype = {
-	__class__: jotun_seo_IReview
-};
-var jotun_seo_ISearchBox = function() { };
-jotun_seo_ISearchBox.__name__ = "jotun.seo.ISearchBox";
-jotun_seo_ISearchBox.prototype = {
-	__class__: jotun_seo_ISearchBox
-};
-var jotun_seo_IWebSite = function() { };
-jotun_seo_IWebSite.__name__ = "jotun.seo.IWebSite";
-jotun_seo_IWebSite.prototype = {
-	__class__: jotun_seo_IWebSite
-};
-var jotun_seo_Organization = function() {
-	jotun_seo_Descriptor.call(this,"Organization");
-	this._e = this.data;
-};
-jotun_seo_Organization.__name__ = "jotun.seo.Organization";
-jotun_seo_Organization.__super__ = jotun_seo_Descriptor;
-jotun_seo_Organization.prototype = $extend(jotun_seo_Descriptor.prototype,{
-	build: function(name,url,logo,email,social) {
-		this.name(name);
-		this.url(url);
-		this.logo(logo);
-		this.email(email);
-		this.social(social);
-	}
-	,contact: function(phone,type,area,language,options) {
-		if(this._e.contactPoint == null) {
-			this._e.contactPoint = [];
-		}
-		var c = jotun_seo_SEO.sign({ },"ContactPoint",false);
-		if(phone != null) {
-			c.telephone = phone;
-		}
-		if(type != null) {
-			c.contactType = type;
-		}
-		if(area != null) {
-			c.areaServed = area;
-		}
-		if(language != null) {
-			c.availableLanguage = language;
-		}
-		if(options != null) {
-			c.contactOption = options;
-		}
-		this._e.contactPoint[this._e.contactPoint.length] = c;
-		return this;
-	}
-	,__class__: jotun_seo_Organization
-});
-var jotun_seo_Person = function() {
-	jotun_seo_Descriptor.call(this,"Person");
-};
-jotun_seo_Person.__name__ = "jotun.seo.Person";
-jotun_seo_Person.__super__ = jotun_seo_Descriptor;
-jotun_seo_Person.prototype = $extend(jotun_seo_Descriptor.prototype,{
-	build: function(name,social) {
-		this.name(name);
-		this.social(social);
-	}
-	,__class__: jotun_seo_Person
-});
-var jotun_seo_Product = $hx_exports["jtn"]["seo"]["Product"] = function() {
-	jotun_seo_SEO.call(this,"Product");
-};
-jotun_seo_Product.__name__ = "jotun.seo.Product";
-jotun_seo_Product.__super__ = jotun_seo_SEO;
-jotun_seo_Product.prototype = $extend(jotun_seo_SEO.prototype,{
-	name: function(q) {
-		if(q != null) {
-			this.data["name"] = q;
-		}
-		return Reflect.field(this.data,"name");
-	}
-	,image: function(q) {
-		if(q != null) {
-			this.data["image"] = q;
-		}
-		return Reflect.field(this.data,"image");
-	}
-	,description: function(q) {
-		if(q != null) {
-			this.data["description"] = q;
-		}
-		return Reflect.field(this.data,"description");
-	}
-	,mpn: function(q) {
-		if(q != null) {
-			this.data["mpn"] = Std.string(q);
-		}
-		return Reflect.field(this.data,"mpn");
-	}
-	,review: function(value,reviews) {
-		if(this.reviewOf == null) {
-			this.reviewOf = { "@type" : "AggregateRating", ratingValue : "0,0", reviewCount : 0};
-			this.data["aggregateRating"] = this.reviewOf;
-		}
-		if(value != null) {
-			this.reviewOf.ratingValue = value.toFixed(1).split('.').join(',');
-		}
-		if(reviews != null) {
-			this.reviewOf.reviewCount = reviews == null ? "null" : "" + reviews;
-		}
-		return this.reviewOf;
-	}
-	,brand: function(name,image,url) {
-		if(this.brandOf == null) {
-			this.brandOf = { "@type" : "Thing", name : ""};
-			this.data["brand"] = this.brandOf;
-		}
-		if(name != null) {
-			this.brandOf.name = name;
-		}
-		if(image != null) {
-			this.brandOf.image = image;
-		}
-		if(url != null) {
-			this.brandOf.url = url;
-		}
-		return this.brandOf;
-	}
-	,offer: function(currency,availability,from,to) {
-		if(this.offerOf == null) {
-			this.offerOf = { "@type" : "AggregateOffer", name : ""};
-			this.data["offers"] = this.offerOf;
-		}
-		if(currency != null) {
-			this.offerOf.priceCurrency = currency.toUpperCase();
-		}
-		if(availability != null) {
-			this.offerOf.availability = "http://schema.org/" + availability;
-		}
-		if(from != null) {
-			if(to != null) {
-				this.offerOf.lowPrice = from;
-				this.offerOf.highPrice = to;
-			} else {
-				this.offerOf.price = from;
-			}
-		}
-		return this.offerOf;
-	}
-	,build: function(name,image,description,mpn) {
-		this.name(name);
-		this.image(image);
-		this.description(description);
-		this.mpn(mpn);
-		return this;
-	}
-	,__class__: jotun_seo_Product
-});
-var jotun_seo_Search = function() {
-	jotun_seo_SEO.call(this,"WebSite");
-	this._d = this.data;
-};
-jotun_seo_Search.__name__ = "jotun.seo.Search";
-jotun_seo_Search.__super__ = jotun_seo_SEO;
-jotun_seo_Search.prototype = $extend(jotun_seo_SEO.prototype,{
-	url: function(q) {
-		if(q != null) {
-			this._d.url = q;
-		}
-		return this._d.url;
-	}
-	,action: function(target,prop) {
-		if(this._d != null) {
-			this._d.potentialAction = { "@type" : "SearchAction", target : target, "query-input" : "required name=" + prop};
-		}
-		return this._d;
-	}
-	,build: function(q,target,prop) {
-		this.url(q);
-		this.action(target,prop);
-		return this;
-	}
-	,__class__: jotun_seo_Search
-});
-var jotun_seo_WebSite = function() {
-	jotun_seo_SEO.call(this,"WebSite");
-	this._d = this.data;
-};
-jotun_seo_WebSite.__name__ = "jotun.seo.WebSite";
-jotun_seo_WebSite.__super__ = jotun_seo_SEO;
-jotun_seo_WebSite.prototype = $extend(jotun_seo_SEO.prototype,{
-	name: function(q) {
-		if(q != null) {
-			this._d.name = q;
-		}
-		return this._d.name;
-	}
-	,alt: function(q) {
-		if(q != null) {
-			this._d.alternateName = q;
-		}
-		return this._d.alternateName;
-	}
-	,url: function(q) {
-		if(q != null) {
-			this._d.url = q;
-		}
-		return this._d.url;
-	}
-	,build: function(name,url,alt) {
-		this.name(name);
-		this.url(url);
-		this.alt(alt);
-		return this._d;
-	}
-	,__class__: jotun_seo_WebSite
-});
 var jotun_serial_IOTools = $hx_exports["IOTools"] = function() { };
 jotun_serial_IOTools.__name__ = "jotun.serial.IOTools";
 jotun_serial_IOTools.encodeBase64 = function(q) {
@@ -8672,12 +8282,6 @@ jotun_dom_Display._CNT = 0;
 jotun_dom_Display._DATA = [];
 jotun_modules_ModLib.CACHE = { };
 jotun_modules_ModLib.DATA = { };
-jotun_seo_SEOTool.WEBSITE = 1;
-jotun_seo_SEOTool.BREADCRUMBS = 2;
-jotun_seo_SEOTool.PRODUCT = 4;
-jotun_seo_SEOTool.ORGANIZATION = 8;
-jotun_seo_SEOTool.PERSON = 16;
-jotun_seo_SEOTool.SEARCH = 32;
 jotun_Jotun._loaded = false;
 jotun_Jotun.resources = new jotun_modules_ModLib();
 jotun_Jotun.domain = new jotun_net_Domain();
@@ -8685,7 +8289,6 @@ jotun_Jotun.logger = new jotun_data_Logger();
 jotun_Jotun._initialized = jotun_Jotun.main();
 jotun_Jotun.loader = new jotun_net_Loader();
 jotun_Jotun.agent = new jotun_tools_Agent();
-jotun_Jotun.seo = new jotun_seo_SEOTool();
 jotun_Jotun.plugins = { };
 jotun_css_CSSGroup.SOF = "/*SOF*/@media";
 jotun_css_CSSGroup.EOF = "}/*EOF*/";

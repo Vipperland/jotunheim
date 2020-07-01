@@ -10,4 +10,6 @@ interface IPoint {
 	public var y:Float;
 	public function reset():Void;
 	public function match(o:IPoint, ?round:Bool):Bool;
+	public function length():Float;
+	public function distanceOf(point:Point):Float;
 }
