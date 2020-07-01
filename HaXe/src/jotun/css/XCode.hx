@@ -1,4 +1,5 @@
 package jotun.css;
+import jotun.math.IARGB;
 import js.html.Element;
 import jotun.Jotun;
 import jotun.css.CSSGroup;
@@ -29,7 +30,22 @@ class XCode {
 		grid: false,
 	};
 	
-	
+	static function _filterCheck(id:String, replace:Bool):Bool {
+		if (_filters == null){
+			_filters = new Svg();
+			Jotun.document.head.addChild(_filters);
+		}
+		var filter:IDisplay = _filters.one('#' + id);
+		if (filter != null){
+			if (replace){
+				_filters.removeChild(filter);
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	/**
 	 * Create all cell styles
@@ -180,23 +196,9 @@ class XCode {
 		css.styleXL += (selector.split(',').join('-xl,') + '-xl' + '{' + query + '}');
 		css.stylePR += (selector.split(',').join('-pr,') + '-pr' + '{' + query + '}');
 	}
+	
 	static public function build(selector:String, query:String):Void {
 		css.style += (selector + '{' + query + '}');
-	}
-	
-	static public function createFilter(id:String, a:Float, r:Float, g:Float, b:Float):Void {
-		if (_filters == null){
-			_filters = new Svg();
-			Jotun.document.head.addChild(_filters);
-		}
-		var filter:IDisplay = _filters.one('#' + id);
-		if (filter != null){
-			_filters.removeChild(filter);
-		}
-		var end:String = "<filter id=\"" + id + "\" color-interpolation-filters=\"sRGB\" x=\"0\" y=\"0\" height=\"100%\" width=\"100%\">";
-			end += "<feColorMatrix type=\"matrix\" values=\"" + r + " 0 0 0 0 0 " + g + " 0 0 0 0 0 " + b + " 0 0 0 0 0 " + a + " 0\"/>";
-			end += "</filter>";
-		_filters.appendHtml(end);
 	}
 	
 	static public function clearDisplacements():Void {
@@ -205,23 +207,26 @@ class XCode {
 		}
 	}
 	
-	static public function createDisplacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0):Void {
-		if (_filters == null){
-			_filters = new Svg();
-			Jotun.document.head.addChild(_filters);
+	static public function filter(id:String, a:Float, r:Float, g:Float, b:Float, ?replace:Bool):Void {
+		if(_filterCheck(id, replace)){
+			var end:String = "<filter id=\"" + id + "\" color-interpolation-filters=\"sRGB\" x=\"0\" y=\"0\" height=\"100%\" width=\"100%\">";
+				end += "<feColorMatrix type=\"matrix\" values=\"" + r + " 0 0 0 0 0 " + g + " 0 0 0 0 0 " + b + " 0 0 0 0 0 " + a + " 0\"/>";
+				end += "</filter>";
+			_filters.appendHtml(end);
 		}
-		var filter:IDisplay = _filters.one('#' + id);
-		if (filter != null){
-			_filters.removeChild(filter);
-		}
-		var end:String = "<filter id=\"" + id + "\">";
-			end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"" + seed + "\"/>";
-			end += "<feDisplacementMap id=\"displacement\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
-			end += "</filter>";
-		_filters.appendHtml(end);
 	}
 	
-	static public function createStroke(id:String, text:Bool, color:Dynamic, ?strenght:Int, ?blur:Int):String {
+	static public function displacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0, ?replace:Bool):Void {
+		if(_filterCheck(id, replace)){
+			var end:String = "<filter id=\"" + id + "\">";
+				end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"" + seed + "\"/>";
+				end += "<feDisplacementMap id=\"displacement\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
+				end += "</filter>";
+			_filters.appendHtml(end);
+		}
+	}
+	
+	static public function stroke(id:String, text:Bool, color:Dynamic, ?strenght:Int, ?blur:Int):String {
 		var c:String = new ARGB(color).hex();
 		var l:Int = Utils.getValidOne(strenght, 1);
 		var b:Int = Utils.getValidOne(blur, 1);
@@ -249,8 +254,11 @@ class XCode {
 		return id;
 	}
 	
-	static public function createShadow(id:String, text:Bool, color:Dynamic, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
-		var t:ARGB = new ARGB(color);
+	static public function shadow(id:String, text:Bool, color:Dynamic, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
+		if (!Std.is(color, IARGB)){
+			color = new ARGB(color);
+		}
+		var t:ARGB = color;
 		var y:Int = 0;
 		var z:Int = Utils.getValidOne(distance, 5);
 		var a:Int = Utils.getValidOne(direction, 45);
@@ -276,7 +284,7 @@ class XCode {
 			}
 			tx = (cast cos * y);
 			ty = (cast sin * y);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.brightnesss(.8 - (y/z*c)).hex();
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.multiply(.8 - (y/z*c)).hex();
 		}
 		y = 0;
 		var oX:Float = cos * z;
@@ -292,7 +300,7 @@ class XCode {
 		return id;
 	}
 	
-	static public function createMotionFor(name:String, time:Float, values:Array<String>):Void {
+	static public function motion(name:String, time:Float, values:Array<String>):Void {
 		if (_motions == null){
 			_motions = new Style();
 			_motions.publish();

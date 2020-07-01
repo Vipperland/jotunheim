@@ -8,71 +8,47 @@
 		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
 		<script type="text/javascript" src="jotun/api.jotun.js"></script>
 		<style>  
-			
+			html, body {
+				font-family: Arial;
+			}
+			.content {
+				font-size: 45px;
+				text-align: center;
+			}
+			#color-test span {
+				color: #999999;
+			}
 		</style>
 	</head>
 	<body automator>
-		<thinker>
-			[COLORS]
-				
-				@BACKGROUND = #000000
-				@TEXT = #000000
-				
-			[MENU]
-				
-				@Home = /home
-				@Cases = /cases
-				@About = /about
-				@Contact = /contact
-				
-			[CONTENT]
-				
-				@BACKGROUND = /images/file.jpg
-				@SIZE = 12
-				
-				@BLOCK
-				Bla bla bla bla
-				Bla bla _bla_ 
-				
-				@HTML
-				
-			[GALLERY]
-				
-				@SIZE = 4
-				
-				@IMG = /images/img1_big.jpg & /images/img1_thumb.jpg
-				@IMG = /images/img2_big.jpg & /images/img2_thumb.jpg
-				@IMG = /images/img3_big.jpg & /images/img3_thumb.jpg
-				@IMG = /images/img4_big.jpg & /images/img4_thumb.jpg
-				@IMG = /images/img5_big.jpg & /images/img5_thumb.jpg
-				@VIDEO = /videos/video1.mp4 & /videos/video1_thumb.jpg
-				
-			[CONTENT]
-				
-				@Background = /images/file2.jpg
-				@Size = 8
-				
-				@Block
-				Bla bla bla bla
-				Bla bla bla 
-				
-			[FORM]
-				
-				@Background = #EFEFEF
-				@Size = 6
-				@Name = name
-				@Email = me@domain.com
-				@SendTo > /contact.php
-				
-			[CONTENT]
-				
-				@Background = /images/file2.jpg
-				@Size = 6
-				
-				@Block
-				Bla bla bla bla
-				Bla bla bla 
-				
-		</thinker>
+		<div class="shelf o-middle">
+			<div class="content cel">
+				<span>HI!</span>
+				<br/>
+				<br/>
+				<div id="disp-test">
+					<span contenteditable>
+						This is a Displacement Filter
+					</span>
+				</div>
+				<br/>
+				<br/>
+				<div id="color-test">
+					<span contenteditable>
+						This is a Color Filter
+					</span>
+					<br/>
+					<img src="https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" />
+				</div>
+			</div>
+		</div>
+		<script>
+			Jotun.run(function(){
+				setInterval(function(){
+					Jotun.one('#disp-test').displacement(Math.random() * .03, 45, Math.random() * 15 + 2);
+					Jotun.one('#color-test').colorTransform(1, Math.random()+.5, Math.random()+.5, Math.random()+.5);
+				}, 100);
+			});
+		</script>
 	</body>                                                                               
 </html>

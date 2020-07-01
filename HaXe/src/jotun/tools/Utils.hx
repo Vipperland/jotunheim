@@ -440,4 +440,18 @@ class Utils{
 		return r.join('&');
 	}
 	
+	#if php 
+		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {
+			return untyped __call__('number_format', n, i, s, t);
+		}
+	#elseif js
+		static public function toFixed(n:Float, i:Int, s:String = '.'):String {
+			var a:String = (cast n).toFixed(i);
+			if (s != '.'){
+				a = a.split('.').join('s');
+			}
+			return a;
+		}
+	#end
+	
 }

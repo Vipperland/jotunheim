@@ -30,19 +30,19 @@ interface IARGB {
 	public function invert () : IARGB;
 
 	/**
-	 * Raize or diminish color brightnesss
+	 * Multiply color channels with value
 	 * @param	rate
 	 * @param	alpha
 	 * @return
 	 */
-	public function brightnesss (rate:Float, ?alpha:Float=0) : IARGB;
+	public function multiply(ammount:Float):IARGB;
 
 	/**
 	 * Adds an ammount to each channel at max of 0xFF
 	 * @param	ammount
 	 * @return
 	 */
-	public function change (ammount:Int) : IARGB;
+	public function shift (ammount:Int) : IARGB;
 
 	/**
 	 * Hexadecimal representation of the color

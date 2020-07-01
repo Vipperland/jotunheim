@@ -14,6 +14,7 @@ import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
+import jotun.serial.IOTools;
 import jotun.tools.Ticker;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -546,18 +547,22 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function colorTransform(r:UInt, g:UInt, b:UInt, ?a:UInt = 255):IDisplay {
-		var name:String = 'auto-' + r + 'x' + g + 'x' + b + 'x' + a;
-		XCode.createFilter(name, r / 255, g / 255, b / 255, a / 255);
-		style('filter', 'url(#' + name + ')');
+	public function colorTransform(r:Float, g:Float, b:Float, ?a:Float = 1):IDisplay {
+		var name:String = 'svg_color_' + _uid;
+		XCode.filter(name, a, r, g, b, true);
+		filters(name);
 		return this;
 	}
 	
 	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay {
-		var name:String = 'auto-' + Std.int(freq * 10000) + 'x' + octaves + 'x' + scale + 'x' + seed;
-		XCode.createDisplacement(name, freq, octaves, scale, seed);
-		style('filter', 'url(#' + name + ')');
+		var name:String = 'svg_disp_' + _uid;
+		XCode.displacement(name, freq, octaves, scale, seed, true);
+		filters(name);
 		return this;
+	}
+	
+	public function filters(name:Dynamic):Void {
+		style('filter', 'url(#' + name + ')');
 	}
 	
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {

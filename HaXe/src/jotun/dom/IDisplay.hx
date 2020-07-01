@@ -420,6 +420,11 @@ interface IDisplay extends IQuery {
 	 */
 	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay;
 	
+	/**
+	 * Apply advanced SVG filters
+	 * @param	name
+	 */
+	public function filters(name:Dynamic):Void;
 	
 	/**
 	 * Clear all object data
