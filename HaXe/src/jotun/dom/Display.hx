@@ -820,9 +820,9 @@ class Display extends Query implements IDisplay {
 	
 	public function autoLoad(?progress:IProgress->Void):Void {
 		all("[sru-load]").each(function(o:IDisplay){
-			var f:String = o.attribute('sru-load');
+			var f:String = o.attribute('jtn-load');
 			var d:Array<String> = f.split('#');
-			o.clearAttribute('sru-load');
+			o.clearAttribute('jtn-load');
 			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, null, progress);
 		});
 	}

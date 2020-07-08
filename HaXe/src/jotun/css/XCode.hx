@@ -91,16 +91,16 @@ class XCode {
 			omnibuild('.cel', '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;');
 			// Pack will align left, center or right
 			omnibuild('.o-left,.o-top-left,.o-bottom-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
-			omnibuild('.v-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
+			omnibuild('.h-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
 			omnibuild('.o-right,.o-top-right,o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
 			// Lift will align top, middle and bottom
 			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
-			omnibuild('.h-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
+			omnibuild('.v-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
 			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', '-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;');
 			// Fill empty spaces around the cells
-			omnibuild('.o-arrange', '-ms-flex-pack:distribute;justify-content: space-around;');
+			omnibuild('.o-outer-fill', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
-			omnibuild('.o-wellfit', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
+			omnibuild('.o-inner-fill', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
 			// Order by right to left instead of left to right
 			omnibuild('.shelf.o-stack,.hack.o-stack', '-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;');
 			omnibuild('.drawer.o-stack', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');

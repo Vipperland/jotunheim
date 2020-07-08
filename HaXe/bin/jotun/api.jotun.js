@@ -6,14 +6,14 @@ $hx_exports["sru"]["modules"] = $hx_exports["sru"]["modules"] || {};
 ;$hx_exports["sru"]["objects"] = $hx_exports["sru"]["objects"] || {};
 ;$hx_exports["sru"]["math"] = $hx_exports["sru"]["math"] || {};
 $hx_exports["jtn"] = $hx_exports["jtn"] || {};
-$hx_exports["jtn"]["modules"] = $hx_exports["jtn"]["modules"] || {};
-;$hx_exports["jtn"]["signals"] = $hx_exports["jtn"]["signals"] || {};
-;$hx_exports["jtn"]["css"] = $hx_exports["jtn"]["css"] || {};
+$hx_exports["jtn"]["css"] = $hx_exports["jtn"]["css"] || {};
 ;$hx_exports["jtn"]["data"] = $hx_exports["jtn"]["data"] || {};
 ;$hx_exports["jtn"]["dom"] = $hx_exports["jtn"]["dom"] || {};
 ;$hx_exports["jtn"]["draw"] = $hx_exports["jtn"]["draw"] || {};
 ;$hx_exports["jtn"]["events"] = $hx_exports["jtn"]["events"] || {};
 ;$hx_exports["jtn"]["game"] = $hx_exports["jtn"]["game"] || {};
+;$hx_exports["jtn"]["net"] = $hx_exports["jtn"]["net"] || {};
+;$hx_exports["jtn"]["signals"] = $hx_exports["jtn"]["signals"] || {};
 ;$hx_exports["jtn"]["tools"] = $hx_exports["jtn"]["tools"] || {};
 ;$hx_exports["jtn"]["utils"] = $hx_exports["jtn"]["utils"] || {};
 var $estr = function() { return js_Boot.__string_rec(this,''); },$hxEnums = $hxEnums || {},$_;
@@ -1870,9 +1870,9 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	}
 	,autoLoad: function(progress) {
 		this.all("[sru-load]").each(function(o) {
-			var f = o.attribute("sru-load");
+			var f = o.attribute("jtn-load");
 			var d = f.split("#");
-			o.clearAttribute("sru-load");
+			o.clearAttribute("jtn-load");
 			o.load(d[0],d.length == 1 ? d[0] : d[1],null,null,null,progress);
 		});
 	}
@@ -2870,12 +2870,7 @@ jotun_net_ILoader.__name__ = "jotun.net.ILoader";
 jotun_net_ILoader.prototype = {
 	__class__: jotun_net_ILoader
 };
-var jotun_net_Loader = $hx_exports["jtn"]["modules"]["Loader"] = function() {
-	this._toload = [];
-	this.signals = new jotun_signals_Signals(this);
-	this.totalLoaded = 0;
-	this.totalFiles = 0;
-	this._fileProgress = 0;
+var jotun_net_Loader = function() {
 };
 jotun_net_Loader.__name__ = "jotun.net.Loader";
 jotun_net_Loader.__interfaces__ = [jotun_net_ILoader];
@@ -2883,78 +2878,16 @@ jotun_net_Loader.prototype = {
 	_getReq: function(u) {
 		return new jotun_net_HttpRequest(u);
 	}
-	,progress: function() {
-		return (this.totalLoaded + (this._fileProgress < 1 ? this._fileProgress : 0)) / this.totalFiles;
-	}
-	,add: function(files) {
-		if(!((files) instanceof Array)) {
-			files = [files];
-		}
-		if(files != null && files.length > 0) {
-			this._toload = this._toload.concat(files);
-			this.totalFiles += files.length;
-		}
-		return this;
-	}
-	,start: function() {
-		if(!this._isBusy) {
-			this._isBusy = true;
-			this._loadNext();
-		}
-		return this;
-	}
-	,_changed: function(file,status,data,request) {
-		this.signals.call(status,{ file : file, data : data, request : request});
-	}
-	,_loadNext: function() {
-		var _gthis = this;
-		if(this._toload.length > 0) {
-			var f = this._toload.shift();
-			var r = this._getReq(f);
-			this._changed(f,"started",null,r);
-			r.async = true;
-			r.onError = function(e) {
-				++_gthis.totalLoaded;
-				_gthis._changed(f,"error",e,r);
-				_gthis._loadNext();
-			};
-			r.onData = function(d) {
-				++_gthis.totalLoaded;
-				jotun_Jotun.resources.register(f,d);
-				_gthis._changed(f,"loaded",d,r);
-				_gthis._loadNext();
-			};
-			r.request("GET",null,$bind(this,this._onLoadProgress));
-		} else {
-			this._isBusy = false;
-			this._complete();
-		}
-	}
-	,_onLoadProgress: function(file,loaded,total) {
-		this._fileProgress = loaded / total;
-		this.signals.call("progress",{ file : file, loaded : loaded, total : total, progress : this._fileProgress});
-	}
-	,_error: function(e) {
-		this.lastError = typeof(e) == "string" ? new jotun_errors_Error(-1,e,this) : new jotun_errors_Error(-1,"Unknow",{ content : e, loader : this});
-		this.signals.call("error",this.lastError);
-	}
-	,_complete: function() {
-		this.signals.call("completed");
-	}
 	,module: function(file,data,handler,progress) {
-		var _gthis = this;
 		var r = this._getReq(file);
 		r.async = true;
-		this._changed(file,"started",data,r);
 		r.onData = function(d) {
 			jotun_Jotun.resources.register(file,d);
-			_gthis._changed(file,"loaded",d,r);
 			if(handler != null) {
 				handler(new jotun_net_Request(true,d,null,file));
 			}
 		};
 		r.onError = function(d) {
-			_gthis._changed(file,"error",d,r);
 			if(handler != null) {
 				handler(new jotun_net_Request(false,null,new jotun_errors_Error(-1,d),file));
 			}
@@ -2975,7 +2908,6 @@ jotun_net_Loader.prototype = {
 		if(method == null) {
 			method = "POST";
 		}
-		var _gthis = this;
 		if(method != null) {
 			method = method.toUpperCase();
 		}
@@ -2986,7 +2918,6 @@ jotun_net_Loader.prototype = {
 			url += (url.indexOf("?") == -1 ? "?" : "&") + jotun_tools_Utils.paramsOf(data);
 		}
 		var r = this._getReq(url);
-		this._changed(url,"started",data,r);
 		r.async = true;
 		if(!is_data && data != null) {
 			jotun_utils_Dice.All(data,$bind(r,r.addParameter));
@@ -3003,20 +2934,17 @@ jotun_net_Loader.prototype = {
 					if(options.responseType == "blob") {
 						var f = new FileReader();
 						f.onloadend = function(e) {
-							_gthis._changed(url,"loaded",d,r);
 							handler(new jotun_net_Request(true,e.target.result,null,url,hdrs));
 						};
 						f.readAsDataURL(d);
 						return;
 					}
 				} else {
-					_gthis._changed(url,"loaded",d,r);
 					handler(new jotun_net_Request(true,d,null,url,hdrs));
 				}
 			}
 		};
 		r.onError = function(d) {
-			_gthis._changed(url,"error",d,r);
 			if(handler != null) {
 				handler(new jotun_net_Request(false,null,new jotun_errors_Error(-1,d)));
 			}
@@ -3030,57 +2958,7 @@ jotun_net_Loader.prototype = {
 		} : null;
 		r.request(method,data,tmp,options);
 	}
-	,get: function(module,data) {
-		return jotun_Jotun.resources.get(module,data);
-	}
 	,__class__: jotun_net_Loader
-};
-var jotun_signals_ISignals = function() { };
-jotun_signals_ISignals.__name__ = "jotun.signals.ISignals";
-jotun_signals_ISignals.prototype = {
-	__class__: jotun_signals_ISignals
-};
-var jotun_signals_Signals = $hx_exports["jtn"]["signals"]["Signal"] = function(to) {
-	this.object = to;
-	this.reset();
-};
-jotun_signals_Signals.__name__ = "jotun.signals.Signals";
-jotun_signals_Signals.__interfaces__ = [jotun_signals_ISignals];
-jotun_signals_Signals.prototype = {
-	_c: function(n) {
-		if(!this.has(n)) {
-			this._l[n] = new jotun_signals_Pipe(n,this);
-		}
-		return Reflect.field(this._l,n);
-	}
-	,has: function(name) {
-		return Object.prototype.hasOwnProperty.call(this._l,name);
-	}
-	,get: function(name) {
-		return this._c(name);
-	}
-	,remove: function(name,handler) {
-		return this._c(name).remove(handler);
-	}
-	,add: function(name,handler) {
-		return this._c(name).add(handler);
-	}
-	,call: function(name,data) {
-		if(this.has(name)) {
-			this.get(name).call(data);
-		}
-		return this;
-	}
-	,reset: function(name) {
-		if(name != null) {
-			if(this.has(name)) {
-				this.get(name).reset();
-			}
-		} else {
-			this._l = [];
-		}
-	}
-	,__class__: jotun_signals_Signals
 };
 var jotun_modules_ModLib = $hx_exports["sru"]["modules"]["ModLib"] = function() {
 	this._onMount = [];
@@ -3127,6 +3005,7 @@ jotun_modules_ModLib.prototype = {
 		var sur = content.split("[!MOD!]");
 		if(sur.length > 1) {
 			jotun_Jotun.log("ModLib => PARSING " + file,1);
+			var mountAfter = [];
 			jotun_utils_Dice.All(sur,function(p,v) {
 				if(p > 0) {
 					var i = v.indexOf("}]");
@@ -3150,18 +3029,26 @@ jotun_modules_ModLib.prototype = {
 							while(HxOverrides.substr(content,-1,null) == "\r") content = content.substring(0,content.length - 1);
 						}
 						if(mod.require != null) {
-							var dependencies = mod.require.split(";");
-							jotun_Jotun.log("\tModLib => " + path + " VERIFYING...",1);
-							jotun_utils_Dice.Values(dependencies,function(v) {
-								var set = Reflect.field(jotun_modules_ModLib.CACHE,v.toLowerCase());
-								if(set == null) {
-									jotun_Jotun.log("\t\tModLib => REQUIRED " + v,2);
+							jotun_Jotun.log("\tModLib => " + path + " INCLUDING MODULES...",1);
+							jotun_utils_Dice.Values(mod.require,function(v) {
+								if(_gthis.exists(v)) {
+									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
 								} else {
-									content = content.split("{{@include:" + v + "}}").join(set);
+									jotun_Jotun.log("\t\tModLib => MISSING '" + v + "'",2);
 								}
 							});
 						}
+						if(mod.inject != null) {
+							var injection = mod.inject;
+							jotun_Jotun.log("\tModLib => " + path + " INJECTING MODULES...",1);
+							if(_gthis.exists(injection)) {
+								content = _gthis.get(injection).split("{{@injection}}").join(content);
+							} else {
+								jotun_Jotun.log("\t\tModLib => MISSING '" + v + "'",2);
+							}
+						}
 						if(mod.data != null) {
+							mod.data = JSON.parse(mod.data);
 							content = jotun_utils_Filler.to(content,mod.data);
 						}
 						if(mod.wrap != null) {
@@ -3182,10 +3069,7 @@ jotun_modules_ModLib.prototype = {
 							}
 						}
 						if(mod.target != null) {
-							var t = jotun_Jotun.one(mod.target);
-							if(t != null) {
-								t.addChild(_gthis.build(mod.name));
-							}
+							mountAfter[mountAfter.length] = mod;
 						}
 						var n = mod.name.toLowerCase();
 						jotun_modules_ModLib.CACHE[n] = content;
@@ -3195,6 +3079,14 @@ jotun_modules_ModLib.prototype = {
 					}
 				}
 			});
+			if(mountAfter.length > 0) {
+				jotun_utils_Dice.Values(mountAfter,function(v) {
+					var o = jotun_Jotun.one(v.target);
+					if(o != null) {
+						o.mount(v.name,v.data);
+					}
+				});
+			}
 		} else {
 			var ext = file.split(".").pop();
 			switch(ext) {
@@ -3241,34 +3133,23 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( _g ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 234, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 251, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
 	}
-	,fill: function(module,data,sufix) {
-		return jotun_utils_Filler.to(this.get(module),data,sufix);
-	}
-	,build: function(module,data,each) {
-		var _gthis = this;
-		var d = null;
-		var signature = Reflect.field(jotun_modules_ModLib.CACHE,"@" + module.toLowerCase());
-		if(each != null && ((data) instanceof Array)) {
-			d = new jotun_dom_Div();
-			jotun_utils_Dice.Values(data,function(v) {
-				v = new jotun_dom_Display().writeHtml(_gthis.get(module,v));
-				v = each(v);
-				if(v != null && js_Boot.__implements(v,jotun_dom_IDisplay)) {
-					d.attribute("sru-mod",signature);
-					d.addChild(v);
-				}
-			});
-		} else {
-			d = new jotun_dom_Display().writeHtml(this.get(module,data));
-			d.children().attribute("sru-mod",signature);
+	,build: function(module,data) {
+		if(jotun_Jotun.agent.mobile && this.exists(module + "::mobile")) {
+			module += "::mobile";
 		}
-		this._afterMount(d,module);
-		return d;
+		var signature = Reflect.field(jotun_modules_ModLib.CACHE,"@" + module.toLowerCase());
+		var result = new jotun_dom_Display().writeHtml(this.get(module,data));
+		result.children().attribute("sru-mod",signature);
+		if(data != null) {
+			result.react(data);
+		}
+		this._afterMount(result,module);
+		return result;
 	}
 	,__class__: jotun_modules_ModLib
 };
@@ -6429,6 +6310,76 @@ jotun_modules_IMod.__name__ = "jotun.modules.IMod";
 jotun_modules_IMod.prototype = {
 	__class__: jotun_modules_IMod
 };
+var jotun_net_BulkLoader = $hx_exports["jtn"]["net"]["BulkLoader"] = function() {
+	this._toload = [];
+	this.signals = new jotun_signals_Signals(this);
+	this.totalLoaded = 0;
+	this.totalFiles = 0;
+	this._fileProgress = 0;
+};
+jotun_net_BulkLoader.__name__ = "jotun.net.BulkLoader";
+jotun_net_BulkLoader.prototype = {
+	_getReq: function(u) {
+		return new jotun_net_HttpRequest(u);
+	}
+	,progress: function() {
+		return (this.totalLoaded + (this._fileProgress < 1 ? this._fileProgress : 0)) / this.totalFiles;
+	}
+	,add: function(files) {
+		if(!((files) instanceof Array)) {
+			files = [files];
+		}
+		if(files != null && files.length > 0) {
+			this._toload = this._toload.concat(files);
+			this.totalFiles += files.length;
+		}
+	}
+	,start: function() {
+		if(!this._isBusy) {
+			this._isBusy = true;
+			this._loadNext();
+		}
+	}
+	,_changed: function(file,status,data,request) {
+		this.signals.call(status,{ file : file, data : data, request : request});
+	}
+	,_loadNext: function() {
+		var _gthis = this;
+		if(this._toload.length > 0) {
+			var f = this._toload.shift();
+			var r = this._getReq(f);
+			this._changed(f,"started",null,r);
+			r.async = true;
+			r.onError = function(e) {
+				++_gthis.totalLoaded;
+				_gthis._changed(f,"error",e,r);
+				_gthis._loadNext();
+			};
+			r.onData = function(d) {
+				++_gthis.totalLoaded;
+				jotun_Jotun.resources.register(f,d);
+				_gthis._changed(f,"loaded",d,r);
+				_gthis._loadNext();
+			};
+			r.request("GET",null,$bind(this,this._onLoadProgress));
+		} else {
+			this._isBusy = false;
+			this._complete();
+		}
+	}
+	,_onLoadProgress: function(file,loaded,total) {
+		this._fileProgress = loaded / total;
+		this.signals.call("progress",{ file : file, loaded : loaded, total : total, progress : this._fileProgress});
+	}
+	,_error: function(e) {
+		this.lastError = typeof(e) == "string" ? new jotun_errors_Error(-1,e,this) : new jotun_errors_Error(-1,"Unknow",{ content : e, loader : this});
+		this.signals.call("error",this.lastError);
+	}
+	,_complete: function() {
+		this.signals.call("completed");
+	}
+	,__class__: jotun_net_BulkLoader
+};
 var jotun_net_HttpRequest = function(url) {
 	this.url = url;
 	this.headers = new haxe_ds_List();
@@ -6933,6 +6884,11 @@ jotun_signals_IPipe.__name__ = "jotun.signals.IPipe";
 jotun_signals_IPipe.prototype = {
 	__class__: jotun_signals_IPipe
 };
+var jotun_signals_ISignals = function() { };
+jotun_signals_ISignals.__name__ = "jotun.signals.ISignals";
+jotun_signals_ISignals.prototype = {
+	__class__: jotun_signals_ISignals
+};
 var jotun_signals_Pipe = function(name,host) {
 	this.calls = 0;
 	this.enabled = true;
@@ -6987,6 +6943,48 @@ jotun_signals_Pipe.prototype = {
 		this._l = [];
 	}
 	,__class__: jotun_signals_Pipe
+};
+var jotun_signals_Signals = $hx_exports["jtn"]["signals"]["Signal"] = function(to) {
+	this.object = to;
+	this.reset();
+};
+jotun_signals_Signals.__name__ = "jotun.signals.Signals";
+jotun_signals_Signals.__interfaces__ = [jotun_signals_ISignals];
+jotun_signals_Signals.prototype = {
+	_c: function(n) {
+		if(!this.has(n)) {
+			this._l[n] = new jotun_signals_Pipe(n,this);
+		}
+		return Reflect.field(this._l,n);
+	}
+	,has: function(name) {
+		return Object.prototype.hasOwnProperty.call(this._l,name);
+	}
+	,get: function(name) {
+		return this._c(name);
+	}
+	,remove: function(name,handler) {
+		return this._c(name).remove(handler);
+	}
+	,add: function(name,handler) {
+		return this._c(name).add(handler);
+	}
+	,call: function(name,data) {
+		if(this.has(name)) {
+			this.get(name).call(data);
+		}
+		return this;
+	}
+	,reset: function(name) {
+		if(name != null) {
+			if(this.has(name)) {
+				this.get(name).reset();
+			}
+		} else {
+			this._l = [];
+		}
+	}
+	,__class__: jotun_signals_Signals
 };
 var jotun_tools_Delayer = $hx_exports["jtn"]["tools"]["Delayer"] = function(handler,time,args,thisObj) {
 	this._this = thisObj;

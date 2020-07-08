@@ -21,7 +21,7 @@
 		</style>
 	</head>
 	<body automator>
-		<div class="shelf o-middle">
+		<div class="shelf o-middle hidden">
 			<div class="content cel">
 				<span>HI!</span>
 				<br/>
@@ -43,11 +43,13 @@
 			</div>
 		</div>
 		<script>
+			Jotun.logger.maxLvLog(6);
 			Jotun.run(function(){
-				setInterval(function(){
-					Jotun.one('#disp-test').displacement(Math.random() * .03, 45, Math.random() * 15 + 2);
-					Jotun.one('#color-test').colorTransform(1, Math.random()+.5, Math.random()+.5, Math.random()+.5);
-				}, 100);
+				//setInterval(function(){
+				//	Jotun.one('#disp-test').displacement(Math.random() * .03, 45, Math.random() * 15 + 2);
+				//	Jotun.one('#color-test').colorTransform(1, Math.random()+.5, Math.random()+.5, Math.random()+.5);
+				//}, 100);
+				Jotun.module('jotun/modules/sample/modsample.html');
 			});
 		</script>
 	</body>                                                                               

@@ -8,11 +8,9 @@ interface IMod {
 	public var id:String;
 	public var name:String;
 	public var target:String;
-	public var require:String;
-	public var filler:String;
-	public var repeat:String;
+	public var require:Array<String>;
+	public var inject:String;
 	public var type:String;
 	public var wrap:String;
-	public var version:String;
 	public var data:Dynamic;
 }

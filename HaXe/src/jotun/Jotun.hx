@@ -107,8 +107,6 @@ class Jotun {
 				_loadPool = [];
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				//Automator._init();
-				//log("Jotun => LOADING...", 1);
 				Reflect.deleteField(Jotun, '_preInit');
 				var state:String = Browser.document.readyState;
 				if (state == 'complete' || state == 'interactive'){

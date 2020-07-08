@@ -30,11 +30,15 @@ class Logger{
 	}
 	
 	public function mute():Void {
-		if (Lambda.indexOf(_events, query) != -1) _events.splice(0, 1);
+		if (Lambda.indexOf(_events, query) != -1) {
+			_events.splice(0, 1);
+		}
 	}
 	
 	public function unmute():Void {
-		if (Lambda.indexOf(_events, query) == -1) _events.unshift(query);
+		if (Lambda.indexOf(_events, query) == -1) {
+			_events.unshift(query);
+		}
 	}
 	
 	public function listen(handler:Dynamic->Int->Void):Void {
@@ -42,7 +46,9 @@ class Logger{
 	}
 	
 	public function push(q:Dynamic, type:Int) {
-		Dice.Values(_events, function(v:Dynamic->Int->Void) { 	v(q, type); });
+		Dice.Values(_events, function(v:Dynamic->Int->Void) {
+			v(q, type); 
+		});
 	}
 	
 	public function dump(q:Dynamic):Void {

@@ -1,0 +1,56 @@
+[Module:{"type":"script"}]
+	<script>
+	  (function(){
+		alert('HI!');
+	  });
+	</script>
+[Module:{"type":"style"}]
+	<style>
+	  body {
+		padding: 15px;
+	  }
+	  body:before {
+		content: "HI!";
+		font-size: 24px;
+	  }
+	  .test {
+		font-size: 18px;
+		padding: 15px;
+	  }
+	</style>
+[Module:{"name":"sample-module","target":"body"}]
+	<div class="test desktop">
+		<span>
+			This a simple module.
+			<br/>
+			Because of the "target" property, Jotun.one('body').mount("sample-module");
+		</span>
+	</div>
+[Module:{"name":"sample-module::mobile"}]
+	<div class="test mobile">
+		<span>
+			If it's a mobile access, Jotun will prefer the ::mobile alternative for the content.
+			<br/>
+			Because of the "target" property, Jotun.one('body').mount("sample-module");
+		</span>
+	</div>
+[Module:{"name":"sample-dependency-1"}]
+	<span style="color:blue">
+		This is the content from a dependency mod.
+	</span>
+[Module:{"name":"sample-dependency-2"}]
+	<span style="color:green">
+		This is the content from another dependency mod.
+	</span>
+[Module:{"name":"sample-dependency","require":["sample-dependency-1","sample-dependency-2"],"target":"body"}]
+	<div class="test">
+		<span>
+			This block is a test for dependency inclusion. When a mod "require" another mods, their contents will be write in this module. 
+			<br/>
+			<p>
+				"sample-dependency-1" content is: {{@include:sample-dependency-1}}
+				<br/>
+				"sample-dependency-2" content is: {{@include:sample-dependency-2}}
+			</p>
+		</span>
+	</div>

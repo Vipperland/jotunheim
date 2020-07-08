@@ -2,6 +2,7 @@ package jotun.tools;
 import haxe.Json;
 import haxe.Log;
 import jotun.data.DataSet;
+import jotun.net.BulkLoader;
 import jotun.utils.IDiceRoll;
 
 #if js

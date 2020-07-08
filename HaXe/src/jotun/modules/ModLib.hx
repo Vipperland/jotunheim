@@ -100,6 +100,9 @@ class ModLib {
 		var sur:Array<String> = content.split("[!MOD!]");
 		if (sur.length > 1) {
 			Jotun.log("ModLib => PARSING " + file, 1);
+			#if js 
+				var mountAfter:Array<IMod> = [];
+			#end
 			Dice.All(sur, function(p:Int, v:String) {
 				if(p > 0){
 					var i:Int = v.indexOf("}]");
@@ -127,18 +130,26 @@ class ModLib {
 							}
 						}
 						if (mod.require != null) {
-							var dependencies:Array<String> = mod.require.split(";");
-							Jotun.log("	ModLib => " + path + " VERIFYING...", 1);
-							Dice.Values(dependencies, function(v:String) {
-								var set:String = Reflect.field(CACHE, v.toLowerCase());
-								if (set == null){
-									Jotun.log("		ModLib => REQUIRED " + v, 2);
+							Jotun.log("	ModLib => " + path + " INCLUDING MODULES...", 1);
+							Dice.Values(mod.require, function(v:String) {
+								if (exists(v)){
+									content = content.split("{{@include:" + v + "}}").join(get(v));
 								} else{
-									content = content.split("{{@include:" + v + "}}").join(set);
+									Jotun.log("		ModLib => MISSING '" + v + "'", 2);
 								}
 							});
 						}
+						if (mod.inject != null) {
+							var injection:String = mod.inject;
+							Jotun.log("	ModLib => " + path + " INJECTING MODULES...", 1);
+							if (exists(injection)){
+								content = get(injection).split("{{@injection}}").join(content);
+							}else{
+								Jotun.log("		ModLib => MISSING '" + v + "'", 2);
+							}
+						}
 						if (mod.data != null){
+							mod.data = Json.parse(mod.data);
 							content = Filler.to(content, mod.data);
 						}
 						if (mod.wrap != null){
@@ -160,10 +171,7 @@ class ModLib {
 								}
 							}
 							if (mod.target != null) {
-								var t:IDisplay = Jotun.one(mod.target);
-								if (t != null){
-									t.addChild(build(mod.name));
-								}
+								mountAfter[mountAfter.length] = mod;
 							}
 							// ***
 						#end
@@ -173,8 +181,18 @@ class ModLib {
 					}else {
 						Jotun.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", 3);
 					}
-			}
+				}
 			});
+			#if js 
+				if (mountAfter.length > 0){
+					Dice.Values(mountAfter, function(v:IMod){
+						var o:IDisplay = Jotun.one(v.target);
+						if (o != null){
+							o.mount(v.name, v.data);
+						}
+					});
+				}
+			#end
 		}else {
 			#if js
 				var ext:String = file.split('.').pop();
@@ -205,7 +223,6 @@ class ModLib {
 			#else
 				Reflect.setField(CACHE, file.toLowerCase(), content);
 			#end
-			
 		}
 	}
 	
@@ -237,17 +254,6 @@ class ModLib {
 		return null;
 	}
 	
-	/**
-	 * Write a content in module
-	 * @param	module
-	 * @param	data
-	 * @param	sufix
-	 * @return
-	 */
-	public function fill(module:String, data:Dynamic, ?sufix:String = null):String {
-		return Filler.to(get(module), data, sufix);
-	}
-	
 	#if php
 		
 		// ============================= PHP ONLY =============================
@@ -271,16 +277,8 @@ class ModLib {
 		 * @param	repeat
 		 * @param	sufix
 		 */
-		public function print(name:String, ?data:Dynamic, ?repeat:Bool, ?sufix:String = null):Void {
-			if (repeat) {
-				var module:String = get(name);
-				Dice.Values(data, function(v:Dynamic) {
-					Lib.print(Filler.to(module, v, sufix));
-				});
-			}else {
-				Lib.print(fill(name, data, sufix));
-				
-			}
+		public function print(name:String, ?data:Dynamic):Void {
+			Lib.print(get(name, data));
 		}
 		
 	#elseif js
@@ -290,27 +288,20 @@ class ModLib {
 		 * Write module in a DOM element
 		 * @param	module
 		 * @param	data
-		 * @return
+		 * @return	The display created from Module
 		 */
-		public function build(module:String, ?data:Dynamic, ?each:IDisplay->IDisplay = null):IDisplay {
-			var d:IDisplay = null;
-			var signature:String = Reflect.field(CACHE, '@' + module.toLowerCase());
-			if (each != null && Std.is(data, Array)) {
-				d = new Div();
-				Dice.Values(data, function(v:Dynamic) {
-					v = new Display().writeHtml(get(module, v));
-					v = each(v);
-					if (v != null && Std.is(v, IDisplay)) {
-						d.attribute('sru-mod', signature);
-						d.addChild(v);
-					}
-				});
-			}else {
-				d = new Display().writeHtml(get(module, data));
-				d.children().attribute('sru-mod', signature);
+		public function build(module:String, ?data:Dynamic):IDisplay {
+			if (Jotun.agent.mobile && exists(module + '::mobile')){
+				module += '::mobile';
 			}
-			_afterMount(d, module);
-			return d;
+			var signature:String = Reflect.field(CACHE, '@' + module.toLowerCase());
+			var result:IDisplay = new Display().writeHtml(get(module, data));
+			result.children().attribute('sru-mod', signature);
+			if (data != null){
+				result.react(data);
+			}
+			_afterMount(result, module);
+			return result;
 		}
 		
 	#end;
