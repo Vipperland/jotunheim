@@ -79,7 +79,7 @@ class Query extends Resolve implements IQuery {
 					isMethod = Reflect.isFunction(o);
 				#elseif php
 					if (php.Syntax.codeDeref("method_exists({0}, {1})", this, method)){
-						o = method;
+						o = Reflect.field(this, method);
 						isMethod = true;
 					}
 				#end
@@ -87,7 +87,6 @@ class Query extends Resolve implements IQuery {
 					_log[_log.length] = q;
 					// Call method, if is a function and use the argument array, recursive call if result is a string and result the last one
 					if (isMethod){
-						o = Reflect.field(this, o);
 						o = Reflect.callMethod(this, o, tk);
 						if (o != null && Std.is(o, String)){
 							_batchExec(o);

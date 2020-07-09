@@ -443,7 +443,7 @@ class Utils{
 	
 	#if php 
 		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {
-			return untyped __call__('number_format', n, i, s, t);
+			return php.Syntax.codeDeref('number_format({0},{1},{2},{3})', n, i, s, t);
 		}
 	#elseif js
 		static public function toFixed(n:Float, i:Int, s:String = '.'):String {

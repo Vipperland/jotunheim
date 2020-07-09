@@ -111,16 +111,14 @@ class Header {
 			}else {
 				compress = null;
 			}
-			var length:Int = data.length;
-			if(compress != null){
+			if (compress != null){
 				data = php.Syntax.codeDeref('gzcompress({0},{1})', data, 1);
 				Web.setHeader('Content-Encoding', compress);
 			}
-			Web.setHeader('Content-Length', Std.string(data.length));
 			if (compress != null){
-				Lib.print('\x1f' + php.Syntax.codeDeref('chr({0})', 139) + '\x08\x00\x00\x00\x00\x00');
+				data = '\x1f' + php.Syntax.codeDeref('chr({0})', 139) + '\x08\x00\x00\x00\x00\x00' + data;
 			}
-			Lib.print(data.substr(0, length));
+			Lib.print(data);
 		}
 	}
 	
