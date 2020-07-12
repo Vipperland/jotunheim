@@ -1,5 +1,4 @@
 package jotun.thread;
-import js.Browser;
 
 /**
  * ...
