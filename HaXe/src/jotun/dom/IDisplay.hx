@@ -448,7 +448,7 @@ interface IDisplay extends IQuery {
 	 * @param	offset y
 	 * @return
 	 */
-	public function lookAt(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay;
+	public function lookAt(?time:Float, ?y:Int, ?x:Int):IDisplay;
 	
 	/**
 	 * Re-run all external loaded scripts

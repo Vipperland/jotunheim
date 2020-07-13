@@ -799,8 +799,8 @@ class Display extends Query implements IDisplay {
 		}, headers, progress);
 	}
 	
-	public function lookAt(?time:Float, ?ease:Dynamic, ?x:Int, ?y:Int):IDisplay {
-		Jotun.document.scrollTo(this, time, ease, x, y);
+	public function lookAt(?time:Float, ?y:Int, ?x:Int):IDisplay {
+		Jotun.document.scrollTo(this, time, y, x);
 		return this;
 	}
 	
@@ -808,7 +808,7 @@ class Display extends Query implements IDisplay {
 		all('script').each(cast function(o:Script){
 			o.remove();
 			var u:String = o.attribute('src');
-			if (u != ''){
+			if (Utils.isValid(u)){
 				all('script[src="' + u + '"]' ).remove();
 				var s:Script = new Script();
 				s.src(u);
@@ -819,7 +819,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function autoLoad(?progress:IProgress->Void):Void {
-		all("[sru-load]").each(function(o:IDisplay){
+		all("[jtn-load]").each(function(o:IDisplay){
 			var f:String = o.attribute('jtn-load');
 			var d:Array<String> = f.split('#');
 			o.clearAttribute('jtn-load');

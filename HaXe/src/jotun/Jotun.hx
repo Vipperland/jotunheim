@@ -13,13 +13,10 @@ import jotun.utils.Dice;
 
 #if js
 	import js.Browser;
-	import js.html.Element;
 	import js.html.Event;
 	//import jotun.ai.Thinker;
-	import jotun.css.XCode;
-	import jotun.css.CSSGroup;
-	import jotun.dom.Body;
-	import jotun.dom.Display;
+	import jotun.utils.ITable;
+	import jotun.utils.Table;
 	import jotun.dom.Document;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Script;
@@ -27,10 +24,6 @@ import jotun.utils.Dice;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;
 	import jotun.transitions.Ease;
-	import jotun.utils.ITable;
-	import jotun.utils.SearchTag;
-	import jotun.utils.Table;
-	import jotun.gaming.actions.Events;
 #elseif php
 	import php.Lib;
 	import jotun.data.DataCache;

@@ -1,6 +1,5 @@
 package jotun.modules;
 import haxe.Json;
-import jotun.net.IRequest;
 import jotun.serial.IOTools;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -8,11 +7,9 @@ import jotun.Jotun;
 
 #if js
 	import js.html.Image;
-	import jotun.css.XCode;
 	import jotun.dom.Style;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Display;
-	import jotun.dom.Div;
 	import jotun.dom.Script;
 #elseif php
 	import php.Lib;
@@ -307,3 +304,13 @@ class ModLib {
 	#end;
 	
 }
+
+/*
+	[Module:{
+		"type"		:"css|js|style|script|json|data",		// Unique module identifier
+		"name"		:"testModule",						// Unique module identifier
+		"target"		:"selector",							// Auto append module in target selector
+		"require"	:["modA","modB","...","modN"],			// Dependencies that will be writed in module
+		"inject"		:"modName",							// Inject this content in another module and override with the result
+	}]
+*/

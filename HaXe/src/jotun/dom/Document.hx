@@ -1,23 +1,17 @@
 package jotun.dom;
-import haxe.Json;
-import haxe.Log;
 import jotun.Jotun;
-import js.Browser;
-import js.lib.Error;
-import js.html.AnimationEvent;
-import js.html.BeforeUnloadEvent;
-import js.html.DOMRect;
-import js.html.Element;
-import js.html.Event;
-import js.html.MouseEvent;
 import jotun.css.XCode;
 import jotun.events.Dispatcher;
-import jotun.events.IDispatcher;
-import jotun.events.IEvent;
 import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.tools.Utils;
 import jotun.utils.ITable;
+import js.Browser;
+import js.html.BeforeUnloadEvent;
+import js.html.Element;
+import js.html.Event;
+import js.html.MouseEvent;
+import js.lib.Error;
 
 /**
  * ...
@@ -28,20 +22,50 @@ class Document extends Display {
 	
 	static private var __doc__:Document;
 	
+	/**
+	 * Singleton Document
+	 * @return
+	 */
 	static public function ME():Document {
 		return __doc__ == null ? new Document() : __doc__;
 	}
-	
-	public var body:Body;
-	
-	public var head:Head;
 	
 	private var __scroll__:Dynamic = { x:0, y:0 };
 	
 	private var __cursor__:Dynamic = { x:0, y:0 };
 	
+	/**
+	 * Document body
+	 */
+	public var body:Body;
+	
+	/**
+	 * Document head
+	 */
+	public var head:Head;
+	
 	private function _applyScroll():Void {
 		Browser.window.scroll(__scroll__.x, __scroll__.y);
+	}
+	
+	private function __init__() {
+		Browser.window.addEventListener('scroll', _hookScroll);
+	}
+	
+	private function _hookScroll(e:Event):Void {
+		events.scroll().call();
+	}
+	
+	private function _onCloseWindow(e:BeforeUnloadEvent):Bool {
+		if (e == null) {
+			e = js.Syntax.code("window.event");
+		}
+		e.returnValue = true;
+		if (e.stopPropagation != null) {
+			e.stopPropagation();
+			e.preventDefault();
+		}
+		return e.returnValue;
 	}
 	
 	public function new() {
@@ -57,10 +81,10 @@ class Document extends Display {
 		}
 	}
 	
-	function __init__() {
-		Browser.window.addEventListener('scroll', _hookScroll);
-	}
-	
+	/**
+	 * Show window/tab exit confirmation dialog
+	 * @param	mode
+	 */
 	public function preventClose(mode:Bool):Void {
 		if (mode){
 			Browser.window.addEventListener('beforeunload', _onCloseWindow);
@@ -69,47 +93,45 @@ class Document extends Display {
 		}
 	}
 	
-	function _onCloseWindow(e:BeforeUnloadEvent):Bool {
-		if (e == null) {
-			e = js.Syntax.code("window.event");
-		}
-		e.returnValue = true;
-		if (e.stopPropagation != null) {
-			e.stopPropagation();
-			e.preventDefault();
-		}
-		return e.returnValue;
-	}
-	
+	/**
+	 * Update body reference
+	 */
 	public function checkBody():Void {
 		body = new Body(js.Syntax.code("document.body"));
-		if (body.hasAttribute('automator')){
+		if (body.hasAttribute('xcode')){
 			XCode.reset();
 		}
 	}
 	
-	private function _hookScroll(e:Event):Void {
-		events.scroll().call();
-	}
-	
+	/**
+	 * Set current scroll point on Window element
+	 * @param	x
+	 * @param	y
+	 */
 	public function scroll(x:Float, y:Float):Void {
 		Browser.window.scroll(x, y);
 	}
 	
+	/**
+	 * Change current scroll by ammount
+	 * @param	x
+	 * @param	y
+	 */
 	override public function addScroll(x:Float, y:Float):Void {
 		var current:IPoint = getScroll();
 		Browser.window.scroll(current.x + x, current.y + y);
 	}
 	
-	public function getScrollRange(?o:IPoint = null, ?pct:Bool = false):IPoint {
+	/**
+	 * Return current scroll range value (from 0 to 1)
+	 * @param	o
+	 * @return
+	 */
+	public function getScrollRange(?o:IPoint = null):IPoint {
 		var current:IPoint = getScroll(o);
 		if (body != null) {
 			current.x /= body.maxScrollX();
 			current.y /= body.maxScrollY();
-			if (pct) {
-				current.x *= 100;
-				current.y *= 100;
-			}
 		}else {
 			current.reset();
 		}
@@ -133,13 +155,27 @@ class Document extends Display {
 		return o;
 	}
 	
-	public function scrollTo(target:Dynamic, time:Float = 1, ease:Dynamic = null, offX:Int = 0, offY:Int = 0):Void {
-		if (Std.is(target, String)) 	target = Jotun.one(target).element;
-		if (Std.is(target, IDisplay)) 	target = target.element;
+	/**
+	 * Scroll to element position
+	 * @param	target
+	 * @param	time
+	 * @param	offY
+	 * @param	offX
+	 */
+	public function scrollTo(target:Dynamic, time:Float = 1, offY:Int = 100, offX:Int = 0):Void {
+		if (Std.is(target, String)){
+			target = Jotun.one(target).element;
+		}
+		if (Std.is(target, IDisplay)){
+			target = target.element;
+		}
 		var pos:IPoint = Display.getPosition(target);
 		scroll(pos.x - offX, pos.y - offY);
 	}
 	
+	/**
+	 * Track the mouse/touch position
+	 */
 	public function trackCursor():Void {
 		if (__cursor__.enabled) {
 			return;
@@ -151,20 +187,38 @@ class Document extends Display {
 		});
 	}
 	
+	/**
+	 * Current clientX
+	 * @return
+	 */
 	public function cursorX():Int {
 		return __cursor__.x;
 	}
 	
+	/**
+	 * Current clientY
+	 * @return
+	 */
 	public function cursorY():Int {
 		return __cursor__.y;
 	}
 	
+	/**
+	 * Current selected element
+	 * @return
+	 */
 	public function getFocused():IDisplay {
 		var el:Element = Browser.document.activeElement;
 		return el != null ? Utils.displayFrom(el) : null;
 	}
 	
-	public function print(selector:String, ?exclude:String = "button, img, .no-print"):Bool {
+	/**
+	 * Print a custom element content
+	 * @param	selector
+	 * @param	exclude
+	 * @return
+	 */
+	public function print(selector:String, ?exclude:String):Bool {
 		var i:ITable = body.children();
 		var success:Bool = false;
 		if (i.length() > 0) {
@@ -179,10 +233,9 @@ class Document extends Display {
 			if (content.length > 0) {
 				var r:IDisplay = new Div();
 				r.mount(content);
-				r.all(exclude).remove();
-				//r.children().each(function(v:IDisplay) {
-					//Log.trace(v.trueStyle());
-				//});
+				if (Utils.isValid(exclude)){
+					r.all(exclude).remove();
+				}
 				body.addChild(r);
 				try {
 					Browser.window.print();

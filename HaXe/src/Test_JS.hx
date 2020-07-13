@@ -1,9 +1,6 @@
 package;
 
-import jotun.gaming.dataform.DataCollection;
-import jotun.gaming.dataform.DataObject;
 import jotun.idb.WebDB;
-import jotun.idb.WebDBTable;
 
 /**
  * ...

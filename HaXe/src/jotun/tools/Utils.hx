@@ -7,13 +7,14 @@ import jotun.utils.IDiceRoll;
 
 #if js
 
-	import js.Lib;
 	import js.Browser;
 	import js.html.Attr;
 	import js.html.Blob;
 	import js.html.Element;
 	import js.html.File;
 	import js.html.NamedNodeMap;
+	import jotun.css.XCode;
+	import jotun.css.CSSGroup;
 	import jotun.dom.A;
 	import jotun.dom.Area;
 	import jotun.dom.Audio;
@@ -80,6 +81,8 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Video;
 	import jotun.draw.Book;
 	import jotun.draw.Paper;
+	import jotun.utils.SearchTag;
+	import jotun.gaming.actions.Events;
 	
 #end
 

@@ -1094,7 +1094,6 @@ jotun_objects_Query.prototype = $extend(jotun_objects_Resolve.prototype,{
 			if(o != null && isMethod) {
 				this._log[this._log.length] = q;
 				if(isMethod) {
-					o = Reflect.field(this,o);
 					o = o.apply(this,tk);
 					if(o != null && typeof(o) == "string") {
 						this._batchExec(o);
@@ -1850,8 +1849,8 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 			}
 		},headers,progress);
 	}
-	,lookAt: function(time,ease,x,y) {
-		jotun_Jotun.document.scrollTo(this,time,ease,x,y);
+	,lookAt: function(time,y,x) {
+		jotun_Jotun.document.scrollTo(this,time,y,x);
 		return this;
 	}
 	,redoScripts: function() {
@@ -1924,12 +1923,8 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 	,__init__: function() {
 		window.addEventListener("scroll",$bind(this,this._hookScroll));
 	}
-	,preventClose: function(mode) {
-		if(mode) {
-			window.addEventListener("beforeunload",$bind(this,this._onCloseWindow));
-		} else {
-			window.removeEventListener("beforeunload",$bind(this,this._onCloseWindow));
-		}
+	,_hookScroll: function(e) {
+		this.events.scroll().call();
 	}
 	,_onCloseWindow: function(e) {
 		if(e == null) {
@@ -1942,14 +1937,18 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return e.returnValue;
 	}
-	,checkBody: function() {
-		this.body = new jotun_dom_Body(document.body);
-		if(this.body.hasAttribute("automator")) {
-			jotun_css_XCode.reset();
+	,preventClose: function(mode) {
+		if(mode) {
+			window.addEventListener("beforeunload",$bind(this,this._onCloseWindow));
+		} else {
+			window.removeEventListener("beforeunload",$bind(this,this._onCloseWindow));
 		}
 	}
-	,_hookScroll: function(e) {
-		this.events.scroll().call();
+	,checkBody: function() {
+		this.body = new jotun_dom_Body(document.body);
+		if(this.body.hasAttribute("xcode")) {
+			jotun_css_XCode.reset();
+		}
 	}
 	,scroll: function(x,y) {
 		window.scroll(x,y);
@@ -1958,18 +1957,11 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		var current = this.getScroll();
 		window.scroll(current.x + x,current.y + y);
 	}
-	,getScrollRange: function(o,pct) {
-		if(pct == null) {
-			pct = false;
-		}
+	,getScrollRange: function(o) {
 		var current = this.getScroll(o);
 		if(this.body != null) {
 			current.x /= this.body.maxScrollX();
 			current.y /= this.body.maxScrollY();
-			if(pct) {
-				current.x *= 100;
-				current.y *= 100;
-			}
 		} else {
 			current.reset();
 		}
@@ -1991,12 +1983,12 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return o;
 	}
-	,scrollTo: function(target,time,ease,offX,offY) {
-		if(offY == null) {
-			offY = 0;
-		}
+	,scrollTo: function(target,time,offY,offX) {
 		if(offX == null) {
 			offX = 0;
+		}
+		if(offY == null) {
+			offY = 100;
 		}
 		if(time == null) {
 			time = 1;
@@ -2036,9 +2028,6 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 	}
 	,print: function(selector,exclude) {
-		if(exclude == null) {
-			exclude = "button, img, .no-print";
-		}
 		var i = this.body.children();
 		var success = false;
 		if(i.length() > 0) {
@@ -2053,7 +2042,9 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 			if(content.length > 0) {
 				var r = new jotun_dom_Div();
 				r.mount(content);
-				r.all(exclude).remove();
+				if(jotun_tools_Utils.isValid(exclude)) {
+					r.all(exclude).remove();
+				}
 				this.body.addChild(r);
 				try {
 					window.print();
@@ -3133,7 +3124,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( _g ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 251, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 248, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
@@ -3456,13 +3447,13 @@ jotun_css_XCode._createGrid = function() {
 		jotun_css_XCode.omnibuild(".drawer","-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;");
 		jotun_css_XCode.omnibuild(".cel","-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;");
 		jotun_css_XCode.omnibuild(".o-left,.o-top-left,.o-bottom-left","-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;");
-		jotun_css_XCode.omnibuild(".v-middle,.o-middle","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
+		jotun_css_XCode.omnibuild(".h-middle,.o-middle","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
 		jotun_css_XCode.omnibuild(".o-right,.o-top-right,o-bottom-right","-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;");
 		jotun_css_XCode.omnibuild(".o-top,.o-top-left,.o-top-right","-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;");
-		jotun_css_XCode.omnibuild(".h-middle,.o-middle","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
+		jotun_css_XCode.omnibuild(".v-middle,.o-middle","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
 		jotun_css_XCode.omnibuild(".o-bottom,.o-bottom-left,.o-bottom-right","-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;");
-		jotun_css_XCode.omnibuild(".o-arrange","-ms-flex-pack:distribute;justify-content: space-around;");
-		jotun_css_XCode.omnibuild(".o-wellfit","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
+		jotun_css_XCode.omnibuild(".o-outer-fill","-ms-flex-pack:distribute;justify-content: space-around;");
+		jotun_css_XCode.omnibuild(".o-inner-fill","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
 		jotun_css_XCode.omnibuild(".shelf.o-stack,.hack.o-stack","-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;");
 		jotun_css_XCode.omnibuild(".drawer.o-stack","-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;");
 		jotun_css_XCode.omnibuild(".hack.o-stack","-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;");
