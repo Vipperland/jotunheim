@@ -6,9 +6,9 @@ $hx_exports["sru"]["modules"] = $hx_exports["sru"]["modules"] || {};
 ;$hx_exports["sru"]["objects"] = $hx_exports["sru"]["objects"] || {};
 ;$hx_exports["sru"]["math"] = $hx_exports["sru"]["math"] || {};
 $hx_exports["jtn"] = $hx_exports["jtn"] || {};
-$hx_exports["jtn"]["css"] = $hx_exports["jtn"]["css"] || {};
+$hx_exports["jtn"]["dom"] = $hx_exports["jtn"]["dom"] || {};
+;$hx_exports["jtn"]["css"] = $hx_exports["jtn"]["css"] || {};
 ;$hx_exports["jtn"]["data"] = $hx_exports["jtn"]["data"] || {};
-;$hx_exports["jtn"]["dom"] = $hx_exports["jtn"]["dom"] || {};
 ;$hx_exports["jtn"]["draw"] = $hx_exports["jtn"]["draw"] || {};
 ;$hx_exports["jtn"]["events"] = $hx_exports["jtn"]["events"] || {};
 ;$hx_exports["jtn"]["game"] = $hx_exports["jtn"]["game"] || {};
@@ -1832,7 +1832,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	,id: function() {
 		return this._uid;
 	}
-	,load: function(url,module,data,handler,headers,progress) {
+	,load: function(url,module,data,handler,progress) {
 		var _gthis = this;
 		if(module != null) {
 			if(jotun_Jotun.resources.exists(module)) {
@@ -1840,14 +1840,14 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 				return;
 			}
 		}
-		jotun_Jotun.request(url,data,null,function(r) {
+		jotun_Jotun.module(url,url,data,function(r) {
 			if(r.success) {
 				_gthis.mount(module,data);
 			}
 			if(handler != null) {
 				handler(r);
 			}
-		},headers,progress);
+		},progress);
 	}
 	,lookAt: function(time,y,x) {
 		jotun_Jotun.document.scrollTo(this,time,y,x);
@@ -1858,7 +1858,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		this.all("script").each(function(o) {
 			o.remove();
 			var u = o.attribute("src");
-			if(u != "") {
+			if(jotun_tools_Utils.isValid(u)) {
 				_gthis.all("script[src=\"" + u + "\"]").remove();
 				var s = new jotun_dom_Script();
 				s.src(u);
@@ -1868,11 +1868,11 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this;
 	}
 	,autoLoad: function(progress) {
-		this.all("[sru-load]").each(function(o) {
+		this.all("[jtn-load]").each(function(o) {
 			var f = o.attribute("jtn-load");
 			var d = f.split("#");
 			o.clearAttribute("jtn-load");
-			o.load(d[0],d.length == 1 ? d[0] : d[1],null,null,null,progress);
+			o.load(d[0],d.length == 1 ? d[0] : d[1],null,null,progress);
 		});
 	}
 	,react: function(data) {
@@ -2076,7 +2076,18 @@ jotun_dom_Head.get = function(q) {
 };
 jotun_dom_Head.__super__ = jotun_dom_Display;
 jotun_dom_Head.prototype = $extend(jotun_dom_Display.prototype,{
-	bind: function(content,type,id) {
+	mount: function(q,data,at) {
+		if(at == null) {
+			at = -1;
+		}
+		if(jotun_Jotun.resources.exists(q)) {
+			jotun_Jotun.resources.build(q,data).children().each($bind(this,this.addChild));
+		} else {
+			this.writeHtml("/* <!> mod:" + q + " not found */");
+		}
+		return this;
+	}
+	,bind: function(content,type,id) {
 		if(content != null) {
 			var s;
 			if(content.length > 1) {
@@ -2813,6 +2824,1746 @@ jotun_data_Logger.prototype = {
 	}
 	,__class__: jotun_data_Logger
 };
+var jotun_dom_A = $hx_exports["jtn"]["dom"]["A"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("a");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_A.__name__ = "jotun.dom.A";
+jotun_dom_A.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_A.__super__ = jotun_dom_Display;
+jotun_dom_A.prototype = $extend(jotun_dom_Display.prototype,{
+	href: function(url) {
+		if(url != null) {
+			this.attribute("href",url);
+		}
+		return this.attribute("href");
+	}
+	,target: function(q) {
+		if(q != null) {
+			this.attribute("target",q);
+		}
+		return this.attribute("target");
+	}
+	,__class__: jotun_dom_A
+});
+var jotun_dom_Area = $hx_exports["jtn"]["dom"]["Area"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("area");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Area.__name__ = "jotun.dom.Area";
+jotun_dom_Area.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Area.__super__ = jotun_dom_Display;
+jotun_dom_Area.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Area
+});
+var jotun_dom_Audio = $hx_exports["jtn"]["dom"]["Audio"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("audio");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Audio.__name__ = "jotun.dom.Audio";
+jotun_dom_Audio.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Audio.__super__ = jotun_dom_Display;
+jotun_dom_Audio.prototype = $extend(jotun_dom_Display.prototype,{
+	src: function(value) {
+		this.attribute("src",value);
+	}
+	,play: function(reset) {
+		if(reset == true) {
+			this.object.currentTime = 0;
+		}
+		this.object.play();
+	}
+	,pause: function() {
+		this.object.pause();
+	}
+	,stop: function() {
+		this.object.pause();
+		this.object.currentTime = 0;
+	}
+	,volume: function(ammount) {
+		if(ammount != null) {
+			this.object.volume = ammount;
+		}
+		return this.object.volume;
+	}
+	,loop: function(value) {
+		if(value != null) {
+			this.object.loop = value;
+		}
+		return this.object.loop;
+	}
+	,__class__: jotun_dom_Audio
+});
+var jotun_dom_B = $hx_exports["jtn"]["dom"]["B"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("B");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_B.__name__ = "jotun.dom.B";
+jotun_dom_B.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_B.__super__ = jotun_dom_Display;
+jotun_dom_B.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_B
+});
+var jotun_dom_Base = $hx_exports["jtn"]["dom"]["Base"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("base");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Base.__name__ = "jotun.dom.Base";
+jotun_dom_Base.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Base.__super__ = jotun_dom_Display;
+jotun_dom_Base.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Base
+});
+var jotun_dom_Body = $hx_exports["jtn"]["dom"]["Body"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("body");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this._body = this.element;
+	window.addEventListener("resize",$bind(this,this._wResize));
+};
+jotun_dom_Body.__name__ = "jotun.dom.Body";
+jotun_dom_Body.__super__ = jotun_dom_Display;
+jotun_dom_Body.prototype = $extend(jotun_dom_Display.prototype,{
+	_wResize: function(e) {
+		this.events.resize().call();
+	}
+	,maxScrollX: function() {
+		return this._body.scrollWidth - jotun_tools_Utils.viewportWidth();
+	}
+	,maxScrollY: function() {
+		return this._body.scrollHeight - jotun_tools_Utils.viewportHeight();
+	}
+	,__class__: jotun_dom_Body
+});
+var jotun_dom_BR = $hx_exports["jtn"]["dom"]["BR"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("br");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_BR.__name__ = "jotun.dom.BR";
+jotun_dom_BR.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_BR.__super__ = jotun_dom_Display;
+jotun_dom_BR.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_BR
+});
+var jotun_dom_Div = $hx_exports["jtn"]["dom"]["Div"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("div");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Div.__name__ = "jotun.dom.Div";
+jotun_dom_Div.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Div.__super__ = jotun_dom_Display;
+jotun_dom_Div.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Div
+});
+var jotun_dom_Button = function(q) {
+	jotun_dom_Div.call(this,q);
+	this.style("cursor","pointer");
+};
+jotun_dom_Button.__name__ = "jotun.dom.Button";
+jotun_dom_Button.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Button.__super__ = jotun_dom_Div;
+jotun_dom_Button.prototype = $extend(jotun_dom_Div.prototype,{
+	__class__: jotun_dom_Button
+});
+var jotun_dom_Canvas = $hx_exports["jtn"]["dom"]["Canvas"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("canvas");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.dom = this.element;
+};
+jotun_dom_Canvas.__name__ = "jotun.dom.Canvas";
+jotun_dom_Canvas.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Canvas.__super__ = jotun_dom_Display;
+jotun_dom_Canvas.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Canvas
+});
+var jotun_dom_Caption = $hx_exports["jtn"]["dom"]["Caption"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("caption");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Caption.__name__ = "jotun.dom.Caption";
+jotun_dom_Caption.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Caption.__super__ = jotun_dom_Display;
+jotun_dom_Caption.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Caption
+});
+var jotun_dom_Col = $hx_exports["jtn"]["dom"]["Col"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("col");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Col.__name__ = "jotun.dom.Col";
+jotun_dom_Col.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Col.__super__ = jotun_dom_Display;
+jotun_dom_Col.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Col
+});
+var jotun_dom_DataList = $hx_exports["jtn"]["dom"]["DataList"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("datalist");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_DataList.__name__ = "jotun.dom.DataList";
+jotun_dom_DataList.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_DataList.__super__ = jotun_dom_Display;
+jotun_dom_DataList.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_DataList
+});
+var jotun_dom_Embed = $hx_exports["jtn"]["dom"]["Embed"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("embed");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Embed.__name__ = "jotun.dom.Embed";
+jotun_dom_Embed.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Embed.__super__ = jotun_dom_Display;
+jotun_dom_Embed.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Embed
+});
+var jotun_dom_FieldSet = $hx_exports["jtn"]["dom"]["FieldSet"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("fieldset");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_FieldSet.__name__ = "jotun.dom.FieldSet";
+jotun_dom_FieldSet.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_FieldSet.__super__ = jotun_dom_Display;
+jotun_dom_FieldSet.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_FieldSet
+});
+var jotun_dom_Form = $hx_exports["jtn"]["dom"]["Form"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("form");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Form.__name__ = "jotun.dom.Form";
+jotun_dom_Form.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Form.__super__ = jotun_dom_Display;
+jotun_dom_Form.prototype = $extend(jotun_dom_Display.prototype,{
+	validate: function() {
+		this.checkSubmit().click();
+		return this.object.checkValidity();
+	}
+	,checkSubmit: function() {
+		if(this._submit == null) {
+			var i;
+			if(!this.exists("input[type=submit]")) {
+				i = new jotun_dom_Input();
+				i.type("submit");
+				i.hide();
+				this.addChild(i);
+			} else {
+				i = this.one("input[type=submit]");
+			}
+			this._submit = i;
+		}
+		return this._submit;
+	}
+	,submit: function() {
+		this.object.submit();
+	}
+	,formData: function() {
+		if(this.inputData == null) {
+			this.inputData = new jotun_data_FormData(this);
+		} else {
+			this.inputData.scan(this);
+		}
+		return this.inputData;
+	}
+	,getAsInput: function(i,update) {
+		if(this._children == null || update == true) {
+			this._children = this.children();
+		}
+		return this._children.obj(i);
+	}
+	,__class__: jotun_dom_Form
+});
+var jotun_dom_H1 = $hx_exports["jtn"]["dom"]["H1"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h1");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H1.__name__ = "jotun.dom.H1";
+jotun_dom_H1.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H1.__super__ = jotun_dom_Display;
+jotun_dom_H1.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H1
+});
+var jotun_dom_H2 = $hx_exports["jtn"]["dom"]["H2"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h2");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H2.__name__ = "jotun.dom.H2";
+jotun_dom_H2.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H2.__super__ = jotun_dom_Display;
+jotun_dom_H2.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H2
+});
+var jotun_dom_H3 = $hx_exports["jtn"]["dom"]["H3"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h3");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H3.__name__ = "jotun.dom.H3";
+jotun_dom_H3.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H3.__super__ = jotun_dom_Display;
+jotun_dom_H3.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H3
+});
+var jotun_dom_H4 = $hx_exports["jtn"]["dom"]["H4"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h4");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H4.__name__ = "jotun.dom.H4";
+jotun_dom_H4.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H4.__super__ = jotun_dom_Display;
+jotun_dom_H4.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H4
+});
+var jotun_dom_H5 = $hx_exports["jtn"]["dom"]["H5"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h5");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H5.__name__ = "jotun.dom.H5";
+jotun_dom_H5.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H5.__super__ = jotun_dom_Display;
+jotun_dom_H5.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H5
+});
+var jotun_dom_H6 = $hx_exports["jtn"]["dom"]["H6"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("h6");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_H6.__name__ = "jotun.dom.H6";
+jotun_dom_H6.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_H6.__super__ = jotun_dom_Display;
+jotun_dom_H6.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_H6
+});
+var jotun_dom_HR = $hx_exports["jtn"]["dom"]["HR"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("hr");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_HR.__name__ = "jotun.dom.HR";
+jotun_dom_HR.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_HR.__super__ = jotun_dom_Display;
+jotun_dom_HR.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_HR
+});
+var jotun_dom_Html = $hx_exports["jtn"]["dom"]["Html"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("html");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Html.__name__ = "jotun.dom.Html";
+jotun_dom_Html.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Html.__super__ = jotun_dom_Display;
+jotun_dom_Html.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Html
+});
+var jotun_dom_I = $hx_exports["jtn"]["dom"]["I"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("I");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_I.__name__ = "jotun.dom.I";
+jotun_dom_I.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_I.__super__ = jotun_dom_Display;
+jotun_dom_I.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_I
+});
+var jotun_dom_IFrame = $hx_exports["jtn"]["dom"]["IFrame"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("iframe");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_IFrame.__name__ = "jotun.dom.IFrame";
+jotun_dom_IFrame.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_IFrame.__super__ = jotun_dom_Display;
+jotun_dom_IFrame.prototype = $extend(jotun_dom_Display.prototype,{
+	src: function(url) {
+		this.object.src = url;
+	}
+	,enableScroll: function(mode) {
+		this.object.scrolling = mode ? "yes" : "no";
+	}
+	,__class__: jotun_dom_IFrame
+});
+var jotun_dom_Img = $hx_exports["jtn"]["dom"]["Img"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("img");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Img.__name__ = "jotun.dom.Img";
+jotun_dom_Img.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Img.__super__ = jotun_dom_Display;
+jotun_dom_Img.prototype = $extend(jotun_dom_Display.prototype,{
+	src: function(value) {
+		var a;
+		if(value != null) {
+			this.object.src = value;
+		}
+		return this.object.src;
+	}
+	,alt: function(value) {
+		if(value != null) {
+			this.object.alt = value;
+		}
+		return this.object.alt;
+	}
+	,loadBinary: function(url) {
+		var _gthis = this;
+		var req = new XMLHttpRequest();
+		var url1 = url;
+		req.open("GET",url1,true);
+		req.responseType = "arraybuffer";
+		req.send(null);
+		req.onload = function(e) {
+			var blob = new Blob([e.target.response]);
+			_gthis.src(jotun_tools_Utils.fileToURL(blob));
+			_gthis.events.progress().call(false,true,{ completed : true});
+		};
+		req.onprogress = function(e) {
+			_gthis.events.progress().call(false,true,e);
+		};
+		req.onerror = function(e) {
+			_gthis.events.error().call(false,true,e);
+		};
+	}
+	,__class__: jotun_dom_Img
+});
+var jotun_dom_Input = $hx_exports["jtn"]["dom"]["Input"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("input");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+	if(this.type() == "file") {
+		if(this.hasAttribute("display-on")) {
+			this.fillTarget = jotun_Jotun.one(this.attribute("display-on"));
+		}
+	}
+};
+jotun_dom_Input.__name__ = "jotun.dom.Input";
+jotun_dom_Input.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Input.__super__ = jotun_dom_Display;
+jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
+	_onFileSelected: function(e) {
+		var bg = null;
+		var ftype = this.file(0).type.split("/");
+		if(ftype[0] == "image") {
+			bg = this.readFile(0);
+		} else {
+			bg = Object.prototype.hasOwnProperty.call(jotun_dom_Input.icons,ftype[1]) ? Reflect.field(jotun_dom_Input.icons,ftype[1]) : jotun_dom_Input.icons.common;
+		}
+		if(bg != null && this.fillTarget != null) {
+			if(this.fillTarget.typeOf() == "IMG") {
+				this.fillTarget.attribute("src",bg);
+			} else {
+				this.fillTarget.style({ backgroundImage : "url(" + bg + ")"});
+			}
+		}
+		if(this._ioHandler != null) {
+			this._ioHandler(this);
+		}
+	}
+	,type: function(q) {
+		if(q != null) {
+			this.object.type = q;
+		}
+		return this.object.type;
+	}
+	,required: function(q) {
+		if(q != null) {
+			this.object.required = q;
+		}
+		return this.object.required;
+	}
+	,pattern: function(q) {
+		if(q != null) {
+			this.object.pattern = q;
+		}
+		return this.object.pattern;
+	}
+	,placeholder: function(q) {
+		if(q != null) {
+			this.object.placeholder = q;
+		}
+		return this.object.placeholder;
+	}
+	,restrict: function(q,filter) {
+		this._rgx = q;
+		this._flt = filter;
+	}
+	,value: function(q) {
+		switch(this.type()) {
+		case "checkbox":
+			if(q != null) {
+				this.check(jotun_tools_Utils.boolean(q));
+			} else {
+				return this.isChecked();
+			}
+			break;
+		case "file":
+			if(this.hasFile()) {
+				if(this.object.files.length > 0) {
+					return this.object.files;
+				} else if(q != null) {
+					if(q != "") {
+						return this.file(q);
+					}
+				} else {
+					return this.file(0);
+				}
+			} else {
+				return null;
+			}
+			break;
+		}
+		if(q != null) {
+			this.object.value = q;
+		} else {
+			q = this.object.value;
+			if(this.object.maxLength != null && this.object.maxLength > 0) {
+				q = q.substr(0,this.object.maxLength);
+			}
+			if(this._flt != null) {
+				var k = this._flt.split("");
+				jotun_utils_Dice.Values(k,function(v1) {
+					q = q.split(v1).join("");
+				});
+			}
+		}
+		return q;
+	}
+	,clear: function(background) {
+		this.value("");
+		if(this.fillTarget != null) {
+			this.fillTarget.style("backgroundImage",background);
+		}
+	}
+	,isValid: function() {
+		switch(this.type()) {
+		case "checkbox":
+			return true;
+		case "file":
+			if(this.hasFile()) {
+				var mime = this.attribute("accept").split(", ");
+				var roll = jotun_utils_Dice.Values(this.files(),function(f) {
+					return mime.indexOf(f.type) == -1;
+				});
+				return roll.completed;
+			}
+			break;
+		default:
+			var v = this.object.value;
+			if(v.length == 0) {
+				return false;
+			} else if(this._rgx != null) {
+				return this._rgx.match(v);
+			} else {
+				return true;
+			}
+		}
+		return false;
+	}
+	,isEmpty: function() {
+		return this.value() == "";
+	}
+	,hasFile: function() {
+		return this.files().length > 0;
+	}
+	,files: function() {
+		return this.object.files;
+	}
+	,file: function(id) {
+		if(id == null) {
+			id = 0;
+		}
+		return this.files().item(id);
+	}
+	,readFile: function(id) {
+		if(id == null) {
+			id = 0;
+		}
+		var tmp = window.URL;
+		var tmp1 = this.file();
+		return tmp.createObjectURL(tmp1);
+	}
+	,control: function(handler,display,mime) {
+		this._ioHandler = handler;
+		if(display != null) {
+			this.fillTarget = display;
+		}
+		if(mime != null) {
+			this.acceptOnly(mime);
+		}
+		if(this.attribute("jotun-control") != "ready") {
+			this.type("file");
+			this.attribute("jotun-control","ready");
+			this.events.change($bind(this,this._onFileSelected));
+		}
+	}
+	,acceptOnly: function(mime) {
+		this.attribute("accept",mime.join(", "));
+	}
+	,check: function(toggle) {
+		if(toggle == null) {
+			toggle = true;
+		}
+		this.object.checked = toggle == null ? !this.object.checked : toggle == true || toggle == 1;
+	}
+	,isChecked: function() {
+		return this.object.checked;
+	}
+	,__class__: jotun_dom_Input
+});
+var jotun_dom_Label = $hx_exports["jtn"]["dom"]["Label"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("label");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Label.__name__ = "jotun.dom.Label";
+jotun_dom_Label.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Label.__super__ = jotun_dom_Display;
+jotun_dom_Label.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Label
+});
+var jotun_dom_Legend = $hx_exports["jtn"]["dom"]["Legend"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("legend");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Legend.__name__ = "jotun.dom.Legend";
+jotun_dom_Legend.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Legend.__super__ = jotun_dom_Display;
+jotun_dom_Legend.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Legend
+});
+var jotun_dom_LI = $hx_exports["jtn"]["dom"]["LI"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("li");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_LI.__name__ = "jotun.dom.LI";
+jotun_dom_LI.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_LI.__super__ = jotun_dom_Display;
+jotun_dom_LI.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_LI
+});
+var jotun_dom_Link = $hx_exports["jtn"]["dom"]["Link"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("link");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Link.__name__ = "jotun.dom.Link";
+jotun_dom_Link.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Link.__super__ = jotun_dom_Display;
+jotun_dom_Link.prototype = $extend(jotun_dom_Display.prototype,{
+	href: function(url,handler) {
+		this.object.href = url;
+		if(handler != null) {
+			this.events.load(handler,1);
+		}
+	}
+	,__class__: jotun_dom_Link
+});
+var jotun_dom_Map = $hx_exports["jtn"]["dom"]["Map"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("map");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Map.__name__ = "jotun.dom.Map";
+jotun_dom_Map.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Map.__super__ = jotun_dom_Display;
+jotun_dom_Map.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Map
+});
+var jotun_dom_Media = $hx_exports["jtn"]["dom"]["Media"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("media");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Media.__name__ = "jotun.dom.Media";
+jotun_dom_Media.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Media.__super__ = jotun_dom_Display;
+jotun_dom_Media.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Media
+});
+var jotun_dom_Meta = $hx_exports["jtn"]["dom"]["Meta"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("meta");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Meta.__name__ = "jotun.dom.Meta";
+jotun_dom_Meta.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Meta.__super__ = jotun_dom_Display;
+jotun_dom_Meta.prototype = $extend(jotun_dom_Display.prototype,{
+	set: function(name,content) {
+		this.attribute("name",name);
+		this.attribute("content",content);
+	}
+	,charset: function(q,vr) {
+		if(vr == null) {
+			vr = 5;
+		}
+		if(vr >= 5) {
+			this.attribute("charset",q);
+		} else if(vr < 5) {
+			this.attribute("http-equiv","content-type");
+			this.attribute("charset","text/html; charset=UTF-8");
+		}
+	}
+	,__class__: jotun_dom_Meta
+});
+var jotun_dom_Meter = $hx_exports["jtn"]["dom"]["Meter"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("meter");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Meter.__name__ = "jotun.dom.Meter";
+jotun_dom_Meter.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Meter.__super__ = jotun_dom_Display;
+jotun_dom_Meter.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Meter
+});
+var jotun_dom_Mod = $hx_exports["jtn"]["dom"]["Mod"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("mod");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Mod.__name__ = "jotun.dom.Mod";
+jotun_dom_Mod.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Mod.__super__ = jotun_dom_Display;
+jotun_dom_Mod.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Mod
+});
+var jotun_dom_Object = $hx_exports["jtn"]["dom"]["Object"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("object");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Object.__name__ = "jotun.dom.Object";
+jotun_dom_Object.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Object.__super__ = jotun_dom_Display;
+jotun_dom_Object.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Object
+});
+var jotun_dom_OL = $hx_exports["jtn"]["dom"]["OL"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("ol");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_OL.__name__ = "jotun.dom.OL";
+jotun_dom_OL.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_OL.__super__ = jotun_dom_Display;
+jotun_dom_OL.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_OL
+});
+var jotun_dom_OptGroup = $hx_exports["jtn"]["dom"]["OptGroup"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("optgroup");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_OptGroup.__name__ = "jotun.dom.OptGroup";
+jotun_dom_OptGroup.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_OptGroup.__super__ = jotun_dom_Display;
+jotun_dom_OptGroup.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_OptGroup
+});
+var jotun_dom_Option = $hx_exports["jtn"]["dom"]["Option"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("option");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Option.__name__ = "jotun.dom.Option";
+jotun_dom_Option.__super__ = jotun_dom_Display;
+jotun_dom_Option.prototype = $extend(jotun_dom_Display.prototype,{
+	value: function(q) {
+		return this.object.value;
+	}
+	,label: function() {
+		return this.object.innerText;
+	}
+	,__class__: jotun_dom_Option
+});
+var jotun_dom_Output = $hx_exports["jtn"]["dom"]["Output"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("output");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Output.__name__ = "jotun.dom.Output";
+jotun_dom_Output.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Output.__super__ = jotun_dom_Display;
+jotun_dom_Output.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Output
+});
+var jotun_dom_P = $hx_exports["jtn"]["dom"]["P"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("p");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_P.__name__ = "jotun.dom.P";
+jotun_dom_P.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_P.__super__ = jotun_dom_Display;
+jotun_dom_P.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_P
+});
+var jotun_dom_Param = $hx_exports["jtn"]["dom"]["Param"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("param");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Param.__name__ = "jotun.dom.Param";
+jotun_dom_Param.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Param.__super__ = jotun_dom_Display;
+jotun_dom_Param.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Param
+});
+var jotun_dom_Picture = $hx_exports["jtn"]["dom"]["Picture"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("picture");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Picture.__name__ = "jotun.dom.Picture";
+jotun_dom_Picture.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Picture.__super__ = jotun_dom_Display;
+jotun_dom_Picture.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Picture
+});
+var jotun_dom_Pre = $hx_exports["jtn"]["dom"]["Pre"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("pre");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Pre.__name__ = "jotun.dom.Pre";
+jotun_dom_Pre.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Pre.__super__ = jotun_dom_Display;
+jotun_dom_Pre.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Pre
+});
+var jotun_dom_Progress = $hx_exports["jtn"]["dom"]["Progress"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("progress");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Progress.__name__ = "jotun.dom.Progress";
+jotun_dom_Progress.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Progress.__super__ = jotun_dom_Display;
+jotun_dom_Progress.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Progress
+});
+var jotun_dom_Quote = $hx_exports["jtn"]["dom"]["Quote"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("quote");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Quote.__name__ = "jotun.dom.Quote";
+jotun_dom_Quote.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Quote.__super__ = jotun_dom_Display;
+jotun_dom_Quote.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Quote
+});
+var jotun_dom_Script = $hx_exports["jtn"]["dom"]["Script"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("script");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Script.__name__ = "jotun.dom.Script";
+jotun_dom_Script.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Script.fromUrl = function(q,data,handler) {
+	jotun_Jotun.request(q,data,"GET",function(r) {
+		var js = null;
+		if(r.success) {
+			js = jotun_dom_Script.fromString(r.data).publish();
+			js.attribute("source",q);
+		}
+		if(handler != null) {
+			handler(js);
+		}
+	});
+};
+jotun_dom_Script.fromString = function(q,data) {
+	var js = new jotun_dom_Script();
+	js.writeHtml(jotun_utils_Filler.to(q,data));
+	return js;
+};
+jotun_dom_Script.require = function(url,handler) {
+	if(!((url) instanceof Array)) {
+		url = [url];
+	}
+	if(url.length > 0) {
+		var file = url.shift();
+		if(file != null) {
+			var s = new jotun_dom_Script();
+			s.publish();
+			s.src(file,function(e) {
+				jotun_dom_Script.require(url,handler);
+			});
+		}
+	} else if(handler != null) {
+		handler();
+	}
+};
+jotun_dom_Script.__super__ = jotun_dom_Display;
+jotun_dom_Script.prototype = $extend(jotun_dom_Display.prototype,{
+	type: function(q) {
+		this.object.type = q;
+		return this;
+	}
+	,src: function(url,handler) {
+		this.object.src = url;
+		if(handler != null) {
+			this.events.load(handler,1);
+		}
+	}
+	,async: function() {
+		this.object.async = true;
+	}
+	,writeText: function(q) {
+		this.object.text = q;
+		return this;
+	}
+	,appendText: function(q) {
+		this.object.text += Std.string(q);
+		return this;
+	}
+	,writeHtml: function(q) {
+		this.object.text = q;
+		return this;
+	}
+	,appendHtml: function(q) {
+		this.object.text += Std.string(q);
+		return this;
+	}
+	,publish: function() {
+		jotun_Jotun.document.head.addChild(this);
+		return this;
+	}
+	,__class__: jotun_dom_Script
+});
+var jotun_dom_Select = $hx_exports["jtn"]["dom"]["Select"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("select");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+	this.events.change($bind(this,this._refreshIO));
+};
+jotun_dom_Select.__name__ = "jotun.dom.Select";
+jotun_dom_Select.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Select.__super__ = jotun_dom_Display;
+jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
+	_refreshIO: function(e) {
+		var c = "" + Std.string(this.value());
+		var p = this.attribute("current-value");
+		if(c != p) {
+			this.attribute("previous-value",p);
+			this.attribute("current-value",c);
+			if(this._ioHandler != null) {
+				this._ioHandler(e);
+			}
+		}
+	}
+	,getAllSelected: function() {
+		return this.all("option:checked");
+	}
+	,getSelected: function() {
+		return this.one("option:checked");
+	}
+	,setValue: function(i) {
+		this.object.selectedIndex = i;
+		this.events.change().call(true,true);
+	}
+	,clearSelected: function() {
+		this.getAllSelected().each(function(o) {
+			o.object.selected = false;
+		});
+	}
+	,selectValue: function(value) {
+		value = Std.string(value);
+		this.all("option").each(function(o) {
+			var tmp = o.value();
+			o.object.selected = tmp == value;
+		});
+		this.events.change().call(true,true);
+	}
+	,value: function(q) {
+		if(q != null) {
+			this.selectValue(q);
+		}
+		var t = this.getAllSelected();
+		var r = [];
+		if(t != null && t.length() > 0) {
+			t.each(function(v) {
+				var o = v;
+				r[r.length] = o.value();
+			});
+		}
+		if(r.length <= 1) {
+			return r[0];
+		} else {
+			return r;
+		}
+	}
+	,hasValue: function() {
+		var i = 0;
+		if(this.object.selectedOptions != null) {
+			while(UInt.gt(this.object.selectedOptions.length,i)) {
+				var o = this.object.selectedOptions.item(i++);
+				if(!o.disabled) {
+					return true;
+				}
+			}
+		} else {
+			while(UInt.gt(this.object.options.length,i)) {
+				var o = this.object.options[i++];
+				if(o.selected && !o.disabled) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	,addOption: function(label,value,selected,disabled) {
+		this.appendHtml("<option value=\"" + Std.string(value) + "\"" + (disabled == true ? " disabled" : "") + (selected == true ? " selected" : "") + ">" + label + "</options>");
+		if(selected) {
+			this.attribute("current-value",this.value());
+			this.selectValue(value);
+		}
+		return this;
+	}
+	,saveTheme: function(name,content) {
+		if(jotun_dom_Select._themes == null) {
+			jotun_dom_Select._themes = { };
+		}
+		var o = jotun_dom_Select._themes;
+		var tmp = this.id();
+		o[jotun_tools_Utils.getValidOne(name,"default_" + (tmp == null ? "null" : Std.string(UInt.toFloat(tmp))))] = jotun_tools_Utils.getValidOne(content,this.element.innerHTML);
+	}
+	,loadTheme: function(name) {
+		var tmp = jotun_dom_Select._themes;
+		var tmp1 = this.id();
+		var tmp2 = jotun_tools_Utils.getValidOne(name,"default" + (tmp1 == null ? "null" : Std.string(UInt.toFloat(tmp1))));
+		this.element.innerHTML = Reflect.field(tmp,tmp2);
+		this.events.change().call();
+	}
+	,control: function(handler) {
+		this._ioHandler = handler;
+	}
+	,__class__: jotun_dom_Select
+});
+var jotun_dom_Source = $hx_exports["jtn"]["dom"]["Source"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("source");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Source.__name__ = "jotun.dom.Source";
+jotun_dom_Source.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Source.__super__ = jotun_dom_Display;
+jotun_dom_Source.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Source
+});
+var jotun_dom_Span = $hx_exports["jtn"]["dom"]["Span"] = function(q,d) {
+	if(q == null) {
+		q = window.document.createElement("span");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Span.__name__ = "jotun.dom.Span";
+jotun_dom_Span.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Span.__super__ = jotun_dom_Display;
+jotun_dom_Span.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Span
+});
+var jotun_dom_Style = $hx_exports["jtn"]["dom"]["Style"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("style");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+	this.object.type = "text/css";
+};
+jotun_dom_Style.__name__ = "jotun.dom.Style";
+jotun_dom_Style.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Style.fromUrl = function(q,data,handler) {
+	jotun_Jotun.request(q,null,"GET",function(r) {
+		var css = null;
+		if(r.success) {
+			css = jotun_dom_Style.fromString(r.data).publish();
+		}
+		if(handler != null) {
+			handler(css);
+		}
+	});
+};
+jotun_dom_Style.fromString = function(q,data) {
+	var css = new jotun_dom_Style();
+	css.writeHtml(jotun_utils_Filler.to(q,data));
+	return css;
+};
+jotun_dom_Style.require = function(url,handler) {
+	if(!((url) instanceof Array)) {
+		url = [url];
+	}
+	if(url.length > 0) {
+		var file = url.shift();
+		if(file != null) {
+			var s = new jotun_dom_Link();
+			s.href(file,function(e) {
+				jotun_dom_Style.require(url,handler);
+			});
+			jotun_Jotun.document.head.addChild(s);
+		}
+	} else if(handler != null) {
+		handler();
+	}
+};
+jotun_dom_Style.__super__ = jotun_dom_Display;
+jotun_dom_Style.prototype = $extend(jotun_dom_Display.prototype,{
+	mount: function(q,data,at) {
+		if(at == null) {
+			at = -1;
+		}
+		if(jotun_Jotun.resources.exists(q)) {
+			this.writeHtml(jotun_Jotun.resources.get(q,data));
+		} else {
+			this.writeHtml("/* <!> mod:" + q + " not found */");
+		}
+		return this;
+	}
+	,publish: function() {
+		window.document.head.appendChild(this.element);
+		return this;
+	}
+	,addToBody: function() {
+		this.publish();
+		return this;
+	}
+	,__class__: jotun_dom_Style
+});
+var jotun_dom_Svg = $hx_exports["jtn"]["dom"]["Svg"] = function(q) {
+	this._tmp_width = 1;
+	this._tmp_stoke = "#CC0000";
+	this._tmp_fill = "#FF0000";
+	if(q == null) {
+		q = window.document.createElementNS("http://www.w3.org/2000/svg","svg");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Svg.__name__ = "jotun.dom.Svg";
+jotun_dom_Svg.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Svg.__super__ = jotun_dom_Display;
+jotun_dom_Svg.prototype = $extend(jotun_dom_Display.prototype,{
+	hasAttribute: function(name) {
+		if(!this.element.hasAttributeNS(null,name)) {
+			return Object.prototype.hasOwnProperty.call(this.element,name);
+		} else {
+			return true;
+		}
+	}
+	,attribute: function(name,value) {
+		if(name != null) {
+			var t = Reflect.field(this.element,name);
+			if(t != null) {
+				if(value != null) {
+					this.element[name] = value;
+				}
+				return Reflect.field(this.element,name);
+			}
+			if(value != null) {
+				if(this._setattr) {
+					this.element.setAttributeNS(null,name,value);
+				}
+				return value;
+			}
+			if(this._getattr) {
+				return this.element.getAttributeNS(null,name);
+			}
+		}
+		return null;
+	}
+	,clearAttribute: function(name) {
+		var value = null;
+		if(this.hasAttribute(name)) {
+			if(Object.prototype.hasOwnProperty.call(this.element,name)) {
+				Reflect.deleteField(this.element,name);
+			} else {
+				value = this.attribute(name);
+				this.element.removeAttributeNS(null,name);
+			}
+		}
+		return value;
+	}
+	,draw: function(paper,stroke,width,fill) {
+		if(fill == null) {
+			fill = "none";
+		}
+		if(width == null) {
+			width = 1;
+		}
+		if(stroke == null) {
+			stroke = "#000000";
+		}
+		this.appendHtml("<path d=\"" + paper.val() + "\" stroke=\"" + stroke + "\" stroke-width=\"" + width + "\" fill=\"" + fill + "\"></path>");
+	}
+	,__class__: jotun_dom_Svg
+});
+var jotun_dom_Text = function(q) {
+	q = window.document.createTextNode(q);
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Text.__name__ = "jotun.dom.Text";
+jotun_dom_Text.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Text.__super__ = jotun_dom_Display;
+jotun_dom_Text.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Text
+});
+var jotun_dom_TextArea = $hx_exports["jtn"]["dom"]["TextArea"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("textarea");
+	}
+	jotun_dom_Input.call(this,q);
+};
+jotun_dom_TextArea.__name__ = "jotun.dom.TextArea";
+jotun_dom_TextArea.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_TextArea.__super__ = jotun_dom_Input;
+jotun_dom_TextArea.prototype = $extend(jotun_dom_Input.prototype,{
+	__class__: jotun_dom_TextArea
+});
+var jotun_dom_Title = $hx_exports["jtn"]["dom"]["Title"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("title");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Title.__name__ = "jotun.dom.Title";
+jotun_dom_Title.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Title.__super__ = jotun_dom_Display;
+jotun_dom_Title.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Title
+});
+var jotun_dom_Track = $hx_exports["jtn"]["dom"]["Track"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("track");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_Track.__name__ = "jotun.dom.Track";
+jotun_dom_Track.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Track.__super__ = jotun_dom_Display;
+jotun_dom_Track.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_Track
+});
+var jotun_dom_UL = $hx_exports["jtn"]["dom"]["UL"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("ul");
+	}
+	jotun_dom_Display.call(this,q,null);
+};
+jotun_dom_UL.__name__ = "jotun.dom.UL";
+jotun_dom_UL.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_UL.__super__ = jotun_dom_Display;
+jotun_dom_UL.prototype = $extend(jotun_dom_Display.prototype,{
+	__class__: jotun_dom_UL
+});
+var jotun_dom_Video = $hx_exports["jtn"]["dom"]["Video"] = function(q) {
+	if(q == null) {
+		q = window.document.createElement("video");
+	}
+	jotun_dom_Display.call(this,q,null);
+	this.object = this.element;
+};
+jotun_dom_Video.__name__ = "jotun.dom.Video";
+jotun_dom_Video.get = function(q) {
+	return jotun_Jotun.one(q);
+};
+jotun_dom_Video.__super__ = jotun_dom_Display;
+jotun_dom_Video.prototype = $extend(jotun_dom_Display.prototype,{
+	play: function() {
+		this.object.play();
+	}
+	,pause: function() {
+		this.object.pause();
+	}
+	,togglePause: function() {
+		if(this.object.paused) {
+			this.play();
+		} else {
+			this.pause();
+		}
+	}
+	,__class__: jotun_dom_Video
+});
+var jotun_tools_Utils = $hx_exports["Utils"] = function() { };
+jotun_tools_Utils.__name__ = "jotun.tools.Utils";
+jotun_tools_Utils.matchMedia = function(value) {
+	return window.matchMedia(value).matches;
+};
+jotun_tools_Utils.screenOrientation = function() {
+	if(jotun_tools_Utils.matchMedia("(orientation: portrait)")) {
+		return "portrait";
+	} else {
+		return "landscape";
+	}
+};
+jotun_tools_Utils.viewportWidth = function() {
+	return window.innerWidth || document.documentElement.clientWidth;
+};
+jotun_tools_Utils.viewportHeight = function() {
+	return window.innerHeight || document.documentElement.clientHeight;
+};
+jotun_tools_Utils.mathLocation = function(uri) {
+	return window.location.href.indexOf(uri) != -1;
+};
+jotun_tools_Utils.screenInfo = function() {
+	return jotun_tools_Utils.screenOrientation() + "(" + jotun_tools_Utils.viewportWidth() + "x" + jotun_tools_Utils.viewportHeight() + ")";
+};
+jotun_tools_Utils.displayFrom = function(t) {
+	var id = null;
+	var type = null;
+	if(t.hasAttribute != null) {
+		id = t.getAttribute("jotun-id");
+		if(id == null) {
+			type = t.getAttribute("jotun-dom");
+			if(type == null) {
+				type = t.tagName.toUpperCase();
+				t.setAttribute("jotun-dom",type);
+			} else {
+				type = type.toUpperCase();
+			}
+		} else {
+			return jotun_dom_Display.fromGC(id);
+		}
+	}
+	var OC = Reflect.field(jotun_tools_Utils._typeOf,type);
+	if(OC == null) {
+		return new jotun_dom_Display(t);
+	} else {
+		return new OC(t);
+	}
+};
+jotun_tools_Utils.getDisplay = function(t) {
+	var id = t.hasAttribute != null && t.hasAttribute("jotun-id") ? Std.parseInt(t.getAttribute("jotun-id")) : null;
+	if(id != null) {
+		return jotun_dom_Display.fromGC(id);
+	}
+	return new jotun_dom_Display(t);
+};
+jotun_tools_Utils.intToString = function(value,rad) {
+	if(typeof(value) == "string") {
+		value = Std.parseInt(value);
+	}
+	return value.toString.apply(value,rad != null ? [rad] : []);
+};
+jotun_tools_Utils.getAttributes = function(display) {
+	var attr = display.element.attributes;
+	var data = { };
+	if(attr != null) {
+		var i = 0;
+		var len = attr.length;
+		while(UInt.gt(len,i)) {
+			var a = attr.item(i);
+			data[a.name] = a.value;
+			++i;
+		}
+	}
+	return data;
+};
+jotun_tools_Utils.fileToURL = function(file) {
+	return window.URL.createObjectURL(file);
+};
+jotun_tools_Utils.getMin = function(values,filter) {
+	var r = null;
+	jotun_utils_Dice.Values(values,function(i) {
+		if(filter == null || filter(i)) {
+			if(i < r || r == null) {
+				r = i;
+			}
+		}
+	});
+	return r;
+};
+jotun_tools_Utils.getMax = function(values,filter) {
+	var r = null;
+	jotun_utils_Dice.Values(values,function(i) {
+		if(filter == null || filter(i)) {
+			if(i > r || r == null) {
+				r = i;
+			}
+		}
+	});
+	return r;
+};
+jotun_tools_Utils.getQueryParams = function(value) {
+	var params = { };
+	if(value.indexOf("?") > 0) {
+		value = value.split("+").join(" ").split("?")[1];
+	} else {
+		return params;
+	}
+	jotun_utils_Dice.Values(value.split("&"),function(v) {
+		var data = v.split("=");
+		if(data.length > 1) {
+			var field = decodeURIComponent(data[0].split("+").join(" "));
+			var value = decodeURIComponent(data[1].split("+").join(" "));
+			params[field] = value;
+		}
+	});
+	return params;
+};
+jotun_tools_Utils.clearArray = function(path,filter) {
+	var copy = [];
+	jotun_utils_Dice.Values(path,function(v) {
+		if(v != null && v != "" && (filter == null || filter(v))) {
+			copy[copy.length] = v;
+		}
+	});
+	return copy;
+};
+jotun_tools_Utils.toString = function(o,json) {
+	if(json == true) {
+		return JSON.stringify(o);
+	} else {
+		return Std.string(o);
+	}
+};
+jotun_tools_Utils.sruString = function(o) {
+	return jotun_tools_Utils._sruFly(o,"","");
+};
+jotun_tools_Utils._sruFly = function(o,i,b) {
+	i += "  ";
+	jotun_utils_Dice.All(o,function(p,v) {
+		if(v == null) {
+			b += i + p + ":* = NULL\r";
+		} else if(typeof(v) == "string") {
+			b += i + p + ":String = " + Std.string(v) + "\r";
+		} else if(typeof(v) == "boolean" || v == "true" || v == "false" || v == true || v == false) {
+			b += i + p + ":Bool = " + Std.string(v) + "\r";
+		} else if(typeof(v) == "number" && ((v | 0) === v) || typeof(v) == "number") {
+			b += i + p + ":Number = " + Std.string(v) + "\r";
+		} else if(((v) instanceof Array)) {
+			b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "]\r";
+		} else {
+			b += i + p + ":Object {\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "}\r";
+		}
+	});
+	return b;
+};
+jotun_tools_Utils.isValid = function(o,len) {
+	if(len == null) {
+		len = 0;
+	}
+	if(o != null && o != "") {
+		if(o != "null" && Object.prototype.hasOwnProperty.call(o,"length")) {
+			return UInt.gt(o.length,len);
+		} else if(o != 0) {
+			return o != false;
+		} else {
+			return false;
+		}
+	}
+	return false;
+};
+jotun_tools_Utils.isRange = function(o,min,max) {
+	if(o != null) {
+		if(typeof(o) != "number") {
+			if(((o) instanceof Array) || typeof(o) == "string") {
+				o = o.length;
+			} else {
+				return false;
+			}
+		}
+	} else {
+		return false;
+	}
+	if(max == null) {
+		return o >= min;
+	} else if(min == null) {
+		return o <= max;
+	} else if(o >= min) {
+		return o <= max;
+	} else {
+		return false;
+	}
+};
+jotun_tools_Utils.isValidAll = function(o) {
+	var q = jotun_utils_Dice.Values(o,function(v) {
+		return !jotun_tools_Utils.isValid(v);
+	});
+	return q.completed;
+};
+jotun_tools_Utils.getValidOne = function(o,alt) {
+	if(jotun_tools_Utils.isValid(o)) {
+		return o;
+	} else {
+		return alt;
+	}
+};
+jotun_tools_Utils.typeof = function(o) {
+	var name;
+	if(o != null) {
+		try {
+			return o.__proto__.__class__.__name__.join(".");
+		} catch( _g ) {
+		}
+		try {
+			var c = js_Boot.getClass(o);
+			return c.__name__;
+		} catch( _g ) {
+		}
+	}
+	return null;
+};
+jotun_tools_Utils.boolean = function(q) {
+	if(!(q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok")) {
+		return q == "selected";
+	} else {
+		return true;
+	}
+};
+jotun_tools_Utils.money = function(val,s,a,b) {
+	if(b == null) {
+		b = ".";
+	}
+	if(a == null) {
+		a = ",";
+	}
+	if(s == null) {
+		s = "$";
+	}
+	var r = "";
+	val *= 100;
+	if(val > 99) {
+		val = "" + (val | 0);
+		var i = val.length;
+		var c = 0;
+		while(i-- > 0) {
+			r = Std.string(val.substr(i,1)) + r;
+			if(i > 0) {
+				if(c == 1) {
+					r = b + r;
+				} else if(c > 1 && (c + 2) % 3 == 0) {
+					r = a + r;
+				}
+			} else if(c < 3) {
+				r = "0" + (c == 1 ? "." : "") + r;
+			}
+			++c;
+		}
+	} else {
+		r = "0" + b + (val < 10 ? "0" : "") + Std.string(val);
+	}
+	return s + r;
+};
+jotun_tools_Utils.stdClone = function(q) {
+	return JSON.parse(JSON.stringify(q));
+};
+jotun_tools_Utils.paramsOf = function(o) {
+	var r = [];
+	jotun_utils_Dice.All(o,function(p,v) {
+		v = JSON.stringify(v);
+		var r1 = r;
+		var r2 = r.length;
+		var s = v.substr(1,v.length - 2);
+		r1[r2] = p + "=" + encodeURIComponent(s);
+	});
+	return r.join("&");
+};
+jotun_tools_Utils.toFixed = function(n,i,s) {
+	if(s == null) {
+		s = ".";
+	}
+	var a = n.toFixed(i);
+	if(s != ".") {
+		a = a.split(".").join("s");
+	}
+	return a;
+};
 var jotun_net_IDomain = function() { };
 jotun_net_IDomain.__name__ = "jotun.net.IDomain";
 jotun_net_IDomain.prototype = {
@@ -3170,7 +4921,7 @@ jotun_Jotun._loadController = function(e) {
 		Reflect.deleteField(jotun_Jotun,"_loadController");
 		Reflect.deleteField(jotun_Jotun,"_loadPool");
 		Reflect.deleteField(jotun_Jotun,"main");
-		jotun_Jotun.document.body.autoLoad();
+		jotun_Jotun.one("html").autoLoad();
 	}
 };
 jotun_Jotun._preInit = function() {
@@ -3253,9 +5004,9 @@ jotun_Jotun.request = function(url,data,method,handler,headers,progress,options)
 		jotun_Jotun.loader.request(url,data,method,handler,headers,progress,options);
 	});
 };
-jotun_Jotun.module = function(file,name,data,handler) {
+jotun_Jotun.module = function(file,name,data,handler,progress) {
 	if(name == null || !jotun_Jotun.resources.exists(name)) {
-		jotun_Jotun.loader.module(file,data,handler);
+		jotun_Jotun.loader.module(file,data,handler,progress);
 	} else {
 		handler(null);
 	}
@@ -3353,74 +5104,6 @@ jotun_css_CSSGroup.prototype = {
 	}
 	,__class__: jotun_css_CSSGroup
 };
-var jotun_dom_Style = $hx_exports["jtn"]["dom"]["Style"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("style");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-	this.object.type = "text/css";
-};
-jotun_dom_Style.__name__ = "jotun.dom.Style";
-jotun_dom_Style.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Style.fromUrl = function(q,data,handler) {
-	jotun_Jotun.request(q,null,"GET",function(r) {
-		var css = null;
-		if(r.success) {
-			css = jotun_dom_Style.fromString(r.data).publish();
-		}
-		if(handler != null) {
-			handler(css);
-		}
-	});
-};
-jotun_dom_Style.fromString = function(q,data) {
-	var css = new jotun_dom_Style();
-	css.writeHtml(jotun_utils_Filler.to(q,data));
-	return css;
-};
-jotun_dom_Style.require = function(url,handler) {
-	if(!((url) instanceof Array)) {
-		url = [url];
-	}
-	if(url.length > 0) {
-		var file = url.shift();
-		if(file != null) {
-			var s = new jotun_dom_Link();
-			s.href(file,function(e) {
-				jotun_dom_Style.require(url,handler);
-			});
-			jotun_Jotun.document.head.addChild(s);
-		}
-	} else if(handler != null) {
-		handler();
-	}
-};
-jotun_dom_Style.__super__ = jotun_dom_Display;
-jotun_dom_Style.prototype = $extend(jotun_dom_Display.prototype,{
-	mount: function(q,data,at) {
-		if(at == null) {
-			at = -1;
-		}
-		if(jotun_Jotun.resources.exists(q)) {
-			this.writeHtml(jotun_Jotun.resources.get(q,data));
-		} else {
-			this.writeHtml("/* <!> mod:" + q + " not found */");
-		}
-		return this;
-	}
-	,publish: function() {
-		window.document.head.appendChild(this.element);
-		return this;
-	}
-	,addToBody: function() {
-		this.publish();
-		return this;
-	}
-	,__class__: jotun_dom_Style
-});
 var jotun_css_XCode = $hx_exports["XCode"] = function() { };
 jotun_css_XCode.__name__ = "jotun.css.XCode";
 jotun_css_XCode._filterCheck = function(id,replace) {
@@ -4037,1393 +5720,6 @@ jotun_data_Fragments.prototype = {
 	}
 	,__class__: jotun_data_Fragments
 };
-var jotun_dom_A = $hx_exports["jtn"]["dom"]["A"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("a");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_A.__name__ = "jotun.dom.A";
-jotun_dom_A.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_A.__super__ = jotun_dom_Display;
-jotun_dom_A.prototype = $extend(jotun_dom_Display.prototype,{
-	href: function(url) {
-		if(url != null) {
-			this.attribute("href",url);
-		}
-		return this.attribute("href");
-	}
-	,target: function(q) {
-		if(q != null) {
-			this.attribute("target",q);
-		}
-		return this.attribute("target");
-	}
-	,__class__: jotun_dom_A
-});
-var jotun_dom_Area = $hx_exports["jtn"]["dom"]["Area"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("area");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Area.__name__ = "jotun.dom.Area";
-jotun_dom_Area.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Area.__super__ = jotun_dom_Display;
-jotun_dom_Area.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Area
-});
-var jotun_dom_Audio = $hx_exports["jtn"]["dom"]["Audio"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("audio");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Audio.__name__ = "jotun.dom.Audio";
-jotun_dom_Audio.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Audio.__super__ = jotun_dom_Display;
-jotun_dom_Audio.prototype = $extend(jotun_dom_Display.prototype,{
-	src: function(value) {
-		this.attribute("src",value);
-	}
-	,play: function(reset) {
-		if(reset == true) {
-			this.object.currentTime = 0;
-		}
-		this.object.play();
-	}
-	,pause: function() {
-		this.object.pause();
-	}
-	,stop: function() {
-		this.object.pause();
-		this.object.currentTime = 0;
-	}
-	,volume: function(ammount) {
-		if(ammount != null) {
-			this.object.volume = ammount;
-		}
-		return this.object.volume;
-	}
-	,loop: function(value) {
-		if(value != null) {
-			this.object.loop = value;
-		}
-		return this.object.loop;
-	}
-	,__class__: jotun_dom_Audio
-});
-var jotun_dom_B = $hx_exports["jtn"]["dom"]["B"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("B");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_B.__name__ = "jotun.dom.B";
-jotun_dom_B.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_B.__super__ = jotun_dom_Display;
-jotun_dom_B.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_B
-});
-var jotun_dom_BR = $hx_exports["jtn"]["dom"]["BR"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("br");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_BR.__name__ = "jotun.dom.BR";
-jotun_dom_BR.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_BR.__super__ = jotun_dom_Display;
-jotun_dom_BR.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_BR
-});
-var jotun_dom_Base = $hx_exports["jtn"]["dom"]["Base"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("base");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Base.__name__ = "jotun.dom.Base";
-jotun_dom_Base.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Base.__super__ = jotun_dom_Display;
-jotun_dom_Base.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Base
-});
-var jotun_dom_Body = $hx_exports["jtn"]["dom"]["Body"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("body");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this._body = this.element;
-	window.addEventListener("resize",$bind(this,this._wResize));
-};
-jotun_dom_Body.__name__ = "jotun.dom.Body";
-jotun_dom_Body.__super__ = jotun_dom_Display;
-jotun_dom_Body.prototype = $extend(jotun_dom_Display.prototype,{
-	_wResize: function(e) {
-		this.events.resize().call();
-	}
-	,maxScrollX: function() {
-		return this._body.scrollWidth - jotun_tools_Utils.viewportWidth();
-	}
-	,maxScrollY: function() {
-		return this._body.scrollHeight - jotun_tools_Utils.viewportHeight();
-	}
-	,__class__: jotun_dom_Body
-});
-var jotun_dom_Div = $hx_exports["jtn"]["dom"]["Div"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("div");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Div.__name__ = "jotun.dom.Div";
-jotun_dom_Div.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Div.__super__ = jotun_dom_Display;
-jotun_dom_Div.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Div
-});
-var jotun_dom_Button = function(q) {
-	jotun_dom_Div.call(this,q);
-	this.style("cursor","pointer");
-};
-jotun_dom_Button.__name__ = "jotun.dom.Button";
-jotun_dom_Button.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Button.__super__ = jotun_dom_Div;
-jotun_dom_Button.prototype = $extend(jotun_dom_Div.prototype,{
-	__class__: jotun_dom_Button
-});
-var jotun_dom_Canvas = $hx_exports["jtn"]["dom"]["Canvas"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("canvas");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.dom = this.element;
-};
-jotun_dom_Canvas.__name__ = "jotun.dom.Canvas";
-jotun_dom_Canvas.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Canvas.__super__ = jotun_dom_Display;
-jotun_dom_Canvas.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Canvas
-});
-var jotun_dom_Caption = $hx_exports["jtn"]["dom"]["Caption"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("caption");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Caption.__name__ = "jotun.dom.Caption";
-jotun_dom_Caption.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Caption.__super__ = jotun_dom_Display;
-jotun_dom_Caption.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Caption
-});
-var jotun_dom_Col = $hx_exports["jtn"]["dom"]["Col"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("col");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Col.__name__ = "jotun.dom.Col";
-jotun_dom_Col.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Col.__super__ = jotun_dom_Display;
-jotun_dom_Col.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Col
-});
-var jotun_dom_DataList = $hx_exports["jtn"]["dom"]["DataList"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("datalist");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_DataList.__name__ = "jotun.dom.DataList";
-jotun_dom_DataList.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_DataList.__super__ = jotun_dom_Display;
-jotun_dom_DataList.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_DataList
-});
-var jotun_dom_Embed = $hx_exports["jtn"]["dom"]["Embed"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("embed");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Embed.__name__ = "jotun.dom.Embed";
-jotun_dom_Embed.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Embed.__super__ = jotun_dom_Display;
-jotun_dom_Embed.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Embed
-});
-var jotun_dom_FieldSet = $hx_exports["jtn"]["dom"]["FieldSet"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("fieldset");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_FieldSet.__name__ = "jotun.dom.FieldSet";
-jotun_dom_FieldSet.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_FieldSet.__super__ = jotun_dom_Display;
-jotun_dom_FieldSet.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_FieldSet
-});
-var jotun_dom_Form = $hx_exports["jtn"]["dom"]["Form"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("form");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Form.__name__ = "jotun.dom.Form";
-jotun_dom_Form.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Form.__super__ = jotun_dom_Display;
-jotun_dom_Form.prototype = $extend(jotun_dom_Display.prototype,{
-	validate: function() {
-		this.checkSubmit().click();
-		return this.object.checkValidity();
-	}
-	,checkSubmit: function() {
-		if(this._submit == null) {
-			var i;
-			if(!this.exists("input[type=submit]")) {
-				i = new jotun_dom_Input();
-				i.type("submit");
-				i.hide();
-				this.addChild(i);
-			} else {
-				i = this.one("input[type=submit]");
-			}
-			this._submit = i;
-		}
-		return this._submit;
-	}
-	,submit: function() {
-		this.object.submit();
-	}
-	,formData: function() {
-		if(this.inputData == null) {
-			this.inputData = new jotun_data_FormData(this);
-		} else {
-			this.inputData.scan(this);
-		}
-		return this.inputData;
-	}
-	,getAsInput: function(i,update) {
-		if(this._children == null || update == true) {
-			this._children = this.children();
-		}
-		return this._children.obj(i);
-	}
-	,__class__: jotun_dom_Form
-});
-var jotun_dom_H1 = $hx_exports["jtn"]["dom"]["H1"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h1");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H1.__name__ = "jotun.dom.H1";
-jotun_dom_H1.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H1.__super__ = jotun_dom_Display;
-jotun_dom_H1.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H1
-});
-var jotun_dom_H2 = $hx_exports["jtn"]["dom"]["H2"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h2");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H2.__name__ = "jotun.dom.H2";
-jotun_dom_H2.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H2.__super__ = jotun_dom_Display;
-jotun_dom_H2.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H2
-});
-var jotun_dom_H3 = $hx_exports["jtn"]["dom"]["H3"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h3");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H3.__name__ = "jotun.dom.H3";
-jotun_dom_H3.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H3.__super__ = jotun_dom_Display;
-jotun_dom_H3.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H3
-});
-var jotun_dom_H4 = $hx_exports["jtn"]["dom"]["H4"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h4");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H4.__name__ = "jotun.dom.H4";
-jotun_dom_H4.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H4.__super__ = jotun_dom_Display;
-jotun_dom_H4.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H4
-});
-var jotun_dom_H5 = $hx_exports["jtn"]["dom"]["H5"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h5");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H5.__name__ = "jotun.dom.H5";
-jotun_dom_H5.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H5.__super__ = jotun_dom_Display;
-jotun_dom_H5.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H5
-});
-var jotun_dom_H6 = $hx_exports["jtn"]["dom"]["H6"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("h6");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_H6.__name__ = "jotun.dom.H6";
-jotun_dom_H6.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_H6.__super__ = jotun_dom_Display;
-jotun_dom_H6.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_H6
-});
-var jotun_dom_HR = $hx_exports["jtn"]["dom"]["HR"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("hr");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_HR.__name__ = "jotun.dom.HR";
-jotun_dom_HR.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_HR.__super__ = jotun_dom_Display;
-jotun_dom_HR.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_HR
-});
-var jotun_dom_Html = $hx_exports["jtn"]["dom"]["Html"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("html");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Html.__name__ = "jotun.dom.Html";
-jotun_dom_Html.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Html.__super__ = jotun_dom_Display;
-jotun_dom_Html.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Html
-});
-var jotun_dom_I = $hx_exports["jtn"]["dom"]["I"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("I");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_I.__name__ = "jotun.dom.I";
-jotun_dom_I.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_I.__super__ = jotun_dom_Display;
-jotun_dom_I.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_I
-});
-var jotun_dom_IFrame = $hx_exports["jtn"]["dom"]["IFrame"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("iframe");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_IFrame.__name__ = "jotun.dom.IFrame";
-jotun_dom_IFrame.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_IFrame.__super__ = jotun_dom_Display;
-jotun_dom_IFrame.prototype = $extend(jotun_dom_Display.prototype,{
-	src: function(url) {
-		this.object.src = url;
-	}
-	,enableScroll: function(mode) {
-		this.object.scrolling = mode ? "yes" : "no";
-	}
-	,__class__: jotun_dom_IFrame
-});
-var jotun_dom_Img = $hx_exports["jtn"]["dom"]["Img"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("img");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Img.__name__ = "jotun.dom.Img";
-jotun_dom_Img.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Img.__super__ = jotun_dom_Display;
-jotun_dom_Img.prototype = $extend(jotun_dom_Display.prototype,{
-	src: function(value) {
-		var a;
-		if(value != null) {
-			this.object.src = value;
-		}
-		return this.object.src;
-	}
-	,alt: function(value) {
-		if(value != null) {
-			this.object.alt = value;
-		}
-		return this.object.alt;
-	}
-	,loadBinary: function(url) {
-		var _gthis = this;
-		var req = new XMLHttpRequest();
-		var url1 = url;
-		req.open("GET",url1,true);
-		req.responseType = "arraybuffer";
-		req.send(null);
-		req.onload = function(e) {
-			var blob = new Blob([e.target.response]);
-			_gthis.src(jotun_tools_Utils.fileToURL(blob));
-			_gthis.events.progress().call(false,true,{ completed : true});
-		};
-		req.onprogress = function(e) {
-			_gthis.events.progress().call(false,true,e);
-		};
-		req.onerror = function(e) {
-			_gthis.events.error().call(false,true,e);
-		};
-	}
-	,__class__: jotun_dom_Img
-});
-var jotun_dom_Input = $hx_exports["jtn"]["dom"]["Input"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("input");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-	if(this.type() == "file") {
-		if(this.hasAttribute("display-on")) {
-			this.fillTarget = jotun_Jotun.one(this.attribute("display-on"));
-		}
-	}
-};
-jotun_dom_Input.__name__ = "jotun.dom.Input";
-jotun_dom_Input.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Input.__super__ = jotun_dom_Display;
-jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
-	_onFileSelected: function(e) {
-		var bg = null;
-		var ftype = this.file(0).type.split("/");
-		if(ftype[0] == "image") {
-			bg = this.readFile(0);
-		} else {
-			bg = Object.prototype.hasOwnProperty.call(jotun_dom_Input.icons,ftype[1]) ? Reflect.field(jotun_dom_Input.icons,ftype[1]) : jotun_dom_Input.icons.common;
-		}
-		if(bg != null && this.fillTarget != null) {
-			if(this.fillTarget.typeOf() == "IMG") {
-				this.fillTarget.attribute("src",bg);
-			} else {
-				this.fillTarget.style({ backgroundImage : "url(" + bg + ")"});
-			}
-		}
-		if(this._ioHandler != null) {
-			this._ioHandler(this);
-		}
-	}
-	,type: function(q) {
-		if(q != null) {
-			this.object.type = q;
-		}
-		return this.object.type;
-	}
-	,required: function(q) {
-		if(q != null) {
-			this.object.required = q;
-		}
-		return this.object.required;
-	}
-	,pattern: function(q) {
-		if(q != null) {
-			this.object.pattern = q;
-		}
-		return this.object.pattern;
-	}
-	,placeholder: function(q) {
-		if(q != null) {
-			this.object.placeholder = q;
-		}
-		return this.object.placeholder;
-	}
-	,restrict: function(q,filter) {
-		this._rgx = q;
-		this._flt = filter;
-	}
-	,value: function(q) {
-		switch(this.type()) {
-		case "checkbox":
-			if(q != null) {
-				this.check(jotun_tools_Utils.boolean(q));
-			} else {
-				return this.isChecked();
-			}
-			break;
-		case "file":
-			if(this.hasFile()) {
-				if(this.object.files.length > 0) {
-					return this.object.files;
-				} else if(q != null) {
-					if(q != "") {
-						return this.file(q);
-					}
-				} else {
-					return this.file(0);
-				}
-			} else {
-				return null;
-			}
-			break;
-		}
-		if(q != null) {
-			this.object.value = q;
-		} else {
-			q = this.object.value;
-			if(this.object.maxLength != null && this.object.maxLength > 0) {
-				q = q.substr(0,this.object.maxLength);
-			}
-			if(this._flt != null) {
-				var k = this._flt.split("");
-				jotun_utils_Dice.Values(k,function(v1) {
-					q = q.split(v1).join("");
-				});
-			}
-		}
-		return q;
-	}
-	,clear: function(background) {
-		this.value("");
-		if(this.fillTarget != null) {
-			this.fillTarget.style("backgroundImage",background);
-		}
-	}
-	,isValid: function() {
-		switch(this.type()) {
-		case "checkbox":
-			return true;
-		case "file":
-			if(this.hasFile()) {
-				var mime = this.attribute("accept").split(", ");
-				var roll = jotun_utils_Dice.Values(this.files(),function(f) {
-					return mime.indexOf(f.type) == -1;
-				});
-				return roll.completed;
-			}
-			break;
-		default:
-			var v = this.object.value;
-			if(v.length == 0) {
-				return false;
-			} else if(this._rgx != null) {
-				return this._rgx.match(v);
-			} else {
-				return true;
-			}
-		}
-		return false;
-	}
-	,isEmpty: function() {
-		return this.value() == "";
-	}
-	,hasFile: function() {
-		return this.files().length > 0;
-	}
-	,files: function() {
-		return this.object.files;
-	}
-	,file: function(id) {
-		if(id == null) {
-			id = 0;
-		}
-		return this.files().item(id);
-	}
-	,readFile: function(id) {
-		if(id == null) {
-			id = 0;
-		}
-		var tmp = window.URL;
-		var tmp1 = this.file();
-		return tmp.createObjectURL(tmp1);
-	}
-	,control: function(handler,display,mime) {
-		this._ioHandler = handler;
-		if(display != null) {
-			this.fillTarget = display;
-		}
-		if(mime != null) {
-			this.acceptOnly(mime);
-		}
-		if(this.attribute("jotun-control") != "ready") {
-			this.type("file");
-			this.attribute("jotun-control","ready");
-			this.events.change($bind(this,this._onFileSelected));
-		}
-	}
-	,acceptOnly: function(mime) {
-		this.attribute("accept",mime.join(", "));
-	}
-	,check: function(toggle) {
-		if(toggle == null) {
-			toggle = true;
-		}
-		this.object.checked = toggle == null ? !this.object.checked : toggle == true || toggle == 1;
-	}
-	,isChecked: function() {
-		return this.object.checked;
-	}
-	,__class__: jotun_dom_Input
-});
-var jotun_dom_LI = $hx_exports["jtn"]["dom"]["LI"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("li");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_LI.__name__ = "jotun.dom.LI";
-jotun_dom_LI.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_LI.__super__ = jotun_dom_Display;
-jotun_dom_LI.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_LI
-});
-var jotun_dom_Label = $hx_exports["jtn"]["dom"]["Label"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("label");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Label.__name__ = "jotun.dom.Label";
-jotun_dom_Label.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Label.__super__ = jotun_dom_Display;
-jotun_dom_Label.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Label
-});
-var jotun_dom_Legend = $hx_exports["jtn"]["dom"]["Legend"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("legend");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Legend.__name__ = "jotun.dom.Legend";
-jotun_dom_Legend.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Legend.__super__ = jotun_dom_Display;
-jotun_dom_Legend.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Legend
-});
-var jotun_dom_Link = $hx_exports["jtn"]["dom"]["Link"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("link");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Link.__name__ = "jotun.dom.Link";
-jotun_dom_Link.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Link.__super__ = jotun_dom_Display;
-jotun_dom_Link.prototype = $extend(jotun_dom_Display.prototype,{
-	href: function(url,handler) {
-		this.object.href = url;
-		if(handler != null) {
-			this.events.load(handler,1);
-		}
-	}
-	,__class__: jotun_dom_Link
-});
-var jotun_dom_Map = $hx_exports["jtn"]["dom"]["Map"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("map");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Map.__name__ = "jotun.dom.Map";
-jotun_dom_Map.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Map.__super__ = jotun_dom_Display;
-jotun_dom_Map.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Map
-});
-var jotun_dom_Media = $hx_exports["jtn"]["dom"]["Media"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("media");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Media.__name__ = "jotun.dom.Media";
-jotun_dom_Media.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Media.__super__ = jotun_dom_Display;
-jotun_dom_Media.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Media
-});
-var jotun_dom_Meta = $hx_exports["jtn"]["dom"]["Meta"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("meta");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Meta.__name__ = "jotun.dom.Meta";
-jotun_dom_Meta.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Meta.__super__ = jotun_dom_Display;
-jotun_dom_Meta.prototype = $extend(jotun_dom_Display.prototype,{
-	set: function(name,content) {
-		this.attribute("name",name);
-		this.attribute("content",content);
-	}
-	,charset: function(q,vr) {
-		if(vr == null) {
-			vr = 5;
-		}
-		if(vr >= 5) {
-			this.attribute("charset",q);
-		} else if(vr < 5) {
-			this.attribute("http-equiv","content-type");
-			this.attribute("charset","text/html; charset=UTF-8");
-		}
-	}
-	,__class__: jotun_dom_Meta
-});
-var jotun_dom_Meter = $hx_exports["jtn"]["dom"]["Meter"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("meter");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Meter.__name__ = "jotun.dom.Meter";
-jotun_dom_Meter.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Meter.__super__ = jotun_dom_Display;
-jotun_dom_Meter.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Meter
-});
-var jotun_dom_Mod = $hx_exports["jtn"]["dom"]["Mod"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("mod");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Mod.__name__ = "jotun.dom.Mod";
-jotun_dom_Mod.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Mod.__super__ = jotun_dom_Display;
-jotun_dom_Mod.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Mod
-});
-var jotun_dom_OL = $hx_exports["jtn"]["dom"]["OL"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("ol");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_OL.__name__ = "jotun.dom.OL";
-jotun_dom_OL.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_OL.__super__ = jotun_dom_Display;
-jotun_dom_OL.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_OL
-});
-var jotun_dom_Object = $hx_exports["jtn"]["dom"]["Object"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("object");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Object.__name__ = "jotun.dom.Object";
-jotun_dom_Object.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Object.__super__ = jotun_dom_Display;
-jotun_dom_Object.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Object
-});
-var jotun_dom_OptGroup = $hx_exports["jtn"]["dom"]["OptGroup"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("optgroup");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_OptGroup.__name__ = "jotun.dom.OptGroup";
-jotun_dom_OptGroup.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_OptGroup.__super__ = jotun_dom_Display;
-jotun_dom_OptGroup.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_OptGroup
-});
-var jotun_dom_Option = $hx_exports["jtn"]["dom"]["Option"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("option");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Option.__name__ = "jotun.dom.Option";
-jotun_dom_Option.__super__ = jotun_dom_Display;
-jotun_dom_Option.prototype = $extend(jotun_dom_Display.prototype,{
-	value: function(q) {
-		return this.object.value;
-	}
-	,label: function() {
-		return this.object.innerText;
-	}
-	,__class__: jotun_dom_Option
-});
-var jotun_dom_Output = $hx_exports["jtn"]["dom"]["Output"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("output");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Output.__name__ = "jotun.dom.Output";
-jotun_dom_Output.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Output.__super__ = jotun_dom_Display;
-jotun_dom_Output.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Output
-});
-var jotun_dom_P = $hx_exports["jtn"]["dom"]["P"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("p");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_P.__name__ = "jotun.dom.P";
-jotun_dom_P.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_P.__super__ = jotun_dom_Display;
-jotun_dom_P.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_P
-});
-var jotun_dom_Param = $hx_exports["jtn"]["dom"]["Param"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("param");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Param.__name__ = "jotun.dom.Param";
-jotun_dom_Param.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Param.__super__ = jotun_dom_Display;
-jotun_dom_Param.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Param
-});
-var jotun_dom_Picture = $hx_exports["jtn"]["dom"]["Picture"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("picture");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Picture.__name__ = "jotun.dom.Picture";
-jotun_dom_Picture.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Picture.__super__ = jotun_dom_Display;
-jotun_dom_Picture.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Picture
-});
-var jotun_dom_Pre = $hx_exports["jtn"]["dom"]["Pre"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("pre");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Pre.__name__ = "jotun.dom.Pre";
-jotun_dom_Pre.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Pre.__super__ = jotun_dom_Display;
-jotun_dom_Pre.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Pre
-});
-var jotun_dom_Progress = $hx_exports["jtn"]["dom"]["Progress"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("progress");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Progress.__name__ = "jotun.dom.Progress";
-jotun_dom_Progress.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Progress.__super__ = jotun_dom_Display;
-jotun_dom_Progress.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Progress
-});
-var jotun_dom_Quote = $hx_exports["jtn"]["dom"]["Quote"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("quote");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Quote.__name__ = "jotun.dom.Quote";
-jotun_dom_Quote.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Quote.__super__ = jotun_dom_Display;
-jotun_dom_Quote.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Quote
-});
-var jotun_dom_Script = $hx_exports["jtn"]["dom"]["Script"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("script");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Script.__name__ = "jotun.dom.Script";
-jotun_dom_Script.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Script.fromUrl = function(q,data,handler) {
-	jotun_Jotun.request(q,data,"GET",function(r) {
-		var js = null;
-		if(r.success) {
-			js = jotun_dom_Script.fromString(r.data).publish();
-			js.attribute("source",q);
-		}
-		if(handler != null) {
-			handler(js);
-		}
-	});
-};
-jotun_dom_Script.fromString = function(q,data) {
-	var js = new jotun_dom_Script();
-	js.writeHtml(jotun_utils_Filler.to(q,data));
-	return js;
-};
-jotun_dom_Script.require = function(url,handler) {
-	if(!((url) instanceof Array)) {
-		url = [url];
-	}
-	if(url.length > 0) {
-		var file = url.shift();
-		if(file != null) {
-			var s = new jotun_dom_Script();
-			s.publish();
-			s.src(file,function(e) {
-				jotun_dom_Script.require(url,handler);
-			});
-		}
-	} else if(handler != null) {
-		handler();
-	}
-};
-jotun_dom_Script.__super__ = jotun_dom_Display;
-jotun_dom_Script.prototype = $extend(jotun_dom_Display.prototype,{
-	type: function(q) {
-		this.object.type = q;
-		return this;
-	}
-	,src: function(url,handler) {
-		this.object.src = url;
-		if(handler != null) {
-			this.events.load(handler,1);
-		}
-	}
-	,async: function() {
-		this.object.async = true;
-	}
-	,writeText: function(q) {
-		this.object.text = q;
-		return this;
-	}
-	,appendText: function(q) {
-		this.object.text += Std.string(q);
-		return this;
-	}
-	,writeHtml: function(q) {
-		this.object.text = q;
-		return this;
-	}
-	,appendHtml: function(q) {
-		this.object.text += Std.string(q);
-		return this;
-	}
-	,publish: function() {
-		jotun_Jotun.document.head.addChild(this);
-		return this;
-	}
-	,__class__: jotun_dom_Script
-});
-var jotun_dom_Select = $hx_exports["jtn"]["dom"]["Select"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("select");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-	this.events.change($bind(this,this._refreshIO));
-};
-jotun_dom_Select.__name__ = "jotun.dom.Select";
-jotun_dom_Select.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Select.__super__ = jotun_dom_Display;
-jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
-	_refreshIO: function(e) {
-		var c = "" + Std.string(this.value());
-		var p = this.attribute("current-value");
-		if(c != p) {
-			this.attribute("previous-value",p);
-			this.attribute("current-value",c);
-			if(this._ioHandler != null) {
-				this._ioHandler(e);
-			}
-		}
-	}
-	,getAllSelected: function() {
-		return this.all("option:checked");
-	}
-	,getSelected: function() {
-		return this.one("option:checked");
-	}
-	,setValue: function(i) {
-		this.object.selectedIndex = i;
-		this.events.change().call(true,true);
-	}
-	,clearSelected: function() {
-		this.getAllSelected().each(function(o) {
-			o.object.selected = false;
-		});
-	}
-	,selectValue: function(value) {
-		value = Std.string(value);
-		this.all("option").each(function(o) {
-			var tmp = o.value();
-			o.object.selected = tmp == value;
-		});
-		this.events.change().call(true,true);
-	}
-	,value: function(q) {
-		if(q != null) {
-			this.selectValue(q);
-		}
-		var t = this.getAllSelected();
-		var r = [];
-		if(t != null && t.length() > 0) {
-			t.each(function(v) {
-				var o = v;
-				r[r.length] = o.value();
-			});
-		}
-		if(r.length <= 1) {
-			return r[0];
-		} else {
-			return r;
-		}
-	}
-	,hasValue: function() {
-		var i = 0;
-		if(this.object.selectedOptions != null) {
-			while(UInt.gt(this.object.selectedOptions.length,i)) {
-				var o = this.object.selectedOptions.item(i++);
-				if(!o.disabled) {
-					return true;
-				}
-			}
-		} else {
-			while(UInt.gt(this.object.options.length,i)) {
-				var o = this.object.options[i++];
-				if(o.selected && !o.disabled) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	,addOption: function(label,value,selected,disabled) {
-		this.appendHtml("<option value=\"" + Std.string(value) + "\"" + (disabled == true ? " disabled" : "") + (selected == true ? " selected" : "") + ">" + label + "</options>");
-		if(selected) {
-			this.attribute("current-value",this.value());
-			this.selectValue(value);
-		}
-		return this;
-	}
-	,saveTheme: function(name,content) {
-		if(jotun_dom_Select._themes == null) {
-			jotun_dom_Select._themes = { };
-		}
-		var o = jotun_dom_Select._themes;
-		var tmp = this.id();
-		o[jotun_tools_Utils.getValidOne(name,"default_" + (tmp == null ? "null" : Std.string(UInt.toFloat(tmp))))] = jotun_tools_Utils.getValidOne(content,this.element.innerHTML);
-	}
-	,loadTheme: function(name) {
-		var tmp = jotun_dom_Select._themes;
-		var tmp1 = this.id();
-		var tmp2 = jotun_tools_Utils.getValidOne(name,"default" + (tmp1 == null ? "null" : Std.string(UInt.toFloat(tmp1))));
-		this.element.innerHTML = Reflect.field(tmp,tmp2);
-		this.events.change().call();
-	}
-	,control: function(handler) {
-		this._ioHandler = handler;
-	}
-	,__class__: jotun_dom_Select
-});
-var jotun_dom_Source = $hx_exports["jtn"]["dom"]["Source"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("source");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Source.__name__ = "jotun.dom.Source";
-jotun_dom_Source.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Source.__super__ = jotun_dom_Display;
-jotun_dom_Source.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Source
-});
-var jotun_dom_Span = $hx_exports["jtn"]["dom"]["Span"] = function(q,d) {
-	if(q == null) {
-		q = window.document.createElement("span");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Span.__name__ = "jotun.dom.Span";
-jotun_dom_Span.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Span.__super__ = jotun_dom_Display;
-jotun_dom_Span.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Span
-});
-var jotun_dom_Svg = $hx_exports["jtn"]["dom"]["Svg"] = function(q) {
-	this._tmp_width = 1;
-	this._tmp_stoke = "#CC0000";
-	this._tmp_fill = "#FF0000";
-	if(q == null) {
-		q = window.document.createElementNS("http://www.w3.org/2000/svg","svg");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Svg.__name__ = "jotun.dom.Svg";
-jotun_dom_Svg.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Svg.__super__ = jotun_dom_Display;
-jotun_dom_Svg.prototype = $extend(jotun_dom_Display.prototype,{
-	hasAttribute: function(name) {
-		if(!this.element.hasAttributeNS(null,name)) {
-			return Object.prototype.hasOwnProperty.call(this.element,name);
-		} else {
-			return true;
-		}
-	}
-	,attribute: function(name,value) {
-		if(name != null) {
-			var t = Reflect.field(this.element,name);
-			if(t != null) {
-				if(value != null) {
-					this.element[name] = value;
-				}
-				return Reflect.field(this.element,name);
-			}
-			if(value != null) {
-				if(this._setattr) {
-					this.element.setAttributeNS(null,name,value);
-				}
-				return value;
-			}
-			if(this._getattr) {
-				return this.element.getAttributeNS(null,name);
-			}
-		}
-		return null;
-	}
-	,clearAttribute: function(name) {
-		var value = null;
-		if(this.hasAttribute(name)) {
-			if(Object.prototype.hasOwnProperty.call(this.element,name)) {
-				Reflect.deleteField(this.element,name);
-			} else {
-				value = this.attribute(name);
-				this.element.removeAttributeNS(null,name);
-			}
-		}
-		return value;
-	}
-	,draw: function(paper,stroke,width,fill) {
-		if(fill == null) {
-			fill = "none";
-		}
-		if(width == null) {
-			width = 1;
-		}
-		if(stroke == null) {
-			stroke = "#000000";
-		}
-		this.appendHtml("<path d=\"" + paper.val() + "\" stroke=\"" + stroke + "\" stroke-width=\"" + width + "\" fill=\"" + fill + "\"></path>");
-	}
-	,__class__: jotun_dom_Svg
-});
-var jotun_dom_Text = function(q) {
-	q = window.document.createTextNode(q);
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Text.__name__ = "jotun.dom.Text";
-jotun_dom_Text.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Text.__super__ = jotun_dom_Display;
-jotun_dom_Text.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Text
-});
-var jotun_dom_TextArea = $hx_exports["jtn"]["dom"]["TextArea"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("textarea");
-	}
-	jotun_dom_Input.call(this,q);
-};
-jotun_dom_TextArea.__name__ = "jotun.dom.TextArea";
-jotun_dom_TextArea.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_TextArea.__super__ = jotun_dom_Input;
-jotun_dom_TextArea.prototype = $extend(jotun_dom_Input.prototype,{
-	__class__: jotun_dom_TextArea
-});
-var jotun_dom_Title = $hx_exports["jtn"]["dom"]["Title"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("title");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Title.__name__ = "jotun.dom.Title";
-jotun_dom_Title.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Title.__super__ = jotun_dom_Display;
-jotun_dom_Title.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Title
-});
-var jotun_dom_Track = $hx_exports["jtn"]["dom"]["Track"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("track");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_Track.__name__ = "jotun.dom.Track";
-jotun_dom_Track.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Track.__super__ = jotun_dom_Display;
-jotun_dom_Track.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_Track
-});
-var jotun_dom_UL = $hx_exports["jtn"]["dom"]["UL"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("ul");
-	}
-	jotun_dom_Display.call(this,q,null);
-};
-jotun_dom_UL.__name__ = "jotun.dom.UL";
-jotun_dom_UL.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_UL.__super__ = jotun_dom_Display;
-jotun_dom_UL.prototype = $extend(jotun_dom_Display.prototype,{
-	__class__: jotun_dom_UL
-});
-var jotun_dom_Video = $hx_exports["jtn"]["dom"]["Video"] = function(q) {
-	if(q == null) {
-		q = window.document.createElement("video");
-	}
-	jotun_dom_Display.call(this,q,null);
-	this.object = this.element;
-};
-jotun_dom_Video.__name__ = "jotun.dom.Video";
-jotun_dom_Video.get = function(q) {
-	return jotun_Jotun.one(q);
-};
-jotun_dom_Video.__super__ = jotun_dom_Display;
-jotun_dom_Video.prototype = $extend(jotun_dom_Display.prototype,{
-	play: function() {
-		this.object.play();
-	}
-	,pause: function() {
-		this.object.pause();
-	}
-	,togglePause: function() {
-		if(this.object.paused) {
-			this.play();
-		} else {
-			this.pause();
-		}
-	}
-	,__class__: jotun_dom_Video
-});
 var jotun_draw_Book = $hx_exports["jtn"]["draw"]["Book"] = function() {
 	this.pages = { };
 };
@@ -7240,291 +7536,6 @@ jotun_tools_Ticker.remove = function(handler) {
 jotun_tools_Ticker.delay = function(handler,time,args) {
 	return jotun_tools_Delayer.create(handler,time,args);
 };
-var jotun_tools_Utils = $hx_exports["Utils"] = function() { };
-jotun_tools_Utils.__name__ = "jotun.tools.Utils";
-jotun_tools_Utils.matchMedia = function(value) {
-	return window.matchMedia(value).matches;
-};
-jotun_tools_Utils.screenOrientation = function() {
-	if(jotun_tools_Utils.matchMedia("(orientation: portrait)")) {
-		return "portrait";
-	} else {
-		return "landscape";
-	}
-};
-jotun_tools_Utils.viewportWidth = function() {
-	return window.innerWidth || document.documentElement.clientWidth;
-};
-jotun_tools_Utils.viewportHeight = function() {
-	return window.innerHeight || document.documentElement.clientHeight;
-};
-jotun_tools_Utils.mathLocation = function(uri) {
-	return window.location.href.indexOf(uri) != -1;
-};
-jotun_tools_Utils.screenInfo = function() {
-	return jotun_tools_Utils.screenOrientation() + "(" + jotun_tools_Utils.viewportWidth() + "x" + jotun_tools_Utils.viewportHeight() + ")";
-};
-jotun_tools_Utils.displayFrom = function(t) {
-	var id = null;
-	var type = null;
-	if(t.hasAttribute != null) {
-		id = t.getAttribute("jotun-id");
-		if(id == null) {
-			type = t.getAttribute("jotun-dom");
-			if(type == null) {
-				type = t.tagName.toUpperCase();
-				t.setAttribute("jotun-dom",type);
-			} else {
-				type = type.toUpperCase();
-			}
-		} else {
-			return jotun_dom_Display.fromGC(id);
-		}
-	}
-	var OC = Reflect.field(jotun_tools_Utils._typeOf,type);
-	if(OC == null) {
-		return new jotun_dom_Display(t);
-	} else {
-		return new OC(t);
-	}
-};
-jotun_tools_Utils.getDisplay = function(t) {
-	var id = t.hasAttribute != null && t.hasAttribute("jotun-id") ? Std.parseInt(t.getAttribute("jotun-id")) : null;
-	if(id != null) {
-		return jotun_dom_Display.fromGC(id);
-	}
-	return new jotun_dom_Display(t);
-};
-jotun_tools_Utils.intToString = function(value,rad) {
-	if(typeof(value) == "string") {
-		value = Std.parseInt(value);
-	}
-	return value.toString.apply(value,rad != null ? [rad] : []);
-};
-jotun_tools_Utils.getAttributes = function(display) {
-	var attr = display.element.attributes;
-	var data = { };
-	if(attr != null) {
-		var i = 0;
-		var len = attr.length;
-		while(UInt.gt(len,i)) {
-			var a = attr.item(i);
-			data[a.name] = a.value;
-			++i;
-		}
-	}
-	return data;
-};
-jotun_tools_Utils.fileToURL = function(file) {
-	return window.URL.createObjectURL(file);
-};
-jotun_tools_Utils.getMin = function(values,filter) {
-	var r = null;
-	jotun_utils_Dice.Values(values,function(i) {
-		if(filter == null || filter(i)) {
-			if(i < r || r == null) {
-				r = i;
-			}
-		}
-	});
-	return r;
-};
-jotun_tools_Utils.getMax = function(values,filter) {
-	var r = null;
-	jotun_utils_Dice.Values(values,function(i) {
-		if(filter == null || filter(i)) {
-			if(i > r || r == null) {
-				r = i;
-			}
-		}
-	});
-	return r;
-};
-jotun_tools_Utils.getQueryParams = function(value) {
-	var params = { };
-	if(value.indexOf("?") > 0) {
-		value = value.split("+").join(" ").split("?")[1];
-	} else {
-		return params;
-	}
-	jotun_utils_Dice.Values(value.split("&"),function(v) {
-		var data = v.split("=");
-		if(data.length > 1) {
-			var field = decodeURIComponent(data[0].split("+").join(" "));
-			var value = decodeURIComponent(data[1].split("+").join(" "));
-			params[field] = value;
-		}
-	});
-	return params;
-};
-jotun_tools_Utils.clearArray = function(path,filter) {
-	var copy = [];
-	jotun_utils_Dice.Values(path,function(v) {
-		if(v != null && v != "" && (filter == null || filter(v))) {
-			copy[copy.length] = v;
-		}
-	});
-	return copy;
-};
-jotun_tools_Utils.toString = function(o,json) {
-	if(json == true) {
-		return JSON.stringify(o);
-	} else {
-		return Std.string(o);
-	}
-};
-jotun_tools_Utils.sruString = function(o) {
-	return jotun_tools_Utils._sruFly(o,"","");
-};
-jotun_tools_Utils._sruFly = function(o,i,b) {
-	i += "  ";
-	jotun_utils_Dice.All(o,function(p,v) {
-		if(v == null) {
-			b += i + p + ":* = NULL\r";
-		} else if(typeof(v) == "string") {
-			b += i + p + ":String = " + Std.string(v) + "\r";
-		} else if(typeof(v) == "boolean" || v == "true" || v == "false" || v == true || v == false) {
-			b += i + p + ":Bool = " + Std.string(v) + "\r";
-		} else if(typeof(v) == "number" && ((v | 0) === v) || typeof(v) == "number") {
-			b += i + p + ":Number = " + Std.string(v) + "\r";
-		} else if(((v) instanceof Array)) {
-			b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "]\r";
-		} else {
-			b += i + p + ":Object {\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "}\r";
-		}
-	});
-	return b;
-};
-jotun_tools_Utils.isValid = function(o,len) {
-	if(len == null) {
-		len = 0;
-	}
-	if(o != null && o != "") {
-		if(o != "null" && Object.prototype.hasOwnProperty.call(o,"length")) {
-			return UInt.gt(o.length,len);
-		} else if(o != 0) {
-			return o != false;
-		} else {
-			return false;
-		}
-	}
-	return false;
-};
-jotun_tools_Utils.isRange = function(o,min,max) {
-	if(o != null) {
-		if(typeof(o) != "number") {
-			if(((o) instanceof Array) || typeof(o) == "string") {
-				o = o.length;
-			} else {
-				return false;
-			}
-		}
-	} else {
-		return false;
-	}
-	if(max == null) {
-		return o >= min;
-	} else if(min == null) {
-		return o <= max;
-	} else if(o >= min) {
-		return o <= max;
-	} else {
-		return false;
-	}
-};
-jotun_tools_Utils.isValidAll = function(o) {
-	var q = jotun_utils_Dice.Values(o,function(v) {
-		return !jotun_tools_Utils.isValid(v);
-	});
-	return q.completed;
-};
-jotun_tools_Utils.getValidOne = function(o,alt) {
-	if(jotun_tools_Utils.isValid(o)) {
-		return o;
-	} else {
-		return alt;
-	}
-};
-jotun_tools_Utils.typeof = function(o) {
-	var name;
-	if(o != null) {
-		try {
-			return o.__proto__.__class__.__name__.join(".");
-		} catch( _g ) {
-		}
-		try {
-			var c = js_Boot.getClass(o);
-			return c.__name__;
-		} catch( _g ) {
-		}
-	}
-	return null;
-};
-jotun_tools_Utils.boolean = function(q) {
-	if(!(q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok")) {
-		return q == "selected";
-	} else {
-		return true;
-	}
-};
-jotun_tools_Utils.money = function(val,s,a,b) {
-	if(b == null) {
-		b = ".";
-	}
-	if(a == null) {
-		a = ",";
-	}
-	if(s == null) {
-		s = "$";
-	}
-	var r = "";
-	val *= 100;
-	if(val > 99) {
-		val = "" + (val | 0);
-		var i = val.length;
-		var c = 0;
-		while(i-- > 0) {
-			r = Std.string(val.substr(i,1)) + r;
-			if(i > 0) {
-				if(c == 1) {
-					r = b + r;
-				} else if(c > 1 && (c + 2) % 3 == 0) {
-					r = a + r;
-				}
-			} else if(c < 3) {
-				r = "0" + (c == 1 ? "." : "") + r;
-			}
-			++c;
-		}
-	} else {
-		r = "0" + b + (val < 10 ? "0" : "") + Std.string(val);
-	}
-	return s + r;
-};
-jotun_tools_Utils.stdClone = function(q) {
-	return JSON.parse(JSON.stringify(q));
-};
-jotun_tools_Utils.paramsOf = function(o) {
-	var r = [];
-	jotun_utils_Dice.All(o,function(p,v) {
-		v = JSON.stringify(v);
-		var r1 = r;
-		var r2 = r.length;
-		var s = v.substr(1,v.length - 2);
-		r1[r2] = p + "=" + encodeURIComponent(s);
-	});
-	return r.join("&");
-};
-jotun_tools_Utils.toFixed = function(n,i,s) {
-	if(s == null) {
-		s = ".";
-	}
-	var a = n.toFixed(i);
-	if(s != ".") {
-		a = a.split(".").join("s");
-	}
-	return a;
-};
 var jotun_transitions_IEasing = function() { };
 jotun_transitions_IEasing.__name__ = "jotun.transitions.IEasing";
 jotun_transitions_IEasing.prototype = {
@@ -8270,6 +8281,8 @@ haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 jotun_dom_Display._CNT = 0;
 jotun_dom_Display._DATA = [];
+jotun_dom_Input.icons = { };
+jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_modules_ModLib.CACHE = { };
 jotun_modules_ModLib.DATA = { };
 jotun_Jotun._loaded = false;
@@ -8293,7 +8306,6 @@ jotun_css_CSSGroup.MEDIA_LG_MAX = "(max-width:1479px)";
 jotun_css_CSSGroup.MEDIA_XL = "(min-width:1480px)";
 jotun_css_XCode.css = new jotun_css_CSSGroup();
 jotun_css_XCode._inits = { reset : false, grid : false};
-jotun_dom_Input.icons = { };
 jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.commands = new jotun_objects_QueryGroup();
 jotun_gaming_actions_Requirement.cache = { };
@@ -8319,7 +8331,6 @@ jotun_tools_Key.VALIDATE_NON_URL = new EReg("^[A-Za-z0-9._-]{6,24}$","");
 jotun_tools_Key.VALIDATE_HASH = new EReg("^[A-Za-z0-9._-]{35}$","");
 jotun_tools_Key.VALIDATE_CARD = new EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}$","");
 jotun_tools_Ticker._pool = [];
-jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Table._trash = [];

@@ -438,7 +438,7 @@ interface IDisplay extends IQuery {
 	 * @param	data
 	 * @param	handler
 	 */
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void;
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void;
 	
 	/**
 	 * Scroll document for display visibility

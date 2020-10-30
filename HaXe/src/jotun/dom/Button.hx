@@ -8,6 +8,12 @@ import jotun.Jotun;
 @:extern("sru.dom.Div")
 class Button extends Div {
 	
+	/*
+	
+
+
+
+*/
 	static public function get(q:String):Button {
 		return cast Jotun.one(q);
 	}

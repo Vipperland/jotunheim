@@ -568,11 +568,13 @@ class Display extends Query implements IDisplay {
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
 			if (Std.is(p, String)) {
-				if (v != null) 
+				if (v != null) {
 					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+				}
 				v = Reflect.field(trueStyle(), p);
-				if (p.toLowerCase().indexOf("color") > 0)
+				if (p.toLowerCase().indexOf("color") > 0){
 					v = new ARGB(v);
+				}
 				return v;
 			}else {
 				Dice.All(p, function(p:String, v:Dynamic) {
@@ -584,17 +586,19 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function trueStyle():CSSStyleDeclaration {
-		if (Browser.document.defaultView.opener != null) 	
+		if (Browser.document.defaultView.opener != null) {
 			return Browser.document.defaultView.getComputedStyle(element);
-		else
+		} else{
 			return Browser.window.getComputedStyle(element);
+		}
 	}
 	
 	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
-		if (Jotun.resources.exists(q))
+		if (Jotun.resources.exists(q)){
 			return addChildren(Jotun.resources.build(q, data).children(), at);
-		else
+		} else {
 			return addChildren(new Display().writeHtml(q).children(), at);
+		}
 	}
 	
 	public function empty(?fast:Bool):IDisplay {
@@ -784,19 +788,20 @@ class Display extends Query implements IDisplay {
 		return _uid;
 	}
 	
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?headers:Dynamic, ?progress:IProgress->Void):Void {
+	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
 		if (module != null){
 			if (Jotun.resources.exists(module)){
 				mount(module, data);
 				return;
 			}
 		}
-		Jotun.request(url, data, function(r:IRequest) {
-			if (r.success)
+		Jotun.module(url, url, data, function(r:IRequest) {
+			if (r.success){
 				mount(module, data);
-			if (handler != null)
+			} if (handler != null){
 				handler(r);
-		}, headers, progress);
+			}
+		}, progress);
 	}
 	
 	public function lookAt(?time:Float, ?y:Int, ?x:Int):IDisplay {
@@ -823,7 +828,7 @@ class Display extends Query implements IDisplay {
 			var f:String = o.attribute('jtn-load');
 			var d:Array<String> = f.split('#');
 			o.clearAttribute('jtn-load');
-			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, null, progress);
+			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, progress);
 		});
 	}
 	

@@ -89,7 +89,7 @@ class Jotun {
 				Reflect.deleteField(Jotun, '_loadController');
 				Reflect.deleteField(Jotun, '_loadPool');
 				Reflect.deleteField(Jotun, 'main');
-				document.body.autoLoad();
+				Jotun.one('html').autoLoad();
 			}
 		}
 		
@@ -201,9 +201,9 @@ class Jotun {
 		 * @param	content
 		 * @param	handler
 		 */
-		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
+		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void = null):Void {
 			if (name == null || !resources.exists(name)){
-				loader.module(file, data, handler);
+				loader.module(file, data, handler, progress);
 			}else{
 				handler(null);
 			}

@@ -1,5 +1,6 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.utils.ITable;
 import js.Browser;
 import jotun.tools.Utils;
 
@@ -15,8 +16,20 @@ class Head extends Display{
 	}
 	
 	public function new(?q:Dynamic) {
-		if (q == null) q = Browser.document.createHeadElement();
+		if (q == null){
+			q = Browser.document.createHeadElement();
+		}
 		super(q,null);
+	}
+	
+	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+		if (Jotun.resources.exists(q)){
+			Jotun.resources.build(q, data).children().each(cast addChild);
+			
+		}else {
+			writeHtml('/* <!> mod:' + q + ' not found */');
+		}
+		return this;
 	}
 	
 	public function bind(content:String, type:String, ?id:String):IDisplay {
