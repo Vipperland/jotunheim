@@ -8,16 +8,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
 		<script type="text/javascript" src="jotun/api.jotun.js"></script>
 		<style>  
-			html, body {
-				font-family: Arial;
-			}
-			.content {
-				font-size: 45px;
-				text-align: center;
-			}
-			#color-test span {
-				color: #999999;
-			}
+			
 		</style>
 	</head>
 	<body automator>
@@ -43,13 +34,19 @@
 			</div>
 		</div>
 		<script>
-			Jotun.logger.maxLvLog(6);
+			//Jotun.logger.maxLvLog(6);
 			Jotun.run(function(){
-				//setInterval(function(){
-				//	Jotun.one('#disp-test').displacement(Math.random() * .03, 45, Math.random() * 15 + 2);
-				//	Jotun.one('#color-test').colorTransform(1, Math.random()+.5, Math.random()+.5, Math.random()+.5);
-				//}, 100);
-				Jotun.module('jotun/modules/sample/modsample.html');
+				Jotun.module('jotun/modules/sample/modsample.html', null, null, function(r){
+					Jotun.document.body.mount('sample-data-react', {
+						content1:"Hello World!",
+						block: {
+							content2: "Foobar",
+						},
+						styleTest: "font-size: 12px; font-weight: bold;",
+						styleNamedTest: "#FF0000",
+						attrTest: "BYE!",
+					});
+				});
 			});
 		</script>
 	</body>                                                                               

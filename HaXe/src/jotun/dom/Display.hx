@@ -136,7 +136,7 @@ class Display extends Query implements IDisplay {
 			});
 			// Write object classes
 			all('[set-class="' + path + '"]').each(function(o:IDisplay){
-				o.clearAttribute('class');
+				//o.clearAttribute('class');
 				o.css(data);
 			});
 		}else {

@@ -260,7 +260,7 @@ class XCode {
 		}
 		var t:ARGB = color;
 		var y:Int = 0;
-		var z:Int = Utils.getValidOne(distance, 5);
+		var z:Int = Utils.getValidOne(distance, text ? 1 : 5);
 		var a:Int = Utils.getValidOne(direction, 45);
 		var w:Int = Utils.getValidOne(strenght, 5);
 		var u:Int = Utils.getValidOne(quality, 10);

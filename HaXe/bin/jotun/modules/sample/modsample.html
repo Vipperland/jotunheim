@@ -1,22 +1,38 @@
-[Module:{"type":"script"}]
-	<script>
-	  (function(){
-		alert('HI!');
-	  });
-	</script>
 [Module:{"type":"style"}]
 	<style>
-	  body {
-		padding: 15px;
-	  }
-	  body:before {
-		content: "HI!";
-		font-size: 24px;
-	  }
-	  .test {
-		font-size: 18px;
-		padding: 15px;
-	  }
+		body {
+			padding: 15px;
+		}
+		html, body {
+			font-family: Arial;
+		}
+		.content {
+			font-size: 45px;
+			text-align: center;
+		}
+		#color-test span {
+			color: #999999;
+		}
+		[set-attr-name="text"]:after {
+			content: attr(text);
+			font-weight: BOLD;
+		}
+		.test {
+			font-size: 18px;
+			padding: 15px;
+		}
+		.shadow-test {
+			font-size: 30px;
+		}
+		.shadow-test-2 {
+			font-size: 30px;
+			padding: 10px 20px;
+			border-radius: 10px;
+			background-color: #333333;
+			margin-top: 20px;
+			display: inline-block;
+			color: #FFFFFF;
+		}
 	</style>
 [Module:{"name":"sample-module","target":"body"}]
 	<div class="test desktop">
@@ -42,6 +58,24 @@
 	<span style="color:green">
 		This is the content from another dependency mod.
 	</span>
+[Module:{"name":"sample-data-react"}]
+	<div set-class="className">
+		<span>Object.content1 value is:</span>
+		<b set-data="content1"></b>
+		<br/>
+		<span>Object.block.content2 value is:</span>
+		<b set-data="block.content2"></b>
+		<br/>
+		<span set-style="styleTest">Object.styleTest(style=<b set-data="styleTest"></b>)</span>
+		<br/>
+		<span set-style="styleNamedTest" set-style-name="color">Object.styleNamedTest(color=<b set-data="styleNamedTest"></b>)</span>
+		<br/>
+		<span set-attr="attrTest" set-attr-name="text">Attribute test value: </span>
+		<br/>
+		<span class="shadow-test">This is a TEXT Drop Shadow Effect</span>
+		<br/>
+		<span class="shadow-test-2">This is a Drop Shadow Effect</span>
+	</div>
 [Module:{"name":"sample-dependency","require":["sample-dependency-1","sample-dependency-2"],"target":"body"}]
 	<div class="test">
 		<span>
@@ -54,3 +88,24 @@
 			</p>
 		</span>
 	</div>
+[Module:{"type":"script"}]
+	<script>
+	  (function(){
+		var r = 0;
+		setTimeout(function(){
+			XCode.shadow('.shadow-test', true, 0x003377, 1, 90);
+			XCode.shadow('.shadow-test-2', false, 0x333333, 5, 90, 10, 10);
+			XCode.apply();
+			setInterval(function(){
+				Jotun.one('#disp-test').displacement(Math.random() * .03, 45, Math.random() * 15 + 2);
+				Jotun.one('#color-test').colorTransform(1, Math.random()+.5, Math.random()+.5, Math.random()+.5);
+				Jotun.one('#color-test').rotateZ(r);
+				Jotun.one('#color-test').rotateX(r);
+				Jotun.one('#color-test').rotateY(r);
+				//Jotun.one('#color-test').translate(Math.cos(180/Math.PI * r) * 180, Math.sin(180/Math.PI * r) * 180, 0);
+				Jotun.one('#color-test').transform();
+				r+=10;
+			}, 100);
+		}, 1000);
+	  })();
+	</script>

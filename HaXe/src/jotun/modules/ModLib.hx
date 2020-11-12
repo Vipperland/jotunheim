@@ -91,7 +91,7 @@ class ModLib {
 	 * @param	file
 	 * @param	content
 	 */
-	public function register(file:String, content:String):Void {
+	public function register(file:String, content:String, ?data:Dynamic):Void {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");

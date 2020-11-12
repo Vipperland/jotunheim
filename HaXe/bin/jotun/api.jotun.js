@@ -1191,7 +1191,6 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 				}
 			});
 			this.all("[set-class=\"" + path + "\"]").each(function(o) {
-				o.clearAttribute("class");
 				o.css(data);
 			});
 		} else {
