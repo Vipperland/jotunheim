@@ -5,7 +5,7 @@ import jotun.tools.Flag;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-@:expose('JsonTool')
+@:expose('J_Json')
 class JsonTool {
 	
 	

@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("Ticker")
+@:expose("J_Ticker")
 class Ticker {
 	
 	private static var _uid:Int;
@@ -19,14 +19,16 @@ class Ticker {
 	}
 	
 	public static function start():Void {
-		stop();
-		var t:Dynamic = _tickAll;
-		_uid = js.Syntax.code("setInterval({0},{1})", t, 33);
+		if(_uid == null){
+			stop();
+			var t:Dynamic = _tickAll;
+			_uid = js.Syntax.code("setInterval({0},{1})", t, 33);
+		}
 	}
 	
 	public static function stop():Void {
-		var uid:Int = _uid;
-		js.Syntax.code("clearInterval({0})", uid);
+		js.Syntax.code("clearInterval({0})", _uid);
+		_uid = null;
 	}
 	
 	public static function add(handler:Dynamic):Void {

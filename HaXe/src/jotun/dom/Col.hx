@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Col")
+@:expose("J_dom_Col")
 class Col extends Display{
 	
 	static public function get(q:String):Col {

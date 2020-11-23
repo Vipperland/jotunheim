@@ -7,7 +7,7 @@ import js.html.BaseElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.B")
+@:expose("J_dom_B")
 class B extends Display{
 	
 	static public function get(q:String):B {

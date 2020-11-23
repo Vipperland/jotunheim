@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Param")
+@:expose("J_dom_Param")
 class Param extends Display{
 	
 	static public function get(q:String):Param {

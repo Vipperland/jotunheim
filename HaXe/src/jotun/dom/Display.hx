@@ -14,7 +14,7 @@ import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
-import jotun.serial.IOTools;
+import jotun.serial.Packager;
 import jotun.tools.Ticker;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -33,7 +33,7 @@ import js.html.Node;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Display")
+@:expose("J_dom_Display")
 class Display extends Query implements IDisplay {
 	
 	private static var _CNT:UInt = 0;

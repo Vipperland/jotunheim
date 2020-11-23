@@ -13,7 +13,7 @@ import jotun.utils.ITable;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Select")
+@:expose("J_dom_Select")
 class Select extends Display {
 	
 	static private var _themes:Dynamic;

@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Span")
+@:expose("J_dom_Span")
 class Span extends Display{
 	
 	static public function get(q:String):Span {

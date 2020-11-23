@@ -12,7 +12,7 @@ import jotun.utils.IDiceRoll;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose('sru.data.FormData')
+@:expose('J_FormData')
 class FormData implements IFormData {
 	
 	private var _form:IDisplay;

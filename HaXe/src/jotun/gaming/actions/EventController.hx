@@ -7,7 +7,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.EventController")
+@:expose("J_EventController")
 class EventController implements IEventDispatcher  {
 	
 	private var _debug:Bool;

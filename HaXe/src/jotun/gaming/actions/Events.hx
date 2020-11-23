@@ -7,7 +7,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.Events")
+@:expose("J_Events")
 class Events {
 	
 	public static function patch(data:Dynamic, ?origin:Dynamic){

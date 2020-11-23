@@ -9,7 +9,7 @@ import jotun.data.IFormData;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Form")
+@:expose("J_dom_Form")
 class Form extends Display {
 	
 	static public function get(q:String):Form {

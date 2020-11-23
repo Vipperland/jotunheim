@@ -6,7 +6,7 @@ import js.html.OptionElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Option")
+@:expose("J_dom_Option")
 class Option extends Display {
 	
 	public var object:OptionElement;

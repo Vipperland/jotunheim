@@ -10,7 +10,7 @@ import jotun.dom.Style;
  * ...
  * @author Rafael Moreira
  */
-@:expose("jtn.css.CSSGroup")
+@:expose("J_CSSGroup")
 class CSSGroup{
 
 	private static var SOF:String = "/*SOF*/@media";

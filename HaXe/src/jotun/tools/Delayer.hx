@@ -7,7 +7,7 @@ import jotun.tools.Key;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.tools.Delayer")
+@:expose("J_Delayer")
 class Delayer {
 	
 	static public var setTimeout:Dynamic->UInt->Array<Dynamic>->Int = js.Syntax.code('setTimeout');

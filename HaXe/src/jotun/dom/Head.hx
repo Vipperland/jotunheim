@@ -8,7 +8,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Head")
+@:expose("J_dom_Head")
 class Head extends Display{
 	
 	static public function get(q:String):Head {

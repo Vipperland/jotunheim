@@ -9,4 +9,6 @@ interface IResolve {
 
 	public function setProp(name:String, value:Dynamic):Void;
 	
+	public function deleteProp(name:String):Void;
+	
 }

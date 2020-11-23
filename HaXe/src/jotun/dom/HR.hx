@@ -7,7 +7,7 @@ import js.html.BaseElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.HR")
+@:expose("J_dom_HR")
 class HR extends Display{
 	
 	static public function get(q:String):HR {

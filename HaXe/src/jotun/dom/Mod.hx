@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Mod")
+@:expose("J_dom_Mod")
 class Mod extends Display{
 	
 	static public function get(q:String):Mod {

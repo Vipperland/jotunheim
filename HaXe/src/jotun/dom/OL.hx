@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.OL")
+@:expose("J_dom_OL")
 class OL extends Display{
 	
 	static public function get(q:String):OL {

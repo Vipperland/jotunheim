@@ -11,7 +11,7 @@ import jotun.events.IEvent;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Style")
+@:expose("J_dom_Style")
 class Style extends Display {
 	
 	static public function get(q:String):Style {

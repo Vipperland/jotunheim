@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:expose('sru.objects.Query')
+@:expose('J_Query')
 class Query extends Resolve implements IQuery {
 	
 	private var _log:Array<String>;

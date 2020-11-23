@@ -5,7 +5,7 @@ import jotun.math.IPoint;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose('sru.math.point')
+@:expose('J_Point')
 class Point implements IPoint {
 	
 	

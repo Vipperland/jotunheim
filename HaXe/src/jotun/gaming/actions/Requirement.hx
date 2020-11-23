@@ -9,7 +9,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.Requirement")
+@:expose("J_Requirement")
 class Requirement extends Resolution {
 	
 	public static var cache:Dynamic = {};

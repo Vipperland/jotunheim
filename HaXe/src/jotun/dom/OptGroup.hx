@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.OptGroup")
+@:expose("J_dom_OptGroup")
 class OptGroup extends Display{
 	
 	static public function get(q:String):OptGroup {

@@ -9,8 +9,8 @@ import jotun.serial.JsonTool;
  * ...
  * @author Rafael Moreira
  */
-@:expose('IOTools')
-class IOTools {
+@:expose('J_Packager')
+class Packager {
 
 	/**
 	 * Encode Object to Base64 encoded Json String

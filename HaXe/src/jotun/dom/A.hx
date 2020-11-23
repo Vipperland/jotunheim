@@ -7,7 +7,7 @@ import jotun.events.IEvent;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.A")
+@:expose("J_dom_A")
 class A extends Display {
 	
 	static public function get(q:String):A {

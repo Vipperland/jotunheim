@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Track")
+@:expose("J_dom_Track")
 class Track extends Display{
 	
 	static public function get(q:String):Track {

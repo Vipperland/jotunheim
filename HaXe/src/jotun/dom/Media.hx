@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Media")
+@:expose("J_dom_Media")
 class Media extends Display{
 	
 	static public function get(q:String):Media {

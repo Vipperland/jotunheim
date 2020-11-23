@@ -5,7 +5,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.Resolution")
+@:expose("J_Resolution")
 class Resolution {
 	
 	private var _type:String;

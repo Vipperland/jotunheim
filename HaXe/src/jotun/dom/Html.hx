@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Html")
+@:expose("J_dom_Html")
 class Html extends Display{
 	
 	static public function get(q:String):Html {

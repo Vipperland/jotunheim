@@ -1,6 +1,6 @@
 package jotun.modules;
 import haxe.Json;
-import jotun.serial.IOTools;
+import jotun.serial.Packager;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
 import jotun.Jotun;
@@ -21,7 +21,7 @@ import jotun.Jotun;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose('sru.modules.ModLib')
+@:expose('J_ModLib')
 class ModLib {
 	
 	private static var CACHE:Dynamic = { };
@@ -164,7 +164,7 @@ class ModLib {
 									content = '';
 								}else if (mod.type.substring(0,6)  == 'image/') {
 									var img:Image = new Image();
-									img.src = "data:" + mod.type + "," + IOTools.encodeBase64(content);
+									img.src = "data:" + mod.type + "," +Packager.encodeBase64(content);
 								}
 							}
 							if (mod.target != null) {

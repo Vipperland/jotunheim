@@ -10,7 +10,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Img")
+@:expose("J_dom_Img")
 class Img extends Display {
 	
 	static public function get(q:String):Img {

@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Base")
+@:expose("J_dom_Base")
 class Base extends Display{
 	
 	static public function get(q:String):Base {

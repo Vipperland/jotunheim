@@ -10,7 +10,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.Action")
+@:expose("J_Action")
 class Action extends Resolution {
 	
 	public static var cache:Dynamic = {};

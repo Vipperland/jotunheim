@@ -9,7 +9,7 @@ import js.html.Window;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.IFrame")
+@:expose("J_dom_IFrame")
 class IFrame extends Display {
 	
 	static public function get(q:String):IFrame {

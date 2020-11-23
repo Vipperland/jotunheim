@@ -81,12 +81,13 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Video;
 	import jotun.draw.Book;
 	import jotun.draw.Paper;
-	import jotun.utils.SearchTag;
 	import jotun.gaming.actions.Events;
+	import jotun.utils.SearchTag;
+	import jotun.signals.Observer;
 	
 #end
 
-import jotun.serial.IOTools;
+import jotun.serial.Packager;
 import jotun.tools.Flag;
 import jotun.utils.Dice;
 
@@ -94,7 +95,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("Utils")
+@:expose("J_Utils")
 class Utils{
 
 	#if js
@@ -184,8 +185,9 @@ class Utils{
 		 */
 		static public function getDisplay(t:Element):IDisplay {
 			var id:UInt = t.hasAttribute != null && t.hasAttribute('jotun-id') ? Std.parseInt(t.getAttribute('jotun-id')) : null;
-			if (id != null)
+			if (id != null){
 				return Display.fromGC(id);
+			}
 			return new Display(t);
 		}
 		
@@ -196,8 +198,10 @@ class Utils{
 		 * @return
 		 */
 		static public function intToString(value:Dynamic, ?rad:Int):String {
-			if (Std.is(value, String)) value = Std.parseInt(value);
-				value = value >> 0;
+			if (Std.isOfType(value, String)) {
+				value = Std.parseInt(value);
+			}
+			value = value >> 0;
 			return Reflect.callMethod(value, value.toString, rad != null ? [rad] : []);
 		}
 		
@@ -306,16 +310,16 @@ class Utils{
 			if (v == null){
 				b += i + p + ":* = NULL\r";
 			}
-			else if (Std.is(v, String)){
+			else if (Std.isOfType(v, String)){
 				b += i + p + ":String = " + v + "\r";
 			}
-			else if (Std.is(v, Bool) || v == "true" || v == "false" || v == true || v == false){
+			else if (Std.isOfType(v, Bool) || v == "true" || v == "false" || v == true || v == false){
 				b += i + p + ":Bool = " + v + "\r";
 			}
-			else if (Std.is(v, Int) || Std.is(v, Float)){
+			else if (Std.isOfType(v, Int) || Std.isOfType(v, Float)){
 				b += i + p + ":Number = " + v + "\r";
 			}
-			else if (Std.is(v, Array)){
+			else if (Std.isOfType(v, Array)){
 				b += i + p + ":Array[" + v.length + "]:[\r" + _sruFly(v, i, '') + i + "]\r";
 			} else{
 				b += i + p + ":Object {\r" + _sruFly(v, i, '') + i + "}\r";
@@ -341,8 +345,8 @@ class Utils{
 	
 	static public function isRange(o:Dynamic, min:Int, max:Int):Bool {
 		if(o != null){
-			if (!Std.is(o, Float)){
-				if (Std.is(o, Array) || Std.is(o, String)){
+			if (!Std.isOfType(o, Float)){
+				if (Std.isOfType(o, Array) || Std.isOfType(o, String)){
 					o = o.length;
 				}else{
 					return false;
@@ -438,17 +442,30 @@ class Utils{
 	static public function paramsOf(o:Dynamic):String {
 		var r:Array<String> = [];
 		Dice.All(o, function(p:String, v:Dynamic){
-			v = Json.stringify(v);
-			r[r.length] = p + '=' + StringTools.urlEncode(v.substr(1, v.length-2));
+			if(isValid(v) && !isFunction(v)){
+				if (Std.isOfType(v, Float)){
+					v = Std.string(v);
+				}else if (!Std.isOfType(v, String)){
+					v = Json.stringify(v);
+				}
+				r[r.length] = p + '=' + StringTools.urlEncode(v);
+			}
 		});
 		return r.join('&');
 	}
 	
 	#if php 
+	
 		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {
 			return php.Syntax.codeDeref('number_format({0},{1},{2},{3})', n, i, s, t);
 		}
+		
+		static public function isFunction(o:Dynamic):Bool {
+			return php.Syntax.codeDeref("is_callable({0})", o);
+		}
+		
 	#elseif js
+	
 		static public function toFixed(n:Float, i:Int, s:String = '.'):String {
 			var a:String = (cast n).toFixed(i);
 			if (s != '.'){
@@ -456,6 +473,11 @@ class Utils{
 			}
 			return a;
 		}
+		
+		static public function isFunction(o:Dynamic):Bool {
+			return Reflect.isFunction(o);
+		}
+		
 	#end
 	
 }

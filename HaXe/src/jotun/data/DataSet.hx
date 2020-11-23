@@ -6,7 +6,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:expose("jtn.data.DataSet")
+@:expose("J_DataSet")
 class DataSet implements IDataSet {
 	
 	private var _content:Dynamic;

@@ -17,7 +17,7 @@ import js.lib.Error;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Document")
+@:expose("J_dom_Document")
 class Document extends Display {
 	
 	static private var __doc__:Document;

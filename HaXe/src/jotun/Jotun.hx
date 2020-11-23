@@ -23,7 +23,6 @@ import jotun.utils.Dice;
 	import jotun.dom.Style;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;
-	import jotun.transitions.Ease;
 #elseif php
 	import php.Lib;
 	import jotun.data.DataCache;
@@ -81,7 +80,6 @@ class Jotun {
 				_loaded = true;
 				document.checkBody();
 				agent.update();
-				Ease.update();
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
 				log("Jotun => READY", 1);

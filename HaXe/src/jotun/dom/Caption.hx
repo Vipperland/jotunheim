@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Caption")
+@:expose("J_dom_Caption")
 class Caption extends Display{
 	
 	static public function get(q:String):Caption {

@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Map")
+@:expose("J_dom_Map")
 class Map extends Display{
 	
 	static public function get(q:String):Map {

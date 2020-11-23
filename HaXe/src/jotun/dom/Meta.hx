@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Meta")
+@:expose("J_dom_Meta")
 class Meta extends Display {
 	
 	static public function get(q:String):Meta {

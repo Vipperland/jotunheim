@@ -4,7 +4,7 @@ package jotun.utils;
  * ...
  * @author Rafael Moreira
  */
-@:expose('SearchTag')
+@:expose('J_SearchTag')
 class SearchTag {
 	
 	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];

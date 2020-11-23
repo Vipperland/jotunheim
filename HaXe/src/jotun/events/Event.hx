@@ -5,7 +5,7 @@ import jotun.dom.IDisplay;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.events.Event")
+@:expose("J_Event")
 class Event implements IEvent {
 	
 	/** Current Dispatcher */

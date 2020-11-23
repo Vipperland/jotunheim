@@ -8,7 +8,7 @@ import jotun.signals.Signals;
  * ...
  * @author Rafael Moreira
  */
-@:expose("jtn.net.BulkLoader")
+@:expose("J_BulkLoader")
 class BulkLoader {
 
 	private var _toload:Array<String> = [];

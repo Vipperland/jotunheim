@@ -14,4 +14,8 @@ class Resolve implements IResolve {
 		Reflect.setField(this, name, value);
 	}
 	
+	public function deleteProp(name:String):Void {
+		Reflect.deleteField(this, name);
+	}
+
 }

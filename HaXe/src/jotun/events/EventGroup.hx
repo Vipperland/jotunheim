@@ -12,7 +12,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.events.EventGroup")
+@:expose("J_EventGroup")
 class EventGroup implements IEventGroup {
 	
 	private var _pd:Bool;

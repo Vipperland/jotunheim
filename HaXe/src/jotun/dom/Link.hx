@@ -8,7 +8,7 @@ import jotun.events.IEvent;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Link")
+@:expose("J_dom_Link")
 class Link extends Display{
 	
 	static public function get(q:String):Link {

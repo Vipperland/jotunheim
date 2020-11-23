@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Quote")
+@:expose("J_dom_Quote")
 class Quote extends Display{
 	
 	static public function get(q:String):Quote {

@@ -5,7 +5,7 @@ import jotun.objects.Query;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.ActionQuery")
+@:expose("J_ActionQuery")
 class ActionQuery extends Query {
 
 	private function _isempty(value:String):Bool {

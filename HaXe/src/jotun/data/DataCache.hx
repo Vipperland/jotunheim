@@ -16,14 +16,14 @@ import jotun.serial.JsonTool;
 import jotun.tools.Flag;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
-import jotun.serial.IOTools;
+import jotun.serial.Packager;
 
 
 /**
  * ...
  * @author Rafael Moreira
  */
-@:expose("jtn.data.DataCache")
+@:expose("J_DataCache")
 class DataCache implements IDataCache {
 	
 	private var _DB:Dynamic;
@@ -153,10 +153,10 @@ class DataCache implements IDataCache {
 	
 	public function save():DataCache {
 		#if js
-			var data:String = IOTools.encodeBase64(_DB);
+			var data:String = Packager.encodeBase64(_DB);
 			Cookie.set(_name, data, _expire > 0 ? _expire : 2592000, _path);
 		#elseif php
-			var data:String = _base64 ? IOTools.encodeBase64(_DB) : json(false);
+			var data:String = _base64 ? Packager.encodeBase64(_DB) : json(false);
 			if (!_validated) _checkPath();
 			if(_expire > 0) _sign(true);
 			File.saveContent(_name, data);
@@ -180,14 +180,14 @@ class DataCache implements IDataCache {
 			if (Cookie.exists(_name)) {
 				var a:Dynamic = Base64.decode(Cookie.get(_name));
 				trace(a);
-				_DB = IOTools.decodeBase64(Cookie.get(_name), true);
+				_DB = Packager.decodeBase64(Cookie.get(_name), true);
 				trace(_DB);
 			}
 		#elseif php
 			if (!_validated) _checkPath();
 			if (FileSystem.exists(_name)) {
 				var c:String =  File.getContent(_name);
-				_DB = _base64 ? IOTools.decodeBase64(c, true) : Json.parse(c);
+				_DB = _base64 ? Packager.decodeBase64(c, true) : Json.parse(c);
 			}
 		#end
 		if (_DB == null || (_expire != 0 && (_DB.__time__ == null || _now() - _DB.__time__ >= _expire))) {
@@ -212,7 +212,7 @@ class DataCache implements IDataCache {
 	}
 	
 	public function base64(?print:Bool):String {
-		var result:String = IOTools.encodeBase64(_DB);
+		var result:String = Packager.encodeBase64(_DB);
 		if (print) #if php Lib.print(result); #elseif js if (print) Log.trace(result); #end
 		return result;
 	}

@@ -1,5 +1,5 @@
 package jotun.tools;
-import jotun.serial.IOTools;
+import jotun.serial.Packager;
 #if js
 	import js.RegExp;
 #end
@@ -8,7 +8,7 @@ import jotun.serial.IOTools;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.tools.Key")
+@:expose("J_Key")
 class Key {
 	
 	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -52,7 +52,7 @@ class Key {
 	}
 	
 	public static function UUID():String {
-		_last_uuid = IOTools.md5Encode(Date.now() + '-' + GEN());
+		_last_uuid = Packager.md5Encode(Date.now() + '-' + GEN());
 		return _last_uuid;
 	}
 	

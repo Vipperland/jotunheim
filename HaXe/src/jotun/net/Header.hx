@@ -1,11 +1,8 @@
 package jotun.net;
-import haxe.Json;
+import jotun.serial.Packager;
+import jotun.serial.JsonTool;
 import php.Lib;
 import php.Web;
-import jotun.serial.JsonTool;
-import jotun.tools.Flag;
-import jotun.serial.IOTools;
-import jotun.utils.Dice;
 
 
 /**
@@ -97,7 +94,7 @@ class Header {
 	function writeData(data:String, ?encode:Bool, ?chunk:Int) {
 		if(data != null){
 			if (encode == true) {
-				data = IOTools.encodeBase64(data);
+				data = Packager.encodeBase64(data);
 				if (chunk != null && chunk >= 40){
 					Web.setHeader('Content-Chunk', '' + chunk);
 					data = _createPieces(data, chunk);

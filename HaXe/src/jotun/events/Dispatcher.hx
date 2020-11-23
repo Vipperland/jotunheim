@@ -7,7 +7,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.events.Dispatcher")
+@:expose("J_Dispatcher")
 class Dispatcher implements IDispatcher {
 	
 	/**

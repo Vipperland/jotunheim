@@ -7,7 +7,7 @@ import js.html.AudioElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Audio")
+@:expose("J_dom_Audio")
 class Audio extends Display{
 
 	static public function get(q:String):Audio {

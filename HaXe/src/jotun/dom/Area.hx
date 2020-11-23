@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Area")
+@:expose("J_dom_Area")
 class Area extends Display{
 
 	static public function get(q:String):Area {

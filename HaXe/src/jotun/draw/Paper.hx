@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.draw.Paper")
+@:expose("J_Paper")
 class Paper {
 	
 	private var _tmp_path:String;

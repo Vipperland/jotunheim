@@ -7,7 +7,7 @@ import js.html.VideoElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Video")
+@:expose("J_dom_Video")
 class Video extends Display {
 	
 	static public function get(q:String):Video {

@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.FieldSet")
+@:expose("J_dom_FieldSet")
 class FieldSet extends Display{
 
 	static public function get(q:String):FieldSet {

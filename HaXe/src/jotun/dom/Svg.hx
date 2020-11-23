@@ -9,7 +9,7 @@ import jotun.draw.Paper;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.dom.Svg")
+@:expose("J_dom_Svg")
 class Svg extends Display {
 	
 	public var _tmp_fill:String = '#FF0000';

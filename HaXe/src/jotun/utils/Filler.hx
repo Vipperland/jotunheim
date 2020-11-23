@@ -5,7 +5,7 @@ import haxe.Log;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.utils.Filler")
+@:expose("J_Filler")
 class Filler{
 	
 	static private function _apply(path:String, content:String, data:Dynamic):String {

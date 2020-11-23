@@ -6,7 +6,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.game.RequirementQuery")
+@:expose("J_RequirementQuery")
 class RequirementQuery extends Query {
 	
 	private function _isempty(value:String):Bool {

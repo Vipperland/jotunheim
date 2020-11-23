@@ -16,7 +16,7 @@ import jotun.utils.ITable;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.utils.Table")
+@:expose("J_Table")
 class Table implements ITable {
 	
 	static private var _trash:Array<ITable> = [];

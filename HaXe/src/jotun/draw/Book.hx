@@ -4,7 +4,7 @@ package jotun.draw;
  * ...
  * @author Rim Project
  */
-@:expose("jtn.draw.Book")
+@:expose("J_Book")
 class Book {
 	
 	public var pages:Dynamic;

@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Embed")
+@:expose("J_dom_Embed")
 class Embed extends Display{
 	
 	static public function get(q:String):Embed {

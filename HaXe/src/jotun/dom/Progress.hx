@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Progress")
+@:expose("J_dom_Progress")
 class Progress extends Display{
 	
 	static public function get(q:String):Progress {

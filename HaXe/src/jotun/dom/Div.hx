@@ -7,7 +7,7 @@ import js.html.Element;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("jtn.dom.Div")
+@:expose("J_dom_Div")
 class Div extends Display {
 	
 	static public function get(q:String):Div {
