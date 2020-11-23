@@ -2693,91 +2693,6 @@ jotun_utils_Dice.Children = function(of,each,complete) {
 	}
 	return r;
 };
-var jotun_data_Logger = function() {
-	this._level = 4;
-	this._events = [];
-	this._events[0] = $bind(this,this.query);
-};
-jotun_data_Logger.__name__ = "jotun.data.Logger";
-jotun_data_Logger.prototype = {
-	maxLvLog: function(i) {
-		this._level = i;
-	}
-	,mute: function() {
-		if(Lambda.indexOf(this._events,$bind(this,this.query)) != -1) {
-			this._events.splice(0,1);
-		}
-	}
-	,unmute: function() {
-		if(Lambda.indexOf(this._events,$bind(this,this.query)) == -1) {
-			this._events.unshift($bind(this,this.query));
-		}
-	}
-	,listen: function(handler) {
-		this._events[this._events.length] = handler;
-	}
-	,push: function(q,type) {
-		jotun_utils_Dice.Values(this._events,function(v) {
-			v(q,type);
-		});
-	}
-	,dump: function(q) {
-		console.log(q);
-	}
-	,query: function(q,type) {
-		if(type > this._level) {
-			return;
-		}
-		var t;
-		switch(type) {
-		case 0:
-			t = "[MESSAGE] ";
-			break;
-		case 1:
-			t = "[>SYSTEM] ";
-			break;
-		case 2:
-			t = "[WARNING] ";
-			break;
-		case 3:
-			t = "[!ERROR!] ";
-			break;
-		case 4:
-			t = "[//TODO*] ";
-			break;
-		case 5:
-			t = "[$QUERY*] ";
-			break;
-		default:
-			t = "";
-		}
-		this.dump(t + Std.string(q));
-	}
-	,showConsole: function(url) {
-		if(url == null) {
-			url = "modules/dev/console.html";
-		}
-		jotun_Jotun.module(url,"jotun-console",null,function(r) {
-			var ui = jotun_Jotun.one("jotun-console");
-			if(ui == null) {
-				ui = jotun_Jotun.resources.build("jotun-console");
-				if(ui != null) {
-					ui.addToBody();
-				}
-			}
-			if(ui != null) {
-				ui.show();
-			}
-		});
-	}
-	,hideConsole: function() {
-		var ui = jotun_Jotun.one("jotun-console");
-		if(ui != null) {
-			ui.hide();
-		}
-	}
-	,__class__: jotun_data_Logger
-};
 var jotun_dom_A = $hx_exports["J_dom_A"] = function(q) {
 	if(q == null) {
 		q = window.document.createElement("a");
@@ -4524,6 +4439,91 @@ jotun_tools_Utils.toFixed = function(n,i,s) {
 jotun_tools_Utils.isFunction = function(o) {
 	return Reflect.isFunction(o);
 };
+var jotun_data_Logger = function() {
+	this._level = 4;
+	this._events = [];
+	this._events[0] = $bind(this,this.query);
+};
+jotun_data_Logger.__name__ = "jotun.data.Logger";
+jotun_data_Logger.prototype = {
+	maxLvLog: function(i) {
+		this._level = i;
+	}
+	,mute: function() {
+		if(Lambda.indexOf(this._events,$bind(this,this.query)) != -1) {
+			this._events.splice(0,1);
+		}
+	}
+	,unmute: function() {
+		if(Lambda.indexOf(this._events,$bind(this,this.query)) == -1) {
+			this._events.unshift($bind(this,this.query));
+		}
+	}
+	,listen: function(handler) {
+		this._events[this._events.length] = handler;
+	}
+	,push: function(q,type) {
+		jotun_utils_Dice.Values(this._events,function(v) {
+			v(q,type);
+		});
+	}
+	,dump: function(q) {
+		console.log(q);
+	}
+	,query: function(q,type) {
+		if(type > this._level) {
+			return;
+		}
+		var t;
+		switch(type) {
+		case 0:
+			t = "[MESSAGE] ";
+			break;
+		case 1:
+			t = "[>SYSTEM] ";
+			break;
+		case 2:
+			t = "[WARNING] ";
+			break;
+		case 3:
+			t = "[!ERROR!] ";
+			break;
+		case 4:
+			t = "[//TODO*] ";
+			break;
+		case 5:
+			t = "[$QUERY*] ";
+			break;
+		default:
+			t = "";
+		}
+		this.dump(t + Std.string(q));
+	}
+	,showConsole: function(url) {
+		if(url == null) {
+			url = "modules/dev/console.html";
+		}
+		jotun_Jotun.module(url,"jotun-console",null,function(r) {
+			var ui = jotun_Jotun.one("jotun-console");
+			if(ui == null) {
+				ui = jotun_Jotun.resources.build("jotun-console");
+				if(ui != null) {
+					ui.addToBody();
+				}
+			}
+			if(ui != null) {
+				ui.show();
+			}
+		});
+	}
+	,hideConsole: function() {
+		var ui = jotun_Jotun.one("jotun-console");
+		if(ui != null) {
+			ui.hide();
+		}
+	}
+	,__class__: jotun_data_Logger
+};
 var jotun_net_IDomain = function() { };
 jotun_net_IDomain.__name__ = "jotun.net.IDomain";
 jotun_net_IDomain.prototype = {
@@ -4877,12 +4877,12 @@ jotun_Jotun._loadController = function(e) {
 			}
 		});
 		jotun_Jotun._loadPool = null;
-		jotun_Jotun.log("Jotun => READY",1);
 		window.document.removeEventListener("DOMContentLoaded",jotun_Jotun._loadController);
 		Reflect.deleteField(jotun_Jotun,"_loadController");
 		Reflect.deleteField(jotun_Jotun,"_loadPool");
 		Reflect.deleteField(jotun_Jotun,"main");
 		jotun_Jotun.one("html").autoLoad();
+		jotun_Jotun.log("Jotun => READY",1);
 	}
 };
 jotun_Jotun._preInit = function() {

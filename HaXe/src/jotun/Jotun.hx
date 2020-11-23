@@ -80,9 +80,9 @@ class Jotun {
 				_loaded = true;
 				document.checkBody();
 				agent.update();
+				log("Jotun => READY", 1);
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
-				log("Jotun => READY", 1);
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
 				Reflect.deleteField(Jotun, '_loadController');
 				Reflect.deleteField(Jotun, '_loadPool');
