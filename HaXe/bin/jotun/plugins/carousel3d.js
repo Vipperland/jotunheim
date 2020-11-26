@@ -4,14 +4,11 @@
  * @author Rafael Moreira
  */
 (function($exports) {
-	$exports.jtn = $exports.jtn || {};
-	$exports.jtn.plugins = $exports.jtn.plugins || {};
-	$exports.jtn.plugins.Carousel3D = function(angle, zoom, keyboard, addto){
-		var Display = jtn.dom.Display;
+	$exports.J_Carousel3D = function(angle, zoom, keyboard, addto){
 		function CreateContainer(){
-			var c = new Display();
+			var c = new J_dom_Display();
 			c.enablePerspective();
-			c.content = new Display();
+			c.content = new J_dom_Display();
 			c.css('Carousel3D no-backface');
 			c.content.transform();
 			c.addChild(c.content);
@@ -21,7 +18,6 @@
 			return c;
 		}
 		
-		var Div = jtn.dom.Div;
         var body = Jotun.document.body;
 		var o = {
 			panels : [],
@@ -60,7 +56,7 @@
 				this.spacing = q;
 			},
 			addPanel : function(p){
-				var panel = new Display().addTo(o.carousel.content);
+				var panel = new J_dom_Display().addTo(o.carousel.content);
 				p.style({
 					width:'100%',
 					height:'100%',
@@ -139,7 +135,7 @@
 				return o.axys;
 			},
 			showPanel : function(i){
-				Jotun.document.scroll(0,i*Utils.viewportHeight());
+				Jotun.document.scroll(0,i*J_Utils.viewportHeight());
 			},
 			prevPanel : function(){
 				if(o.index > 0) 
@@ -178,7 +174,7 @@
 				if(!o.enabled)
 					return;
 				var disp = o.carousel.parent();
-				var h = Utils.viewportHeight();
+				var h = J_Utils.viewportHeight();
 				var h2 = ((o.axys == 'x' ? disp.width() : h) / 2);
 				var tz = h2 / Math.tan(Math.PI/o.maxPanels) + o.spacing;
 				var y = Jotun.document.getScroll().y;
@@ -354,8 +350,8 @@
 		XCode.css.add('.Carousel3D.no-backface .Panel3D{backface-visibility: hidden;}');
 		XCode.css.build();
 		
-		Ticker.add(o.render);
-		Ticker.start();
+		J_Ticker.add(o.render);
+		J_Ticker.start();
 		return o;
 		
 	}

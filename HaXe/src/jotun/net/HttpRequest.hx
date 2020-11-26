@@ -289,8 +289,11 @@ class HttpRequest {
 				return;
 			}
 			var is_json:Bool = Std.is(data, String);
-			if(!Lambda.exists(headers, function(h) return h.header == "Content-Type"))
-				r.setRequestHeader("Content-Type", is_json ? "application/json" : "application/x-www-form-urlencoded");
+			if (!Lambda.exists(headers, function(h) return h.header == "Content-Type")){
+				if (is_json){
+					r.setRequestHeader("Content-Type", "application/json");
+				}
+			}
 			for( h in headers )
 				r.setRequestHeader(h.header, h.value);
 			if (is_json){

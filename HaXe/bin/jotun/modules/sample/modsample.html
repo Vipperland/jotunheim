@@ -34,6 +34,7 @@
 			color: #FFFFFF;
 		}
 	</style>
+	
 [Module:{"name":"sample-module","target":"body"}]
 	<div class="test desktop">
 		<span>
@@ -42,6 +43,7 @@
 			Because of the "target" property, Jotun.one('body').mount("sample-module");
 		</span>
 	</div>
+
 [Module:{"name":"sample-module::mobile"}]
 	<div class="test mobile">
 		<span>
@@ -50,18 +52,23 @@
 			Because of the "target" property, Jotun.one('body').mount("sample-module");
 		</span>
 	</div>
+
 [Module:{"name":"sample-dependency-1"}]
 	<span style="color:blue">
 		This is the content from a dependency mod.
 	</span>
+
 [Module:{"name":"sample-dependency-2"}]
 	<span style="color:green">
 		This is the content from another dependency mod.
 	</span>
+
 [Module:{"name":"sample-data-react"}]
-	<div set-class="className">
+	<div id="test-div" set-class="className">
 		<span>Object.content1 value is:</span>
-		<b set-data="content1"></b>
+		<b set-data="myVar"></b>
+		<br/>
+		<b>{{myVar2}}</b>
 		<br/>
 		<span>Object.block.content2 value is:</span>
 		<b set-data="block.content2"></b>
@@ -76,6 +83,7 @@
 		<br/>
 		<span class="shadow-test-2">This is a Drop Shadow Effect</span>
 	</div>
+
 [Module:{"name":"sample-dependency","require":["sample-dependency-1","sample-dependency-2"],"target":"body"}]
 	<div class="test">
 		<span>
@@ -88,6 +96,7 @@
 			</p>
 		</span>
 	</div>
+
 [Module:{"type":"script"}]
 	<script>
 	  (function(){

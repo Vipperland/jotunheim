@@ -4,6 +4,7 @@ import jotun.Jotun;
 import jotun.tools.Utils;
 import jotun.utils.IDiceRoll;
 import js.Browser;
+import js.html.Blob;
 import js.html.File;
 import js.html.FileList;
 import js.html.FileReader;
@@ -54,6 +55,77 @@ class Input extends Display {
 		if (_ioHandler != null){
 			_ioHandler(this);
 		}
+	}
+	
+	
+	public function validateCardExp():Void {
+		_rgx = ~/\d{2}\/\d{2,4}/;
+	}
+	
+	public function validateDate():Void {
+		_rgx = ~/\d{1,2}\/\d{1,2}\/\d{4}/;
+	}
+	
+	public function validateURL():Void {
+		_rgx = ~/https?:\/\/.+/;
+	}
+	
+	public function validateIPv4():Void {
+		_rgx = ~/^\d{1,3}d{1,3}.\d{1,3}.\d{1,3}/;
+	}
+	
+	public function validateCurrency():Void {
+		_rgx = ~/\d+(.\d{2})?/;
+	}
+	
+	public function validateEmail():Void {
+		_rgx = ~/^[a-z0-9!'#$%&*+\/=?^_`{|}~-]+(?:\.[a-z0-9!'#$%&*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-zA-Z]{2,}$/giu;
+		_flt = " \t";
+	}
+	
+	public function validateNumbers():Void {
+		_rgx = ~/^\d{1,}$/;
+		_flt = " ";
+	}
+	
+	public function validateMobile():Void {
+		_rgx = ~/^(\d{10,11})|(\(\d{2}\) \d{5}-\d{4})$/;
+		_flt = "+()- ";
+	}
+	
+	public function validatePhone():Void {
+		_rgx = ~/^(\d{10,11})|(\(\d{2}\) \d{5}-\d{4})$/;
+		_flt = "+()- ";
+	}
+	
+	public function validateDoc():Void {
+		_rgx = ~/^(\d{3}.\d{3}.\d{3}-\d{2})|(\d{2}.\d{3}.\d{3}\/\d{4}-\d{2})$/;
+		_flt = "-./";
+	}
+	
+	public function validateZipcode():Void {
+		_rgx = ~/^(\d{5}-\d{3})|(\d{8})$/;
+		_flt = "- ";
+	}
+	
+	public function validateLetters():Void {
+		_rgx = ~/^[a-zA-Z]{3,}$/;
+	}
+	
+	public function validatePwd():Void {
+		_rgx = ~/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+	}
+	
+	public function validateUsr():Void {
+		_rgx = ~/^[A-Za-z0-9._-]{6,24}$/;
+	}
+	
+	public function validateMd5():Void {
+		_rgx = ~/^[A-Za-z0-9._-]{35}$/;
+	}
+	
+	public function validateCard():Void {
+		_rgx = ~/\d{4}-\d{4}-\d{4}-\d{4}$/;
 	}
 	
 	public function new(?q:Dynamic) {
@@ -216,6 +288,26 @@ class Input extends Display {
 	
 	public function isChecked():Bool {
 		return object.checked;
+	}
+	
+	public function filesToArray(?o:Array<Blob>):Array<Blob> {
+		if (o == null) { o = []; }
+		if (hasFile()){
+			var f:FileList = files();
+			Dice.Count(0, f.length, function(a:Int, b:Int, e:Bool) {
+				o.push(f.item(a));
+				return false;
+			});
+		}
+		return o;
+	}
+	
+	public function filesToObject(?o:Dynamic):Dynamic {
+		if (o == null){ o = {}; }
+		Dice.All(filesToArray(), function(p:String, v:Blob){
+			Reflect.setField(o, 'file_' + p, v);
+		});
+		return o;
 	}
 	
 }

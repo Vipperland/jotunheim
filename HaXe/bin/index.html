@@ -1,53 +1,488 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta charset="utf-8"/>
-		<title>Sirius::Automator</title>
-		<meta name="description" content=""/>
-		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
-		<script type="text/javascript" src="jotun/api.jotun.js"></script>
-		<style>  
-			
-		</style>
-	</head>
-	<body automator>
-		<div class="shelf o-middle hidden">
-			<div class="content cel">
-				<span>HI!</span>
-				<br/>
-				<br/>
-				<div id="disp-test">
-					<span contenteditable>
-						This is a Displacement Filter
-					</span>
-				</div>
-				<br/>
-				<br/>
-				<div id="color-test">
-					<span contenteditable>
-						This is a Color Filter
-					</span>
-					<br/>
-					<img src="https://www.google.com.br/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" />
+<html lang="pt-BR">
+<head class="marg-0">
+	<meta charset="utf-8"/>
+	<title>Jotun</title>
+	<meta name="description" content=""/>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Roboto:300,700&display=swap');
+		body {
+			background-color: #000000;
+			color: #ffffff;
+			font-family: 'Roboto', sans-serif;
+			transition: background-color .3s ease-in;
+		}
+		.video-container {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			overflow: hidden;
+			position: absolute;
+			padding: 0px;
+		}
+		video {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			z-index: 0;
+		}
+		.panel {
+			width: 100%;
+			height: 100%;
+			max-height: 100%;
+			padding: 5vh 10vw;
+			flex-direction: column;
+			display: flex;
+			font-size: 18px;
+			border: 0px solid #111111;
+			text-align: left;
+			align-items: left;
+			justify-content: center;
+			overflow: auto;
+		}
+		.panel.video {
+			padding: 0;
+			flex-direction: row;
+			text-align: center;
+			align-items: center;
+			justify-content: center;
+		}
+		.panel .content {
+			color: #FFFFFF;
+			font-size: 1rem;
+			font-weight: 300;
+		}
+		.panel .content a {
+			color: #FFFFFF;
+		}
+		.panel .title {
+			font-size: 2rem;
+		}
+		.logo {
+			pointer-events: none;
+			z-index: 100;
+		}
+		
+		.logo .a {
+			font-size: 10vh;
+		}
+		
+		.logo .b {
+			font-size: 2vh;
+		}
+		
+		.ref-bottom {
+			bottom: 0;
+		}
+		
+		.ref-bottom.hide {
+			bottom: -100px;
+		}
+		
+		.ref-hint {
+			position: fixed;
+			z-index: 1000;
+			width: 100%;
+			text-align: center;
+			transition: all .3s ease-out;
+		}
+		
+		.ref-index {
+			z-index: 100;
+			top: 0;
+			height: 100%;
+			padding: 8px;
+			position: fixed;
+		}
+		
+		.ref-index .dot{
+			padding-top: 2px;
+			margin: 4px 0;
+			transition: all .3s ease-out;
+		}
+		
+		.carousel-main {
+			overflow: hidden;
+		}
+		
+		.footer {
+			margin-top: 100px;
+			padding: 24px;
+			text-align: center;
+			border-top: 1px solid #ffffff;
+		}
+		
+		#menu > div {
+			padding: 10px;
+		}
+		
+		.item {
+			width: 50px;
+			height: 50px;
+			background-color: #000000;
+			border-radius: 1px;
+			color: #FFFFFF;
+			text-align: center;
+			padding-top: 15px;
+			cursor: pointer;
+			border-radius: 50%;
+		}
+		
+		.item:hover {
+			width: 50px;
+			height: 50px;
+		}
+		
+		[action-trigger] {
+			cursor: pointer;
+			font-size: 1.5rem;
+		}
+		
+		[action-trigger] .value {
+			text-align: right;
+		}
+		
+	</style>
+</head>
+	
+<body xcode>
+	
+	<div class="carousel-main" hidden>
+		
+		<div class="panel video" t-style="#111111">
+			<div class="video-container">
+				<video loop>
+				  <source src="http://techlab.gateofsirius.com/assets/media/cover.mp4" type="video/mp4">
+				</video>
+			</div>
+			<div class="logo">
+				<div>
+					<img src="assets/img/sirius.png" /><br/><span class="a">Jotunheim</span><br/><span class="b">Carousel3D</span>
 				</div>
 			</div>
 		</div>
-		<script>
-			//Jotun.logger.maxLvLog(6);
-			Jotun.run(function(){
-				Jotun.module('jotun/modules/sample/modsample.html', null, null, function(r){
-					Jotun.document.body.mount('sample-data-react', {
-						content1:"Hello World!",
-						block: {
-							content2: "Foobar",
-						},
-						styleTest: "font-size: 12px; font-weight: bold;",
-						styleNamedTest: "#FF0000",
-						attrTest: "BYE!",
+		
+		<div class="panel" t-style="#992211">
+			<span class="title">How Menglöð Was Won</span>
+			<span class="content">Svipdagr was given a task by his stepmother to woo the maiden Menglöð. He summoned his mother, Gróa, a völva in life, to seek her advice on how to woo the maiden Menglöð. Gróa cast a series of charms to protect him on his quest. Upon arriving at Jötunheim, Svipdagr is blocked by a castle gate guarded by the jötunn Fjölsviðr, who dismisses him before asking for his name. Svipdagr, giving a false name, answers a series of questions, in which he learned about the castle, its residents, and its environments. Svipdagr learns that the gate will only open up to one person: Svipdagr. The gates opens when he reveals his identity, where he is met by his expected lover, Menglöð.</span>
+		</div>
+		<div class="panel" t-style="#994411">
+			<img src="">
+			<span class="title">How Thor Killed Geirröd</span>
+			<span class="content">
+				The popular myth of how Thor killed the jötunn Geirröd has many variations, but all of them are caused by the trickster god Loki. Donning a suit of falcon feathers, Loki paid a visit to the jötunn's castle. When Geirröd saw the falcon, he knew right away that it was not a real falcon. Locked in a cage and starving, Loki revealed his identity. Geirröd released him on the condition that he bring Thor without his hammer to his castle. Loki readily agreed.
+				<br/>
+				Back in Asgard, Loki openly discussed the giant's eagerness to meet Thor to introduce his two beautiful daughters, Gjálp and Greip. Simple-minded Thor couldn't resist the temptation of meeting beautiful maidens. He agreed to Loki's suggestion of leaving his hammer behind. On the way to the castle, Thor and Loki had to stay overnight with a gentle giantess, Gríðr, who warned Thor of the danger Geirröd possessed. The giantess lent him her belt and her magic staff.
+				<br/>
+				Seeing the giantess Gjálp causing the water on Vimur river to rise, Thor used the magic staff to escape drowning, and then threw a rock at the giantess who fled. Thor and Loki arrived at the castle, where he was placed in a room with one chair. Weary from the travel, he sat down and closed his eyes. All at once, Thor was closing in on the ceiling. He thrust Gríðr's staff against the roof beam and pushed down. With the heavy weight and force of their guest, the giantess sisters, Gjálp and Greip, were crushed to death.
+				<br/>
+				Thor, displeased with everything that had happened, went to confront Geirröd. The giant raised his hand and threw a hot lump of iron at the thunder god. Using the iron gloves lent to him by Gríðr, Thor caught the hot iron and threw it back at the giant who hid behind a pillar. The hot ball went straight into the pillar, into the head of Geirröd, and finally rested deep into the earth.
+			</span>
+		</div>
+		<div class="panel" t-style="#998811">
+			<span class="title">How Thor Lost His Hammer</span>
+			<span class="content">
+				Thor, the god of thunder and storm, once lost his hammer, Mjölnir. With the loss of the mighty weapon, the only absolute defense of the Aesir against the giants, Asgard would be in much danger. Thor's angered shouts were heard by the trickster god, Loki, who knew that he must help this time. Thor and Loki sought out Freyja, a beautiful goddess, to borrow her suit of falcon feathers:1. Putting on the feathered coat, Loki flew to Jötunheim.
+				<br/>
+				Loki met the king of the jötnar, Þrymr (often anglicized as Thrym), who had admitted to the theft of Thor's hammer. Mjölnir was hidden deep beneath the earth. Loki flew back to Asgard and relayed the information to Thor. The gods convened a meeting to discuss how to get back the hammer. Heimdallr offered the solution to their problem. Thor was to be dressed in bridal clothes and meet Þrymr as Freyja.
+				<br/>
+				Upon hearing that Freyja was on her way, Þrymr ordered a grand feast in her honor:48. Seeing his bride consume large servings of food after food, Thrym was astounded by the fact. Loki reasoned "she" had not eaten or drunk for eight days due to her anxiety in meeting him. Elated, Thrym reached over to kiss his bride, but seeing the glaring eyes of Thor through the thin veil, he withdrew in disappointment. Loki explained that "Freyja" had not slept for eight nights in her excitement to come to Jötunheim. Wanting the marriage to be done quickly, Thrym ordered for Mjölnir to be brought to his bride. Once Mjölnir was placed on his lap, Thor grabbed the hammer by its handle and slew every jötunn in sight.
+			</span>
+		</div>
+		<div class="panel" t-style="#999911">
+			<span class="title">How Útgarða-Loki Outwitted Thor</span>
+			<span class="content">
+				The tale of how Thor was outwitted by the giant Útgarða-Loki (often anglicized as Utgard-Loki) was one of the best known myths of Norse mythology. Thor, wanting to go to Utgard, the stronghold of the jötunn, traveled with Asgard's trickster god, Loki. Utgard was guarded by Útgarða-Loki, a known master of trickery:0.
+				<br/>
+				Thor and Loki were traveling to Jötunheimr, accompanied by Þjálfi (anglicized as Thialfi) and his sister, Röskva. They arrived to a vast forest and continued their journey through the woods until dark. The four seek shelter for the night and discover an immense building. Finding shelter in a side room, they experience earthquakes through the night. The earthquakes cause all four to be fearful, except Thor, who grips his hammer in defense. The building turns out to be the huge glove of Skrýmir, who has been snoring throughout the night, causing what seemed to be earthquakes. The next night, all four sleep beneath an oak tree near Skrýmir in fear.
+				<br/>
+				Thor wakes up in the middle of the night, and a series of events occur where Thor twice attempts to destroy the sleeping Skrýmir with his hammer. Skrýmir awakes after each attempt, only to say that he detected an acorn falling on his head or that he wonders if bits of tree from the branches above have fallen on top of him. The second attempt awakes Skrýmir. Skrýmir gives them advice; if they are going to be cocky at the castle of Útgarðr it would be better for them to turn back now, for Útgarða-Loki's men there won't put up with it. Skrýmir throws his knapsack onto his back and abruptly goes into the forest and "there is no report that the Æsir expressed hope for a happy reunion".
+				<br/>
+				The four travelers continue their journey until midday. They find themselves facing a massive castle in an open area. The castle is so tall that they must bend their heads back to their spines to see above it. At the entrance to the castle is a shut gate, and Thor finds that he cannot open it. Struggling, all four squeeze through the bars of the gate, and continue to a large hall. Inside the great hall are two benches, where many generally large people sit on two benches. The four see Útgarða-Loki, the king of the castle, sitting.
+				<br/>
+				Útgarða-Loki says that no visitors are allowed to stay unless they can perform a feat. Loki, standing in the rear of the party, is the first to speak, claiming that he can eat faster than anyone. Loki competes with a being named Logi to consume a trencher full of meat but loses. Útgarða-Loki asks what feat the "young man" can perform, referring to Þjálfi. Þjálfi says that he will attempt to run a race against anyone Útgarða-Loki chooses. Útgarða-Loki says that this would be a fine feat yet that Þjálfi had better be good at running, for he is about to be put to the test. Útgarða-Loki and the group go outside to a level-grounded course.
+				<br/>
+				At the course, Útgarða-Loki calls for a small figure by the name of Hugi to compete with Þjálfi. The first race begins and Þjálfi runs, but Hugi runs to the end of the course and then back again to meet Þjálfi. Útgarða-Loki comments to Þjálfi that he will have to run faster than that, yet notes that he has never seen anyone who has come to his hall run faster than that. Þjálfi and Hugi run a second race. Þjálfi loses by an arrow-shot. Útgarða-Loki comments that Þjálfi has again ran a fine race but that he has no confidence that Þjálfi will be able to win a third. A third race between the two commences and Þjálfi again loses to Hugi. Everyone agrees that the contest between Þjálfi and Hugi has been decided.
+				Thor agrees to compete in a drinking contest but after three immense gulps fails. Thor agrees to lift a large, gray cat in the hall but finds that it arches his back no matter what he does, and that he can only raise a single paw. Thor demands to fight someone in the hall, but the inhabitants say doing so would be demeaning, considering Thor's weakness. Útgarða-Loki then calls for his nurse Elli, an old woman. The two wrestle but the harder Thor struggles the more difficult the battle becomes. Thor is finally brought down to a single knee. Útgarða-Loki said to Thor that fighting anyone else would be pointless. Now late at night, Útgarða-Loki shows the group to their rooms and they are treated with hospitality.
+				<br/>
+				The next morning the group gets dressed and prepares to leave the keep. Útgarða-Loki appears, has his servants prepare a table, and they all merrily eat and drink. As they leave, Útgarða-Loki asks Thor how he thought he fared in the contests. Thor says that he is unable to say he did well, noting that he is particularly annoyed that Útgarða-Loki will now speak negatively about him. Útgarða-Loki, once the group has left his keep, points out that he hopes that they never return to it, for if he had an inkling of what he was dealing with he would never have allowed the group to enter in the first place. Útgarða-Loki reveals that all was not what it seemed to the group. Útgarða-Loki was in fact the immense Skrýmir, and that if the three blows Thor attempted to land had hit their mark, the first would have killed Skrýmir. In reality, Thor's blows were so powerful that they had resulted in three square valleys.
+				<br/>
+				Idunn and the Apples of Youth by George Percy Jacomb-Hood.
+				<br/>
+				The contests, too, were an illusion. Útgarða-Loki reveals that Loki had actually competed against wildfire itself (Logi, Old Norse "flame"), Þjálfi had raced against thought (Hugi, Old Norse "thought"), Thor's drinking horn had actually reached to the ocean and with his drinks he lowered the ocean level (resulting in tides). The cat that Thor attempted to lift was in actuality the world serpent, Jörmungandr, and everyone was terrified when Thor was able to lift the paw of this "cat", for Thor had actually held the great serpent up to the sky. The old woman Thor wrestled was in fact old age (Elli, Old Norse "old age"), and there is no one that old age cannot bring down. Útgarða-Loki tells Thor that it would be better for "both sides" if they did not meet again. Upon hearing this, Thor takes hold of his hammer and swings it at Útgarða-Loki but he is gone and so is his castle. Only a wide landscape remains.
+			</span>
+		</div>
+		<div class="panel" t-style="#889922">
+			<span class="title">The Abduction of Iðunn</span>
+			<span class="content">
+				Unlike the Greek gods, the gods of Norse mythology were prone to aging. One day, the jötnar Þjazi, disguised as an eagle, swooped down and tricked Loki into bringing him Iðunn, the goddess who supplied magic apples to the gods and goddesses to stay young, in exchange for his life. Fearful of what the ancient giant would do to him, Loki agreed to the bargain.
+				<br/>
+				As soon as Loki reached Asgard, he went straight to the orchard tended by Iðunn and her husband, Bragi. He spun a lie of having found some apples in Midgard that looked the same as hers. Urging her to bring her own basket of apples to compare the two fruits, they departed for the world. When they crossed Bifrost, Þjazi swooped down and carried Iðunn away. The giant had locked her up in the highest tower in Þrymheimr. The gods and goddesses started aging. Summoning a meeting where every god was present except for Loki, the gods knew that Loki was up to no good. Upon finding the trickster god, he was ordered by Odin to bring back Iðunn and her apples or his life would be forfeited.
+				<br/>
+				Fleeing in terror, Loki sought out Freyja to borrow her suit of falcon feathers. Loki flew to Þrymheimr, where he found Iðunn alone and unguarded. Loki turned the goddess and her basket of apples into a nut and held her in his claws. At this time, Þjazi, in his eagle disguise, was following them. Odin, who saw everything, immediately ordered the gods to build a bonfire at the gates of Asgard. When Þjazi reached the walls, his body caught on fire, and he fell to the ground. The gods slew him with no mercy. Releasing Iðunn from the spell, the gods and goddesses were once again youthful.
+			</span>
+		</div>
+		<div class="panel" t-style="#449944">
+			<span class="title">The Loss of Odin's Eye</span>
+			<span class="content">
+				Mimir was an ancient being, notorious for his unparalleled wisdom. His dwelling was Mímisbrunnr ("Mímir's well"), a sacred well situated under one of the roots of the tree Yggdrasil in Jötunheim. Odin, wanting to gain immense knowledge and wisdom, consulted all living beings. He ventured to the land of the giants and asked for a drink from the well. Mimir, knowing the value of the water, refused unless Odin offered one of his eyes. The chief god was ready to pay any price for the wisdom he desired, and so he agreed to the deal and sacrificed his eye. The eye was then placed in Mímisbrunnr.
+			</span>
+		</div>
+		<div class="panel" t-style="#229988">
+			<span class="title">Aegir and Ran</span>
+			<span class="content">
+				Aegir (Old Norse “Ægir”) is a giant with white hair and a long beard, he is well skilled in the arts of magic. He might be a brother to Loki the trickster and Karl. Aegir is married to his sister Ran, Aegir and Ran are the parents of nine daughters in Norse mythology, their daughters are the spirits of the waves. The names of Aegir’s nine daughters are Himminglaeva, Dufa, Blodughadda, Hefring, Ud, Hrönn, Bölge, Dröfn and Kolga. It is said that their nine daughters, are the mothers of Heimdallr.
+				<br/>
+				Whenever the Vikings saw huge waves coming towards their ships, they knew that Aegir was close by. If the Vikings had some prisoners they would sometimes sacrifice some of them in the hope of a safe passage. But Aegir was often very unforgiving and cruel and would in his lust for more treasures especially gold, smash their ships into pieces of wood.
+				<br/>
+				The Goddess Ran is also dangerous and very hostile, with her huge fishing net, she will drag anyone down that she can catch into the deep dark ocean. Because the Vikings feared Ran they would sometimes offer tribute to Ran before they would embark on raids in the hope of a safe return.
+				<br/>
+				While the people in Midgard fears Ran, the Gods, and Goddesses from Asgard in Norse mythology, will often travel to the home of Aegir and Ran for a great feast. Because they are very known throughout the nine worlds, to have some of the biggest and most fun parties one can imagine.
+			</span>
+		</div>
+		<div class="panel" t-style="#119999">
+			<span class="title">Skadi: Destruction</span>
+			<span class="content">
+				Skadi (Or Skaði) is married to Njord, the Vanir God of wind, seafarers, coasts, and inland waters. She is the daughter of the frost giant Thiazzi. Skadi is the Goddess of winter, skiers, and hunters. Skadi picked Njord as her husband because of his beautiful feet. But they could not agree where to live, Njord thought that the home of Skadi in the land of the jotuns was too cold and deserted.
+				<br/>
+				While Skadi didn’t like the noise and fuss of the shipbuilding around Njords home, Noatun in Asgard. After nine nights at each place, they decided to live by them self. Skadi went back to her favorite interest to hunt on skis, and the weather bitten Njord, returned to the sea. The apparently unbridgeable disconnection between them likely reflects more their personal tastes. Njord was for certain seen as a fertility God, assuring safe journey to the sea, for those who worship him.
+				<br/>
+				But also for wealth and good fortune, in the form of land and sons. Skadi’s context was quite another, she came from a mountain with snow on the top. Where heavy clouds hid the sun and the hard rock made the ground feel dead cold. In her wild and inhospitable land where nothing would thrive or grow, here was there hardly anything for people to do.
+			</span>
+		</div>
+		<div class="panel" t-style="#118899">
+			<span class="title">Niflheim: The World of Fog and Mist</span>
+			<span class="content">
+				Niflheim (Old Norse: “Niðavellir”) and it means (“Mist home” or “Mist World”) is the darkest and coldest region in the world according to Norse mythology. Niflheim is the first of the nine worlds and Niflheim is placed in the northern region of Ginnungagap. The eldest of the three wells are located in Niflheim which is called Hvergelmir “bubbling boiling spring” and it is protected by the huge dragon called Nidhug (Níðhöggr).
+				<br/>
+				It is said that all cold rivers come from the well called Hvergelmir, and it is said to be the source of the eleven rivers in Norse mythology. The well Hvergelmir is the origin of all living and the place where every living being will go back. Elivagar “ice waves” are the rivers which existed in Niflheim at the beginning of the world. They were the streams floating out of Hvergelmir. The water from Elivagar flowed down the mountains to the plains of Ginnungagap, where it solidified to frost and ice, which gradually formed a very dense layer. This is the reason that it is very cold in the northern plains. As the world tree Yggdrasil started to grow, it stretched one of its three large roots far into Niflheim and drew water from the spring Hvergelmir.
+			</span>
+		</div>
+		<div class="panel" t-style="#114499">
+			<span class="title">Muspelheim: The Land of Fire</span>
+			<span class="content">
+				Muspelheim (Old Norse: “Múspellsheimr”) was created far to the south of the world in Norse mythology. Muspelheim is a burning hot place, filled with lava, flames, sparks, and soot. Muspelheim is the home the of fire giants, fire demons and ruled by the giant Surtr. He is a sworn enemy of the Aesir. Surtr will ride out with his flaming sword in his hand at Ragnarok “Ragnarök” “the end of the world” Surtr will then attack Asgard, “the home of the Gods” and turn it into a flaming inferno.
+			</span>
+		</div>
+		<div class="panel" t-style="#112299">
+			<span class="title">Asgard: Home of the Gods</span>
+			<span class="content">
+				In the middle of the world, high up in the sky is Asgard (Old Norse: “Ásgarðr”). It’s the home of the Gods and Goddesses. The male Gods in Asgard, are called Aesir, and the female Gods are called Asynjur. Odin is the ruler of Asgard and the chief of the Aesir. Odin is married to Frigg; and she is the Queen of the Aesir. Inside the gates of Asgard is Valhalla; it’s the place where half of the Vikings “Einherjer” that died in battle will go for the afterlife, the other half goes to Fólkvangr.
+			</span>
+		</div>
+		<div class="panel" t-style="#221199">
+			<span class="title">Midgard: Home of the Humans</span>
+			<span class="content">
+				Midgard (Old Norse: “Miðgarðr”) “middle earth” is located in the middle of the world, below Asgard. Midgard and Asgard are connected by Bifrost the Rainbow Bridge. Midgard is surrounded by a huge ocean that is impassable.
+				<br/>
+				The Ocean is occupied by a huge sea serpent, the Midgard Serpent. The Midgard serpent is so huge that it encircles the world entirely, and biting its own tail. Odin and his two brothers Vili and Ve created the humans from an Ash log, the man and from an elm log, the woman.
+			</span>
+		</div>
+		<div class="panel" t-style="#551199">
+			<span class="title">Jotunheim: Home of the Giants</span>
+			<span class="content">
+				Jotunheim (Old Norse: “Jötunheimr or Útgarðr”) is the home of the giants (also called Jotuns). They are the sworn enemies of the Aesir. Jotunheim consists mostly of rocks, wilderness, and dense forests, and it lies in the snowy regions on the outermost shores of the ocean. Because of this, the giants live mostly from the fish from the rivers, and the animals from the forest, because there is no fertile land in Jotunheim.
+				<br/>
+				The giants and the Aesir are constantly fighting, but it also happens from time to time, that love affairs will occur. Odin, Thor and a few others, had lovers who were giants. Loki also came from Jotunheim, but he was accepted by the Aesir and lived in Asgard. Jotunheim is separated from Asgard by the river Iving, which never freezes over. Mimir’s well of wisdom is in Jotunheim, beneath the Midgard root of the ash tree Yggdrasil. The stronghold of Utgard is so big that it is hard to see the top of it. And there the feared Jotun king Utgard-Loki lives. Utgard is carved from blocks of snow and glistening icicles.
+			</span>
+		</div>
+		<div class="panel" t-style="#881199">
+			<span class="title">Vanaheim: Home of the Vanir</span>
+			<span class="content">
+				Vanaheim (Old Norse: “Vanaheimr”) is the home of the Vanir Gods. The Vanir Gods is an old branch of Gods. The Vanir are masters of sorcery and magic. They are also widely acknowledged for their talent to predict the future. Nobody knows where exactly the land, Vanaheim is located, or even how it looks like. When the war between the Aesir and the Vanir ended, three of the Vanir came to live in Asgard, Njord and his children Freya and Freyr.
+			</span>
+		</div>
+		<div class="panel" t-style="#881188">
+			<span class="title">Alfheim: Home of the Light Elves</span>
+			<span class="content">
+				Alfheim (Old Norse: “Álfheimr or Ljósálfheimr”) is right next to Asgard in the heaven. The light elves are beautiful creatures. They are considered the “guardian angels” The God Freyr, is the ruler of Alfheim. The Light elves are minor Gods of nature and fertility; they can help or hinder humans with their knowledge of magical powers. They also often delivered an inspiration to art or music.
+			</span>
+		</div>
+		<div class="panel" t-style="#881144">
+			<span class="title">Download</span>
+			<span class="content">
+				<div class="shelf" action-trigger="download">
+					<div class="cel"><a href="jotum_carousel3d.zip" target="_blank">Carousel3D Source code and Jotum Framework</a></div>
+				</div>
+				
+				<hr/>
+				<div class="shelf" action-trigger="axys" on-key-trigger="q">
+					<div class="cel-9">Toggle Horizontal/Vertical Axys (Press Q)</div>
+					<div class="value cel-3">y</div>
+				</div>
+				<hr/>
+				<div class="shelf" action-trigger="index">
+					<div class="cel">Next/Previous Panel (Press UP or DOWN)</div>
+				</div>
+				<hr/>
+				<div class="shelf" action-trigger="angle" on-key-trigger="ws">
+					<div class="cel-9">Angle (Press W or S)</div>
+					<div class="value cel-3">0</div>
+				</div>
+			</span>
+		</div>
+	</div>
+	
+	<div class="footer hidden">
+		This is not in Carousel3D Context
+	</div>
+	
+	<div id="hint" class="ref-hint ref-easing ref-bottom">
+		<img src="./assets/img/scroll.png" />
+	</div>
+	
+	<script src="./jotun/api.jotun.js"> </script>
+	<script>
+		
+		function _init3D(){
+			
+			// ================== You only need this line to init the Carousel Effect ==================
+			var carousel3d = new J_Carousel3D(20, 1000, true, '.carousel-main');
+			
+			if(carousel3d != null){
+			
+				// Apply color background to each panel
+				var i = 0;
+				Jotun.all('.panel').each(function(o){
+					var c = new J_ARGB(o.attribute('t-style'));
+					var b = c.multiply(.2);
+					o.attribute('o-style',b.css());
+					o.style({
+						backgroundColor:c.css(),
+					});
+					i += 1;
+				});
+				
+				var angle = 120;
+				var targetAngle = 20;
+				var endAngle = 20;
+				
+				carousel3d.addBySelector('.panel');
+				
+				// ================== Control panel index highlight ==================
+				
+				var hint = Jotun.one('#hint');
+				
+				function onFocusIn(e){
+					var panel = e.target;
+					panel.data.index.fit(25,1);
+					panel.data.index.style({opacity:.6});
+					Jotun.document.body.style({
+						backgroundColor: panel.one('.panel').attribute('o-style'),
+					});
+					endAngle = (panel.data.control.id == 0) ? 20 : angle;
+					// show/hide sroll label
+					if(panel.data.id == 0){
+						hint.css('/hide');
+					}else{
+						hint.css('hide');
+					}
+				}
+				
+				function onFocusOut(e){
+					var panel = e.target;
+					panel.data.index.fit(10,1);
+					panel.data.index.style({opacity:.3});
+				}
+				
+				function onPinIn(e){
+					var panel = e.target;
+					panel.data.index.fit(50,1);
+					panel.data.index.style({opacity:1});
+				}
+				
+				function onPinOut(e){
+					var panel = e.target;
+					panel.data.index.fit(25,1);
+					panel.data.index.style({opacity:.6});
+				}
+				
+				carousel3d.onFocusIn(onFocusIn);
+				carousel3d.onFocusOut(onFocusOut);
+				carousel3d.onPinIn(onPinIn);
+				carousel3d.onPinOut(onPinOut);
+				//carousel3d.onZoomIn(onZoomIn);
+				//carousel3d.onZoomOut(onZoomOut);
+				
+				
+				// ================== Create Index indicator ==================
+				
+				var index = new J_dom_Div();
+				index.content = new J_dom_Div();
+				index.addChild(index.content);
+				index.css('ref-index mouse-none');
+				index.style({width:'20px',height:'100%',display:'table', cursor:'pointer'});
+				index.content.style({verticalAlign:'middle', display:'table-cell'});
+				index.addToBody();
+				Dice.All(carousel3d.panels, function(p, v){
+					var panel = new J_dom_Div();
+					panel.fit(10,1);
+					panel.css('dot');
+					panel.style('backgroundColor','#ffffff');
+					panel.style({opacity:.3});
+					index.content.addChild(panel);
+					v.data.index = panel;
+					v.data.id = p;
+				});
+				
+				
+				// ================== Fold/Unfold effect between panels 0 and 1 ==================
+				
+				J_Ticker.add(function(){
+					if(targetAngle != endAngle){
+						targetAngle += (endAngle - targetAngle) * .1;
+						carousel3d.setAngle(targetAngle);
+					}
+				});
+				
+				// ================== Show Carousel ==================
+				
+				Jotun.one('.carousel-main').show();
+				
+				Jotun.document.body.events.keyPress(function(e){
+					var trigger = Jotun.one('[action-trigger][on-key-trigger*="' + e.event.key + '"]');
+					if(trigger != null){
+						trigger.attribute('key-event', e.event.key);
+						trigger.click();
+					}
+				});
+				
+				Jotun.all("[action-trigger]").each(function(o){
+					o.events.click(function(e){
+						var val = e.target.attribute('action-trigger').split(' ');
+						switch(val[0]){
+							case 'axys' : {
+								var x = carousel3d.toggleAxys();
+								e.target.one('.value').writeHtml(x);
+								break;
+							}
+							case 'angle' : {
+								var y = e.target.attribute('key-event');
+								if(y == 'w'){
+									angle -= 1;
+								}else{
+									angle += 1;
+								}
+								endAngle = angle;
+								e.target.one('.value').writeHtml(angle.toFixed(2));
+								break;
+							}
+						}
 					});
 				});
-			});
-		</script>
-	</body>                                                                               
+				
+			}
+			
+			// ================== Config Video Start/Stop on click ==================
+			var vid = Jotun.one('video');
+				vid.events.click(function(v){ v.target.togglePause(); });
+			
+		}
+		
+		// Inject plugin
+		Jotun.inject('jotun/plugins/carousel3d.js', null, _init3D);
+		
+	</script>
+	
+</body>
 </html>

@@ -18,6 +18,7 @@ import jotun.serial.Packager;
 import jotun.tools.Ticker;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import jotun.utils.Filler;
 import jotun.utils.IDiceRoll;
 import jotun.utils.ITable;
 import js.Browser;
@@ -597,6 +598,9 @@ class Display extends Query implements IDisplay {
 		if (Jotun.resources.exists(q)){
 			return addChildren(Jotun.resources.build(q, data).children(), at);
 		} else {
+			if (data != null){
+				q = Filler.to(q, data);
+			}
 			return addChildren(new Display().writeHtml(q).children(), at);
 		}
 	}
@@ -784,7 +788,10 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function id():UInt {
+	public function id(?value:String):UInt {
+		if (value != null){
+			element.id = value;
+		}
 		return _uid;
 	}
 	

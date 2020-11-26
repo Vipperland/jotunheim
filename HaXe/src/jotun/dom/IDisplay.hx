@@ -105,7 +105,7 @@ interface IDisplay extends IQuery {
 	 * Unique Sirius DOM ID
 	 * @return
 	 */
-	public function id():UInt;
+	public function id(?value:String):UInt;
 	
 	/**
 	 * Get the element index in DOM
