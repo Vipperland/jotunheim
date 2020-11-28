@@ -1,13 +1,26 @@
 /**
  * ...
  * @author Rafael Moreira
+	
+	Attribute options:
+		glitter-mode				Set dial type, can be "horizontal", "vertical" or "radial". Default is "radial"
+		glitter-multiple			Allow multiple selection
+		glitter-autoclose			Close after interaction (if not multiple)
+		glitter-size				Size of dial options (width*height). Default is "auto"
+		glitter-target				Write the menu selected values array in the target.
+		glitter-time				Animation delay between options. Default is "30"
+		glitter-transition			CSS transition to be applied. Default is "all .3s ease-in-out"
+		
+		If radial mode:
+			glitter-fov				Set max angular distribution. Default if "360"
+			glitter-angle			Change the starting angle by an ammount. Default is "0"
+			glitter-grow			Add empty points in the dial menu. Default id "0"
+	
  */
 (function($exports) {
-	$exports.jtn = $exports.jtn || {};
-	$exports.jtn.plugins = $exports.jtn.plugins || {};
-	$exports.jtn.plugins.GlitterMenu = new (function(){
+	$exports.GlitterMenu = new (function(){
 		var _glitterTimer = null;
-		var _layer = new jtn.dom.Div();
+		var _layer = new J_dom_Div();
 		var _activity = false;
 		function _toggleLayer(){
 			clearTimeout(_glitterTimer);
@@ -40,13 +53,13 @@
 			clearTimeout(_glitterTimer);
 			this.scanning = false;
 			var item = this.getMenu(menu);
-			item.data=new jtn.data.DataSet();
 			item.glitterOptions = {
-				dimension:(item.attribute('glitter-size') || "150*150").split('*'), 
-				startAngle:180 + (parseInt(item.attribute('glitter-angle')) || 0), 
+				mode:item.attribute('glitter-mode') || "radial", 
+				dimension:(item.attribute('glitter-size') || "auto").split('*'), 
+				startAngle: (parseInt(item.attribute('glitter-angle')) || 0), 
 				maxAngle:(parseInt(item.attribute('glitter-fov')) || 360), 
 				grow:(parseInt(item.attribute('glitter-grow')) || 0), 
-				autoSize:item.attribute('glitter-size') == 'auto', 
+				autoSize:!item.hasAttribute('glitter-size') || item.attribute('glitter-size') == 'auto', 
 				multiple:item.attribute('glitter-multiple') == 'true', 
 				target:item.attribute('glitter-target'),
 				transition:item.attribute('glitter-transition') || 'all .3s ease-in-out',
@@ -54,12 +67,13 @@
 				root:item,
 				autoClose:item.attribute('glitter-autoclose')=='true',
 			}
-			if(item.data.exists('gliter')){
-				clearInterval(item.data.get('gliter'));
+			if(item.data._glitterTime){
+				clearInterval(item.data._glitterTime);
+				delete item.data._glitterTime;
 			}
 			item.style({
-				width: '100%',
-				height: '100%',
+				width: '100vw',
+				height: '100vh',
 				position: 'fixed',
 				top:0,
 				left:0,
@@ -69,7 +83,7 @@
 				pointerEvents:'none',
 			});
 			var bts = item.all('.item');
-			var count = item.glitterOptions.grow || bts.length();
+			var count = bts.length() + item.glitterOptions.grow;
 			var i = 0;
 			var maxAngle = item.glitterOptions.maxAngle;
 			if(maxAngle > 360){
@@ -90,7 +104,10 @@
 				setTimeout(function(k){
 					if(!o.glitterData){
 						var bdx = o.getBounds();
-						var offset = {x:((bdx.width*.5)>>0),y:((bdx.height*.5)>>0)};
+						var offset = {
+							x:((bdx.width*.5)>>0),
+							y:((bdx.height*.5)>>0)
+						};
 						o.events.click(function(e){
 							var target = e.target;
 							var menu = target.glitterOptions.root;
@@ -105,12 +122,13 @@
 									GlitterMenu.selectBy(cval, menu);
 								}else{
 									if(!target.glitterOptions.multiple){
-										menu.all('.item[value]').attribute('selected',false);
+										GlitterMenu.deselectAll(menu);
 									}
 									var cur = target.attribute('selected') == "true";
 									target.attribute('selected', !cur);
+									target.css((cur ? '/' : '') + 'active');
 								}
-								var values = GlitterMenu.getData();
+								var values = GlitterMenu.getData(menu);
 								if(target.glitterOptions.target != null){
 									values = values.join(', ');
 									var tg = Jotun.one(target.glitterOptions.target);
@@ -118,11 +136,11 @@
 										if(tg.is('input')){
 											tg.value(values);
 										}else{
-											tg.clear(true).write(values);
+											tg.writeHtml(values);
 										}
 									}
 								}
-								if(target.glitterOptions.autoClose){
+								if(target.glitterOptions.autoClose && !target.glitterOptions.multiple){
 									GlitterMenu.closeMenu(menu);
 								}
 								if(GlitterMenu.onClick != null){
@@ -130,12 +148,14 @@
 										GlitterMenu.onClick(e.target, values);
 									}, 50);
 								}
-							}else{
-								GlitterMenu.closeMenu(menu);
-								if(o.hasAttribute('glitter-open')){
-									GlitterMenu.openMenu(o.attribute('glitter-open'));
-								}
 							}
+							if(o.hasAttribute('glitter-open')){
+								GlitterMenu.closeMenu(menu);
+								GlitterMenu.openMenu(o.attribute('glitter-open'));
+							}else if(o.hasAttribute('glitter-close')){
+								GlitterMenu.closeMenu(menu);
+							}
+							
 						});
 						o.glitterData = {
 							offset:offset,
@@ -159,21 +179,29 @@
 							var offset = o.glitterData.offset;
 							var aRad = o.glitterOptions.autoSize;
 							var decay = 360/item.glitterOptions.maxAngle;
-							var dx = Math.round((offset.x*-1.5)/Math.tan(Math.PI/count));
-							var dy = Math.round((offset.y*-1.5)/Math.tan(Math.PI/count));
+							var dx = 0;
+							var dy = 0;
 							if(aRad){
-								tx = (tx * (offset.x + dx) * decay) >> 0;
-								ty = (ty * (offset.y + dy) * decay) >> 0;
+								dx = Math.round((offset.x)/Math.tan(Math.PI/count));
+								dy = Math.round((offset.y)/Math.tan(Math.PI/count));
 							}else{
-								tx = (tx * parseInt(o.glitterOptions.dimension[0]) * decay) >> 0;
-								ty = (ty * parseInt(o.glitterOptions.dimension[1]) * decay) >> 0;
+								dx = parseInt(o.glitterOptions.dimension[0]);
+								dy = parseInt(o.glitterOptions.dimension[1]);
 							}
+							var mx = J_Utils.viewportWidth() >> 1;
+							var my = J_Utils.viewportHeight() >> 1;
+							
+							tx = (tx * (offset.x + dx) * decay) >> 0;
+							ty = (ty * (offset.y + dy) * decay) >> 0;
+							
 							o.glitterData.to = {
 								top:'calc(50% + ' + ty + 'px - ' + offset.y + 'px)',
 								left:'calc(50% + ' + tx + 'px - ' + offset.x + 'px)',
 								opacity:1,
 							};
+							
 						}
+						
 						o.style(o.glitterData.to);
 					}, o.glitterOptions.time * k, k);
 				},20, i++);
@@ -191,7 +219,10 @@
 		}
 		this.getData = function(menu){
 			var values = [];
-			this.getMenu(menu).all('.item[selected="true"]').each(function(o){
+			if(typeof(menu) == "string"){
+				menu = this.getMenu(menu);
+			}
+			menu.all('.item[selected="true"]').each(function(o){
 				values.push(o.attribute('value'));
 			});
 			return values;
@@ -203,7 +234,10 @@
 			this.toggleSelection(true, menu);
 		}
 		this.toggleSelection = function(value, menu, selector){
-			this.getMenu(menu).all(selector || '.item[value]').attribute('selected', value);
+			this.getMenu(menu).all(selector || '.item[value]').each(function(o){
+				o.attribute('selected', value);
+				o.css((value ? '' : '/') + 'active');
+			});
 		}
 		this.selectBy = function(value, menu){
 			this.deselectAll();
