@@ -94,6 +94,7 @@
 			var radius = maxAngle/count;
 			bts.each(function(o){
 				o.glitterOptions = item.glitterOptions;
+				o.disable();
 				o.style({
 					overflow:'hidden',
 					position:'absolute',
@@ -199,9 +200,8 @@
 								left:'calc(50% + ' + tx + 'px - ' + offset.x + 'px)',
 								opacity:1,
 							};
-							
 						}
-						
+						o.enable();
 						o.style(o.glitterData.to);
 					}, o.glitterOptions.time * k, k);
 				},20, i++);
