@@ -22,6 +22,7 @@
 		var _glitterTimer = null;
 		var _layer = new J_dom_Div();
 		var _activity = false;
+		var _doc_size = {};
 		function _toggleLayer(){
 			clearTimeout(_glitterTimer);
 			if(!_activity){
@@ -40,13 +41,40 @@
 				});
 			}
 		}
+		function _updateAura(e){
+			_doc_size.x = J_Utils.viewportWidth();
+			_doc_size.y = J_Utils.viewportHeight();
+			_doc_size.hx = _doc_size.x>>1;
+			_doc_size.hy = _doc_size.y>>1;
+		}
+		function _tryUpdate(target){
+			var data = GlitterMenu.getData(target.glitterOptions.root);
+			if(target.glitterOptions.target != null){
+				var values = data.values.join(', ');
+				var tg = Jotun.one(target.glitterOptions.target);
+				if(tg != null){
+					if(tg.is('input') || tg.is('textarea')){
+						tg.value(values);
+					}else{
+						tg.writeHtml(data.displays.join(', '));
+					}
+					tg.attribute('selected-value', values);
+				}
+			}
+			return data;
+		}
+		Jotun.run(function(){
+			Jotun.document.body.events.resize(_updateAura);
+		});
+		_updateAura();
 		this.active = false;
 		this.scanning = false;
 		this.control = false;
 		this.onClick = null;
 		this.getMenu = function(obj){
-			if(typeof obj == "string")
+			if(typeof obj == "string"){
 				obj = Jotun.one(obj);
+			}
 			return obj || Jotun.one('.glittermenu');
 		}
 		this.openMenu = function(menu, handler){
@@ -78,7 +106,6 @@
 				top:0,
 				left:0,
 				visibility:'none',
-				overflow:'hidden',
 				zIndex:0xFFFFFF,
 				pointerEvents:'none',
 			});
@@ -96,14 +123,15 @@
 				o.glitterOptions = item.glitterOptions;
 				o.disable();
 				o.style({
-					overflow:'hidden',
 					position:'absolute',
 					opacity:0,
 					zIndex:1,
 					transition:'none',
 				});
-				setTimeout(function(k){
-					if(!o.glitterData){
+				clearTimeout(o._timerA);
+				o._timerA = setTimeout(function(k){
+					var stage = o.glitterData == null ? null : o.glitterData.stage;
+					if(stage == null || (_doc_size.x != stage.x || _doc_size.y != stage.y)){
 						var bdx = o.getBounds();
 						var offset = {
 							x:((bdx.width*.5)>>0),
@@ -129,24 +157,13 @@
 									target.attribute('selected', !cur);
 									target.css((cur ? '/' : '') + 'active');
 								}
-								var values = GlitterMenu.getData(menu);
-								if(target.glitterOptions.target != null){
-									values = values.join(', ');
-									var tg = Jotun.one(target.glitterOptions.target);
-									if(tg != null){
-										if(tg.is('input')){
-											tg.value(values);
-										}else{
-											tg.writeHtml(values);
-										}
-									}
-								}
+								var menuData = _tryUpdate(target);
 								if(target.glitterOptions.autoClose && !target.glitterOptions.multiple){
 									GlitterMenu.closeMenu(menu);
 								}
 								if(GlitterMenu.onClick != null){
 									setTimeout(function(){
-										GlitterMenu.onClick(e.target, values);
+										GlitterMenu.onClick(e.target, menuData.values);
 									}, 50);
 								}
 							}
@@ -161,6 +178,10 @@
 						o.glitterData = {
 							offset:offset,
 							index:k,
+							stage: {
+								x: _doc_size.x,
+								y: _doc_size.y,
+							},
 							from:{
 								opacity:0,
 								transition:o.glitterOptions.transition,
@@ -172,7 +193,8 @@
 					pos.top = (Jotun.document.cursorY() - offset.y) + 'px';
 					pos.left = (Jotun.document.cursorX() - offset.x) + 'px';
 					o.style(o.glitterData.from);
-					setTimeout(function(j){
+					clearTimeout(o._timerA);
+					o._timerA = setTimeout(function(j){
 						if(!o.glitterData.to){
 							var rd = Math.PI/180*(radius*j-o.glitterOptions.startAngle);
 							var tx = Math.cos(rd);
@@ -194,6 +216,18 @@
 							
 							tx = (tx * (offset.x + dx) * decay) >> 0;
 							ty = (ty * (offset.y + dy) * decay) >> 0;
+							
+							if(tx - offset.x < -mx){
+								tx = -mx + offset.x;
+							}else if(tx + offset.x > mx){
+								tx = mx - offset.x;
+							}
+							
+							if(ty - offset.y < -my){
+								ty = -my + offset.y;
+							}else if(ty + offset.y > my){
+								ty = my - offset.y;
+							}
 							
 							o.glitterData.to = {
 								top:'calc(50% + ' + ty + 'px - ' + offset.y + 'px)',
@@ -219,13 +253,31 @@
 		}
 		this.getData = function(menu){
 			var values = [];
+			var displays = [];
 			if(typeof(menu) == "string"){
 				menu = this.getMenu(menu);
 			}
 			menu.all('.item[selected="true"]').each(function(o){
-				values.push(o.attribute('value'));
+				var disp = o.hasAttribute('display-self') ? o.element.innerHTML : o.attribute('display-value');
+				var val = o.attribute('value');
+				if(disp && val){
+					displays.push(disp);
+					values.push(val);
+				}else if(val){
+					displays.push(val);
+					values.push(val);
+				}
 			});
-			return values;
+			menu.all('[selected-value]').each(function(o){
+				o = o.attribute('selected-value');
+				if(o){
+					values.push(o);
+				}
+			});
+			return {
+				values: values,
+				displays: displays,
+			};
 		}
 		this.deselectAll = function(menu){
 			this.toggleSelection(false, menu);
@@ -246,24 +298,22 @@
 		this.closeMenu = function(menu){
 			var item = this.getMenu(menu);
 			var bts = item.all('.item');
-			clearTimeout(item.glitterHx);
 			_activity = false;
 			bts.each(function(o){
 				var pos = o.glitterData.from;
 				var offset = o.glitterData.offset;
-				//if(target.glitterOptions.target){
-				//}else{
-					pos.top = (Jotun.document.cursorY() - offset.y) + 'px';
-					pos.left = (Jotun.document.cursorX() - offset.x) + 'px';
-				//}
-				setTimeout(function(){
+				pos.top = (Jotun.document.cursorY() - offset.y) + 'px';
+				pos.left = (Jotun.document.cursorX() - offset.x) + 'px';
+				clearTimeout(o._timerA);
+				o._timerA = setTimeout(function(){
 					o.style(o.glitterData.from);
 				},o.glitterOptions.time*o.glitterData.index);
 			});
 			item.style({
 				pointerEvents:'none',
 			});
-			item.glitterHx = setTimeout(function(){
+			clearTimeout(item.__glitterHx);
+			item.__glitterHx = setTimeout(function(){
 				item.hide();
 				item.style({zIndex:0xFFFFF0});
 				_layer.style({
@@ -271,6 +321,7 @@
 				});
 				_toggleLayer();
 			}, bts.length() * item.glitterOptions.time + 100);
+			_tryUpdate(menu);
 		}
 		_layer.hide();
 		_layer.style({

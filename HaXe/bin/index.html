@@ -4,34 +4,32 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta charset="utf-8">
 		<title></title>
+		<link rel="stylesheet" href="assets/icons/pro.min.css">
 		<script type="text/javascript" src="jotun/api.jotun.js"></script>
 		<script type="text/javascript" src="jotun/plugins/glitter-menu.js"></script>
 		<style>
 			.item {
-				padding: 24px 0;
 				color: #000000;
-				border-radius: 50%;
-				width:60px;
-				height:60px;
+				width:120px;
+				height:120px;
 				overflow: none;
-				background-color: #FFFFFF;
 				cursor: pointer;
 				text-align: center;
 			}
 			
-			.item[value] {
-				padding: 8px 0;
-				border: 14px solid #ffffff;
+			.item i {
+				font-size: 32px;
 			}
 			
-			.item.active {
-				border: 4px solid #ffffff;
-				padding: 20px 0;
-			}
-			
-			.letter-menu .item.active, .number-menu .item.active {
-				background-color: #000000;
-				color: #FFFFFF;
+			.item.active:after {
+				content: "";
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				background-color: #00CC33;
 			}
 			
 			.hint {
@@ -41,35 +39,45 @@
 				height: 100%;
 			}
 			
-			.item[value="Red"]{
+			.item[class*="color"] {
+				border-radius: 50%;
+			}
+			
+			.color-menu .item {
+				width: 80px;
+				height: 80px;
+				border: 0 solid #ffffff;
+			}
+			
+			.color-menu .item[class*="color"]:not(.active) {
+				border: 12px solid #ffffff;
+			}
+			
+			.item.color-red {
 				background-color: #FF0000;
 			}
 			
-			.item[value="Orange"]{
+			.item.color-orange{
 				background-color: #FF6600;
 			}
 			
-			.item[value="Yellow"]{
+			.item.color-yellow{
 				background-color: #FFFF66;
 			}
 			
-			.item[value="Green"]{
+			.item.color-green{
 				background-color: #00FF66;
 			}
 			
-			.item[value="Yellow"]{
-				background-color: #FFFF00;
-			}
-			
-			.item[value="Blue"]{
+			.item.color-blue{
 				background-color: #0099CC;
 			}
 			
-			.item[value="Indigo"]{
+			.item.color-indigo{
 				background-color: #0066FF;
 			}
 			
-			.item[value="Violet"]{
+			.item.color-violet{
 				background-color: #6600FF;
 			}
 			
@@ -111,10 +119,16 @@
 				clear: both;
 			}
 			
-			body {
+			html, body {
 				background-size: cover;
 				background-position: center center;
 				font-family: Tahoma;
+				height: 100%;
+			}
+			
+			textarea {
+				height: 200px;
+				background-color: #efefef;
 			}
 			
 		</style>
@@ -128,82 +142,63 @@
 				 glitter-fov="360" 
 				 glitter-angle="0" 
 				 glitter-grow="0" 
-				 glitter-multiple="true" 
 				 glitter-target=".selected-value" 
 				 glitter-time="30" 
 				 glitter-transition="all .3s ease-in-out" 
 				 hidden>
-					<div value="Red" class="item"></div>
-					<div value="Orange" class="item"></div>
-					<div value="Yellow" class="item"></div>
-					<div value="Green" class="item"></div>
-					<div value="Blue" class="item"></div>
-					<div value="Indigo" class="item"></div>
-					<div value="Violet" class="item"></div>
-					<div glitter-select="all" class="item">All</div>
-					<div glitter-select="none" class="item">None</div>
-					<div glitter-open=".letter-menu" class="item">A-Z</div>
-					<div glitter-open=".number-menu" class="item">0-9</div>
-					<div glitter-close class="item">Close</div>
+					<div glitter-open=".letter-menu" class="item drawer o-middle letter-target"><i class="fa fa-venus-mars"></i> Gênero</div>
+					<div glitter-open=".number-menu" class="item drawer o-middle number-target"><i class="fa fa-tag"></i> Tipo</div>
+					<div glitter-open=".people-menu" class="item drawer o-middle people-target"><i class="far fa-user"></i> Moradores</div>
+					<div glitter-open=".color-menu" class="item drawer o-middle"><i class="far fa-palette"></i> Cores<span class="color-target" hidden></span></div>
+					<div glitter-close class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
 			</div>
-			<div class="letter-menu" glitter-target="[glitter-open='.letter-menu']" hidden>
-				<div glitter-open=".glittermenu" value="A" class="item">A</div>
-				<div glitter-open=".glittermenu" value="B" class="item">B</div>
-				<div glitter-open=".glittermenu" value="C" class="item">C</div>
-				<div glitter-open=".glittermenu" value="D" class="item">D</div>
-				<div glitter-open=".glittermenu" value="E" class="item">E</div>
-				<div glitter-open=".glittermenu" value="F" class="item">F</div>
-				<div glitter-open=".glittermenu" value="G" class="item">G</div>
-				<div glitter-open=".glittermenu" value="H" class="item">H</div>
-				<div glitter-open=".glittermenu" value="I" class="item">I</div>
-				<div glitter-open=".glittermenu" value="J" class="item">J</div>
-				<div glitter-open=".glittermenu" value="K" class="item">K</div>
-				<div glitter-open=".glittermenu" value="L" class="item">L</div>
-				<div glitter-open=".glittermenu" value="M" class="item">M</div>
-				<div glitter-open=".glittermenu" value="N" class="item">N</div>
-				<div glitter-open=".glittermenu" value="O" class="item">O</div>
-				<div glitter-open=".glittermenu" value="P" class="item">P</div>
-				<div glitter-open=".glittermenu" value="Q" class="item">Q</div>
-				<div glitter-open=".glittermenu" value="R" class="item">R</div>
-				<div glitter-open=".glittermenu" value="S" class="item">S</div>
-				<div glitter-open=".glittermenu" value="T" class="item">T</div>
-				<div glitter-open=".glittermenu" value="U" class="item">U</div>
-				<div glitter-open=".glittermenu" value="V" class="item">V</div>
-				<div glitter-open=".glittermenu" value="W" class="item">W</div>
-				<div glitter-open=".glittermenu" value="X" class="item">X</div>
-				<div glitter-open=".glittermenu" value="Y" class="item">Y</div>
-				<div glitter-open=".glittermenu" value="Z" class="item">Z</div>
-				<div glitter-open=".glittermenu" class="item">Close</div>
+			<div class="letter-menu" glitter-target=".letter-target" hidden>
+				<div glitter-open=".glittermenu" display-self value="Homem" class="item drawer o-middle"><i class="fa fa-male"></i><br/>Homem</div>
+				<div glitter-open=".glittermenu" display-self value="Mulher" class="item drawer o-middle"><i class="fa fa-female"></i><br/>Mulher</div>
+				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
 			</div>
-			<div class="number-menu" glitter-target="[glitter-open='.number-menu']" hidden>
-				<div glitter-open=".glittermenu" value="0" class="item">0</div>
-				<div glitter-open=".glittermenu" value="1" class="item">1</div>
-				<div glitter-open=".glittermenu" value="2" class="item">2</div>
-				<div glitter-open=".glittermenu" value="3" class="item">3</div>
-				<div glitter-open=".glittermenu" value="4" class="item">4</div>
-				<div glitter-open=".glittermenu" value="5" class="item">5</div>
-				<div glitter-open=".glittermenu" value="6" class="item">6</div>
-				<div glitter-open=".glittermenu" value="7" class="item">7</div>
-				<div glitter-open=".glittermenu" value="8" class="item">8</div>
-				<div glitter-open=".glittermenu" value="9" class="item">9</div>
-				<div glitter-open=".glittermenu" class="item">Close</div>
+			<div class="number-menu" glitter-target=".number-target" hidden>
+				<div glitter-open=".glittermenu" display-self value="Residencial" class="item drawer o-middle"><i class="fa fa-home"></i><br/>Casa</div>
+				<div glitter-open=".glittermenu" display-self value="Apartamento" class="item drawer o-middle"><i class="fa fa-building"></i><br/>Apartamento</div>
+				<div glitter-open=".glittermenu" display-self value="Comércio" class="item drawer o-middle"><i class="fa fa-store"></i><br/>Comércial</div>
+				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
+			</div>
+			<div class="people-menu" glitter-target=".people-target" hidden>
+				<div glitter-open=".glittermenu" display-self value="1 pessoa" class="item drawer o-middle"><i class="fa fa-user"></i><br/>1 pessoa</div>
+				<div glitter-open=".glittermenu" display-self value="2 pessoas" class="item drawer o-middle"><i class="fa fa-user-friends"></i><br/>2 pessoas</div>
+				<div glitter-open=".glittermenu" display-self value="3 ou mais pessoas" class="item drawer o-middle"><i class="fa fa-users"></i><br/>3 ou mais pessoas</div>
+				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
+			</div>
+			<div class="people-menu" glitter-target=".people-target" hidden>
+				<div glitter-open=".glittermenu" display-self value="1 pessoa" class="item drawer o-middle"><i class="fa fa-user"></i><br/>1 pessoa</div>
+				<div glitter-open=".glittermenu" display-self value="2 pessoas" class="item drawer o-middle"><i class="fa fa-user-friends"></i><br/>2 pessoas</div>
+				<div glitter-open=".glittermenu" display-self value="3 ou mais pessoas" class="item drawer o-middle"><i class="fa fa-users"></i><br/>3 ou mais pessoas</div>
+				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
+			</div>
+			<div class="color-menu" 
+				 glitter-target=".color-target" 
+				 glitter-multiple="true" hidden>
+					<div value="Vermelho" class="color-red item drawer o-middle"></div>
+					<div value="Laranja" class="color-orange item drawer o-middle"></div>
+					<div value="Amarelo" class="color-yellow item drawer o-middle"></div>
+					<div value="Verde" class="color-green item drawer o-middle"></div>
+					<div value="Azul" class="color-blue item drawer o-middle"></div>
+					<div value="Anil" class="color-indigo item drawer o-middle"></div>
+					<div value="Violeta" class="color-violet item drawer o-middle"></div>
+					<div glitter-select="all" class="item drawer o-middle"><i class="fa fa-check-circle"></i><br/>Todas</div>
+					<div glitter-select="none" class="item drawer o-middle"><i class="far fa-circle"></i><br/>Nenhuma</div>
+					<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
 			</div>
 		</div>
-		<div class="shelf o-middle">
+		<div class="shelf o-middle" style="height: 100%;">
 			<div>
 				<div class="hint">
 					<div class="title">
-						GlitterMenu
+						GlitterMenu (RAW)
 					</div>
 					<a class="shelf" onclick="GlitterMenu.openMenu('.glittermenu');">
-						<div>
-							Selected
-						</div>
-						<input class="selected-value" placeholder="Click to Select" disabled>
+						<textarea class="cel selected-value" placeholder="Click to Select"></textarea>
 					</a>
-					<div class="download">
-						<span><a href="glittermenu.zip">Download</a></span>
-					</div>
 				</div>
 			</div>
 			
