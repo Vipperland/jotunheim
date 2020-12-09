@@ -3,7 +3,7 @@
  * @author Rafael Moreira
 	
 	Attribute options:
-		glitter-mode				Set dial type, can be "horizontal", "vertical" or "radial". Default is "radial"
+		glitter-mode (TODO)			Set dial type, can be "horizontal", "vertical" or "radial". Default is "radial"
 		glitter-multiple			Allow multiple selection
 		glitter-autoclose			Close after interaction (if not multiple)
 		glitter-size				Size of dial options (width*height). Default is "auto"

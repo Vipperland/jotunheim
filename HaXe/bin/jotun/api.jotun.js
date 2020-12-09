@@ -3324,60 +3324,6 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 			this._ioHandler(this);
 		}
 	}
-	,validateCardExp: function() {
-		this._rgx = new EReg("\\d{2}/\\d{2,4}","");
-	}
-	,validateDate: function() {
-		this._rgx = new EReg("\\d{1,2}/\\d{1,2}/\\d{4}","");
-	}
-	,validateURL: function() {
-		this._rgx = new EReg("https?://.+","");
-	}
-	,validateIPv4: function() {
-		this._rgx = new EReg("^\\d{1,3}d{1,3}.\\d{1,3}.\\d{1,3}","");
-	}
-	,validateCurrency: function() {
-		this._rgx = new EReg("\\d+(.\\d{2})?","");
-	}
-	,validateEmail: function() {
-		this._rgx = new EReg("^[a-z0-9!'#$%&*+/=?^_`{|}~-]+(?:\\.[a-z0-9!'#$%&*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-zA-Z]{2,}$","giu");
-		this._flt = " \t";
-	}
-	,validateNumbers: function() {
-		this._rgx = new EReg("^\\d{1,}$","");
-		this._flt = " ";
-	}
-	,validateMobile: function() {
-		this._rgx = new EReg("^(\\d{10,11})|(\\(\\d{2}\\) \\d{5}-\\d{4})$","");
-		this._flt = "+()- ";
-	}
-	,validatePhone: function() {
-		this._rgx = new EReg("^(\\d{10,11})|(\\(\\d{2}\\) \\d{5}-\\d{4})$","");
-		this._flt = "+()- ";
-	}
-	,validateDoc: function() {
-		this._rgx = new EReg("^(\\d{3}.\\d{3}.\\d{3}-\\d{2})|(\\d{2}.\\d{3}.\\d{3}/\\d{4}-\\d{2})$","");
-		this._flt = "-./";
-	}
-	,validateZipcode: function() {
-		this._rgx = new EReg("^(\\d{5}-\\d{3})|(\\d{8})$","");
-		this._flt = "- ";
-	}
-	,validateLetters: function() {
-		this._rgx = new EReg("^[a-zA-Z]{3,}$","");
-	}
-	,validatePwd: function() {
-		this._rgx = new EReg("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$","");
-	}
-	,validateUsr: function() {
-		this._rgx = new EReg("^[A-Za-z0-9._-]{6,24}$","");
-	}
-	,validateMd5: function() {
-		this._rgx = new EReg("^[A-Za-z0-9._-]{35}$","");
-	}
-	,validateCard: function() {
-		this._rgx = new EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}$","");
-	}
 	,type: function(q) {
 		if(q != null) {
 			this.object.type = q;
@@ -3403,6 +3349,13 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		return this.object.placeholder;
 	}
 	,restrict: function(q,filter) {
+		if(!((q) instanceof EReg)) {
+			if(typeof(q) != "string") {
+				q = q.toString();
+			}
+			q = q.split("$/");
+			q = new EReg(q[0].substring(1),q[1]);
+		}
 		this._rgx = q;
 		this._flt = filter;
 	}
