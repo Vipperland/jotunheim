@@ -1,5 +1,6 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.utils.Dice;
 import js.Browser;
 import jotun.events.IEvent;
 
@@ -23,6 +24,14 @@ class A extends Display {
 		if(url != null)
 			attribute('href', url);
 		return attribute('href');
+	}
+	
+	public function link():Dynamic {
+		var uri = {};
+		Dice.Values(['href', 'protocol', 'host', 'hostname', 'port', 'pathname', 'search', 'hash'], function(v:String){
+			Reflect.setField(uri, v, Reflect.field(element, v));
+		});
+		return uri;
 	}
 	
 	public function target(?q:String):String {

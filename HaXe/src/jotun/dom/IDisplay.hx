@@ -102,10 +102,16 @@ interface IDisplay extends IQuery {
 	public function setIndex(i:UInt):IDisplay;
 	
 	/**
-	 * Unique Sirius DOM ID
+	 * Jotun ID
 	 * @return
 	 */
-	public function id(?value:String):UInt;
+	public function id():UInt;
+	
+	/**
+	 * DOM ID
+	 * @return
+	 */
+	public function ref(?value:String):String;
 	
 	/**
 	 * Get the element index in DOM

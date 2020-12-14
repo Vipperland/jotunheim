@@ -4,6 +4,7 @@ import jotun.css.XCode;
 import jotun.events.Dispatcher;
 import jotun.math.IPoint;
 import jotun.math.Point;
+import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.ITable;
 import js.Browser;
@@ -101,6 +102,14 @@ class Document extends Display {
 		if (body.hasAttribute('xcode')){
 			XCode.reset();
 		}
+		Jotun.all("noscript[jtn-module]").each(function(o:IDisplay){
+			var n:String = o.attribute('module-name');
+			if (n == null){
+				n = 'module' + Key.GEN();
+			}
+			Jotun.resources.register(n, o.element.innerHTML);
+			o.dispose();
+		});
 	}
 	
 	/**

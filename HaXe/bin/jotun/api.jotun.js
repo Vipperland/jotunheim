@@ -1818,11 +1818,14 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		this.height(height);
 		return this;
 	}
-	,id: function(value) {
+	,id: function() {
+		return this._uid;
+	}
+	,ref: function(value) {
 		if(value != null) {
 			this.element.id = value;
 		}
-		return this._uid;
+		return this.element.id;
 	}
 	,load: function(url,module,data,handler,progress) {
 		var _gthis = this;
@@ -1941,6 +1944,14 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		if(this.body.hasAttribute("xcode")) {
 			jotun_css_XCode.reset();
 		}
+		jotun_Jotun.all("noscript[jtn-module]").each(function(o) {
+			var n = o.attribute("module-name");
+			if(n == null) {
+				n = "module" + jotun_tools_Key.GEN();
+			}
+			jotun_Jotun.resources.register(n,o.element.innerHTML);
+			o.dispose();
+		});
 	}
 	,scroll: function(x,y) {
 		window.scroll(x,y);
@@ -2802,6 +2813,14 @@ jotun_dom_A.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return this.attribute("href");
 	}
+	,link: function() {
+		var _gthis = this;
+		var uri = { };
+		jotun_utils_Dice.Values(["href","protocol","host","hostname","port","pathname","search","hash"],function(v) {
+			uri[v] = Reflect.field(_gthis.element,v);
+		});
+		return uri;
+	}
 	,target: function(q) {
 		if(q != null) {
 			this.attribute("target",q);
@@ -3354,6 +3373,9 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 				q = q.toString();
 			}
 			q = q.split("$/");
+			if(!jotun_tools_Utils.isValid(q[1])) {
+				q[1] = "";
+			}
 			q = new EReg(q[0].substring(1),q[1]);
 		}
 		this._rgx = q;

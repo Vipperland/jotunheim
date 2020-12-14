@@ -96,6 +96,9 @@ class Input extends Display {
 				q = q.toString();
 			}
 			q = q.split('$/');
+			if (!Utils.isValid(q[1])){
+				q[1] = "";
+			}
 			q = new EReg(q[0].substring(1), q[1]);
 		}
 		_rgx = q;

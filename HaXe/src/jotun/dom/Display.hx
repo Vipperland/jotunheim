@@ -788,11 +788,15 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function id(?value:String):UInt {
+	public function id():UInt {
+		return _uid;
+	}
+	
+	public function ref(?value:String):String {
 		if (value != null){
 			element.id = value;
 		}
-		return _uid;
+		return element.id;
 	}
 	
 	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
