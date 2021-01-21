@@ -93,8 +93,9 @@ class EventGroup implements IEventGroup {
 		if (!enabled) return;
 		var evt:IEvent = new Event(dispatcher, this, e);
 		Dice.Values(events, function(v:Dynamic) {
-			if (v != null)
+			if (v != null){
 				v(evt);
+			}
 			return !propagation;
 		});
 		if (_pd && e != null){

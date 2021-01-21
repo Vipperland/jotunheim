@@ -117,8 +117,12 @@ class Document extends Display {
 	 * @param	x
 	 * @param	y
 	 */
-	public function scroll(x:Float, y:Float):Void {
-		Browser.window.scroll(x, y);
+	public function scroll(x:Int, y:Int):Void {
+		Browser.window.scroll(cast {
+			top:y,
+			left:x,
+			behavior: 'smooth',
+		});
 	}
 	
 	/**
@@ -126,9 +130,12 @@ class Document extends Display {
 	 * @param	x
 	 * @param	y
 	 */
-	override public function addScroll(x:Float, y:Float):Void {
-		var current:IPoint = getScroll();
-		Browser.window.scroll(current.x + x, current.y + y);
+	override public function addScroll(x:Int, y:Int):Void {
+		Browser.window.scrollBy(cast {
+			top:y,
+			left:x,
+			behavior: 'smooth',
+		});
 	}
 	
 	/**
@@ -179,7 +186,7 @@ class Document extends Display {
 			target = target.element;
 		}
 		var pos:IPoint = Display.getPosition(target);
-		scroll(pos.x - offX, pos.y - offY);
+		scroll(cast pos.x - offX, cast pos.y - offY);
 	}
 	
 	/**

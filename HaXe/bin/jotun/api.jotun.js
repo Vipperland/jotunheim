@@ -1157,7 +1157,11 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		var _gthis = this;
 		if(typeof(data) == "string" || typeof(data) == "number" || typeof(data) == "boolean") {
 			this.all("[set-data=\"" + path + "\"]").each(function(o) {
-				o.writeHtml(data);
+				if(((o) instanceof jotun_dom_Input)) {
+					o.value(data);
+				} else {
+					o.writeHtml(data);
+				}
 			});
 			this.all("[set-attr=\"" + path + "\"]").each(function(o) {
 				if(o.hasAttribute("set-attr-name")) {
@@ -1249,16 +1253,10 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return o;
 	}
 	,addScroll: function(x,y) {
-		var current = this.getScroll();
-		this.setScroll(current.x + x | 0,current.y + y | 0);
+		this.element.scrollBy({ top : y, left : x, behavior : "smooth"});
 	}
 	,setScroll: function(x,y) {
-		if(y != null) {
-			this.element.scrollTop = y;
-		}
-		if(x != null) {
-			this.element.scrollLeft = x;
-		}
+		this.element.scroll({ top : y, left : x, behavior : "smooth"});
 	}
 	,rect: function() {
 		return { left : this.element.scrollLeft, top : this.element.scrollTop, offsetX : this.element.offsetLeft, offsetY : this.element.offsetTop, x : this.element.offsetLeft - window.scrollX, y : this.element.offsetTop - window.scrollY};
@@ -1954,11 +1952,10 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		});
 	}
 	,scroll: function(x,y) {
-		window.scroll(x,y);
+		window.scroll({ top : y, left : x, behavior : "smooth"});
 	}
 	,addScroll: function(x,y) {
-		var current = this.getScroll();
-		window.scroll(current.x + x,current.y + y);
+		window.scrollBy({ top : y, left : x, behavior : "smooth"});
 	}
 	,getScrollRange: function(o) {
 		var current = this.getScroll(o);
@@ -4719,7 +4716,7 @@ jotun_net_Loader.prototype = {
 	}
 	,__class__: jotun_net_Loader
 };
-var jotun_modules_ModLib = $hx_exports["J_ModLib"] = function() {
+var jotun_modules_ModLib = function() {
 	this._onMount = [];
 	this.assets = new jotun_dom_Display();
 	this.data = jotun_modules_ModLib.DATA;
@@ -4894,7 +4891,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( _g ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 248, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 247, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;
@@ -4939,7 +4936,8 @@ jotun_Jotun._loadController = function(e) {
 		Reflect.deleteField(jotun_Jotun,"_loadController");
 		Reflect.deleteField(jotun_Jotun,"_loadPool");
 		Reflect.deleteField(jotun_Jotun,"main");
-		jotun_Jotun.one("html").autoLoad();
+		jotun_Jotun.one("head").autoLoad();
+		jotun_Jotun.one("body").autoLoad();
 	}
 };
 jotun_Jotun._preInit = function() {
@@ -6348,6 +6346,162 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
+var jotun_idb_WebDB = $hx_exports["J_WebDB"] = function(db,error,upgrade) {
+	this._tables = [];
+	this._need_upgrade = upgrade;
+	this._db = db;
+	this._error = error;
+};
+jotun_idb_WebDB.__name__ = "jotun.idb.WebDB";
+jotun_idb_WebDB.open = function(name,options,handler) {
+	var request = window.indexedDB.open(name,options);
+	request.onsuccess = function(e) {
+		handler(new jotun_idb_WebDB(request.result,null,false));
+	};
+	request.onerror = function(e) {
+		handler(new jotun_idb_WebDB(null,request.error,false));
+	};
+	request.onupgradeneeded = function(e) {
+		handler(new jotun_idb_WebDB(request.result,null,true));
+	};
+};
+jotun_idb_WebDB.prototype = {
+	isOpen: function() {
+		return this._db != null;
+	}
+	,isUpgradeNeeded: function() {
+		return this._need_upgrade;
+	}
+	,getError: function() {
+		return this._error;
+	}
+	,createTable: function(name,options) {
+		this._regTable(name,this._db.createObjectStore(name,options));
+		return this.table(name);
+	}
+	,getTables: function(name,mode,handler) {
+		var _gthis = this;
+		if(typeof(name) == "string") {
+			if(name == "*") {
+				name = this._db.objectStoreNames;
+			} else {
+				name = [name];
+			}
+		}
+		switch(mode.toLowerCase()) {
+		case "r":
+			mode = "read";
+			break;
+		case "rw":
+			mode = "readwrite";
+			break;
+		case "w":
+			mode = "write";
+			break;
+		}
+		this._transaction = this._db.transaction(name,mode);
+		jotun_utils_Dice.Values(name,function(v) {
+			_gthis._regTable(v,_gthis._transaction.objectStore(v));
+		});
+		if(handler != null) {
+			this._transaction.oncomplete = function(e) {
+				handler(_gthis);
+			};
+			this._transaction.onerror = function(e) {
+				_gthis._error = _gthis._transaction.error;
+				handler(_gthis);
+			};
+		}
+	}
+	,_regTable: function(name,store) {
+		this._tables[name] = new jotun_idb_WebDBTable(name,this._db,store);
+	}
+	,table: function(name) {
+		return Reflect.field(this._tables,name);
+	}
+	,__class__: jotun_idb_WebDB
+};
+var jotun_idb_WebDBTable = $hx_exports["J_WebDBTable"] = function(name,db,store) {
+	this._db = db;
+	this._name = name;
+	this._table = store;
+};
+jotun_idb_WebDBTable.__name__ = "jotun.idb.WebDBTable";
+jotun_idb_WebDBTable.prototype = {
+	_request_io: function(r,handler) {
+		var _gthis = this;
+		if(handler != null) {
+			r.onsuccess = function(e) {
+				_gthis._result = e.target.result;
+				handler(_gthis);
+			};
+			r.onerror = function(e) {
+				_gthis._error = r.error;
+				handler(_gthis);
+			};
+		}
+		return r;
+	}
+	,destroy: function() {
+		this._db.deleteObjectStore(this._name);
+	}
+	,addIndex: function(key,path,props) {
+		this._table.createIndex(key,path,props);
+	}
+	,deleteIndex: function(key) {
+		this._table.deleteIndex(key);
+	}
+	,index: function(key) {
+		this._table.index(key);
+	}
+	,count: function(key,handler) {
+		this._error = null;
+		return this._request_io(this._table.count(key),handler);
+	}
+	,clear: function(handler) {
+		this._error = null;
+		return this._request_io(this._table.clear(),handler);
+	}
+	,'delete': function(key,handler) {
+		this._error = null;
+		return this._request_io(this._table.delete(key),handler);
+	}
+	,add: function(data,key,handler) {
+		this._error = null;
+		return this._request_io(this._table.add(data,key),handler);
+	}
+	,put: function(data,key,handler) {
+		this._error = null;
+		return this._request_io(this._table.put(data,key),handler);
+	}
+	,get: function(key,handler) {
+		this._error = null;
+		return this._request_io(this._table.get(key),handler);
+	}
+	,getAll: function(key,limit,handler) {
+		this._error = null;
+		return this._request_io(this._table.getAll(key,limit),handler);
+	}
+	,getAllKeys: function(key,limit,handler) {
+		this._error = null;
+		return this._request_io(this._table.getAllKeys(key,limit),handler);
+	}
+	,openCursor: function(key,direction,handler) {
+		this._error = null;
+		return this._request_io(this._table.openCursor(key,direction),handler);
+	}
+	,openKeyCursor: function(key,direction,handler) {
+		this._error = null;
+		return this._request_io(this._table.openKeyCursor(key,direction),handler);
+	}
+	,isSuccess: function() {
+		return this._error == null;
+	}
+	,getResult: function() {
+		return this._result;
+	}
+	,__class__: jotun_idb_WebDBTable
+};
 var jotun_math_IARGB = function() { };
 jotun_math_IARGB.__name__ = "jotun.math.IARGB";
 jotun_math_IARGB.prototype = {
@@ -7612,6 +7766,9 @@ jotun_utils_Filler._apply = function(path,content,data) {
 	if(data == null) {
 		content = content.split("{{" + path + "}}").join("");
 	} else if(typeof(data) == "number" || typeof(data) == "string" || typeof(data) == "boolean" || typeof(data) == "number" && ((data | 0) === data)) {
+		var is_valid = data != null && data != 0 && data != false;
+		content = content.split("{{show-if:" + path + "}}").join(is_valid ? "" : "hidden");
+		content = content.split("{{hide-if:" + path + "}}").join(is_valid ? "hidden" : "");
 		content = content.split("{{" + path + "}}").join(data);
 	} else {
 		if(path != null && path != "") {

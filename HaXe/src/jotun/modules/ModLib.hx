@@ -21,7 +21,6 @@ import jotun.Jotun;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose('J_ModLib')
 class ModLib {
 	
 	private static var CACHE:Dynamic = { };

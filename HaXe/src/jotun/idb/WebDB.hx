@@ -13,6 +13,7 @@ import js.html.idb.TransactionMode;
  * ...
  * @author ...
  */
+@:expose("J_WebDB")
 class WebDB {
 	
 	public static function open(name:String, options:Dynamic, handler:WebDB->Void):Void {
@@ -21,7 +22,7 @@ class WebDB {
 			handler(new WebDB(request.result, null, false));
 		}
 		request.onerror = function(e:Event){
-			handler(new WebDB(null, request.error, false));
+			handler(new WebDB(null, cast request.error, false));
 		}
 		request.onupgradeneeded = function(e:Event){
 			handler(new WebDB(request.result, null, true));
@@ -97,7 +98,7 @@ class WebDB {
 				handler(this);
 			}
 			_transaction.onerror = function(e:Event){
-				_error = _transaction.error;
+				_error = cast _transaction.error;
 				handler(this);
 			}
 		}

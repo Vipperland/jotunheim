@@ -110,7 +110,11 @@ class Display extends Query implements IDisplay {
 		if (Std.is(data, String) || Std.is(data, Float) || Std.is(data, Bool)){
 			// Simple write content
 			all('[set-data="' + path + '"]').each(function(o:IDisplay){
-				o.writeHtml(data);
+				if (Std.is(o, Input)){
+					o.value(data);
+				}else {
+					o.writeHtml(data);
+				}
 			});
 			// Write object attributes
 			all('[set-attr="' + path + '"]').each(function(o:IDisplay){
@@ -230,19 +234,21 @@ class Display extends Query implements IDisplay {
 	}
 	
 	
-	public function addScroll(x:Float, y:Float):Void {
-		var current:IPoint = getScroll();
-		setScroll(Std.int(current.x + x), Std.int(current.y + y));
+	public function addScroll(x:Int, y:Int):Void {
+		element.scrollBy(cast {
+			top:y,
+			left:x,
+			behavior:'smooth',
+		});
 	}
 	
 	
 	public function setScroll(x:Int, y:Int):Void {
-		if (y != null){
-			element.scrollTop = y;
-		}
-		if (x != null){
-			element.scrollLeft = x;
-		}
+		element.scroll(cast {
+			top:y,
+			left:x,
+			behavior:'smooth',
+		});
 	}
 	
 	public function rect():Dynamic {

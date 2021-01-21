@@ -9,6 +9,7 @@ import js.html.idb.Request;
  * ...
  * @author ...
  */
+@:expose("J_WebDBTable")
 class WebDBTable {
 	
 	private var _db:Database;
@@ -28,7 +29,7 @@ class WebDBTable {
 				handler(this);
 			}
 			r.onerror = function(e:Event){
-				_error = r.error;
+				_error = cast r.error;
 				handler(this);
 			}
 		}
@@ -75,7 +76,7 @@ class WebDBTable {
 	
 	public function delete(?key:Dynamic, ?handler:WebDBTable-> Void):Request {
 		_error = null;
-		return _request_io(_table.delete_(key), handler);
+		return _request_io(_table.delete(key), handler);
 	}
 	
 	public function add(data:Dynamic, ?key:Dynamic, ?handler:WebDBTable-> Void):Request {

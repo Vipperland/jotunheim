@@ -82,6 +82,8 @@ import jotun.utils.IDiceRoll;
 	import jotun.draw.Book;
 	import jotun.draw.Paper;
 	import jotun.gaming.actions.Events;
+	import jotun.idb.WebDB;
+	import jotun.idb.WebDBTable;
 	import jotun.utils.SearchTag;
 	import jotun.signals.Observer;
 	

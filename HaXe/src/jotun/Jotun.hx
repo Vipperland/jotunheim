@@ -87,7 +87,8 @@ class Jotun {
 				Reflect.deleteField(Jotun, '_loadController');
 				Reflect.deleteField(Jotun, '_loadPool');
 				Reflect.deleteField(Jotun, 'main');
-				Jotun.one('html').autoLoad();
+				Jotun.one('head').autoLoad();
+				Jotun.one('body').autoLoad();
 			}
 		}
 		

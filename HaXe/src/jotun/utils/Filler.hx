@@ -1,5 +1,6 @@
 package jotun.utils;
 import haxe.Log;
+import jotun.tools.Utils;
 
 /**
  * ...
@@ -12,7 +13,11 @@ class Filler{
 		if (data == null) {
 			content = content.split("{{" + path + "}}").join("");
 		}else if (Std.is(data, Float) || Std.is(data, String) || Std.is(data, Bool) || Std.is(data, Int)) {
+			var is_valid:Bool = data != null && data != 0 && data != false;
+			content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
+			content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
 			content = content.split("{{" + path + "}}").join(data);
+			
 		}else {
 			path = path != null && path != "" ? path + "." : "";
 			Dice.All(data, function(p:String, v:Dynamic) {
