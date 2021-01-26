@@ -91,6 +91,24 @@ class Dice {
 	}
 	
 	/**
+	 * For each object Value call each(value, previous)
+	 * @param	q		Target object
+	 * @param	each		Value handler, return true to stop propagation
+	 * @param	complete	On propagation stop handler, call it with fail value
+	 */
+	public static function Comparer(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
+		var prev:Dynamic = null;
+		return All(q, 
+			function(p:Dynamic, v:Dynamic) {
+				var r = each(v, prev);
+				prev = v;
+				return r;
+			}, 
+			complete
+		);
+	}
+	
+	/**
 	 * Extract properties from a object and return a new object with then
 	 * @param	q		A valid object
 	 * @param	fields	Named fields to extract

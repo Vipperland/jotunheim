@@ -106,48 +106,72 @@ class Display extends Query implements IDisplay {
 	
 	public var data:Dynamic;
 	
-	private function _rect_fill(data:Dynamic, path:String){
+	private function _react_fill_data(data:Dynamic, o:IDisplay){
+		if (Std.is(o, Input)){
+			o.value(data);
+		}else {
+			o.writeHtml(data);
+		}
+	}
+	
+	private function _react_fill_class(verify:Bool, data:Dynamic, path:String, o:IDisplay){
+		if (verify || o.hasAttribute('set-class-' + path)){
+			o.css(data);
+		}
+	}
+	
+	private function _react_fill_attr(verify:Bool, data:Dynamic, path:String, o:IDisplay){
+		if (verify || o.hasAttribute('set-attr-' + path)){
+			if (data != null){
+				o.attribute(o.attribute('set-attr-' + path), data);
+			}else{
+				o.attribute(o.attribute('set-attr-' + path), "");
+			}
+		}
+	}
+	
+	private function _react_fill_style(verified:Bool, data:Dynamic, path:String, o:IDisplay){
+		if (verified || o.hasAttribute('set-style-' + path)){
+			o.style(o.attribute('set-style-' + path), data);
+		}else{
+			if (data != null){
+				o.attribute('style', data);
+			}else{
+				o.clearAttribute('style');
+			}
+		}
+	}
+	
+	private function _rect_fill(data:Dynamic, path:String, alt_path:String){
 		if (Std.is(data, String) || Std.is(data, Float) || Std.is(data, Bool)){
 			// Simple write content
+			if (attribute('set-data') == path){
+				_react_fill_data(data, this);
+			}
 			all('[set-data="' + path + '"]').each(function(o:IDisplay){
-				if (Std.is(o, Input)){
-					o.value(data);
-				}else {
-					o.writeHtml(data);
-				}
+				_react_fill_data(data, o);
 			});
 			// Write object attributes
-			all('[set-attr="' + path + '"]').each(function(o:IDisplay){
-				if (o.hasAttribute('set-attr-name')){
-					if (data != null){
-						o.attribute(o.attribute('set-attr-name'), data);
-					}else{
-						o.attribute(o.attribute('set-attr-name'), "");
-					}
-				}
+			_react_fill_attr(false, data, alt_path, this);
+			all('[set-attr-' + alt_path + ']').each(function(o:IDisplay){
+				_react_fill_attr(true, data, alt_path, o);
 			});
-			
 			// Write object styles
-			all('[set-style="' + path + '"]').each(function(o:IDisplay){
-				if (o.hasAttribute('set-style-name')){
-					o.style(o.attribute('set-style-name'), data);
-				}else{
-					if (data != null){
-						o.attribute('style', data);
-					}else{
-						o.clearAttribute('style');
-					}
-				}
+			_react_fill_style(false, data, alt_path, this);
+			all('[set-style-' + alt_path + ']').each(function(o:IDisplay){
+				_react_fill_style(true, data, alt_path, o);
 			});
 			// Write object classes
-			all('[set-class="' + path + '"]').each(function(o:IDisplay){
-				//o.clearAttribute('class');
-				o.css(data);
-			});
+			if (data != null){
+				_react_fill_class(false, data, alt_path, this);
+				all('[set-class-' + alt_path + ']').each(function(o:IDisplay){
+					_react_fill_class(true, data, alt_path, o);
+				});
+			}
 		}else {
 			path = path == '' ? '' : path + '.';
 			Dice.All(data, function(p:String, v:Dynamic){
-				_rect_fill(v, path + p);
+				_rect_fill(v, path + p, (path + p).split('.').join('-'));
 			});
 		}
 	}
@@ -577,14 +601,15 @@ class Display extends Query implements IDisplay {
 			if (Std.is(p, String)) {
 				if (v != null) {
 					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
-				}
-				v = Reflect.field(trueStyle(), p);
-				if (p.toLowerCase().indexOf("color") > 0){
-					v = new ARGB(v);
+				}else{
+					v = Reflect.field(trueStyle(), p);
+					if (p.toLowerCase().indexOf("color") > 0){
+						v = new ARGB(v);
+					}
 				}
 				return v;
 			}else {
-				Dice.All(p, function(p:String, v:Dynamic) {
+				Dice.All(p, function(p:Dynamic, v:Dynamic) {
 					style(p, v);
 				});
 			}
@@ -634,6 +659,10 @@ class Display extends Query implements IDisplay {
 			return _parent.parent(--levels);
 		else
 			return _parent;
+	}
+	
+	public function parentQuery(q:String):IDisplay {
+		return null;
 	}
 	
 	public function x(?value:Dynamic):Int {
@@ -853,7 +882,7 @@ class Display extends Query implements IDisplay {
 		if (Std.is(data, String)){
 			data = Json.parse(data);
 		}
-		_rect_fill(data, '');
+		_rect_fill(data, '', '');
 	}
 	
 	public function toString():String {

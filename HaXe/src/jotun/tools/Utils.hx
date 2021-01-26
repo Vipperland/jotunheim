@@ -456,6 +456,15 @@ class Utils{
 		return r.join('&');
 	}
 	
+	public static function And(data:Array<Dynamic>, separator:String=', ', and:String=' & '):String {
+		if (data.length > 1){
+			var q:Array<Dynamic> = data.splice(0, data.length - 1);
+			return q.join(separator) + and + data.join('');
+		}else{
+			return data.join('');
+		}
+	}
+	
 	#if php 
 	
 		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {
