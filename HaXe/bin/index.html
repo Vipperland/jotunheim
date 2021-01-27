@@ -9,7 +9,7 @@
 		<script type="text/javascript" src="jotun/plugins/glitter-menu.js"></script>
 		<style>
 			.item {
-				color: #000000;
+				color: #FFFFFF;
 				width:120px;
 				height:120px;
 				overflow: none;
@@ -46,38 +46,54 @@
 			.color-menu .item {
 				width: 80px;
 				height: 80px;
-				border: 0 solid #ffffff;
+				transition: all .3s ease-out;
+				position: relative;
 			}
 			
 			.color-menu .item[class*="color"]:not(.active) {
-				border: 12px solid #ffffff;
+				transition: all .3s ease-out;
 			}
 			
-			.item.color-red {
+			.color-menu .item[class*="color"]:not(.active):before {
+				width: 60%;
+				height: 60%;
+			}
+			
+			.color-menu .item:before {
+				width: 100%;
+				height: 100%;
+				content: "";
+				margin: 0px;
+				border-radius: 50%;
+				transition: all .3s ease-out;
+				position: absolute;
+			}
+			
+			.item.color-red:before {
 				background-color: #FF0000;
 			}
 			
-			.item.color-orange{
+			.item.color-orange:before{
 				background-color: #FF6600;
 			}
 			
-			.item.color-yellow{
+			.item.color-yellow:before{
 				background-color: #FFFF66;
 			}
 			
-			.item.color-green{
+			.item.color-green:before{
 				background-color: #00FF66;
 			}
 			
-			.item.color-blue{
+			.item.color-blue:before{
 				background-color: #0099CC;
 			}
 			
-			.item.color-indigo{
+			.item.color-indigo:before{
 				background-color: #0066FF;
 			}
 			
-			.item.color-violet{
+			.item.color-violet:before{
 				background-color: #6600FF;
 			}
 			
