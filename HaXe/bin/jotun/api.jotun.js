@@ -1213,7 +1213,10 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 				path += ".";
 			}
 			jotun_utils_Dice.All(data,function(p,v) {
-				_gthis._rect_fill(v,path + p,(path + p).split(".").join("-"));
+				p = "" + p;
+				if(HxOverrides.substr(p,0,1) != "_") {
+					_gthis._rect_fill(v,path + p,(path + p).split(".").join("-"));
+				}
 			});
 		}
 	}
@@ -7825,7 +7828,10 @@ jotun_utils_Filler._apply = function(path,content,data) {
 			path = "";
 		}
 		jotun_utils_Dice.All(data,function(p,v) {
-			content = jotun_utils_Filler._apply(path + p,content,v);
+			p = "" + p;
+			if(HxOverrides.substr(p,0,1) != "_") {
+				content = jotun_utils_Filler._apply(path + p,content,v);
+			}
 		});
 	}
 	return content;

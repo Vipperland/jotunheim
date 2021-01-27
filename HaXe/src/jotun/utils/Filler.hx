@@ -21,7 +21,10 @@ class Filler{
 		}else {
 			path = path != null && path != "" ? path + "." : "";
 			Dice.All(data, function(p:String, v:Dynamic) {
-				content = _apply(path + p, content, v);
+				p = '' + p;
+				if (p.substr(0, 1) != '_'){
+					content = _apply(path + p, content, v);
+				}
 			});
 		}
 		return content;

@@ -171,7 +171,10 @@ class Display extends Query implements IDisplay {
 		}else {
 			path = path == '' ? '' : path + '.';
 			Dice.All(data, function(p:String, v:Dynamic){
-				_rect_fill(v, path + p, (path + p).split('.').join('-'));
+				p = '' + p;
+				if (p.substr(0, 1) != '_'){
+					_rect_fill(v, path + p, (path + p).split('.').join('-'));
+				}
 			});
 		}
 	}
