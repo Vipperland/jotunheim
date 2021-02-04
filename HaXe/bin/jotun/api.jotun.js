@@ -1453,7 +1453,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	}
 	,scale: function(x,y,z) {
 		this.data.__changed = true;
-		this.data.__scale = jotun_math_Matrix3D.translate(x,y,z);
+		this.data.__scale = jotun_math_Matrix3D.scale(x,y,z);
 		return this;
 	}
 	,transform: function() {

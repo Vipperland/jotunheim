@@ -453,7 +453,7 @@ class Display extends Query implements IDisplay {
 	
 	public function scale(x:Float, y:Float, z:Float):IDisplay {
 		data.__changed = true;
-		data.__scale = Matrix3D.translate(x, y, z);
+		data.__scale = Matrix3D.scale(x, y, z);
 		return this;
 	}
 	
