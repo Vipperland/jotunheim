@@ -178,7 +178,7 @@ class Document extends Display {
 	 * @param	offY
 	 * @param	offX
 	 */
-	public function scrollTo(target:Dynamic, time:Float = 1, offY:Int = 100, offX:Int = 0):Void {
+	public function scrollTo(target:Dynamic, offY:Int = 100, offX:Int = 0):Void {
 		if (Std.is(target, String)){
 			target = Jotun.one(target).element;
 		}

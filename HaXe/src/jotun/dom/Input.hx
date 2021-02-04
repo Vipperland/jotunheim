@@ -129,7 +129,7 @@ class Input extends Display {
 				if (q != null){
 					check(Utils.boolean(q));
 				}else{
-					return isChecked();
+					return hasAttribute('value') ? attribute('value') : isChecked();
 				}
 			}
 		}

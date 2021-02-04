@@ -142,6 +142,18 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
+	private function _react_display_self(verified:Bool, data:Dynamic, path:String, o:IDisplay){
+		if (verified || o.hasAttribute('set-style-' + path)){
+			o.style(o.attribute('set-style-' + path), data);
+		}else{
+			if (data != null){
+				o.attribute('style', data);
+			}else{
+				o.clearAttribute('style');
+			}
+		}
+	}
+	
 	private function _rect_fill(data:Dynamic, path:String, alt_path:String){
 		if (Std.is(data, String) || Std.is(data, Float) || Std.is(data, Bool)){
 			// Simple write content
@@ -167,6 +179,26 @@ class Display extends Query implements IDisplay {
 				all('[set-class-' + alt_path + ']').each(function(o:IDisplay){
 					_react_fill_class(true, data, alt_path, o);
 				});
+			}
+			var is_valid:Bool = data != null && data != 0 && data != false;
+			if (is_valid){
+				if (this.hasAttribute('[show-if-' + alt_path + ']')){
+					this.show();
+				}
+				if (this.hasAttribute('[hide-if-' + alt_path + ']')){
+					this.hide();
+				}
+				all('[show-if-' + alt_path + ']').show();
+				all('[hide-if-' + alt_path + ']').hide();
+			}else{
+				if (this.hasAttribute('[show-if-' + alt_path + ']')){
+					this.hide();
+				}
+				if (this.hasAttribute('[hide-if-' + alt_path + ']')){
+					this.show();
+				}
+				all('[show-if-' + alt_path + ']').hide();
+				all('[hide-if-' + alt_path + ']').show();
 			}
 		}else {
 			path = path == '' ? '' : path + '.';
@@ -665,6 +697,13 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function parentQuery(q:String):IDisplay {
+		if (!is('html')){
+			if (parent().hasCss(q)){
+				return parent();
+			}else{
+				return parent().parentQuery(q);
+			}
+		}
 		return null;
 	}
 	
@@ -806,6 +845,7 @@ class Display extends Query implements IDisplay {
 			}
 		}
 		style(o);
+		css('pinned');
 		return this;
 	}
 	
@@ -817,6 +857,7 @@ class Display extends Query implements IDisplay {
 			bottom:'',
 			top:'',
 		});
+		css('/pinned');
 		return this;
 	}
 	
@@ -853,8 +894,8 @@ class Display extends Query implements IDisplay {
 		}, progress);
 	}
 	
-	public function lookAt(?time:Float, ?y:Int, ?x:Int):IDisplay {
-		Jotun.document.scrollTo(this, time, y, x);
+	public function lookAt(?y:Int, ?x:Int):IDisplay {
+		Jotun.document.scrollTo(this, y, x);
 		return this;
 	}
 	

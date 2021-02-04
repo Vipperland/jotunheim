@@ -171,7 +171,9 @@ interface IDisplay extends IQuery {
 	 * @param	levels
 	 * @return
 	 */
-	public function parent(levels:UInt=0):IDisplay;
+	public function parent(levels:UInt = 0):IDisplay;
+	
+	public function parentQuery(q:String):IDisplay;
 	
 	public function focus():IDisplay;
 	
@@ -454,7 +456,7 @@ interface IDisplay extends IQuery {
 	 * @param	offset y
 	 * @return
 	 */
-	public function lookAt(?time:Float, ?y:Int, ?x:Int):IDisplay;
+	public function lookAt(?y:Int, ?x:Int):IDisplay;
 	
 	/**
 	 * Re-run all external loaded scripts
