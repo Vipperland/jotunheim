@@ -102,7 +102,7 @@ class Document extends Display {
 		if (body.hasAttribute('xcode')){
 			XCode.reset();
 		}
-		Jotun.all("noscript[jtn-module]").each(function(o:IDisplay){
+		Jotun.all("[jtn-module]").each(function(o:IDisplay){
 			var n:String = o.attribute('module-name');
 			if (n == null){
 				n = 'module' + Key.GEN();

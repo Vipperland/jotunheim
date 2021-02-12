@@ -241,8 +241,8 @@ class Clause {
 	 * @param	to
 	 * @return
 	 */
-	static public function IN_RANGE(param:String, from:UInt, to:UInt):Clause {
-		return Clause.AND([Clause.GREATER(param, from), Clause.LESS(param, to)]);
+	static public function BETWEEN(param:String, from:UInt, to:UInt):Dynamic {
+		return {param:param, condition:"{{p}} BETWEEN ? AND ?", value:[from, to]};
 	}
 	
 	/**
@@ -252,8 +252,8 @@ class Clause {
 	 * @param	to
 	 * @return
 	 */
-	static public function OUT_RANGE(param:String, from:UInt, to:UInt):Clause {
-		return Clause.OR([Clause.LESS(param, from), Clause.GREATER(param, to)]);
+	static public function NOT_BETWEEN(param:String, from:UInt, to:UInt):Dynamic {
+		return {param:param, condition:"{{p}} NOT BETWEEN ? AND ?", value:[from, to]};
 	}
 	
 	/**

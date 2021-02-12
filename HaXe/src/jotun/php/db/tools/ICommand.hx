@@ -29,7 +29,7 @@ interface ICommand {
 	 * @param	arguments
 	 * @return
 	 */
-	public function bind (arguments:Dynamic) : ICommand;
+	public function bind (arguments:Array<Dynamic>) : ICommand;
 	
 	/**
 	 * Execute the command
@@ -41,8 +41,14 @@ interface ICommand {
 	public function execute (?handler:IDataSet->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : ICommand;
 	
 	/**
-	 * Dump the final query
+	 * The final value of the query
 	 */
 	public function log():String;
+	
+	/**
+	 * The base value of the query
+	 * @return
+	 */
+	public function query():String;
 	
 }

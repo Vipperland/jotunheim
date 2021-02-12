@@ -2009,7 +2009,7 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		if(this.body.hasAttribute("xcode")) {
 			jotun_css_XCode.reset();
 		}
-		jotun_Jotun.all("noscript[jtn-module]").each(function(o) {
+		jotun_Jotun.all("[jtn-module]").each(function(o) {
 			var n = o.attribute("module-name");
 			if(n == null) {
 				n = "module" + jotun_tools_Key.GEN();
@@ -7855,9 +7855,13 @@ jotun_utils_Filler._apply = function(path,content,data) {
 		content = content.split("{{" + path + "}}").join("");
 	} else if(typeof(data) == "number" || typeof(data) == "string" || typeof(data) == "boolean" || typeof(data) == "number" && ((data | 0) === data)) {
 		var is_valid = data != null && data != 0 && data != false;
+		content = content.split("{{" + path + "}}").join(data);
 		content = content.split("{{show-if:" + path + "}}").join(is_valid ? "" : "hidden");
 		content = content.split("{{hide-if:" + path + "}}").join(is_valid ? "hidden" : "");
+		path = path.toLowerCase();
 		content = content.split("{{" + path + "}}").join(data);
+		content = content.split("{{show-if:" + path + "}}").join(is_valid ? "" : "hidden");
+		content = content.split("{{hide-if:" + path + "}}").join(is_valid ? "hidden" : "");
 	} else {
 		if(path != null && path != "") {
 			path += ".";

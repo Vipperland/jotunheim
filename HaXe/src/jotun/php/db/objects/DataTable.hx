@@ -24,10 +24,12 @@ class DataTable implements IDataTable {
 	
 	private var _restrict:UInt;
 	
-	private function _checkRestriction():Dynamic {
-		var r:Dynamic = _fields;
-		if (_restrict > 0 && --_restrict == 0) unrestrict();
-		return r;
+	private function _checkRestriction(?fields:Dynamic):Dynamic {
+		if(fields == null){
+			fields = _fields;
+			if (_restrict > 0 && --_restrict == 0) unrestrict();
+		}
+		return fields;
 	}
 	
 	public function getInfo():Dynamic {
@@ -85,12 +87,24 @@ class DataTable implements IDataTable {
 		return new Query(this, _gate.builder.add(_name, parameters).execute().success);
 	}
 
-	public function find (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
-		return new ExtQuery(this, _gate.builder.find(_checkRestriction(), _name, clause, order, limit).execute(null, _class).result);
+	public function find (?fields:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
+		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), _name, clause, order, limit).execute(null, _class).result);
 	}
 
-	public function findOne (?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
-		return new ExtQuery(this, _gate.builder.find(_checkRestriction(), _name, clause, order, Limit.ONE).execute(null, _class).result).first();
+	public function findJoin(?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
+		if (!Std.is(tables, Array)){
+			tables = [tables];
+		}
+		tables.unshift(_name);
+		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), tables, clause, order, limit).execute(null, _class).result);
+	}
+
+	public function findOne (?fields:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
+		return find(fields, clause, order, Limit.ONE).first();
+	}
+
+	public function findOneJoin (?fields:Dynamic, tables:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
+		return findJoin(fields, tables, clause, order, Limit.ONE).first();
 	}
 
 	public function update (?parameters:Dynamic=null, ?clause:Dynamic=null, ?order:Dynamic=null, ?limit:String=null) : IQuery {

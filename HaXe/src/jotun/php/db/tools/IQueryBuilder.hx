@@ -1,4 +1,5 @@
 package jotun.php.db.tools;
+import jotun.php.db.objects.IDataTable;
 import jotun.php.db.tools.ICommand;
 
 /**
@@ -24,7 +25,7 @@ interface IQueryBuilder {
 	 * @param	limit
 	 * @return
 	 */
-	public function find (fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : IExtCommand;
+	public function find (fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String) : IExtCommand;
 
 	/**
 	 * Update an entry
@@ -83,5 +84,60 @@ interface IQueryBuilder {
 	 * @param	to
 	 */
 	public function rename(name:String, to:String):ICommand;
-
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	parameters
+	 * @param	clause
+	 * @return
+	 */
+	public function join(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 */
+	public function leftJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 */
+	public function outerJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 */
+	public function leftOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 */
+	public function rightOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 */
+	public function fullOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String;
+	
 }

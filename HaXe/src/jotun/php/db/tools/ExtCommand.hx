@@ -16,7 +16,7 @@ class ExtCommand implements IExtCommand {
 	
 	private var _query:String;
 	
-	private var _parameters:Dynamic;
+	private var _parameters:Array<Dynamic>;
 	
 	private var _errors:Array<IError>;
 	
@@ -36,7 +36,7 @@ class ExtCommand implements IExtCommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(conn:Connection, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(conn:Connection, query:String, parameters:Array<Dynamic>, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
@@ -44,7 +44,7 @@ class ExtCommand implements IExtCommand {
 		_parameters = parameters;
 	}
 	
-	public function bind(parameters:Dynamic):ICommand {
+	public function bind(parameters:Array<Dynamic>):ICommand {
 		_parameters = parameters;
 		return this;
 	}
@@ -54,7 +54,7 @@ class ExtCommand implements IExtCommand {
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
-			}else if (_parameters){
+			}else if (_parameters != null){
 				p = Lib.toPhpArray(_parameters);
 			}
 			try {
@@ -137,6 +137,10 @@ class ExtCommand implements IExtCommand {
 			}
 		});
 		return r.join('');
+	}
+	
+	public function query():String {
+		return _query;
 	}
 	
 }

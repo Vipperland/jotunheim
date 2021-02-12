@@ -15,7 +15,7 @@ class Command implements ICommand {
 	
 	private var _query:String;
 	
-	private var _parameters:Dynamic;
+	private var _parameters:Array<Dynamic>;
 	
 	private var _errors:Array<IError>;
 	
@@ -33,7 +33,7 @@ class Command implements ICommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(statement:Statement, query:String, parameters:Dynamic, errors:Array<IError>, log:Array<String>) {
+	public function new(statement:Statement, query:String, parameters:Array<Dynamic>, errors:Array<IError>, log:Array<String>) {
 		_log = log;
 		_errors = errors;
 		_query = query;
@@ -57,7 +57,7 @@ class Command implements ICommand {
 		}
 	}
 	
-	public function bind(parameters:Dynamic):ICommand {
+	public function bind(parameters:Array<Dynamic>):ICommand {
 		_parameters = parameters;
 		if(statement != null){
 			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
@@ -108,6 +108,10 @@ class Command implements ICommand {
 			}
 		});
 		return r.join('');
+	}
+	
+	public function query():String {
+		return _query;
 	}
 	
 }

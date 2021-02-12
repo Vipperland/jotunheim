@@ -927,6 +927,9 @@ class Display extends Query implements IDisplay {
 			data = Json.parse(data);
 		}
 		_rect_fill(data, '', '');
+		//all('[on-react-event]').each(function(o:IDisplay){
+			//o.events.on('react').call(false, true, data);
+		//});
 	}
 	
 	public function toString():String {

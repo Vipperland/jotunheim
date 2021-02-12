@@ -1,5 +1,8 @@
 package;
 import jotun.Jotun;
+import jotun.php.db.Clause;
+import jotun.php.db.Token;
+import jotun.php.db.tools.QueryBuilder;
 import jotun.php.file.Uploader;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -21,9 +24,9 @@ class Test_PHP {
 		Dice.All(Jotun.domain.params, function(p:String, v:String){
 			buff.push(p + ': ' + v);
 		});
-		buff.push('===================================================== APPLICATION/JSON Content-Type');
+		//buff.push('===================================================== APPLICATION/JSON Content-Type');
 		//buff.push(Utils.sruString(Jotun.domain.input));
-		buff.push(Utils.sruString(Jotun.domain));
+		//buff.push(Utils.sruString(Jotun.domain));
 		
 		buff.push('===================================================== Files');
 		buff.push(Uploader.save('./uploads/', {
@@ -48,6 +51,18 @@ class Test_PHP {
 				create:true,
 			},
 		}).list);
+		
+		
+		
+		Jotun.gate.open(Token.localhost('decorador'), true);
+		var q:Dynamic = Jotun.gate.table('users').findJoin(['users.id as UID','users.name as NAME','state.alt as STATE','city.name as CITY'], [
+			Jotun.gate.builder.leftJoin('user_address', 'address', Clause.EQUAL('address.user_id', 1)),
+			Jotun.gate.builder.leftJoin('location_state', 'state', Clause.CUSTOM('state.id=address.state_id')),
+			Jotun.gate.builder.leftJoin('location_city', 'city', 'city.id=address.city_id'),
+		], Clause.CUSTOM('users.id<30'));
+		
+		buff.push(Jotun.gate.log);
+		buff.push(q);
 		
 		Jotun.header.setJSON(buff);
 		

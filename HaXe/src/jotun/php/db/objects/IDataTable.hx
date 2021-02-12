@@ -51,14 +51,33 @@ interface IDataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function find (?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
+	public function find (?fields:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
+	
+	/**
+	 * 
+	 * @param	tables
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
+	public function findJoin(?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery;
 	
 	/**
 	 * Select a single entry
 	 * @param	clause
 	 * @return
 	 */
-	public function findOne (?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic;
+	public function findOne (?fields:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic;
+	
+	/**
+	 * 
+	 * @param	tables
+	 * @param	clause
+	 * @param	order
+	 * @return
+	 */
+	public function findOneJoin (?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null) : Dynamic;
 	
 	/**
 	 * Update a entry

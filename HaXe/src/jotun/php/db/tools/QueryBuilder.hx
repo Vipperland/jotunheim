@@ -1,5 +1,6 @@
 package jotun.php.db.tools;
 import haxe.Json;
+import jotun.php.db.objects.IDataTable;
 import php.Lib;
 import jotun.php.db.tools.ICommand;
 import jotun.utils.Dice;
@@ -47,7 +48,7 @@ class QueryBuilder implements IQueryBuilder {
 		return r.join(",");
 	}
 	
-	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String):String {
+	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String, skip:Bool):String {
 		
 		var r:Array<String> = [];
 		var s:String = joiner;
@@ -56,7 +57,7 @@ class QueryBuilder implements IQueryBuilder {
 		// IF IS A CLAUSULE, PARSE INNER OBJECTS
 		if (Std.is(obj, Clause)) {
 			Dice.Values(obj.conditions, function(v:Dynamic) { 
-				v = _conditions(v, props, joiner);
+				v = _conditions(v, props, joiner, skip);
 				if(v != null)
 					r[r.length] = v;
 			});
@@ -66,15 +67,18 @@ class QueryBuilder implements IQueryBuilder {
 		else if(Std.is(obj, Array)){
 			Dice.All(obj, function(p:String, v:Dynamic) {
 				if (Std.is(v, Clause)) {
-					v = _conditions(v, props, v.joiner());
+					v = _conditions(v, props, v.joiner(), skip);
 					if (v != null)
 						r[r.length] = v;
 				}else {
-					v = _conditions(v, props, joiner);
+					v = _conditions(v, props, joiner, skip);
 					if (v != null)
 						r[r.length] = v;
 				}
 			});
+		}
+		else if (Std.is(obj, String)){
+			r[r.length] = obj;
 		}
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
 		else if(obj != null) {
@@ -84,9 +88,15 @@ class QueryBuilder implements IQueryBuilder {
 					props[props.length] = v;
 				});
 			}else {
-				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
-				if(!obj.skip){
-					props[props.length] = obj.value;
+				if (skip){
+					r[r.length] = Filler.splitter(Filler.to(obj.condition, { p:obj.param } ), '?', [obj.value]);
+				}else{
+					r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
+					if (!obj.skip){
+						r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
+						props[props.length] = obj.value;
+					}
+					
 				}
 			}
 		}
@@ -103,7 +113,7 @@ class QueryBuilder implements IQueryBuilder {
 	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
 		if (clause != null)
-			q += " WHERE " + _conditions(clause , parameters, " || ");
+			q += " WHERE " + _conditions(clause , parameters, " || ", false);
 		if (order != null)
 			q += " ORDER BY " + _order(order);
 		if (limit != null)
@@ -116,9 +126,14 @@ class QueryBuilder implements IQueryBuilder {
 		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(null, dataset) + ";", dataset);
 	}
 	
-	public function find(fields:Dynamic, table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
+	public function find(fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
 		if (Std.is(fields, Array)) {
 			fields = fields.join(",");
+		}
+		var joinner:String = "";
+		if (Std.is(table, Array)) {
+			var main:Dynamic = table.shift();
+			table = main + ' ' + table.join(" ");
 		}
 		var parameters:Dynamic = [];
 		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
@@ -162,6 +177,30 @@ class QueryBuilder implements IQueryBuilder {
 	
 	public function rename(table:String, to:String):ICommand {
 		return _gate.prepare("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
+	}
+	
+	public function join(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'JOIN ' + (Std.is(table, IDataTable) ? table.name : table) + (name != null ? ' AS ' + name : '') + ' ON ' + _conditions(clause , [], " || ", true);
+	}
+	
+	public function leftJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'LEFT ' + join(table, name, clause);
+	}
+	
+	public function outerJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'OUTER ' + join(table, name, clause);
+	}
+	
+	public function leftOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'LEFT ' + outerJoin(table, name, clause);
+	}
+	
+	public function rightOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'RIGHT ' + outerJoin(table, name, clause);
+	}
+	
+	public function fullOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
+		return 'FULL ' + outerJoin(table, name, clause);
 	}
 	
 }
