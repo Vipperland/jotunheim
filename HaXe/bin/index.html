@@ -152,15 +152,11 @@
 	<body xcode>
 		<div>
 			<div class="glittermenu" 
-				 glitter-mode="radial"
+				 glitter-mode="grid-vertical"
+				 glitter-grid-size="4"
 				 glitter-autoclose="true"
-				 glitter-size="auto" 
-				 glitter-fov="360" 
-				 glitter-angle="0" 
-				 glitter-grow="0" 
+				 glitter-size="120x120" 
 				 glitter-target=".selected-value" 
-				 glitter-time="30" 
-				 glitter-transition="all .3s ease-in-out" 
 				 hidden>
 					<div glitter-open=".letter-menu" class="item drawer o-middle letter-target"><i class="fa fa-venus-mars"></i> Gênero</div>
 					<div glitter-open=".number-menu" class="item drawer o-middle number-target"><i class="fa fa-tag"></i> Tipo</div>
@@ -192,6 +188,9 @@
 				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
 			</div>
 			<div class="color-menu" 
+				 glitter-mode="grid-horizontal"
+				 glitter-grid-size="4"
+				 glitter-size="120x120" 
 				 glitter-target=".color-target" 
 				 glitter-multiple="true" hidden>
 					<div value="Vermelho" class="color-red item drawer o-middle"></div>

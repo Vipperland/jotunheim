@@ -6,7 +6,7 @@
 		glitter-mode (TODO)			Set dial type, can be "horizontal", "vertical" or "radial". Default is "radial"
 		glitter-multiple			Allow multiple selection
 		glitter-autoclose			Close after interaction (if not multiple)
-		glitter-size				Size of dial options (width*height). Default is "auto"
+		glitter-size				Size of dial options (width x height). Default is "auto"
 		glitter-target				Write the menu selected values array in the target.
 		glitter-time				Animation delay between options. Default is "30"
 		glitter-transition			CSS transition to be applied. Default is "all .3s ease-in-out"
@@ -83,7 +83,8 @@
 			var item = this.getMenu(menu);
 			item.glitterOptions = {
 				mode:item.attribute('glitter-mode') || "radial", 
-				dimension:(item.attribute('glitter-size') || "auto").split('*'), 
+				dimension:(item.attribute('glitter-size') || "auto").split('x'), 
+				gridSize:(parseInt(item.attribute('glitter-grid-size')) || 0), 
 				startAngle: (parseInt(item.attribute('glitter-angle')) || 0), 
 				maxAngle:(parseInt(item.attribute('glitter-fov')) || 360), 
 				grow:(parseInt(item.attribute('glitter-grow')) || 0), 
@@ -94,6 +95,12 @@
 				time:parseInt(item.attribute('glitter-time')) || 30,
 				root:item,
 				autoClose:item.attribute('glitter-autoclose')=='true',
+			}
+			if(item.glitterOptions.dimension != "auto"){
+				item.glitterOptions.dimension = [
+					parseInt(item.glitterOptions.dimension[0]) || 10,
+					parseInt(item.glitterOptions.dimension[1]) || 10,
+				];
 			}
 			if(item.data._glitterTime){
 				clearInterval(item.data._glitterTime);
@@ -129,7 +136,7 @@
 					transition:'none',
 				});
 				clearTimeout(o._timerA);
-				o._timerA = setTimeout(function(k){
+				o._timerA = setTimeout(function(k, l){
 					var stage = o.glitterData == null ? null : o.glitterData.stage;
 					if(stage == null || (_doc_size.x != stage.x || _doc_size.y != stage.y)){
 						var bdx = o.getBounds();
@@ -194,41 +201,64 @@
 					pos.left = (Jotun.document.cursorX() - offset.x) + 'px';
 					o.style(o.glitterData.from);
 					clearTimeout(o._timerA);
-					o._timerA = setTimeout(function(j){
+					o._timerA = setTimeout(function(j, l){
 						if(!o.glitterData.to){
-							var rd = Math.PI/180*(radius*j-o.glitterOptions.startAngle);
-							var tx = Math.cos(rd);
-							var ty = Math.sin(rd);
+							var tx = 0;
+							var ty = 0;
 							var offset = o.glitterData.offset;
-							var aRad = o.glitterOptions.autoSize;
-							var decay = 360/item.glitterOptions.maxAngle;
-							var dx = 0;
-							var dy = 0;
-							if(aRad){
-								dx = Math.round((offset.x)/Math.tan(Math.PI/count));
-								dy = Math.round((offset.y)/Math.tan(Math.PI/count));
-							}else{
-								dx = parseInt(o.glitterOptions.dimension[0]);
-								dy = parseInt(o.glitterOptions.dimension[1]);
+							switch(o.glitterOptions.mode){
+								case 'grid-vertical': {
+									var size = o.glitterOptions.gridSize;
+									var dx = (j%size);
+									var dy = ((j/size)>>0);
+									var len = l/size;
+									var dim = item.glitterOptions.dimension;
+									tx = dx * dim[0] - (dim[0] * size *.5) + (offset.x);
+									ty = dy * dim[1] - (dim[1] * len * .5) + (offset.y);
+									break;
+								}
+								case 'grid-horizontal': {
+									var size = o.glitterOptions.gridSize;
+									var dx = ((j/size)>>0);
+									var dy = (j%size);
+									var len = l/size;
+									var dim = item.glitterOptions.dimension;
+									tx = dx * dim[0] - (dim[1] * len * .5) + (offset.x);
+									ty = dy * dim[1] - (dim[1] * size *.5) + (offset.y);
+									break;
+								}
+								default : {
+									var rd = Math.PI/180*(radius*j-o.glitterOptions.startAngle);
+									tx = Math.cos(rd);
+									ty = Math.sin(rd);
+									var aRad = o.glitterOptions.autoSize;
+									var decay = 360/item.glitterOptions.maxAngle;
+									var dx = 0;
+									var dy = 0;
+									if(aRad){
+										dx = Math.round((offset.x)/Math.tan(Math.PI/count));
+										dy = Math.round((offset.y)/Math.tan(Math.PI/count));
+									}else{
+										dx = parseInt(o.glitterOptions.dimension[0]);
+										dy = parseInt(o.glitterOptions.dimension[1]);
+									}
+									var mx = J_Utils.viewportWidth() >> 1;
+									var my = J_Utils.viewportHeight() >> 1;
+									tx = (tx * (offset.x + dx) * decay) >> 0;
+									ty = (ty * (offset.y + dy) * decay) >> 0;
+									if(tx - offset.x < -mx){
+										tx = -mx + offset.x;
+									}else if(tx + offset.x > mx){
+										tx = mx - offset.x;
+									}
+									if(ty - offset.y < -my){
+										ty = -my + offset.y;
+									}else if(ty + offset.y > my){
+										ty = my - offset.y;
+									}
+									break;
+								}
 							}
-							var mx = J_Utils.viewportWidth() >> 1;
-							var my = J_Utils.viewportHeight() >> 1;
-							
-							tx = (tx * (offset.x + dx) * decay) >> 0;
-							ty = (ty * (offset.y + dy) * decay) >> 0;
-							
-							if(tx - offset.x < -mx){
-								tx = -mx + offset.x;
-							}else if(tx + offset.x > mx){
-								tx = mx - offset.x;
-							}
-							
-							if(ty - offset.y < -my){
-								ty = -my + offset.y;
-							}else if(ty + offset.y > my){
-								ty = my - offset.y;
-							}
-							
 							o.glitterData.to = {
 								top:'calc(50% + ' + ty + 'px - ' + offset.y + 'px)',
 								left:'calc(50% + ' + tx + 'px - ' + offset.x + 'px)',
@@ -237,8 +267,8 @@
 						}
 						o.enable();
 						o.style(o.glitterData.to);
-					}, o.glitterOptions.time * k, k);
-				},20, i++);
+					}, o.glitterOptions.time * k, k, l);
+				},20, i++, bts.length());
 			});
 			if(handler != null){
 				this.onClick = handler;

@@ -7890,6 +7890,25 @@ jotun_utils_Filler.to = function(value,data,sufix) {
 	}
 	return r;
 };
+jotun_utils_Filler.splitter = function(value,split,glue,each) {
+	var r = value.split(split);
+	if(r.length > 1) {
+		jotun_utils_Dice.All(r,function(p,v) {
+			if(p < glue.length) {
+				var e = glue[p];
+				if(each != null) {
+					e = each(e);
+				}
+				r[p] = v + Std.string(e);
+			}
+		});
+	}
+	return r.join("");
+};
+jotun_utils_Filler.splitterTo = function(value,data,split,glue,each) {
+	value = jotun_utils_Filler.to(value,data);
+	return jotun_utils_Filler.splitter(value,split,glue,each);
+};
 jotun_utils_Filler.extractNumber = function(value) {
 	var s = "";
 	var i = 0;
@@ -8653,3 +8672,5 @@ jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Table._trash = [];
 jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
+
+//# sourceMappingURL=api.jotun.js.map
