@@ -1,4 +1,5 @@
 package jotun.idb;
+import js.Syntax;
 import js.html.DOMError;
 import js.html.Event;
 import js.html.idb.Database;
@@ -112,6 +113,17 @@ class WebDBTable {
 	public function openKeyCursor(?key:Dynamic, ?direction:Dynamic, ?handler:WebDBTable-> Void):Request {
 		_error = null;
 		return _request_io(_table.openKeyCursor(key, direction), handler);
+	}
+	
+	public function each(handler:Dynamic->Bool):Request {
+		_error = null;
+		return _request_io(_table.openCursor(), function(h:WebDBTable):Void{
+			if (_result != null){
+				if (!handler(_result.value)){
+					Reflect.field(_result, 'continue')();
+				}
+			}
+		});
 	}
 	
 	public function isSuccess():Bool {

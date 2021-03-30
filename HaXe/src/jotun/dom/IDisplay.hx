@@ -175,6 +175,8 @@ interface IDisplay extends IQuery {
 	
 	public function parentQuery(q:String):IDisplay;
 	
+	public function matches(q:String):Bool;
+	
 	public function focus():IDisplay;
 	
 	/**

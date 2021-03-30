@@ -698,13 +698,17 @@ class Display extends Query implements IDisplay {
 	
 	public function parentQuery(q:String):IDisplay {
 		if (!is('html')){
-			if (parent().hasCss(q)){
+			if (parent().matches(q)){
 				return parent();
 			}else{
 				return parent().parentQuery(q);
 			}
 		}
 		return null;
+	}
+	
+	public function matches(q:String):Bool {
+		return element != null && element.matches(q);
 	}
 	
 	public function x(?value:Dynamic):Int {

@@ -297,6 +297,34 @@ class Dice {
 		return copy;
 	}
 	
+	public static function Blend(objects:Array<Dynamic>, into:Dynamic, blendType:Int = 0):Void {
+		Dice.Values(objects, function(o:Dynamic):Void {
+			Dice.All(o, function(p:Dynamic, v:Dynamic):Void {
+				switch(blendType){
+					case 0 : {
+						Reflect.setField(into, p, v);
+					}
+					case 1 : {
+						if (!Reflect.hasField(into, p)){
+							Reflect.setField(into, p, v);
+						}
+					}
+					case 2 : {
+						if (Reflect.hasField(into, p)){
+							var i:Int = 0;
+							while(Reflect.hasField(into, p + '_' + i)){
+								++i;
+							}
+							Reflect.setField(into, p, p + '_' + i);
+						}else{
+							Reflect.setField(into, p, v);
+						}
+					}
+				}
+			});
+		});
+	}
+	
 	#if !php
 		/**
 		 * For each Child element in an Object

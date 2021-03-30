@@ -85,7 +85,7 @@ class WebDB {
 			case 'w' : {
 				mode = 'write';
 			}
-			case 'rw' : {
+			default : {
 				mode = 'readwrite';
 			}
 		}
@@ -105,9 +105,7 @@ class WebDB {
 	}
 	
 	private function _regTable(name:String, store:ObjectStore):Void {
-		//if (!Reflect.hasField(_tables, name)){
-			Reflect.setField(_tables, name, new WebDBTable(name, _db, store));
-		//}
+		Reflect.setField(_tables, name, new WebDBTable(name, _db, store));
 	}
 	
 	public function table(name:String):WebDBTable {

@@ -25,12 +25,12 @@ class Loader implements ILoader {
 	
 	#if js 
 	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
-	#elseif php
+	#else
 	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 	#end
 		var r:HttpRequest = _getReq(file);
 		#if js 
-			r.async = true; 
+			r.async = true;
 		#end
 		r.onData = function(d) {
 			Jotun.resources.register(file, d);
@@ -62,7 +62,7 @@ class Loader implements ILoader {
 	
 	#if js 
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic = null):Void {
-	#elseif php
+	#else
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
 		if (method != null){

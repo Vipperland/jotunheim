@@ -29,7 +29,7 @@ class Observer {
 			_init = true;
 			_radar = [];
 			Ticker.start();
-			Ticker.add(_checkTargets);
+			Ticker.addLow(_checkTargets);
 		}
 		if (target != null && _radar.indexOf(target) == -1){
 			target.setProp('__onsigh', handler);

@@ -1,5 +1,6 @@
 package jotun;
 
+import haxe.macro.Expr;
 import jotun.data.Logger;
 import jotun.modules.ModLib;
 import jotun.net.Domain;
@@ -106,6 +107,11 @@ class Jotun {
 				}
 			}
 			return true;
+		}
+		
+		macro static function myMacro(e1:Expr, extra:Array<Expr>) {
+			
+			return macro null;
 		}
 		
 		/**
