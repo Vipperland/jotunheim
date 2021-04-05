@@ -119,8 +119,8 @@ class WebDBTable {
 		_error = null;
 		return _request_io(_table.openCursor(), function(h:WebDBTable):Void{
 			if (_result != null){
-				if (!handler(_result.value)){
-					Reflect.field(_result, 'continue')();
+				if (handler(_result.value) != true){
+					js.Syntax.code('_gthis._result.continue()');
 				}
 			}
 		});

@@ -156,12 +156,12 @@ class Utils{
 			var id:UInt = null;
 			var type:String = null;
 			if (t.hasAttribute != null) {
-				id = (cast t.getAttribute('jotun-id')) * 1;
+				id = (cast t.getAttribute('jtn-id')) * 1;
 				if (id == null) {
-					type = cast t.getAttribute('jotun-dom');
+					type = cast t.getAttribute('jtn-dom');
 					if (type == null){
 						type = t.tagName.toUpperCase();
-						t.setAttribute('jotun-dom', type);
+						t.setAttribute('jtn-dom', type);
 					}else{
 						type = type.toUpperCase();
 					}
@@ -186,7 +186,7 @@ class Utils{
 		 * @return
 		 */
 		static public function getDisplay(t:Element):IDisplay {
-			var id:UInt = t.hasAttribute != null && t.hasAttribute('jotun-id') ? Std.parseInt(t.getAttribute('jotun-id')) : null;
+			var id:UInt = t.hasAttribute != null && t.hasAttribute('jtn-id') ? Std.parseInt(t.getAttribute('jtn-id')) : null;
 			if (id != null){
 				return Display.fromGC(id);
 			}

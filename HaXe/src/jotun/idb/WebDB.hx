@@ -80,13 +80,10 @@ class WebDB {
 		}
 		switch(mode.toLowerCase()){
 			case 'r' : {
-				mode = 'read';
-			}
-			case 'w' : {
-				mode = 'write';
+				mode = "readonly";
 			}
 			default : {
-				mode = 'readwrite';
+				mode = "readwrite";
 			}
 		}
 		_transaction = _db.transaction(name, cast mode);

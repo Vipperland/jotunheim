@@ -247,7 +247,7 @@ interface IDisplay extends IQuery {
 	public function clearAttribute(name:String):Dynamic;
 	
 	/**
-	 * Get the current value of the element (input.value() or dom.attribute('value'))
+	 * Get the current value of the element (input.value(), textarea.value() or dom.attribute('value'))
 	 * @param	q
 	 * @return
 	 */
@@ -277,15 +277,38 @@ interface IDisplay extends IQuery {
 	 */
 	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay;
 	
-	
+	/**
+	 * Clear innerText and write new text
+	 * @param	q
+	 * @return
+	 */
 	public function writeText(q:Dynamic):IDisplay;
 	
+	/**
+	 * Add text do innerText
+	 * @param	q
+	 * @return
+	 */
 	public function appendText(q:Dynamic):IDisplay;
 	
+	/**
+	 * Clear all innerHTML and set a new innerHTML value
+	 * @param	q
+	 * @return
+	 */
 	public function writeHtml(q:Dynamic):IDisplay;
 	
+	/**
+	 * Add html text to innerHTML
+	 * @param	q
+	 * @return
+	 */
 	public function appendHtml(q:Dynamic):IDisplay;
 	
+	/**
+	 * Map and Iterate object arans and values and write to this displa and it's children
+	 * @param	data
+	 */
 	public function react(data:Dynamic):Void;
 	
 	/**
@@ -362,7 +385,7 @@ interface IDisplay extends IQuery {
 	 * @param	tag
 	 * @return
 	 */
-	public function is(tag:Either<String,Array<String>>):Bool;
+	public function is(tag:Dynamic):Bool;
 	
 	/**
 	 * Add this to a target element or Body if target is null
@@ -461,9 +484,9 @@ interface IDisplay extends IQuery {
 	public function lookAt(?y:Int, ?x:Int):IDisplay;
 	
 	/**
-	 * Re-run all external loaded scripts
+	 * Reload all external loaded <script> tags
 	 */
-	public function redoScripts():IDisplay;
+	public function reloadScripts():IDisplay;
 	
 	/**
 	 * Load and build external modules spefified by the attribute 'sru-load'

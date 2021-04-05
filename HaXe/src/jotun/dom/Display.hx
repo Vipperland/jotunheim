@@ -71,7 +71,7 @@ class Display extends Query implements IDisplay {
 		}else{
 			Dice.Values(_DATA, function(v:IDisplay) {
 				var id:UInt = v.id();
-				if (Jotun.one('[jotun-id=' + id + ']') == null) {
+				if (Jotun.one('[jtn-id=' + id + ']') == null) {
 					Reflect.deleteField(_DATA, id + '');
 				}
 			});
@@ -221,7 +221,7 @@ class Display extends Query implements IDisplay {
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
-			_uid = Std.int(hasAttribute("jotun-id") ? attribute("jotun-id") : attribute("jotun-id", _CNT++));
+			_uid = Std.int(hasAttribute("jtn-id") ? attribute("jtn-id") : attribute("jtn-id", _CNT++));
 			_DATA[_uid] = this;
 		}
 		events = new Dispatcher(this);
@@ -243,7 +243,7 @@ class Display extends Query implements IDisplay {
 				_children.dispose();
 			if(events != null)
 				events.dispose();
-			all('[jotun-id]').dispose();
+			all('[jtn-id]').dispose();
 			remove();
 			element = null;
 			_uid = -1;
@@ -781,14 +781,14 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function typeOf():String {
-		return hasAttribute('sru-dom') ? attribute('sru-dom') : element.tagName;
+		return hasAttribute('jtn-dom') ? attribute('jtn-dom') : element.tagName;
 	}
 	
 	public function is(tag:Dynamic):Bool {
 		if (!Std.is(tag, Array)) tag = [tag];
 		var r:IDiceRoll = Dice.Values(tag, function(v:String) {
 			v = v.toUpperCase();
-			return v == element.tagName || v == attribute('sru-dom');
+			return v == element.tagName || v == attribute('jtn-dom');
 		});
 		return !r.completed;
 	}
@@ -903,7 +903,7 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function redoScripts():IDisplay {
+	public function reloadScripts():IDisplay {
 		all('script').each(cast function(o:Script){
 			o.remove();
 			var u:String = o.attribute('src');
@@ -940,7 +940,7 @@ class Display extends Query implements IDisplay {
 		var v:Bool = element != null && element.getBoundingClientRect != null;
 		var data:Dynamic = {
 			id:element.id, 
-			'jotun-id': id,
+			'jtn-id': id,
 			'class':element.className,
 			index:index(),
 			length:length(),
