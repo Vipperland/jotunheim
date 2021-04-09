@@ -26,6 +26,10 @@ class A extends Display {
 		return attribute('href');
 	}
 	
+	public function path():String {
+		return attribute('href').split(Jotun.domain.host).pop();
+	}
+	
 	public function link():Dynamic {
 		var uri = {};
 		Dice.Values(['href', 'protocol', 'host', 'hostname', 'port', 'pathname', 'search', 'hash'], function(v:String){

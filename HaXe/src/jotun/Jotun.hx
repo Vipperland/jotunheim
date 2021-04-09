@@ -3,6 +3,7 @@ package jotun;
 import haxe.macro.Expr;
 import jotun.data.Logger;
 import jotun.modules.ModLib;
+import jotun.net.Broadcast;
 import jotun.net.Domain;
 import jotun.net.IDomain;
 import jotun.net.ILoader;
@@ -71,6 +72,9 @@ class Jotun {
 		
 		/// Browser information
 		static public var agent:IAgent = new Agent();
+		
+		/// 
+		static public var broadcast:Broadcast = Broadcast.ME();
 		
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;

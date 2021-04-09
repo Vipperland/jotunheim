@@ -2886,6 +2886,9 @@ jotun_dom_A.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return this.attribute("href");
 	}
+	,path: function() {
+		return this.attribute("href").split(jotun_Jotun.domain.host).pop();
+	}
 	,link: function() {
 		var _gthis = this;
 		var uri = { };
@@ -8655,5 +8658,3 @@ jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Table._trash = [];
 jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
-
-//# sourceMappingURL=api.jotun.js.map
