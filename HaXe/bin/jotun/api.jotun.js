@@ -2572,7 +2572,7 @@ jotun_data_Logger.prototype = {
 		});
 	}
 	,dump: function(q) {
-		console.log(q);
+		console.log.apply(null,q);
 	}
 	,query: function(q,type) {
 		if(type > this._level) {
@@ -2601,7 +2601,12 @@ jotun_data_Logger.prototype = {
 		default:
 			t = "";
 		}
-		this.dump(t + Std.string(q));
+		if(t != null && ((q) instanceof Array)) {
+			q.unshift(t);
+		} else {
+			q = [t,q];
+		}
+		this.dump(q);
 	}
 	,showConsole: function(url) {
 		if(url == null) {
@@ -4672,6 +4677,100 @@ jotun_tools_Utils.toFixed = function(n,i,s) {
 };
 jotun_tools_Utils.isFunction = function(o) {
 	return Reflect.isFunction(o);
+};
+var jotun_net_Broadcast = $hx_exports["J_Broadcast"] = function() {
+	this._listeners = { };
+	var _gthis = this;
+	if(jotun_net_Broadcast.__me__ == null) {
+		try {
+			this._channels = { };
+		} catch( _g ) {
+			window.addEventListener("storage",function(e) {
+				var channel = e.key;
+				var events = Reflect.field(_gthis._listeners,channel);
+				if(events != null && events.length > 0) {
+					var data = e.newValue;
+					if(data != null) {
+						data = JSON.parse(data);
+						_gthis._proccessMsg(channel,data);
+					}
+				}
+			});
+		}
+		jotun_net_Broadcast.__me__ = this;
+	} else {
+		throw new Error("Broadcast is a singleton, use Broadcast.ME() instead of new");
+	}
+};
+jotun_net_Broadcast.__name__ = "jotun.net.Broadcast";
+jotun_net_Broadcast.ME = function() {
+	if(jotun_net_Broadcast.__me__ == null) {
+		return new jotun_net_Broadcast();
+	} else {
+		return jotun_net_Broadcast.__me__;
+	}
+};
+jotun_net_Broadcast.prototype = {
+	_openChannel: function(name) {
+		var bc = Reflect.field(this._channels,name);
+		if(bc == null) {
+			bc = new BroadcastChannel(name);
+			bc.onmessage = $bind(this,this._onChannelMsg);
+			this._channels[name] = bc;
+		}
+		return bc;
+	}
+	,_onChannelMsg: function(e) {
+		this._proccessMsg(e.target.name,e.data);
+	}
+	,_proccessMsg: function(channel,data) {
+		jotun_Jotun.log(["[BROADCAST <<] CHANNEL {" + channel + "} @ DATA RECEIVED",data]);
+		jotun_utils_Dice.Values(Reflect.field(this._listeners,channel),function(handler) {
+			handler(data);
+		});
+	}
+	,listen: function(channel,handler) {
+		if(handler != null) {
+			var events = Reflect.field(this._listeners,channel);
+			if(events == null) {
+				if(this._channels != null) {
+					this._openChannel(channel);
+				}
+				events = [];
+				this._listeners[channel] = events;
+				jotun_Jotun.log(["[BROADCAST ++] CHANNEL {" + channel + "} CONNECTED"]);
+			}
+			events.push(handler);
+		} else {
+			jotun_Jotun.log(["[BROADCAST !!] CHANNEL {" + channel + "} NOT CONNECTED (null)"]);
+		}
+	}
+	,unlisten: function(channel,handler) {
+		var events = Reflect.field(this._listeners,channel);
+		if(events != null && handler != null) {
+			var iof = events.indexOf(handler);
+			if(iof != -1) {
+				events.slice(iof,1);
+				if(events.length == 0) {
+					if(this._channels != null) {
+						Reflect.field(this._channels,channel).close();
+						Reflect.deleteField(this._channels,channel);
+					}
+					jotun_Jotun.log(["[BROADCAST --] CHANNEL {" + channel + "} DISCONNECTED"]);
+				}
+			}
+		}
+	}
+	,send: function(channel,data) {
+		jotun_Jotun.log(["[BROADCAST >>] CHANNEL {" + channel + "} @ DATA SENT",data]);
+		if(this._channels != null) {
+			this._openChannel(channel).postMessage(data);
+		} else {
+			window.localStorage.setItem(channel,JSON.stringify(data));
+			window.localStorage.removeItem(channel);
+		}
+	}
+	,__class__: jotun_net_Broadcast
 };
 var jotun_net_IDomain = function() { };
 jotun_net_IDomain.__name__ = "jotun.net.IDomain";
@@ -8616,6 +8715,7 @@ jotun_Jotun.logger = new jotun_data_Logger();
 jotun_Jotun._initialized = jotun_Jotun.main();
 jotun_Jotun.loader = new jotun_net_Loader();
 jotun_Jotun.agent = new jotun_tools_Agent();
+jotun_Jotun.broadcast = jotun_net_Broadcast.ME();
 jotun_css_CSSGroup.SOF = "/*SOF*/@media";
 jotun_css_CSSGroup.EOF = "}/*EOF*/";
 jotun_css_CSSGroup.MEDIA_PR = "print";

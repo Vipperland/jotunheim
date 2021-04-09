@@ -3,6 +3,8 @@ import haxe.Json;
 import jotun.events.Event;
 import jotun.utils.Dice;
 import js.Browser;
+import js.html.BroadcastChannel;
+import js.html.MessageEvent;
 import js.html.StorageEvent;
 
 /**
@@ -19,23 +21,49 @@ class Broadcast {
 	}
 	
 	private var _listeners:Dynamic = {};
+	private var _channels:Dynamic;
+	
+	private function _openChannel(name:String):BroadcastChannel {
+		var bc:BroadcastChannel = Reflect.field(_channels, name);
+		if (bc == null){
+			bc = new BroadcastChannel(name);
+			bc.onmessage = _onChannelMsg;
+			Reflect.setField(_channels, name, bc);
+		}
+		return bc;
+	}
+	
+	private function _onChannelMsg(e:MessageEvent):Void {
+		_proccessMsg((cast e.target).name, e.data);
+	}
+	
+	private function _proccessMsg(channel:String, data:Dynamic):Void {
+		Jotun.log(['[BROADCAST <<] CHANNEL {' + channel + '} @ DATA RECEIVED', data]);
+		Dice.Values(Reflect.field(_listeners, channel), function(handler:Dynamic->Void){
+			handler(data);
+		});
+	}
 	
 	public function new() {
 		if (__me__ == null){
-			Browser.window.addEventListener('storage', function(e:StorageEvent){
-				var channel:String = e.key;
-				var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
-				if(event != null && events.length > 0){
-					var data:Dynamic = e.newValue;
-					if(data != null){
-						data = Json.parse(data);
-						trace('[BROADCAST <<] CHANNEL {' + channel + '} @ DATA RECEIVED', data);
-						Dice.Values(_listeners[channel], function(handler:Dynamic->Void){
-							handler(data);
-						});
+			try {
+				// Compatible Browsers
+				BroadcastChannel != null;
+				_channels = {};
+			}catch (e:Dynamic){
+				// Non compatible Browsers
+				Browser.window.addEventListener('storage', function(e:StorageEvent){
+					var channel:String = e.key;
+					var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
+					if(events != null && events.length > 0){
+						var data:Dynamic = e.newValue;
+						if(data != null){
+							data = Json.parse(data);
+							_proccessMsg(channel, data);
+						}
 					}
-				}
-			});
+				});
+			}
 			__me__ = this;
 		}else{
 			throw new js.lib.Error("Broadcast is a singleton, use Broadcast.ME() instead of new");
@@ -43,32 +71,47 @@ class Broadcast {
 	}
 	
 	public function listen(channel:String, handler:Dynamic->Void):Void {
-		var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
-		if (events == null){
-			trace('[BROADCAST ++] CHANNEL {' + channel + '} CONNECTED');
-			events = [];
-			Reflect.setField(_listeners, channel, events);
+		if(handler != null){
+			var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
+			if (events == null){
+				if (_channels != null){
+					_openChannel(channel);
+				}
+				events = [];
+				Reflect.setField(_listeners, channel, events);
+				Jotun.log(['[BROADCAST ++] CHANNEL {' + channel + '} CONNECTED']);
+			}
+			events.push(handler);
+		}else{
+			Jotun.log(['[BROADCAST !!] CHANNEL {' + channel + '} NOT CONNECTED (null)']);
 		}
-		events.push(handler);
 	}
 	
 	public function unlisten(channel:String, handler:Dynamic->Void):Void {
 		var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
-		if (events != null){
+		if (events != null && handler != null){
 			var iof:Int = events.indexOf(handler);
 			if (iof != -1){
 				events.slice(iof, 1);
-			}
-			if (events.length == 0){
-				trace('[BROADCAST --] CHANNEL {' + channel + '} DISCONNECTED');
+				if (events.length == 0){
+					if (_channels != null){
+						Reflect.field(_channels, channel).close();
+						Reflect.deleteField(_channels, channel);
+					}
+					Jotun.log(['[BROADCAST --] CHANNEL {' + channel + '} DISCONNECTED']);
+				}
 			}
 		}
 	}
 	
 	public function send(channel:String, data:Dynamic){
-		trace('[BROADCAST >>] CHANNEL {' + channel + '} @ DATA SENT', data);
-		Browser.window.localStorage.setItem(channel, Json.stringify(data));
-		Browser.window.localStorage.removeItem(channel);
+		Jotun.log(['[BROADCAST >>] CHANNEL {' + channel + '} @ DATA SENT', data]);
+		if (_channels != null){
+			_openChannel(channel).postMessage(data);
+		}else{
+			Browser.window.localStorage.setItem(channel, Json.stringify(data));
+			Browser.window.localStorage.removeItem(channel);
+		}
 	}
 	
 	

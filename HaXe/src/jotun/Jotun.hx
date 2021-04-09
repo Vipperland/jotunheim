@@ -3,7 +3,6 @@ package jotun;
 import haxe.macro.Expr;
 import jotun.data.Logger;
 import jotun.modules.ModLib;
-import jotun.net.Broadcast;
 import jotun.net.Domain;
 import jotun.net.IDomain;
 import jotun.net.ILoader;
@@ -23,6 +22,7 @@ import jotun.utils.Dice;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Script;
 	import jotun.dom.Style;
+	import jotun.net.Broadcast;
 	import jotun.tools.IAgent;
 	import jotun.tools.Agent;
 #elseif php

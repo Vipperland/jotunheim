@@ -53,7 +53,7 @@ class Logger{
 	
 	public function dump(q:Dynamic):Void {
 		#if js
-			js.Syntax.code("console.log")(q);
+			js.Syntax.code("console.log").apply(null, q);
 		#elseif php
 			php.Lib.dump(q);
 		#end
@@ -73,10 +73,13 @@ class Logger{
 			default : "";
 		}
 		#if js
-			dump(t + q);
-		#elseif php
-			dump(q);
+			if (t != null && Std.is(q, Array)){
+				q.unshift(t);
+			}else{
+				q = [t, q];
+			}
 		#end
+		dump(q);
 	}
 	
 	#if js
