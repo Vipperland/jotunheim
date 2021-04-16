@@ -27,7 +27,13 @@ class Img extends Display {
 	
 	public function src(?value:String):String {
 		var a:ImageElement;
-		if (value != null) object.src = value;
+		if (value != null) {
+			if (value.indexOf('<svg') != -1 && value.indexOf('</svg>') != -1){
+				var blob:Blob = new Blob([value], {type: 'image/svg+xml'});
+				value = (cast Browser.window).URL.createObjectURL(blob);
+			}
+			object.src = value;
+		}
 		return object.src;
 	}
 	

@@ -9,7 +9,6 @@ import haxe.Json;
 	import sys.FileSystem;
 	import sys.io.File;
 	import sys.io.FileInput;
-	import jotun.net.Header;
 #end
 import haxe.Log;
 import jotun.serial.JsonTool;

@@ -104,18 +104,15 @@ class Jotun {
 				_loadPool = [];
 				document = Document.ME();
 				Browser.document.addEventListener("DOMContentLoaded", _loadController);
-				Reflect.deleteField(Jotun, '_preInit');
+				try {
+					Reflect.deleteField(Jotun, '_preInit');
+				}catch(e:Dynamic){}
 				var state:String = Browser.document.readyState;
 				if (state == 'complete' || state == 'interactive'){
 					_loadController(null);
 				}
 			}
 			return true;
-		}
-		
-		macro static function myMacro(e1:Expr, extra:Array<Expr>) {
-			
-			return macro null;
 		}
 		
 		/**

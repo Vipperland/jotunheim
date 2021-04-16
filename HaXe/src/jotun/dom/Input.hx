@@ -27,7 +27,11 @@ class Input extends Display {
 	
 	static public var icons:Dynamic = { }
 	
-	public var object:InputElement;
+	public var _object(get, null):InputElement;
+	
+	private function get__object():InputElement {
+		return cast element;
+	}
 	
 	private var _rgx:EReg;
 	
@@ -62,7 +66,7 @@ class Input extends Display {
 			q = Browser.document.createInputElement();
 		}
 		super(q, null);
-		object = cast element;
+		_object = cast element;
 		if (type() == 'file'){
 			if (hasAttribute('display-on')){
 				fillTarget = Jotun.one(attribute('display-on'));
@@ -71,23 +75,23 @@ class Input extends Display {
 	}
 	
 	public function type(?q:String):String {
-		if (q != null) object.type = q;
-		return object.type;
+		if (q != null) _object.type = q;
+		return _object.type;
 	}
 	
 	public function required(?q:Bool):Bool {
-		if (q != null) object.required = q;
-		return object.required;
+		if (q != null) _object.required = q;
+		return _object.required;
 	}
 	
 	public function pattern(?q:String):String {
-		if (q != null) object.pattern = q;
-		return object.pattern;
+		if (q != null) _object.pattern = q;
+		return _object.pattern;
 	}
 	
 	public function placeholder(?q:String):String {
-		if (q != null) object.placeholder = q;
-		return object.placeholder;
+		if (q != null) _object.placeholder = q;
+		return _object.placeholder;
 	}
 	
 	public function restrict(q:Dynamic, ?filter:String):Void {
@@ -112,8 +116,8 @@ class Input extends Display {
 		switch(type()){
 			case 'file' : {
 				if (hasFile()){
-					if (object.files.length > 0){
-						return object.files;
+					if (_object.files.length > 0){
+						return _object.files;
 					}else if (q != null){
 						if (q != ''){
 							return file(q);
@@ -134,11 +138,11 @@ class Input extends Display {
 			}
 		}
 		if (q != null) {
-			object.value = q;
+			_object.value = q;
 		}else{
-			q = object.value;
-			if (object.maxLength != null && object.maxLength > 0)
-				q = q.substr(0, object.maxLength);
+			q = _object.value;
+			if (_object.maxLength != null && _object.maxLength > 0)
+				q = q.substr(0, _object.maxLength);
 			if(_flt !=null){
 				var k:Array<String> = _flt.split("");
 				Dice.Values(k, function(v1:String) { q = q.split(v1).join(''); } );
@@ -169,7 +173,7 @@ class Input extends Display {
 				return true;
 			}
 			default : {
-				var v:String = object.value;
+				var v:String = _object.value;
 				return v.length == 0 ? false :  _rgx != null ? _rgx.match(v) : true;
 			}
 		}
@@ -185,7 +189,7 @@ class Input extends Display {
 	}
 	
 	public function files():FileList {
-		return object.files;
+		return _object.files;
 	}
 	
 	public function file(id:UInt = 0):File {
@@ -222,11 +226,11 @@ class Input extends Display {
 	}
 	
 	public function check(?toggle:Dynamic = true):Void {
-		object.checked = toggle == null ? !object.checked : toggle == true || toggle == 1;
+		_object.checked = toggle == null ? !_object.checked : toggle == true || toggle == 1;
 	}
 	
 	public function isChecked():Bool {
-		return object.checked;
+		return _object.checked;
 	}
 	
 	public function filesToArray(?o:Array<Blob>):Array<Blob> {

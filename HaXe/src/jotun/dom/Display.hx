@@ -830,10 +830,10 @@ class Display extends Query implements IDisplay {
 			case 'c' :			{ v = 0; h = 0; }
 		}
 		var o:Dynamic = {position:'fixed'};
-		if(v != null){
-			if (v < 0){
+		if(h != null){
+			if (h < 0){
 				o.top = 0;
-			}else if (v > 0){
+			}else if (h > 0){
 				o.bottom = 0;
 			}else{
 				o.top = 'calc(50vh - ' + (height()>>1) + 'px)';
@@ -866,8 +866,8 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function fit(width:Dynamic, height:Dynamic):IDisplay {
-		this.width(width);
-		this.height(height);
+		this.width(width == null ? this.width() : width);
+		this.height(height == null ? this.height() : height);
 		return this;
 	}
 	

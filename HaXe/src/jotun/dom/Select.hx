@@ -1,6 +1,7 @@
 package jotun.dom;
 import jotun.Jotun;
 import jotun.tools.Utils;
+import jotun.utils.Filler;
 import js.Browser;
 import js.html.BaseElement;
 import js.html.OptionElement;
@@ -15,6 +16,8 @@ import jotun.utils.ITable;
  */
 @:expose("J_dom_Select")
 class Select extends Display {
+	
+	static public var layout:String = '<option value="{{value}}">{{label}}</option>';
 	
 	static private var _themes:Dynamic;
 	
@@ -111,24 +114,28 @@ class Select extends Display {
 		return false;
 	}
 	
-	public function addOption(label:String, value:Dynamic, ?selected:Bool, ?disabled:Bool):Select {
-		appendHtml('<option value="' + value + '"' + (disabled == true ? ' disabled' : '') + (selected == true ? ' selected' : '') + '>' + label + '</options>');
-		if (selected) {
-			attribute('current-value', this.value());
-			selectValue(value);
+	@:overload(function(options:Array<Dynamic>):Array<Option>{})
+	public function add(option:Dynamic):Dynamic {
+		if (Std.is(option, Array)){
+			var r:Array<Option> = [];
+			Dice.All(option, function(p:Int, v:Dynamic){
+				r[p] = cast mount(Filler.to(layout, v));
+			});
+			return r;
+		} else{
+			return mount(Filler.to(layout, option));
 		}
-		return this;
 	}
 	
-	public function saveTheme(?name:String, ?content:String):Void {
+	public function saveTheme(name:String, ?content:String):Void {
 		if (_themes == null){
 			_themes = {};
 		}
-		Reflect.setField(_themes, Utils.getValidOne(name, 'default_' + id()), Utils.getValidOne(content, element.innerHTML));
+		Reflect.setField(_themes, name, Utils.getValidOne(content, element.innerHTML));
 	}
 	
-	public function loadTheme(?name:String):Void {
-		element.innerHTML = Reflect.field(_themes, Utils.getValidOne(name, 'default' + id()));
+	public function loadTheme(name:String):Void {
+		element.innerHTML = Reflect.field(_themes, name);
 		events.change().call();
 	}
 	
