@@ -70,6 +70,21 @@ interface ITable {
 	public function css(styles:String) : ITable;
 	
 	/**
+	 * Causes all children a reaction for data
+	 * @param	data
+	 * @return
+	 */
+	public function react(data:Dynamic):ITable;
+	
+	/**
+	 * Set the style value to all children
+	 * @param	p
+	 * @param	v
+	 * @return
+	 */
+	public function style(p:Dynamic, v:Dynamic):ITable;
+	
+	/**
 	 * Set the attribute value to all children
 	 * @param	name
 	 * @param	value

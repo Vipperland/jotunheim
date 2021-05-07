@@ -91,19 +91,19 @@ class Agent implements IAgent {
 	}
 	
 	public function isXS():Bool {
-		return Utils.matchMedia(CSSGroup.MEDIA_XS);
+		return Utils.matchMedia(CSSGroup.MEDIA_XS + ' and ' + CSSGroup.MEDIA_XS_MAX);
 	}
 	
 	public function isSM():Bool {
-		return Utils.matchMedia(CSSGroup.MEDIA_SM);
+		return Utils.matchMedia(CSSGroup.MEDIA_SM + ' and ' + CSSGroup.MEDIA_SM_MAX);
 	}
 	
 	public function isMD():Bool {
-		return Utils.matchMedia(CSSGroup.MEDIA_MD);
+		return Utils.matchMedia(CSSGroup.MEDIA_MD + ' and ' + CSSGroup.MEDIA_MD_MAX);
 	}
 	
 	public function isLG():Bool {
-		return Utils.matchMedia(CSSGroup.MEDIA_LG);
+		return Utils.matchMedia(CSSGroup.MEDIA_LG + ' and ' + CSSGroup.MEDIA_LG_MAX);
 	}
 	
 	public function isXL():Bool {

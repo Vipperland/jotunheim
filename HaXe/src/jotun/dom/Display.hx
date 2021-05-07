@@ -631,22 +631,29 @@ class Display extends Query implements IDisplay {
 		style('filter', 'url(#' + name + ')');
 	}
 	
+	private function _style_set(p:Dynamic, v:Dynamic):Void {
+		if (Std.is(p, String) && v != null) {
+			Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+		}
+	}
+	
+	private function _style_get(p:Dynamic):Dynamic {
+		return Reflect.field(trueStyle(), p);
+	}
+	
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
 			if (Std.is(p, String)) {
-				if (v != null) {
-					Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+				if (v == null){
+					return _style_get(p);
 				}else{
-					v = Reflect.field(trueStyle(), p);
-					if (p.toLowerCase().indexOf("color") > 0){
-						v = new ARGB(v);
-					}
+					_style_set(p, v);
 				}
-				return v;
 			}else {
 				Dice.All(p, function(p:Dynamic, v:Dynamic) {
-					style(p, v);
+					_style_set(p, v);
 				});
+				return null;
 			}
 		}
 		return trueStyle();

@@ -184,7 +184,7 @@ class ModLib {
 					Dice.Values(mountAfter, function(v:IMod){
 						var o:IDisplay = Jotun.one(v.target);
 						if (o != null){
-							o.mount(v.name, v.data);
+							o.mount(v.name, v.data, v.index);
 						}
 					});
 				}

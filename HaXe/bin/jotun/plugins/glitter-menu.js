@@ -3,7 +3,7 @@
  * @author Rafael Moreira
 	
 	Attribute options:
-		glitter-mode (TODO)			Set dial type, can be "horizontal", "vertical" or "radial". Default is "radial"
+		glitter-mode (TODO)			Set dial type, can be "grid-horizontal", "grid-vertical" or "radial". Default is "radial"
 		glitter-multiple			Allow multiple selection
 		glitter-autoclose			Close after interaction (if not multiple)
 		glitter-size				Size of dial options (width x height). Default is "auto"
@@ -116,6 +116,7 @@
 				zIndex:0xFFFFFF,
 				pointerEvents:'none',
 			});
+			
 			var bts = item.all('.item');
 			var count = bts.length() + item.glitterOptions.grow;
 			var i = 0;
@@ -214,7 +215,7 @@
 									var len = l/size;
 									var dim = item.glitterOptions.dimension;
 									tx = dx * dim[0] - (dim[0] * size *.5) + (offset.x);
-									ty = dy * dim[1] - (dim[1] * len * .5) + (offset.y);
+									ty = dy * dim[1] - (dim[1] + len * .5) + (offset.y);
 									break;
 								}
 								case 'grid-horizontal': {
@@ -223,7 +224,7 @@
 									var dy = (j%size);
 									var len = l/size;
 									var dim = item.glitterOptions.dimension;
-									tx = dx * dim[0] - (dim[1] * len * .5) + (offset.x);
+									tx = dx * dim[0] - (dim[0] + len * .5) + (offset.x);
 									ty = dy * dim[1] - (dim[1] * size *.5) + (offset.y);
 									break;
 								}

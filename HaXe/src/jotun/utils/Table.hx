@@ -111,6 +111,16 @@ class Table implements ITable {
 		return this;
 	}
 	
+	public function react(data:Dynamic):ITable {
+		each(function(v:IDisplay) { v.react(data); } );
+		return this;
+	}
+	
+	public function style(p:Dynamic, v:Dynamic):ITable {
+		each(function(v:IDisplay) { v.style(p, v); } );
+		return this;
+	}
+	
 	public function attribute(name:String, value:String):ITable {
 		each(function(v:IDisplay) {	v.attribute(name, value); } );
 		return this;

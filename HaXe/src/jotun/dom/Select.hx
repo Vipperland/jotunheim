@@ -31,8 +31,8 @@ class Select extends Display {
 	
 	private function _refreshIO(e:IEvent):Void {
 		var c:String = '' + value();
-		var p:String = attribute('current-value');
-		if (c != p) {
+		var p:String = hasAttribute('current-value') ? attribute('current-value') : null;
+		if (p == null || c != p) {
 			attribute('previous-value', p);
 			attribute('current-value', c);
 			if (_ioHandler != null){

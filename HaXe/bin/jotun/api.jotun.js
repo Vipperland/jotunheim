@@ -1591,23 +1591,28 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	,filters: function(name) {
 		this.style("filter","url(#" + Std.string(name) + ")");
 	}
+	,_style_set: function(p,v) {
+		if(typeof(p) == "string" && v != null) {
+			this.element.style[p] = js_Boot.__implements(v,jotun_math_IARGB) ? v.css() : Std.string(v);
+		}
+	}
+	,_style_get: function(p) {
+		return Reflect.field(this.trueStyle(),p);
+	}
 	,style: function(p,v) {
 		var _gthis = this;
 		if(p != null) {
 			if(typeof(p) == "string") {
-				if(v != null) {
-					this.element.style[p] = js_Boot.__implements(v,jotun_math_IARGB) ? v.css() : Std.string(v);
+				if(v == null) {
+					return this._style_get(p);
 				} else {
-					v = Reflect.field(this.trueStyle(),p);
-					if(p.toLowerCase().indexOf("color") > 0) {
-						v = new jotun_math_ARGB(v);
-					}
+					this._style_set(p,v);
 				}
-				return v;
 			} else {
 				jotun_utils_Dice.All(p,function(p,v) {
-					_gthis.style(p,v);
+					_gthis._style_set(p,v);
 				});
+				return null;
 			}
 		}
 		return this.trueStyle();
@@ -2527,16 +2532,16 @@ jotun_tools_Agent.prototype = {
 		return "OS:" + $global.navigator.oscpu + "/Browser:" + $global.navigator.userAgent + "/Mobile:" + Std.string(this.mobile);
 	}
 	,isXS: function() {
-		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XS);
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XS + " and " + jotun_css_CSSGroup.MEDIA_XS_MAX);
 	}
 	,isSM: function() {
-		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_SM);
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_SM + " and " + jotun_css_CSSGroup.MEDIA_SM_MAX);
 	}
 	,isMD: function() {
-		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_MD);
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_MD + " and " + jotun_css_CSSGroup.MEDIA_MD_MAX);
 	}
 	,isLG: function() {
-		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_LG);
+		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_LG + " and " + jotun_css_CSSGroup.MEDIA_LG_MAX);
 	}
 	,isXL: function() {
 		return jotun_tools_Utils.matchMedia(jotun_css_CSSGroup.MEDIA_XL);
@@ -4022,8 +4027,8 @@ jotun_dom_Select.__super__ = jotun_dom_Display;
 jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 	_refreshIO: function(e) {
 		var c = "" + Std.string(this.value());
-		var p = this.attribute("current-value");
-		if(c != p) {
+		var p = this.hasAttribute("current-value") ? this.attribute("current-value") : null;
+		if(p == null || c != p) {
 			this.attribute("previous-value",p);
 			this.attribute("current-value",c);
 			if(this._ioHandler != null) {
@@ -5055,7 +5060,7 @@ jotun_modules_ModLib.prototype = {
 				jotun_utils_Dice.Values(mountAfter,function(v) {
 					var o = jotun_Jotun.one(v.target);
 					if(o != null) {
-						o.mount(v.name,v.data);
+						o.mount(v.name,v.data,v.index);
 					}
 				});
 			}
@@ -8197,6 +8202,18 @@ jotun_utils_Table.prototype = {
 	,css: function(styles) {
 		this.each(function(v) {
 			v.css(styles);
+		});
+		return this;
+	}
+	,react: function(data) {
+		this.each(function(v) {
+			v.react(data);
+		});
+		return this;
+	}
+	,style: function(p,v) {
+		this.each(function(v) {
+			v.style(p,v);
 		});
 		return this;
 	}
