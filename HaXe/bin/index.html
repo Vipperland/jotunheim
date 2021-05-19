@@ -19,8 +19,8 @@
 			
 			var _max_ball_value = 99;
 			var _card_set_length = 8;
-			var _card_columns = 7;
-			var _card_rows = 4;
+			var _card_columns = 5;
+			var _card_rows = 5;
 			
 			function _Round(){
 				var _to_daub = null;
@@ -147,15 +147,19 @@
 						o[i] = l.substr(i * this.w, this.w).split('').join('  ').split('1').join('<b>1</b>') + '   <>   ' + r.splice(0, this.w).join('  ') + ' ←' + this.getRowProgress(i);
 						++i;
 					}
-					var t = '                           ';
+					var t = '     ';
 					i = 0;
 					while(i < this.w){
-						t += '↑' + this.getColProgress(i) + '  ';
+						t += '   ';
 						++i;
 					}
-					t += '#' + this.matches.score + '/' + (this.w*this.h);
+					i = 0;
+					while(i < this.w){
+						t += ' ↑' + this.getColProgress(i) + ' ';
+						++i;
+					}
 					o.push(t);
-					return 'CARD / ROW:' + this.matches.rows + ' COL:' + this.matches.columns + ' / @' + this.id + ' [' + this.f + '] \n|\t\t' + o.join('\n|\t\t');
+					return 'CARD[] Row x' + this.matches.rows + ' Col x' + this.matches.columns + ' ~ Progress ' + ((this.matches.score<10 ? '0' : '') + this.matches.score + '/' + (this.w*this.h)) + ' ~ #' + this.id + ' [' + this.f + '] \n|\t\t' + o.join('\n|\t\t');
 				}
 				this.reset();
 			}
@@ -179,7 +183,7 @@
 						card = this.cards[card];
 						r[r.length] = card.toString();
 					}
-					return 'CardSet[]\n|\n|\t' + r.join('\n|\n|\t');
+					return 'CardSet[' + this.cards.length + ']\n|\n|\t' + r.join('\n|\n|\t') + '|\n|\n';
 				}
 				this.create();
 			}
@@ -196,7 +200,7 @@
 						Jotun.one('.CardSet').appendHtml(CardSet.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;'));
 					}
 				}
-				setInterval(ProcessOneDaub, 100);
+				setInterval(ProcessOneDaub, 250);
 				ProcessOneDaub();
 			});
 			
