@@ -4705,6 +4705,7 @@ jotun_tools_Utils.isFunction = function(o) {
 };
 var jotun_net_Broadcast = $hx_exports["J_Broadcast"] = function() {
 	this._listeners = { };
+	this._muted = true;
 	var _gthis = this;
 	if(jotun_net_Broadcast.__me__ == null) {
 		try {
@@ -4749,7 +4750,9 @@ jotun_net_Broadcast.prototype = {
 		this._proccessMsg(e.target.name,e.data);
 	}
 	,_proccessMsg: function(channel,data) {
-		jotun_Jotun.log(["[BROADCAST <<] CHANNEL {" + channel + "} @ DATA RECEIVED",data]);
+		if(!this._muted) {
+			jotun_Jotun.log(["[BROADCAST <<] CHANNEL {" + channel + "} @ DATA RECEIVED",data]);
+		}
 		jotun_utils_Dice.Values(Reflect.field(this._listeners,channel),function(handler) {
 			handler(data);
 		});
@@ -4763,10 +4766,12 @@ jotun_net_Broadcast.prototype = {
 				}
 				events = [];
 				this._listeners[channel] = events;
-				jotun_Jotun.log(["[BROADCAST ++] CHANNEL {" + channel + "} CONNECTED"]);
+				if(!this._muted) {
+					jotun_Jotun.log(["[BROADCAST ++] CHANNEL {" + channel + "} CONNECTED"]);
+				}
 			}
 			events.push(handler);
-		} else {
+		} else if(!this._muted) {
 			jotun_Jotun.log(["[BROADCAST !!] CHANNEL {" + channel + "} NOT CONNECTED (null)"]);
 		}
 	}
@@ -4781,19 +4786,29 @@ jotun_net_Broadcast.prototype = {
 						Reflect.field(this._channels,channel).close();
 						Reflect.deleteField(this._channels,channel);
 					}
-					jotun_Jotun.log(["[BROADCAST --] CHANNEL {" + channel + "} DISCONNECTED"]);
+					if(!this._muted) {
+						jotun_Jotun.log(["[BROADCAST --] CHANNEL {" + channel + "} DISCONNECTED"]);
+					}
 				}
 			}
 		}
 	}
 	,send: function(channel,data) {
-		jotun_Jotun.log(["[BROADCAST >>] CHANNEL {" + channel + "} @ DATA SENT",data]);
+		if(!this._muted) {
+			jotun_Jotun.log(["[BROADCAST >>] CHANNEL {" + channel + "} @ DATA SENT",data]);
+		}
 		if(this._channels != null) {
 			this._openChannel(channel).postMessage(data);
 		} else {
 			window.localStorage.setItem(channel,JSON.stringify(data));
 			window.localStorage.removeItem(channel);
 		}
+	}
+	,mute: function() {
+		this._muted = true;
+	}
+	,unmute: function() {
+		this._muted = false;
 	}
 	,__class__: jotun_net_Broadcast
 };
@@ -5032,10 +5047,10 @@ jotun_modules_ModLib.prototype = {
 						if(mod.type != null) {
 							if(mod.type == "data") {
 								try {
-									var field = mod.name;
-									var value = JSON.parse(content);
-									data[field] = value;
+									_gthis.data[mod.name] = JSON.parse(content);
 								} catch( _g ) {
+									var e = haxe_Exception.caught(_g).unwrap();
+									jotun_Jotun.log("\tModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
 								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
 								jotun_Jotun.document.head.bind(content,mod.type,mod.id);
@@ -5110,7 +5125,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( _g ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 247, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 249, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;

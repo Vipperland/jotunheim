@@ -156,8 +156,10 @@ class ModLib {
 							if (mod.type != null) {
 								if (mod.type == 'data'){
 									try {
-										Reflect.setField(data, mod.name, Json.parse(content));
-									}catch (e:Dynamic){ }
+										Reflect.setField(this.data, mod.name, Json.parse(content));
+									}catch (e:Dynamic){
+										Jotun.log("	ModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, 3);
+									}
 								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
 									Jotun.document.head.bind(content, mod.type, mod.id);
 									content = '';

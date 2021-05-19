@@ -20,6 +20,7 @@ class Broadcast {
 		return __me__ == null ? new Broadcast() : __me__;
 	}
 	
+	private var _muted:Bool = true;
 	private var _listeners:Dynamic = {};
 	private var _channels:Dynamic;
 	
@@ -38,7 +39,9 @@ class Broadcast {
 	}
 	
 	private function _proccessMsg(channel:String, data:Dynamic):Void {
-		Jotun.log(['[BROADCAST <<] CHANNEL {' + channel + '} @ DATA RECEIVED', data]);
+		if (!_muted){
+			Jotun.log(['[BROADCAST <<] CHANNEL {' + channel + '} @ DATA RECEIVED', data]);
+		}
 		Dice.Values(Reflect.field(_listeners, channel), function(handler:Dynamic->Void){
 			handler(data);
 		});
@@ -79,11 +82,15 @@ class Broadcast {
 				}
 				events = [];
 				Reflect.setField(_listeners, channel, events);
-				Jotun.log(['[BROADCAST ++] CHANNEL {' + channel + '} CONNECTED']);
+				if (!_muted){
+					Jotun.log(['[BROADCAST ++] CHANNEL {' + channel + '} CONNECTED']);
+				}
 			}
 			events.push(handler);
 		}else{
-			Jotun.log(['[BROADCAST !!] CHANNEL {' + channel + '} NOT CONNECTED (null)']);
+			if (!_muted){
+				Jotun.log(['[BROADCAST !!] CHANNEL {' + channel + '} NOT CONNECTED (null)']);
+			}
 		}
 	}
 	
@@ -98,20 +105,32 @@ class Broadcast {
 						Reflect.field(_channels, channel).close();
 						Reflect.deleteField(_channels, channel);
 					}
-					Jotun.log(['[BROADCAST --] CHANNEL {' + channel + '} DISCONNECTED']);
+					if (!_muted){
+						Jotun.log(['[BROADCAST --] CHANNEL {' + channel + '} DISCONNECTED']);
+					}
 				}
 			}
 		}
 	}
 	
 	public function send(channel:String, data:Dynamic){
-		Jotun.log(['[BROADCAST >>] CHANNEL {' + channel + '} @ DATA SENT', data]);
+		if (!_muted){
+			Jotun.log(['[BROADCAST >>] CHANNEL {' + channel + '} @ DATA SENT', data]);
+		}
 		if (_channels != null){
 			_openChannel(channel).postMessage(data);
 		}else{
 			Browser.window.localStorage.setItem(channel, Json.stringify(data));
 			Browser.window.localStorage.removeItem(channel);
 		}
+	}
+	
+	public function mute(){
+		_muted = true;
+	}
+	
+	public function unmute(){
+		_muted = false;
 	}
 	
 	

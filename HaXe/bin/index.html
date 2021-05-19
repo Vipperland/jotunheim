@@ -6,217 +6,202 @@
 		<title></title>
 		<link rel="stylesheet" href="assets/icons/pro.min.css">
 		<script type="text/javascript" src="jotun/api.jotun.js"></script>
-		<script type="text/javascript" src="jotun/plugins/glitter-menu.js"></script>
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;700&display=swap" rel="stylesheet">
 		<style>
-			.item {
-				color: #FFFFFF;
-				width:120px;
-				height:120px;
-				overflow: none;
-				cursor: pointer;
-				text-align: center;
-			}
-			
-			.item i {
-				font-size: 32px;
-			}
-			
-			.item.active:after {
-				content: "";
-				position: absolute;
-				top: 10px;
-				right: 10px;
-				width: 20px;
-				height: 20px;
-				border-radius: 50%;
-				background-color: #00CC33;
-			}
-			
-			.hint {
-				font-size: 16px;
-			}
-			.sprite {
-				height: 100%;
-			}
-			
-			.item[class*="color"] {
-				border-radius: 50%;
-			}
-			
-			.color-menu .item {
-				width: 80px;
-				height: 80px;
-				transition: all .3s ease-out;
-				position: relative;
-			}
-			
-			.color-menu .item[class*="color"]:not(.active) {
-				transition: all .3s ease-out;
-			}
-			
-			.color-menu .item[class*="color"]:not(.active):before {
-				width: 60%;
-				height: 60%;
-			}
-			
-			.color-menu .item:before {
-				width: 100%;
-				height: 100%;
-				content: "";
-				margin: 0px;
-				border-radius: 50%;
-				transition: all .3s ease-out;
-				position: absolute;
-			}
-			
-			.item.color-red:before {
-				background-color: #FF0000;
-			}
-			
-			.item.color-orange:before{
-				background-color: #FF6600;
-			}
-			
-			.item.color-yellow:before{
-				background-color: #FFFF66;
-			}
-			
-			.item.color-green:before{
-				background-color: #00FF66;
-			}
-			
-			.item.color-blue:before{
-				background-color: #0099CC;
-			}
-			
-			.item.color-indigo:before{
-				background-color: #0066FF;
-			}
-			
-			.item.color-violet:before{
-				background-color: #6600FF;
-			}
-			
-			.hint {
-				width: 340px;
-				padding: 20px;
-				border-radius: 20px;
-				background-color: #FFFFFF;
-			}
-			
-			.hint a div {
-				float: left;
-				padding: 10px;
-				width: 100px;
-				background-color: #DDDDDD;
-			}
-			
-			.hint a input {
-				width: 200px;
-				float: left;
-				padding: 10px;
-				background-color: #EEEEEE;
-			}
-			
-			.hint .title {
-				width: 100%;
-				font-size: 24px;
-				text-align: center;
-				color: #000000;
-				padding: 20px;
-				background-color: #FFFFFF;
-			}
-			
-			.hint .download {
-				width: 100%;
-				text-align: center;
-				padding: 20px;
-				background-color: #FFFFFF;
-				clear: both;
-			}
-			
 			html, body {
-				background-size: cover;
-				background-position: center center;
-				font-family: Tahoma;
-				height: 100%;
+				font-family: 'Roboto Mono', monospace;
 			}
-			
-			textarea {
-				height: 200px;
-				background-color: #efefef;
-			}
-			
 		</style>
 	</head>
 	<body xcode>
-		<div>
-			<div class="glittermenu" 
-				 glitter-mode="radial"
-				 glitter-grid-size="4"
-				 glitter-autoclose="true"
-				 glitter-size="120x120" 
-				 glitter-target=".selected-value" 
-				 hidden>
-					<div glitter-open=".letter-menu" class="item drawer o-middle letter-target"><i class="fa fa-venus-mars"></i> Gênero</div>
-					<div glitter-open=".number-menu" class="item drawer o-middle number-target"><i class="fa fa-tag"></i> Tipo</div>
-					<div glitter-open=".people-menu" class="item drawer o-middle people-target"><i class="far fa-user"></i> Moradores</div>
-					<div glitter-open=".color-menu" class="item drawer o-middle"><i class="far fa-palette"></i> Cores<span class="color-target" hidden></span></div>
-					<div glitter-close class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-			<div class="letter-menu" glitter-target=".letter-target" hidden>
-				<div glitter-open=".glittermenu" display-self value="Homem" class="item drawer o-middle"><i class="fa fa-male"></i><br/>Homem</div>
-				<div glitter-open=".glittermenu" display-self value="Mulher" class="item drawer o-middle"><i class="fa fa-female"></i><br/>Mulher</div>
-				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-			<div class="number-menu" glitter-target=".number-target" hidden>
-				<div glitter-open=".glittermenu" display-self value="Residencial" class="item drawer o-middle"><i class="fa fa-home"></i><br/>Casa</div>
-				<div glitter-open=".glittermenu" display-self value="Apartamento" class="item drawer o-middle"><i class="fa fa-building"></i><br/>Apartamento</div>
-				<div glitter-open=".glittermenu" display-self value="Comércio" class="item drawer o-middle"><i class="fa fa-store"></i><br/>Comércial</div>
-				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-			<div class="people-menu" glitter-target=".people-target" hidden>
-				<div glitter-open=".glittermenu" display-self value="1 pessoa" class="item drawer o-middle"><i class="fa fa-user"></i><br/>1 pessoa</div>
-				<div glitter-open=".glittermenu" display-self value="2 pessoas" class="item drawer o-middle"><i class="fa fa-user-friends"></i><br/>2 pessoas</div>
-				<div glitter-open=".glittermenu" display-self value="3 ou mais pessoas" class="item drawer o-middle"><i class="fa fa-users"></i><br/>3 ou mais pessoas</div>
-				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-			<div class="people-menu" glitter-target=".people-target" hidden>
-				<div glitter-open=".glittermenu" display-self value="1 pessoa" class="item drawer o-middle"><i class="fa fa-user"></i><br/>1 pessoa</div>
-				<div glitter-open=".glittermenu" display-self value="2 pessoas" class="item drawer o-middle"><i class="fa fa-user-friends"></i><br/>2 pessoas</div>
-				<div glitter-open=".glittermenu" display-self value="3 ou mais pessoas" class="item drawer o-middle"><i class="fa fa-users"></i><br/>3 ou mais pessoas</div>
-				<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-			<div class="color-menu" 
-				 glitter-mode="grid-horizontal"
-				 glitter-grid-size="4"
-				 glitter-size="120x120" 
-				 glitter-target=".color-target" 
-				 glitter-multiple="true" hidden>
-					<div value="Vermelho" class="color-red item drawer o-middle"></div>
-					<div value="Laranja" class="color-orange item drawer o-middle"></div>
-					<div value="Amarelo" class="color-yellow item drawer o-middle"></div>
-					<div value="Verde" class="color-green item drawer o-middle"></div>
-					<div value="Azul" class="color-blue item drawer o-middle"></div>
-					<div value="Anil" class="color-indigo item drawer o-middle"></div>
-					<div value="Violeta" class="color-violet item drawer o-middle"></div>
-					<div glitter-select="all" class="item drawer o-middle"><i class="fa fa-check-circle"></i><br/>Todas</div>
-					<div glitter-select="none" class="item drawer o-middle"><i class="far fa-circle"></i><br/>Nenhuma</div>
-					<div glitter-open=".glittermenu" class="item drawer o-middle"><i class="fa fa-times-circle"></i><br/>Fechar</div>
-			</div>
-		</div>
-		<div class="shelf o-middle" style="height: 100%;">
-			<div>
-				<div class="hint">
-					<div class="title">
-						GlitterMenu (RAW)
-					</div>
-					<a class="shelf" onclick="GlitterMenu.openMenu('.glittermenu');">
-						<textarea class="cel selected-value" placeholder="Click to Select"></textarea>
-					</a>
-				</div>
-			</div>
+		<script>
 			
-		</div>
+			var _max_ball_value = 99;
+			var _card_set_length = 8;
+			var _card_columns = 7;
+			var _card_rows = 4;
+			
+			function _Round(){
+				var _to_daub = null;
+				var lastDaub = null;
+				this.daubed = null;
+				this.daub = function(){
+					lastDaub = _to_daub.shift();
+					this.daubed.push(lastDaub);
+					return lastDaub;
+				}
+				this.create = function(){
+					var r = [];
+					var i = 0;
+					while(i < _max_ball_value){
+						r[i] = ++i;
+					}
+					_to_daub = [];
+					while(r.length > 0){
+						_to_daub[_to_daub.length] = r.splice((Math.random() * (r.length-1))>>0, 1)[0];
+					}
+					this.daubed = [];
+				}
+				this.toString = function(){
+					var r = [
+						'Round[]',
+						'lastDaub: <b>' + lastDaub + '</b>',
+						'daubed: ' + this.daubed.length,
+						'remain: ' + _to_daub.length,
+					];
+					return r.join('\n|\t');
+				}
+				this.create();
+			}
+			
+			function _Slots(){
+				var _len = _card_columns * _card_rows;
+				this.values = null;
+				this.shuffle = function(){
+					var t = [];
+					var i = 0;
+					while(i < _max_ball_value){
+						t[i] = ++i;
+					}
+					this.values = [];
+					while(this.values.length < _len){
+						this.values.push(t.splice((Math.random() * (t.length-1))>>0, 1)[0]);
+					}
+				}
+				this.match = function(i){
+					return this.values.indexOf(i);
+				}
+				this.shuffle();
+			}
+			
+			function _Card(id){
+				this.id = id;
+				this.w = _card_columns;
+				this.h = _card_rows;
+				this.f = null;
+				this.slots = null;
+				this.matches = null;
+				this.daub = function(i){
+					var p = this.slots.match(i);
+					if(p != -1){
+						var x = p%this.w;
+						var y = (p/this.w)>>0;
+						var f = (1<<(y*this.w+x));
+						if(!((this.f & f) == f)){
+							this.f = this.f | f;
+							this.matches.col[x] += 1;
+							this.matches.row[y] += 1;
+							this.matches.score += 1;
+							if(this.matches.col[x] == this.h){
+								this.matches.columns+=1;
+							}
+							if(this.matches.row[y] == this.w){
+								this.matches.rows+=1;
+							}
+							if(this.matches.score == this.w * this.h){
+								this.matches.full += 1;
+							}
+						}
+					}
+				}
+				this.getColProgress = function(x){
+					return this.matches.col[x];
+				}
+				this.getRowProgress = function(y){
+					return this.matches.row[y];
+				}
+				this.reset = function(){
+					this.f = 0;
+					this.slots = new _Slots();
+					this.matches = {row:[], col:[], score:0, rows:0, columns:0, full:0};
+					while(this.matches.row.length < this.h){
+						this.matches.row.push(0);
+					}
+					while(this.matches.col.length < this.w){
+						this.matches.col.push(0);
+					}
+				}
+				this.toString = function(){
+					// left block
+					var l = this.f.toString(2);
+					var o = [];
+					while(l.length < this.w * this.h){
+						l = '0' + l;
+					}
+					l = l.split('').reverse();
+					l = l.join('');
+					// right block
+					var r = [];
+					for(var i in this.slots.values){
+						var v = this.slots.values[i];
+						var t = 1<<i;
+						var m = (this.f & t) == t;
+						r[i] = (m ? '<b>' : '') + (v < 10 ? '0' + v : v) + (m ? '</b>' : '');
+					}
+					// matches
+					
+					// merge
+					var i = 0;
+					while(i < this.h){
+						o[i] = l.substr(i * this.w, this.w).split('').join('  ').split('1').join('<b>1</b>') + '   <>   ' + r.splice(0, this.w).join('  ') + ' ←' + this.getRowProgress(i);
+						++i;
+					}
+					var t = '                           ';
+					i = 0;
+					while(i < this.w){
+						t += '↑' + this.getColProgress(i) + '  ';
+						++i;
+					}
+					t += '#' + this.matches.score + '/' + (this.w*this.h);
+					o.push(t);
+					return 'CARD / ROW:' + this.matches.rows + ' COL:' + this.matches.columns + ' / @' + this.id + ' [' + this.f + '] \n|\t\t' + o.join('\n|\t\t');
+				}
+				this.reset();
+			}
+			
+			function _CardSet(){
+				this.cards = null;
+				this.create = function(){
+					this.cards = [];
+					while(this.cards.length < _card_set_length){
+						this.cards.push(new _Card(this.cards.length));
+					}
+				}
+				this.proccessDaub = function(daub){
+					for(var i in this.cards){
+						this.cards[i].daub(daub);
+					}
+				}
+				this.toString = function(){
+					var r = [];
+					for(var card in this.cards){
+						card = this.cards[card];
+						r[r.length] = card.toString();
+					}
+					return 'CardSet[]\n|\n|\t' + r.join('\n|\n|\t');
+				}
+				this.create();
+			}
+			
+			var Round = new _Round();
+			var CardSet = new _CardSet();
+			
+			Jotun.run(function(){
+				function ProcessOneDaub(){
+					var daub = Round.daub();
+					if(daub != null){
+						CardSet.proccessDaub(daub);
+						Jotun.one('.CardSet').writeHtml(Round.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;')+'<br><br>');
+						Jotun.one('.CardSet').appendHtml(CardSet.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;'));
+					}
+				}
+				setInterval(ProcessOneDaub, 100);
+				ProcessOneDaub();
+			});
+			
+			
+		</script>
+		<div class="CardSet"></div>
 	</body>
 </html>
