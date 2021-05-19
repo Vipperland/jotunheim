@@ -17,10 +17,23 @@
 	<body xcode>
 		<script>
 			
-			var _max_ball_value = 99;
-			var _card_set_length = 8;
-			var _card_columns = 5;
-			var _card_rows = 5;
+			var _max_ball_value = 75;
+			var _card_set_length = 100;
+			var _card_columns = 8;
+			var _card_rows = 3;
+			var _pos_cache = {};
+			var _card_slots = _card_columns * _card_rows;
+			
+			var i = 0;
+			while(i < _card_slots){
+				var d = {
+					x:i%_card_columns,
+					y:(i/_card_columns)>>0,
+				};
+				d.f = 1<<(d.y*_card_columns+d.x);
+				_pos_cache[i] = d;
+				++i;
+			}
 			
 			function _Round(){
 				var _to_daub = null;
@@ -46,9 +59,9 @@
 				this.toString = function(){
 					var r = [
 						'Round[]',
-						'lastDaub: <b>' + lastDaub + '</b>',
-						'daubed: ' + this.daubed.length,
-						'remain: ' + _to_daub.length,
+						'lastDaub: 	 <b>' + lastDaub + '</b>',
+						'daubed:		' + this.daubed.length,
+						'remain:		' + _to_daub.length,
 					];
 					return r.join('\n|\t');
 				}
@@ -56,7 +69,7 @@
 			}
 			
 			function _Slots(){
-				var _len = _card_columns * _card_rows;
+				var _len = _card_slots;
 				this.values = null;
 				this.shuffle = function(){
 					var t = [];
@@ -68,6 +81,7 @@
 					while(this.values.length < _len){
 						this.values.push(t.splice((Math.random() * (t.length-1))>>0, 1)[0]);
 					}
+					Dice.Table(this.values, null, true);
 				}
 				this.match = function(i){
 					return this.values.indexOf(i);
@@ -80,27 +94,28 @@
 				this.w = _card_columns;
 				this.h = _card_rows;
 				this.f = null;
+				this.size = _card_columns * _card_rows;
+				this.big = this.size > 31;
 				this.slots = null;
 				this.matches = null;
 				this.daub = function(i){
 					var p = this.slots.match(i);
 					if(p != -1){
-						var x = p%this.w;
-						var y = (p/this.w)>>0;
-						var f = (1<<(y*this.w+x));
-						if(!((this.f & f) == f)){
-							this.f = this.f | f;
-							this.matches.col[x] += 1;
-							this.matches.row[y] += 1;
-							this.matches.score += 1;
-							if(this.matches.col[x] == this.h){
-								this.matches.columns+=1;
+						var d = _pos_cache[p];
+						if(!((this.f & d.f) == d.f)){
+							this.f = this.f | d.f;
+							this.matches.col[d.x] += 1;
+							this.matches.row[d.y] += 1;
+							++this.matches.score;
+							--this.matches.missing;
+							if(this.matches.col[d.x] == this.h){
+								++this.matches.columns;
 							}
-							if(this.matches.row[y] == this.w){
-								this.matches.rows+=1;
+							if(this.matches.row[d.y] == this.w){
+								++this.matches.rows;
 							}
-							if(this.matches.score == this.w * this.h){
-								this.matches.full += 1;
+							if(this.matches.score == this.size){
+								++this.matches.full;
 							}
 						}
 					}
@@ -111,10 +126,49 @@
 				this.getRowProgress = function(y){
 					return this.matches.row[y];
 				}
+				this.countRowProgress = function(m, l){
+					m = m || this.w;
+					l = l || this.h;
+					var i = 0;
+					var r = 0;
+					while(i < this.h){
+						if(this.getRowProgress(i) == m){
+							if(++r == l){
+								break;
+							}
+						}
+						++i;
+					}
+					return r;
+				}
+				this.countColProgress = function(m, l){
+					m = m || this.h;
+					l = l || this.w;
+					var i = 0;
+					var r = 0;
+					while(i < this.w){
+						if(this.getColProgress(i) == m){
+							if(++r == l){
+								break;
+							}
+						}
+						++i;
+					}
+					return r;
+				}
+				this.getScoreProgress = function(){
+					return this.matches.score;
+				}
+				this.getMissingProgress = function(){
+					return this.matches.missing;
+				}
+				this.isFullProgress = function(){
+					return this.matches.score == this.size;
+				}
 				this.reset = function(){
 					this.f = 0;
 					this.slots = new _Slots();
-					this.matches = {row:[], col:[], score:0, rows:0, columns:0, full:0};
+					this.matches = {row:[], col:[], score:0, rows:0, columns:0, full:0, missing:this.size};
 					while(this.matches.row.length < this.h){
 						this.matches.row.push(0);
 					}
@@ -177,6 +231,48 @@
 						this.cards[i].daub(daub);
 					}
 				}
+				this.getRowProgress = function(m, l){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].countRowProgress(m, l);
+					}
+					return r;
+				}
+				this.getColProgress = function(m, l){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].countColProgress(m, l);
+					}
+					return r;
+				}
+				this.getFullProgress = function(m){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].countFullProgress(m);
+					}
+					return r;
+				}
+				this.getRowMatches = function(){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].matches.rows;
+					}
+					return r;
+				}
+				this.getColMatches = function(){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].matches.columns;
+					}
+					return r;
+				}
+				this.countFullProgress = function(){
+					var r = 0;
+					for(var i in this.cards){
+						r += this.cards[i].isFullProgress() ? 1 : 0;
+					}
+					return r;
+				}
 				this.toString = function(){
 					var r = [];
 					for(var card in this.cards){
@@ -191,16 +287,58 @@
 			var Round = new _Round();
 			var CardSet = new _CardSet();
 			
+			function _prefix(s, l, c){
+				c = c || ' ';
+				s += '';
+				while(s.length < l){
+					s = c + s;
+				}
+				return s;
+			}
+			
+			function _sufix(s, l, c){
+				c = c || ' ';
+				s += '';
+				while(s.length < l){
+					s = s + c;
+				}
+				return s;
+			}
+			
 			Jotun.run(function(){
 				function ProcessOneDaub(){
+					var lastTime = new Date().getTime();
 					var daub = Round.daub();
 					if(daub != null){
 						CardSet.proccessDaub(daub);
-						Jotun.one('.CardSet').writeHtml(Round.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;')+'<br><br>');
-						Jotun.one('.CardSet').appendHtml(CardSet.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;'));
+						var timenow = new Date().getTime();
+						var elapsed = timenow - lastTime;
+						lastTime = timenow;
+						var total_col = (_card_set_length * _card_columns);
+						var total_row = (_card_set_length * _card_rows);
+						Jotun.one('.CardSet').writeHtml(('Average Time: 	  ' + elapsed + 'ms' + '<br/>Ammount of Cards:   ' + _card_set_length + '<br/><br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;'));
+						Jotun.one('.CardSet').appendHtml(Round.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;')+'<br><br>');
+						var r = ['CardSet Prizes []'];
+						//if(_card_rows > 3){
+						//	r.push('| Row Missing 3:		' + CardSet.getRowProgress(_card_columns-3));
+						//}
+						//r.push('| Row Missing 2:		' + CardSet.getRowProgress(_card_columns-2));
+						//r.push('| Row Missing 1:		' + CardSet.getRowProgress(_card_columns-1));
+						r.push('| Rows:			 ' + _prefix(CardSet.getRowMatches(), (total_row+'').length,'0') + '/' + (_card_set_length * _card_rows));
+						//if(_card_columns > 3){
+						//	r.push('| Column Missing 3:	 ' + CardSet.getColProgress(_card_rows-3));
+						//}
+						//r.push('| Column Missing 2:	 ' + CardSet.getColProgress(_card_rows-2));
+						//r.push('| Column Missing 1:	 ' + CardSet.getColProgress(_card_rows-1));
+						r.push('| Columns:		  ' + _prefix(CardSet.getColMatches(), (total_col+'').length,'0') + '/' + total_col);
+						r.push('| Full:			 ' + _prefix(CardSet.countFullProgress(), (_card_set_length+'').length, '0') + '/' + (_card_set_length));
+						Jotun.one('.CardSet').appendHtml(r.join('<br>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;')+'<br><br>');
+						if(_card_set_length <= 100){
+							Jotun.one('.CardSet').appendHtml(CardSet.toString().split('\n').join('<br/>').split(' ').join('&nbsp;').split('\t').join('&nbsp;&nbsp;&nbsp;&nbsp;'));
+						}
 					}
 				}
-				setInterval(ProcessOneDaub, 250);
+				setInterval(ProcessOneDaub, 33);
 				ProcessOneDaub();
 			});
 			
