@@ -18,7 +18,7 @@
 		<script>
 			
 			var _max_ball_value = 75;
-			var _card_set_length = 100;
+			var _card_set_length = 10;
 			var _card_columns = 8;
 			var _card_rows = 3;
 			var _pos_cache = {};
@@ -60,7 +60,7 @@
 					var r = [
 						'Round[]',
 						'lastDaub: 	 <b>' + lastDaub + '</b>',
-						'daubed:		' + this.daubed.length,
+						'daubed:		' + [].concat(this.daubed).reverse(),
 						'remain:		' + _to_daub.length,
 					];
 					return r.join('\n|\t');

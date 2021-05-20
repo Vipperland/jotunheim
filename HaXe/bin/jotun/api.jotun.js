@@ -8277,8 +8277,12 @@ jotun_utils_Table.prototype = {
 	,length: function() {
 		return this.content.length;
 	}
-	,each: function(handler) {
-		jotun_utils_Dice.Values(this.content,handler);
+	,each: function(handler,onnull) {
+		if(this.content.length > 0) {
+			jotun_utils_Dice.Values(this.content,handler);
+		} else if(onnull != null) {
+			onnull();
+		}
 		return this;
 	}
 	,call: function(method,args) {

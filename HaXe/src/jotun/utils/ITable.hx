@@ -143,7 +143,7 @@ interface ITable {
 	 * @param	handler
 	 * @return
 	 */
-	public function each(handler:IDisplay->Void) : ITable;
+	public function each(handler:IDisplay->Void, ?onnull:Void->Void) : ITable;
 	
 	/**
 	 * Current content count

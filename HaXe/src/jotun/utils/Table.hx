@@ -159,8 +159,12 @@ class Table implements ITable {
 		return content.length;
 	}
 	
-	public function each(handler:IDisplay->Void):ITable {
-		Dice.Values(content, handler);
+	public function each(handler:IDisplay->Void, ?onnull:Void->Void):ITable {
+		if (content.length > 0){
+			Dice.Values(content, handler);
+		}else if(onnull != null){
+			onnull();
+		}
 		return this;
 	}
 	
