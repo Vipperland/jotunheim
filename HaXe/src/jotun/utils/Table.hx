@@ -11,6 +11,7 @@ import jotun.dom.IDisplay;
 import jotun.events.IEvent;
 import jotun.tools.Utils;
 import jotun.utils.ITable;
+import js.html.Text;
 
 /**
  * ...
@@ -48,17 +49,10 @@ class Table implements ITable {
 		return this;
 	}
 	
-	public function scan(q:String, ?t:Element):ITable {
-		reset();
-		if (q == null)
-			q = "*";
-		if (t == null)
-			t = cast Browser.document.body;
-		var result:NodeList = q != "*" ? t.querySelectorAll(q) : t.childNodes;
+	public function fill(result:NodeList){
 		var element:Element = null;
 		var obj:IDisplay = null;
 		var len:UInt = result.length;
-		
 		if(len > 0){
 			var ind:UInt = 0;
 			while(ind < len){
@@ -70,9 +64,16 @@ class Table implements ITable {
 				}
 				++ind;
 			}
-		//}else {
-			//Jotun.log("Table => " + (q != null ? q : (t != null ? t.className : "UNKNOW")) + " : EMPTY", 2);
 		}
+	}
+	
+	public function scan(q:String, ?t:Element):ITable {
+		reset();
+		if (q == null)
+			q = "*";
+		if (t == null)
+			t = cast Browser.document.body;
+		fill(q != "*" ? t.querySelectorAll(q) : t.childNodes);
 		return this;
 	}
 	

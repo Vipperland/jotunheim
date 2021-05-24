@@ -40,28 +40,6 @@ class Test_JS{
 		//trace('Data Match? \r\n\t' + (t == rA && t == rB));
 		//
 		
-		//WebDB.open('test', 1, function(db:WebDB){
-			//_db = db;
-			//if (db.isOpen()){
-				//if (db.isUpgradeNeeded()){
-					//trace('DB UPGRADE');
-					//var t:WebDBTable = db.createTable('users', {keyPath:'_id', autoIncrement:true});
-					//t.addIndex('name', 'name', {unique:false});
-					//t.addIndex('gender', 'gender', {unique:false});
-					//t.add({name:'Rafael', gender:'Male'});
-					//t.add({name:'Daya', gender:'Female'});
-				//}else{
-					//trace('DB READY');
-					//db.getTables('users', 'rw', function(db:WebDB){ });
-					//db.table('users').getAll(null, null, function(tb:WebDBTable){
-						//trace(tb.getResult());
-					//});
-				//}
-			//}else{
-				//trace(db.getError().message);
-			//}
-		//});
-		
 	}
 	
 } 

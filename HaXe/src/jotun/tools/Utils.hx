@@ -255,19 +255,21 @@ class Utils{
 		return r;
 	}
 	
-	static public function getQueryParams(value:String):Dynamic {
-		var params:Dynamic = {};
+	static public function getQueryParams(value:String, ?merge:Dynamic):Dynamic {
+		if (merge == null){
+			merge = {};
+		}
 		if(value.indexOf('?') > 0)
 			value = value.split('+').join(' ').split('?')[1];
 		else
-			return params;
+			return merge;
 		Dice.Values(value.split('&'), function(v:String){
 			var data:Array<Dynamic> = v.split('=');
 			if (data.length > 1){
-				Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+				Reflect.setField(merge, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
 			}
 		});
-		return params;
+		return merge;
 	}
 
 	

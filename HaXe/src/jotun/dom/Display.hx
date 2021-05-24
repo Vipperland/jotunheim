@@ -514,7 +514,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function hasCss(name:String):Bool {
-		return (' ' + css() + ' ').indexOf(' ' + name + ' ') != -1;
+		return element.classList.contains(name);
 	}
 	
 	public function toggle(styles:String):IDisplay {

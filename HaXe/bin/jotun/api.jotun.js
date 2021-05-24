@@ -1479,7 +1479,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this.element.className;
 	}
 	,hasCss: function(name) {
-		return (" " + this.css() + " ").indexOf(" " + name + " ") != -1;
+		return this.element.classList.contains(name);
 	}
 	,toggle: function(styles) {
 		var _gthis = this;
@@ -4498,22 +4498,24 @@ jotun_tools_Utils.getMax = function(values,filter) {
 	});
 	return r;
 };
-jotun_tools_Utils.getQueryParams = function(value) {
-	var params = { };
+jotun_tools_Utils.getQueryParams = function(value,merge) {
+	if(merge == null) {
+		merge = { };
+	}
 	if(value.indexOf("?") > 0) {
 		value = value.split("+").join(" ").split("?")[1];
 	} else {
-		return params;
+		return merge;
 	}
 	jotun_utils_Dice.Values(value.split("&"),function(v) {
 		var data = v.split("=");
 		if(data.length > 1) {
 			var field = decodeURIComponent(data[0].split("+").join(" "));
 			var value = decodeURIComponent(data[1].split("+").join(" "));
-			params[field] = value;
+			merge[field] = value;
 		}
 	});
-	return params;
+	return merge;
 };
 jotun_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
@@ -8163,15 +8165,7 @@ jotun_utils_Table.prototype = {
 		this.elements = [];
 		return this;
 	}
-	,scan: function(q,t) {
-		this.reset();
-		if(q == null) {
-			q = "*";
-		}
-		if(t == null) {
-			t = window.document.body;
-		}
-		var result = q != "*" ? t.querySelectorAll(q) : t.childNodes;
+	,fill: function(result) {
 		var element = null;
 		var obj = null;
 		var len = result.length;
@@ -8187,6 +8181,16 @@ jotun_utils_Table.prototype = {
 				++ind;
 			}
 		}
+	}
+	,scan: function(q,t) {
+		this.reset();
+		if(q == null) {
+			q = "*";
+		}
+		if(t == null) {
+			t = window.document.body;
+		}
+		this.fill(q != "*" ? t.querySelectorAll(q) : t.childNodes);
 		return this;
 	}
 	,contains: function(q) {

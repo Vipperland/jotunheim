@@ -370,6 +370,5 @@
 			Jotun.document.body.addChild(_layer);
 		});
 		Jotun.document.trackCursor();
-		window.GlitterMenu = this;
 	})();
 })(typeof window != "undefined" ? window : exports);
