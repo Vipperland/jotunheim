@@ -49,11 +49,10 @@ class Broadcast {
 	
 	public function new() {
 		if (__me__ == null){
-			try {
+			if(Reflect.hasField(Browser.window, 'BroadcastChannel')){
 				// Compatible Browsers
-				BroadcastChannel != null;
 				_channels = {};
-			}catch (e:Dynamic){
+			}else{
 				// Non compatible Browsers
 				Browser.window.addEventListener('storage', function(e:StorageEvent){
 					var channel:String = e.key;

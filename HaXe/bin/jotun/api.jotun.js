@@ -2838,6 +2838,9 @@ jotun_utils_Dice.Blend = function(objects,into,blendType) {
 	if(blendType == null) {
 		blendType = 0;
 	}
+	if(!((objects) instanceof Array)) {
+		objects = [objects];
+	}
 	jotun_utils_Dice.Values(objects,function(o) {
 		jotun_utils_Dice.All(o,function(p,v) {
 			switch(blendType) {
@@ -4710,9 +4713,10 @@ var jotun_net_Broadcast = $hx_exports["J_Broadcast"] = function() {
 	this._muted = true;
 	var _gthis = this;
 	if(jotun_net_Broadcast.__me__ == null) {
-		try {
+		var o = window;
+		if(Object.prototype.hasOwnProperty.call(o,"BroadcastChannel")) {
 			this._channels = { };
-		} catch( _g ) {
+		} else {
 			window.addEventListener("storage",function(e) {
 				var channel = e.key;
 				var events = Reflect.field(_gthis._listeners,channel);

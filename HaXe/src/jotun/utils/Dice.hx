@@ -297,7 +297,10 @@ class Dice {
 		return copy;
 	}
 	
-	public static function Blend(objects:Array<Dynamic>, into:Dynamic, blendType:Int = 0):Void {
+	public static function Blend(objects:Dynamic, into:Dynamic, blendType:Int = 0):Void {
+		if (!Std.is(objects, Array)){
+			objects = [objects];
+		}
 		Dice.Values(objects, function(o:Dynamic):Void {
 			Dice.All(o, function(p:Dynamic, v:Dynamic):Void {
 				switch(blendType){
