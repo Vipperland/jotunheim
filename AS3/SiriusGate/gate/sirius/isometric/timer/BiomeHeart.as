@@ -80,7 +80,7 @@ class ObjData {
 	public function tick():void {
 		if (++count > this.ups){
 			object.pulse(count);
-			count = 0;
+			count -= this.ups;
 		}
 	}
 }

@@ -14,7 +14,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit09(value:uint):void {
-			BitIO.IO[value](hash, Bit.P09);
+			hash = BitIO.IO[value](hash, Bit.P09);
 		}
 		
 		public function get bit10():uint {
@@ -22,7 +22,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit10(value:uint):void {
-			BitIO.IO[value](hash, Bit.P10);
+			hash = BitIO.IO[value](hash, Bit.P10);
 		}
 		
 		public function get bit11():uint {
@@ -30,7 +30,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit11(value:uint):void {
-			BitIO.IO[value](hash, Bit.P11);
+			hash = BitIO.IO[value](hash, Bit.P11);
 		}
 		
 		public function get bit12():uint {
@@ -38,7 +38,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit12(value:uint):void {
-			BitIO.IO[value](hash, Bit.P12);
+			hash = BitIO.IO[value](hash, Bit.P12);
 		}
 		
 		public function get bit13():uint {
@@ -46,7 +46,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit13(value:uint):void {
-			BitIO.IO[value](hash, Bit.P13);
+			hash = BitIO.IO[value](hash, Bit.P13);
 		}
 		
 		public function get bit14():uint {
@@ -54,7 +54,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit14(value:uint):void {
-			BitIO.IO[value](hash, Bit.P14);
+			hash = BitIO.IO[value](hash, Bit.P14);
 		}
 		
 		public function get bit15():uint {
@@ -62,7 +62,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit15(value:uint):void {
-			BitIO.IO[value](hash, Bit.P15);
+			hash = BitIO.IO[value](hash, Bit.P15);
 		}
 		
 		public function get bit16():uint {
@@ -70,11 +70,11 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit16(value:uint):void {
-			BitIO.IO[value](hash, Bit.P16);
+			hash = BitIO.IO[value](hash, Bit.P16);
 		}
 		
 		override public function toString():String {
-			return "[Bit02::hash=" + BitIO.getString(hash, 16) + "]";
+			return "[Bit16::hash=" + BitIO.getString(hash, 16) + "]";
 		}
 		
 	}

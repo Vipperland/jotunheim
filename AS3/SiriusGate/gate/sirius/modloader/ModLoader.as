@@ -27,6 +27,7 @@ package gate.sirius.modloader {
 	import gate.sirius.log.ULog;
 	import gate.sirius.meta.Console;
 	import gate.sirius.modloader.AssetCache;
+	import gate.sirius.modloader.data.ContextBridge;
 	import gate.sirius.modloader.data.Mod;
 	import gate.sirius.modloader.data.StartupData;
 	import gate.sirius.modloader.signals.ResourceSignal;
@@ -84,7 +85,7 @@ package gate.sirius.modloader {
 		
 		private var _toParseData:Array;
 		
-		private var _shared:Object;
+		private var _sharedContext:ContextBridge;
 		
 		private var _logger:ULog = ULog.GATE;
 		
@@ -115,7 +116,7 @@ package gate.sirius.modloader {
 				var loader:File = mods_dir.resolvePath("loader");
 				if (!loader.exists) {
 					loader.createDirectory();
-					_config.createInfoFile(loader.resolvePath("info.sru"), "loader", "0.0.0", null, null, "UILoaderScreen");
+					_config.createInfoFile(loader.resolvePath("info.sru"), "loader", "0.0.0", null, null, "UI_LoaderScreen");
 				}
 				// Create /RESOURCE/MODS/CORE/
 				var core:File = mods_dir.resolvePath("core");
@@ -364,11 +365,12 @@ package gate.sirius.modloader {
 			if (mod.onload != null){
 				mod.initialized = _cache.getInstance(_current.id + '=' + mod.onload);
 				try {
-					mod.initialized.Context = _shared;
+					mod.initialized.Context = _sharedContext;
+					mod.initialized.Console = Console;
 					mod.initialized.Self = {
 						_main:mod,
 						show:function():void {
-							_shared.viewport.ui.addChild(this._main.initialized);
+							_sharedContext.Viewport.ui.addChild(this._main.initialized);
 						},
 						hide:function():void {
 							if (this._main.initialized.parent != null){
@@ -379,14 +381,18 @@ package gate.sirius.modloader {
 							this.hide();
 							this._main.initialized.Context = null;
 							this._main.initialized.Self = null;
+							this._main.initialized.Console = null;
 							this._main.initialized = null;
+						},
+						signals:function(name:String):Object{
+							return _sharedContext.Signals.custom(name);
 						}
 					};
 					if (mod.initialized.OnInit != null){
 						mod.initialized.OnInit();
 					}
 				}catch (e:Error){
-					_logger.pushError('Error Dectected on Mod:[' + mod.id + ']');
+					_logger.pushError('Error Dectected on Mod::Initiate(' + mod.id + ')');
 					_logger.pushError(e.getStackTrace());
 				}
 			}
@@ -480,6 +486,7 @@ package gate.sirius.modloader {
 				case STARTUP_DATA:  {
 					_loadPhase = MOD_DATA;
 					var mod:Mod;
+					_signals.ON_CONFIG.send(ResourceSignal, true, null);
 					_config.loadorder.iterate(function(name:String, enabled:Boolean):void {
 							mod = _mods[name];
 							if (enabled && mod) {
@@ -535,8 +542,8 @@ package gate.sirius.modloader {
 		}
 		
 		
-		public function start(skipDomains:Array, desktop:Boolean, parameters:Object):ModLoader {
-			_shared = parameters;
+		public function start(skipDomains:Array, desktop:Boolean, bridge:ContextBridge):ModLoader {
+			_sharedContext = bridge;
 			_loadPhase = 0;
 			_createTicket();
 			_cache.avoidDomains(skipDomains);
@@ -544,8 +551,6 @@ package gate.sirius.modloader {
 			_logger.pushMessage("[LOAD] " + (_IS_DESKTOP ? "DESKTOP" : "MOBILE") + " MODE ENABLED");
 			if (_IS_DESKTOP){
 				_preScan();
-			}else{
-				
 			}
 			return this;
 		}

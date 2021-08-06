@@ -97,8 +97,8 @@ package gate.sirius.isometric.math {
 		
 		public function move(x:Number, y:Number, z:Number):void {
 			moveX(x);
-			moveX(y);
-			moveX(z);
+			moveY(y);
+			moveZ(z);
 		}
 		
 		

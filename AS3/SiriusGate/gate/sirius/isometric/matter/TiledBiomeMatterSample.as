@@ -83,13 +83,9 @@ package gate.sirius.isometric.matter {
 			var bds:Rectangle = s.getBounds(s);
 			bmp.bitmapData.draw(s, new Matrix(1, 0, 0, 1, -bds.x, -bds.y));
 			_content = bmp;
-			
 			s.graphics.clear();
+			syncPos(width >> 1, height >> 1, depth, bds);
 			
-			syncPos(width>>1, height>>1, depth, bds);
-			
-			
-		
 		}
 		
 		

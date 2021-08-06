@@ -1,9 +1,8 @@
 package gate.sirius.isometric.behaviours.verifiers {
 	import flash.utils.getQualifiedClassName;
 	import gate.sirius.isometric.behaviours.action.Actions;
-	import gate.sirius.isometric.behaviours.action.BasicAction;
-	import gate.sirius.isometric.behaviours.report.Report;
 	import gate.sirius.isometric.behaviours.core.ICoreElement;
+	import gate.sirius.isometric.behaviours.report.Report;
 	
 	/**
 	 * ...

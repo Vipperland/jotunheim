@@ -3,6 +3,8 @@ package gate.sirius.isometric.signal {
 	import flash.display.Stage;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import gate.sirius.isometric.math.low.Bit;
+	import gate.sirius.isometric.math.low.BitIO;
 	import gate.sirius.isometric.matter.BiomeMatter;
 	
 	
@@ -20,11 +22,9 @@ package gate.sirius.isometric.signal {
 		
 		private var _drag:Boolean;
 		
-		private var _rightClick:Boolean;
-		
-		private var _middleClick:Boolean;
-		
 		private var _scroll:int;
+		
+		private var _buttom:uint;
 		
 		private var _startPoint:Point;
 		
@@ -38,15 +38,14 @@ package gate.sirius.isometric.signal {
 		}
 		
 		
-		private function _constructor(matter:BiomeMatter, phase:uint, drag:Boolean, event:MouseEvent, rightClick:Boolean = false, middleClick:Boolean = false, scroll:int = 0, startPoint:Point = null, endPoint:Point = null, image:Bitmap = null):void {
+		private function _constructor(matter:BiomeMatter, phase:uint, drag:Boolean, event:MouseEvent, buttom:uint = 0, scroll:int = 0, startPoint:Point = null, endPoint:Point = null, image:Bitmap = null, mode:int = 0):void {
 			_image = image;
 			_endPoint = endPoint.clone();
 			_startPoint = startPoint.clone();
 			_scroll = scroll;
-			_middleClick = middleClick;
-			_rightClick = rightClick;
 			_drag = drag;
 			_event = event;
+			_buttom = buttom;
 			_phase = phase;
 			_matter = matter;
 		}
@@ -75,22 +74,6 @@ package gate.sirius.isometric.signal {
 		public function get drag():Boolean {
 			return _drag;
 		}
-		
-		
-		public function leftClick():Boolean {
-			return _scroll == 0 && !(_middleClick || _rightClick);
-		}
-		
-		
-		public function get rightClick():Boolean {
-			return _rightClick;
-		}
-		
-		
-		public function get middleClick():Boolean {
-			return _middleClick;
-		}
-		
 		
 		public function get scroll():int {
 			return _scroll;
@@ -123,6 +106,17 @@ package gate.sirius.isometric.signal {
 			return _image;
 		}
 		
+		public function get isLeftClick():Boolean {
+			return BitIO.test(_buttom, Bit.P01);
+		}
+		
+		public function get isMidClick():Boolean {
+			return BitIO.test(_buttom, Bit.P02);
+		}
+		
+		public function get isRightClick():Boolean {
+			return BitIO.test(_buttom, Bit.P03);
+		}
 		
 		override public function dispose(recyclable:Boolean):void {
 			_matter = null;
@@ -132,7 +126,7 @@ package gate.sirius.isometric.signal {
 		
 		
 		public function toString():String {
-			return "[BiomeInteractionSignal matter=" + matter + " phase=" + phase + " event=" + event + " stage=" + stage + " drag=" + drag + " rightClick=" + rightClick + " middleClick=" + middleClick + " scroll=" + scroll + "]";
+			return "[BiomeInteractionSignal matter=" + matter + " phase=" + phase + " event=" + event + " stage=" + stage + " drag=" + drag + " buttom=" + _buttom + " scroll=" + scroll + "]";
 		}
 	
 	}

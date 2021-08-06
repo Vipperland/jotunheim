@@ -12,6 +12,8 @@ package gate.sirius.modloader.signals {
 		
 		private var _error:SignalDispatcher;
 		
+		private var _on_config:SignalDispatcher;
+		
 		private var _on_file:SignalDispatcher;
 		
 		private var _on_progress:SignalDispatcher;
@@ -22,6 +24,7 @@ package gate.sirius.modloader.signals {
 		public function ResourceSignals(author:Object) {
 			_complete = new SignalDispatcher(author);
 			_error = new SignalDispatcher(author);
+			_on_config = new SignalDispatcher(author);
 			_on_file = new SignalDispatcher(author);
 			_on_progress = new SignalDispatcher(author);
 			_on_mod_loaded = new SignalDispatcher(author);
@@ -35,6 +38,10 @@ package gate.sirius.modloader.signals {
 		
 		public function get ERROR():SignalDispatcher {
 			return _error;
+		}
+		
+		public function get ON_CONFIG():SignalDispatcher {
+			return _on_config;
 		}
 		
 		public function get ON_FILE():SignalDispatcher {

@@ -27,11 +27,7 @@ package gate.sirius.isometric.matter {
 		
 		public static const REMOVED:uint = 9;
 		
-		public static const RIGHT_CLICK:uint = 10;
-		
-		public static const MID_CLICK:uint = 11;
-		
-		public static const INTERACT:uint = 12;
+		public static const INTERACT:uint = 10;
 	
 	}
 

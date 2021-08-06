@@ -54,13 +54,6 @@ package gate.sirius.isometric {
 		/** Create missing tiles */
 		public var alwaysCreateTiles:Boolean;
 		
-		
-		/** @private */
-		private function _disableInteraction():void {
-			_cursor = null;
-		}
-		
-		
 		/** @private */
 		protected function _createEntry(x:int, y:int, z:int, data:Dictionary):BiomeEntry {
 			var entry:BiomeEntry = new BiomeEntry(x, y, z, this);
@@ -190,6 +183,7 @@ package gate.sirius.isometric {
 			var omatter:OrganicBiomeMatter = matter as OrganicBiomeMatter;
 			if (omatter) {
 				_heart.connect(omatter);
+				omatter.pulse(0);
 			}
 			_signals.MATTER_ADDED.send(BiomeMatterSignal, true, matter);
 			matter.activate(BiomeActivations.ADDED, null, this);
@@ -295,15 +289,13 @@ package gate.sirius.isometric {
 			return result;
 		}
 		
-		
 		/**
 		 * Scan Z-axys for matters
-		 * @param	mouseX
-		 * @param	mouseY
-		 * @param	tileWidth
-		 * @param	tileHeight
-		 * @param	startZ
-		 * @param	maxElements
+		 * @param	x
+		 * @param	y
+		 * @param	start
+		 * @param	end
+		 * @param	ocuppiedOnly
 		 * @return
 		 */
 		public function depthScan(x:int, y:int, start:int, end:int, ocuppiedOnly:Boolean = true):Vector.<BiomeMatter> {
@@ -471,9 +463,12 @@ package gate.sirius.isometric {
 		 * @param	stage
 		 */
 		public function enableInteracion(stage:Stage, maxObjects:uint = 0):void {
-			_cursor = new BiomeInteraction(stage, this, _disableInteraction, maxObjects);
+			if (_cursor == null){
+				_cursor = new BiomeInteraction(stage, this, maxObjects);
+			}
+			_cursor.enable();
 		}
-	
+		
 	}
 
 }

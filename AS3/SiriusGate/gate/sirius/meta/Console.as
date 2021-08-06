@@ -61,12 +61,12 @@ package gate.sirius.meta {
 		}
 		
 		
-		static public function init(stage:Stage, allowCommands:Boolean, TargetObject:* = null, ... classes:Array):void {
+		static public function init(stage:Stage, TargetObject:* = null, ... classes:Array):void {
 			if (_stage) {
 				return;
 			}
 			_stage = stage;
-			_console = new Console(allowCommands);
+			_console = new Console();
 			_TargetObject = TargetObject || _console;
 			_stage.addEventListener(Event.RESIZE, _onResize);
 			SruDecoder.allowClasses.apply(null, classes);
@@ -372,7 +372,7 @@ package gate.sirius.meta {
 		}
 		
 		
-		public function Console(dev:Boolean) {
+		public function Console() {
 			
 			_lines = new Vector.<String>();
 			
@@ -403,7 +403,7 @@ package gate.sirius.meta {
 			
 			_stage.addEventListener(KeyboardEvent.KEY_DOWN, _onKeyDown);
 			
-			_tf_input.visible = dev;
+			_tf_input.visible = false;
 			
 			addChild(_tf_output);
 			addChild(_tf_input);
@@ -738,8 +738,6 @@ package gate.sirius.meta {
 			mouseEnabled = false;
 			mouseChildren = false;
 			_updatePosition();
-			pushHighMsg("!== CONSOLE :: LOG MODE ==");
-			pushHighMsg("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.language, "/DEBUG:", Capabilities.isDebugger);
 		}
 		
 		public function setDevMode():void {
@@ -747,8 +745,6 @@ package gate.sirius.meta {
 			mouseEnabled = true;
 			mouseChildren = true;
 			_updatePosition();
-			pushHighMsg("!== CONSOLE :: DEV MODE ==");
-			pushHighMsg("OS:", Capabilities.os, "/DPI:", Capabilities.screenDPI, "/LANG:", Capabilities.language, "/DEBUG:", Capabilities.isDebugger);
 		}
 		
 		public function isDevMode():Boolean {

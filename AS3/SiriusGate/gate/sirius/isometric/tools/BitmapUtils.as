@@ -1,15 +1,14 @@
 package gate.sirius.isometric.tools {
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Shape;
-	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import gate.sirius.isometric.math.BiomeBounds;
 	import gate.sirius.isometric.math.BiomeMath;
 	import gate.sirius.isometric.math.BiomePoint;
 	import gate.sirius.isometric.matter.BiomeMatter;
-	
 	
 	/**
 	 * ...
@@ -18,13 +17,16 @@ package gate.sirius.isometric.tools {
 	public class BitmapUtils {
 		
 		public static function apply(to:BiomeMatter, funct:Function, width:uint, height:uint, color:uint, border:uint = 0x0):void {
+			
 			var bitmap:Bitmap = BitmapUtils.check(to);
 			bitmap.bitmapData = funct(to, width, height, color, border);
 			to.content = bitmap;
 			bitmap.name = to.name;
+			
 			var location:BiomePoint = BiomeMath.expandLocation(to.location.x, to.location.y, 0, width, height, 0);
 			to.content.x = location.x;
 			to.content.y = location.y;
+			
 		}
 		
 		
@@ -45,7 +47,7 @@ package gate.sirius.isometric.tools {
 				});
 			
 			return texture;
-		
+			
 		}
 		
 		
@@ -73,6 +75,7 @@ package gate.sirius.isometric.tools {
 		
 		
 		static public function check(matter:BiomeMatter):Bitmap {
+			
 			var bitmap:Bitmap = (matter.content as Bitmap);
 			if (bitmap) {
 				if (bitmap.bitmapData) {
@@ -81,20 +84,25 @@ package gate.sirius.isometric.tools {
 			} else {
 				bitmap = new Bitmap();
 			}
+			
 			return bitmap;
+			
 		}
 		
 		static public function spriteFrom(bitmap:BitmapData, w:int, h:int, x1:int = 0, y1:int = 0, x2:int = 0, y2:int = 0):Vector.<BitmapData> {
+			
 			if (x2 == 0){
 				x2 = bitmap.width;
 			}
 			if (y2 == 0){
 				y2 = bitmap.height;
 			}
+			
 			var xT:int = x1;
 			var res:Vector.<BitmapData> = new Vector.<BitmapData>();
 			var loct:Point = new Point(0, 0);
 			var rect:Rectangle = new Rectangle(0, 0, 100, 100);
+			
 			while (y1 < y2){
 				while (x1 < x2){
 					rect.x = x1;
@@ -107,7 +115,9 @@ package gate.sirius.isometric.tools {
 				x1 = xT;
 				y1 += h;
 			}
+			
 			return res;
+			
 		}
 		
 	}

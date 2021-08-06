@@ -14,7 +14,7 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit03(value:uint):void {
-			BitIO.IO[value](hash, Bit.P03);
+			hash = BitIO.IO[value](hash, Bit.P03);
 		}
 		
 		public function get bit04():uint {
@@ -22,11 +22,11 @@ package gate.sirius.isometric.math.low {
 		}
 		
 		public function set bit04(value:uint):void {
-			BitIO.IO[value](hash, Bit.P04);
+			hash = BitIO.IO[value](hash, Bit.P04);
 		}
 		
 		override public function toString():String {
-			return "[Bit02::hash=" + BitIO.getString(hash, 4) + "]";
+			return "[Bit04::hash=" + BitIO.getString(hash, 4) + "]";
 		}
 		
 	}

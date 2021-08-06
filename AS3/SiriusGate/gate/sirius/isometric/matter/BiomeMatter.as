@@ -65,7 +65,7 @@ package gate.sirius.isometric.matter {
 		private function _activateNeighborsDelayer(hash:uint, closed:Vector.<BiomeMatter>, phase:uint, level:uint, data:*, from:BiomeMatter, filter:Function, delay:uint):void {
 			if (delay == 0) {
 				_activateNeighbors(hash, closed, phase, level, data, from, filter, delay, null);
-			} else {
+			} else if(!hasPendingActivation()){
 				_delayedCall = setTimeout(_activateNeighbors, delay, hash, closed, phase, level, data, from, filter, delay, null);
 			}
 		}
@@ -73,8 +73,8 @@ package gate.sirius.isometric.matter {
 		
 		private function _activateNeighbors(hash:uint, closed:Vector.<BiomeMatter>, phase:uint, level:uint, data:*, from:BiomeMatter, filter:Function, delay:uint, near:BiomeBounds):void {
 			cancelPendingActivation();
-			var neigbor:BiomeMatter;
 			if (closed.indexOf(this) == -1) {
+				var neigbor:BiomeMatter;
 				if (from !== this) {
 					if (filter !== null) {
 						if (!filter(from, this)) {
@@ -86,24 +86,36 @@ package gate.sirius.isometric.matter {
 				if (level > 0) {
 					--level;
 					closed[closed.length] = this;
-					if ((hash & BiomeNeighbor.RIGHT) == BiomeNeighbor.RIGHT)
-						for each (neigbor in getCollision(_location.getRightPoint(), near))
+					if ((hash & BiomeNeighbor.RIGHT) == BiomeNeighbor.RIGHT){
+						for each (neigbor in getCollision(_location.getRightPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
-					if ((hash & BiomeNeighbor.BOTTOM) == BiomeNeighbor.BOTTOM)
-						for each (neigbor in getCollision(_location.getBottomPoint(), near))
+						}
+					}
+					if ((hash & BiomeNeighbor.BOTTOM) == BiomeNeighbor.BOTTOM){
+						for each (neigbor in getCollision(_location.getBottomPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
-					if ((hash & BiomeNeighbor.LEFT) == BiomeNeighbor.LEFT)
-						for each (neigbor in getCollision(_location.getLeftPoint(), near))
+						}
+					}
+					if ((hash & BiomeNeighbor.LEFT) == BiomeNeighbor.LEFT){
+						for each (neigbor in getCollision(_location.getLeftPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
-					if ((hash & BiomeNeighbor.TOP) == BiomeNeighbor.TOP)
-						for each (neigbor in getCollision(_location.getTopPoint(), near))
+						}
+					}
+					if ((hash & BiomeNeighbor.TOP) == BiomeNeighbor.TOP){
+						for each (neigbor in getCollision(_location.getTopPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
-					if ((hash & BiomeNeighbor.BACK) == BiomeNeighbor.BACK)
-						for each (neigbor in getCollision(_location.getBackPoint(), near))
+						}
+					}
+					if ((hash & BiomeNeighbor.BACK) == BiomeNeighbor.BACK){
+						for each (neigbor in getCollision(_location.getBackPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
-					if ((hash & BiomeNeighbor.FRONT) == BiomeNeighbor.FRONT)
-						for each (neigbor in getCollision(_location.getFrontPoint(), near))
+						}
+					}
+					if ((hash & BiomeNeighbor.FRONT) == BiomeNeighbor.FRONT){
+						for each (neigbor in getCollision(_location.getFrontPoint(), near)){
 							neigbor._activateNeighborsDelayer(hash, closed, phase, level, data, this, filter, delay);
+						}
+					}
 				}
 			}
 		}
@@ -116,7 +128,7 @@ package gate.sirius.isometric.matter {
 		 * @param	bounds
 		 * @param	location
 		 */
-		public function BiomeMatter(name:String, allocation:BiomeAllocation = null, location:BiomeFlexPoint = null, content:* = null) {
+		public function BiomeMatter(name:String, allocation:BiomeAllocation = null, location:BiomeFlexPoint = null, content:DisplayObject = null) {
 			_allocation = (allocation || new BiomeAllocation()).getUnique(this);
 			_location = location || new BiomeFlexPoint(0, 0, 0);
 			_offset = new MatterOffset(_location);
@@ -124,6 +136,7 @@ package gate.sirius.isometric.matter {
 			_behaviours = new MatterBehaviours(this);
 			_content = content;
 			_depthInfo = new DepthInfo(this);
+			publishName();
 			++MATTER_COUNT;
 		}
 		
@@ -381,8 +394,9 @@ package gate.sirius.isometric.matter {
 		 */
 		public function activateNeighbors(hash:uint, phase:uint, filter:Function, level:uint = 1, data:* = null, delay:uint = 0, bounds:BiomeBounds = null):void {
 			var closed:Vector.<BiomeMatter> = new Vector.<BiomeMatter>();
-			if (level == 0)
+			if (level == 0){
 				level = 99999;
+			}
 			_activateNeighbors(hash, closed, phase, level, data, this, filter, delay, bounds);
 		}
 		

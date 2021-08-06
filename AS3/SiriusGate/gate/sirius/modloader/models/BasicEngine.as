@@ -9,8 +9,12 @@ package gate.sirius.modloader.models {
 	import gate.sirius.log.signals.ULogSignal;
 	import gate.sirius.meta.Console;
 	import gate.sirius.modloader.ModLoader;
+	import gate.sirius.modloader.data.ContextBridge;
 	import gate.sirius.modloader.models.BasicViewport;
 	import gate.sirius.modloader.signals.ResourceSignal;
+	import gate.sirius.signals.DynamicSignals;
+	import gate.sirius.signals.Signal;
+	import gate.sirius.signals.SignalDispatcher;
 	/**
 	 * ...
 	 * @author Rim Project
@@ -25,14 +29,48 @@ package gate.sirius.modloader.models {
 		
 		private var _desktop:Boolean;
 		
+		private var _signals:DynamicSignals;
+		
+		private var _dev:Object;
+		
 		private var _log:File;
+		
 		private var _log_io:FileStream;
 		
-		private function _on_allModsLoaded(ticket:ResourceSignal):void { }
+		protected function _on_allModsLoaded(ticket:ResourceSignal):void {
+		}
 		
-		private function _on_singleModLoaded(ticket:ResourceSignal):void { }
+		protected function _on_singleModLoaded(ticket:ResourceSignal):void { }
 		
-		public function BasicEngine(viewport:Sprite, console:Boolean) {
+		protected function _on_configLoaded(ticket:ResourceSignal):void {
+			if (_mods.config.properties.console){
+				if (_mods.config.properties.devmode){
+					Console.setDevMode();
+					Console.show();
+					Console.expand();
+				}else{
+					Console.setLogMode();
+				}
+			}
+		}
+		
+		private function _logSystem():void {
+			_writeLog('=== STARTED AT ' + [
+				(new Date().toString()),
+				Capabilities.os,
+				Capabilities.screenResolutionX + 'x' + Capabilities.screenResolutionX + ' (' + Capabilities.screenDPI + 'dpi)',
+				'VERSION ' + Capabilities.version,
+				'DEBUG=' + Capabilities.isDebugger
+			].join(' // '));
+		}
+		
+		private function _writeLog(message:String):void {
+			_log_io.open(_log, FileMode.APPEND);
+			_log_io.writeUTFBytes(message + '\r');
+			_log_io.close();
+		}
+		
+		public function BasicEngine(viewport:Sprite) {
 			
 			_desktop = Capabilities.os.toUpperCase().indexOf('WIN') != -1;
 			
@@ -72,33 +110,18 @@ package gate.sirius.modloader.models {
 			});
 			
 			_mods = new ModLoader(null);
+			_mods.signals.ON_CONFIG.hold(_on_configLoaded);
 			_mods.signals.ON_MOD_LOADED.hold(_on_singleModLoaded);
 			_mods.signals.COMPLETE.hold(_on_allModsLoaded);
 			
-			_viewport = new BasicViewport(viewport);
-			if (console){
-				Console.init(viewport.stage, true, this);
-				Console.expand();
-				Console.show();
-			}
-			_mods.start([], _desktop, new SharedBridge(this, _viewport, Console));
-			_biome = new Biome(0, 0, 0, 0, 0, 0, false, 60);
+			Console.init(viewport.stage, this);
 			
-		}
-		
-		private function _logSystem():void {
-			_writeLog('=== STARTED AT ' + [
-				(new Date().toString()),
-				Capabilities.os,
-				Capabilities.screenResolutionX + 'x' + Capabilities.screenResolutionX + ' (' + Capabilities.screenDPI + 'dpi)',
-				'VERSION ' + Capabilities.version,
-			].join(' // '));
-		}
-		
-		private function _writeLog(message:String):void {
-			_log_io.open(_log, FileMode.APPEND);
-			_log_io.writeUTFBytes(message + '\r');
-			_log_io.close();
+			_viewport = new BasicViewport(viewport);
+			_biome = new Biome(0, 0, 0, 0, 0, 0, false, 60);
+			_signals = new DynamicSignals(this);
+			
+			_mods.start([], _desktop, new ContextBridge(this));
+			
 		}
 		
 		public function get biome():Biome {
@@ -109,34 +132,14 @@ package gate.sirius.modloader.models {
 			return _mods;
 		}
 		
+		public function get signals():DynamicSignals {
+			return _signals;
+		}
+		
 		public function get viewport():BasicViewport {
 			return _viewport;
 		}
 		
 	}
 
-}
-
-class SharedBridge {
-	
-	private var _Engine:Object;
-	public function get Engine():Object {
-		return _Engine;
-	}
-	
-	private var _Viewport:Object;
-	public function get Viewport():Object {
-		return _Viewport;
-	}
-	
-	private var _Console:Object;
-	public function get Console():Object {
-		return _Console;
-	}
-	
-	public function SharedBridge(engine:Object, viewport:Object, console:Object){
-		_Engine = engine;
-		_Viewport = viewport;
-		_Console = console;
-	}
 }

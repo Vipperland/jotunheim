@@ -2,6 +2,7 @@ package gate.sirius.modloader {
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.geom.Matrix;
 	import flash.system.ApplicationDomain;
 	import gate.sirius.log.ULog;
 	import gate.sirius.modloader.data.Mod;
@@ -24,6 +25,9 @@ package gate.sirius.modloader {
 		
 		private var _avoidDomain:Array;
 		
+		private var _base_matrix:Matrix;
+		
+		private var _uid:String;
 		
 		private function _addDefinition(mod:String, name:String, definition:Class, bitmap:BitmapData):Def {
 			var route:String = _routines[name] || name;
@@ -39,18 +43,19 @@ package gate.sirius.modloader {
 			return def;
 		}
 		
-		
 		public function AssetCache() {
 			_cached = {};
 			_textures = {};
 			_routines = {};
+			_base_matrix = new Matrix(1, 0, 0, 1, 0, 0);
 			_swf = new Explorer();
+			_uid = '$_'+new Date().getTime();
 		}
 		
-		
 		public function route(mod:Mod, definition:String, target:String):void {
-			if (!mod)
+			if (!mod){
 				return;
+			}
 			definition = mod.id + "=" + definition;
 			var def:Def = _getDefinition(definition);
 			if (def) {
@@ -65,7 +70,6 @@ package gate.sirius.modloader {
 				_routines[definition] = target;
 			}
 		}
-		
 		
 		internal function register(mod:Mod, object:DisplayObject):void {
 			var d:Def;
@@ -91,9 +95,7 @@ package gate.sirius.modloader {
 					}
 				}
 			}
-		
 		}
-		
 		
 		internal function registerImage(mod:Mod, name:String, content:BitmapData):void {
 			var d:Def = _addDefinition(mod.id, name, null, content.clone());
@@ -103,16 +105,9 @@ package gate.sirius.modloader {
 			}
 		}
 		
-		
 		private function _getDefinition(name:String):Def {
 			return _cached[name] as Def;
 		}
-		
-		public function hasTexture(name:String):Boolean {
-			var def:Def = _getDefinition(name);
-			return def !== null;
-		}
-		
 		
 		public function getTexture(name:String):BitmapData {
 			var def:Def = _getDefinition(name);

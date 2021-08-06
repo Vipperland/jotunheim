@@ -1,4 +1,5 @@
 package gate.sirius.isometric.matter {
+	import flash.display.DisplayObject;
 	import gate.sirius.isometric.math.BiomeAllocation;
 	import gate.sirius.isometric.math.BiomeFlexPoint;
 	
@@ -19,7 +20,7 @@ package gate.sirius.isometric.matter {
 		protected var _idle:Boolean;
 		
 		
-		public function OrganicBiomeMatter(name:String, allocation:BiomeAllocation = null, location:BiomeFlexPoint = null, ups:uint = 10, content:* = null) {
+		public function OrganicBiomeMatter(name:String, allocation:BiomeAllocation = null, location:BiomeFlexPoint = null, ups:uint = 10, content:DisplayObject = null) {
 			super(name, allocation, location, content);
 			this._ups = ups;
 		

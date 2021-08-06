@@ -27,11 +27,14 @@ package gate.sirius.log {
 		
 		private var _lastMessage:String;
 		
+		private var _count:int;
+		
 		
 		public function ULog() {
 			_signals = new SignalDispatcher(this);
 			_messages = new Vector.<String>();
 			_names = Vector.<String>([" ", "!", "?"]);
+			_count = 0;
 		}
 		
 		
@@ -49,9 +52,13 @@ package gate.sirius.log {
 			if (level > 3){
 				level = 3;
 			}
-			_lastMessage = ((_messages.length + 1) * 0.0001).toFixed(4).split(".").join("") + " &lt;" + _names[level] + "&gt; " + message.join("\n");
+			_lastMessage = ((_count + 1) * 0.0001).toFixed(4).split(".").join("") + " &lt;" + _names[level] + "&gt; " + message.join("\n");
 			_signals.send(ULogSignal, true, level, _lastMessage);
 			_messages[_messages.length] = _lastMessage;
+			++_count;
+			if (_messages.length > 1000){
+				_messages.shift();
+			}
 		}
 		
 		
