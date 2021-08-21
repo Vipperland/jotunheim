@@ -252,9 +252,10 @@ package gate.sirius.isometric.math {
 		
 		/**
 		 * Create a custom clone of current bounds
+		 * @param options
 		 * @return
 		 */
-		public function clone(options:uint = 0, mirror:Boolean = false):BiomeBounds {
+		public function clone(options:uint = 0):BiomeBounds {
 			var bounds:BiomeBounds = new BiomeBounds();
 			var points:Vector.<BiomePoint> = bounds._points;
 			switch (options) {

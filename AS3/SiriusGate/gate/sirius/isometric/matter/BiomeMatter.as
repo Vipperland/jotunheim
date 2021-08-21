@@ -359,12 +359,11 @@ package gate.sirius.isometric.matter {
 		/**
 		 *
 		 * @param	options
-		 * @param	mirror
 		 * @return
 		 */
-		public function clone(options:uint = 0, mirror:Boolean = false):BiomeMatter {
+		public function clone(options:uint = 0):BiomeMatter {
 			var matter:BiomeMatter = new BiomeMatter(_name + "_copy", null, _location.clone(), _content);
-			matter._allocation = _allocation.clone(matter, options, mirror);
+			matter._allocation = _allocation.clone(matter, options);
 			matter._behaviours = _behaviours.clone() as MatterBehaviours;
 			return matter;
 		}

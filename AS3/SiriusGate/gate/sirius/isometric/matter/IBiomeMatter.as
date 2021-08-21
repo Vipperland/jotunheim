@@ -120,10 +120,9 @@ package gate.sirius.isometric.matter {
 		/**
 		 *
 		 * @param	options
-		 * @param	mirror
 		 * @return
 		 */
-		function clone(options:uint = 0, mirror:Boolean = false):BiomeMatter;
+		function clone(options:uint = 0):BiomeMatter;
 		
 		/**
 		 * Blank method for implementation

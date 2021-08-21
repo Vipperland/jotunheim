@@ -90,10 +90,10 @@ package gate.sirius.isometric.math {
 			_position = 0;
 		}
 		
-		public function clone(to:BiomeMatter, options:uint = 0, mirror:Boolean = false):BiomeAllocation {
+		public function clone(to:BiomeMatter, options:uint = 0):BiomeAllocation {
 			var bounds:Array = [];
 			for each (var bound:BiomeBounds in _bounds) {
-				bounds[bounds.length] = bound.clone(options, mirror);
+				bounds[bounds.length] = bound.clone(options);
 			}
 			return new BiomeAllocation(bounds).getUnique(to);
 		}
