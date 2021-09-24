@@ -2,7 +2,7 @@
 
 	namespace flash\filters
 	
-	class DisplacementMapFilterMode extends HydraObject {
+	class DisplacementMapFilterMode {
 
 		public static $CLAMP = "clamp";
 		public static $COLOR = "color";

@@ -6,7 +6,7 @@ class SiriusDecoder
 {
 	private static $_errors = array();
 	
-  private static $_classAlias = array();
+	private static $_classAlias = array();
 
 	public static $enableDefaultObjects = false;
 	
@@ -75,7 +75,6 @@ class SiriusDecoder
 		$value = explode("\n", $value);
 		$value = implode("<<_BREAK_>>", $value);
 		$value = explode("<<_BREAK_>>", $value);
-		
 		return $value;
 	}
 	
@@ -139,7 +138,7 @@ class SiriusDecoder
 							$currentObject->push($pushObject);
 					} 
 					else
-            $currentObject->{ $pathName } = $pushObject;
+						$currentObject->{ $pathName } = $pushObject;
 				} 
 				catch (Exception $error) {
 					self::_setError ($currentLine, "Error: Can't create property '{$paramName}' in [" . (get_class($currentObject)) . "].", 0);
@@ -168,8 +167,8 @@ class SiriusDecoder
 			echo $targetClass;
 			$alias = self::_getPath($targetClass, $path, null, null);
 		}
-    else
-      $alias = null;
+		else
+			$alias = null;
 		
 		return $alias;
 	}
@@ -208,18 +207,18 @@ class SiriusDecoder
 			if ($isCommentBlock){
 				$index = strpos($clearLine, "*/");
 				if ($index === false)	
-				  continue;
+					continue;
 				$normalLine = substr($normalLine, $index, count($normalLine) - $index - 2);
 				$isCommentBlock = false;
 				if (strlen($normalLine) == 0) 
-				  continue;
+					continue;
 			}
 			
 			$clearLine = self::_removeComments($normalLine);
 			$clearLine = self::_clearSpaces($clearLine);
       
 			if (strlen($clearLine) == 0) 
-        continue;
+				continue;
 
 			// Search for comments
 			if (strpos($clearLine, "/*") !== false) {
@@ -231,17 +230,17 @@ class SiriusDecoder
 				$clearLine = substr($clearLine, $index + 2, strlen($clearLine) - $index - 2);
 				$clearLine = self::_clearSpaces($clearLine);
 				if (strlen($clearLine) == 0) 
-				  continue;
+					continue;
 			}
 			
 			// clar whitespaces at the end of the line
 			while (substr($normalLine, strlen($normalLine) - 1) == " ") 
-        $normalLine = substr($normalLine, 0, strlen($normalLine) - 1);
+				$normalLine = substr($normalLine, 0, strlen($normalLine) - 1);
 			
 			$cmdChar1 = substr($clearLine, 0, 1);
 			
 			if (strpos($clearLine, "[Inject<") === 0) {
-			  continue; // ignore injections
+				continue; // ignore injections
 			  
 				$clearLine = substr($clearLine, 8, strlen($clearLine) - 9);
 				$index = strpos($clearLine, "=");
@@ -249,9 +248,8 @@ class SiriusDecoder
 					$refValue = explode("=", $clearLine, 2);
 					$paramName = $refValue[0];
 					$paramValue = self::_searchForParamValue($refValue[1]);
-          $currentObject->pushVariable($paramName, $paramValue);
-				}
-				else {
+					$currentObject->pushVariable($paramName, $paramValue);
+				} else {
 					$paramValue = self::_searchForParamValue($clearLine);
 					$currentObject->push($paramValue);
 				}
@@ -289,11 +287,11 @@ class SiriusDecoder
 								$clearLine = self::_clearSpaces($normalLine);
 								
 								if (strpos($clearLine, "(") === strlen($clearLine) - 1) 
-								  ++$openedBracers;
+									++$openedBracers;
 								
 								if (strpos($clearLine, ")") === 0) {
 									if ($openedBracers == 0) 
-									  break;
+										break;
 									--$openedBracers;
 								}
 								else
@@ -308,7 +306,7 @@ class SiriusDecoder
 					$functionName = substr($clearLine, 1, $index - 1);
 				
 				if (!isset($functionName)) 
-				  continue;
+					continue;
 				
 				if (!method_exists($currentObject, $functionName)) {
 					self::_setError($currentLine, "Function '$functionName' no found in [" . get_class($currentObject) . "]");
@@ -335,10 +333,10 @@ class SiriusDecoder
 					$className = substr($clearLine, 1, strlen($clearLine) - 1);
 					$className = self::_getClassAlias($className);
 					if ($className == "Object" || $className == "Array") 
-					  $className = "sirius\SiriusObject";
+						$className = "sirius\SiriusObject";
 					elseif (!class_exists($className)) {
 						if (self::$enableDefaultObjects) 
-						  $className = "sirius\SiriusObject";
+							$className = "sirius\SiriusObject";
 						else {
 							self::_setError($currentLine, "Definition Class '{$className}' not found.");
 							continue;
@@ -389,10 +387,10 @@ class SiriusDecoder
 				$className = substr($clearLine, 0, strlen(substr) - 2);
 				$className = self::_getClassAlias($className);
 				if ($className == "Object" || $className == "Array") 
-				  $className = "sirius\SiriusObject";
+					$className = "sirius\SiriusObject";
 				elseif (!class_exists($className)) {
 					if (self::$enableDefaultObjects)
-					  $className = "sirius\SiriusObject";
+						$className = "sirius\SiriusObject";
 					else {
 						self::_setError($currentLine, "Definition Class '{$className}' not found.");
 						continue;
@@ -409,10 +407,10 @@ class SiriusDecoder
 					$className = substr($paramName, $index + 1, strlen($paramName));
 					$className = self::_getClassAlias($className);
 					if ($className == "Object" || $className == "Array") 
-					  $className = "sirius\SiriusObject";
+						$className = "sirius\SiriusObject";
 					else if (!class_exists($className)) {
 						if (self::$enableDefaultObjects) 
-						 $className = "sirius\SiriusObject";
+							$className = "sirius\SiriusObject";
 						else {
 							self::_setError($currentLine, "Definition Class '{$className}' not found.");
 							++$waitForBracerClose;
@@ -475,10 +473,10 @@ class SiriusDecoder
 						$className = substr($clearLine, $index + 2, strlen($clearLine) - $index - 2);
 						$className = self::_getClassAlias($className);
 						if ($className == "Object" || $className == "Array") 
-						  $className = "sirius\SiriusObject";
+							$className = "sirius\SiriusObject";
 						elseif (!class_exists($className)) {
 							if (self::$enableDefaultObjects) 
-							  $className = "sirius\SiriusObject";
+								$className = "sirius\SiriusObject";
 							else {
 								self::_setError($currentLine, "Definition Class ['{$className}'] not found.");
 								continue;

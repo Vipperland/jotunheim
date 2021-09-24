@@ -23,7 +23,15 @@
 
 		public $strength;
 
-		public function __construct(){
+		public function __construct($alpha, $blurX, $blurY, $color, $inner, $knockout, $quality, $strength){
+			$this->alpha = $alpha;
+			$this->blurX = $blurX;
+			$this->blurY = $blurY;
+			$this->color = $color;
+			$this->inner = $inner;
+			$this->knockout = $knockout;
+			$this->quality = $quality;
+			$this->strength = $strength;
 		}
 
 	}

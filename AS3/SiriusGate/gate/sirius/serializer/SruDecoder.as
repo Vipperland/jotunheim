@@ -22,21 +22,21 @@ package gate.sirius.serializer {
 	 * Fast Help:
 	 *
 	 * //	Basics
-	 * propName = test					Set String Variable
-	 * propName = 1						Set Number Variable
-	 * propName = 0xFF					Set Number Variable
-	 * propName = 0001					Set Number Variable
-	 * propName = true					Set Boolean Variable
+	 * 	propName = test					Set String Variable
+	 * 	propName = 1					Set Number Variable
+	 * 	propName = 0xFF					Set Number Variable
+	 * 	propName = 0001					Set Number Variable
+	 * 	propName = true					Set Boolean Variable
 	 *
 	 * //	Objects
-	 * #ClassName						Equals to cursor.push(new ClassName());
-	 * #ClassName(						Create an alternate cursor to buffer constructor properties
-	 * #ClassName{						Equals to cursor.push(new ClassName()); and set value to cursor
-	 * ){								Close the current alternated cursor and call the class constructor with the buffer values
-	 * prop:ClassName					Equals to myProp = new ClassName();
-	 * propA.propB:ClassName			Equals to myObject.prop = new ClassName(); and set value to cursor
-	 * prop:ClassName{					Equals to myProp = new ClassName(); and set value to cursor
-	 * }								Close current object and set the previous object to cursor
+	 * 	#ClassName					Equals to cursor.push(new ClassName());
+	 * 	#ClassName(					Create an alternate cursor to buffer constructor properties
+	 * 	#ClassName{					Equals to cursor.push(new ClassName()); and set value to cursor
+	 * 	){							Close the current alternated cursor and call the class constructor with the buffer values
+	 * 	prop:ClassName					Equals to myProp = new ClassName();
+	 * 	propA.propB:ClassName			Equals to myObject.prop = new ClassName(); and set value to cursor
+	 * 	prop:ClassName{					Equals to myProp = new ClassName(); and set value to cursor
+	 * 	}							Close current object and set the previous object to cursor
 	 * 			Ex.:
 	 * 				users:Array {
 	 * 					#Object {
@@ -46,11 +46,11 @@ package gate.sirius.serializer {
 	 * 				}
 	 *
 	 * //	Methods
-	 * ~methodName()					Equals to myFunction();
-	 * ~prop.methodName()				Equals to myObject.myFunction();
-	 * ~methodName(a,b,c,d,e)			Equals to myFunction(a,b,c,d,e);
-	 * ~methodName(						Create an alternate cursor to buffer methods properties
-	 * )								Close the current alternated cursor and call the method with the buffer values
+	 * 	~methodName()					Equals to myFunction();
+	 * 	~prop.methodName()				Equals to myObject.myFunction();
+	 * 	~methodName(a,b,c,d,e)			Equals to myFunction(a,b,c,d,e);
+	 * 	~methodName(					Create an alternate cursor to buffer methods properties
+	 * 	)							Close the current alternated cursor and call the method with the buffer values
 	 * 			Ex.:
 	 * 				#Sprite {
 	 * 					~addChild(
@@ -67,9 +67,9 @@ package gate.sirius.serializer {
 	 * 
 	 *
 	 * //	Queries
-	 * @ methodName						Equal to myFunction();
-	 * @ prop.methodName				Equal to myObject.myFunction();
-	 * @ methodName a b c d e			Equal to myFunction(a,b,c,d,e);
+	 * 	@ methodName					Equal to myFunction();
+	 * 	@ prop.methodName				Equal to myObject.myFunction();
+	 * 	@ methodName a b c d e			Equal to myFunction(a,b,c,d,e);
 	 * 			Ex.:
 	 * 				numbers:Array
 	 * 				@ numbers.push a b c d e f ...

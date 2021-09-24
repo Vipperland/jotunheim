@@ -601,7 +601,7 @@ package gate.sirius.meta {
 							}
 						}
 						if (section.length == 0 || subsecta[0].indexOf(section) !== -1){
-							endValue += " <a href='event:@" + subsecta[0] + "'>" + emode + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
+							endValue += " <a href='event:@" + path + "." + subsecta[0] + "'>" + emode + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
 						}
 						if (++counter == 15) {
 							counter = 0;
@@ -617,6 +617,10 @@ package gate.sirius.meta {
 			_altValueCursor = codeEnd;
 			_altPoint(0);
 		
+		}
+		
+		private function _renderData():void {
+			
 		}
 		
 		

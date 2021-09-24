@@ -22,7 +22,7 @@ package gate.sirius.serializer.data {
 		
 		static private const DOT:String = ".";
 		
-		static private const DOUBLE_SPACE:String = SPACE + SPACE;
+		static private const DOUBLE_SPACE:String = "  ";
 		
 		static private const CALL_METHOD:String = "~";
 		

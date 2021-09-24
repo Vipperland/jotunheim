@@ -1,6 +1,6 @@
 <?php
 
-  namespace sirius;
+	namespace sirius;
 
 	class SiriusError {
 		
@@ -13,4 +13,5 @@
 		}
 		
 	}
+	
 ?>
