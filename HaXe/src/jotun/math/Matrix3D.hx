@@ -6,6 +6,11 @@ package jotun.math;
  */
 class Matrix3D {
 	
+	/**
+	 * 
+	 * @param	r
+	 * @return
+	 */
 	public static function rotateX(r:Float):Array<Float> {
 		r = r * .017453292519943295;
 		return [
@@ -16,6 +21,11 @@ class Matrix3D {
 		];
 	}
 	
+	/**
+	 * 
+	 * @param	r
+	 * @return
+	 */
 	public static function rotateY(r:Float):Array<Float> {
 		r = r * .017453292519943295;
 		return [
@@ -26,6 +36,11 @@ class Matrix3D {
 		];
 	}
 	
+	/**
+	 * 
+	 * @param	r
+	 * @return
+	 */
 	public static function rotateZ(r:Float):Array<Float> {
 		r = r * .017453292519943295;
 		return [
@@ -36,6 +51,13 @@ class Matrix3D {
 		];
 	}
 	
+	/**
+	 * 
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @return
+	 */
 	public static function scale(x:Float, y:Float, z:Float):Array<Float> {
 		return [
 			x,    0,    0,   0,
@@ -45,6 +67,13 @@ class Matrix3D {
 		];
 	}
 	
+	/**
+	 * 
+	 * @param	x
+	 * @param	y
+	 * @param	z
+	 * @return
+	 */
 	public static function translate(x:Float, y:Float, z:Float):Array<Float> {
 		return [
 			1,    0,    0,   0,
@@ -54,6 +83,12 @@ class Matrix3D {
 		];
 	}
 	
+	/**
+	 * 
+	 * @param	a
+	 * @param	b
+	 * @return
+	 */
 	private static function _multiply(a:Array<Float>, b:Array<Float>):Array<Float> {
 		
 		var result = [];
@@ -118,6 +153,11 @@ class Matrix3D {
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param	data
+	 * @return
+	 */
 	public static function transform(data:Array<Array<Float>>):Array<Float> {
 		var res:Array<Float> = null;
 		var idx:Int = 0;
@@ -137,6 +177,11 @@ class Matrix3D {
 		return res;
 	}
 	
+	/**
+	 * 
+	 * @param	matrix
+	 * @return
+	 */
 	public static function toCss(matrix:Array<Float>):String {
 		return "matrix3d(" + matrix.join(',') + ")";
 	}

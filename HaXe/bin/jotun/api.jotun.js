@@ -5035,10 +5035,9 @@ jotun_modules_ModLib.prototype = {
 							});
 						}
 						if(mod.inject != null) {
-							var injection = mod.inject;
 							jotun_Jotun.log("\tModLib => " + path + " INJECTING MODULES...",1);
-							if(_gthis.exists(injection)) {
-								content = _gthis.get(injection).split("{{@injection}}").join(content);
+							if(_gthis.exists(mod.inject)) {
+								content = _gthis.get(mod.inject).split("{{@injection}}").join(content);
 							} else {
 								jotun_Jotun.log("\t\tModLib => MISSING '" + v + "'",2);
 							}
@@ -5131,7 +5130,7 @@ jotun_modules_ModLib.prototype = {
 			try {
 				return JSON.parse(val);
 			} catch( _g ) {
-				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 249, className : "jotun.modules.ModLib", methodName : "getObj"});
+				haxe_Log.trace("Parsing error for MOD:[" + name + "]",{ fileName : "src/jotun/modules/ModLib.hx", lineNumber : 248, className : "jotun.modules.ModLib", methodName : "getObj"});
 			}
 		}
 		return null;

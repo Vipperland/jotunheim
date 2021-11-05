@@ -826,15 +826,15 @@ class Display extends Query implements IDisplay {
 		var v:Int = null;
 		var h:Int = null;
 		switch(align){
-			case 't' : 			{ v = -1; h = 0; };
+			case 't' : 		{ v = -1; h = 0; };
 			case 'tl','lt' : 	{ v = -1; h = -1; }
-			case 'l' : 			{ v = 0; h = -1; }
+			case 'l' : 		{ v = 0; h = -1; }
 			case 'bl','lb' : 	{ v = 1; h = -1; }
-			case 'b' : 			{ v = 1; h = 0; }
+			case 'b' : 		{ v = 1; h = 0; }
 			case 'br','rb' : 	{ v = 1; h = 1; }
-			case 'r' : 			{ v = 0; h = 1; }
+			case 'r' : 		{ v = 0; h = 1; }
 			case 'tr','rt' :	{ v = -1; h = 1; }
-			case 'c' :			{ v = 0; h = 0; }
+			case 'c' :		{ v = 0; h = 0; }
 		}
 		var o:Dynamic = {position:'fixed'};
 		if(h != null){

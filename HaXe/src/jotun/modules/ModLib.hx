@@ -1,9 +1,9 @@
 package jotun.modules;
 import haxe.Json;
+import jotun.Jotun;
 import jotun.serial.Packager;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
-import jotun.Jotun;
 
 #if js
 	import js.html.Image;
@@ -136,10 +136,9 @@ class ModLib {
 							});
 						}
 						if (mod.inject != null) {
-							var injection:String = mod.inject;
 							Jotun.log("	ModLib => " + path + " INJECTING MODULES...", 1);
-							if (exists(injection)){
-								content = get(injection).split("{{@injection}}").join(content);
+							if (exists(mod.inject)){
+								content = get(mod.inject).split("{{@injection}}").join(content);
 							}else{
 								Jotun.log("		ModLib => MISSING '" + v + "'", 2);
 							}
