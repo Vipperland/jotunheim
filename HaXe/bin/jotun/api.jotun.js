@@ -1126,7 +1126,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		if(((o) instanceof jotun_dom_Input)) {
 			o.value(data);
 		} else {
-			o.writeHtml(data);
+			o.writeHtml(typeof(data) == "string" ? data.split("\r\n").join("<br/>").split("\r").join("<br/>").split("\n").join("<br/>") : data);
 		}
 	}
 	,_react_fill_class: function(verify,data,path,o) {
@@ -4501,24 +4501,55 @@ jotun_tools_Utils.getMax = function(values,filter) {
 	});
 	return r;
 };
-jotun_tools_Utils.getQueryParams = function(value,merge) {
-	if(merge == null) {
-		merge = { };
-	}
-	if(value.indexOf("?") > 0) {
+jotun_tools_Utils.getQueryParams = function(value) {
+	var params = { };
+	if(value != null && value.indexOf("?") > 0) {
 		value = value.split("+").join(" ").split("?")[1];
 	} else {
-		return merge;
+		return params;
 	}
 	jotun_utils_Dice.Values(value.split("&"),function(v) {
 		var data = v.split("=");
 		if(data.length > 1) {
 			var field = decodeURIComponent(data[0].split("+").join(" "));
 			var value = decodeURIComponent(data[1].split("+").join(" "));
-			merge[field] = value;
+			params[field] = value;
 		}
 	});
-	return merge;
+	return params;
+};
+jotun_tools_Utils.createQueryParams = function(url,value,encode) {
+	if(encode == null) {
+		encode = true;
+	}
+	var q = [];
+	jotun_utils_Dice.All(value,function(p,v) {
+		if(typeof(v) == "string" || typeof(v) == "number" || typeof(v) == "boolean") {
+			q[q.length] = p + "=" + (encode ? encodeURIComponent(v) : v);
+		} else if(((v) instanceof Array)) {
+			var q1 = q;
+			var q2 = q.length;
+			var tmp;
+			if(encode) {
+				var s = v.join(";");
+				tmp = encodeURIComponent(s);
+			} else {
+				tmp = v.join(";");
+			}
+			q1[q2] = tmp;
+		}
+	});
+	if(url == null) {
+		url = "";
+	}
+	return url + (url.indexOf("?") == -1 ? "?" : "&") + q.join("&");
+};
+jotun_tools_Utils.replaceQuery = function(url,params) {
+	var current = jotun_tools_Utils.getQueryParams(url);
+	jotun_utils_Dice.All(params,function(p,v) {
+		current[p] = v;
+	});
+	return jotun_tools_Utils.createQueryParams(url.split("?")[0],current);
 };
 jotun_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
@@ -7011,80 +7042,42 @@ jotun_math_Point.prototype = {
 	}
 	,__class__: jotun_math_Point
 };
+var jotun_math_RNG = $hx_exports["J_math_RNG"] = function(seed) {
+	if(seed == null) {
+		seed = Math.random();
+	}
+	this.set(seed);
+};
+jotun_math_RNG.__name__ = "jotun.math.RNG";
+jotun_math_RNG.prototype = {
+	set: function(seed) {
+		this._s = seed;
+	}
+	,get: function() {
+		var x = Math.sin(this._s) * 10000;
+		this._s += .01;
+		if(this._s < 0) {
+			this._s -= this._s;
+		}
+		return x - Math.floor(x);
+	}
+	,between: function(a,b) {
+		++b;
+		return this.get() * (b - a) + a | 0;
+	}
+	,max: function(a) {
+		++a;
+		return this.get() * a | 0;
+	}
+	,seed: function() {
+		return this._s;
+	}
+	,__class__: jotun_math_RNG
+};
 var jotun_modules_IMod = function() { };
 jotun_modules_IMod.__name__ = "jotun.modules.IMod";
 jotun_modules_IMod.prototype = {
 	__class__: jotun_modules_IMod
-};
-var jotun_net_BulkLoader = $hx_exports["J_BulkLoader"] = function() {
-	this._toload = [];
-	this.signals = new jotun_signals_Signals(this);
-	this.totalLoaded = 0;
-	this.totalFiles = 0;
-	this._fileProgress = 0;
-};
-jotun_net_BulkLoader.__name__ = "jotun.net.BulkLoader";
-jotun_net_BulkLoader.prototype = {
-	_getReq: function(u) {
-		return new jotun_net_HttpRequest(u);
-	}
-	,progress: function() {
-		return (this.totalLoaded + (this._fileProgress < 1 ? this._fileProgress : 0)) / this.totalFiles;
-	}
-	,add: function(files) {
-		if(!((files) instanceof Array)) {
-			files = [files];
-		}
-		if(files != null && files.length > 0) {
-			this._toload = this._toload.concat(files);
-			this.totalFiles += files.length;
-		}
-	}
-	,start: function() {
-		if(!this._isBusy) {
-			this._isBusy = true;
-			this._loadNext();
-		}
-	}
-	,_changed: function(file,status,data,request) {
-		this.signals.call(status,{ file : file, data : data, request : request});
-	}
-	,_loadNext: function() {
-		var _gthis = this;
-		if(this._toload.length > 0) {
-			var f = this._toload.shift();
-			var r = this._getReq(f);
-			this._changed(f,"started",null,r);
-			r.async = true;
-			r.onError = function(e) {
-				++_gthis.totalLoaded;
-				_gthis._changed(f,"error",e,r);
-				_gthis._loadNext();
-			};
-			r.onData = function(d) {
-				++_gthis.totalLoaded;
-				jotun_Jotun.resources.register(f,d);
-				_gthis._changed(f,"loaded",d,r);
-				_gthis._loadNext();
-			};
-			r.request("GET",null,$bind(this,this._onLoadProgress));
-		} else {
-			this._isBusy = false;
-			this._complete();
-		}
-	}
-	,_onLoadProgress: function(file,loaded,total) {
-		this._fileProgress = loaded / total;
-		this.signals.call("progress",{ file : file, loaded : loaded, total : total, progress : this._fileProgress});
-	}
-	,_error: function(e) {
-		this.lastError = typeof(e) == "string" ? new jotun_errors_Error(-1,e,this) : new jotun_errors_Error(-1,"Unknow",{ content : e, loader : this});
-		this.signals.call("error",this.lastError);
-	}
-	,_complete: function() {
-		this.signals.call("completed");
-	}
-	,__class__: jotun_net_BulkLoader
 };
 var jotun_net_HttpRequest = function(url) {
 	this.url = url;
@@ -7573,30 +7566,6 @@ jotun_serial_Packager.md5Encode = function(o,base64) {
 		return haxe_crypto_Md5.encode(base64 ? jotun_serial_Packager.encodeBase64(o) : jotun_serial_Packager.jsonEncode(o));
 	}
 };
-var jotun_signals_IFlow = function() { };
-jotun_signals_IFlow.__name__ = "jotun.signals.IFlow";
-jotun_signals_IFlow.prototype = {
-	__class__: jotun_signals_IFlow
-};
-var jotun_signals_Flow = function(pipe,data) {
-	this.data = data;
-	this.pipe = pipe;
-};
-jotun_signals_Flow.__name__ = "jotun.signals.Flow";
-jotun_signals_Flow.__interfaces__ = [jotun_signals_IFlow];
-jotun_signals_Flow.prototype = {
-	__class__: jotun_signals_Flow
-};
-var jotun_signals_IPipe = function() { };
-jotun_signals_IPipe.__name__ = "jotun.signals.IPipe";
-jotun_signals_IPipe.prototype = {
-	__class__: jotun_signals_IPipe
-};
-var jotun_signals_ISignals = function() { };
-jotun_signals_ISignals.__name__ = "jotun.signals.ISignals";
-jotun_signals_ISignals.prototype = {
-	__class__: jotun_signals_ISignals
-};
 var jotun_signals_Observer = $hx_exports["J_Observer"] = function() { };
 jotun_signals_Observer.__name__ = "jotun.signals.Observer";
 jotun_signals_Observer.add = function(target,handler) {
@@ -7644,103 +7613,6 @@ jotun_signals_Observer.removeBy = function(atrr,value) {
 };
 jotun_signals_Observer.clear = function() {
 	jotun_signals_Observer._radar = [];
-};
-var jotun_signals_Pipe = function(name,host) {
-	this.calls = 0;
-	this.enabled = true;
-	this.transfer = true;
-	this.host = host;
-	this.name = name;
-	this.reset();
-};
-jotun_signals_Pipe.__name__ = "jotun.signals.Pipe";
-jotun_signals_Pipe.__interfaces__ = [jotun_signals_IPipe];
-jotun_signals_Pipe.prototype = {
-	add: function(handler) {
-		if(Lambda.indexOf(this._l,handler) == -1) {
-			this._l.push(handler);
-		}
-		return this;
-	}
-	,remove: function(handler) {
-		var i = Lambda.indexOf(this._l,handler);
-		if(i != -1) {
-			this._l.splice(i,1);
-		}
-		return this;
-	}
-	,disconnect: function() {
-		if(this._v != null) {
-			this.remove(this._v);
-			this._v = null;
-		}
-		return this;
-	}
-	,call: function(data) {
-		var _gthis = this;
-		if(this.enabled) {
-			++this.calls;
-			this.current = new jotun_signals_Flow(this,data);
-			this.transfer = true;
-			jotun_utils_Dice.Values(this._l,function(v) {
-				_gthis._v = v;
-				v(_gthis.current);
-				return !_gthis.transfer;
-			});
-			this._v = null;
-		}
-		this.current = null;
-		return this;
-	}
-	,stop: function() {
-		this.transfer = false;
-	}
-	,reset: function() {
-		this._l = [];
-	}
-	,__class__: jotun_signals_Pipe
-};
-var jotun_signals_Signals = $hx_exports["J_Signal"] = function(to) {
-	this.object = to;
-	this.reset();
-};
-jotun_signals_Signals.__name__ = "jotun.signals.Signals";
-jotun_signals_Signals.__interfaces__ = [jotun_signals_ISignals];
-jotun_signals_Signals.prototype = {
-	_c: function(n) {
-		if(!this.has(n)) {
-			this._l[n] = new jotun_signals_Pipe(n,this);
-		}
-		return Reflect.field(this._l,n);
-	}
-	,has: function(name) {
-		return Object.prototype.hasOwnProperty.call(this._l,name);
-	}
-	,get: function(name) {
-		return this._c(name);
-	}
-	,remove: function(name,handler) {
-		return this._c(name).remove(handler);
-	}
-	,add: function(name,handler) {
-		return this._c(name).add(handler);
-	}
-	,call: function(name,data) {
-		if(this.has(name)) {
-			this.get(name).call(data);
-		}
-		return this;
-	}
-	,reset: function(name) {
-		if(name != null) {
-			if(this.has(name)) {
-				this.get(name).reset();
-			}
-		} else {
-			this._l = [];
-		}
-	}
-	,__class__: jotun_signals_Signals
 };
 var jotun_tools_Flag = $hx_exports["Flag"] = function(value) {
 	if(typeof(value) != "number" && (typeof(value) == "number" && ((value | 0) === value))) {

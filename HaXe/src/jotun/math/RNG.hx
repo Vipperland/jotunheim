@@ -4,6 +4,7 @@ package jotun.math;
  * ...
  * @author Rim Project
  */
+@:expose("J_math_RNG")
 class RNG {
 	
 	private var _s:Float;

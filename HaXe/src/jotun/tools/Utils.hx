@@ -2,7 +2,7 @@ package jotun.tools;
 import haxe.Json;
 import haxe.Log;
 import jotun.data.DataSet;
-import jotun.net.BulkLoader;
+import jotun.math.RNG;
 import jotun.utils.IDiceRoll;
 
 #if js
@@ -255,23 +255,43 @@ class Utils{
 		return r;
 	}
 	
-	static public function getQueryParams(value:String, ?merge:Dynamic):Dynamic {
-		if (merge == null){
-			merge = {};
-		}
-		if(value.indexOf('?') > 0)
+	static public function getQueryParams(value:String):Dynamic {
+		var params:Dynamic = {};
+		if(value != null && value.indexOf('?') > 0)
 			value = value.split('+').join(' ').split('?')[1];
 		else
-			return merge;
+			return params;
 		Dice.Values(value.split('&'), function(v:String){
 			var data:Array<Dynamic> = v.split('=');
 			if (data.length > 1){
-				Reflect.setField(merge, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+				Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
 			}
 		});
-		return merge;
+		return params;
 	}
 
+	static public function createQueryParams(url:String, value:Dynamic, ?encode:Bool = true):String {
+		var q:Array<String> = [];
+		Dice.All(value, function(p:String, v:Dynamic):Void {
+			if (Std.is(v, String) || Std.is(v, Float) || Std.is(v, Bool)){
+				q[q.length] = p + '=' + (encode ?StringTools.urlEncode(v) : v);
+			}else if (Std.is(v, Array)){
+				q[q.length] = encode ? StringTools.urlEncode(v.join(';')) : v.join(';');
+			}
+		});
+		if (url == null){
+			url = "";
+		}
+		return url + (url.indexOf('?') == -1 ? '?' : '&') + q.join("&");
+	}
+	
+	static public function replaceQuery(url:String, params:Dynamic){
+		var current:Dynamic = getQueryParams(url);
+		Dice.All(params, function(p:String, v:Dynamic){
+			Reflect.setField(current, p, v);
+		});
+		return createQueryParams(url.split('?')[0], current);
+	}
 	
 	/**
 	 * Remove white and null values from array

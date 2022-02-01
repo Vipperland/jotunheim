@@ -110,7 +110,7 @@ class Display extends Query implements IDisplay {
 		if (Std.is(o, Input)){
 			o.value(data);
 		}else {
-			o.writeHtml(data);
+			o.writeHtml(Std.is(data, String) ? data.split('\r\n').join('<br/>').split('\r').join('<br/>').split('\n').join('<br/>') : data);
 		}
 	}
 	
