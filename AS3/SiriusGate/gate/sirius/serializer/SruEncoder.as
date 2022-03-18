@@ -392,7 +392,6 @@ package gate.sirius.serializer {
 						continue;
 					
 					qName = new QName(uri, p);
-					//trace(prop);
 					try {
 						obj[qName];
 						propertyNames[propertyNames.length] = qName;

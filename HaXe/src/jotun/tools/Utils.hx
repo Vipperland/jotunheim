@@ -323,32 +323,49 @@ class Utils{
 	 * @param	o
 	 * @return
 	 */
-	static public function sruString(o:Dynamic):String {
-		return _sruFly(o, '', '');
+	static public function sruString(o:Dynamic, type:Bool = true, ?html:Bool):String {
+		return _sruFly(o, '', '', type, html);
+	}
+	
+	static private function _codex(i:String, n:String, c:String, p:String, v:Dynamic, t:Bool, h:Bool, r:Bool):String {
+		return (h ? '<div class="prop"><span>' : '') + i + p + (t ? (h ? '<span class="' + c + '">' : '') + ":" + n + (h ? '</span>' : '') : '') + "=" + (h && r ? '</span><span class="' + c + ' value">' : '') + v + (h && r ? '</span>' : '') + (h ? '</div>' : "\r");
+	}
+	
+	static private function _codexWrap(i:String, ls:String, rs:String, v:Dynamic, t:Bool, h:Bool):String {
+		return ls + (h ? '<br/>' : "\r") + _sruFly(v, i, '', t, h) + i +rs;
 	}
 	
 	/** @private */
-	static public function _sruFly(o:Dynamic, i:String, b:String):String {
-		i = i + '  ';
+	static public function _sruFly(o:Dynamic, i:String, b:String, t:Bool, h:Bool):String {
+		if (h){
+			b += '<div class="block">';
+		}
+		i = i + (h ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '\t');
 		Dice.All(o, function(p:String, v:Dynamic) {
 			if (v == null){
-				b += i + p + ":* = NULL\r";
+				b += i + p + ":* = null\r";
 			}
 			else if (Std.isOfType(v, String)){
-				b += i + p + ":String = " + v + "\r";
+				b += _codex(i, 'String', 'string', p, v, t, h, true);
 			}
-			else if (Std.isOfType(v, Bool) || v == "true" || v == "false" || v == true || v == false){
-				b += i + p + ":Bool = " + v + "\r";
+			else if (Std.isOfType(v, Bool)){
+				b += _codex(i, 'Bool', 'bool', p, v, t, h, true);
 			}
-			else if (Std.isOfType(v, Int) || Std.isOfType(v, Float)){
-				b += i + p + ":Number = " + v + "\r";
+			else if (Std.isOfType(v, Int)){
+				b += _codex(i, 'Int', 'int', p, v, t, h, true);
+			}
+			else if (Std.isOfType(v, Float)){
+				b += _codex(i, 'Float', 'float', p, v, t, h, true);
 			}
 			else if (Std.isOfType(v, Array)){
-				b += i + p + ":Array[" + v.length + "]:[\r" + _sruFly(v, i, '') + i + "]\r";
+				b += _codex(i,  'Array(' + v.length + ')', 'array', p,  _codexWrap(i, '[', ']',v, t, h) , t, h, false);
 			} else{
-				b += i + p + ":Object {\r" + _sruFly(v, i, '') + i + "}\r";
+				b += _codex(i,  'Object', 'object', p,  _codexWrap(i, '{', '}',v, t, h) , t, h, false);
 			}
 		});
+		if (h){
+			b += '</div>';
+		}
 		return b;
 	}
 	

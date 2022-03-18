@@ -1,5 +1,8 @@
 package gate.sirius.meta {
 	
+	import flash.display.Bitmap;
+	import flash.display.Loader;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -41,6 +44,10 @@ package gate.sirius.meta {
 		
 		static private var _listenners:Vector.<Function> = new Vector.<Function>();
 		
+		static public function get self():Console {
+			return _console;
+		}
+		
 		private var _validcmdchars:String = "abcdefghijklmnopqrstuvwxyz.ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
 		
 		private var _lines:Vector.<String>;
@@ -69,6 +76,7 @@ package gate.sirius.meta {
 			_console = new Console();
 			_TargetObject = TargetObject || _console;
 			_stage.addEventListener(Event.RESIZE, _onResize);
+			SruDecoder.allowClasses(Console);
 			SruDecoder.allowClasses.apply(null, classes);
 		}
 		
@@ -500,7 +508,7 @@ package gate.sirius.meta {
 					}
 					alias = null;
 					var fseclc:String = fsec.toLowerCase();
-					for (var className:String in SruDecoder.CLASS_COLLECTION) {
+					for (var className:String in SruDecoder.getClassCollection()) {
 						if (className.indexOf(".") == -1){
 							if (!_aliases[className] && className.toLowerCase().indexOf(fseclc) == 0) {
 								endValue += "<font color='#0066CC'><a href='event:" + className + "'>" + className + "</a></font>\n";
@@ -512,25 +520,25 @@ package gate.sirius.meta {
 						}
 					}
 				}
-				targetObject = _aliases[fsec] || SruDecoder.CLASS_COLLECTION[fsec];
+				targetObject = _aliases[fsec] || SruDecoder.getClassCollection()[fsec];
 				if (targetObject) {
-					fsec = fsec.toLowerCase();
 					_runAliases[fsec] = targetObject;
 					alias = fsec;
 				} else {
 					targetObject = _TargetObject;
 					targetParams = targetObject;
-					command.unshift(fsec.toLowerCase());
+					command.unshift(fsec);
 				}
 			}
 			
-			var targetParams:*;
+			var targetParams:* = targetObject;
 			
 			var lastSection:String = "";
 			
 			for each (var section:String in command) {
 				
 				if (!section){
+					section = "";
 					continue;
 				}
 				
@@ -541,6 +549,7 @@ package gate.sirius.meta {
 						path += (path ? "." : "") + section;
 					} else {
 						targetObject = null;
+						targetParams = null;
 					}
 					lastSection = section;
 				} else {
@@ -561,7 +570,7 @@ package gate.sirius.meta {
 					if (subsect == "prototype"){
 						continue;
 					}
-					if (section.length == 0 || subsect.indexOf(section) !== -1) {
+					if (!section || section.length == 0 || subsect.indexOf(section) !== -1) {
 						combined = subsect + ":<font color='#0066CC'>" + (eobject.types[subsect] || "*").split("::").pop() + "</font>";
 						if (!(targetParams is Class)) {
 							combined += "=" + _getValueOf(targetParams[subsect]);
@@ -600,7 +609,7 @@ package gate.sirius.meta {
 								paramSet[i] = "<font color='#0066CC'>" + vname.split("::").pop() + "</font>";
 							}
 						}
-						if (section.length == 0 || subsecta[0].indexOf(section) !== -1){
+						if (!section || section.length == 0 || subsecta[0].indexOf(section) !== -1){
 							endValue += " <a href='event:@" + path + "." + subsecta[0] + "'>" + emode + subsecta[0] + "</a>(" + paramSet + "):<font color='#0066CC'>" + subsecta[1].split("::").pop() + "</font>\n";
 						}
 						if (++counter == 15) {
@@ -714,12 +723,15 @@ package gate.sirius.meta {
 		
 		public function expand():void {
 			var ad:ApplicationDomain = _stage.loaderInfo.applicationDomain;
+			var ccount:int = 0;
 			for each (var c:String in ad.getQualifiedDefinitionNames()) {
 				var def:String = c.split("::").join(".");
 				if (ad.hasDefinition(def)){
 					SruDecoder.allowClasses(ad.getDefinition(def) as Class);
+					++ccount;
 				}
 			}
+			//Console.pushSuccessMsg("Expanded with " + ccount + " classes.");
 		}
 		
 		

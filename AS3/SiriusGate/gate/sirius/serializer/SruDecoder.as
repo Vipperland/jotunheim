@@ -82,8 +82,11 @@ package gate.sirius.serializer {
 		/**
 		 * @private
 		 */
-		static public const CLASS_COLLECTION:Dictionary = new Dictionary(true);
+		static internal const CLASS_COLLECTION:Dictionary = new Dictionary(true);
 		
+		static public function getClassCollection():Dictionary {
+			return CLASS_COLLECTION;
+		}
 		
 		/**
 		 *
@@ -666,9 +669,9 @@ package gate.sirius.serializer {
 	}
 
 }
+
 import flash.utils.getQualifiedClassName;
-
-
+import gate.sirius.serializer.SruDecoder;
 class ParseTicket {
 	
 	public static const GATE:ParseTicket = new ParseTicket();
@@ -699,7 +702,7 @@ class ParseTicket {
 	
 	
 	public function run(to:*, args:Array):Boolean {
-		var obj:* = getEnd(to);
+		var obj:* = getEnd(to) || getEnd(SruDecoder.getClassCollection());
 		if (obj && param in obj) {
 			lastArgsLength = args.length;
 			try {
@@ -729,7 +732,7 @@ class ParseTicket {
 	
 	
 	public function setValue(to:*, value:*):void {
-		getEnd(to)[param] = value;
+		(getEnd(to) || getEnd(SruDecoder.getClassCollection()))[param] = value;
 	}
 	
 	

@@ -17,15 +17,17 @@ class SearchTag {
 		return value;
 	}
 	
-	public static function convert(data:Dynamic):String {
-		data = Std.string(data).toLowerCase().split(' ').join('');
-		data = data.substr(0,1) + _E.replace(data, '');
-		//var i:Int = 0;
-		//var l:Int = _M.length;
-		//while (i < l) {
-			//data = data.split(_M[i][0]).join(_M[i][1]);
-			//++i;
-		//}
+	public static function convert(data:Dynamic, space:String = "+"):String {
+		data = Std.string(data).toLowerCase();
+		//data = data.substr(0,1) + _E.replace(data, '');
+		var i:Int = 0;
+		var l:Int = _M.length;
+		while (i < l) {
+			data = data.split(_M[i][0]).join(_M[i][1]);
+			++i;
+		}
+		data = data.split(" ").join(space);
+		data = data.split("\t").join(space);
 		return data;
 	}
 	

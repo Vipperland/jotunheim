@@ -4567,26 +4567,43 @@ jotun_tools_Utils.toString = function(o,json) {
 		return Std.string(o);
 	}
 };
-jotun_tools_Utils.sruString = function(o) {
-	return jotun_tools_Utils._sruFly(o,"","");
+jotun_tools_Utils.sruString = function(o,type,html) {
+	if(type == null) {
+		type = true;
+	}
+	return jotun_tools_Utils._sruFly(o,"","",type,html);
 };
-jotun_tools_Utils._sruFly = function(o,i,b) {
-	i += "  ";
+jotun_tools_Utils._codex = function(i,n,c,p,v,t,h,r) {
+	return (h ? "<div class=\"prop\"><span>" : "") + i + p + (t ? (h ? "<span class=\"" + c + "\">" : "") + ":" + n + (h ? "</span>" : "") : "") + "=" + (h && r ? "</span><span class=\"" + c + " value\">" : "") + Std.string(v) + (h && r ? "</span>" : "") + (h ? "</div>" : "\r");
+};
+jotun_tools_Utils._codexWrap = function(i,ls,rs,v,t,h) {
+	return ls + (h ? "<br/>" : "\r") + jotun_tools_Utils._sruFly(v,i,"",t,h) + i + rs;
+};
+jotun_tools_Utils._sruFly = function(o,i,b,t,h) {
+	if(h) {
+		b += "<div class=\"block\">";
+	}
+	i += h ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "\t";
 	jotun_utils_Dice.All(o,function(p,v) {
 		if(v == null) {
-			b += i + p + ":* = NULL\r";
+			b += i + p + ":* = null\r";
 		} else if(typeof(v) == "string") {
-			b += i + p + ":String = " + Std.string(v) + "\r";
-		} else if(typeof(v) == "boolean" || v == "true" || v == "false" || v == true || v == false) {
-			b += i + p + ":Bool = " + Std.string(v) + "\r";
-		} else if(typeof(v) == "number" && ((v | 0) === v) || typeof(v) == "number") {
-			b += i + p + ":Number = " + Std.string(v) + "\r";
+			b += jotun_tools_Utils._codex(i,"String","string",p,v,t,h,true);
+		} else if(typeof(v) == "boolean") {
+			b += jotun_tools_Utils._codex(i,"Bool","bool",p,v,t,h,true);
+		} else if(typeof(v) == "number" && ((v | 0) === v)) {
+			b += jotun_tools_Utils._codex(i,"Int","int",p,v,t,h,true);
+		} else if(typeof(v) == "number") {
+			b += jotun_tools_Utils._codex(i,"Float","float",p,v,t,h,true);
 		} else if(((v) instanceof Array)) {
-			b += i + p + ":Array[" + Std.string(v.length) + "]:[\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "]\r";
+			b += jotun_tools_Utils._codex(i,"Array(" + Std.string(v.length) + ")","array",p,jotun_tools_Utils._codexWrap(i,"[","]",v,t,h),t,h,false);
 		} else {
-			b += i + p + ":Object {\r" + jotun_tools_Utils._sruFly(v,i,"") + i + "}\r";
+			b += jotun_tools_Utils._codex(i,"Object","object",p,jotun_tools_Utils._codexWrap(i,"{","}",v,t,h),t,h,false);
 		}
 	});
+	if(h) {
+		b += "</div>";
+	}
 	return b;
 };
 jotun_tools_Utils.isValid = function(o,len) {
@@ -7954,9 +7971,19 @@ jotun_utils_SearchTag.from = function(value) {
 	}
 	return value;
 };
-jotun_utils_SearchTag.convert = function(data) {
-	data = Std.string(data).toLowerCase().split(" ").join("");
-	data = Std.string(data.substr(0,1)) + data.replace(jotun_utils_SearchTag._E.r,"");
+jotun_utils_SearchTag.convert = function(data,space) {
+	if(space == null) {
+		space = "+";
+	}
+	data = Std.string(data).toLowerCase();
+	var i = 0;
+	var l = jotun_utils_SearchTag._M.length;
+	while(i < l) {
+		data = data.split(jotun_utils_SearchTag._M[i][0]).join(jotun_utils_SearchTag._M[i][1]);
+		++i;
+	}
+	data = data.split(" ").join(space);
+	data = data.split("\t").join(space);
 	return data;
 };
 jotun_utils_SearchTag.prototype = {
