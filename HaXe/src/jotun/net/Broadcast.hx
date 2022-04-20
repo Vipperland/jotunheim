@@ -1,8 +1,11 @@
 package jotun.net;
 import haxe.Json;
 import jotun.events.Event;
+import jotun.tools.Key;
+import jotun.tools.Ticker;
 import jotun.utils.Dice;
 import js.Browser;
+import js.Lib;
 import js.html.BroadcastChannel;
 import js.html.MessageEvent;
 import js.html.StorageEvent;
@@ -16,13 +19,19 @@ class Broadcast {
 	
 	private static var __me__:Broadcast;
 	
+	private static var _uid:String;
+	
 	static public function ME():Broadcast {
 		return __me__ == null ? new Broadcast() : __me__;
 	}
 	
-	private var _muted:Bool = true;
+	private var _muted:Bool = false;
 	private var _listeners:Dynamic = {};
 	private var _channels:Dynamic;
+	
+	public function getUID():String {
+		return _uid;
+	}
 	
 	private function _openChannel(name:String):BroadcastChannel {
 		var bc:BroadcastChannel = Reflect.field(_channels, name);
@@ -49,6 +58,7 @@ class Broadcast {
 	
 	public function new() {
 		if (__me__ == null){
+			_uid = Key.GEN(32);
 			if(Reflect.hasField(Browser.window, 'BroadcastChannel')){
 				// Compatible Browsers
 				_channels = {};
@@ -67,6 +77,7 @@ class Broadcast {
 				});
 			}
 			__me__ = this;
+			
 		}else{
 			throw new js.lib.Error("Broadcast is a singleton, use Broadcast.ME() instead of new");
 		}

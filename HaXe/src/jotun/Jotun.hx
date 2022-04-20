@@ -60,9 +60,13 @@ class Jotun {
 	#if js
 		
 		/** @private */
-		static private var _initialized:Bool = main();
+		static private var _initialized:Bool;
 		
-		static public function main():Bool { return _initialized || _preInit(); }
+		static public function main():Void {
+			if (!_initialized){
+				_initialized = _preInit();
+			}
+		}
 		
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();

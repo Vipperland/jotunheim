@@ -25,15 +25,22 @@ class Ticker {
 	}
 	
 	private static function _tickAll():Void {
-		_etime = 0;
 		Dice.All(_pool_high, function(p:Int, v:Dynamic) {
 			if (v != null) {
 				_calcElapsed();
 				v(_etime);
 			}
 		});
-		while(_etime > 1){
-			_etime -= 1.0;
+		_calcElapsed();
+		if (_etime >= 1){
+			Dice.All(_pool_low, function(p:Int, v:Dynamic) {
+				if (v != null) {
+					v();
+				}
+			});
+			while(_etime > 1){
+				_etime -= 1.0;
+			}
 		}
 	}
 	

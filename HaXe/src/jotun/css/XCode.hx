@@ -216,6 +216,15 @@ class XCode {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param	id
+	 * @param	freq		FLOAT (low values = less noise)
+	 * @param	octaves	INT	(higher values = more natural, +cpu intensive)
+	 * @param	scale		FLOAT	(wave length)
+	 * @param	seed		INT	
+	 * @param	replace	
+	 */
 	static public function displacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0, ?replace:Bool):Void {
 		if(_filterCheck(id, replace)){
 			var end:String = "<filter id=\"" + id + "\">";

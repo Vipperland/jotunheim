@@ -668,6 +668,9 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+		if (Std.is(data, Int) && at == -1){
+			at = data >> 0;
+		}
 		if (Jotun.resources.exists(q)){
 			return addChildren(Jotun.resources.build(q, data).children(), at);
 		} else {

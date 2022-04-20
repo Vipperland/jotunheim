@@ -85,6 +85,7 @@ import jotun.utils.IDiceRoll;
 	import jotun.idb.WebDB;
 	import jotun.idb.WebDBTable;
 	import jotun.utils.SearchTag;
+	import jotun.utils.Singularity;
 	import jotun.signals.Observer;
 	
 #end
@@ -276,7 +277,7 @@ class Utils{
 			if (Std.is(v, String) || Std.is(v, Float) || Std.is(v, Bool)){
 				q[q.length] = p + '=' + (encode ?StringTools.urlEncode(v) : v);
 			}else if (Std.is(v, Array)){
-				q[q.length] = encode ? StringTools.urlEncode(v.join(';')) : v.join(';');
+				q[q.length] = p + '=' + (encode ? StringTools.urlEncode(v.join(';')) : v.join(';'));
 			}
 		});
 		if (url == null){

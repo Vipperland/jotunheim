@@ -29,8 +29,6 @@ class ModLib {
 	
 	#if js
 		
-		public var assets:IDisplay = cast new Display();
-		
 		private var _onMount:Array<IDisplay->String->Void> = [];
 		
 		private function _afterMount(object:IDisplay, module:String):Void {
@@ -194,12 +192,6 @@ class ModLib {
 			#if js
 				var ext:String = file.split('.').pop();
 				switch(ext){
-					case 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico' : {
-						var img:Image = new Image();
-						img.setAttribute('data-url', file);
-						img.src = file;
-						assets.element.appendChild(img);
-					}
 					case 'css' : {
 						var dom:Style = new Style();
 						dom.attribute('data-url', file);

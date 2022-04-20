@@ -23,11 +23,15 @@ class A extends Display {
 	public function href(?url:String):String {
 		if(url != null)
 			attribute('href', url);
-		return attribute('href');
+		return path();
 	}
 	
 	public function path():String {
 		return attribute('href').split(Jotun.domain.host).pop();
+	}
+	
+	public function url():String {
+		return Reflect.field(element, 'pathname');
 	}
 	
 	public function link():Dynamic {
