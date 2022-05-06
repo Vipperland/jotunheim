@@ -191,26 +191,26 @@ package gate.sirius.serializer {
 								
 								isN = isArray ? isNaN(prop) : true;
 								
-								if (isN && !isDict)
-									valueString += prop.toString();
-								
-								if (valueRef is SruComm) {
-									valueString += BREAK + valueRef.getData(ident);
-								} else {
+								if (prop != 'command' || valueRef != null){
+									if (isN && !isDict)
+										valueString += prop.toString();
 									
-									if (!isDict) {
-										if (typeof valueRef == "object" && valueRef !== null && isN)
-											valueString += " : ";
-										else if (isN)
-											valueString += " = ";
+									if (valueRef is SruComm) {
+										valueString += BREAK + valueRef.getData(ident);
+									} else {
+										if (!isDict) {
+											if (typeof valueRef == "object" && valueRef !== null && isN)
+												valueString += " : ";
+											else if (isN)
+												valueString += " = ";
+										}
+										
+										try {
+											valueString += _internalToString(valueRef, ident, refs, !isN || isDict, filters);
+										} catch (e:Error) {
+											valueString += "undefined";
+										}
 									}
-									
-									try {
-										valueString += _internalToString(valueRef, ident, refs, !isN || isDict, filters);
-									} catch (e:Error) {
-										valueString += "undefined";
-									}
-									
 								}
 								
 							}else {

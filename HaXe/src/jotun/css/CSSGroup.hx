@@ -150,10 +150,10 @@ class CSSGroup{
 	
 	public function build() {
 		_write(CM, style, '');
-		_write(XS, styleXS, SOF + MEDIA_XS + "{");
-		_write(SM, styleSM, SOF + MEDIA_SM + "{");
-		_write(MD, styleMD, SOF + MEDIA_MD + "{");
-		_write(LG, styleLG, SOF + MEDIA_LG + "{");
+		_write(XS, styleXS, SOF + MEDIA_XS + ' and ' + MEDIA_XS_MAX + "{");
+		_write(SM, styleSM, SOF + MEDIA_SM + ' and ' + MEDIA_SM_MAX + "{");
+		_write(MD, styleMD, SOF + MEDIA_MD + ' and ' + MEDIA_MD_MAX + "{");
+		_write(LG, styleLG, SOF + MEDIA_LG + ' and ' + MEDIA_LG_MAX + "{");
 		_write(XL, styleXL, SOF + MEDIA_XL + "{");
 		_write(PR, stylePR, SOF + MEDIA_PR + "{");
 		reset();

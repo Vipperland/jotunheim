@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-class DataObject implements Dynamic {
+class DataObject {
 	
 	/**
 	   Properties to output

@@ -1,5 +1,6 @@
 package jotun.gaming.dataform;
 import jotun.utils.Dice;
+import js.Syntax;
 
 /**
  * ...
@@ -19,7 +20,7 @@ class DataCollection {
 			var d__:Dynamic = Reflect.field(_dictio, name);
 			var C__:Dynamic = d__.c;
 			#if js
-				o = untyped __js__("new C__(d__.n,d__.p)");
+				o = Syntax.code("new C__({0}, {1})", d__.n , d__.p);
 			#elseif php
 				o = untyped __php__("new C__(d__.n,d__.p)");
 			#end

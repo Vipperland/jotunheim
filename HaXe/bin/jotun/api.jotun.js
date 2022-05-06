@@ -1875,10 +1875,10 @@ jotun_css_CSSGroup.prototype = {
 	}
 	,build: function() {
 		this._write(this.CM,this.style,"");
-		this._write(this.XS,this.styleXS,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_XS + "{");
-		this._write(this.SM,this.styleSM,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_SM + "{");
-		this._write(this.MD,this.styleMD,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_MD + "{");
-		this._write(this.LG,this.styleLG,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_LG + "{");
+		this._write(this.XS,this.styleXS,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_XS + " and " + jotun_css_CSSGroup.MEDIA_XS_MAX + "{");
+		this._write(this.SM,this.styleSM,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_SM + " and " + jotun_css_CSSGroup.MEDIA_SM_MAX + "{");
+		this._write(this.MD,this.styleMD,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_MD + " and " + jotun_css_CSSGroup.MEDIA_MD_MAX + "{");
+		this._write(this.LG,this.styleLG,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_LG + " and " + jotun_css_CSSGroup.MEDIA_LG_MAX + "{");
 		this._write(this.XL,this.styleXL,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_XL + "{");
 		this._write(this.PR,this.stylePR,jotun_css_CSSGroup.SOF + jotun_css_CSSGroup.MEDIA_PR + "{");
 		this.reset();
@@ -3278,9 +3278,10 @@ jotun_css_XCode.reset = function() {
 	if(!jotun_css_XCode._inits.reset) {
 		jotun_css_XCode._inits.reset = true;
 		jotun_css_XCode.css.add("html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type=\"button\"],[type=\"reset\"],[type=\"submit\"]{-webkit-appearance:button;}button::-moz-focus-inner,[type=\"button\"]::-moz-focus-inner,[type=\"reset\"]::-moz-focus-inner,[type=\"submit\"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type=\"button\"]:-moz-focusring,[type=\"reset\"]:-moz-focusring,[type=\"submit\"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type=\"checkbox\"],[type=\"radio\"]{box-sizing:border-box;padding:0;}[type=\"number\"]::-webkit-inner-spin-button,[type=\"number\"]::-webkit-outer-spin-button{height:auto;}[type=\"search\"]{-webkit-appearance:textfield;outline-offset:-2px;}[type=\"search\"]::-webkit-search-cancel-button,[type=\"search\"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}");
-		jotun_css_XCode.omnibuild(".hidden","display:none !important;");
+		jotun_css_XCode.omnibuild(".hidden","display:none !important");
+		jotun_css_XCode.css.styleXL += ".hidden-xl{display:none !important;}";
 		jotun_css_XCode._createGrid();
-		jotun_css_XCode.css.build();
+		jotun_css_XCode.commit();
 	}
 };
 jotun_css_XCode.style = function(selector,value,mode) {
@@ -3293,6 +3294,9 @@ jotun_css_XCode.style = function(selector,value,mode) {
 	}
 	jotun_css_XCode.css.add(selector + "{" + Std.string(value) + "}",mode);
 };
+jotun_css_XCode.media = function(a,b,style) {
+	return "@media " + a + (b != null ? " and " + b : "") + "{ " + style + "}";
+};
 jotun_css_XCode.morph = function(q) {
 	if(jotun_css_XCode._morph_rules == null) {
 		var e = " and ";
@@ -3304,7 +3308,7 @@ jotun_css_XCode.morph = function(q) {
 	});
 	return q;
 };
-jotun_css_XCode.apply = function() {
+jotun_css_XCode.commit = function() {
 	jotun_css_XCode.css.build();
 };
 jotun_css_XCode.omnibuild = function(selector,query) {
@@ -6124,6 +6128,181 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
+var jotun_gaming_dataform_DataCollection = function() {
+	this._list = { };
+};
+jotun_gaming_dataform_DataCollection.__name__ = "jotun.gaming.dataform.DataCollection";
+jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
+	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o, n : name, p : props};
+};
+jotun_gaming_dataform_DataCollection.construct = function(name,r) {
+	var o = null;
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
+		var d__ = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
+		var C__ = d__.c;
+		o = new C__(d__.n, d__.p);
+	}
+	if(o != null) {
+		if(r.length == 3) {
+			o.id = r[1];
+			o.merge(r[2]);
+		} else if(r.length == 2) {
+			o.merge(r[1]);
+		}
+	}
+	return o;
+};
+jotun_gaming_dataform_DataCollection.prototype = {
+	add: function(o) {
+		var ion = o.getION();
+		if(ion != null && ion.length > 0) {
+			if(!Object.prototype.hasOwnProperty.call(this._list,ion)) {
+				this._list[ion] = { };
+			}
+			if(o.id != null) {
+				var ls = Reflect.field(this._list,ion);
+				ls[o.id] = o;
+			} else {
+				o = null;
+			}
+		} else {
+			o = null;
+		}
+		return o != null;
+	}
+	,parse: function(data) {
+		var _gthis = this;
+		var len = 0;
+		var i = data.split("\r");
+		var l = null;
+		jotun_utils_Dice.Values(i,function(v) {
+			var r = v.split(" ");
+			if(r.length > 0) {
+				v = r[0];
+				var cmd = v.substring(0,1);
+				var o = null;
+				if(cmd == "@") {
+					if(l != null) {
+						v = v.substring(1,v.length);
+						o = jotun_gaming_dataform_DataCollection.construct(v,r);
+						if(l.insert(v,o)) {
+							len += 1;
+						}
+					}
+				} else {
+					o = jotun_gaming_dataform_DataCollection.construct(v,r);
+					if(_gthis.add(o)) {
+						l = o;
+						len += 1;
+					} else {
+						l = null;
+					}
+				}
+			}
+		});
+		return len;
+	}
+	,stringify: function(name) {
+		var r = "";
+		jotun_utils_Dice.Values(this.getList(name),function(v) {
+			jotun_utils_Dice.Values(v,function(v1) {
+				r += (r.length > 0 ? "\r" : "") + v1.stringify();
+			});
+		});
+		return r;
+	}
+	,getList: function(name) {
+		if(name != null) {
+			return Reflect.field(this._list,name);
+		} else {
+			return this._list;
+		}
+	}
+	,__class__: jotun_gaming_dataform_DataCollection
+};
+var jotun_gaming_dataform_DataIO = function() { };
+jotun_gaming_dataform_DataIO.__name__ = "jotun.gaming.dataform.DataIO";
+jotun_gaming_dataform_DataIO.parse = function(c,o,nfo) {
+	var obj = c;
+	jotun_utils_Dice.Values(o.split("|"),function(v) {
+		var tag = v.split(":");
+		var par = Reflect.field(nfo,tag.shift());
+		var value = tag.join(":").split("/_").join(" ");
+		obj[par] = value;
+	});
+	obj.onUpdate();
+	return obj;
+};
+jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
+	var result = [];
+	var count = 0;
+	jotun_utils_Dice.All(nfo,function(p,value) {
+		value = Reflect.field(o,value);
+		if(value != null) {
+			if(typeof(value) == "string") {
+				value = value.split(" ").join("/_");
+			}
+			result[count] = p + ":" + Std.string(value);
+			count += 1;
+		}
+	});
+	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join("|");
+};
+var jotun_gaming_dataform_DataObject = function(io_name,props) {
+	this._io_name = io_name;
+	this._io_props = props;
+};
+jotun_gaming_dataform_DataObject.__name__ = "jotun.gaming.dataform.DataObject";
+jotun_gaming_dataform_DataObject.prototype = {
+	getION: function() {
+		return this._io_name;
+	}
+	,stringify: function() {
+		var r = jotun_gaming_dataform_DataIO.stringify(this,this._io_name,this._io_props);
+		jotun_utils_Dice.Values(this._inserts,function(v) {
+			r += "\r@" + v.stringify();
+		});
+		return r;
+	}
+	,parse: function(data) {
+		var i = data.split(" ");
+		if(i[0] == this._io_name) {
+			if(i.length > 2) {
+				this.id = i[1];
+				data = i[2];
+			} else {
+				this.id = null;
+				data = i[1];
+			}
+			if(data != null) {
+				jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+				return true;
+			}
+		}
+		return false;
+	}
+	,merge: function(data) {
+		jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+	}
+	,insert: function(name,o) {
+		if(this._inserts == null) {
+			this._inserts = [];
+		}
+		if(this.canInsert(name,o)) {
+			this._inserts[this._inserts.length] = o;
+			this.onInsert(name,o);
+		}
+		return true;
+	}
+	,onUpdate: function() {
+	}
+	,canInsert: function(name,o) {
+		return true;
+	}
+	,onInsert: function(name,o) {
+	}
+	,__class__: jotun_gaming_dataform_DataObject
+};
 var jotun_idb_WebDB = $hx_exports["J_WebDB"] = function(db,error,upgrade) {
 	this._tables = [];
 	this._need_upgrade = upgrade;
@@ -8077,20 +8256,35 @@ jotun_utils_SearchTag.prototype = {
 };
 var jotun_utils_Singularity = $hx_exports["J_Singularity"] = function() { };
 jotun_utils_Singularity.__name__ = "jotun.utils.Singularity";
+jotun_utils_Singularity.setCustomChannel = function(name) {
+	jotun_utils_Singularity._channel = name;
+};
 jotun_utils_Singularity._getUID = function() {
 	return jotun_Jotun.broadcast.getUID();
 };
 jotun_utils_Singularity._getTime = function() {
 	return new Date().getTime();
 };
-jotun_utils_Singularity.listen = function(handler) {
+jotun_utils_Singularity.count = function() {
+	return jotun_utils_Singularity._engines.length;
+};
+jotun_utils_Singularity.getHeir = function() {
+	if(jotun_utils_Singularity._engines.length > 0) {
+		return jotun_utils_Singularity._engines[0].id;
+	} else {
+		return null;
+	}
+};
+jotun_utils_Singularity.listen = function(handler,name) {
 	jotun_utils_Singularity._callback = handler;
 	if(jotun_utils_Singularity._engines == null) {
 		jotun_utils_Singularity._engines = [];
-		jotun_Jotun.broadcast.listen("jotun.broadcast.engine",jotun_utils_Singularity._onEngine);
-		jotun_Jotun.broadcast.send("jotun.broadcast.engine",{ action : "connect", id : jotun_utils_Singularity._getUID()});
+		jotun_utils_Singularity._name = name;
+		jotun_Jotun.broadcast.listen(jotun_utils_Singularity._channel,jotun_utils_Singularity._onEngine);
+		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "connect", id : jotun_utils_Singularity._getUID(), name : name});
 		window.addEventListener("beforeunload",function(e) {
-			jotun_Jotun.broadcast.send("jotun.broadcast.engine",{ action : "disconnect", id : jotun_utils_Singularity._getUID(), main : jotun_utils_Singularity._is_main, heir : jotun_utils_Singularity._engines[0]});
+			jotun_utils_Singularity._stopVerification();
+			jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "disconnect", id : jotun_utils_Singularity._getUID(), main : jotun_utils_Singularity._is_main, heir : jotun_utils_Singularity.getHeir()});
 		},true);
 		jotun_tools_Ticker.addLow(jotun_utils_Singularity._routine);
 		jotun_tools_Ticker.start();
@@ -8100,20 +8294,38 @@ jotun_utils_Singularity.listen = function(handler) {
 jotun_utils_Singularity.isMain = function() {
 	return jotun_utils_Singularity._is_main;
 };
+jotun_utils_Singularity.instances = function() {
+	return jotun_utils_Singularity._engines;
+};
+jotun_utils_Singularity._register = function(data) {
+	var i = 0;
+	while(i < jotun_utils_Singularity._engines.length) {
+		if(jotun_utils_Singularity._engines[i].id == data.id) {
+			return;
+		}
+		++i;
+	}
+	jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = { id : data.id, name : data.name};
+};
+jotun_utils_Singularity._unregister = function(data) {
+	var i = 0;
+	while(i < jotun_utils_Singularity._engines.length) {
+		if(jotun_utils_Singularity._engines[i].id == data.id) {
+			jotun_utils_Singularity._engines.splice(i,1);
+			return;
+		}
+		++i;
+	}
+};
 jotun_utils_Singularity._onEngine = function(data) {
 	switch(data.action) {
 	case "connect":
-		if(jotun_utils_Singularity._engines.indexOf(data.id) == -1) {
-			jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = data.id;
-		}
-		jotun_Jotun.broadcast.send("jotun.broadcast.engine",{ action : "update", id : jotun_utils_Singularity._getUID(), time : jotun_utils_Singularity._getTime()});
+		jotun_utils_Singularity._register(data);
+		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "update", id : jotun_utils_Singularity._getUID(), time : jotun_utils_Singularity._getTime()});
 		jotun_utils_Singularity._stopVerification();
 		break;
 	case "disconnect":
-		var iof = jotun_utils_Singularity._engines.indexOf(data.id);
-		if(iof != -1) {
-			jotun_utils_Singularity._engines.splice(iof,1);
-		}
+		jotun_utils_Singularity._unregister(data);
 		if(!jotun_utils_Singularity._is_main) {
 			if(data.main && data.heir == jotun_utils_Singularity._getUID()) {
 				jotun_utils_Singularity._is_main = true;
@@ -8122,14 +8334,15 @@ jotun_utils_Singularity._onEngine = function(data) {
 		}
 		break;
 	case "update":
-		if(jotun_utils_Singularity._engines.indexOf(data.id) == -1) {
-			jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = data.id;
-		}
+		jotun_utils_Singularity._register(data);
 		if(data.time < jotun_utils_Singularity._getTime()) {
 			if(jotun_utils_Singularity._self_activate != null) {
 				jotun_utils_Singularity._self_activate.stop();
 				jotun_utils_Singularity._self_activate = null;
 			}
+		}
+		if(data.main && jotun_utils_Singularity._is_main) {
+			jotun_utils_Singularity._is_main = false;
 		}
 		jotun_utils_Singularity._stopVerification();
 		break;
@@ -8824,6 +9037,7 @@ jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.commands = new jotun_objects_QueryGroup();
 jotun_gaming_actions_Requirement.cache = { };
 jotun_gaming_actions_Requirement.commands = new jotun_objects_QueryGroup();
+jotun_gaming_dataform_DataCollection._dictio = { };
 jotun_tools_Ticker._pool_high = [];
 jotun_tools_Ticker._pool_low = [];
 jotun_tools_Ticker._ltime = 0;
@@ -8831,6 +9045,9 @@ jotun_tools_Ticker._etime = 0;
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
+jotun_utils_Singularity._channel = "singularity.engine";
 jotun_utils_Table._trash = [];
 jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
+
+//# sourceMappingURL=api.jotun.js.map

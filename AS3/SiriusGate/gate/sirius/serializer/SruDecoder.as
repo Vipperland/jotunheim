@@ -125,7 +125,7 @@ package gate.sirius.serializer {
 		 * @return
 		 */
 		static public function getClass(name:String, allowDefaultObject:Boolean):Class {
-			if (name == null || name == "" || name == "Object" || name == "*")
+			if (name == null || name == "" || name == "Object" || name == "*" || name == "SruObject")
 				return SruObject;
 			else if (name == "Array")
 				return Array;

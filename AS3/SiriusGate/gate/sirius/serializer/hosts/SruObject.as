@@ -37,6 +37,9 @@ package gate.sirius.serializer.hosts {
 			return param;
 		}
 		
+		public function isIndexed():Boolean {
+			return false;
+		}
 		
 		/* INTERFACE gate.sirius.serializer.hosts.IList */
 		
@@ -67,6 +70,7 @@ package gate.sirius.serializer.hosts {
 		
 		public function onConstruct():void {
 		}
+		
 		
 	}
 
