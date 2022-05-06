@@ -50,6 +50,8 @@ interface IDomain {
 		
 		public function reload (?force:Bool = false):Void;
 		
+		public function location():String;
+		
 	#elseif php
 		
 		public function require(params:Array<String>):Bool;

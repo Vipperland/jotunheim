@@ -1304,6 +1304,9 @@ jotun_net_Domain.prototype = {
 		}
 		window.location.reload(force);
 	}
+	,location: function() {
+		return this.host + "/" + this.url.value;
+	}
 	,__class__: jotun_net_Domain
 };
 var jotun_net_ILoader = function() { };
@@ -8281,7 +8284,7 @@ jotun_utils_Singularity.listen = function(handler,name) {
 		jotun_utils_Singularity._engines = [];
 		jotun_utils_Singularity._name = name;
 		jotun_Jotun.broadcast.listen(jotun_utils_Singularity._channel,jotun_utils_Singularity._onEngine);
-		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "connect", id : jotun_utils_Singularity._getUID(), name : name});
+		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "connect", id : jotun_utils_Singularity._getUID(), name : jotun_utils_Singularity._name, url : jotun_Jotun.domain.location()});
 		window.addEventListener("beforeunload",function(e) {
 			jotun_utils_Singularity._stopVerification();
 			jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "disconnect", id : jotun_utils_Singularity._getUID(), main : jotun_utils_Singularity._is_main, heir : jotun_utils_Singularity.getHeir()});
@@ -8305,7 +8308,7 @@ jotun_utils_Singularity._register = function(data) {
 		}
 		++i;
 	}
-	jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = { id : data.id, name : data.name};
+	jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = { id : data.id, name : data.name, url : data.url};
 };
 jotun_utils_Singularity._unregister = function(data) {
 	var i = 0;

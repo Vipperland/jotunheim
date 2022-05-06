@@ -113,6 +113,10 @@ class Domain implements IDomain {
 			Browser.window.location.reload(force);
 		}
 		
+		public function location():String {
+			return host + '/' + url.value;
+		}
+		
 	#elseif php
 		
 		public function getRequestMethod():String {
