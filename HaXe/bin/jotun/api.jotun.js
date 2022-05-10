@@ -7257,6 +7257,30 @@ jotun_serial_Packager.md5Encode = function(o,base64) {
 		return haxe_crypto_Md5.encode(base64 ? jotun_serial_Packager.encodeBase64(o) : jotun_serial_Packager.jsonEncode(o));
 	}
 };
+var jotun_signals_IFlow = function() { };
+jotun_signals_IFlow.__name__ = "jotun.signals.IFlow";
+jotun_signals_IFlow.prototype = {
+	__class__: jotun_signals_IFlow
+};
+var jotun_signals_Flow = function(pipe,data) {
+	this.data = data;
+	this.pipe = pipe;
+};
+jotun_signals_Flow.__name__ = "jotun.signals.Flow";
+jotun_signals_Flow.__interfaces__ = [jotun_signals_IFlow];
+jotun_signals_Flow.prototype = {
+	__class__: jotun_signals_Flow
+};
+var jotun_signals_IPipe = function() { };
+jotun_signals_IPipe.__name__ = "jotun.signals.IPipe";
+jotun_signals_IPipe.prototype = {
+	__class__: jotun_signals_IPipe
+};
+var jotun_signals_ISignals = function() { };
+jotun_signals_ISignals.__name__ = "jotun.signals.ISignals";
+jotun_signals_ISignals.prototype = {
+	__class__: jotun_signals_ISignals
+};
 var jotun_signals_Observer = $hx_exports["J_Observer"] = function() { };
 jotun_signals_Observer.__name__ = "jotun.signals.Observer";
 jotun_signals_Observer.add = function(target,handler) {
@@ -7304,6 +7328,103 @@ jotun_signals_Observer.removeBy = function(atrr,value) {
 };
 jotun_signals_Observer.clear = function() {
 	jotun_signals_Observer._radar = [];
+};
+var jotun_signals_Pipe = function(name,host) {
+	this.calls = 0;
+	this.enabled = true;
+	this.transfer = true;
+	this.host = host;
+	this.name = name;
+	this.reset();
+};
+jotun_signals_Pipe.__name__ = "jotun.signals.Pipe";
+jotun_signals_Pipe.__interfaces__ = [jotun_signals_IPipe];
+jotun_signals_Pipe.prototype = {
+	add: function(handler) {
+		if(Lambda.indexOf(this._l,handler) == -1) {
+			this._l.push(handler);
+		}
+		return this;
+	}
+	,remove: function(handler) {
+		var i = Lambda.indexOf(this._l,handler);
+		if(i != -1) {
+			this._l.splice(i,1);
+		}
+		return this;
+	}
+	,disconnect: function() {
+		if(this._v != null) {
+			this.remove(this._v);
+			this._v = null;
+		}
+		return this;
+	}
+	,call: function(data) {
+		var _gthis = this;
+		if(this.enabled) {
+			++this.calls;
+			this.current = new jotun_signals_Flow(this,data);
+			this.transfer = true;
+			jotun_utils_Dice.Values(this._l,function(v) {
+				_gthis._v = v;
+				v(_gthis.current);
+				return !_gthis.transfer;
+			});
+			this._v = null;
+		}
+		this.current = null;
+		return this;
+	}
+	,stop: function() {
+		this.transfer = false;
+	}
+	,reset: function() {
+		this._l = [];
+	}
+	,__class__: jotun_signals_Pipe
+};
+var jotun_signals_Signals = $hx_exports["J_Signal"] = function(to) {
+	this.object = to;
+	this.reset();
+};
+jotun_signals_Signals.__name__ = "jotun.signals.Signals";
+jotun_signals_Signals.__interfaces__ = [jotun_signals_ISignals];
+jotun_signals_Signals.prototype = {
+	_c: function(n) {
+		if(!this.has(n)) {
+			this._l[n] = new jotun_signals_Pipe(n,this);
+		}
+		return Reflect.field(this._l,n);
+	}
+	,has: function(name) {
+		return Object.prototype.hasOwnProperty.call(this._l,name);
+	}
+	,get: function(name) {
+		return this._c(name);
+	}
+	,remove: function(name,handler) {
+		return this._c(name).remove(handler);
+	}
+	,add: function(name,handler) {
+		return this._c(name).add(handler);
+	}
+	,call: function(name,data) {
+		if(this.has(name)) {
+			this.get(name).call(data);
+		}
+		return this;
+	}
+	,reset: function(name) {
+		if(name != null) {
+			if(this.has(name)) {
+				this.get(name).reset();
+			}
+		} else {
+			this._l = [];
+		}
+	}
+	,__class__: jotun_signals_Signals
 };
 var jotun_tools_Flag = $hx_exports["Flag"] = function(value) {
 	if(typeof(value) != "number" && (typeof(value) == "number" && ((value | 0) === value))) {
@@ -8259,117 +8380,170 @@ jotun_utils_SearchTag.prototype = {
 };
 var jotun_utils_Singularity = $hx_exports["J_Singularity"] = function() { };
 jotun_utils_Singularity.__name__ = "jotun.utils.Singularity";
-jotun_utils_Singularity.setCustomChannel = function(name) {
-	jotun_utils_Singularity._channel = name;
+jotun_utils_Singularity._selfActivate = function() {
+	jotun_utils_Singularity._checkIfUnique();
 };
-jotun_utils_Singularity._getUID = function() {
-	return jotun_Jotun.broadcast.getUID();
-};
-jotun_utils_Singularity._getTime = function() {
-	return new Date().getTime();
-};
-jotun_utils_Singularity.count = function() {
-	return jotun_utils_Singularity._engines.length;
-};
-jotun_utils_Singularity.getHeir = function() {
-	if(jotun_utils_Singularity._engines.length > 0) {
-		return jotun_utils_Singularity._engines[0].id;
-	} else {
-		return null;
+jotun_utils_Singularity._stopVerification = function() {
+	if(jotun_utils_Singularity._self_activate != null) {
+		jotun_utils_Singularity._self_activate.stop();
+		jotun_utils_Singularity._self_activate = null;
 	}
 };
-jotun_utils_Singularity.listen = function(handler,name) {
-	jotun_utils_Singularity._callback = handler;
-	if(jotun_utils_Singularity._engines == null) {
-		jotun_utils_Singularity._engines = [];
-		jotun_utils_Singularity._name = name;
-		jotun_Jotun.broadcast.listen(jotun_utils_Singularity._channel,jotun_utils_Singularity._onEngine);
-		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "connect", id : jotun_utils_Singularity._getUID(), name : jotun_utils_Singularity._name, url : jotun_Jotun.domain.location()});
-		window.addEventListener("beforeunload",function(e) {
+jotun_utils_Singularity._checkIfUnique = function() {
+	if(!jotun_utils_Singularity._is_main) {
+		jotun_utils_Singularity._is_main = jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
+			return v.main;
+		}).completed;
+		jotun_utils_Singularity._syncMain();
+	}
+	return jotun_utils_Singularity._is_main;
+};
+jotun_utils_Singularity._syncMain = function() {
+	jotun_utils_Singularity._data.main = true;
+	jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "main", id : jotun_utils_Singularity.id()});
+	jotun_utils_Singularity.signals.call("onMain",jotun_utils_Singularity._data);
+};
+jotun_utils_Singularity._getHeir = function() {
+	var r = null;
+	jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
+		if(v.id != jotun_utils_Singularity._data.id) {
+			r = v.id;
+			return true;
+		} else {
+			return false;
+		}
+	});
+	return r;
+};
+jotun_utils_Singularity.id = function() {
+	return jotun_Jotun.broadcast.getUID();
+};
+jotun_utils_Singularity._register = function(data) {
+	var ndata = { id : data.id, name : data.name, url : data.url, main : data.main, time : data.time, visible : data.visible};
+	jotun_utils_Singularity._engines[data.id] = ndata;
+	return ndata;
+};
+jotun_utils_Singularity._unregister = function(data) {
+	data = Reflect.field(jotun_utils_Singularity._engines,data.id);
+	Reflect.deleteField(jotun_utils_Singularity._engines,data.id);
+	return data;
+};
+jotun_utils_Singularity._onEngine = function(data) {
+	switch(data.action) {
+	case "connect":
+		data = jotun_utils_Singularity._register(data);
+		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "update", id : jotun_utils_Singularity.id(), url : jotun_Jotun.domain.location(), time : jotun_utils_Singularity._data.time, main : jotun_utils_Singularity._is_main, visible : jotun_utils_Singularity._is_active});
+		jotun_utils_Singularity.signals.call("onConnect",data);
+		jotun_utils_Singularity.signals.call("onInstance",data);
+		break;
+	case "disconnect":
+		var drop = jotun_utils_Singularity._unregister(data);
+		if(data.main && data.heir == jotun_utils_Singularity.id()) {
+			jotun_utils_Singularity._is_main = true;
+			jotun_utils_Singularity._syncMain();
+		}
+		jotun_utils_Singularity.signals.call("onDisconnect",drop);
+		break;
+	case "main":
+		var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
+		if(engine) {
+			engine.main = true;
+			if(jotun_utils_Singularity._is_main) {
+				jotun_utils_Singularity._is_main = false;
+				jotun_utils_Singularity._data.main = false;
+			}
+		}
+		jotun_utils_Singularity._stopVerification();
+		jotun_utils_Singularity.signals.call("onMain",engine);
+		break;
+	case "sync":
+		if(typeof(data.filter) == "string") {
+			data.filter = [data.filter];
+		}
+		if(data.filter == null || ((data.filter) instanceof Array) && data.filter.indexOf(jotun_utils_Singularity.id()) != -1) {
+			var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
+			if(engine != null) {
+				jotun_utils_Singularity.signals.call("onSync",{ engine : engine, syncedData : data.data});
+			}
+		}
+		break;
+	case "update":
+		data = jotun_utils_Singularity._register(data);
+		if(data.main && jotun_utils_Singularity._is_main) {
+			jotun_utils_Singularity._is_main = false;
+			jotun_utils_Singularity._data.main = false;
+		}
+		if(data.main) {
 			jotun_utils_Singularity._stopVerification();
-			jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "disconnect", id : jotun_utils_Singularity._getUID(), main : jotun_utils_Singularity._is_main, heir : jotun_utils_Singularity.getHeir()});
+		}
+		jotun_utils_Singularity.signals.call("onUpdate",data);
+		jotun_utils_Singularity.signals.call("onInstance",data);
+		break;
+	case "visibility":
+		var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
+		if(engine) {
+			engine.visible = data.visible && data.visible;
+		}
+		jotun_utils_Singularity.signals.call("onVisibility",engine);
+		break;
+	}
+};
+jotun_utils_Singularity.instances = function() {
+	var r = [];
+	jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
+		r.push(v);
+	});
+	jotun_utils_Dice.Table(r,"time",true);
+	return r;
+};
+jotun_utils_Singularity.count = function() {
+	var i = 0;
+	jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
+		i += 1;
+	});
+	return i;
+};
+jotun_utils_Singularity.channel = function() {
+	return jotun_utils_Singularity._channel;
+};
+jotun_utils_Singularity.sync = function(data,id) {
+	jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "sync", id : jotun_utils_Singularity.id(), filter : id, data : data});
+};
+jotun_utils_Singularity._onVisibilityChanged = function(e) {
+	jotun_utils_Singularity._is_active = window.document.visibilityState == "visible";
+	jotun_utils_Singularity._data.visible = jotun_utils_Singularity._is_active;
+	jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "visibility", id : jotun_utils_Singularity.id(), visible : jotun_utils_Singularity._is_active});
+};
+jotun_utils_Singularity.connect = function(options) {
+	if(jotun_utils_Singularity._engines == null) {
+		jotun_utils_Singularity._engines = { };
+		if(options != null) {
+			if(options.name != null) {
+				jotun_utils_Singularity._name = options.name;
+			}
+			if(options.channel != null) {
+				jotun_utils_Singularity._name = options.channel;
+			}
+		}
+		jotun_utils_Singularity._is_active = window.document.visibilityState != "visible" ? false : true;
+		jotun_utils_Singularity._data = { id : jotun_utils_Singularity.id(), name : jotun_utils_Singularity._name, url : jotun_Jotun.domain.location(), visible : jotun_utils_Singularity._is_active, main : false, current : true, time : new Date().getTime()};
+		jotun_utils_Singularity._engines[jotun_utils_Singularity._data.id] = jotun_utils_Singularity._data;
+		jotun_Jotun.broadcast.listen(jotun_utils_Singularity._channel,jotun_utils_Singularity._onEngine);
+		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "connect", id : jotun_utils_Singularity._data.id, name : jotun_utils_Singularity._data.name, url : jotun_utils_Singularity._data.url, visible : jotun_utils_Singularity._is_active, time : jotun_utils_Singularity._data.time});
+		window.document.addEventListener("visibilitychange",jotun_utils_Singularity._onVisibilityChanged,false);
+		window.addEventListener("beforeunload",function(e) {
+			window.document.removeEventListener("visibilitychange",jotun_utils_Singularity._onVisibilityChanged);
+			jotun_utils_Singularity._stopVerification();
+			jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "disconnect", id : jotun_utils_Singularity.id(), main : jotun_utils_Singularity._is_main, heir : jotun_utils_Singularity._getHeir()});
 		},true);
-		jotun_tools_Ticker.addLow(jotun_utils_Singularity._routine);
-		jotun_tools_Ticker.start();
 		jotun_utils_Singularity._self_activate = haxe_Timer.delay(jotun_utils_Singularity._selfActivate,1000);
 	}
 };
 jotun_utils_Singularity.isMain = function() {
 	return jotun_utils_Singularity._is_main;
 };
-jotun_utils_Singularity.instances = function() {
-	return jotun_utils_Singularity._engines;
-};
-jotun_utils_Singularity._register = function(data) {
-	var i = 0;
-	while(i < jotun_utils_Singularity._engines.length) {
-		if(jotun_utils_Singularity._engines[i].id == data.id) {
-			return;
-		}
-		++i;
-	}
-	jotun_utils_Singularity._engines[jotun_utils_Singularity._engines.length] = { id : data.id, name : data.name, url : data.url};
-};
-jotun_utils_Singularity._unregister = function(data) {
-	var i = 0;
-	while(i < jotun_utils_Singularity._engines.length) {
-		if(jotun_utils_Singularity._engines[i].id == data.id) {
-			jotun_utils_Singularity._engines.splice(i,1);
-			return;
-		}
-		++i;
-	}
-};
-jotun_utils_Singularity._onEngine = function(data) {
-	switch(data.action) {
-	case "connect":
-		jotun_utils_Singularity._register(data);
-		jotun_Jotun.broadcast.send(jotun_utils_Singularity._channel,{ action : "update", id : jotun_utils_Singularity._getUID(), time : jotun_utils_Singularity._getTime()});
-		jotun_utils_Singularity._stopVerification();
-		break;
-	case "disconnect":
-		jotun_utils_Singularity._unregister(data);
-		if(!jotun_utils_Singularity._is_main) {
-			if(data.main && data.heir == jotun_utils_Singularity._getUID()) {
-				jotun_utils_Singularity._is_main = true;
-			}
-			jotun_tools_Ticker.addLow(jotun_utils_Singularity._routine);
-		}
-		break;
-	case "update":
-		jotun_utils_Singularity._register(data);
-		if(data.time < jotun_utils_Singularity._getTime()) {
-			if(jotun_utils_Singularity._self_activate != null) {
-				jotun_utils_Singularity._self_activate.stop();
-				jotun_utils_Singularity._self_activate = null;
-			}
-		}
-		if(data.main && jotun_utils_Singularity._is_main) {
-			jotun_utils_Singularity._is_main = false;
-		}
-		jotun_utils_Singularity._stopVerification();
-		break;
-	}
-};
-jotun_utils_Singularity._selfActivate = function() {
-	jotun_utils_Singularity._is_main = true;
-	jotun_tools_Ticker.addLow(jotun_utils_Singularity._routine);
-};
-jotun_utils_Singularity._routine = function() {
-	if(jotun_utils_Singularity._checkIfUnique()) {
-		jotun_utils_Singularity._callback();
-	}
-};
-jotun_utils_Singularity._stopVerification = function() {
-	if(!jotun_utils_Singularity._is_main) {
-		jotun_tools_Ticker.remove(jotun_utils_Singularity._routine);
-	}
-};
-jotun_utils_Singularity._checkIfUnique = function() {
-	if(!jotun_utils_Singularity._is_main) {
-		jotun_utils_Singularity._is_main = jotun_utils_Singularity._engines.length == 0;
-	}
-	return jotun_utils_Singularity._is_main;
+jotun_utils_Singularity.isActive = function() {
+	return jotun_utils_Singularity._is_active;
 };
 var jotun_utils_Table = $hx_exports["J_Table"] = function() {
 };
@@ -9049,6 +9223,7 @@ jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jo
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Singularity._channel = "singularity.engine";
+jotun_utils_Singularity.signals = new jotun_signals_Signals({ });
 jotun_utils_Table._trash = [];
 jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
