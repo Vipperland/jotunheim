@@ -31,39 +31,41 @@ class RequirementQuery extends Query {
 		if (r == null) {
 			r = ">=";
 		}
-		switch(r){
+		return switch(r){
 			// if a is equal b
-			case "=" : return a == v;
+			case "=","equal" : a == v;
 			// if a is different of b
-			case "!=" : return a != v;
+			case "!=","diff" : a != v;
 			// if a lesser than v
-			case "<" : return a < v;
+			case "<","less" : a < v;
 			// if a lesser than or equal v
-			case "<=" : return a <= v;
+			case "<=","lessor" : a <= v;
 			// if a greater than v
-			case ">" : return a > v;
+			case ">","great": a > v;
 			// if a greater than or equal v
-			case ">=" : return a >= v;
+			case ">=","greator" : a >= v;
 			// if a contain bit v
-			case "&" : return (a & v) == v;
+			case "&","test" : (a & v) == v;
 			// if a don't contain bit v
-			case "!&" : return (~a & v) == v;
+			case "!&","not": (~a & v) == v;
 			// if a contain b
-			case "*=" : return a.indexOf(v) != -1;
+			case "*=","contain" : a.indexOf(v) != -1;
 			// if b contain a
-			case "~=" : return v.indexOf(a) != -1;
+			case "~=","in" : v.indexOf(a) != -1;
 			// if random * a is equal b
-			case "#=" : return Std.int(rng() * a) == (v >> 0);
+			case "#=","random" : Std.int(rng() * a) == (v >> 0);
 			// if random * a is different b
-			case "#!" : return Std.int(rng() * a) != (v >> 0);
+			case "#!","rngnot" : Std.int(rng() * a) != (v >> 0);
 			// if random * a greater then or equal  b
-			case "#>" : return (rng() * a) >= v;
+			case "#>","rnggreat" : (rng() * a) >= v;
 			// if random * a lesser then or equal  b
-			case "#<" : return (rng() * a) <= v;
+			case "#<","rngless" : (rng() * a) <= v;
 			// if a is equal b
-			default : return a == v;
+			default : a == v;
 		}
 	}
+	
+	public var ioContext:IEventContext;
 	
 	public function new() {
 		super();

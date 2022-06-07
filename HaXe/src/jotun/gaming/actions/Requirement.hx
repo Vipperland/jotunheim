@@ -1,7 +1,6 @@
 package jotun.gaming.actions;
 import jotun.objects.QueryGroup;
 import js.html.Event;
-import jotun.gaming.actions.RequirementQuery;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -17,7 +16,7 @@ class Requirement extends Resolution {
 		return cast Reflect.field(cache, id);
 	}
 	
-	public static var commands:QueryGroup = new QueryGroup();
+	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
 	
 	public var cancelOnSuccess:Bool;
 	public var cancelOnFail:Bool;
@@ -42,7 +41,7 @@ class Requirement extends Resolution {
 		var res:Bool = true;
 		var score:UInt = 0;
 		if (Utils.isValid(query)){
-			var sec:Dynamic = commands.run(query).result;
+			var sec:Dynamic = commands.eventRun(query, context).result;
 			if(sec != null){
 				Dice.Values(sec, function(v:Dynamic){
 					if (Utils.boolean(v)){
@@ -63,11 +62,13 @@ class Requirement extends Resolution {
 	}
 	
 	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
-		var s:String = "";
-		while (s.length < context.ident){
-			s += '	';
+		if (context.log != null){
+			var s:String = "";
+			while (s.length < context.ident){
+				s += '	';
+			}
+			context.log.push(s + "↓ " + (success ? "SUCCESS" : "FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': ' ') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 		}
-		context.log.push(s + "↓ " + (success ? "SUCCESS" : "FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': ' ') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 	

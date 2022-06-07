@@ -1,5 +1,7 @@
 ﻿package jotun.serial;
+import jotun.dom.IDisplay;
 import jotun.tools.Flag;
+import jotun.tools.Utils;
 
 /**
  * ...
@@ -8,6 +10,9 @@ import jotun.tools.Flag;
 @:expose('J_Json')
 class JsonTool {
 	
+	static public var displayStringfy:IDisplay->String = function(o:IDisplay):String {
+		return o.typeOf();
+	}
 	
 	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
 		if (Std.is(a, String)) {
@@ -57,10 +62,12 @@ class JsonTool {
 		switch( Type.typeof(v) ) {
 			case TUnknown:				objString(v);
 			case TObject:				objString(v);
-			case TInt:					add(v);
+			case TInt:				add(v);
 			case TFloat:				add(Math.isFinite(v) ? v : 'null');
 			case TFunction:				add('"<fun>"');
 			case TClass(c):
+				if ( c == IDisplay)
+					return;
 				if( c == String )
 					quote(v);
 				else if( c == Array ) {
@@ -141,6 +148,7 @@ class JsonTool {
 			var value = Reflect.field(v,f);
 			if ( value == null ) continue;
 			if ( Reflect.isFunction(value) ) continue;
+			if ( Std.is(value, IDisplay) ) value = displayStringfy(cast value);
 			if ( Std.is(f, String) && f.substr(0, 1) == "_") continue;
 			if( first ) { nind++; first = false; } else addChar(','.code);
 			newl();

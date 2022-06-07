@@ -1,5 +1,7 @@
 package jotun.gaming.actions;
 import jotun.objects.Query;
+import jotun.tools.Utils;
+import jotun.utils.Dice;
 
 /**
  * ...
@@ -12,14 +14,28 @@ class ActionQuery extends Query {
 		return value == null || value == "";
 	}
 	
-	private function _INT(value:String):Int {
-		var o:Int = Std.parseInt(value);
-		return o != null ? o : 0;
+	private function _PARAMS(value:String):Dynamic {
+		var params:Dynamic = {};
+		if(value != null){
+			value = value.split('+').join(' ');
+			Dice.Values(value.split('&'), function(v:String){
+				var data:Array<Dynamic> = v.split('=');
+				if (data.length > 1){
+					Reflect.setField(params, data[0], data[1]);
+				}
+			});
+		}
+		return params;
 	}
 	
-	private function _FLOAT(value:String):Float {
-		var o:Float = Std.parseFloat(value);
-		return o != null ? o : 0;
+	private function _INT(value:Dynamic, ?alt:Int = 0):Int {
+		var o:Int = Std.is(value, String) ? Std.parseInt(value) : Std.int(value);
+		return o != null ? o : alt;
+	}
+	
+	private function _FLOAT(value:Dynamic, ?alt:Float = 0):Float {
+		var o:Float = Std.is(value, String) ? Std.parseFloat(value) : Std.int(value);
+		return o != null ? o : alt;
 	}
 	
 	public function rng():Float {
@@ -30,42 +46,49 @@ class ActionQuery extends Query {
 		if (r == null) {
 			r = "=";
 		}
-		switch(r){
-			// return v
-			case "=" : return v;
+		return switch(r){
+			// return a
+			case "=","equal" : a;
 			// return a plus v
-			case "+" : return a + v;
+			case "+","plus" : a + v;
 			// return a minus v
-			case "-" : return a - v;
+			case "-","minus" : a - v;
 			// return a plus 1
-			case "++" : return a + 1;
+			case "++" : a + 1;
 			// return a minus 1
-			case "--" : return a - 1;
+			case "--" : a - 1;
 			// return a times 1
-			case "*" : return a * v;
+			case "*","multiply" : a * v;
 			// return a divided v
-			case "/" : return a / v;
+			case "/","divided" : a / v;
 			// return a module v
-			case "%" : return a % v;
+			case "%","module" : a % v;
 			// return a shift left
-			case "<<" : return a << v;
+			case "<<" : a << v;
 			// return a shift right
-			case ">>" : return a >> v;
+			case ">>" : a >> v;
 			// return a whithout v
-			case "~" : return a & ~(v >> 0);
+			case "~","not" : a & ~(v >> 0);
 			// return a OR v
-			case "|" : return a | v;
+			case "|","or" : a | v;
 			// return a AND v
-			case "&" : return a & v;
+			case "&","and" : a & v;
+			// return a XOR v
+			case "^","xor" : a ^ v;
 			// return a power of v
-			case "^" : return Math.pow(a, v);
+			case "!","pow" : Math.pow(a, v);
 			// return random a plus v
-			case "#" : return a + rng() * v;
+			case "#", "random" : (rng() * v) + a;
 			// return a equal v
-			default : return v;
+			default : a;
 		}
 	}
 	
+	public var ioContext:IEventContext;
+	
+	/**
+	 * 
+	 */
 	public function new() {
 		super();
 	}

@@ -48,7 +48,6 @@ class Events {
 	}
 	
 	public function run(context:IEventContext) {
-		var l:UInt = context.log.length;
 		++context.ident;
 		Dice.All(_data, function(p:Int, a:Action):Bool{
 			return !a.run(context, p);

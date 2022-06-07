@@ -14,11 +14,12 @@ import jotun.utils.Dice;
 class Action extends Resolution {
 	
 	public static var cache:Dynamic = {};
+	
 	public static function get(id:String):Action {
 		return cast Reflect.field(cache, id);
 	}
 	
-	public static var commands:QueryGroup = new QueryGroup();
+	public static var commands:ActionQueryGroup = new ActionQueryGroup();
 	
 	public var requirements:Array<Requirement>;
 	
@@ -73,19 +74,22 @@ class Action extends Resolution {
 			_log(this, context, success, resolution, position);
 		}
 		if (success){
+			context.history.push(this);
 			if(Utils.isValid(query)){
-				commands.run(query);
+				commands.eventRun(query, context);
 			}
 		}
 		return resolve(success, context);
 	}
 
 	private static function _log(evt:Action, context:IEventContext, success:Bool, score:Int, position:Int):Void {
-		var s:String = "";
-		while (s.length < context.ident){
-			s += '	';
+		if (context.log != null){
+			var s:String = "";
+			while (s.length < context.ident){
+				s += '	';
+			}
+			context.log.push(s + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 		}
-		context.log.push(s + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 }

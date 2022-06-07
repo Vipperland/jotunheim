@@ -8,7 +8,7 @@ import js.Browser;
  * ...
  * @author 
  */
-@:expose("J_Singularity")
+@:expose("Singularity")
 class Singularity {
 
 	private static var _channel:String = 'singularity.engine';

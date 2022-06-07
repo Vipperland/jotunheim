@@ -89,7 +89,7 @@ class Jotun {
 				_loaded = true;
 				document.checkBody();
 				agent.update();
-				log("Jotun => READY", 1);
+				log("Jotun API => READY", 1);
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
@@ -154,6 +154,9 @@ class Jotun {
 		 * @param	handler
 		 */
 		static public function run(handler:Dynamic):Void {
+			if (main != null){
+				main();
+			}
 			if (handler != null) {
 				if (!_loaded && _loadPool != null) 
 					_loadPool[_loadPool.length] = handler;
@@ -190,7 +193,7 @@ class Jotun {
 		 * Runtime status
 		 */
 		static private function status():IAgent {
-			log("Jotun => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
+			log("Jotun API => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
 			return agent;
 		}
 		

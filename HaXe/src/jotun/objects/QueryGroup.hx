@@ -1,5 +1,6 @@
 package jotun.objects;
 import jotun.objects.IQuery;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 
 /**

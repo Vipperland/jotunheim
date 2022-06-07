@@ -2,7 +2,7 @@ package jotun.gaming.actions;
 /**
  * @author Rim Project
  */
-interface IEventDispatcher implements Dynamic {
+interface IEventDispatcher {
 	/**
 	 * Available event collection
 	 */

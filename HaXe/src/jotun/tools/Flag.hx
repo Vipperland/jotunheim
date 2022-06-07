@@ -69,17 +69,16 @@ class Flag {
 		return (hash & value) == value;
 	}
 	
-	public static function FValue(hash:UInt, ?skip:UInt = 0):String {
-		var v:String = (cast hash).toString(2);
-		var i:UInt = v.length;
-		while (i < 32){
-			v = '0' + v;
-			++i;
-		}
-		i = (skip % 8);
+	public static function FValue(hash:UInt, ?size:UInt = 32, ?glen:UInt = 8):String {
 		var r:String = '';
-		while (i < 8){
-			r += v.substr(i * 4, 4) + (++i < 8 ? ' ' : '');
+		var g:Int = 0;
+		while(size>0){
+			--size;
+			r += FTest(hash, 1 << size) ? '1' : '0';
+			if (++g == glen){
+				g = 0;
+				r += ' ';
+			}
 		}
 		return r;
 	}
@@ -152,8 +151,8 @@ class Flag {
 		return FLength(value);
 	}
 	
-	public function toString(?skip:UInt = 0):String {
-		return FValue(value, skip);
+	public function toString(?size:UInt = 32, ?glen:UInt = 8):String {
+		return FValue(value, size, glen);
 	}
 	
 }

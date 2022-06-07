@@ -1,4 +1,5 @@
 package jotun.objects;
+import jotun.gaming.actions.IEventContext;
 
 /**
  * @author Rim Project

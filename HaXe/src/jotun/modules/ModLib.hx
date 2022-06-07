@@ -25,7 +25,9 @@ class ModLib {
 	
 	private static var CACHE:Dynamic = { };
 	
-	private static var DATA:Dynamic = { };
+	private static var DATA:Dynamic = {
+		buffer:[],
+	};
 	
 	#if js
 		
@@ -105,12 +107,15 @@ class ModLib {
 						var path:String = file;
 						if (mod.name == null){
 							mod.name = file;
+						}else if (mod.name == "[]"){
+							path += '[]';
+							Jotun.log("		ModLib => PUSH " + mod.name, 1);
 						}else{
 							path += '#' + mod.name;
-							Jotun.log("		ModLib => NAME " + path, 1);
+							Jotun.log("		ModLib => NAME " + mod.name, 1);
 						}
 						if (exists(mod.name)){
-							Jotun.log("	ModLib => OVERRIDE " + path, 2);
+							Jotun.log("	ModLib => !!! OVERRIDING " + path, 2);
 						}
 						var end:Int = v.indexOf("/EOF;");
 						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
@@ -153,7 +158,12 @@ class ModLib {
 							if (mod.type != null) {
 								if (mod.type == 'data'){
 									try {
-										Reflect.setField(this.data, mod.name, Json.parse(content));
+										if (mod.name == '[]'){
+											DATA.buffer.push(Json.parse(content));
+										}else{
+											Reflect.setField(this.data, mod.name, Json.parse(content));
+										}
+										return false;
 									}catch (e:Dynamic){
 										Jotun.log("	ModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, 3);
 									}
@@ -177,6 +187,7 @@ class ModLib {
 						Jotun.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", 3);
 					}
 				}
+				return false;
 			});
 			#if js 
 				if (mountAfter.length > 0){
@@ -232,15 +243,20 @@ class ModLib {
 	}
 	
 	public function getObj(name:String, ?data:Dynamic):Dynamic {
-		var val:String = get(name, data);
-		if (val != null){
-			try {
-				return Json.parse(val);
-			}catch (e:Dynamic){
-				trace("Parsing error for MOD:[" + name+"]");
+		if (Reflect.hasField(DATA, name)){
+			data = Reflect.field(DATA, name);
+		}else{
+			var val:String = get(name, data);
+			if (val != null){
+				try {
+					data = Json.parse(val);
+				}catch (e:Dynamic){
+					trace("Parsing error for MOD:[" + name+"]");
+					data = null;
+				}
 			}
 		}
-		return null;
+		return data;
 	}
 	
 	#if php

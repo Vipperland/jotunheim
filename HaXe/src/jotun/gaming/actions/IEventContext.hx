@@ -5,8 +5,11 @@ package jotun.gaming.actions;
  */
 interface IEventContext {
 	public var debug:Bool;
+	public var name:String;
 	public var log:Array<String>;
 	public var ident:Int;
 	public var ticks:Int;
 	public var origin:Dynamic;
+	public var previous:IEventContext;
+	public var history:Array<Action>;
 }

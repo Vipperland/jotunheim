@@ -88,7 +88,8 @@ class Query extends Resolve implements IQuery {
 					// Call method, if is a function and use the argument array, recursive call if result is a string and result the last one
 					if (isMethod){
 						o = Reflect.callMethod(this, o, tk);
-						if (o != null && Std.is(o, String)){
+						if (o != null && Std.is(o, String) && o.substr(0, 1) == "~"){
+							o = o.substring(1, o.length);
 							_batchExec(o);
 							o = null;
 						}

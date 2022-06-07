@@ -126,6 +126,45 @@ class Dice {
 	}
 	
 	/**
+	 * Remove NULL elements from Array
+	 * @param	q
+	 * @param stopOnNull
+	 * @return
+	 */
+	public static function nullSkip(q:Array<Dynamic>, ?stopOnNull:Bool):Array<Dynamic> {
+		var r:Array<Dynamic> = [];
+		Dice.Values(q, function(v:Dynamic){
+			if (v != null){
+				r.push(v);
+				return false;
+			}else{
+				return stopOnNull;
+			}
+		});
+		return r;
+	}
+	
+	/**
+	 * Call a mthod for each null value in array
+	 * @param	q
+	 * @param	length
+	 * @param	handler
+	 * @return
+	 */
+	public static function nullFill(q:Array<Dynamic>, from:Int, length:Int, handler:Int->Dynamic):Array<Dynamic> {
+		length = from + length;
+		while (from < length){
+			if (q[from] == null){
+				q[from] = handler(from);
+			}
+			++from;
+		}
+		return q;
+	}
+	
+	
+	
+	/**
 	 * Execute the method in all object list (obj.method(...args))
 	 * @param	q		Target object
 	 * @param	method	Function name

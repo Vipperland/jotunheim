@@ -58,7 +58,7 @@ class Broadcast {
 	
 	public function new() {
 		if (__me__ == null){
-			_uid = Key.GEN(32);
+			_uid = Key.GEN(24);
 			if(Reflect.hasField(Browser.window, 'BroadcastChannel')){
 				// Compatible Browsers
 				_channels = {};

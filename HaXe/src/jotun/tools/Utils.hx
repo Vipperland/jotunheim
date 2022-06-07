@@ -4,10 +4,12 @@ import haxe.Log;
 import jotun.data.DataSet;
 import jotun.math.RNG;
 import jotun.utils.IDiceRoll;
+import js.lib.Error;
 
 #if js
 
 	import js.Browser;
+	import js.Syntax;
 	import js.html.Attr;
 	import js.html.Blob;
 	import js.html.Element;
@@ -86,7 +88,9 @@ import jotun.utils.IDiceRoll;
 	import jotun.gaming.dataform.DataIO;
 	import jotun.gaming.dataform.DataObject;
 	import jotun.idb.WebDB;
+	import jotun.idb.WebDBAssist;
 	import jotun.idb.WebDBTable;
+	import jotun.math.JMath;
 	import jotun.utils.SearchTag;
 	import jotun.utils.Singularity;
 	import jotun.signals.Observer;
@@ -235,6 +239,10 @@ class Utils{
 			return (cast Browser.window).URL.createObjectURL(file);
 		}
 		
+		static public function freeze(data:Dynamic):Void {
+			Syntax.code('Object.freeze({0})', data);
+		}
+		
 		
 	#elseif php
 		
@@ -261,10 +269,11 @@ class Utils{
 	
 	static public function getQueryParams(value:String):Dynamic {
 		var params:Dynamic = {};
-		if(value != null && value.indexOf('?') > 0)
-			value = value.split('+').join(' ').split('?')[1];
-		else
+		if (value != null){
+			value = value.split('+').join(' ').split('?').pop();
+		} else{
 			return params;
+		}
 		Dice.Values(value.split('&'), function(v:String){
 			var data:Array<Dynamic> = v.split('=');
 			if (data.length > 1){
@@ -388,7 +397,7 @@ class Utils{
 		return false;
 	}
 	
-	static public function isRange(o:Dynamic, min:Int, max:Int):Bool {
+	static public function isBetween(o:Dynamic, min:Int, max:Int):Bool {
 		if(o != null){
 			if (!Std.isOfType(o, Float)){
 				if (Std.isOfType(o, Array) || Std.isOfType(o, String)){
@@ -530,6 +539,28 @@ class Utils{
 		
 		static public function isFunction(o:Dynamic):Bool {
 			return Reflect.isFunction(o);
+		}
+		
+		static public function stackTrace():String {
+			try {
+				throw new Error();
+			}catch (e:Dynamic){
+				e = e.stack.split('\r\n').join('\r').split('\n').join('\r').split('\r');
+				Dice.All(e, function(p:Int, v:String){
+					if (v.indexOf('Function.jotun_tools_Utils.stackTrace') != -1){
+						e.splice(p, 1);
+						return true;
+					}else{
+						return false;
+					}
+				});
+				e[0] = 'STACK TRACE';
+				return e.join("\r\n	↑ ");
+			}
+		}
+		
+		static public function throwError():Void {
+			throw new Error();
 		}
 		
 	#end

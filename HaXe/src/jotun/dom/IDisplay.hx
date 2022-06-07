@@ -32,6 +32,10 @@ interface IDisplay extends IQuery {
 	public var events : IDispatcher;
 	
 	/**
+	 * Custom data
+	 */
+	public var data:Dynamic;
+	/**
 	 * Check if a selector exists
 	 * @return
 	 */
@@ -499,10 +503,5 @@ interface IDisplay extends IQuery {
 	 * @return
 	 */
 	public function toString():String;
-	
-	/**
-	 * Common data holder
-	 */
-	public var data:Dynamic;
 	
 }
