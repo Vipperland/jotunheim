@@ -1,6 +1,7 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.IEventContext;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 
 /**
@@ -50,7 +51,11 @@ class Events {
 	public function run(context:IEventContext) {
 		++context.ident;
 		Dice.All(_data, function(p:Int, a:Action):Bool{
-			return !a.run(context, p);
+			if (a.run(context, p)){
+				return a.cancelOnSuccess;
+			}else{
+				return a.cancelOnFail;
+			}
 		});
 		--context.ident;
 		if (context.ident == 0){
@@ -62,12 +67,11 @@ class Events {
 	}
 	
 	private static function _log(evt:Events, context:IEventContext):Void {
-		var s:String = "";
-		while (s.length < context.ident){
-			s += '	';
-		}
 		var a:Int = evt._data.length;
-		context.log.push(s + "≈ EVENT " + evt._type + (a == 0 ? " [!] No Actions" : " @" + a));
+		context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
+		if (context.chain > 0 && context.parent.action != null){
+			context.log.push(Utils.prefix("", context.ident + context.chain + 1, '\t') + "├ ACTION [" + context.parent.action + "]");
+		}
 	}
 	
 }

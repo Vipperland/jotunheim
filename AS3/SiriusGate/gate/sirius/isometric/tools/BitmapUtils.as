@@ -16,9 +16,9 @@ package gate.sirius.isometric.tools {
 	 */
 	public class BitmapUtils {
 		
-		public static function apply(to:BiomeMatter, funct:Function, width:uint, height:uint, color:uint, border:uint = 0x0):void {
+		public static function apply(to:BiomeMatter, funct:Function, width:uint, height:uint, color:uint, border:uint = 0x0, dispose:Boolean = true):void {
 			
-			var bitmap:Bitmap = BitmapUtils.check(to);
+			var bitmap:Bitmap = BitmapUtils.check(to, dispose);
 			bitmap.bitmapData = funct(to, width, height, color, border);
 			to.content = bitmap;
 			bitmap.name = to.name;
@@ -74,14 +74,16 @@ package gate.sirius.isometric.tools {
 		}
 		
 		
-		static public function check(matter:BiomeMatter):Bitmap {
+		static public function check(matter:BiomeMatter, dispose:Boolean):Bitmap {
 			
 			var bitmap:Bitmap = (matter.content as Bitmap);
 			if (bitmap) {
-				if (bitmap.bitmapData) {
+				if (dispose && bitmap.bitmapData != null) {
 					bitmap.bitmapData.dispose();
+				}else{
+					bitmap.bitmapData = null;
 				}
-			} else {
+			}else{
 				bitmap = new Bitmap();
 			}
 			

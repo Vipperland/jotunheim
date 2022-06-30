@@ -1,6 +1,7 @@
 package jotun.gaming.actions;
 import jotun.Jotun;
 import jotun.gaming.actions.IEventContext;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 
 /**
@@ -53,21 +54,26 @@ class EventController implements IEventDispatcher  {
 	public function call(name:String, ?data:Dynamic):Bool {
 		if (Reflect.hasField(events, name)){
 			var context:IEventContext = _createContext(data, name);
+			context.chain = _index;
 			_chain[_chain.length] = context;
+			if (_index > 0){
+				context.parent = _chain[_index-1];
+			}
 			++_index;
 			_onCallBefore(context);
 			Reflect.field(events, name).run(context);
-			if (--_index == 0){
+			--_index;
+			_onCallAfter(context);
+			if (_index == 0){
 				_onChainEnd(_chain);
 				_chain = [];
 			}
-			_onCallAfter(context);
 			return true;
 		}else{
 			if (_debug){
 				var context:IEventContext = _createContext(data, name);
 				_onCallBefore(context);
-				context.log.push("≈ EVENT " + name + " [!] Not Found on " + Type.getClassName(Type.getClass(this))) + ". ";
+				context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + "≈ EVENT " + name + " [!] Not Found on " + Type.getClassName(Type.getClass(this))) + ". ";
 				_onCallAfter(context);
 			}
 			return false;

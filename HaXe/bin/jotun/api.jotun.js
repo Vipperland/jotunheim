@@ -1087,7 +1087,7 @@ var jotun_net_Broadcast = $hx_exports["J_Broadcast"] = function() {
 	this._muted = false;
 	var _gthis = this;
 	if(jotun_net_Broadcast.__me__ == null) {
-		jotun_net_Broadcast._uid = jotun_tools_Key.GEN(32);
+		jotun_net_Broadcast._uid = jotun_tools_Key.GEN(24);
 		var o = window;
 		if(Object.prototype.hasOwnProperty.call(o,"BroadcastChannel")) {
 			this._channels = { };
@@ -7455,19 +7455,23 @@ jotun_tools_Flag.FToggle = function(hash,bit) {
 jotun_tools_Flag.FTest = function(hash,value) {
 	return (hash & value) == value;
 };
-jotun_tools_Flag.FValue = function(hash,skip) {
-	if(skip == null) {
-		skip = 0;
+jotun_tools_Flag.FValue = function(hash,size,glen) {
+	if(glen == null) {
+		glen = 8;
 	}
-	var v = hash.toString(2);
-	var i = v.length;
-	while(UInt.gt(32,i)) {
-		v = "0" + v;
-		++i;
+	if(size == null) {
+		size = 32;
 	}
-	i = UInt.toFloat(skip) % UInt.toFloat(8) | 0;
 	var r = "";
-	while(UInt.gt(8,i)) r += HxOverrides.substr(v,i++ * 4,4) + (UInt.gt(8,i) ? " " : "");
+	var g = 0;
+	while(UInt.gt(size,0)) {
+		--size;
+		r += jotun_tools_Flag.FTest(hash,1 << size) ? "1" : "0";
+		if(++g == glen) {
+			g = 0;
+			r += " ";
+		}
+	}
 	return r;
 };
 jotun_tools_Flag.FLength = function(hash) {
@@ -7529,11 +7533,14 @@ jotun_tools_Flag.prototype = {
 	,length: function() {
 		return jotun_tools_Flag.FLength(this.value);
 	}
-	,toString: function(skip) {
-		if(skip == null) {
-			skip = 0;
+	,toString: function(size,glen) {
+		if(glen == null) {
+			glen = 8;
 		}
-		return jotun_tools_Flag.FValue(this.value,skip);
+		if(size == null) {
+			size = 32;
+		}
+		return jotun_tools_Flag.FValue(this.value,size,glen);
 	}
 	,__class__: jotun_tools_Flag
 };
@@ -8378,7 +8385,7 @@ jotun_utils_SearchTag.prototype = {
 	}
 	,__class__: jotun_utils_SearchTag
 };
-var jotun_utils_Singularity = $hx_exports["J_Singularity"] = function() { };
+var jotun_utils_Singularity = $hx_exports["Singularity"] = function() { };
 jotun_utils_Singularity.__name__ = "jotun.utils.Singularity";
 jotun_utils_Singularity._selfActivate = function() {
 	jotun_utils_Singularity._checkIfUnique();

@@ -64,7 +64,9 @@ class Query extends Resolve implements IQuery {
 			// Common behaviour
 			default: {
 				// Clear double tabs
-				q = q.split('	').join(' ');
+				while (q.indexOf('\t\t') != -1){
+					q = q.split('\t\t').join(' ');
+				}
 				while (q.indexOf('  ') != -1){
 					q = q.split('  ').join(' ');
 				}

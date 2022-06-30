@@ -28,12 +28,16 @@ class ActionQuery extends Query {
 		return params;
 	}
 	
-	private function _INT(value:Dynamic, ?alt:Int = 0):Int {
+	private function _BOOL(value:Dynamic):Bool {
+		return Utils.boolean(value);
+	}
+	
+	private function _INT(value:Dynamic, ?alt:Int):Int {
 		var o:Int = Std.is(value, String) ? Std.parseInt(value) : Std.int(value);
 		return o != null ? o : alt;
 	}
 	
-	private function _FLOAT(value:Dynamic, ?alt:Float = 0):Float {
+	private function _FLOAT(value:Dynamic, ?alt:Float):Float {
 		var o:Float = Std.is(value, String) ? Std.parseFloat(value) : Std.int(value);
 		return o != null ? o : alt;
 	}

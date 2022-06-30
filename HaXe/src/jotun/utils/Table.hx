@@ -30,6 +30,13 @@ class Table implements ITable {
 		return r.scan(q, t);
 	}
 	
+	static public function create():ITable {
+		if (_trash.length > 0)
+			return _trash.pop().reset();
+		else
+			return new Table();
+	}
+	
 	//static public function em
 	
 	static public function empty():ITable {
@@ -38,14 +45,16 @@ class Table implements ITable {
 	
 	public var content:Array<IDisplay>;
 	
-	public var elements:Array<Element>;
-	
 	public function new() {
 	}
 	
 	public function reset():ITable {
 		content = [];
-		elements = [];
+		return this;
+	}
+	
+	public function add(obj:IDisplay):ITable {
+		content[content.length] = obj;
 		return this;
 	}
 	
@@ -60,7 +69,6 @@ class Table implements ITable {
 				if (element != null){
 					obj = Utils.displayFrom(element);
 					content[ind] = obj;
-					elements[ind] = element;
 				}
 				++ind;
 			}
@@ -83,7 +91,6 @@ class Table implements ITable {
 		each(function(v:IDisplay) {
 			if (v.element.innerHTML.indexOf(q) != -1) {
 				t.content[i] = v;
-				t.elements[i] = v.element;
 				++i;
 			}
 		});
@@ -184,7 +191,6 @@ class Table implements ITable {
 		tables[tables.length] = this;
 		Dice.Values(tables, function(v:Table) {
 			t.content = t.content.concat(v.content);
-			t.elements = t.elements.concat(v.elements);
 		});
 		return t;
 	}
@@ -192,7 +198,6 @@ class Table implements ITable {
 	public function dispose():Void {
 		each(function(o:IDisplay){ o.dispose(); });
 		content = null;
-		elements = null;
 		_trash[_trash.length] = this;
 	}
 	

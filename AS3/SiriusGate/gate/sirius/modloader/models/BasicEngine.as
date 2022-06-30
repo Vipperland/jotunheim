@@ -1,5 +1,7 @@
 package gate.sirius.modloader.models {
+	
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
@@ -54,13 +56,15 @@ package gate.sirius.modloader.models {
 			}
 		}
 		
-		private function _logSystem():void {
+		private function _logSystem(stage:Stage):void {
 			_writeLog('=== STARTED AT ' + [
 				(new Date().toString()),
 				Capabilities.os,
-				Capabilities.screenResolutionX + 'x' + Capabilities.screenResolutionX + ' (' + Capabilities.screenDPI + 'dpi)',
+				Capabilities.screenResolutionX + 'x' + Capabilities.screenResolutionY + ' (' + Capabilities.screenDPI + 'dpi)',
+				stage.stageWidth + 'x' + stage.stageHeight,
+				'FPS ' + (stage ? stage.frameRate : '--'),
 				'VERSION ' + Capabilities.version,
-				'DEBUG=' + Capabilities.isDebugger
+				'DEBUG:' + Capabilities.isDebugger
 			].join(' // '));
 		}
 		
@@ -82,7 +86,7 @@ package gate.sirius.modloader.models {
 				_log_io.close();
 			}
 			
-			_logSystem();
+			_logSystem(viewport.stage);
 			
 			ULog.GATE.ON_NEW_ENTRY.hold(function(ticket:ULogSignal):void{
 				var l:Boolean = false;

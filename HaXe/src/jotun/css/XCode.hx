@@ -59,12 +59,12 @@ class XCode {
 				|
 				
 				HACK = [0,1,2,3,4		== ROW + COLUMNS
-				|		5,6,7,8,9]
+				|       5,6,7,8,9]
 							+ o-stack  to reverse
 				
 				DRAWER = 	[0,		== COLUMN
-				|			 1,
-				|			 2]
+		|			 1,
+		|			 2]
 							+ o-stack  to reverse
 				
 				Placement

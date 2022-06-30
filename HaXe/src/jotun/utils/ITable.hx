@@ -15,11 +15,6 @@ interface ITable {
 	public var content:Array<IDisplay>;
 	
 	/**
-	 * List of DOM elements
-	 */
-	public var elements:Array<Element>;
-	
-	/**
 	 * Do a query selector
 	 * @param	q
 	 * @param	t
@@ -27,6 +22,13 @@ interface ITable {
 	 * @return
 	 */
 	public function scan(q:String, ?t:Element):ITable;
+	
+	/**
+	 * Add a display to the list
+	 * @param	obj
+	 * @return
+	 */
+	public function add(obj:IDisplay):ITable;
 	
 	/**
 	 * Return all elements with contains a specific value

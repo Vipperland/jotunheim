@@ -18,19 +18,14 @@ class Requirement extends Resolution {
 	
 	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
 	
-	public var cancelOnSuccess:Bool;
-	public var cancelOnFail:Bool;
-	public var reverse:Bool;
 	public var target:Int;
 	
 	public function new(type:String, data:Dynamic) {
 		super(type, data);
-		cancelOnSuccess = Utils.boolean(data.cancelOnSuccess);
-		cancelOnFail = Utils.boolean(data.cancelOnFail);
-		reverse = Utils.boolean(data.reverse);
-		target = Std.int(data.target);
-		if (target == null){
-			target = (query != null ? query.length - 1 : 0);
+		if (data.target == null){
+			target = length();
+		}else{
+			target = Std.int(data.target);
 		}
 		if (Utils.isValid(data.id)){
 			Reflect.setField(cache, data.id, this);
@@ -50,11 +45,8 @@ class Requirement extends Resolution {
 				});
 			}
 			res = score >= target;
-			if (reverse){
-				res = !res;
-			}
 		}
-		resolve(res, context);
+		res = resolve(res, context);
 		if (context.debug){
 			_log(this, context, res, score, reverse, position);
 		}
@@ -63,11 +55,7 @@ class Requirement extends Resolution {
 	
 	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
 		if (context.log != null){
-			var s:String = "";
-			while (s.length < context.ident){
-				s += '	';
-			}
-			context.log.push(s + "↓ " + (success ? "SUCCESS" : "FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': ' ') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (success ? "└ SUCCESS" : "ꭙ FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 		}
 	}
 	

@@ -517,6 +517,24 @@ class Utils{
 		}
 	}
 	
+	public static function prefix(value:String, length:Int, q :String):String {
+		while (value.length < length){
+			value = q + value;
+		}
+		return value;
+	}
+	
+	public static function sufix(value:String, length:Int, q :String):String {
+		while (value.length < length){
+			value = value + q;
+		}
+		return value;
+	}
+	
+	public static function rnToBr(value:String):String {
+		return value.split('\r\n').join('<br/>').split('\r').join('<br/>').split('\n').join('<br/>');
+	}
+	
 	#if php 
 	
 		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {

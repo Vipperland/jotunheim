@@ -223,6 +223,15 @@ class Document extends Display {
 	 * Current selected element
 	 * @return
 	 */
+	public function hasFocusedInput():Bool {
+		var disp:IDisplay = getFocused();
+		return Std.isOfType(disp, Input) || Std.isOfType(disp, TextArea) || disp.isEditable();
+	}
+	
+	/**
+	 * Current selected element
+	 * @return
+	 */
 	public function getFocused():IDisplay {
 		var el:Element = Browser.document.activeElement;
 		return el != null ? Utils.displayFrom(el) : null;

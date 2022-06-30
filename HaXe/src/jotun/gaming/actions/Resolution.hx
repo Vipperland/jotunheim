@@ -18,8 +18,17 @@ class Resolution {
 	
 	public var onFail:Events;
 	
+	public var cancelOnSuccess:Bool;
+	
+	public var cancelOnFail:Bool;
+	
+	public var reverse:Bool;
+	
 	public function new(type:String, data:Dynamic) {
 		_type = type;
+		cancelOnSuccess = Utils.boolean(data.cancelOnSuccess);
+		cancelOnFail = Utils.boolean(data.cancelOnFail);
+		reverse = Utils.boolean(data.reverse);
 		if (Std.is(data.query, Array)){
 			query = data.query;
 			query.unshift('@result');
@@ -38,14 +47,16 @@ class Resolution {
 	public function resolve(result:Bool, context:IEventContext):Bool {
 		++context.ident;
 		if (result){
-			if (onSuccess != null)
+			if (onSuccess != null){
 				onSuccess.run(context);
+			}
 		}else{
-			if (onFail != null)
+			if (onFail != null){
 				onFail.run(context);
+			}
 		}
 		--context.ident;
-		return result;
+		return reverse ? !result : result;
 	}
 	
 	public function length():Int {

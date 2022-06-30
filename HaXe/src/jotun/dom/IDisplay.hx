@@ -183,6 +183,8 @@ interface IDisplay extends IQuery {
 	
 	public function focus():IDisplay;
 	
+	public function isEditable():Bool;
+	
 	/**
 	 * Get child by index
 	 * @param	i
@@ -438,6 +440,12 @@ interface IDisplay extends IQuery {
 	public function getBounds():DOMRect;
 	
 	/**
+	 * 
+	 * @return
+	 */
+	public function rectangle():Dynamic;
+	
+	/**
 	 * Apply a SVG color transform
 	 * @param	r
 	 * @param	g
@@ -503,5 +511,36 @@ interface IDisplay extends IQuery {
 	 * @return
 	 */
 	public function toString():String;
+	
+	/**
+	 * Invoke click event
+	 * @return
+	 */
+	public function click():IDisplay;
+	
+	/**
+	 * 
+	 * @param	o
+	 * @return
+	 */
+	public function getScrollBounds(?o:IPoint = null):IPoint;
+	
+	/**
+	 * 
+	 * @param	min
+	 * @return
+	 */
+	public function removeChildren(min:UInt = 0):IDisplay;
+	
+	/**
+	 * 
+	 */
+	public function enablePerspective():Void;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public function isVisible():Bool;
 	
 }

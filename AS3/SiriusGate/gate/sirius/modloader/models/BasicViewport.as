@@ -15,6 +15,12 @@ package gate.sirius.modloader.models {
 		
 		private var _container:Sprite;
 		
+		private var _root:Sprite;
+		
+		public function get root():Sprite {
+			return _root;
+		}
+		
 		public function get background():Sprite {
 			return _background;
 		}
@@ -28,6 +34,7 @@ package gate.sirius.modloader.models {
 		}
 		
 		public function BasicViewport(main:Sprite) {
+			_root = main;
 			_background = new Sprite();
 			_game = new Sprite();
 			_ui = new Sprite();

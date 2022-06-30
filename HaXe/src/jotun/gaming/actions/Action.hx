@@ -84,11 +84,7 @@ class Action extends Resolution {
 
 	private static function _log(evt:Action, context:IEventContext, success:Bool, score:Int, position:Int):Void {
 		if (context.log != null){
-			var s:String = "";
-			while (s.length < context.ident){
-				s += '	';
-			}
-			context.log.push(s + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
+			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + "↑ " + (success ? "SUCCESS" : "FAIL") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 		}
 	}
 	
