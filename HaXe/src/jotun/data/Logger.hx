@@ -73,7 +73,7 @@ class Logger{
 			default : "";
 		}
 		#if js
-			if (t != null && Std.is(q, Array)){
+			if (t != null && Std.isOfType(q, Array)){
 				q.unshift(t);
 			}else{
 				q = [t, q];

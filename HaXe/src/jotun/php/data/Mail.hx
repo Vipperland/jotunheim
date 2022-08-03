@@ -102,7 +102,7 @@ class Mail {
 	}
 	
 	public function send(subject:String, target:Dynamic, html:String, plain:String):Bool {
-		if (Std.is(target, Array)){
+		if (Std.isOfType(target, Array)){
 			Dice.Values(target, function(v:Dynamic){
 				_sendRaw(subject, v, html, plain);
 			});

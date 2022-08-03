@@ -31,7 +31,7 @@ class ARGB implements IARGB {
 	public function new(q:Dynamic, ?g:Int, ?b:Int, ?a:Int) {
 		
 		// rgb(0,0,0[,0]), 0x000000, #000000
-		var s:Bool = Std.is(q, String) && (q.substr(0,3) == "rgb" || q.substr(0, 2) == "0x" || q.substr(0, 1) == "#");
+		var s:Bool = Std.isOfType(q, String) && (q.substr(0,3) == "rgb" || q.substr(0, 2) == "0x" || q.substr(0, 1) == "#");
 		
 		// rgb(R,G,B[,A])
 		if (s && q.substr(0, 3) == "rgb") {

@@ -37,7 +37,7 @@ class DataObject {
 	public function stringify():String {
 		var r:String = DataIO.stringify(this, _io_name, _io_props);
 		Dice.Values(_inserts, function(v:DataObject){
-			r += '\r@' + v.stringify();
+			r += '\n@' + v.stringify();
 		});
 		return r;
 	}

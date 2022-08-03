@@ -1,6 +1,12 @@
 package jotun.gaming.dataform;
+import jotun.errors.Error;
+import jotun.serial.Packager;
 import jotun.utils.Dice;
-import js.Syntax;
+#if js
+	import js.Syntax;
+#elseif php
+	import php.Syntax;
+#end
 
 /**
  * ...
@@ -19,11 +25,7 @@ class DataCollection {
 		if (Reflect.hasField(_dictio, name)){
 			var d__:Dynamic = Reflect.field(_dictio, name);
 			var C__:Dynamic = d__.c;
-			#if js
-				o = Syntax.code("new C__({0}, {1})", d__.n , d__.p);
-			#elseif php
-				o = untyped __php__("new C__(d__.n,d__.p)");
-			#end
+			Syntax.code("new C__({0}, {1})", d__.n , d__.p);
 		}
 		if (o != null){
 			if (r.length == 3){
@@ -70,8 +72,16 @@ class DataCollection {
 	   @param	data
 	**/
 	public function parse(data:String):Int {
+		if (data.substr(0, 1) == '#'){
+			var key:String = data.substring(1, 33);
+			data = data.substring(34, data.length);
+			if (Packager.md5Encode(data) != key){
+				throw new Error(1, 'Invalid data object');
+			}
+			data = Packager.decodeBase64(data);
+		}
 		var len:Int = 0;
-		var i:Array<String> = data.split('\r');
+		var i:Array<String> = data.split('\n');
 		var l:DataObject = null;
 		Dice.Values(i, function(v:String){
 			var r:Array<String> = v.split(' ');
@@ -108,14 +118,19 @@ class DataCollection {
 	   
 	   @return
 	**/
-	public function stringify(?name:String):String {
+	public function stringify(?encode:Bool, ?name:String):String {
 		var r:String = '';
 		Dice.Values(getList(name), function(v:Dynamic){
 			Dice.Values(v, function(v1:DataObject){
-				r += (r.length > 0 ? '\r' : '') + v1.stringify();
+				r += (r.length > 0 ? '\n' : '') + v1.stringify();
 			});
 		});
-		return r;
+		if (encode){
+			r = Packager.encodeBase64(r);
+			return '#' + Packager.md5Encode(r) + ':' + r; 
+		}else{
+			return r;
+		}
 	}
 	
 	public function getList(?name:String):Dynamic {

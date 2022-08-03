@@ -21,7 +21,7 @@ class ImageLib {
 	
 	public function open(files:Dynamic):ImageLib {
 		// Convert string to array
-		if (!Std.is(files, Array))
+		if (!Std.isOfType(files, Array))
 			files = [files];
 		// Buffer all files
 		Dice.Values(files, function(v:Dynamic) {

@@ -143,7 +143,7 @@ class XCode {
 	}
 	
 	static public function style(selector:String, value:Dynamic, ?mode:String):Void {
-		if (!Std.is(value, String)){
+		if (!Std.isOfType(value, String)){
 			var r:String = '';
 			Dice.All(value, function(p:String, v:Dynamic) {
 				r += (r == '' ? '' : ';') + (p + ': ' + v);
@@ -273,7 +273,7 @@ class XCode {
 	}
 	
 	static public function shadow(id:String, text:Bool, color:Dynamic, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
-		if (!Std.is(color, IARGB)){
+		if (!Std.isOfType(color, IARGB)){
 			color = new ARGB(color);
 		}
 		var t:ARGB = color;

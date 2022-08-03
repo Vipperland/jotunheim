@@ -107,8 +107,8 @@ class Display extends Query implements IDisplay {
 	public var data:Dynamic;
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
-		if (Std.is(p, String) && v != null) {
-			Reflect.setField(element.style, p, Std.is(v, IARGB) ? v.css() : Std.string(v));
+		if (Std.isOfType(p, String) && v != null) {
+			Reflect.setField(element.style, p, Std.isOfType(v, IARGB) ? v.css() : Std.string(v));
 		}
 	}
 	
@@ -161,7 +161,7 @@ class Display extends Query implements IDisplay {
 				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
 			}
 			if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
-				o.data.__qd = Std.is(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
+				o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
 				if (Std.isOfType(o, Input)){
 					o.value(o.data.__qd);
 				}else{
@@ -305,7 +305,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	private function _react_fill(data:Dynamic, path:String){
-		if (Std.is(data, String) || Std.is(data, Float) || Std.is(data, Bool)){
+		if (Std.isOfType(data, String) || Std.isOfType(data, Float) || Std.isOfType(data, Bool)){
 			// Simple write content
 			all('[jtn-data*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
 				_react_fill_data(data, path, o);
@@ -765,7 +765,7 @@ class Display extends Query implements IDisplay {
 	
 	public function style(?p:Dynamic,?v:Dynamic):Dynamic {
 		if (p != null) {
-			if (Std.is(p, String)) {
+			if (Std.isOfType(p, String)) {
 				if (v == null){
 					return _style_get(p);
 				}else{
@@ -790,7 +790,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
-		if (Std.is(data, Int) && at == -1){
+		if (Std.isOfType(data, Int) && at == -1){
 			at = data >> 0;
 		}
 		if (Jotun.resources.exists(q)){
@@ -845,25 +845,25 @@ class Display extends Query implements IDisplay {
 	
 	public function x(?value:Dynamic):Int {
 		if (value != null)
-			element.style.left = Std.is(value, String) ? value : value + "px";
+			element.style.left = Std.isOfType(value, String) ? value : value + "px";
 		return Std.parseInt(element.style.left);
 	}
 	
 	public function y(?value:Dynamic):Int {
 		if (value != null)
-			element.style.top = Std.is(value, String) ? value : value + "px";
+			element.style.top = Std.isOfType(value, String) ? value : value + "px";
 		return Std.parseInt(element.style.top);
 	}
 	
 	public function width(?value:Dynamic):Int {
 		if (value != null)
-			element.style.width = Std.is(value, String) ? value : value + "px";
+			element.style.width = Std.isOfType(value, String) ? value : value + "px";
 		return element.clientWidth;
 	}
 	
 	public function height(?value:Dynamic):Int {
 		if (value != null)
-			element.style.height = Std.is(value, String) ? value : value + "px";
+			element.style.height = Std.isOfType(value, String) ? value : value + "px";
 		return element.clientHeight;
 	}
 	
@@ -913,7 +913,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function is(tag:Dynamic):Bool {
-		if (!Std.is(tag, Array)) tag = [tag];
+		if (!Std.isOfType(tag, Array)) tag = [tag];
 		var r:IDiceRoll = Dice.Values(tag, function(v:String) {
 			v = v.toUpperCase();
 			return v == element.tagName || v == attribute('jtn-dom');
@@ -1055,7 +1055,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function react(data:Dynamic):Void {
-		if (Std.is(data, String)){
+		if (Std.isOfType(data, String)){
 			data = Json.parse(data);
 		}
 		_react_fill(data, '');

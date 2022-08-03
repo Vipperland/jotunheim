@@ -20,7 +20,7 @@ class Boundary {
 			
 			var part:String = "";
 			
-			if (Std.is(v, File)) {
+			if (Std.isOfType(v, File)) {
 				
 				part += 'Content-Disposition: form-data; ';
 				part += 'name="' + p + '"; ';

@@ -70,7 +70,7 @@ class Loader implements ILoader {
 		}
 		var is_post:Bool = method == 'POST';
 		var is_get:Bool = method == 'GET';
-		var is_data:Bool = Std.is(data, String);
+		var is_data:Bool = Std.isOfType(data, String);
 		// Build URL for GET parameters 
 		if (is_get && data != null){
 			url += ((url.indexOf('?') == -1) ? '?' : '&') + Utils.paramsOf(data);

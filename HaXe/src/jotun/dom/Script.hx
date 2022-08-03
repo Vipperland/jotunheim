@@ -43,7 +43,7 @@ class Script extends Display {
 	 * @param	handler
 	 */
 	static public function require(url:Dynamic, ?handler:Void->Void) {
-		if (!Std.is(url, Array)){
+		if (!Std.isOfType(url, Array)){
 			url = [url];
 		}
 		if (url.length > 0) {

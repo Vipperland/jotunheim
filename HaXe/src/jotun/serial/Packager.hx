@@ -18,7 +18,7 @@ class Packager {
 	 * @return
 	 */
 	public static function encodeBase64(q:Dynamic):String {
-		if (!Std.is(q, String))
+		if (!Std.isOfType(q, String))
 			q = jsonEncode(q);
 		return Base64.encode(Bytes.ofString(q));
 	}
@@ -64,7 +64,7 @@ class Packager {
 	 * @return
 	 */
 	public static function md5Encode(o:Dynamic, ?base64:Bool):String {
-		if (Std.is(o, String))
+		if (Std.isOfType(o, String))
 			return Md5.encode(o);
 		else
 			return Md5.encode(base64 ? encodeBase64(o) : jsonEncode(o));

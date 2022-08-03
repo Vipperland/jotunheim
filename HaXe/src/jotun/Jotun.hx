@@ -166,7 +166,7 @@ class Jotun {
 		}
 		
 		static public function inject(value:Dynamic, ?data:Dynamic, ?handler:Script->Void):Void {
-			if (!Std.is(value, Array)){
+			if (!Std.isOfType(value, Array)){
 				value = [value];
 			}
 			Dice.Values(value, function(v:String){

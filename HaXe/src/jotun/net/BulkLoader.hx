@@ -46,7 +46,7 @@ class BulkLoader {
 	}
 	
 	public function add(files:Dynamic):Void {
-		if (!Std.is(files, Array)){
+		if (!Std.isOfType(files, Array)){
 			files = [files];
 		}
 		if (files != null && files.length > 0) {
@@ -104,7 +104,7 @@ class BulkLoader {
 	#end
 	
 	private function _error(e:Dynamic):Void {
-		lastError = Std.is(e, String) ? new Error( -1, e, this) : new Error( -1, "Unknow", { content:e, loader:this } );
+		lastError = Std.isOfType(e, String) ? new Error( -1, e, this) : new Error( -1, "Unknow", { content:e, loader:this } );
 		signals.call('error', lastError);
 	}
 	

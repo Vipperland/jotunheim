@@ -116,7 +116,7 @@ class Select extends Display {
 	
 	@:overload(function(options:Array<Dynamic>):Array<Option>{})
 	public function add(option:Dynamic):Dynamic {
-		if (Std.is(option, Array)){
+		if (Std.isOfType(option, Array)){
 			var r:Array<Option> = [];
 			Dice.All(option, function(p:Int, v:Dynamic){
 				r[p] = cast mount(Filler.to(layout, v));

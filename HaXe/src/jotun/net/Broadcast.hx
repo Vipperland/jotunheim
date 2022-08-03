@@ -33,6 +33,14 @@ class Broadcast {
 		return _uid;
 	}
 	
+	public function disconnect():Void {
+		Dice.All(_channels, function(p:String, v:Dynamic){
+			Dice.Values(Reflect.field(_listeners, p), function(v1:Dynamic){
+				unlisten(p, v1);
+			});
+		});
+	}
+	
 	private function _openChannel(name:String):BroadcastChannel {
 		var bc:BroadcastChannel = Reflect.field(_channels, name);
 		if (bc == null){
@@ -107,9 +115,9 @@ class Broadcast {
 	public function unlisten(channel:String, handler:Dynamic->Void):Void {
 		var events:Array<Dynamic->Void> = Reflect.field(_listeners, channel);
 		if (events != null && handler != null){
-			var iof:Int = events.indexOf(handler);
+			var iof:Int = Lambda.indexOf(events, handler);
 			if (iof != -1){
-				events.slice(iof, 1);
+				events.splice(iof, 1);
 				if (events.length == 0){
 					if (_channels != null){
 						Reflect.field(_channels, channel).close();

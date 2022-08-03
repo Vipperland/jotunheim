@@ -1,5 +1,7 @@
 ﻿package jotun.serial;
-import jotun.dom.IDisplay;
+#if !php 
+	import jotun.dom.IDisplay;
+#end
 import jotun.tools.Flag;
 import jotun.tools.Utils;
 
@@ -10,15 +12,17 @@ import jotun.tools.Utils;
 @:expose('J_Json')
 class JsonTool {
 	
-	static public var displayStringfy:IDisplay->String = function(o:IDisplay):String {
-		return o.typeOf();
-	}
+	#if !php
+		static public var displayStringfy:IDisplay->String = function(o:IDisplay):String {
+			return o.typeOf();
+		}
+	#end
 	
 	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
-		if (Std.is(a, String)) {
+		if (Std.isOfType(a, String)) {
 			if (a.substr(0, 1) == "_") return null;
 		}
-		if (Std.is(b, Flag)) return b.value;
+		if (Std.isOfType(b, Flag)) return b.value;
 		return (b == null) ? null : b; 
 	};
 	
@@ -60,17 +64,30 @@ class JsonTool {
 	function write(k:Dynamic, v:Dynamic) {
 		if (replacer != null) v = replacer(k, v);
 		switch( Type.typeof(v) ) {
-			case TUnknown:				objString(v);
-			case TObject:				objString(v);
-			case TInt:				add(v);
-			case TFloat:				add(Math.isFinite(v) ? v : 'null');
-			case TFunction:				add('"<fun>"');
-			case TClass(c):
-				if ( c == IDisplay)
-					return;
-				if( c == String )
+			case TUnknown:{
+				objString(v);
+			}
+			case TObject:{
+				objString(v);
+			}
+			case TInt:{
+				add(v);
+			}
+			case TFloat:{
+				add(Math.isFinite(v) ? v : 'null');
+			}
+			case TFunction:{
+				add('"<fun>"');
+			}
+			case TClass(c):{
+				#if !php
+					if ( c == IDisplay){
+						return;
+					}
+				#end
+				if ( c == String ){
 					quote(v);
-				else if( c == Array ) {
+				} else if( c == Array ) {
 					var v : Array<Dynamic> = v;
 					addChar('['.code);
 					var len = v.length;
@@ -98,16 +115,24 @@ class JsonTool {
 				} else if( c == Date ) {
 					var v : Date = v;
 					quote(v.toString());
-				} else
+				} else {
 					#if flash
 					classString(v);
 					#else
 					objString(v);
 					#end
-			case TEnum(_):				var i : Dynamic = Type.enumIndex(v);
+				}
+			}
+			case TEnum(_):{
+				var i : Dynamic = Type.enumIndex(v);
 				add(i);
-			case TBool:					add(#if php (v ? 'true' : 'false') #else v #end);
-			case TNull:					add('null');
+			}
+			case TBool:{
+				add(#if php (v ? 'true' : 'false') #else v #end);
+			}
+			case TNull:{
+				add('null');
+			}
 		}
 	}
 
@@ -148,8 +173,10 @@ class JsonTool {
 			var value = Reflect.field(v,f);
 			if ( value == null ) continue;
 			if ( Reflect.isFunction(value) ) continue;
-			if ( Std.is(value, IDisplay) ) value = displayStringfy(cast value);
-			if ( Std.is(f, String) && f.substr(0, 1) == "_") continue;
+			#if !php
+				if ( Std.isOfType(value, IDisplay) ) value = displayStringfy(cast value);
+			#end
+			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") continue;
 			if( first ) { nind++; first = false; } else addChar(','.code);
 			newl();
 			ipad();

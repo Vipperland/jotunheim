@@ -12,7 +12,7 @@ class Filler{
 	static private function _apply(path:String, content:String, data:Dynamic):String {
 		if (data == null) {
 			content = content.split("{{" + path + "}}").join("");
-		}else if (Std.is(data, Float) || Std.is(data, String) || Std.is(data, Bool) || Std.is(data, Int)) {
+		}else if (Std.isOfType(data, Float) || Std.isOfType(data, String) || Std.isOfType(data, Bool) || Std.isOfType(data, Int)) {
 			var is_valid:Bool = data != null && data != 0 && data != false;
 			content = content.split("{{" + path + "}}").join(data);
 			content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
@@ -43,7 +43,7 @@ class Filler{
 	 */
 	static public function to(value:String, data:Dynamic, ?sufix:String):String {
 		var r:String = "";
-		if (Std.is(data, Array)) {
+		if (Std.isOfType(data, Array)) {
 			Dice.All(data, function(p:Int, v:Dynamic) {
 				Reflect.setField(v, '%0', p);
 				r += _apply(sufix, value, v);

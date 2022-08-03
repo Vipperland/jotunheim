@@ -129,10 +129,10 @@ class Singularity {
 				signals.call('onVisibility', engine);
 			}
 			case 'sync' : {
-				if (Std.is(data.filter, String)){
+				if (Std.isOfType(data.filter, String)){
 					data.filter = [data.filter];
 				}
-				if (data.filter == null || (Std.is(data.filter, Array) && data.filter.indexOf(id()) != -1)){
+				if (data.filter == null || (Std.isOfType(data.filter, Array) && data.filter.indexOf(id()) != -1)){
 					var engine:Dynamic = Reflect.field(_engines, data.id);
 					if(engine != null){
 						signals.call('onSync', {

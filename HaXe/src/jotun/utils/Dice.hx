@@ -34,7 +34,7 @@ class Dice {
 		if (q != null) {
 			#if php
 				// ==== Workaround with PHP Arrays
-				if (Std.is(q, NativeArray) || Std.is(q, Array)) {
+				if (Std.isOfType(q, NativeArray) || Std.isOfType(q, Array)) {
 					q = Lib.objectOfAssociativeArray(q);
 				}
 			#end
@@ -215,7 +215,7 @@ class Dice {
 	 * @return
 	 */
 	public static function One(from:Dynamic, ?alt:Dynamic):IDiceRoll {
-		if (Std.is(from, Array)) {
+		if (Std.isOfType(from, Array)) {
 			Values(from, function(v:Dynamic) {
 				from = v;
 				return from == null;
@@ -231,7 +231,7 @@ class Dice {
 	 * @return
 	 */
 	public static function Match(table:Array<Dynamic>, values:Dynamic, ?limit:Int = 1):Int {
-		if (!Std.is(values, Array)) {
+		if (!Std.isOfType(values, Array)) {
 			values = [values];
 		}
 		var r:Int = 0;
@@ -250,7 +250,7 @@ class Dice {
 	 * @param	values
 	 */
 	public static function Remove(table:Array<Dynamic>, values:Dynamic):Void {
-		if (!Std.is(values, Array)) values = [values];
+		if (!Std.isOfType(values, Array)) values = [values];
 		Dice.Values(values, function(v:Dynamic) {
 			var i:Int = Lambda.indexOf(table, v);
 			if (i != -1) {
@@ -265,7 +265,7 @@ class Dice {
 	 * @param	values
 	 */
 	public static function Put(table:Array<Dynamic>, values:Dynamic):Void {
-		if (!Std.is(values, Array)) values = [values];
+		if (!Std.isOfType(values, Array)) values = [values];
 		Dice.Values(values, function(v:Dynamic) {
 			var i:Int = Lambda.indexOf(table, v);
 			if (i == -1) {
@@ -352,7 +352,7 @@ class Dice {
 	}
 	
 	public static function Blend(objects:Dynamic, into:Dynamic, blendType:Int = 0):Void {
-		if (!Std.is(objects, Array)){
+		if (!Std.isOfType(objects, Array)){
 			objects = [objects];
 		}
 		Dice.Values(objects, function(o:Dynamic):Void {
@@ -394,7 +394,7 @@ class Dice {
 			var l:Int = 0;
 			var c:Element;
 			if (of != null) {
-				if (Std.is(of, IDisplay)) {
+				if (Std.isOfType(of, IDisplay)) {
 					of = of.element;
 				}
 				Count(0, of.childNodes.length, function(i:Int,j:Int,k:Bool) {

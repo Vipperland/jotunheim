@@ -46,11 +46,26 @@ class Flag {
 		Flag 1<<31 = 2147483648
 	*/
 	
-	public static function from(hash:Dynamic):Flag {
-		if (Std.is(hash, String)){
-			hash = Std.parseInt(hash);
+	public static function fromCard(hash:String):Flag {
+		hash = Utils.trimm(hash);
+		var i:Int = hash.length;
+		var r:Int = 0;
+		var f:Int;
+		while (i > 0){
+			--i;
+			f = Std.parseInt(hash.substr(i, 1));
+			if (f > 0){
+				r = r | (1 << i);
+			}
 		}
-		return new Flag(hash);
+		return new Flag(r);
+	}
+	
+	public static function from(value:Dynamic):Flag {
+		if (Std.isOfType(value, String)){
+			value = Std.parseInt(value);
+		}
+		return new Flag(value);
 	}
 	
 	public static function FPut(hash:UInt, bit:UInt):UInt {
@@ -69,7 +84,7 @@ class Flag {
 		return (hash & value) == value;
 	}
 	
-	public static function FValue(hash:UInt, ?size:UInt = 32, ?glen:UInt = 8):String {
+	public static function FValue(hash:UInt, ?size:UInt = 32, ?glen:UInt = 8, ?glue:String = ' '):String {
 		var r:String = '';
 		var g:Int = 0;
 		while(size>0){
@@ -77,7 +92,7 @@ class Flag {
 			r += FTest(hash, 1 << size) ? '1' : '0';
 			if (++g == glen){
 				g = 0;
-				r += ' ';
+				r += glue;
 			}
 		}
 		return r;
@@ -94,9 +109,8 @@ class Flag {
 	
 	public var value:UInt;
 	
-	public function new(value:UInt) {
-		if (!Std.is(value, Float) && Std.is(value, Int)) value = Std.parseInt(cast value);
-		this.value = value>>>0;
+	public function new(value:Int) {
+		this.value = value >>> 0;
 	}
 	
 	public function toggle(bit:UInt):Flag {
@@ -152,7 +166,11 @@ class Flag {
 	}
 	
 	public function toString(?size:UInt = 32, ?glen:UInt = 8):String {
-		return FValue(value, size, glen);
+		return FValue(value, size, glen, ' ');
+	}
+	
+	public function toCard(?size:UInt = 32, ?glen:UInt = 8):String {
+		return FValue(value, size, glen, '\n');
 	}
 	
 }

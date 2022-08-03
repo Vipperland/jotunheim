@@ -31,10 +31,10 @@ class FormData implements IFormData {
 	 */
 	public function new(?target:Dynamic) {
 		if (target != null) {
-			if (Std.is(target, String)){
+			if (Std.isOfType(target, String)){
 				scan(Jotun.one(target));
 			}
-			if (Std.is(target, IDisplay)){
+			if (Std.isOfType(target, IDisplay)){
 				scan(target);
 			}
 		}

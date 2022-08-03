@@ -33,7 +33,7 @@ class FormParam {
 	}
 	
 	public function getValue():String {
-		if (Std.is(_e, Select)) {
+		if (Std.isOfType(_e, Select)) {
 			var e:Select = cast _e;
 			if (!e.hasValue()) return null;
 		}

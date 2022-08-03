@@ -120,11 +120,11 @@ class ModLib {
 						var end:Int = v.indexOf("/EOF;");
 						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
 						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
-							content = content.split('\r\n').join('\r').split('\n').join('\r');
+							content = content.split('\r\n').join('\n').split('\r').join('\n');
 							while (content.substr(0, 1) == '\r'){
 								content = content.substring(1, content.length);
 							}
-							while (content.substr( -1) == '\r'){
+							while (content.substr( -1) == '\n'){
 								content = content.substring(0, content.length - 1);
 							}
 						}

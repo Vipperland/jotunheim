@@ -43,7 +43,7 @@ class DataSet implements IDataSet {
 	public function find(v:Dynamic):Array<Dynamic> {
 		var r:Array<String> = [];
 		Dice.All(_content, function(p:Dynamic, x:Dynamic) {
-			if (Std.is(x, String) && x.indexOf(v) != -1) r[r.length] = p;
+			if (Std.isOfType(x, String) && x.indexOf(v) != -1) r[r.length] = p;
 			else if(x == v) r[r.length] = p;
 		});
 		return r;
@@ -65,7 +65,7 @@ class DataSet implements IDataSet {
 		var r:IDataSet = new DataSet();
 		var h:Bool = handler != null;
 		Dice.All(_content, function(p2:String, v:Dynamic) {
-			if (Std.is(v, IDataSet)) {
+			if (Std.isOfType(v, IDataSet)) {
 				if (v.exists(p)) r.set(p2, h ? handler(v) : v.get(p));
 			}else if (Reflect.hasField(v, p)) {
 				r.set(p2, h ? handler(v) : Reflect.field(v, p));

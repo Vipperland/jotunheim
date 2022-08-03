@@ -112,8 +112,8 @@ class WebDBAssist {
 	}
 	
 	public function del(tableName:String, key:Dynamic){
-		if (!Std.is(key, String)){
-			if (Std.is(key, Float) || Std.is(key, Int)){
+		if (!Std.isOfType(key, String)){
+			if (Std.isOfType(key, Float) || Std.isOfType(key, Int)){
 				key = '' + key;
 			}else{
 				key = key._uid;

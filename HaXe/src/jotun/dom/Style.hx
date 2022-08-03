@@ -37,7 +37,7 @@ class Style extends Display {
 	}
 	
 	static public function require(url:Dynamic, handler:Dynamic) {
-		if (!Std.is(url, Array)){
+		if (!Std.isOfType(url, Array)){
 			url = [url];
 		}
 		if (url.length > 0) {

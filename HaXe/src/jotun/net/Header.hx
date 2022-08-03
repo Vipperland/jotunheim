@@ -60,8 +60,8 @@ class Header {
 	public function setTEXT(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
 		content(TEXT);
 		if (data != null){
-			if (Std.is(data, Array)){
-				data = data.join('\r');
+			if (Std.isOfType(data, Array)){
+				data = data.join('\n');
 			}
 			writeData(data, encode, chunk);
 		}
@@ -70,8 +70,8 @@ class Header {
 	public function setSRU(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
 		content(TEXT);
 		if (data != null){
-			if (Std.is(data, Array)){
-				data = data.join('\r');
+			if (Std.isOfType(data, Array)){
+				data = data.join('\n');
 			}
 			writeData(data, encode, chunk);
 		}
@@ -85,7 +85,7 @@ class Header {
 			copy += data.substr(f, chunk);
 			f += chunk;
 			if (f < t){
-				copy += '\r';
+				copy += '\n';
 			}
 		}
 		return copy;

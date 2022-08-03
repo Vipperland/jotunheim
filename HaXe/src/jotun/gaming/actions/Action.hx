@@ -31,11 +31,11 @@ class Action extends Resolution {
 		requirements = [];
 		var i:Int = 0;
 		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic){
-			if (Std.is(v, String)){
+			if (Std.isOfType(v, String)){
 				v = Requirement.get(v);
 			}
 			if(v != null){
-				if (Std.is(v, Requirement)){
+				if (Std.isOfType(v, Requirement)){
 					requirements[i] = cast v;
 				}else{
 					requirements[i] = new Requirement(type + '[' + p + ']', v);

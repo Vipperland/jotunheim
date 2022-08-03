@@ -33,12 +33,12 @@ class ActionQuery extends Query {
 	}
 	
 	private function _INT(value:Dynamic, ?alt:Int):Int {
-		var o:Int = Std.is(value, String) ? Std.parseInt(value) : Std.int(value);
+		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.int(value);
 		return o != null ? o : alt;
 	}
 	
 	private function _FLOAT(value:Dynamic, ?alt:Float):Float {
-		var o:Float = Std.is(value, String) ? Std.parseFloat(value) : Std.int(value);
+		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.int(value);
 		return o != null ? o : alt;
 	}
 	

@@ -29,7 +29,7 @@ class Resolution {
 		cancelOnSuccess = Utils.boolean(data.cancelOnSuccess);
 		cancelOnFail = Utils.boolean(data.cancelOnFail);
 		reverse = Utils.boolean(data.reverse);
-		if (Std.is(data.query, Array)){
+		if (Std.isOfType(data.query, Array)){
 			query = data.query;
 			query.unshift('@result');
 		}else if (Utils.isValid(data.query)){

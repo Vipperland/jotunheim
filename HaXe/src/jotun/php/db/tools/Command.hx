@@ -44,11 +44,11 @@ class Command implements ICommand {
 	}
 	
 	private function _getType(v:Dynamic):Int {
-		if (Std.is(v, String)){
+		if (Std.isOfType(v, String)){
 			return php.Syntax.code('\\PDO::PARAM_STR');
-		} else if (Std.is(v, Float)){
+		} else if (Std.isOfType(v, Float)){
 			return php.Syntax.code('\\PDO::PARAM_INT');
-		} else if (Std.is(v, Bool)){
+		} else if (Std.isOfType(v, Bool)){
 			return php.Syntax.code('\\PDO::PARAM_INT');
 		} else if (v == null){
 			return php.Syntax.code('\\PDO::PARAM_NULL');
@@ -81,7 +81,7 @@ class Command implements ICommand {
 				}
 				this.statement = null;
 			}catch (e:Dynamic) {
-				if (Std.is(e, String)) {
+				if (Std.isOfType(e, String)) {
 					errors[errors.length] = new Error(0, e);
 				}else {
 					errors[errors.length] = new Error(e.getCode(), e.getMessage());
@@ -101,7 +101,7 @@ class Command implements ICommand {
 		Dice.All(r, function(p:Dynamic, v:String) {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
-				if (Std.is(e, String)){
+				if (Std.isOfType(e, String)){
 					e = '"' + e + '"';
 				}
 				r[p] = v + e;

@@ -71,7 +71,7 @@ class WebDB {
 	}
 	
 	public function getTables(name:Dynamic, mode:String, ?handler:WebDB->Void):Void {
-		if (Std.is(name, String)){
+		if (Std.isOfType(name, String)){
 			if (name == '*'){
 				name = _db.objectStoreNames;
 			}else{

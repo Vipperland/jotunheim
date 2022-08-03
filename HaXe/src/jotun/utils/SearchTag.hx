@@ -12,7 +12,7 @@ class SearchTag {
 	private static var _E:EReg = ~/^[a-z0-9]/g;
 	
 	public static function from(value:Dynamic):SearchTag {
-		if (!Std.is(value, SearchTag))
+		if (!Std.isOfType(value, SearchTag))
 			value = new SearchTag(value);
 		return value;
 	}
@@ -44,7 +44,7 @@ class SearchTag {
 	
 	
 	private function add(values:Dynamic):Void {
-		values = Std.is(values, Array) ? values : [values];
+		values = Std.isOfType(values, Array) ? values : [values];
 		Dice.Values(values, function(v:Dynamic) {
 			v = convert(v);
 			var iof = Lambda.indexOf(this.tags, v);

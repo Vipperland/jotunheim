@@ -34,11 +34,11 @@ class Events {
 		_data = [];
 		var i:UInt = 0;
 		Dice.All(data, function(p:String, v:Dynamic){
-			if (Std.is(v, String)){
+			if (Std.isOfType(v, String)){
 				v = Action.get(v);
 			}
 			if(v != null){
-				if (Std.is(v, Action)){
+				if (Std.isOfType(v, Action)){
 					_data[i] = v;
 				}else{
 					_data[i] = new Action(_type + '[' + p + ']', v);

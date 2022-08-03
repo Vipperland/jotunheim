@@ -127,7 +127,7 @@ class Clause {
 	 * @return
 	 */
 	static public function IN(param:String, values:Dynamic):Dynamic {
-		if (Std.is(values, Array)){ 
+		if (Std.isOfType(values, Array)){ 
 			var q:Array<String> = [];
 			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = "?"; });
 			return { param:param, condition:"{{p}} IN (" + q.join(',') + ")", value:values };
@@ -143,7 +143,7 @@ class Clause {
 	 * @return
 	 */
 	static public function NOT_IN(param:String, values:Dynamic):Dynamic {
-		if (Std.is(values, Array)){ 
+		if (Std.isOfType(values, Array)){ 
 			var q:Array<String> = [];
 			Dice.All(values, function(p:String, v:Dynamic){ q[q.length] = "?"; });
 			return { param:param, condition:"{{p}} NOT IN (" + q.join(',') + ")", value:values };

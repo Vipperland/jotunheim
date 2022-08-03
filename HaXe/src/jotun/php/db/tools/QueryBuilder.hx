@@ -55,7 +55,7 @@ class QueryBuilder implements IQueryBuilder {
 		var b:Bool = true;
 		
 		// IF IS A CLAUSULE, PARSE INNER OBJECTS
-		if (Std.is(obj, Clause)) {
+		if (Std.isOfType(obj, Clause)) {
 			Dice.Values(obj.conditions, function(v:Dynamic) { 
 				v = _conditions(v, props, joiner, skip);
 				if(v != null)
@@ -64,9 +64,9 @@ class QueryBuilder implements IQueryBuilder {
 			s = obj.joiner();
 		}
 		// IF IS AN ARRAY, PARSE INNER OBJECTS
-		else if(Std.is(obj, Array)){
+		else if(Std.isOfType(obj, Array)){
 			Dice.All(obj, function(p:String, v:Dynamic) {
-				if (Std.is(v, Clause)) {
+				if (Std.isOfType(v, Clause)) {
 					v = _conditions(v, props, v.joiner(), skip);
 					if (v != null)
 						r[r.length] = v;
@@ -77,12 +77,12 @@ class QueryBuilder implements IQueryBuilder {
 				}
 			});
 		}
-		else if (Std.is(obj, String)){
+		else if (Std.isOfType(obj, String)){
 			r[r.length] = obj;
 		}
 		// IS IS AN OBJECT, RETURN QUERY EXPRESSION
 		else if(obj != null) {
-			if (Std.is(obj.value, Array)){
+			if (Std.isOfType(obj.value, Array)){
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 				Dice.All(obj.value, function(p:String, v:Dynamic){
 					props[props.length] = v;
@@ -127,11 +127,11 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	public function find(fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
-		if (Std.is(fields, Array)) {
+		if (Std.isOfType(fields, Array)) {
 			fields = fields.join(",");
 		}
 		var joinner:String = "";
-		if (Std.is(table, Array)) {
+		if (Std.isOfType(table, Array)) {
 			var main:Dynamic = table.shift();
 			table = main + ' ' + table.join(" ");
 		}
@@ -180,7 +180,7 @@ class QueryBuilder implements IQueryBuilder {
 	}
 	
 	public function join(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'JOIN ' + (Std.is(table, IDataTable) ? table.name : table) + (name != null ? ' AS ' + name : '') + ' ON ' + _conditions(clause , [], " || ", true);
+		return 'JOIN ' + (Std.isOfType(table, IDataTable) ? table.name : table) + (name != null ? ' AS ' + name : '') + ' ON ' + _conditions(clause , [], " || ", true);
 	}
 	
 	public function leftJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {

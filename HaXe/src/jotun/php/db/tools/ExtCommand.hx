@@ -59,7 +59,7 @@ class ExtCommand implements IExtCommand {
 			}
 			try {
 				if (type != null){
-					if (!Std.is(type, Float) && !Std.is(type, String)){
+					if (!Std.isOfType(type, Float) && !Std.isOfType(type, String)){
 						type = Type.getClassName(type).split('.').join('\\');
 					}
 				}else {
@@ -81,7 +81,7 @@ class ExtCommand implements IExtCommand {
 					errors[errors.length] = new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo()));
 				}
 			}catch (e:Dynamic) {
-				if (Std.is(e, String)) {
+				if (Std.isOfType(e, String)) {
 					errors[errors.length] = new Error(0, e);
 				}else {
 					errors[errors.length] = new Error(e.getCode(), e.getMessage());
@@ -130,7 +130,7 @@ class ExtCommand implements IExtCommand {
 		Dice.All(r, function(p:Dynamic, v:String) {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
-				if (Std.is(e, String)) {
+				if (Std.isOfType(e, String)) {
 					e = conn.quote(e);
 				}
 				r[p] = v + e;

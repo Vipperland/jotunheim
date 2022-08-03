@@ -57,7 +57,7 @@ class Key {
 	}
 	
 	public static function TAG(value:Dynamic, ?prefix:String = '0', ?len:Int = 11):String {
-		if (!Std.is(value, String)){
+		if (!Std.isOfType(value, String)){
 			value = Std.string(value);
 		}else if (value == null){
 			value = COUNTER('tag');

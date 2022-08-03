@@ -104,7 +104,7 @@ class Gate implements IGate {
 	
 	public function schema(?table:Dynamic):Array<Dynamic> {
 		var r:IDataSet = null;
-		if (!Std.is(table, Array)) {
+		if (!Std.isOfType(table, Array)) {
 			table = [table];
 		}
 		var tables:Array<Dynamic> = [];

@@ -92,7 +92,7 @@ class DataTable implements IDataTable {
 	}
 
 	public function findJoin(?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : IExtQuery {
-		if (!Std.is(tables, Array)){
+		if (!Std.isOfType(tables, Array)){
 			tables = [tables];
 		}
 		tables.unshift(_name);

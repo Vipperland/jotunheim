@@ -38,7 +38,7 @@ class DataIO {
 		Dice.All(nfo, function(p:Int, value:Dynamic){
 			value = Reflect.field(o, value);
 			if (value != null){
-				if (Std.is(value, String)) {
+				if (Std.isOfType(value, String)) {
 					value = value.split(' ').join('/_');
 				}
 				result[count] = p + ':' + value;

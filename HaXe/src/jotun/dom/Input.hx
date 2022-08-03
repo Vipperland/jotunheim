@@ -95,8 +95,8 @@ class Input extends Display {
 	}
 	
 	public function restrict(q:Dynamic, ?filter:String):Void {
-		if (!Std.is(q, EReg)){
-			if (!Std.is(q, String)){
+		if (!Std.isOfType(q, EReg)){
+			if (!Std.isOfType(q, String)){
 				q = q.toString();
 			}
 			q = q.split('$/');

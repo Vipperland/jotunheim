@@ -91,11 +91,11 @@ class DataCache implements IDataCache {
 		function _fixParams(from:Dynamic, data:Dynamic) {
 			var i:Dynamic;
 			Dice.All(from, function(p:Dynamic, v:Dynamic) {
-				if (Std.is(v, Float) || Std.is(v, Bool) || Std.is(v, String) || Std.is(v, Int)) { 
+				if (Std.isOfType(v, Float) || Std.isOfType(v, Bool) || Std.isOfType(v, String) || Std.isOfType(v, Int)) { 
 					Reflect.setField(data, p, v);	
-				}else if (Std.is(v, Array)) {
+				}else if (Std.isOfType(v, Array)) {
 					v = Lib.toPhpArray(v);
-				}else if (Std.is(v, Dynamic)) { 
+				}else if (Std.isOfType(v, Dynamic)) { 
 					v = Lib.associativeArrayOfObject(v);	
 				}
 				Reflect.setField(data, p, v);
@@ -125,9 +125,9 @@ class DataCache implements IDataCache {
 	}
 	
 	public function merge(p:String, v:Dynamic):IDataCache {
-		if (Std.is(v, Array) && Reflect.hasField(_DB, _name)) {
+		if (Std.isOfType(v, Array) && Reflect.hasField(_DB, _name)) {
 			var t:Array<Dynamic> = get(p);
-			if (Std.is(t, Array)) return set(p, t.concat(v));
+			if (Std.isOfType(t, Array)) return set(p, t.concat(v));
 		}
 		Reflect.setField(_DB, p, v);
 		return this;

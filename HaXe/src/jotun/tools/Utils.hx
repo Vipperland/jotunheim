@@ -4,12 +4,12 @@ import haxe.Log;
 import jotun.data.DataSet;
 import jotun.math.RNG;
 import jotun.utils.IDiceRoll;
-import js.lib.Error;
 
 #if js
 
 	import js.Browser;
 	import js.Syntax;
+	import js.lib.Error;
 	import js.html.Attr;
 	import js.html.Blob;
 	import js.html.Element;
@@ -286,9 +286,9 @@ class Utils{
 	static public function createQueryParams(url:String, value:Dynamic, ?encode:Bool = true):String {
 		var q:Array<String> = [];
 		Dice.All(value, function(p:String, v:Dynamic):Void {
-			if (Std.is(v, String) || Std.is(v, Float) || Std.is(v, Bool)){
+			if (Std.isOfType(v, String) || Std.isOfType(v, Float) || Std.isOfType(v, Bool)){
 				q[q.length] = p + '=' + (encode ?StringTools.urlEncode(v) : v);
-			}else if (Std.is(v, Array)){
+			}else if (Std.isOfType(v, Array)){
 				q[q.length] = p + '=' + (encode ? StringTools.urlEncode(v.join(';')) : v.join(';'));
 			}
 		});
@@ -320,6 +320,10 @@ class Utils{
 		return copy;
 	}
 	
+	static public function trimm(value:String):String {
+		return value.split('\r').join('').split('\n').join('').split('\t').join('').split(' ').join('');
+	}
+	
 	
 	/**
 	 * Convert a value to String or Json string
@@ -336,27 +340,27 @@ class Utils{
 	 * @param	o
 	 * @return
 	 */
-	static public function sruString(o:Dynamic, type:Bool = true, ?html:Bool):String {
-		return _sruFly(o, '', '', type, html);
+	static public function jotunStringify(o:Dynamic, type:Bool = true, ?html:Bool):String {
+		return _jstring(o, '', '', type, html);
 	}
 	
 	static private function _codex(i:String, n:String, c:String, p:String, v:Dynamic, t:Bool, h:Bool, r:Bool):String {
-		return (h ? '<div class="prop"><span>' : '') + i + p + (t ? (h ? '<span class="' + c + '">' : '') + ":" + n + (h ? '</span>' : '') : '') + "=" + (h && r ? '</span><span class="' + c + ' value">' : '') + v + (h && r ? '</span>' : '') + (h ? '</div>' : "\r");
+		return (h ? '<div class="prop"><span>' : '') + i + p + (t ? (h ? '<span class="' + c + '">' : '') + ":" + n + (h ? '</span>' : '') : '') + "=" + (h && r ? '</span><span class="' + c + ' value">' : '') + v + (h && r ? '</span>' : '') + (h ? '</div>' : "\n");
 	}
 	
 	static private function _codexWrap(i:String, ls:String, rs:String, v:Dynamic, t:Bool, h:Bool):String {
-		return ls + (h ? '<br/>' : "\r") + _sruFly(v, i, '', t, h) + i +rs;
+		return ls + (h ? '<br/>' : "\n") + _jstring(v, i, '', t, h) + i +rs;
 	}
 	
 	/** @private */
-	static public function _sruFly(o:Dynamic, i:String, b:String, t:Bool, h:Bool):String {
+	static public function _jstring(o:Dynamic, i:String, b:String, t:Bool, h:Bool):String {
 		if (h){
 			b += '<div class="block">';
 		}
 		i = i + (h ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '\t');
 		Dice.All(o, function(p:String, v:Dynamic) {
 			if (v == null){
-				b += i + p + ":* = null\r";
+				b += i + p + ":* = null\n";
 			}
 			else if (Std.isOfType(v, String)){
 				b += _codex(i, 'String', 'string', p, v, t, h, true);
@@ -573,7 +577,7 @@ class Utils{
 					}
 				});
 				e[0] = 'STACK TRACE';
-				return e.join("\r\n	↑ ");
+				return e.join("\n	↑ ");
 			}
 		}
 		

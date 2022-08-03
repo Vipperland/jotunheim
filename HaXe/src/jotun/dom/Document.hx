@@ -179,10 +179,10 @@ class Document extends Display {
 	 * @param	offX
 	 */
 	public function scrollTo(target:Dynamic, offY:Int = 100, offX:Int = 0):Void {
-		if (Std.is(target, String)){
+		if (Std.isOfType(target, String)){
 			target = Jotun.one(target).element;
 		}
-		if (Std.is(target, IDisplay)){
+		if (Std.isOfType(target, IDisplay)){
 			target = target.element;
 		}
 		var pos:IPoint = Display.getPosition(target);

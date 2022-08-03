@@ -47,15 +47,15 @@ class Mailer {
 	
 	public function targets(to:Array<Dynamic>, ?cc:Array<Dynamic>, ?bbc:Array<Dynamic>):Void {
 		Dice.Values(to, function(v:Dynamic) {
-			if (Std.is(v, Array) && Utils.isValid(v[0])) 	output.addAddress(v[0], v[1]);
+			if (Std.isOfType(v, Array) && Utils.isValid(v[0])) 	output.addAddress(v[0], v[1]);
 			else if(Utils.isValid(v))						output.addAddress(v);
 		});
 		Dice.Values(cc, function(v:Dynamic) {
-			if (Std.is(v, Array) && Utils.isValid(v[0]))	output.addCC(v[0], v[1]);
+			if (Std.isOfType(v, Array) && Utils.isValid(v[0]))	output.addCC(v[0], v[1]);
 			else if(Utils.isValid(v))						output.addCC(v);
 		});
 		Dice.Values(bbc, function(v:Dynamic) {
-			if (Std.is(v, Array) && Utils.isValid(v[0]))	output.addBCC(v[0], v[1]);
+			if (Std.isOfType(v, Array) && Utils.isValid(v[0]))	output.addBCC(v[0], v[1]);
 			else if(Utils.isValid(v))						output.addBCC(v);
 		});
 	}
