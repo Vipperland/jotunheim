@@ -2,6 +2,7 @@ package jotun.net;
 
 #if js
 	import js.Browser;
+	import js.Syntax;
 	import js.html.Location;
 	import jotun.data.DataCache;
 	import jotun.data.IDataCache;
@@ -10,6 +11,7 @@ package jotun.net;
 #elseif php
 	import php.Lib;
 	import php.NativeArray;
+	import php.Syntax;
 	import php.Web;
 	import jotun.net.IDomainData;
 #end
@@ -71,7 +73,7 @@ class Domain implements IDomain {
 		
 		#elseif php
 		
-			data = cast Lib.objectOfAssociativeArray(php.Syntax.codeDeref("$_SERVER"));
+			data = cast Lib.objectOfAssociativeArray(Syntax.codeDeref("$_SERVER"));
 			port = data.SERVER_PORT;
 			server = Web.getCwd();
 			host = Web.getHostName();
@@ -80,7 +82,7 @@ class Domain implements IDomain {
 			var boundary:String = _getMultipartKey();
 			
 			if (data.CONTENT_TYPE == 'application/json'){
-				input = Json.parse(php.Syntax.codeDeref("file_get_contents('php://input')"));
+				input = Json.parse(Syntax.codeDeref("file_get_contents('php://input')"));
 			}
 			params = _getParams();
 			
@@ -117,6 +119,10 @@ class Domain implements IDomain {
 			return host + '/' + url.value;
 		}
 		
+		public static function matchLocation(uri:String):Bool {
+			return Browser.window.location.href.indexOf(uri) != -1;
+		}
+		
 	#elseif php
 		
 		public function getRequestMethod():String {
@@ -141,9 +147,9 @@ class Domain implements IDomain {
 		 * @return
 		 */
 		private function _getParams():Dynamic {
-			var a : NativeArray = php.Syntax.codeDeref("array_merge($_GET, $_POST)");
-			if (php.Syntax.codeDeref("get_magic_quotes_gpc()")){
-				php.Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+			var a : NativeArray = Syntax.codeDeref("array_merge($_GET, $_POST)");
+			if (Syntax.codeDeref("get_magic_quotes_gpc()")){
+				Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
 			}
 			#if force_std_separator
 				var h = Lib.objectOfAssociativeArray(a);
@@ -171,7 +177,7 @@ class Domain implements IDomain {
 			if (data == null) {
 				data = {};
 			}
-			var input:String = php.Syntax.codeDeref("file_get_contents('php://input')");
+			var input:String = Syntax.codeDeref("file_get_contents('php://input')");
 			var result:Array<String> = input.split(boundary);
 			Dice.Values(result, function(v:String) {
 				if (v == null || v.length == 0) {
@@ -202,9 +208,9 @@ class Domain implements IDomain {
 		
 		private function _getMultipartKey():String {
 			if(isRequestMethod('POST')){
-				var a : NativeArray = php.Syntax.codeDeref("$_POST");
-				if (php.Syntax.codeDeref("get_magic_quotes_gpc()")){
-					php.Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
+				var a : NativeArray = Syntax.codeDeref("$_POST");
+				if (Syntax.codeDeref("get_magic_quotes_gpc()")){
+					Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
 				}
 				var post = Lib.hashOfAssociativeArray(a);
 				for (key in post.keys()) {
@@ -216,21 +222,21 @@ class Domain implements IDomain {
 		}
 		
 		public function parseFiles( onPart : String -> String -> Void, onData : Bytes -> Int -> Int -> Void ) : Void {
-			var files:Dynamic = php.Syntax.codeDeref("$_FILES");
-			if (!php.Syntax.codeDeref("isset({0})", files)){
+			var files:Dynamic = Syntax.codeDeref("$_FILES");
+			if (!Syntax.codeDeref("isset({0})", files)){
 				return;
 			}
-			var keys:Dynamic = php.Syntax.codeDeref("array_keys({0})", files);
+			var keys:Dynamic = Syntax.codeDeref("array_keys({0})", files);
 			var parts : Array<String> = Lib.toHaxeArray(keys);
 			for(part in parts) {
-				var info : Dynamic = php.Syntax.codeDeref("$_FILES[$part]");
+				var info : Dynamic = Syntax.codeDeref("$_FILES[$part]");
 				var tmp : String = untyped info['tmp_name'];
 				var file : String = untyped info['name'];
 				var err : Int = untyped info['error'];
 				if(err > 0) {
 					switch(err) {
-						case 1: throw "The uploaded file exceeds the max size of " + php.Syntax.codeDeref('ini_get({0})', 'upload_max_filesize');
-						case 2: throw "The uploaded file exceeds the max file size directive specified in the HTML form (max is" + php.Syntax.codeDeref('ini_get({0})', 'post_max_size') + ")";
+						case 1: throw "The uploaded file exceeds the max size of " + Syntax.codeDeref('ini_get({0})', 'upload_max_filesize');
+						case 2: throw "The uploaded file exceeds the max file size directive specified in the HTML form (max is" + Syntax.codeDeref('ini_get({0})', 'post_max_size') + ")";
 						case 3: throw "The uploaded file was only partially uploaded";
 						case 4: continue; // No file was uploaded
 						case 6: throw "Missing a temporary folder";
@@ -240,14 +246,14 @@ class Domain implements IDomain {
 				}
 				onPart(part, file);
 				if ("" != file)	{
-					var h = php.Syntax.codeDeref("fopen({0},{1})", tmp, "r");
+					var h = Syntax.codeDeref("fopen({0},{1})", tmp, "r");
 					var bsize = 8192;
-					while (!php.Syntax.codeDeref("feof({0})", h)) {
-						var buf : String = php.Syntax.codeDeref("fread({0},{1})", h, bsize);
-						var size : Int = php.Syntax.codeDeref("strlen({0})", buf);
+					while (!Syntax.codeDeref("feof({0})", h)) {
+						var buf : String = Syntax.codeDeref("fread({0},{1})", h, bsize);
+						var size : Int = Syntax.codeDeref("strlen({0})", buf);
 						onData(Bytes.ofString(buf), 0, size);
 					}
-					php.Syntax.codeDeref("fclose({0})", h);
+					Syntax.codeDeref("fclose({0})", h);
 				}
 			}
 			

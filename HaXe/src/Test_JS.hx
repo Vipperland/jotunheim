@@ -16,20 +16,20 @@ class Test_JS{
 	
 	static public function main() {
 		
-		DataCollection.map(DataObject, 'main', ['name', 'email']);
+		DataCollection.map(DataObject, 'user', ['name', 'email']);
 		DataCollection.map(DataObject, 'color', ['name']);
 		DataCollection.map(DataObject, 'animal', ['name']);
 		
 		var t:String = [
-			"main 000001 0:alpha|1:user@alpha.com",
+			"user 000001 0:alpha|1:user@alpha.com",
 			"@color 0:yellow",
 			"@color 0:blue",
 			"@animal 0:dog",
 			"@animal 0:cat",
-			"main 000002 0:beta|1:user@beta.com",
+			"user 000002 0:beta|1:user@beta.com",
 			"@color 0:gray",
 			"@animal 0:cat",
-			"main 000003 0:gama|1:user@gama.com",
+			"user 000003 0:gama|1:user@gama.com",
 			"@color 0:cyan",
 			"@color 0:black",
 			"@color 0:white",
@@ -37,7 +37,7 @@ class Test_JS{
 			"@animal 0:cat",
 			"@animal 0:horse",
 			"@animal 0:pig",
-			"main 000004 0:omega|1:user@omega.com",
+			"user 000004 0:omega|1:user@omega.com",
 			"@animal 0:bird",
 		].join('\n');
 		

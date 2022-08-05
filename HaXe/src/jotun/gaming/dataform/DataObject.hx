@@ -5,40 +5,46 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-class DataObject {
+@:expose("DataObject")
+class DataObject extends DataCore {
 	
-	/**
-	   Properties to output
-	**/
-	private var _io_props:Array<String>;
-	
-	/**
-	   Çommand line name
-	**/
-	private var _io_name:String;
-	
-	private var _inserts:Array<Dynamic>;
+	private var _changes:Array<String>;
 	
 	public var id:Dynamic;
 	
-	public function new(io_name:String, props:Array<String>) {
-		_io_name = io_name;
-		_io_props = props;
+	private function _getProps():Array<String> {
+		return DataCollection.properties(_name);
 	}
 	
-	public function getION():String {
-		return _io_name;
+	public function new(name:String) {
+		super(name);
 	}
 	
 	/**
 	   Convert this object to a string type
 	   @return
 	**/
-	public function stringify():String {
-		var r:String = DataIO.stringify(this, _io_name, _io_props);
-		Dice.Values(_inserts, function(v:DataObject){
-			r += '\n@' + v.stringify();
-		});
+	public function toString(?changes:Bool):String {
+		var r:String = null;
+		var c:String = null;
+		if (!changes || isChanged()){
+			r = DataIO.stringify(this, _name, changes ? _changes : _getProps());
+			Dice.Values(_inserts, function(v:DataObject){
+				if(v != null){
+					c = v.toString(changes);
+					if (c != null){
+						r += '\n@' + c;
+					}
+				}
+			});
+		}
+		c = _getDelString('@-');
+		if (c != null){
+			if (r == null) {
+				r = _name + ' ' + id;
+			}
+			r += (r.length > 0 ? '\n' : '') + c;
+		}
 		return r;
 	}
 	
@@ -49,7 +55,7 @@ class DataObject {
 	**/
 	public function parse(data:String):Bool {
 		var i:Array<String> = data.split(' ');
-		if (i[0] == _io_name){
+		if (i[0] == _name){
 			if (i.length > 2){
 				id = i[1];
 				data = i[2];
@@ -58,7 +64,7 @@ class DataObject {
 				data = i[1];
 			}
 			if (data != null){
-				DataIO.parse(this, data, _io_props);
+				DataIO.parse(this, data, _getProps());
 				return true;
 			}
 		}
@@ -70,36 +76,37 @@ class DataObject {
 	   @param	data
 	**/
 	public function merge(data:String):Void {
-		DataIO.parse(this, data, _io_props);
+		DataIO.parse(this, data, _getProps());
 	}
 	
-	/**
-	   Insert ION sub data
-	   @param	name
-	   @param	o
-	   @return
-	**/
-	public function insert(name:String, o:DataObject):Bool {
-		if (_inserts == null){
-			_inserts = [];
+	public function set(prop:String, value:Dynamic):Void {
+		if (_changes != null && Reflect.field(this, prop) != value){
+			if (_changes.indexOf(prop) == -1){
+				_changes.push(prop);
+			}
 		}
-		if (canInsert(name, o)){
-			_inserts[_inserts.length] = o;
-			onInsert(name, o);
+		Reflect.setField(this, prop, value);
+	}
+	
+	public function allowChanges() {
+		if (_changes == null){
+			commit();
 		}
-		return true;
 	}
 	
-	public function onUpdate():Void {
-		
+	public function isChanged():Bool {
+		return _changes != null && _changes.length > 0;
 	}
 	
-	public function canInsert(name:String, o:DataObject):Bool {
-		return true;
+	public function commit():Void {
+		_changes = [];
+		_deletions = [];
 	}
 	
-	public function onInsert(name:String, o:DataObject):Void {
-		
+	public function clone():DataObject {
+		var o:DataObject = new DataObject(_name);
+		o.parse(toString());
+		return o;
 	}
 	
 }

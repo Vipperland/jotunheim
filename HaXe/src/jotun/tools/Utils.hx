@@ -125,10 +125,6 @@ class Utils{
 			return js.Syntax.code("window.innerHeight || document.documentElement.clientHeight");
 		}
 		
-		public static function mathLocation(uri:String):Bool {
-			return Browser.window.location.href.indexOf(uri) != -1;
-		}
-		
 		static public function screenInfo():String {
 			return screenOrientation() + "(" + viewportWidth() + "x" + viewportHeight() + ")";
 		}

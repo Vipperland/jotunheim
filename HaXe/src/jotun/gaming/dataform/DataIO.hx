@@ -7,6 +7,10 @@ import jotun.utils.Dice;
  */
 class DataIO {
 	
+	public static var PROP:String = '|';
+	public static var SET:String = ':';
+	public static var SPACE:String = '/+';
+	
 	/**
 	   Object construct by property index
 	   @param	c
@@ -16,12 +20,13 @@ class DataIO {
 	**/
 	public static function parse(c:DataObject, o:String, nfo:Dynamic):DataObject {
 		var obj:DataObject = c;
-		Dice.Values(o.split('|'), function(v:String){
-			var tag:Array<String> = v.split(':');
+		Dice.Values(o.split(PROP), function(v:String){
+			var tag:Array<String> = v.split(SET);
 			var par:String = Reflect.field(nfo, tag.shift());
-			Reflect.setField(obj, par, tag.join(':').split('/_').join(' '));
+			c.set(par, tag.join(SET).split(SPACE).join(' '));
 		});
-		obj.onUpdate();
+		obj.onParse();
+		obj.allowChanges();
 		return obj;
 	}
 	
@@ -39,13 +44,13 @@ class DataIO {
 			value = Reflect.field(o, value);
 			if (value != null){
 				if (Std.isOfType(value, String)) {
-					value = value.split(' ').join('/_');
+					value = value.split(' ').join(SPACE);
 				}
-				result[count] = p + ':' + value;
+				result[count] = p + SET + value;
 				++count;
 			}
 		});
-		return n + (o.id != null ? " " + o.id : "") + " " + result.join('|');
+		return n + (o.id != null ? " " + o.id : "") + " " + result.join(PROP);
 	}
 	
 }

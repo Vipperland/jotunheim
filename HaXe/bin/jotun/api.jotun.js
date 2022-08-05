@@ -1303,6 +1303,9 @@ var jotun_net_Domain = function() {
 };
 jotun_net_Domain.__name__ = "jotun.net.Domain";
 jotun_net_Domain.__interfaces__ = [jotun_net_IDomain];
+jotun_net_Domain.matchLocation = function(uri) {
+	return window.location.href.indexOf(uri) != -1;
+};
 jotun_net_Domain.prototype = {
 	_parseURI: function() {
 		var l = window.location;
@@ -6371,55 +6374,73 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
-var jotun_gaming_dataform_DataCollection = function() {
+var jotun_gaming_dataform_DataCollection = $hx_exports["DataCollection"] = function() {
 	this._list = { };
 };
 jotun_gaming_dataform_DataCollection.__name__ = "jotun.gaming.dataform.DataCollection";
 jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
-	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o, n : name, p : props};
+	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o == null ? jotun_gaming_dataform_DataObject : o, p : props};
 };
 jotun_gaming_dataform_DataCollection.construct = function(name,r) {
 	var o = null;
 	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
-		var d__ = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
-		var C__ = d__.c;
-		new C__(d__.n, d__.p);
+		var O = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
+		o = new O.c(name,O.p);
 	}
 	if(o != null) {
 		if(r.length == 3) {
 			o.id = r[1];
 			o.merge(r[2]);
 		} else if(r.length == 2) {
+			o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_DataCollection.ID_SIZE);
 			o.merge(r[1]);
 		}
 	}
 	return o;
 };
+jotun_gaming_dataform_DataCollection.properties = function(name) {
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
+		return Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name).p;
+	} else {
+		return null;
+	}
+};
 jotun_gaming_dataform_DataCollection.prototype = {
-	add: function(o) {
-		var ion = o.getION();
-		if(ion != null && ion.length > 0) {
-			if(!Object.prototype.hasOwnProperty.call(this._list,ion)) {
-				this._list[ion] = { };
-			}
-			if(o.id != null) {
-				var ls = Reflect.field(this._list,ion);
-				ls[o.id] = o;
-			} else {
-				o = null;
-			}
+	_getOrCreate: function(name) {
+		var list = Reflect.field(this._list,name);
+		if(list == null) {
+			list = new jotun_gaming_dataform_DataList(name);
+			this._list[name] = list;
+		}
+		return list;
+	}
+	,add: function(o) {
+		var name = o.getName();
+		if(name != null && name.length > 0) {
+			var list = this._getOrCreate(name);
+			while(o.id == null && !list.exists(o.id)) o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_DataCollection.ID_SIZE);
+			list.insert(o);
 		} else {
 			o = null;
 		}
 		return o != null;
 	}
+	,exists: function(o) {
+		return false;
+	}
 	,parse: function(data) {
 		var _gthis = this;
 		if(HxOverrides.substr(data,0,1) == "#") {
+			data = data.split("\n").join("");
 			var key = data.substring(1,33);
+			var e = Std.parseInt(data.substring(33,34));
 			data = data.substring(34,data.length);
 			if(jotun_serial_Packager.md5Encode(data) != key) {
 				throw haxe_Exception.thrown(new jotun_errors_Error(1,"Invalid data object"));
+			}
+			while(e > 0) {
+				data += "=";
+				--e;
 			}
 			data = jotun_serial_Packager.decodeBase64(data);
 		}
@@ -6432,40 +6453,73 @@ jotun_gaming_dataform_DataCollection.prototype = {
 				v = r[0];
 				var cmd = v.substring(0,1);
 				var o = null;
-				if(cmd == "@") {
+				switch(cmd) {
+				case "-":
+					break;
+				case "@":
 					if(l != null) {
 						v = v.substring(1,v.length);
 						o = jotun_gaming_dataform_DataCollection.construct(v,r);
-						if(l.insert(v,o)) {
+						if(l.insert(o)) {
 							len += 1;
 						}
 					}
-				} else {
+					break;
+				default:
 					o = jotun_gaming_dataform_DataCollection.construct(v,r);
-					if(_gthis.add(o)) {
-						l = o;
-						len += 1;
-					} else {
-						l = null;
+					if(!_gthis.exists(o)) {
+						if(_gthis.add(o)) {
+							if(l != null) {
+								l.refresh();
+							}
+							l = o;
+							len += 1;
+						} else {
+							l = null;
+						}
 					}
 				}
 			}
 		});
+		if(l != null) {
+			l.refresh();
+		}
 		return len;
 	}
-	,stringify: function(encode,name) {
+	,_encode: function(r) {
+		var r1 = jotun_serial_Packager.encodeBase64(r);
+		var i = 0;
+		while(HxOverrides.substr(r1,r1.length - 1,1) == "=") {
+			r1 = r1.substring(0,r1.length - 1);
+			++i;
+		}
+		r1 = "#" + jotun_serial_Packager.md5Encode(r1) + i + r1;
+		i = 0;
+		var nr = "";
+		var len = r1.length;
+		while(i < len) {
+			nr += HxOverrides.substr(r1,i,jotun_gaming_dataform_DataCollection.BLOCK_SIZE) + "\n";
+			i += jotun_gaming_dataform_DataCollection.BLOCK_SIZE;
+		}
+		return nr.substring(0,nr.length - 1);
+	}
+	,_toString: function(encode,changes,name) {
 		var r = "";
-		jotun_utils_Dice.Values(this.getList(name),function(v) {
-			jotun_utils_Dice.Values(v,function(v1) {
-				r += (r.length > 0 ? "\n" : "") + v1.stringify();
-			});
+		jotun_utils_Dice.Values(this._list,function(list) {
+			if(name == null || list.is(name)) {
+				r += list.toString(changes);
+			}
 		});
 		if(encode) {
-			r = jotun_serial_Packager.encodeBase64(r);
-			return "#" + jotun_serial_Packager.md5Encode(r) + ":" + r;
-		} else {
-			return r;
+			r = this._encode(r);
 		}
+		return r;
+	}
+	,toString: function(encode,name) {
+		return this._toString(encode,false,name);
+	}
+	,toChangedString: function(encode,name) {
+		return this._toString(encode,true,name);
 	}
 	,getList: function(name) {
 		if(name != null) {
@@ -6474,19 +6528,141 @@ jotun_gaming_dataform_DataCollection.prototype = {
 			return this._list;
 		}
 	}
+	,each: function(handler) {
+		jotun_utils_Dice.Values(this._list,handler);
+	}
+	,refresh: function(name) {
+		jotun_utils_Dice.Values(this._list,function(list) {
+			if(name == null || list.is(name)) {
+				list.refresh();
+			}
+		});
+	}
+	,commit: function() {
+		jotun_utils_Dice.Values(this._list,function(list) {
+			list.commit();
+		});
+	}
+	,clone: function() {
+		var o = new jotun_gaming_dataform_DataCollection();
+		o.parse(this.toString(false));
+		return o;
+	}
 	,__class__: jotun_gaming_dataform_DataCollection
+};
+var jotun_gaming_dataform_DataCore = function(name) {
+	this._name = name;
+	this._inserts = [];
+	this._indexed = { };
+};
+jotun_gaming_dataform_DataCore.__name__ = "jotun.gaming.dataform.DataCore";
+jotun_gaming_dataform_DataCore.prototype = {
+	_getDelString: function(pre) {
+		var r = null;
+		if(this._deletions != null && this._deletions.length > 0) {
+			r = "";
+			jotun_utils_Dice.All(this._deletions,function(p,v) {
+				r += (p == 0 ? "" : "\r") + pre + v;
+			});
+		}
+		return r;
+	}
+	,_delete: function(id) {
+		var index = Reflect.field(this._indexed,id);
+		if(index != null) {
+			var object = this._inserts[index];
+			if(object != null) {
+				this._inserts[index] = null;
+				Reflect.deleteField(this._indexed,id);
+				if(this._deletions != null) {
+					this._deletions[this._deletions.length] = object.getName() + " " + id;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	,getName: function() {
+		return this._name;
+	}
+	,is: function(name) {
+		return this._name == name;
+	}
+	,get: function(id) {
+		var index = typeof(id) == "string" ? Reflect.field(this._indexed,id) : id;
+		if(index != null) {
+			return this._inserts[index];
+		} else {
+			return null;
+		}
+	}
+	,insert: function(o) {
+		if(this.canInsert(o)) {
+			var index = this._inserts.length;
+			this._inserts[index] = o;
+			this._indexed[o.id] = index;
+			this.onInsert(o);
+		}
+		return true;
+	}
+	,canInsert: function(o) {
+		return true;
+	}
+	,onInsert: function(o) {
+	}
+	,onParse: function() {
+	}
+	,onRemove: function(o) {
+	}
+	,refresh: function() {
+		var max = this._inserts.length;
+		if(max > 0) {
+			var index = 0;
+			var cursor = 0;
+			var object;
+			while(cursor < max) {
+				if(this._inserts[cursor] != null) {
+					if(cursor != index) {
+						object = this._inserts[index];
+						this._inserts[index] = this._inserts[cursor];
+						this._inserts[cursor] = null;
+						if(object != null && object.id != null) {
+							this._indexed[object.id] = index;
+						}
+					}
+					++index;
+				}
+				++cursor;
+			}
+			if(index < max) {
+				this._inserts.splice(index,max - index);
+			}
+		}
+	}
+	,'delete': function(id) {
+		return this._delete(id);
+	}
+	,deleteIndex: function(index) {
+		var obj = this.get(index);
+		if(obj != null) {
+			return this._delete(obj.id);
+		} else {
+			return false;
+		}
+	}
+	,__class__: jotun_gaming_dataform_DataCore
 };
 var jotun_gaming_dataform_DataIO = function() { };
 jotun_gaming_dataform_DataIO.__name__ = "jotun.gaming.dataform.DataIO";
 jotun_gaming_dataform_DataIO.parse = function(c,o,nfo) {
 	var obj = c;
-	jotun_utils_Dice.Values(o.split("|"),function(v) {
-		var tag = v.split(":");
+	jotun_utils_Dice.Values(o.split(jotun_gaming_dataform_DataIO.PROP),function(v) {
+		var tag = v.split(jotun_gaming_dataform_DataIO.SET);
 		var par = Reflect.field(nfo,tag.shift());
-		var value = tag.join(":").split("/_").join(" ");
-		obj[par] = value;
+		c.set(par,tag.join(jotun_gaming_dataform_DataIO.SET).split(jotun_gaming_dataform_DataIO.SPACE).join(" "));
 	});
-	obj.onUpdate();
+	obj.onParse();
+	obj.allowChanges();
 	return obj;
 };
 jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
@@ -6496,33 +6672,100 @@ jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
 		value = Reflect.field(o,value);
 		if(value != null) {
 			if(typeof(value) == "string") {
-				value = value.split(" ").join("/_");
+				value = value.split(" ").join(jotun_gaming_dataform_DataIO.SPACE);
 			}
-			result[count] = p + ":" + Std.string(value);
+			result[count] = p + jotun_gaming_dataform_DataIO.SET + Std.string(value);
 			count += 1;
 		}
 	});
-	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join("|");
+	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join(jotun_gaming_dataform_DataIO.PROP);
 };
-var jotun_gaming_dataform_DataObject = function(io_name,props) {
-	this._io_name = io_name;
-	this._io_props = props;
+var jotun_gaming_dataform_DataList = function(name) {
+	jotun_gaming_dataform_DataCore.call(this,name);
+	this._deletions = [];
+};
+jotun_gaming_dataform_DataList.__name__ = "jotun.gaming.dataform.DataList";
+jotun_gaming_dataform_DataList.__super__ = jotun_gaming_dataform_DataCore;
+jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCore.prototype,{
+	getData: function() {
+		return this._inserts;
+	}
+	,exists: function(id) {
+		return Object.prototype.hasOwnProperty.call(this._indexed,id);
+	}
+	,each: function(handler) {
+		jotun_utils_Dice.Values(this._inserts,function(v) {
+			if(v != null) {
+				return handler(v);
+			} else {
+				return false;
+			}
+		});
+	}
+	,commit: function() {
+		this.each(function(o) {
+			o.commit();
+		});
+		this._deletions = [];
+	}
+	,refresh: function() {
+		jotun_gaming_dataform_DataCore.prototype.refresh.call(this);
+		this.each(function(o) {
+			o.refresh();
+		});
+	}
+	,toString: function(changes) {
+		var r = "";
+		var c = null;
+		this.each(function(object) {
+			c = object.toString(changes);
+			if(c != null) {
+				r += (r.length > 0 ? "\n" : "") + c;
+			}
+		});
+		c = this._getDelString("-");
+		if(c != null) {
+			r += (r.length > 0 ? "\n" : "") + c;
+		}
+		return r;
+	}
+	,__class__: jotun_gaming_dataform_DataList
+});
+var jotun_gaming_dataform_DataObject = $hx_exports["DataObject"] = function(name) {
+	jotun_gaming_dataform_DataCore.call(this,name);
 };
 jotun_gaming_dataform_DataObject.__name__ = "jotun.gaming.dataform.DataObject";
-jotun_gaming_dataform_DataObject.prototype = {
-	getION: function() {
-		return this._io_name;
+jotun_gaming_dataform_DataObject.__super__ = jotun_gaming_dataform_DataCore;
+jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataCore.prototype,{
+	_getProps: function() {
+		return jotun_gaming_dataform_DataCollection.properties(this._name);
 	}
-	,stringify: function() {
-		var r = jotun_gaming_dataform_DataIO.stringify(this,this._io_name,this._io_props);
-		jotun_utils_Dice.Values(this._inserts,function(v) {
-			r += "\n@" + v.stringify();
-		});
+	,toString: function(changes) {
+		var r = null;
+		var c = null;
+		if(!changes || this.isChanged()) {
+			r = jotun_gaming_dataform_DataIO.stringify(this,this._name,changes ? this._changes : this._getProps());
+			jotun_utils_Dice.Values(this._inserts,function(v) {
+				if(v != null) {
+					c = v.toString(changes);
+					if(c != null) {
+						r += "\n@" + c;
+					}
+				}
+			});
+		}
+		c = this._getDelString("@-");
+		if(c != null) {
+			if(r == null) {
+				r = this._name + " " + Std.string(this.id);
+			}
+			r += (r.length > 0 ? "\n" : "") + c;
+		}
 		return r;
 	}
 	,parse: function(data) {
 		var i = data.split(" ");
-		if(i[0] == this._io_name) {
+		if(i[0] == this._name) {
 			if(i.length > 2) {
 				this.id = i[1];
 				data = i[2];
@@ -6531,34 +6774,46 @@ jotun_gaming_dataform_DataObject.prototype = {
 				data = i[1];
 			}
 			if(data != null) {
-				jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+				jotun_gaming_dataform_DataIO.parse(this,data,this._getProps());
 				return true;
 			}
 		}
 		return false;
 	}
 	,merge: function(data) {
-		jotun_gaming_dataform_DataIO.parse(this,data,this._io_props);
+		jotun_gaming_dataform_DataIO.parse(this,data,this._getProps());
 	}
-	,insert: function(name,o) {
-		if(this._inserts == null) {
-			this._inserts = [];
+	,set: function(prop,value) {
+		if(this._changes != null && Reflect.field(this,prop) != value) {
+			if(this._changes.indexOf(prop) == -1) {
+				this._changes.push(prop);
+			}
 		}
-		if(this.canInsert(name,o)) {
-			this._inserts[this._inserts.length] = o;
-			this.onInsert(name,o);
+		this[prop] = value;
+	}
+	,allowChanges: function() {
+		if(this._changes == null) {
+			this.commit();
 		}
-		return true;
 	}
-	,onUpdate: function() {
+	,isChanged: function() {
+		if(this._changes != null) {
+			return this._changes.length > 0;
+		} else {
+			return false;
+		}
 	}
-	,canInsert: function(name,o) {
-		return true;
+	,commit: function() {
+		this._changes = [];
+		this._deletions = [];
 	}
-	,onInsert: function(name,o) {
+	,clone: function() {
+		var o = new jotun_gaming_dataform_DataObject(this._name);
+		o.parse(this.toString());
+		return o;
 	}
 	,__class__: jotun_gaming_dataform_DataObject
-};
+});
 var jotun_idb_WebDB = $hx_exports["J_WebDB"] = function(db,error,upgrade) {
 	this._tables = [];
 	this._need_upgrade = upgrade;
@@ -8040,9 +8295,6 @@ jotun_tools_Utils.viewportWidth = function() {
 };
 jotun_tools_Utils.viewportHeight = function() {
 	return window.innerHeight || document.documentElement.clientHeight;
-};
-jotun_tools_Utils.mathLocation = function(uri) {
-	return window.location.href.indexOf(uri) != -1;
 };
 jotun_tools_Utils.screenInfo = function() {
 	return jotun_tools_Utils.screenOrientation() + "(" + jotun_tools_Utils.viewportWidth() + "x" + jotun_tools_Utils.viewportHeight() + ")";
@@ -9707,7 +9959,12 @@ jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQueryGroup();
 jotun_gaming_actions_Requirement.cache = { };
 jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQueryGroup();
+jotun_gaming_dataform_DataCollection.BLOCK_SIZE = 64;
+jotun_gaming_dataform_DataCollection.ID_SIZE = 32;
 jotun_gaming_dataform_DataCollection._dictio = { };
+jotun_gaming_dataform_DataIO.PROP = "|";
+jotun_gaming_dataform_DataIO.SET = ":";
+jotun_gaming_dataform_DataIO.SPACE = "/+";
 jotun_tools_Ticker._pool_high = [];
 jotun_tools_Ticker._pool_low = [];
 jotun_tools_Ticker._ltime = 0;
