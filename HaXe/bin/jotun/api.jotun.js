@@ -6374,12 +6374,15 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
-var jotun_gaming_dataform_DataCollection = $hx_exports["DataCollection"] = function() {
+var jotun_gaming_dataform_DataCollection = $hx_exports["DataCollection"] = function(data) {
 	this._list = { };
+	if(data != null) {
+		this.parse(data);
+	}
 };
 jotun_gaming_dataform_DataCollection.__name__ = "jotun.gaming.dataform.DataCollection";
 jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
-	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o == null ? jotun_gaming_dataform_DataObject : o, p : props};
+	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o == null ? jotun_gaming_dataform_DataObject : jotun_gaming_dataform_DataObject.inheritance(o), p : props};
 };
 jotun_gaming_dataform_DataCollection.construct = function(name,r) {
 	var o = null;
@@ -6414,6 +6417,37 @@ jotun_gaming_dataform_DataCollection.prototype = {
 		}
 		return list;
 	}
+	,_exists: function(o,r) {
+		if(r.length >= 2) {
+			var list = this.list(r[0]);
+			if(list != null) {
+				return list.exists(r[1]);
+			}
+		}
+		return false;
+	}
+	,_grab: function(r) {
+		if(r.length >= 2) {
+			var list = this.list(r[0]);
+			if(list != null) {
+				return list.get(r[1]);
+			}
+		}
+		return null;
+	}
+	,_delete: function(r) {
+		if(r.length == 2) {
+			var list = this.list(r[0]);
+			if(list != null) {
+				this._onListDelete(list.delete(r[1],true));
+			}
+		}
+	}
+	,_onListDelete: function(o) {
+	}
+	,_onObjectDelete: function(o) {
+		var tmp = o != null;
+	}
 	,add: function(o) {
 		var name = o.getName();
 		if(name != null && name.length > 0) {
@@ -6424,9 +6458,6 @@ jotun_gaming_dataform_DataCollection.prototype = {
 			o = null;
 		}
 		return o != null;
-	}
-	,exists: function(o) {
-		return false;
 	}
 	,parse: function(data) {
 		var _gthis = this;
@@ -6455,19 +6486,39 @@ jotun_gaming_dataform_DataCollection.prototype = {
 				var o = null;
 				switch(cmd) {
 				case "-":
+					cmd = r[0];
+					r[0] = cmd.substring(1,cmd.length);
+					if(_gthis._exists(null,r)) {
+						_gthis._delete(r);
+					}
 					break;
-				case "@":
+				case "/":
+					if(l != null) {
+						_gthis._onObjectDelete(l.delete(r[1],true));
+					}
+					break;
+				case ">":
 					if(l != null) {
 						v = v.substring(1,v.length);
-						o = jotun_gaming_dataform_DataCollection.construct(v,r);
-						if(l.insert(o)) {
-							len += 1;
+						if(r.length == 3 && l.exists(r[1])) {
+							l.get(r[1]).merge(r[2]);
+						} else {
+							o = jotun_gaming_dataform_DataCollection.construct(v,r);
+							if(l.insert(o)) {
+								len += 1;
+							}
 						}
 					}
 					break;
 				default:
-					o = jotun_gaming_dataform_DataCollection.construct(v,r);
-					if(!_gthis.exists(o)) {
+					if(_gthis._exists(null,r)) {
+						o = _gthis._grab(r);
+						if(r.length == 3) {
+							o.merge(r[2]);
+						}
+						l = o;
+					} else {
+						o = jotun_gaming_dataform_DataCollection.construct(v,r);
 						if(_gthis.add(o)) {
 							if(l != null) {
 								l.refresh();
@@ -6484,6 +6535,7 @@ jotun_gaming_dataform_DataCollection.prototype = {
 		if(l != null) {
 			l.refresh();
 		}
+		this.refresh();
 		return len;
 	}
 	,_encode: function(r) {
@@ -6507,7 +6559,7 @@ jotun_gaming_dataform_DataCollection.prototype = {
 		var r = "";
 		jotun_utils_Dice.Values(this._list,function(list) {
 			if(name == null || list.is(name)) {
-				r += list.toString(changes);
+				r += list.stringify(changes);
 			}
 		});
 		if(encode) {
@@ -6521,7 +6573,7 @@ jotun_gaming_dataform_DataCollection.prototype = {
 	,toChangedString: function(encode,name) {
 		return this._toString(encode,true,name);
 	}
-	,getList: function(name) {
+	,list: function(name) {
 		if(name != null) {
 			return Reflect.field(this._list,name);
 		} else {
@@ -6562,31 +6614,32 @@ jotun_gaming_dataform_DataCore.prototype = {
 		if(this._deletions != null && this._deletions.length > 0) {
 			r = "";
 			jotun_utils_Dice.All(this._deletions,function(p,v) {
-				r += (p == 0 ? "" : "\r") + pre + v;
+				r += (p == 0 ? "" : "\n") + pre + v;
 			});
 		}
 		return r;
 	}
 	,_delete: function(id) {
-		var index = Reflect.field(this._indexed,id);
+		var index = typeof(id) == "string" ? Reflect.field(this._indexed,id) : id;
 		if(index != null) {
 			var object = this._inserts[index];
 			if(object != null) {
 				this._inserts[index] = null;
 				Reflect.deleteField(this._indexed,id);
-				if(this._deletions != null) {
-					this._deletions[this._deletions.length] = object.getName() + " " + id;
-				}
-				return true;
+				this.refresh();
+				return object;
 			}
 		}
-		return false;
+		return null;
 	}
 	,getName: function() {
 		return this._name;
 	}
 	,is: function(name) {
 		return this._name == name;
+	}
+	,exists: function(id) {
+		return Object.prototype.hasOwnProperty.call(this._indexed,id);
 	}
 	,get: function(id) {
 		var index = typeof(id) == "string" ? Reflect.field(this._indexed,id) : id;
@@ -6612,7 +6665,7 @@ jotun_gaming_dataform_DataCore.prototype = {
 	}
 	,onParse: function() {
 	}
-	,onRemove: function(o) {
+	,onDelete: function(o) {
 	}
 	,refresh: function() {
 		var max = this._inserts.length;
@@ -6623,10 +6676,10 @@ jotun_gaming_dataform_DataCore.prototype = {
 			while(cursor < max) {
 				if(this._inserts[cursor] != null) {
 					if(cursor != index) {
-						object = this._inserts[index];
+						object = this._inserts[cursor];
 						this._inserts[index] = this._inserts[cursor];
 						this._inserts[cursor] = null;
-						if(object != null && object.id != null) {
+						if(object != null) {
 							this._indexed[object.id] = index;
 						}
 					}
@@ -6639,27 +6692,33 @@ jotun_gaming_dataform_DataCore.prototype = {
 			}
 		}
 	}
-	,'delete': function(id) {
-		return this._delete(id);
-	}
-	,deleteIndex: function(index) {
-		var obj = this.get(index);
-		if(obj != null) {
-			return this._delete(obj.id);
+	,'delete': function(id,silent) {
+		var o = this._delete(id);
+		if(o != null) {
+			if(!silent) {
+				this._deletions[this._deletions.length] = o.getName() + " " + Std.string(o.id);
+			}
+			this.onDelete(o);
+			return o;
 		} else {
-			return false;
+			return null;
 		}
 	}
 	,__class__: jotun_gaming_dataform_DataCore
 };
 var jotun_gaming_dataform_DataIO = function() { };
 jotun_gaming_dataform_DataIO.__name__ = "jotun.gaming.dataform.DataIO";
-jotun_gaming_dataform_DataIO.parse = function(c,o,nfo) {
+jotun_gaming_dataform_DataIO.parse = function(c,o,nfo,silent) {
 	var obj = c;
 	jotun_utils_Dice.Values(o.split(jotun_gaming_dataform_DataIO.PROP),function(v) {
 		var tag = v.split(jotun_gaming_dataform_DataIO.SET);
 		var par = Reflect.field(nfo,tag.shift());
-		c.set(par,tag.join(jotun_gaming_dataform_DataIO.SET).split(jotun_gaming_dataform_DataIO.SPACE).join(" "));
+		v = tag.join(jotun_gaming_dataform_DataIO.SET).split(jotun_gaming_dataform_DataIO.SPACE).join(" ");
+		if(silent) {
+			c[par] = v;
+		} else {
+			c.set(par,v);
+		}
 	});
 	obj.onParse();
 	obj.allowChanges();
@@ -6690,9 +6749,6 @@ jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCor
 	getData: function() {
 		return this._inserts;
 	}
-	,exists: function(id) {
-		return Object.prototype.hasOwnProperty.call(this._indexed,id);
-	}
 	,each: function(handler) {
 		jotun_utils_Dice.Values(this._inserts,function(v) {
 			if(v != null) {
@@ -6714,11 +6770,11 @@ jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCor
 			o.refresh();
 		});
 	}
-	,toString: function(changes) {
+	,stringify: function(changes) {
 		var r = "";
 		var c = null;
 		this.each(function(object) {
-			c = object.toString(changes);
+			c = object.stringify(changes);
 			if(c != null) {
 				r += (r.length > 0 ? "\n" : "") + c;
 			}
@@ -6735,26 +6791,36 @@ var jotun_gaming_dataform_DataObject = $hx_exports["DataObject"] = function(name
 	jotun_gaming_dataform_DataCore.call(this,name);
 };
 jotun_gaming_dataform_DataObject.__name__ = "jotun.gaming.dataform.DataObject";
+jotun_gaming_dataform_DataObject.inheritance = function(obj) {
+	if(!DataObject.prototype.isPrototypeOf(obj)) {
+		obj.prototype = Object.create(DataObject.prototype);
+	}
+	return obj;
+};
 jotun_gaming_dataform_DataObject.__super__ = jotun_gaming_dataform_DataCore;
 jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataCore.prototype,{
 	_getProps: function() {
 		return jotun_gaming_dataform_DataCollection.properties(this._name);
 	}
-	,toString: function(changes) {
+	,stringify: function(changes) {
+		var _gthis = this;
 		var r = null;
 		var c = null;
 		if(!changes || this.isChanged()) {
 			r = jotun_gaming_dataform_DataIO.stringify(this,this._name,changes ? this._changes : this._getProps());
-			jotun_utils_Dice.Values(this._inserts,function(v) {
-				if(v != null) {
-					c = v.toString(changes);
-					if(c != null) {
-						r += "\n@" + c;
-					}
-				}
-			});
 		}
-		c = this._getDelString("@-");
+		jotun_utils_Dice.Values(this._inserts,function(v) {
+			if(v != null) {
+				c = v.stringify(changes);
+				if(c != null) {
+					if(r == null) {
+						r = _gthis._name + " " + Std.string(_gthis.id);
+					}
+					r += "\n>" + c;
+				}
+			}
+		});
+		c = this._getDelString("/");
 		if(c != null) {
 			if(r == null) {
 				r = this._name + " " + Std.string(this.id);
@@ -6774,14 +6840,14 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 				data = i[1];
 			}
 			if(data != null) {
-				jotun_gaming_dataform_DataIO.parse(this,data,this._getProps());
+				jotun_gaming_dataform_DataIO.parse(this,data,this._getProps(),false);
 				return true;
 			}
 		}
 		return false;
 	}
 	,merge: function(data) {
-		jotun_gaming_dataform_DataIO.parse(this,data,this._getProps());
+		jotun_gaming_dataform_DataIO.parse(this,data,this._getProps(),true);
 	}
 	,set: function(prop,value) {
 		if(this._changes != null && Reflect.field(this,prop) != value) {
@@ -6790,6 +6856,9 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 			}
 		}
 		this[prop] = value;
+	}
+	,prop: function(name) {
+		return Reflect.field(this,name);
 	}
 	,allowChanges: function() {
 		if(this._changes == null) {
@@ -6809,7 +6878,7 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 	}
 	,clone: function() {
 		var o = new jotun_gaming_dataform_DataObject(this._name);
-		o.parse(this.toString());
+		o.parse(this.stringify());
 		return o;
 	}
 	,__class__: jotun_gaming_dataform_DataObject

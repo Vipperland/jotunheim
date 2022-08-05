@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="assets/icons/pro.min.css">
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;700&display=swap" rel="stylesheet">
+		<style>
+			html, body {
+				font-family: 'Roboto Mono', monospace;
+			}
+			body {
+				padding: 10px;
+			}
+			.flags {
+				width: 1000px;
+			}
+			.spacer {
+				margin: 40px;
+			}
+		</style>
+	</head>
+	<body xcode>
+		<script type="text/javascript" src="jotun/api.jotun.js"></script>
+		
+		<script>
+			
+			Jotun.run(function(){
+				
+				function User(n){
+					DataObject.call(this, n);
+					this.onInsert = function(o){
+						if(this[o.getName()] == null){
+							this[o.getName()] = [];
+						}
+						this[o.getName()].push(o);
+					}
+				}
+				
+				DataCollection.map(null, 'user', ['name', 'email']);
+				DataCollection.map(null, 'color', ['name']);
+				DataCollection.map(null, 'animal', ['name']);
+				
+				var t = [
+					"user 0:alpha|1:user@alpha.com",
+					">color 0:yellow",
+					">color 0:blue",
+					">animal 0:dog",
+					">animal 0:cat",
+					"user test_edit 0:beta|1:user@beta.com",
+					">color 0:gray",
+					">animal 0:cat",
+					">animal 0:lhama",
+					"user test_delete 0:gama|1:user@gama.com",
+					">color 0:cyan",
+					">color 0:black",
+					">color 0:white",
+					">animal 0:dog",
+					">animal 0:cat",
+					"user teste_inn_delete 0:omega|1:user@omega.com",
+					">animal 0:bird",
+					">animal 0:horse",
+					">animal 0:pig",
+				].join('\n');
+				
+				var colA = new DataCollection(t);
+				trace('COLLECTION(A) \r\n' + colA.toString(false));
+				
+				
+				var colB = colA.clone();
+				
+				colB.list('user').delete('test_delete');
+				var edit = colB.list('user').get('test_edit');
+				edit.set('name', 'new-name');
+				
+				var edit = colB.list('user').get('teste_inn_delete');
+				edit.delete(1);
+				edit.delete(1);
+				
+				edit.get(0).set('name', 'foobar');
+				
+				colB.refresh();
+				trace('COLLECTION(B) UPDATED \r\n' + colB.toChangedString(false));
+				
+				var rB = colB.toChangedString(false);
+				colA.parse(rB);
+				
+				trace('COLLECTION(A) CHANGED \r\n' + colA.toString(false));
+				trace('COLLECTION(A) UPDATED \r\n' + colA.toChangedString(false));
+				
+				trace(colA.list());
+				
+			});
+			
+		</script>
+	</body>
+</html>

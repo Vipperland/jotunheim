@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="assets/icons/pro.min.css">
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;700&display=swap" rel="stylesheet">
+		<style>
+			html, body {
+				font-family: 'Roboto Mono', monospace;
+			}
+			body {
+				padding: 10px;
+			}
+			body textarea {
+				width: 350px;
+				height: 80px;
+				border: 1px solid #333333;
+			}
+			body button {
+				padding: 10px;
+			}
+		</style>
+	</head>
+	<body xcode>
+		<div class="main">
+			
+		</div>
+		<div class="info">
+			
+		</div>
+		<div class="messages">
+			<div class="content">
+				
+			</div>
+			<br/>
+			<textarea placeholder="This data will be sent to another instances"></textarea>
+			<br/>
+			<br/>
+			<button>SEND</button>
+		</div>
+		<script type="text/javascript" src="jotun/api.jotun.js"></script>
+		<script>
+			Jotun.run(function(){
+				
+				var _sData = [];
+				var dom_main = Jotun.one('.main');
+				var dom_info = Jotun.one('.info');
+				var dom_messages = Jotun.one('.messages .content');
+				var dom_textarea = Jotun.one('.messages textarea');
+				var dom_button = Jotun.one('button');
+				
+				dom_button.events.click(function(e){
+					var msg = dom_textarea.value();
+					if(msg != dom_textarea.attribute('placeholder')){
+						_sync(Singularity.id(), msg);
+						dom_textarea.value(dom_textarea.attribute('placeholder'));
+						Singularity.sync(msg);
+					}
+				});
+				
+				function _draw(tick){
+					dom_info.writeHtml('This is the Main #' + Jotun.broadcast.getUID() + "<br/>" + new Date().toString() + '<br/>+' +  Singularity.count() + ' instances (channel: ' + Singularity.channel() + ')<br/>');
+					Dice.Values(Singularity.instances(), function(v){
+						dom_info.appendHtml('&nbsp;&nbsp;&nbsp;&nbsp; ' + (v.current ? '<b>' : '') + v.id + (v.main ? ' [PRI]' : '[SEC]') + ' - visible: ' + v.visible + ' - ' + (v.url ? ' (' + v.url + ')' : '') + (v.current ? '</b>' : '') +  '<br/>');
+					});
+				}
+				
+				function _readMsg(id, message){
+					dom_messages.appendHtml('<div class="msg-block">@' + (Singularity.id() == id ? '<b>me</b>' : id) + ':<br/>&nbsp&nbsp' + message + '</div>');
+				}
+				
+				function _sync(id, data){
+					if(data.cache){
+						for(var i in data.cache){
+							i = data.cache[i];
+							_sData[_sData.length] = i;
+							_readMsg(i[0], i[1]);
+						}
+					}else{
+						_sData[_sData.length] = [id, data];
+						_readMsg(id, data);
+					}
+				}
+				
+				Singularity.signals.add('onInstance', function(o){
+					_draw();
+				});
+				
+				Singularity.signals.add('onMain', function(o){
+					_draw();
+				});
+				
+				Singularity.signals.add('onVisibility', function(o){
+					_draw();
+				});
+				
+				Singularity.signals.add('onConnect', function(o){
+					if(Singularity.isMain() && _sData.length > 0){
+						Singularity.sync({cache:_sData}, o.data.id);
+					}
+					dom_messages.appendHtml('<div class="msg-block"><i>' + o.data.id + ' connected!</i></div>');
+				});
+				
+				Singularity.signals.add('onDisconnect', function(o){
+					dom_messages.appendHtml('<div class="msg-block"><i>' + o.data.id + ' disconnected!</i></div>');
+				});
+				
+				Singularity.signals.add('onSync', function(o){
+					_sync(o.data.engine.id, o.data.syncedData);
+				});
+				
+				Singularity.connect();
+				
+			});
+		</script>
+	</body>
+</html>

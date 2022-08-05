@@ -23,7 +23,7 @@ class DataCollection {
 	private static var _dictio:Dynamic = {};
 	
 	public static function map(o:Dynamic, name:String, props:Array<String>):Void {
-		Reflect.setField(_dictio, name, {'c':o == null ? DataObject : o, p:props});
+		Reflect.setField(_dictio, name, {'c':o == null ? DataObject : DataObject.inheritance(o), p:props});
 	}
 	
 	public static function construct(name:String, r:Array<String>):DataObject {
@@ -59,8 +59,50 @@ class DataCollection {
 		return list;
 	}
 	
-	public function new() {
+	private function _exists(o:DataObject, r:Array<String>):Bool {
+		if (r.length >= 2){
+			var list:DataList = list(r[0]);
+			if (list != null){
+				return list.exists(r[1]);
+			}
+		}
+		return false;
+	}
+	
+	private function _grab(r:Array<String>):DataObject {
+		if (r.length >= 2){
+			var list:DataList = list(r[0]);
+			if (list != null){
+				return list.get(r[1]);
+			}
+		}
+		return null;
+	}
+	
+	private function _delete(r:Array<String>):Void {
+		if (r.length == 2){
+			var list:DataList = list(r[0]);
+			if (list != null){
+				_onListDelete(list.delete(r[1], true));
+			}
+		}
+	}
+	
+	private function _onListDelete(o:DataObject):Void {
+		
+	}
+	
+	private function _onObjectDelete(o:DataObject):Void {
+		if (o != null){
+			
+		}
+	}
+	
+	public function new(?data:String) {
 		_list = {};
+		if (data != null){
+			parse(data);
+		}
 	}
 	
 	/**
@@ -81,15 +123,6 @@ class DataCollection {
 			o = null;
 		}
 		return o != null;
-	}
-	
-	/**
-	   
-	   @param	o
-	   @return
-	**/
-	public function exists(o:DataObject):Bool {
-		return false;
 	}
 	
 	/**
@@ -121,30 +154,49 @@ class DataCollection {
 				var cmd:String = v.substring(0, 1);
 				var o:DataObject = null;
 				switch(cmd){
-					case '@' : {
+					case '>' : {
 						if (l != null){
 							v = v.substring(1, v.length);
-							o = construct(v, r);
-							if (l.insert(o)){
-								len += 1;
+							if (r.length == 3 && l.exists(r[1])){
+								l.get(r[1]).merge(r[2]);
+							}else{
+								o = construct(v, r);
+								if (l.insert(o)){
+									len += 1;
+								}
 							}
 						}
 					}
+					case '/' : {
+						if (l != null){
+							_onObjectDelete(l.delete(r[1], true));
+						}
+					}
 					case '-' : {
-						
+						cmd = r[0];
+						r[0] = cmd.substring(1, cmd.length);
+						if (_exists(null, r)){
+							_delete(r);
+						}
 					}
 					default : {
-						o = construct(v, r);
-						if (exists(o)){
-							
-						}else if (add(o)){
-							if (l != null){
-								l.refresh();
+						if (_exists(null, r)){
+							o = _grab(r);
+							if (r.length == 3){
+								o.merge(r[2]);
 							}
 							l = o;
-							len += 1;
 						}else{
-							l = null;
+							o = construct(v, r);
+							if (add(o)){
+								if (l != null){
+									l.refresh();
+								}
+								l = o;
+								len += 1;
+							}else{
+								l = null;
+							}
 						}
 					}
 				}
@@ -153,6 +205,7 @@ class DataCollection {
 		if (l != null){
 			l.refresh();
 		}
+		refresh();
 		return len;
 	}
 	
@@ -178,7 +231,7 @@ class DataCollection {
 		var r:String = '';
 		Dice.Values(_list, function(list:DataList){
 			if (name == null || list.is(name)){
-				r += list.toString(changes);
+				r += list.stringify(changes);
 			}
 		});
 		if (encode){
@@ -203,7 +256,7 @@ class DataCollection {
 		return _toString(encode, true, name);
 	}
 	
-	public function getList(?name:String):DataList {
+	public function list(?name:String):DataList {
 		if (name != null){
 			return Reflect.field(_list, name);
 		}else{

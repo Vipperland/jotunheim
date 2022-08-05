@@ -18,12 +18,17 @@ class DataIO {
 	   @param	nfo
 	   @return
 	**/
-	public static function parse(c:DataObject, o:String, nfo:Dynamic):DataObject {
+	public static function parse(c:DataObject, o:String, nfo:Dynamic, silent:Bool):DataObject {
 		var obj:DataObject = c;
 		Dice.Values(o.split(PROP), function(v:String){
 			var tag:Array<String> = v.split(SET);
 			var par:String = Reflect.field(nfo, tag.shift());
-			c.set(par, tag.join(SET).split(SPACE).join(' '));
+			v = tag.join(SET).split(SPACE).join(' ');
+			if (silent){
+				Reflect.setField(c, par, v);
+			}else{
+				c.set(par, v);
+			}
 		});
 		obj.onParse();
 		obj.allowChanges();

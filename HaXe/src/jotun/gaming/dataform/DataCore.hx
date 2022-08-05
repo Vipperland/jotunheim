@@ -20,26 +20,24 @@ class DataCore {
 		if (_deletions != null && _deletions.length > 0){
 			r = '';
 			Dice.All(_deletions, function(p:Int, v:String){
-				r += (p == 0 ? '' : '\r') + pre + v;
+				r += (p == 0 ? '' : '\n') + pre + v;
 			});
 		}
 		return  r;
 	}
 	
-	public function _delete(id:String):Bool {
-		var index:Int = Reflect.field(_indexed, id);
+	private function _delete(id:Dynamic):DataObject {
+		var index:Int = Std.isOfType(id, String) ? Reflect.field(_indexed, id) : id;
 		if (index != null){
 			var object:DataObject = _inserts[index];
 			if (object != null){
 				_inserts[index] = null;
 				Reflect.deleteField(_indexed, id);
-				if (_deletions != null){
-					_deletions[_deletions.length] = object.getName() + ' ' + id;
-				}
-				return true;
+				refresh();
+				return object;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public function new(name:String) {
@@ -54,6 +52,10 @@ class DataCore {
 	
 	public function is(name:String):Bool {
 		return _name == name;
+	}
+	
+	public function exists(id:String):Bool {
+		return Reflect.hasField(_indexed, id);
 	}
 	
 	public function get(id:Dynamic):DataObject {
@@ -94,7 +96,7 @@ class DataCore {
 		// override
 	}
 	
-	public function onRemove(o:DataObject):Void {
+	public function onDelete(o:DataObject):Void {
 		
 	}
 	
@@ -107,10 +109,10 @@ class DataCore {
 			while(cursor < max){
 				if (_inserts[cursor] != null){
 					if (cursor != index){
-						object = _inserts[index];
+						object = _inserts[cursor];
 						_inserts[index] = _inserts[cursor];
 						_inserts[cursor] = null;
-						if(object != null && object.id != null){
+						if(object != null){
 							Reflect.setField(_indexed, object.id, index);
 						}
 					}
@@ -124,16 +126,16 @@ class DataCore {
 		}
 	}
 	
-	public function delete(id:String):Bool {
-		return _delete(id);
-	}
-	
-	public function deleteIndex(index:Int):Bool {
-		var obj:DataObject = get(index);
-		if (obj != null){
-			return _delete(obj.id);
+	public function delete(id:Dynamic, ?silent:Bool):DataObject {
+		var o:DataObject = _delete(id);
+		if (o != null){
+			if(!silent){
+				_deletions[_deletions.length] = o.getName() + ' ' + o.id;
+			}
+			onDelete(o);
+			return o;
 		}else{
-			return false;
+			return null;
 		}
 	}
 	

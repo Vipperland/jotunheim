@@ -1,5 +1,6 @@
 package jotun.gaming.dataform;
 import jotun.utils.Dice;
+import js.Syntax;
 
 /**
  * ...
@@ -7,6 +8,13 @@ import jotun.utils.Dice;
  */
 @:expose("DataObject")
 class DataObject extends DataCore {
+	
+	public static function inheritance(obj:Dynamic):Dynamic{
+		if (!Syntax.code("DataObject.prototype.isPrototypeOf({0})", obj)){
+			obj.prototype = Syntax.code("Object.create(DataObject.prototype)");
+		}
+		return obj;
+	}
 	
 	private var _changes:Array<String>;
 	
@@ -24,21 +32,24 @@ class DataObject extends DataCore {
 	   Convert this object to a string type
 	   @return
 	**/
-	public function toString(?changes:Bool):String {
+	public function stringify(?changes:Bool):String {
 		var r:String = null;
 		var c:String = null;
 		if (!changes || isChanged()){
 			r = DataIO.stringify(this, _name, changes ? _changes : _getProps());
-			Dice.Values(_inserts, function(v:DataObject){
-				if(v != null){
-					c = v.toString(changes);
-					if (c != null){
-						r += '\n@' + c;
-					}
-				}
-			});
 		}
-		c = _getDelString('@-');
+		Dice.Values(_inserts, function(v:DataObject){
+			if (v != null){
+				c = v.stringify(changes);
+				if (c != null){
+					if (r == null){
+						r = _name + ' ' + id;
+					}
+					r += '\n>' + c;
+				}
+			}
+		});
+		c = _getDelString('/');
 		if (c != null){
 			if (r == null) {
 				r = _name + ' ' + id;
@@ -64,7 +75,7 @@ class DataObject extends DataCore {
 				data = i[1];
 			}
 			if (data != null){
-				DataIO.parse(this, data, _getProps());
+				DataIO.parse(this, data, _getProps(), false);
 				return true;
 			}
 		}
@@ -76,7 +87,7 @@ class DataObject extends DataCore {
 	   @param	data
 	**/
 	public function merge(data:String):Void {
-		DataIO.parse(this, data, _getProps());
+		DataIO.parse(this, data, _getProps(), true);
 	}
 	
 	public function set(prop:String, value:Dynamic):Void {
@@ -88,6 +99,10 @@ class DataObject extends DataCore {
 		Reflect.setField(this, prop, value);
 	}
 	
+	public function prop(name:String):Dynamic {
+		return Reflect.field(this, name);
+	}
+	
 	public function allowChanges() {
 		if (_changes == null){
 			commit();
@@ -95,7 +110,7 @@ class DataObject extends DataCore {
 	}
 	
 	public function isChanged():Bool {
-		return _changes != null && _changes.length > 0;
+		return (_changes != null && _changes.length > 0);
 	}
 	
 	public function commit():Void {
@@ -105,7 +120,7 @@ class DataObject extends DataCore {
 	
 	public function clone():DataObject {
 		var o:DataObject = new DataObject(_name);
-		o.parse(toString());
+		o.parse(stringify());
 		return o;
 	}
 	

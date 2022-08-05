@@ -21,15 +21,15 @@ class Test_JS{
 		DataCollection.map(DataObject, 'animal', ['name']);
 		
 		var t:String = [
-			"user 000001 0:alpha|1:user@alpha.com",
+			"user 0:alpha|1:user@alpha.com",
 			"@color 0:yellow",
 			"@color 0:blue",
 			"@animal 0:dog",
 			"@animal 0:cat",
-			"user 000002 0:beta|1:user@beta.com",
+			"user 0:beta|1:user@beta.com",
 			"@color 0:gray",
 			"@animal 0:cat",
-			"user 000003 0:gama|1:user@gama.com",
+			"user 0:gama|1:user@gama.com",
 			"@color 0:cyan",
 			"@color 0:black",
 			"@color 0:white",
@@ -37,7 +37,7 @@ class Test_JS{
 			"@animal 0:cat",
 			"@animal 0:horse",
 			"@animal 0:pig",
-			"user 000004 0:omega|1:user@omega.com",
+			"user 0:omega|1:user@omega.com",
 			"@animal 0:bird",
 		].join('\n');
 		
@@ -54,7 +54,7 @@ class Test_JS{
 		
 		//trace('Data Match? \r\n\t' + (t == rA && t == rB));
 		
-		trace(colA.getList());
+		trace(colA.list());
 		
 		
 	}

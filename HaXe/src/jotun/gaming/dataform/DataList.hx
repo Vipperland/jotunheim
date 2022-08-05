@@ -17,10 +17,6 @@ class DataList extends DataCore {
 		return _inserts;
 	}
 	
-	public function exists(id:String) {
-		return Reflect.hasField(_indexed, id);
-	}
-	
 	public function each(handler:DataObject->Bool){
 		Dice.Values(_inserts, function(v:DataObject){
 			return v != null && handler(v);
@@ -41,11 +37,11 @@ class DataList extends DataCore {
 		});
 	}
 	
-	public function toString(?changes:Bool):String {
+	public function stringify(?changes:Bool):String {
 		var r:String = '';
 		var c:String = null;
 		each(cast function(object:DataObject){
-			c = object.toString(changes);
+			c = object.stringify(changes);
 			if (c != null){
 				r += (r.length > 0 ? '\n' : '') + c;
 			}
