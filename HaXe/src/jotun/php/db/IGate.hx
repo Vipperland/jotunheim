@@ -39,6 +39,12 @@ interface IGate {
 	public function isOpen () : Bool;
 	
 	/**
+	 * If log is enabled
+	 * @return
+	 */
+	public function isLogEnabled () : Bool;
+	
+	/**
 	   Name of Selected database
 	   @return
 	**/

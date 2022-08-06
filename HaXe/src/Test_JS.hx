@@ -1,8 +1,8 @@
 package;
 
 import haxe.Json;
-import jotun.gaming.dataform.DataCollection;
-import jotun.gaming.dataform.DataObject;
+import jotun.gaming.dataform.Pulsar;
+import jotun.gaming.dataform.Spark;
 import jotun.idb.WebDB;
 import jotun.serial.Packager;
 
@@ -16,9 +16,9 @@ class Test_JS{
 	
 	static public function main() {
 		
-		DataCollection.map(DataObject, 'user', ['name', 'email']);
-		DataCollection.map(DataObject, 'color', ['name']);
-		DataCollection.map(DataObject, 'animal', ['name']);
+		Pulsar.map(Spark, 'user', ['name', 'email']);
+		Pulsar.map(Spark, 'color', ['name']);
+		Pulsar.map(Spark, 'animal', ['name']);
 		
 		var t:String = [
 			"user 0:alpha|1:user@alpha.com",
@@ -41,8 +41,8 @@ class Test_JS{
 			"@animal 0:bird",
 		].join('\n');
 		
-		var colA:DataCollection = new DataCollection();
-		var colB:DataCollection = new DataCollection();
+		var colA:Pulsar = new Pulsar();
+		var colB:Pulsar = new Pulsar();
 		
 		var cA:Int = colA.parse(t);
 		var rA:String = colA.stringify(true);
@@ -54,7 +54,7 @@ class Test_JS{
 		
 		//trace('Data Match? \r\n\t' + (t == rA && t == rB));
 		
-		trace(colA.list());
+		trace(colA.link());
 		
 		
 	}

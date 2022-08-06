@@ -1,6 +1,7 @@
 package jotun.gaming.dataform;
 import jotun.errors.Error;
 import jotun.serial.Packager;
+import jotun.signals.Signals;
 import jotun.tools.Key;
 import jotun.utils.Dice;
 #if js
@@ -13,8 +14,8 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("DataCollection")
-class DataCollection {
+@:expose("Pulsar")
+class Pulsar {
 	
 	public static var BLOCK_SIZE:Int = 64;
 	
@@ -22,58 +23,78 @@ class DataCollection {
 	
 	private static var _dictio:Dynamic = {};
 	
-	public static function map(o:Dynamic, name:String, props:Array<String>):Void {
-		Reflect.setField(_dictio, name, {'c':o == null ? DataObject : DataObject.inheritance(o), p:props});
+	public static function map(name:String, props:Array<String>, object:Dynamic = null, indexable:Bool = true, tageable:Bool = true):Void {
+		if(object != null){
+			#if js
+				object = Spark.inheritance(object);
+			#end
+				
+		}else{
+			object = Spark;
+		}
+		Reflect.setField(_dictio, name, {'Construct':object == null ? Spark : object, Properties:props, Indexable: indexable, Tag:tageable });
 	}
 	
-	public static function construct(name:String, r:Array<String>):DataObject {
-		var o:DataObject = null;
+	public static function construct(name:String, r:Array<String>):Spark {
+		var O:Dynamic = null;
+		var o:Spark = null;
+		var indexable:Bool;
 		if (Reflect.hasField(_dictio, name)){
-			var O:Dynamic = Reflect.field(_dictio, name);
-			o = Syntax.construct(O.c, name, O.p);
+			O = Reflect.field(_dictio, name);
+			if (O.Tag){
+				o = Syntax.construct(O.Construct, name);
+			}else{
+				o = Syntax.construct(O.Construct);
+			}
 		}
 		if (o != null){
 			if (r.length == 3){
 				o.id = r[1];
 				o.merge(r[2]);
 			}else if (r.length == 2){
-				o.id = Key.GEN(ID_SIZE);
+				if (O.Indexable){
+					o.id = Key.GEN(ID_SIZE);
+				}
 				o.merge(r[1]);
 			}
 		}
 		return o;
 	}
 	
-	public static function properties(name:String):Array<String> {
-		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).p : null;
+	public static function isIndexable(name:String):Bool {
+		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Indexable : false;
 	}
 	
-	private var _list:Dynamic;
+	public static function propertiesOf(name:String):Array<String> {
+		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Properties : null;
+	}
 	
-	private function _getOrCreate(name:String):DataList {
-		var list:DataList = Reflect.field(_list, name);
-		if (list == null){
-			list = new DataList(name);
-			Reflect.setField(_list, name, list);
+	private var _open_links:Dynamic;
+	
+	private function _getOrCreate(name:String):PulsarLink {
+		var x:PulsarLink = Reflect.field(_open_links, name);
+		if (x == null){
+			x = new PulsarLink(name);
+			Reflect.setField(_open_links, name, x);
 		}
-		return list;
+		return x;
 	}
 	
-	private function _exists(o:DataObject, r:Array<String>):Bool {
+	private function _exists(o:Spark, r:Array<String>):Bool {
 		if (r.length >= 2){
-			var list:DataList = list(r[0]);
-			if (list != null){
-				return list.exists(r[1]);
+			var x:PulsarLink = link(r[0]);
+			if (x != null){
+				return x.exists(r[1]);
 			}
 		}
 		return false;
 	}
 	
-	private function _grab(r:Array<String>):DataObject {
+	private function _grab(r:Array<String>):Spark {
 		if (r.length >= 2){
-			var list:DataList = list(r[0]);
-			if (list != null){
-				return list.get(r[1]);
+			var x:PulsarLink = link(r[0]);
+			if (x != null){
+				return x.get(r[1]);
 			}
 		}
 		return null;
@@ -81,25 +102,48 @@ class DataCollection {
 	
 	private function _delete(r:Array<String>):Void {
 		if (r.length == 2){
-			var list:DataList = list(r[0]);
-			if (list != null){
-				_onListDelete(list.delete(r[1], true));
+			var x:PulsarLink = link(r[0]);
+			if (x != null){
+				_onLinkDelete(x.delete(r[1], true));
 			}
 		}
 	}
 	
-	private function _onListDelete(o:DataObject):Void {
-		
+	private function _onLinkAdd(o:Spark):Void {
+		signals.call(PulsarSignals.LINK_CREATED, o);
 	}
 	
-	private function _onObjectDelete(o:DataObject):Void {
+	private function _onObjectAdd(o:Spark):Void {
 		if (o != null){
-			
+			signals.call(PulsarSignals.SPARK_CREATED, o);
 		}
 	}
 	
+	private function _onLinkDelete(o:Spark):Void {
+		signals.call(PulsarSignals.LINK_DELETED, o);
+	}
+	
+	private function _onObjectDelete(o:Spark):Void {
+		if (o != null){
+			signals.call(PulsarSignals.SPARK_DELETED, o);
+		}
+	}
+	
+	private function _onLinkUpdate(o:Spark):Void {
+		signals.call(PulsarSignals.LINK_UPDATED, o);
+	}
+	
+	private function _onObjectUpdate(o:Spark):Void {
+		if (o != null){
+			signals.call(PulsarSignals.SPARK_UPDATED, o);
+		}
+	}
+	
+	public var signals:Signals;
+	
 	public function new(?data:String) {
-		_list = {};
+		_open_links = {};
+		signals = new Signals(this);
 		if (data != null){
 			parse(data);
 		}
@@ -110,15 +154,17 @@ class DataCollection {
 	   @param	o
 	   @return
 	**/
-	public function add(o:DataObject):Bool {
+	public function insert(o:Spark):Bool {
 		var name:String = o.getName();
 		if(name != null && name.length > 0){
-			var list:DataList = _getOrCreate(name);
+			var x:PulsarLink = _getOrCreate(name);
 			// Create an unique ID
-			while (o.id == null && !list.exists(o.id)){
-				o.id = Key.GEN(ID_SIZE);
+			if(isIndexable(name)){
+				while (o.id == null && !x.exists(o.id)){
+					o.id = Key.GEN(ID_SIZE);
+				}
 			}
-			list.insert(o);
+			x.insert(o);
 		}else{
 			o = null;
 		}
@@ -146,23 +192,26 @@ class DataCollection {
 		}
 		var len:Int = 0;
 		var i:Array<String> = data.split('\n');
-		var l:DataObject = null;
+		var l:Spark = null;
 		Dice.Values(i, function(v:String){
 			var r:Array<String> = v.split(' ');
 			if (r.length > 0){
 				v = r[0];
 				var cmd:String = v.substring(0, 1);
-				var o:DataObject = null;
+				var o:Spark = null;
 				switch(cmd){
 					case '>' : {
 						if (l != null){
 							v = v.substring(1, v.length);
 							if (r.length == 3 && l.exists(r[1])){
-								l.get(r[1]).merge(r[2]);
+								o = l.get(r[1]);
+								o.merge(r[2]);
+								_onObjectUpdate(o);
 							}else{
 								o = construct(v, r);
 								if (l.insert(o)){
 									len += 1;
+									_onObjectAdd(o);
 								}
 							}
 						}
@@ -184,16 +233,18 @@ class DataCollection {
 							o = _grab(r);
 							if (r.length == 3){
 								o.merge(r[2]);
+								_onLinkUpdate(o);
 							}
 							l = o;
 						}else{
 							o = construct(v, r);
-							if (add(o)){
+							if (insert(o)){
 								if (l != null){
 									l.refresh();
 								}
 								l = o;
 								len += 1;
+								_onLinkAdd(o);
 							}else{
 								l = null;
 							}
@@ -229,9 +280,16 @@ class DataCollection {
 	
 	private function _toString(?encode:Bool, ?changes:Bool, ?name:String):String {
 		var r:String = '';
-		Dice.Values(_list, function(list:DataList){
+		var c:String = null;
+		Dice.Values(_open_links, function(list:PulsarLink){
 			if (name == null || list.is(name)){
-				r += list.stringify(changes);
+				c = list.stringify(changes);
+				if (c != null){
+					if (r.length > 0){
+						r += '\n';
+					}
+					r += c;
+				}
 			}
 		});
 		if (encode){
@@ -256,20 +314,22 @@ class DataCollection {
 		return _toString(encode, true, name);
 	}
 	
-	public function list(?name:String):DataList {
-		if (name != null){
-			return Reflect.field(_list, name);
-		}else{
-			return _list;
-		}
+	public function link(name:String):PulsarLink {
+		return Reflect.field(_open_links, name);
 	}
 	
-	public function each(handler:DataList->Bool):Void {
-		Dice.Values(_list, handler);
+	public function links():Array<PulsarLink> {
+		var r:Array<PulsarLink> = [];
+		Dice.Values(_open_links, r.push);
+		return r;
+	}
+	
+	public function each(handler:PulsarLink->Bool):Void {
+		Dice.Values(_open_links, handler);
 	}
 	
 	public function refresh(?name:String):Void {
-		Dice.Values(_list, function(list:DataList){
+		Dice.Values(_open_links, function(list:PulsarLink){
 			if (name == null || list.is(name)){
 				list.refresh();
 			}
@@ -277,13 +337,13 @@ class DataCollection {
 	}
 	
 	public function commit():Void {
-		Dice.Values(_list, function(list:DataList){
+		Dice.Values(_open_links, function(list:PulsarLink){
 			list.commit();
 		});
 	}
 	
-	public function clone():DataCollection {
-		var o:DataCollection = new DataCollection();
+	public function clone():Pulsar {
+		var o:Pulsar = new Pulsar();
 		o.parse(toString(false));
 		return o;
 	}

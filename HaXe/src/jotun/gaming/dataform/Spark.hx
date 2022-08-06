@@ -1,27 +1,31 @@
 package jotun.gaming.dataform;
 import jotun.utils.Dice;
-import js.Syntax;
+#if js
+	import js.Syntax;
+#end
 
 /**
  * ...
  * @author Rim Project
  */
-@:expose("DataObject")
-class DataObject extends DataCore {
+@:expose("Spark")
+class Spark extends SparkCore {
 	
-	public static function inheritance(obj:Dynamic):Dynamic{
-		if (!Syntax.code("DataObject.prototype.isPrototypeOf({0})", obj)){
-			obj.prototype = Syntax.code("Object.create(DataObject.prototype)");
+	#if js
+		public static function inheritance(obj:Dynamic):Dynamic{
+			if (!Syntax.code("Spark.prototype.isPrototypeOf({0})", obj)){
+				obj.prototype = Syntax.code("Object.create(Spark.prototype)");
+			}
+			return obj;
 		}
-		return obj;
-	}
-	
+	#end
+		
 	private var _changes:Array<String>;
 	
-	public var id:Dynamic;
+	public var id:String;
 	
 	private function _getProps():Array<String> {
-		return DataCollection.properties(_name);
+		return Pulsar.propertiesOf(_name);
 	}
 	
 	public function new(name:String) {
@@ -36,9 +40,9 @@ class DataObject extends DataCore {
 		var r:String = null;
 		var c:String = null;
 		if (!changes || isChanged()){
-			r = DataIO.stringify(this, _name, changes ? _changes : _getProps());
+			r = SparkWriter.stringify(this, _name, changes ? _changes : _getProps());
 		}
-		Dice.Values(_inserts, function(v:DataObject){
+		Dice.Values(_inserts, function(v:Spark){
 			if (v != null){
 				c = v.stringify(changes);
 				if (c != null){
@@ -75,7 +79,7 @@ class DataObject extends DataCore {
 				data = i[1];
 			}
 			if (data != null){
-				DataIO.parse(this, data, _getProps(), false);
+				SparkWriter.parse(this, data, _getProps(), false);
 				return true;
 			}
 		}
@@ -87,7 +91,7 @@ class DataObject extends DataCore {
 	   @param	data
 	**/
 	public function merge(data:String):Void {
-		DataIO.parse(this, data, _getProps(), true);
+		SparkWriter.parse(this, data, _getProps(), true);
 	}
 	
 	public function set(prop:String, value:Dynamic):Void {
@@ -118,10 +122,14 @@ class DataObject extends DataCore {
 		_deletions = [];
 	}
 	
-	public function clone():DataObject {
-		var o:DataObject = new DataObject(_name);
+	public function clone():Spark {
+		var o:Spark = new Spark(_name);
 		o.parse(stringify());
 		return o;
+	}
+	
+	public function isIndexable():Bool {
+		return Pulsar.isIndexable(_name);
 	}
 	
 }

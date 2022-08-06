@@ -5,11 +5,11 @@ import jotun.utils.Dice;
  * ...
  * @author 
  */
-class DataCore {
+class SparkCore {
 
 	private var _name:String;
 	
-	private var _inserts:Array<DataObject>;
+	private var _inserts:Array<Spark>;
 	
 	private var _deletions:Array<String>;
 	
@@ -26,10 +26,10 @@ class DataCore {
 		return  r;
 	}
 	
-	private function _delete(id:Dynamic):DataObject {
+	private function _delete(id:Dynamic):Spark {
 		var index:Int = Std.isOfType(id, String) ? Reflect.field(_indexed, id) : id;
 		if (index != null){
-			var object:DataObject = _inserts[index];
+			var object:Spark = _inserts[index];
 			if (object != null){
 				_inserts[index] = null;
 				Reflect.deleteField(_indexed, id);
@@ -58,7 +58,7 @@ class DataCore {
 		return Reflect.hasField(_indexed, id);
 	}
 	
-	public function get(id:Dynamic):DataObject {
+	public function get(id:Dynamic):Spark {
 		var index:Int = Std.isOfType(id, String) ? Reflect.field(_indexed, id) : id;
 		if (index != null){
 			return _inserts[index];
@@ -73,22 +73,24 @@ class DataCore {
 	   @param	o
 	   @return
 	**/
-	public function insert(o:DataObject):Bool {
+	public function insert(o:Spark):Bool {
 		if (canInsert(o)){
 			var index:Int = _inserts.length;
 			_inserts[index] = o;
-			Reflect.setField(_indexed, o.id, index);
+			if (o.isIndexable()){
+				Reflect.setField(_indexed, o.id, index);
+			}
 			onInsert(o);
 		}
 		return true;
 	}
 	
-	public function canInsert(o:DataObject):Bool {
+	public function canInsert(o:Spark):Bool {
 		// override
 		return true;
 	}
 	
-	public function onInsert(o:DataObject):Void {
+	public function onInsert(o:Spark):Void {
 		// override
 	}
 	
@@ -96,7 +98,7 @@ class DataCore {
 		// override
 	}
 	
-	public function onDelete(o:DataObject):Void {
+	public function onDelete(o:Spark):Void {
 		
 	}
 	
@@ -105,7 +107,7 @@ class DataCore {
 		if(max > 0){
 			var index:Int = 0;
 			var cursor:Int = 0;
-			var object:DataObject;
+			var object:Spark;
 			while(cursor < max){
 				if (_inserts[cursor] != null){
 					if (cursor != index){
@@ -126,8 +128,8 @@ class DataCore {
 		}
 	}
 	
-	public function delete(id:Dynamic, ?silent:Bool):DataObject {
-		var o:DataObject = _delete(id);
+	public function delete(id:Dynamic, ?silent:Bool):Spark {
+		var o:Spark = _delete(id);
 		if (o != null){
 			if(!silent){
 				_deletions[_deletions.length] = o.getName() + ' ' + o.id;
