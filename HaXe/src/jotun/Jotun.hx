@@ -27,7 +27,6 @@ import jotun.utils.Dice;
 	import jotun.tools.Agent;
 #elseif php
 	import php.Lib;
-	import jotun.data.DataCache;
 	import jotun.php.db.Gate;
 	import jotun.php.db.IGate;
 	import jotun.php.data.Cache;

@@ -1,0 +1,101 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Token {
+	/**
+	 * @var string
+	 */
+	public $db;
+	/**
+	 * @var string
+	 */
+	public $host;
+	/**
+	 * @var int[]|\Array_hx
+	 */
+	public $options;
+	/**
+	 * @var string
+	 */
+	public $pass;
+	/**
+	 * @var string
+	 */
+	public $user;
+
+	/**
+	 * @param string $host
+	 * @param int $port
+	 * @param string $user
+	 * @param string $pass
+	 * @param string $db
+	 * @param int[]|\Array_hx $options
+	 * 
+	 * @return Token
+	 */
+	public static function from ($host, $port, $user, $pass, $db, $options = null) {
+		#src/jotun/php/db/Token.hx:10: characters 3-56
+		return new Token($host, $port, $user, $pass, $db, $options);
+	}
+
+	/**
+	 * @param string $db
+	 * @param string $user
+	 * @param string $pass
+	 * @param int[]|\Array_hx $options
+	 * 
+	 * @return Token
+	 */
+	public static function localhost ($db, $user = "root", $pass = "", $options = null) {
+		#src/jotun/php/db/Token.hx:14: characters 3-63
+		if ($user === null) {
+			$user = "root";
+		}
+		if ($pass === null) {
+			$pass = "";
+		}
+		return new Token("localhost", 3306, $user, $pass, $db, $options);
+	}
+
+	/**
+	 * @param string $host
+	 * @param int $port
+	 * @param string $user
+	 * @param string $pass
+	 * @param string $db
+	 * @param int[]|\Array_hx $options
+	 * 
+	 * @return void
+	 */
+	public function __construct ($host, $port, $user, $pass, $db, $options = null) {
+		#src/jotun/php/db/Token.hx:24: characters 3-15
+		$this->db = $db;
+		#src/jotun/php/db/Token.hx:25: characters 3-25
+		$this->options = $options;
+		#src/jotun/php/db/Token.hx:26: characters 3-19
+		$this->pass = $pass;
+		#src/jotun/php/db/Token.hx:27: characters 3-19
+		$this->user = $user;
+		#src/jotun/php/db/Token.hx:28: characters 49-53
+		$tmp = null;
+		if ($port === null) {
+			$tmp = "null";
+		} else {
+			$int = $port;
+			$tmp = \Std::string(($int < 0 ? 4294967296.0 + $int : $int + 0.0));
+		}
+		#src/jotun/php/db/Token.hx:28: characters 3-89
+		$this->host = "mysql:host=" . ($host??'null') . ";port=" . ($tmp??'null') . ";dbname=" . ($db??'null') . ";charset=UTF8";
+	}
+}
+
+Boot::registerClass(Token::class, 'jotun.php.db.Token');

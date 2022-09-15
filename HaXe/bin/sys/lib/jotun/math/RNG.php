@@ -1,0 +1,107 @@
+<?php
+/**
+ */
+
+namespace jotun\math;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rim Project
+ */
+class RNG {
+	/**
+	 * @var float
+	 */
+	public $_l;
+	/**
+	 * @var float
+	 */
+	public $_s;
+
+	/**
+	 * @param float $seed
+	 * 
+	 * @return void
+	 */
+	public function __construct ($seed = null) {
+		#src/jotun/math/RNG.hx:14: lines 14-16
+		if ($seed === null) {
+			#src/jotun/math/RNG.hx:15: characters 4-24
+			$seed = \mt_rand() / \mt_getrandmax();
+		}
+		#src/jotun/math/RNG.hx:17: characters 3-12
+		$this->set($seed);
+	}
+
+	/**
+	 * @param int $a
+	 * @param int $b
+	 * 
+	 * @return int
+	 */
+	public function between ($a, $b) {
+		#src/jotun/math/RNG.hx:35: characters 10-42
+		return (int)(($this->get() * (++$b - $a) + $a));
+	}
+
+	/**
+	 * @return float
+	 */
+	public function get () {
+		#src/jotun/math/RNG.hx:25: characters 3-28
+		$this->_l = \sin($this->_s) * 10000;
+		#src/jotun/math/RNG.hx:26: characters 3-12
+		$this->_s += .01;
+		#src/jotun/math/RNG.hx:27: lines 27-29
+		if ($this->_s < 0) {
+			#src/jotun/math/RNG.hx:28: characters 4-12
+			$this->_s -= $this->_s;
+		}
+		#src/jotun/math/RNG.hx:30: characters 3-5
+		$tmp = $this;
+		#src/jotun/math/RNG.hx:30: characters 3-23
+		$tmp->_l = $tmp->_l - (int)(\floor($this->_l));
+		#src/jotun/math/RNG.hx:31: characters 3-12
+		return $this->_l;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function last () {
+		#src/jotun/math/RNG.hx:47: characters 3-12
+		return $this->_l;
+	}
+
+	/**
+	 * @param int $a
+	 * 
+	 * @return int
+	 */
+	public function max ($a) {
+		#src/jotun/math/RNG.hx:39: characters 10-32
+		return (int)(($this->get() * ++$a));
+	}
+
+	/**
+	 * @return float
+	 */
+	public function seed () {
+		#src/jotun/math/RNG.hx:43: characters 3-12
+		return $this->_s;
+	}
+
+	/**
+	 * @param float $seed
+	 * 
+	 * @return void
+	 */
+	public function set ($seed) {
+		#src/jotun/math/RNG.hx:21: characters 3-12
+		$this->_s = $seed;
+	}
+}
+
+Boot::registerClass(RNG::class, 'jotun.math.RNG');

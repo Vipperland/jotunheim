@@ -1322,15 +1322,6 @@ jotun_net_Domain.prototype = {
 		var h = this.host.split(".");
 		return h.splice(h.length - len,len).join(".");
 	}
-	,allocate: function(expire) {
-		if(expire == null) {
-			expire = 30;
-		}
-		if(this.data == null) {
-			this.data = new jotun_data_DataCache(this.host,"/",86400 * expire);
-		}
-		return this.data;
-	}
 	,reload: function(force) {
 		if(force == null) {
 			force = false;
@@ -3580,129 +3571,6 @@ jotun_css_XCode.motion = function(name,time,values) {
 	css += "} animation: " + name + " " + time + "s linear infinite; /*EOF " + name + "*/";
 	jotun_css_XCode._motions.appendHtml(css);
 };
-var jotun_data_IDataCache = function() { };
-jotun_data_IDataCache.__name__ = "jotun.data.IDataCache";
-jotun_data_IDataCache.prototype = {
-	__class__: jotun_data_IDataCache
-	,__properties__: {get_data:"get_data"}
-};
-var jotun_data_DataCache = $hx_exports["J_DataCache"] = function(name,path,expire,base64) {
-	if(expire == null) {
-		expire = 0;
-	}
-	this._name = name;
-	this._path = path;
-	this._expire = expire;
-	this._base64 = base64;
-	this.clear();
-};
-jotun_data_DataCache.__name__ = "jotun.data.DataCache";
-jotun_data_DataCache.__interfaces__ = [jotun_data_IDataCache];
-jotun_data_DataCache.prototype = {
-	get_data: function() {
-		return this._DB;
-	}
-	,_now: function() {
-		return new Date().getTime();
-	}
-	,clear: function(p) {
-		if(p != null) {
-			if(p != "__time__") {
-				Reflect.deleteField(this._DB,p);
-			}
-		} else {
-			this._DB = { };
-			if(this._expire > 0) {
-				this._DB.__time__ = this._now();
-			}
-			js_Cookie.remove(this._name,this._path);
-		}
-		return this;
-	}
-	,set: function(p,v) {
-		this._DB[p] = v;
-		return this;
-	}
-	,merge: function(p,v) {
-		if(((v) instanceof Array) && Object.prototype.hasOwnProperty.call(this._DB,this._name)) {
-			var t = this.get(p);
-			if(((t) instanceof Array)) {
-				return this.set(p,t.concat(v));
-			}
-		}
-		this._DB[p] = v;
-		return this;
-	}
-	,get: function(id) {
-		var d = id != null ? Reflect.field(this._DB,id) : null;
-		if(d == null) {
-			d = { };
-			this.set(id,d);
-		}
-		return d;
-	}
-	,exists: function(name) {
-		if(name != null) {
-			return Object.prototype.hasOwnProperty.call(this._DB,name);
-		} else {
-			return this._loaded;
-		}
-	}
-	,save: function() {
-		var data = jotun_serial_Packager.encodeBase64(this._DB);
-		js_Cookie.set(this._name,data,this._expire > 0 ? this._expire : 2592000,this._path);
-		return this;
-	}
-	,_sign: function(add) {
-		if(add) {
-			this._DB.__time__ = this._now();
-		} else {
-			this.__time__ = this._expire > 0 ? this._DB.__time__ : 0;
-			Reflect.deleteField(this._DB,"__time__");
-		}
-	}
-	,load: function() {
-		this._DB = null;
-		if(js_Cookie.exists(this._name)) {
-			var a = haxe_crypto_Base64.decode(js_Cookie.get(this._name));
-			haxe_Log.trace(a,{ fileName : "src/jotun/data/DataCache.hx", lineNumber : 181, className : "jotun.data.DataCache", methodName : "load"});
-			this._DB = jotun_serial_Packager.decodeBase64(js_Cookie.get(this._name),true);
-			haxe_Log.trace(this._DB,{ fileName : "src/jotun/data/DataCache.hx", lineNumber : 183, className : "jotun.data.DataCache", methodName : "load"});
-		}
-		if(this._DB == null || this._expire != 0 && (this._DB.__time__ == null || this._now() - this._DB.__time__ >= this._expire)) {
-			this._DB = { };
-			this._loaded = false;
-		} else {
-			this._sign(false);
-			this._loaded = true;
-		}
-		return this._loaded;
-	}
-	,refresh: function() {
-		this.__time__ = this._now();
-		return this;
-	}
-	,json: function(print) {
-		var result = jotun_serial_JsonTool.stringify(this._DB,null," ");
-		if(print) {
-			if(print) {
-				haxe_Log.trace(result,{ fileName : "src/jotun/data/DataCache.hx", lineNumber : 209, className : "jotun.data.DataCache", methodName : "json"});
-			}
-		}
-		return result;
-	}
-	,base64: function(print) {
-		var result = jotun_serial_Packager.encodeBase64(this._DB);
-		if(print) {
-			if(print) {
-				haxe_Log.trace(result,{ fileName : "src/jotun/data/DataCache.hx", lineNumber : 215, className : "jotun.data.DataCache", methodName : "base64"});
-			}
-		}
-		return result;
-	}
-	,__class__: jotun_data_DataCache
-	,__properties__: {get_data:"get_data"}
-};
 var jotun_data_IDataSet = function() { };
 jotun_data_IDataSet.__name__ = "jotun.data.IDataSet";
 jotun_data_IDataSet.prototype = {
@@ -3986,6 +3854,12 @@ jotun_data_Fragments.prototype = {
 		return this;
 	}
 	,__class__: jotun_data_Fragments
+};
+var jotun_data_IDataCache = function() { };
+jotun_data_IDataCache.__name__ = "jotun.data.IDataCache";
+jotun_data_IDataCache.prototype = {
+	__class__: jotun_data_IDataCache
+	,__properties__: {get_data:"get_data"}
 };
 var jotun_dom_A = $hx_exports["J_dom_A"] = function(q) {
 	if(q == null) {
@@ -6005,7 +5879,7 @@ var jotun_gaming_actions_Action = $hx_exports["J_Action"] = function(type,data) 
 	var i = 0;
 	jotun_utils_Dice.All(data.requirements,function(p,v) {
 		if(typeof(v) == "string") {
-			v = jotun_gaming_actions_Requirement.get(v);
+			v = jotun_gaming_actions_EventController.loadRequirement(v);
 		}
 		if(v != null) {
 			if(((v) instanceof jotun_gaming_actions_Requirement)) {
@@ -6021,11 +5895,14 @@ var jotun_gaming_actions_Action = $hx_exports["J_Action"] = function(type,data) 
 		this.target = this.requirements.length;
 	}
 	if(jotun_tools_Utils.isValid(data.id)) {
-		jotun_gaming_actions_Action.cache[data.id] = this;
+		jotun_gaming_actions_EventController.saveAction(this);
 	}
 };
 jotun_gaming_actions_Action.__name__ = "jotun.gaming.actions.Action";
-jotun_gaming_actions_Action.get = function(id) {
+jotun_gaming_actions_Action.save = function(action) {
+	jotun_gaming_actions_Action.cache[action.id] = action;
+};
+jotun_gaming_actions_Action.load = function(id) {
 	return Reflect.field(jotun_gaming_actions_Action.cache,id);
 };
 jotun_gaming_actions_Action._log = function(evt,context,success,score,position) {
@@ -6157,12 +6034,111 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 	}
 	,__class__: jotun_gaming_actions_ActionQuery
 });
+var jotun_gaming_actions_IEventDispatcher = function() { };
+jotun_gaming_actions_IEventDispatcher.__name__ = "jotun.gaming.actions.IEventDispatcher";
+jotun_gaming_actions_IEventDispatcher.prototype = {
+	__class__: jotun_gaming_actions_IEventDispatcher
+};
+var jotun_gaming_actions_EventController = $hx_exports["J_EventController"] = function(data,debug) {
+	this._chain = [];
+	this._index = 0;
+	var _gthis = this;
+	this._debug = debug == true;
+	if(data != null) {
+		this.events = data;
+		jotun_utils_Dice.All(this.events,function(p,v) {
+			jotun_gaming_actions_Events.patch(_gthis);
+		});
+	}
+};
+jotun_gaming_actions_EventController.__name__ = "jotun.gaming.actions.EventController";
+jotun_gaming_actions_EventController.__interfaces__ = [jotun_gaming_actions_IEventDispatcher];
+jotun_gaming_actions_EventController.cacheController = function(saveAction,loadAction,saveRequirement,loadRequirement) {
+	jotun_gaming_actions_EventController._wAction = saveAction;
+	jotun_gaming_actions_EventController._rAction = loadAction;
+	jotun_gaming_actions_EventController._wRequirement = saveRequirement;
+	jotun_gaming_actions_EventController._rRequirement = loadRequirement;
+};
+jotun_gaming_actions_EventController.loadAction = function(id) {
+	if(jotun_gaming_actions_EventController._rAction != null) {
+		return jotun_gaming_actions_EventController._rAction(id);
+	} else {
+		return jotun_gaming_actions_Action.load(id);
+	}
+};
+jotun_gaming_actions_EventController.saveAction = function(a) {
+	if(jotun_gaming_actions_EventController._wAction != null) {
+		jotun_gaming_actions_EventController._wAction(a);
+	} else {
+		jotun_gaming_actions_Action.save(a);
+	}
+};
+jotun_gaming_actions_EventController.loadRequirement = function(id) {
+	if(jotun_gaming_actions_EventController._rRequirement != null) {
+		return jotun_gaming_actions_EventController._rRequirement(id);
+	} else {
+		return jotun_gaming_actions_Requirement.load(id);
+	}
+};
+jotun_gaming_actions_EventController.saveRequirement = function(r) {
+	if(jotun_gaming_actions_EventController._wRequirement != null) {
+		jotun_gaming_actions_EventController._wRequirement(r);
+	} else {
+		jotun_gaming_actions_Requirement.save(r);
+	}
+};
+jotun_gaming_actions_EventController.prototype = {
+	_onCallBefore: function(context) {
+	}
+	,_onCallAfter: function(context) {
+	}
+	,_onChainEnd: function(chain) {
+	}
+	,_createContext: function(data,name) {
+		return { name : name, debug : this._debug, log : [], ident : 0, ticks : 0, origin : data, history : []};
+	}
+	,setDebug: function(mode) {
+		this._debug = mode;
+	}
+	,call: function(name,data) {
+		if(Object.prototype.hasOwnProperty.call(this.events,name)) {
+			var context = this._createContext(data,name);
+			context.chain = this._index;
+			this._chain[this._chain.length] = context;
+			if(this._index > 0) {
+				context.parent = this._chain[this._index - 1];
+			}
+			++this._index;
+			this._onCallBefore(context);
+			Reflect.field(this.events,name).run(context);
+			--this._index;
+			this._onCallAfter(context);
+			if(this._index == 0) {
+				this._onChainEnd(this._chain);
+				this._chain = [];
+			}
+			return true;
+		} else {
+			if(this._debug) {
+				var context = this._createContext(data,name);
+				this._onCallBefore(context);
+				var context1 = context.log;
+				var tmp = jotun_tools_Utils.prefix("",context.ident + context.chain,"\t") + "≈ EVENT " + name + " [!] Not Found on ";
+				var c = js_Boot.getClass(this);
+				context1.push(tmp + c.__name__);
+				this._onCallAfter(context);
+			}
+			return false;
+		}
+	}
+	,__class__: jotun_gaming_actions_EventController
+};
 var jotun_gaming_actions_Events = $hx_exports["J_Events"] = function(type,data) {
 	this._type = type;
 	this._init(data);
 };
 jotun_gaming_actions_Events.__name__ = "jotun.gaming.actions.Events";
-jotun_gaming_actions_Events.patch = function(data,origin) {
+jotun_gaming_actions_Events.patch = function(data) {
 	if(data.events != null) {
 		if(!data.events.patched) {
 			data.events.patched = true;
@@ -6184,15 +6160,19 @@ jotun_gaming_actions_Events.prototype = {
 		var _gthis = this;
 		this._data = [];
 		var i = 0;
+		var r = { };
 		jotun_utils_Dice.All(data,function(p,v) {
 			if(typeof(v) == "string") {
-				v = jotun_gaming_actions_Action.get(v);
+				v = jotun_gaming_actions_EventController.loadAction(v);
 			}
-			if(v != null) {
+			if(v != null && (v.id == null || !Object.prototype.hasOwnProperty.call(r,v.id))) {
 				if(((v) instanceof jotun_gaming_actions_Action)) {
 					_gthis._data[i] = v;
 				} else {
 					_gthis._data[i] = new jotun_gaming_actions_Action(_gthis._type + "[" + p + "]",v);
+				}
+				if(v.id != null) {
+					r[v.id] = 1;
 				}
 				i += 1;
 			}
@@ -6264,11 +6244,14 @@ var jotun_gaming_actions_Requirement = $hx_exports["J_Requirement"] = function(t
 		this.target = data.target | 0;
 	}
 	if(jotun_tools_Utils.isValid(data.id)) {
-		jotun_gaming_actions_Requirement.cache[data.id] = this;
+		jotun_gaming_actions_EventController.saveRequirement(this);
 	}
 };
 jotun_gaming_actions_Requirement.__name__ = "jotun.gaming.actions.Requirement";
-jotun_gaming_actions_Requirement.get = function(id) {
+jotun_gaming_actions_Requirement.save = function(requirement) {
+	jotun_gaming_actions_Requirement.cache[requirement.id] = requirement;
+};
+jotun_gaming_actions_Requirement.load = function(id) {
 	return Reflect.field(jotun_gaming_actions_Requirement.cache,id);
 };
 jotun_gaming_actions_Requirement._log = function(evt,context,success,score,reversed,position) {
@@ -6374,86 +6357,134 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
-var jotun_gaming_dataform_DataCollection = $hx_exports["DataCollection"] = function(data) {
-	this._list = { };
-	if(data != null) {
+var jotun_gaming_dataform_Pulsar = $hx_exports["Pulsar"] = function(data) {
+	this._open_links = { };
+	this.signals = new jotun_signals_Signals(this);
+	if(data != null && data.length > 0) {
 		this.parse(data);
 	}
 };
-jotun_gaming_dataform_DataCollection.__name__ = "jotun.gaming.dataform.DataCollection";
-jotun_gaming_dataform_DataCollection.map = function(o,name,props) {
-	jotun_gaming_dataform_DataCollection._dictio[name] = { "c" : o == null ? jotun_gaming_dataform_DataObject : jotun_gaming_dataform_DataObject.inheritance(o), p : props};
+jotun_gaming_dataform_Pulsar.__name__ = "jotun.gaming.dataform.Pulsar";
+jotun_gaming_dataform_Pulsar.map = function(name,props,object,indexable,tageable) {
+	if(tageable == null) {
+		tageable = true;
+	}
+	if(indexable == null) {
+		indexable = true;
+	}
+	if(object != null) {
+		object = jotun_gaming_dataform_Spark.inheritance(object);
+	} else {
+		object = jotun_gaming_dataform_Spark;
+	}
+	jotun_gaming_dataform_Pulsar._dictio[name] = { "Construct" : object == null ? jotun_gaming_dataform_Spark : object, Properties : props, Indexable : indexable, Tag : tageable};
 };
-jotun_gaming_dataform_DataCollection.construct = function(name,r) {
+jotun_gaming_dataform_Pulsar.construct = function(name,r) {
+	var O = null;
 	var o = null;
-	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
-		var O = Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name);
-		o = new O.c(name,O.p);
+	var indexable;
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_Pulsar._dictio,name)) {
+		O = Reflect.field(jotun_gaming_dataform_Pulsar._dictio,name);
+		if(O.Tag) {
+			o = new O.Construct(name);
+		} else {
+			o = new O.Construct();
+		}
 	}
 	if(o != null) {
 		if(r.length == 3) {
 			o.id = r[1];
 			o.merge(r[2]);
 		} else if(r.length == 2) {
-			o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_DataCollection.ID_SIZE);
+			if(O.Indexable) {
+				o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_Pulsar.ID_SIZE);
+			}
 			o.merge(r[1]);
 		}
 	}
 	return o;
 };
-jotun_gaming_dataform_DataCollection.properties = function(name) {
-	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_DataCollection._dictio,name)) {
-		return Reflect.field(jotun_gaming_dataform_DataCollection._dictio,name).p;
+jotun_gaming_dataform_Pulsar.isIndexable = function(name) {
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_Pulsar._dictio,name)) {
+		return Reflect.field(jotun_gaming_dataform_Pulsar._dictio,name).Indexable;
+	} else {
+		return false;
+	}
+};
+jotun_gaming_dataform_Pulsar.propertiesOf = function(name) {
+	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_Pulsar._dictio,name)) {
+		return Reflect.field(jotun_gaming_dataform_Pulsar._dictio,name).Properties;
 	} else {
 		return null;
 	}
 };
-jotun_gaming_dataform_DataCollection.prototype = {
+jotun_gaming_dataform_Pulsar.prototype = {
 	_getOrCreate: function(name) {
-		var list = Reflect.field(this._list,name);
-		if(list == null) {
-			list = new jotun_gaming_dataform_DataList(name);
-			this._list[name] = list;
+		var x = Reflect.field(this._open_links,name);
+		if(x == null) {
+			x = new jotun_gaming_dataform_PulsarLink(name);
+			this._open_links[name] = x;
 		}
-		return list;
+		return x;
 	}
 	,_exists: function(o,r) {
 		if(r.length >= 2) {
-			var list = this.list(r[0]);
-			if(list != null) {
-				return list.exists(r[1]);
+			var x = this.link(r[0]);
+			if(x != null) {
+				return x.exists(r[1]);
 			}
 		}
 		return false;
 	}
 	,_grab: function(r) {
 		if(r.length >= 2) {
-			var list = this.list(r[0]);
-			if(list != null) {
-				return list.get(r[1]);
+			var x = this.link(r[0]);
+			if(x != null) {
+				return x.get(r[1]);
 			}
 		}
 		return null;
 	}
 	,_delete: function(r) {
 		if(r.length == 2) {
-			var list = this.list(r[0]);
-			if(list != null) {
-				this._onListDelete(list.delete(r[1],true));
+			var x = this.link(r[0]);
+			if(x != null) {
+				this._onLinkDelete(x.delete(r[1],true));
 			}
 		}
 	}
-	,_onListDelete: function(o) {
+	,_onLinkAdd: function(o) {
+		this.signals.call(jotun_gaming_dataform_PulsarSignals.LINK_CREATED,o);
+	}
+	,_onObjectAdd: function(o) {
+		if(o != null) {
+			this.signals.call(jotun_gaming_dataform_PulsarSignals.SPARK_CREATED,o);
+		}
+	}
+	,_onLinkDelete: function(o) {
+		this.signals.call(jotun_gaming_dataform_PulsarSignals.LINK_DELETED,o);
 	}
 	,_onObjectDelete: function(o) {
-		var tmp = o != null;
+		if(o != null) {
+			this.signals.call(jotun_gaming_dataform_PulsarSignals.SPARK_DELETED,o);
+		}
 	}
-	,add: function(o) {
+	,_onLinkUpdate: function(o) {
+		this.signals.call(jotun_gaming_dataform_PulsarSignals.LINK_UPDATED,o);
+	}
+	,_onObjectUpdate: function(o) {
+		if(o != null) {
+			this.signals.call(jotun_gaming_dataform_PulsarSignals.SPARK_UPDATED,o);
+		}
+	}
+	,insert: function(o) {
 		var name = o.getName();
 		if(name != null && name.length > 0) {
-			var list = this._getOrCreate(name);
-			while(o.id == null && !list.exists(o.id)) o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_DataCollection.ID_SIZE);
-			list.insert(o);
+			var x = this._getOrCreate(name);
+			if(jotun_gaming_dataform_Pulsar.isIndexable(name)) {
+				while(o.id == null && !x.exists(o.id)) o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_Pulsar.ID_SIZE);
+			}
+			x.insert(o);
 		} else {
 			o = null;
 		}
@@ -6479,7 +6510,9 @@ jotun_gaming_dataform_DataCollection.prototype = {
 		var i = data.split("\n");
 		var l = null;
 		jotun_utils_Dice.Values(i,function(v) {
-			var r = v.split(" ");
+			var q = v.split(" @::");
+			var r = q[0].split(" ");
+			r[r.length] = q[1];
 			if(r.length > 0) {
 				v = r[0];
 				var cmd = v.substring(0,1);
@@ -6501,11 +6534,14 @@ jotun_gaming_dataform_DataCollection.prototype = {
 					if(l != null) {
 						v = v.substring(1,v.length);
 						if(r.length == 3 && l.exists(r[1])) {
-							l.get(r[1]).merge(r[2]);
+							o = l.get(r[1]);
+							o.merge(r[2]);
+							_gthis._onObjectUpdate(o);
 						} else {
-							o = jotun_gaming_dataform_DataCollection.construct(v,r);
+							o = jotun_gaming_dataform_Pulsar.construct(v,r);
 							if(l.insert(o)) {
 								len += 1;
+								_gthis._onObjectAdd(o);
 							}
 						}
 					}
@@ -6515,16 +6551,18 @@ jotun_gaming_dataform_DataCollection.prototype = {
 						o = _gthis._grab(r);
 						if(r.length == 3) {
 							o.merge(r[2]);
+							_gthis._onLinkUpdate(o);
 						}
 						l = o;
 					} else {
-						o = jotun_gaming_dataform_DataCollection.construct(v,r);
-						if(_gthis.add(o)) {
+						o = jotun_gaming_dataform_Pulsar.construct(v,r);
+						if(_gthis.insert(o)) {
 							if(l != null) {
 								l.refresh();
 							}
 							l = o;
 							len += 1;
+							_gthis._onLinkAdd(o);
 						} else {
 							l = null;
 						}
@@ -6550,16 +6588,23 @@ jotun_gaming_dataform_DataCollection.prototype = {
 		var nr = "";
 		var len = r1.length;
 		while(i < len) {
-			nr += HxOverrides.substr(r1,i,jotun_gaming_dataform_DataCollection.BLOCK_SIZE) + "\n";
-			i += jotun_gaming_dataform_DataCollection.BLOCK_SIZE;
+			nr += HxOverrides.substr(r1,i,jotun_gaming_dataform_Pulsar.BLOCK_SIZE) + "\n";
+			i += jotun_gaming_dataform_Pulsar.BLOCK_SIZE;
 		}
 		return nr.substring(0,nr.length - 1);
 	}
 	,_toString: function(encode,changes,name) {
 		var r = "";
-		jotun_utils_Dice.Values(this._list,function(list) {
+		var c = null;
+		jotun_utils_Dice.Values(this._open_links,function(list) {
 			if(name == null || list.is(name)) {
-				r += list.stringify(changes);
+				c = list.stringify(changes);
+				if(c != null) {
+					if(r.length > 0) {
+						r += "\n";
+					}
+					r += c;
+				}
 			}
 		});
 		if(encode) {
@@ -6573,42 +6618,46 @@ jotun_gaming_dataform_DataCollection.prototype = {
 	,toChangedString: function(encode,name) {
 		return this._toString(encode,true,name);
 	}
-	,list: function(name) {
-		if(name != null) {
-			return Reflect.field(this._list,name);
-		} else {
-			return this._list;
-		}
+	,exists: function(name) {
+		return Object.prototype.hasOwnProperty.call(this._open_links,name);
+	}
+	,link: function(name) {
+		return Reflect.field(this._open_links,name);
+	}
+	,links: function() {
+		var r = [];
+		jotun_utils_Dice.Values(this._open_links,$bind(r,$arrayPush));
+		return r;
 	}
 	,each: function(handler) {
-		jotun_utils_Dice.Values(this._list,handler);
+		jotun_utils_Dice.Values(this._open_links,handler);
 	}
 	,refresh: function(name) {
-		jotun_utils_Dice.Values(this._list,function(list) {
+		jotun_utils_Dice.Values(this._open_links,function(list) {
 			if(name == null || list.is(name)) {
 				list.refresh();
 			}
 		});
 	}
 	,commit: function() {
-		jotun_utils_Dice.Values(this._list,function(list) {
+		jotun_utils_Dice.Values(this._open_links,function(list) {
 			list.commit();
 		});
 	}
 	,clone: function() {
-		var o = new jotun_gaming_dataform_DataCollection();
+		var o = new jotun_gaming_dataform_Pulsar();
 		o.parse(this.toString(false));
 		return o;
 	}
-	,__class__: jotun_gaming_dataform_DataCollection
+	,__class__: jotun_gaming_dataform_Pulsar
 };
-var jotun_gaming_dataform_DataCore = function(name) {
+var jotun_gaming_dataform_SparkCore = function(name) {
 	this._name = name;
 	this._inserts = [];
 	this._indexed = { };
 };
-jotun_gaming_dataform_DataCore.__name__ = "jotun.gaming.dataform.DataCore";
-jotun_gaming_dataform_DataCore.prototype = {
+jotun_gaming_dataform_SparkCore.__name__ = "jotun.gaming.dataform.SparkCore";
+jotun_gaming_dataform_SparkCore.prototype = {
 	_getDelString: function(pre) {
 		var r = null;
 		if(this._deletions != null && this._deletions.length > 0) {
@@ -6653,7 +6702,9 @@ jotun_gaming_dataform_DataCore.prototype = {
 		if(this.canInsert(o)) {
 			var index = this._inserts.length;
 			this._inserts[index] = o;
-			this._indexed[o.id] = index;
+			if(o.isIndexable()) {
+				this._indexed[o.id] = index;
+			}
 			this.onInsert(o);
 		}
 		return true;
@@ -6696,7 +6747,7 @@ jotun_gaming_dataform_DataCore.prototype = {
 		var o = this._delete(id);
 		if(o != null) {
 			if(!silent) {
-				this._deletions[this._deletions.length] = o.getName() + " " + Std.string(o.id);
+				this._deletions[this._deletions.length] = o.getName() + " " + o.id;
 			}
 			this.onDelete(o);
 			return o;
@@ -6704,48 +6755,15 @@ jotun_gaming_dataform_DataCore.prototype = {
 			return null;
 		}
 	}
-	,__class__: jotun_gaming_dataform_DataCore
+	,__class__: jotun_gaming_dataform_SparkCore
 };
-var jotun_gaming_dataform_DataIO = function() { };
-jotun_gaming_dataform_DataIO.__name__ = "jotun.gaming.dataform.DataIO";
-jotun_gaming_dataform_DataIO.parse = function(c,o,nfo,silent) {
-	var obj = c;
-	jotun_utils_Dice.Values(o.split(jotun_gaming_dataform_DataIO.PROP),function(v) {
-		var tag = v.split(jotun_gaming_dataform_DataIO.SET);
-		var par = Reflect.field(nfo,tag.shift());
-		v = tag.join(jotun_gaming_dataform_DataIO.SET).split(jotun_gaming_dataform_DataIO.SPACE).join(" ");
-		if(silent) {
-			c[par] = v;
-		} else {
-			c.set(par,v);
-		}
-	});
-	obj.onParse();
-	obj.allowChanges();
-	return obj;
-};
-jotun_gaming_dataform_DataIO.stringify = function(o,n,nfo) {
-	var result = [];
-	var count = 0;
-	jotun_utils_Dice.All(nfo,function(p,value) {
-		value = Reflect.field(o,value);
-		if(value != null) {
-			if(typeof(value) == "string") {
-				value = value.split(" ").join(jotun_gaming_dataform_DataIO.SPACE);
-			}
-			result[count] = p + jotun_gaming_dataform_DataIO.SET + Std.string(value);
-			count += 1;
-		}
-	});
-	return n + (o.id != null ? " " + Std.string(o.id) : "") + " " + result.join(jotun_gaming_dataform_DataIO.PROP);
-};
-var jotun_gaming_dataform_DataList = function(name) {
-	jotun_gaming_dataform_DataCore.call(this,name);
+var jotun_gaming_dataform_PulsarLink = function(name) {
+	jotun_gaming_dataform_SparkCore.call(this,name);
 	this._deletions = [];
 };
-jotun_gaming_dataform_DataList.__name__ = "jotun.gaming.dataform.DataList";
-jotun_gaming_dataform_DataList.__super__ = jotun_gaming_dataform_DataCore;
-jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCore.prototype,{
+jotun_gaming_dataform_PulsarLink.__name__ = "jotun.gaming.dataform.PulsarLink";
+jotun_gaming_dataform_PulsarLink.__super__ = jotun_gaming_dataform_SparkCore;
+jotun_gaming_dataform_PulsarLink.prototype = $extend(jotun_gaming_dataform_SparkCore.prototype,{
 	getData: function() {
 		return this._inserts;
 	}
@@ -6765,7 +6783,7 @@ jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCor
 		this._deletions = [];
 	}
 	,refresh: function() {
-		jotun_gaming_dataform_DataCore.prototype.refresh.call(this);
+		jotun_gaming_dataform_SparkCore.prototype.refresh.call(this);
 		this.each(function(o) {
 			o.refresh();
 		});
@@ -6785,36 +6803,35 @@ jotun_gaming_dataform_DataList.prototype = $extend(jotun_gaming_dataform_DataCor
 		}
 		return r;
 	}
-	,__class__: jotun_gaming_dataform_DataList
+	,__class__: jotun_gaming_dataform_PulsarLink
 });
-var jotun_gaming_dataform_DataObject = $hx_exports["DataObject"] = function(name) {
-	jotun_gaming_dataform_DataCore.call(this,name);
+var jotun_gaming_dataform_PulsarSignals = $hx_exports["PulsarSignals"] = function() { };
+jotun_gaming_dataform_PulsarSignals.__name__ = "jotun.gaming.dataform.PulsarSignals";
+var jotun_gaming_dataform_Spark = $hx_exports["Spark"] = function(name) {
+	jotun_gaming_dataform_SparkCore.call(this,name);
 };
-jotun_gaming_dataform_DataObject.__name__ = "jotun.gaming.dataform.DataObject";
-jotun_gaming_dataform_DataObject.inheritance = function(obj) {
-	if(!DataObject.prototype.isPrototypeOf(obj)) {
-		obj.prototype = Object.create(DataObject.prototype);
-	}
-	return obj;
+jotun_gaming_dataform_Spark.__name__ = "jotun.gaming.dataform.Spark";
+jotun_gaming_dataform_Spark.inheritance = function(obj) {
+	return jotun_tools_Utils.extendClass(obj,jotun_gaming_dataform_Spark);
 };
-jotun_gaming_dataform_DataObject.__super__ = jotun_gaming_dataform_DataCore;
-jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataCore.prototype,{
+jotun_gaming_dataform_Spark.__super__ = jotun_gaming_dataform_SparkCore;
+jotun_gaming_dataform_Spark.prototype = $extend(jotun_gaming_dataform_SparkCore.prototype,{
 	_getProps: function() {
-		return jotun_gaming_dataform_DataCollection.properties(this._name);
+		return jotun_gaming_dataform_Pulsar.propertiesOf(this._name);
 	}
 	,stringify: function(changes) {
 		var _gthis = this;
 		var r = null;
 		var c = null;
 		if(!changes || this.isChanged()) {
-			r = jotun_gaming_dataform_DataIO.stringify(this,this._name,changes ? this._changes : this._getProps());
+			r = jotun_gaming_dataform_SparkWriter.stringify(this,this._name,changes ? this._changes : this._getProps());
 		}
 		jotun_utils_Dice.Values(this._inserts,function(v) {
 			if(v != null) {
 				c = v.stringify(changes);
 				if(c != null) {
 					if(r == null) {
-						r = _gthis._name + " " + Std.string(_gthis.id);
+						r = _gthis._name + " " + _gthis.id;
 					}
 					r += "\n>" + c;
 				}
@@ -6823,7 +6840,7 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 		c = this._getDelString("/");
 		if(c != null) {
 			if(r == null) {
-				r = this._name + " " + Std.string(this.id);
+				r = this._name + " " + this.id;
 			}
 			r += (r.length > 0 ? "\n" : "") + c;
 		}
@@ -6840,14 +6857,14 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 				data = i[1];
 			}
 			if(data != null) {
-				jotun_gaming_dataform_DataIO.parse(this,data,this._getProps(),false);
+				jotun_gaming_dataform_SparkWriter.parse(this,data,this._getProps(),false);
 				return true;
 			}
 		}
 		return false;
 	}
 	,merge: function(data) {
-		jotun_gaming_dataform_DataIO.parse(this,data,this._getProps(),true);
+		jotun_gaming_dataform_SparkWriter.parse(this,data,this._getProps(),true);
 	}
 	,set: function(prop,value) {
 		if(this._changes != null && Reflect.field(this,prop) != value) {
@@ -6877,12 +6894,89 @@ jotun_gaming_dataform_DataObject.prototype = $extend(jotun_gaming_dataform_DataC
 		this._deletions = [];
 	}
 	,clone: function() {
-		var o = new jotun_gaming_dataform_DataObject(this._name);
+		var o = new jotun_gaming_dataform_Spark(this._name);
 		o.parse(this.stringify());
 		return o;
 	}
-	,__class__: jotun_gaming_dataform_DataObject
+	,isIndexable: function() {
+		return jotun_gaming_dataform_Pulsar.isIndexable(this._name);
+	}
+	,__class__: jotun_gaming_dataform_Spark
 });
+var jotun_gaming_dataform_SparkWriter = function() { };
+jotun_gaming_dataform_SparkWriter.__name__ = "jotun.gaming.dataform.SparkWriter";
+jotun_gaming_dataform_SparkWriter.convert = function(value,type) {
+	switch(type) {
+	case "B":
+		return value == "1";
+	case "F":
+		return new jotun_tools_Flag(Std.parseInt(value));
+	case "I":
+		return Std.parseInt(value);
+	case "N":
+		return parseFloat(value);
+	case "O":
+		return JSON.parse(value);
+	case "S":
+		return value;
+	case "U":
+		return null;
+	default:
+		return value;
+	}
+};
+jotun_gaming_dataform_SparkWriter.parse = function(c,o,nfo,silent) {
+	var obj = c;
+	var tag = null;
+	var def = null;
+	var par = null;
+	jotun_utils_Dice.Values(o.split(jotun_gaming_dataform_SparkWriter.PROP),function(v) {
+		tag = v.split(jotun_gaming_dataform_SparkWriter.SET);
+		def = tag.shift().split(jotun_gaming_dataform_SparkWriter.TYPE);
+		par = nfo[def[0]];
+		v = tag.join(jotun_gaming_dataform_SparkWriter.SET).split(jotun_gaming_dataform_SparkWriter.SPACE).join(" ");
+		v = jotun_gaming_dataform_SparkWriter.convert(v,def[1]);
+		if(silent) {
+			c[par] = v;
+		} else {
+			c.set(par,v);
+		}
+	});
+	obj.onParse();
+	obj.allowChanges();
+	return obj;
+};
+jotun_gaming_dataform_SparkWriter.stringify = function(o,n,nfo) {
+	var result = [];
+	var count = 0;
+	var type = null;
+	jotun_utils_Dice.All(nfo,function(p,value) {
+		value = Reflect.field(o,value);
+		if(typeof(value) == "boolean") {
+			type = "B";
+			value = value ? 1 : 0;
+		} else if(typeof(value) == "number") {
+			type = "N";
+		} else if(typeof(value) == "number" && ((value | 0) === value)) {
+			type = "I";
+		} else if(typeof(value) == "string") {
+			type = "S";
+			value = value.split(" ").join(jotun_gaming_dataform_SparkWriter.SPACE);
+		} else if(((value) instanceof jotun_tools_Flag)) {
+			type = "F";
+			value = value.value;
+		} else if(value != null) {
+			type = "O";
+			value = JSON.stringify(value);
+		} else {
+			type = "U";
+			value = "-";
+		}
+		result[count] = p + jotun_gaming_dataform_SparkWriter.TYPE + type + jotun_gaming_dataform_SparkWriter.SET + Std.string(value);
+		count += 1;
+	});
+	return n + (o.id != null ? " " + Std.string(o.id) : "") + (result.length > 0 ? " @::" + result.join(jotun_gaming_dataform_SparkWriter.PROP) : "");
+};
 var jotun_idb_WebDB = $hx_exports["J_WebDB"] = function(db,error,upgrade) {
 	this._tables = [];
 	this._need_upgrade = upgrade;
@@ -8737,6 +8831,13 @@ jotun_tools_Utils.stackTrace = function() {
 jotun_tools_Utils.throwError = function() {
 	throw new Error();
 };
+jotun_tools_Utils.extendClass = function(a,b) {
+	haxe_Log.trace(Object,{ fileName : "src/jotun/tools/Utils.hx", lineNumber : 585, className : "jotun.tools.Utils", methodName : "extendClass", customParams : [b,b.prototype]});
+	if(b.prototype.isPrototypeOf(a)) {
+		a.prototype = Object.create(b.prototype);
+	}
+	return a;
+};
 var jotun_utils_Dice = $hx_exports["Dice"] = function() { };
 jotun_utils_Dice.__name__ = "jotun.utils.Dice";
 jotun_utils_Dice.All = function(q,each,complete) {
@@ -9922,49 +10023,6 @@ js_Browser.createXMLHttpRequest = function() {
 	}
 	throw haxe_Exception.thrown("Unable to create XMLHttpRequest object.");
 };
-var js_Cookie = function() { };
-js_Cookie.__name__ = "js.Cookie";
-js_Cookie.set = function(name,value,expireDelay,path,domain) {
-	var s = name + "=" + encodeURIComponent(value);
-	if(expireDelay != null) {
-		var d = new Date(new Date().getTime() + expireDelay * 1000);
-		s += ";expires=" + d.toGMTString();
-	}
-	if(path != null) {
-		s += ";path=" + path;
-	}
-	if(domain != null) {
-		s += ";domain=" + domain;
-	}
-	window.document.cookie = s;
-};
-js_Cookie.all = function() {
-	var h = new haxe_ds_StringMap();
-	var a = window.document.cookie.split(";");
-	var _g = 0;
-	while(_g < a.length) {
-		var e = a[_g];
-		++_g;
-		e = StringTools.ltrim(e);
-		var t = e.split("=");
-		if(t.length < 2) {
-			continue;
-		}
-		var value = decodeURIComponent(t[1].split("+").join(" "));
-		h.h[t[0]] = value;
-	}
-	return h;
-};
-js_Cookie.get = function(name) {
-	return js_Cookie.all().h[name];
-};
-js_Cookie.exists = function(name) {
-	var _this = js_Cookie.all();
-	return Object.prototype.hasOwnProperty.call(_this.h,name);
-};
-js_Cookie.remove = function(name,path,domain) {
-	js_Cookie.set(name,"",-10,path,domain);
-};
 function $getIterator(o) { if( o instanceof Array ) return new haxe_iterators_ArrayIterator(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 function $arrayPush(x) { this.push(x); }
@@ -10028,12 +10086,19 @@ jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQueryGroup();
 jotun_gaming_actions_Requirement.cache = { };
 jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQueryGroup();
-jotun_gaming_dataform_DataCollection.BLOCK_SIZE = 64;
-jotun_gaming_dataform_DataCollection.ID_SIZE = 32;
-jotun_gaming_dataform_DataCollection._dictio = { };
-jotun_gaming_dataform_DataIO.PROP = "|";
-jotun_gaming_dataform_DataIO.SET = ":";
-jotun_gaming_dataform_DataIO.SPACE = "/+";
+jotun_gaming_dataform_Pulsar.BLOCK_SIZE = 64;
+jotun_gaming_dataform_Pulsar.ID_SIZE = 32;
+jotun_gaming_dataform_Pulsar._dictio = { };
+jotun_gaming_dataform_PulsarSignals.LINK_CREATED = "link_created";
+jotun_gaming_dataform_PulsarSignals.SPARK_CREATED = "spark_created";
+jotun_gaming_dataform_PulsarSignals.LINK_UPDATED = "link_updated";
+jotun_gaming_dataform_PulsarSignals.SPARK_UPDATED = "spark_updated";
+jotun_gaming_dataform_PulsarSignals.LINK_DELETED = "link_deleted";
+jotun_gaming_dataform_PulsarSignals.SPARK_DELETED = "link_deleted";
+jotun_gaming_dataform_SparkWriter.PROP = "|";
+jotun_gaming_dataform_SparkWriter.SET = ":";
+jotun_gaming_dataform_SparkWriter.TYPE = "q";
+jotun_gaming_dataform_SparkWriter.SPACE = " ";
 jotun_tools_Ticker._pool_high = [];
 jotun_tools_Ticker._pool_low = [];
 jotun_tools_Ticker._ltime = 0;

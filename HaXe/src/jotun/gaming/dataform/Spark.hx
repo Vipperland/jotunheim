@@ -1,4 +1,5 @@
 package jotun.gaming.dataform;
+import jotun.tools.Utils;
 import jotun.utils.Dice;
 #if js
 	import js.Syntax;
@@ -13,10 +14,11 @@ class Spark extends SparkCore {
 	
 	#if js
 		public static function inheritance(obj:Dynamic):Dynamic{
-			if (!Syntax.code("Spark.prototype.isPrototypeOf({0})", obj)){
-				obj.prototype = Syntax.code("Object.create(Spark.prototype)");
-			}
-			return obj;
+			//if (!Syntax.code("Spark.prototype.isPrototypeOf({0})", obj)){
+				//obj.prototype = Syntax.code("Object.create(Spark.prototype)");
+			//}
+			//return obj;
+			return Utils.extendClass(obj, Spark);
 		}
 	#end
 		

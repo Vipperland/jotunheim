@@ -1,0 +1,49 @@
+<?php
+/**
+ */
+
+namespace php;
+
+use \haxe\ds\StringMap;
+
+/**
+ * Platform-specific PHP Library. Provides some platform-specific functions
+ * for the PHP target, such as conversion from Haxe types to native types
+ * and vice-versa.
+ */
+class Lib {
+	/**
+	 * @param array $arr
+	 * 
+	 * @return StringMap
+	 */
+	public static function hashOfAssociativeArray ($arr) {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:102: characters 3-32
+		$result = new StringMap();
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:103: characters 19-36
+		$result->data = $arr;
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:104: characters 3-16
+		return $result;
+	}
+
+	/**
+	 * @param array $arr
+	 * 
+	 * @return mixed
+	 */
+	public static function objectOfAssociativeArray ($arr) {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:112: lines 112-116
+		foreach ($arr as $key => $value) {
+			#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:113: lines 113-115
+			$value1 = $value;
+			if (\is_array($value1)) {
+				#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:114: characters 5-47
+				$arr[$key] = Lib::objectOfAssociativeArray($value1);
+			}
+		}
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/php/Lib.hx:117: characters 3-30
+		return Boot::createAnon($arr);
+	}
+}
+
+Boot::registerClass(Lib::class, 'php.Lib');

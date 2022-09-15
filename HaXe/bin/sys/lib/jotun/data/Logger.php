@@ -1,0 +1,137 @@
+<?php
+/**
+ */
+
+namespace jotun\data;
+
+use \php\Boot;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Logger {
+	/**
+	 * @var \Closure[]|\Array_hx
+	 */
+	public $_events;
+	/**
+	 * @var int
+	 */
+	public $_level;
+
+	/**
+	 * @return void
+	 */
+	public function __construct () {
+		#src/jotun/data/Logger.hx:17: characters 27-28
+		$this->_level = 4;
+		#src/jotun/data/Logger.hx:24: characters 3-15
+		$this->_events = new \Array_hx();
+		#src/jotun/data/Logger.hx:28: characters 4-45
+		\Reflect::setField($this->_events, "query", Boot::getInstanceClosure($this, 'query'));
+	}
+
+	/**
+	 * @param mixed $q
+	 * 
+	 * @return void
+	 */
+	public function dump ($q) {
+		#src/jotun/data/Logger.hx:58: characters 4-19
+		\var_dump($q);
+	}
+
+	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return void
+	 */
+	public function listen ($handler) {
+		#src/jotun/data/Logger.hx:45: characters 3-36
+		$this->_events->offsetSet($this->_events->length, $handler);
+	}
+
+	/**
+	 * @param int $i
+	 * 
+	 * @return void
+	 */
+	public function maxLvLog ($i) {
+		#src/jotun/data/Logger.hx:20: characters 3-13
+		$this->_level = $i;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function mute () {
+		#src/jotun/data/Logger.hx:33: lines 33-35
+		if (\Lambda::indexOf($this->_events, Boot::getInstanceClosure($this, 'query')) !== -1) {
+			#src/jotun/data/Logger.hx:34: characters 4-24
+			$this->_events->splice(0, 1);
+		}
+	}
+
+	/**
+	 * @param mixed $q
+	 * @param int $type
+	 * 
+	 * @return void
+	 */
+	public function push ($q, $type) {
+		#src/jotun/data/Logger.hx:49: lines 49-51
+		Dice::Values($this->_events, function ($v) use (&$type, &$q) {
+			#src/jotun/data/Logger.hx:50: characters 4-14
+			$v($q, $type);
+		});
+	}
+
+	/**
+	 * @param mixed $q
+	 * @param int $type
+	 * 
+	 * @return void
+	 */
+	public function query ($q, $type) {
+		#src/jotun/data/Logger.hx:63: lines 63-65
+		if ($type > $this->_level) {
+			#src/jotun/data/Logger.hx:64: characters 4-10
+			return;
+		}
+		#src/jotun/data/Logger.hx:66: lines 66-74
+		$t = null;
+		if ($type === 0) {
+			$t = "[MESSAGE] ";
+		} else if ($type === 1) {
+			$t = "[>SYSTEM] ";
+		} else if ($type === 2) {
+			$t = "[WARNING] ";
+		} else if ($type === 3) {
+			$t = "[!ERROR!] ";
+		} else if ($type === 4) {
+			$t = "[//TODO*] ";
+		} else if ($type === 5) {
+			$t = "[\$QUERY*] ";
+		} else {
+			$t = "";
+		}
+		#src/jotun/data/Logger.hx:82: characters 3-10
+		$this->dump($q);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function unmute () {
+		#src/jotun/data/Logger.hx:39: lines 39-41
+		if (\Lambda::indexOf($this->_events, Boot::getInstanceClosure($this, 'query')) === -1) {
+			#src/jotun/data/Logger.hx:40: characters 4-26
+			$_this = $this->_events;
+			$_this->length = \array_unshift($_this->arr, Boot::getInstanceClosure($this, 'query'));
+		}
+	}
+}
+
+Boot::registerClass(Logger::class, 'jotun.data.Logger');

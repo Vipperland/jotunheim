@@ -144,7 +144,7 @@ class Pulsar {
 	public function new(?data:String) {
 		_open_links = {};
 		signals = new Signals(this);
-		if (data != null){
+		if (data != null && data.length > 0){
 			parse(data);
 		}
 	}
@@ -194,7 +194,9 @@ class Pulsar {
 		var i:Array<String> = data.split('\n');
 		var l:Spark = null;
 		Dice.Values(i, function(v:String){
-			var r:Array<String> = v.split(' ');
+			var q:Array<String> = v.split(' @::');
+			var r:Array<String> = q[0].split(' ');
+			r[r.length] = q[1];
 			if (r.length > 0){
 				v = r[0];
 				var cmd:String = v.substring(0, 1);
@@ -312,6 +314,10 @@ class Pulsar {
 	**/
 	public function toChangedString(?encode:Bool, ?name:String):String {
 		return _toString(encode, true, name);
+	}
+	
+	public function exists(name:String):Bool {
+		return Reflect.hasField(_open_links, name);
 	}
 	
 	public function link(name:String):PulsarLink {

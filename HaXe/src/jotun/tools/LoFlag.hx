@@ -19,12 +19,16 @@ class LoFlag {
 	
 	private var _flags:Array<Int>;
 	
-	public function new(?size:Int=0):Void {
+	private function _fit(length:Int):Void {
+		while (_flags.length < length){
+			_flags[_flags.length] = 0;
+		}
+	}
+	
+	public function new(?size:Int=32):Void {
 		_flags = [];
-		if(size > 0){
-			while (_flags.length < size){
-				_flags[_flags.length] = 0;
-			}
+		if (--size > 0){
+			_fit(Math.ceil(size / 32));
 		}
 	}
 	
@@ -35,9 +39,6 @@ class LoFlag {
 	}
 	
 	public function set(block:Int, flags:Int):LoFlag {
-		while (_flags.length < block){
-			_flags[_flags.length] = 0;
-		}
 		_flags[block] = flags;
 		return this;
 	}

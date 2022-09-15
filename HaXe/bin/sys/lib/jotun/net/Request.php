@@ -1,0 +1,84 @@
+<?php
+/**
+ */
+
+namespace jotun\net;
+
+use \php\Boot;
+use \jotun\errors\Error;
+use \haxe\Json;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Request implements IRequest {
+	/**
+	 * @var string
+	 */
+	public $data;
+	/**
+	 * @var Error
+	 */
+	public $error;
+	/**
+	 * @var mixed
+	 */
+	public $headers;
+	/**
+	 * @var bool
+	 */
+	public $success;
+	/**
+	 * @var string
+	 */
+	public $url;
+
+	/**
+	 * @param bool $success
+	 * @param string $data
+	 * @param Error $error
+	 * @param string $url
+	 * @param mixed $headers
+	 * 
+	 * @return void
+	 */
+	public function __construct ($success, $data, $error = null, $url = null, $headers = null) {
+		#src/jotun/net/Request.hx:22: characters 3-17
+		$this->url = $url;
+		#src/jotun/net/Request.hx:23: characters 3-21
+		$this->error = $error;
+		#src/jotun/net/Request.hx:24: characters 3-19
+		$this->data = $data;
+		#src/jotun/net/Request.hx:25: characters 3-25
+		$this->success = $success;
+		#src/jotun/net/Request.hx:26: characters 3-25
+		$this->headers = $headers;
+	}
+
+	/**
+	 * @param string $name
+	 * 
+	 * @return string
+	 */
+	public function getHeader ($name) {
+		#src/jotun/net/Request.hx:36: characters 3-52
+		return \Reflect::field($this->headers, \mb_strtolower($name));
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function object () {
+		#src/jotun/net/Request.hx:32: characters 10-67
+		if (($this->data !== null) && (mb_strlen($this->data) > 1)) {
+			#src/jotun/net/Request.hx:32: characters 44-60
+			return Json::phpJsonDecode($this->data);
+		} else {
+			#src/jotun/net/Request.hx:32: characters 63-67
+			return null;
+		}
+	}
+}
+
+Boot::registerClass(Request::class, 'jotun.net.Request');

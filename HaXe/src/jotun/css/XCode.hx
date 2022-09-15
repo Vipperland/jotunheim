@@ -74,13 +74,13 @@ class XCode {
 				|	tag-X (x = 1~12)		Cardinal count
 				
 				Distribuition
-				|	o-arrange		Space around
+				|	o-arrange			Space around
 				|	o-welfit			Space between
 				|
 				
 				Alignment:
 				|	o-top-left		o-top			o-top-right		
-				|	o-left			[h|v|o]-middle	o-right			
+				|	o-left			[h|v|o]-middle		o-right			
 				|	o-bottom-left		o-bottom			o-bottom-right	
 			*/
 			omnibuild('.shelf,.hack,.drawer', 'display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;');

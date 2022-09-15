@@ -16,9 +16,10 @@
 				font-family: 'Amatic SC', cursive;
 			}
 			.test3d {
-				width: 250px;
+				width: 600px;
 				height: 400px;
 				margin-top: -100px;
+				text-align: center;
 			}
 			
 			.test3d .text{
@@ -30,46 +31,66 @@
 				display: block;
 			}
 			
+			.test3d .text .info{
+				min-height: 60px;
+				max-height: 40vh;
+				overflow-y: auto;
+			}
+			
 			.test3d .text .title{
 				font-weight: 700;
 			}
 		
 		</style>
 	</head>
-	<body automator>
+	<body xcode>
 		<div class="test3d">
-			<img src="http://techlab.gateofsirius.com/assets/img/sirius.png" />
+			<img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png" />
 			<br/>
 			<div class="text">
-				<span class="title">SIRIUS</span><br/>
-				<div class="info" contenteditable>HEY, TYPE HERE!</div>
+				<span class="title">Displacement Test</span><br/>
+				<div class="info" contenteditable></div>
 			</div>
 		</div>
 		<script>
 			Jotun.run(function(){
 				var e = Jotun.one('.test3d');
+				var t = e.one('.text .info');
 				e.pin('c');
 				e.angle = 0;
 				e.rotateX(20);
+				e.enablePerspective();
 				
+				var txt_d = 100;
+				var txt_t = 30;
 				var dmf_a = 0;
 				var dmf_c = 0;
 				
-				e.activate(function(){
-					e.rotateY(Math.sin(e.angle*Math.PI/180) * 5);
-					e.rotateX(Math.cos(e.angle*Math.PI/180) * 5);
-					e.angle += 10;
+				var chars = "HEY, TYPE HERE!".split("");
+				
+				J_Ticker.add(function(){
+					e.rotateY(Math.sin(e.angle*Math.PI/180) * 15);
+					e.rotateX(Math.cos(e.angle*Math.PI/180) * 15);
+					e.angle += .3;
 					e.transform();
 					XCode.clearDisplacements();
 					e.displacement(dmf_a, 45, dmf_c>>0);
-					dmf_a -= dmf_a * .03;
-					dmf_c -= dmf_c * .03;
+					dmf_a -= dmf_a * .01;
+					dmf_c -= dmf_c * .01;
+					if(chars.length > 0){
+						if(--txt_d <= 0){
+							t.appendHtml(chars.shift().split(" ").join("&nbsp;"));
+							txt_d += txt_t;
+							dmf_a += .03;
+							dmf_c += 2;
+						}
+					}
 				});
 				Jotun.document.events.keyDown(function(e){
 					dmf_a += .03;
-					dmf_c += 3;
+					dmf_c += 6;
 				});
-				Ticker.start();
+				J_Ticker.start();
 			});
 		</script>
 	</body>                                                                               

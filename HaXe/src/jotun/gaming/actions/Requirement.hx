@@ -12,7 +12,12 @@ import jotun.utils.Dice;
 class Requirement extends Resolution {
 	
 	public static var cache:Dynamic = {};
-	public static function get(id:String):Resolution {
+	
+	public static function save(requirement:Requirement):Void {
+		Reflect.setField(cache, requirement.id, requirement);
+	}
+	
+	public static function load(id:String):Requirement {
 		return cast Reflect.field(cache, id);
 	}
 	
@@ -28,7 +33,7 @@ class Requirement extends Resolution {
 			target = Std.int(data.target);
 		}
 		if (Utils.isValid(data.id)){
-			Reflect.setField(cache, data.id, this);
+			EventController.saveRequirement(this);
 		}
 	}
 	

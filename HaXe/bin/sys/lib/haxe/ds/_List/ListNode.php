@@ -1,0 +1,33 @@
+<?php
+/**
+ */
+
+namespace haxe\ds\_List;
+
+use \php\Boot;
+
+class ListNode {
+	/**
+	 * @var mixed
+	 */
+	public $item;
+	/**
+	 * @var ListNode
+	 */
+	public $next;
+
+	/**
+	 * @param mixed $item
+	 * @param ListNode $next
+	 * 
+	 * @return void
+	 */
+	public function __construct ($item, $next) {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:267: characters 3-19
+		$this->item = $item;
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:268: characters 3-19
+		$this->next = $next;
+	}
+}
+
+Boot::registerClass(ListNode::class, 'haxe.ds._List.ListNode');

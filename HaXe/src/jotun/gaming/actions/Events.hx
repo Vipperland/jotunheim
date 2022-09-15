@@ -1,6 +1,9 @@
 package jotun.gaming.actions;
+import jotun.dom.Video;
 import jotun.gaming.actions.Action;
+import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.IEventContext;
+import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -11,7 +14,7 @@ import jotun.utils.Dice;
 @:expose("J_Events")
 class Events {
 	
-	public static function patch(data:Dynamic, ?origin:Dynamic){
+	public static function patch(data:Dynamic){
 		if (data.events != null){
 			if (!data.events.patched){
 				data.events.patched = true;
@@ -24,6 +27,8 @@ class Events {
 	
 	private var _data:Array<Action>;
 	private var _type:String;
+	private var _save:Int->Resolution->Void;
+	private var _load:Int->String->Resolution;
 	
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;
@@ -33,15 +38,19 @@ class Events {
 	public function _init(data:Array<Dynamic>) {
 		_data = [];
 		var i:UInt = 0;
+		var r:Dynamic = {};
 		Dice.All(data, function(p:String, v:Dynamic){
 			if (Std.isOfType(v, String)){
-				v = Action.get(v);
+				v = EventController.loadAction(v);
 			}
-			if(v != null){
+			if (v != null && (v.id == null || !Reflect.hasField(r, v.id))){
 				if (Std.isOfType(v, Action)){
 					_data[i] = v;
 				}else{
 					_data[i] = new Action(_type + '[' + p + ']', v);
+				}
+				if (v.id != null){
+					Reflect.setField(r, v.id, 1);
 				}
 				++i;
 			}

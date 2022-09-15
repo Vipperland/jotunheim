@@ -1,0 +1,15 @@
+<?php
+/**
+ */
+
+namespace jotun\modules;
+
+use \php\Boot;
+
+/**
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
+ */
+interface IMod {
+}
+
+Boot::registerClass(IMod::class, 'jotun.modules.IMod');

@@ -1,0 +1,48 @@
+<?php
+/**
+ */
+
+namespace jotun\net;
+
+use \php\Boot;
+
+/**
+ * @author Rafael Moreira
+ */
+interface IDomain {
+	/**
+	 * @param int $len
+	 * 
+	 * @return string
+	 */
+	public function getFQDN ($len = null) ;
+
+	/**
+	 * @return string
+	 */
+	public function getRequestMethod () ;
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return bool
+	 */
+	public function isRequestMethod ($q) ;
+
+	/**
+	 * @param \Closure $onPart
+	 * @param \Closure $onData
+	 * 
+	 * @return void
+	 */
+	public function parseFiles ($onPart, $onData) ;
+
+	/**
+	 * @param string[]|\Array_hx $params
+	 * 
+	 * @return bool
+	 */
+	public function require ($params) ;
+}
+
+Boot::registerClass(IDomain::class, 'jotun.net.IDomain');

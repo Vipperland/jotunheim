@@ -1,0 +1,215 @@
+<?php
+/**
+ */
+
+namespace jotun\utils;
+
+use \php\Boot;
+use \php\_Boot\HxString;
+
+/**
+ * ...
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
+ */
+class Filler {
+	/**
+	 * @param string $path
+	 * @param string $content
+	 * @param mixed $data
+	 * 
+	 * @return string
+	 */
+	public static function _apply ($path, $content, $data) {
+		#src/jotun/utils/Filler.hx:13: lines 13-32
+		if ($data === null) {
+			#src/jotun/utils/Filler.hx:14: characters 4-56
+			$content = HxString::split($content, "{{" . ($path??'null') . "}}")->join("");
+		} else if ((is_float($data) || is_int($data)) || is_string($data) || is_bool($data) || Boot::isOfType($data, Boot::getClass('Int'))) {
+			#src/jotun/utils/Filler.hx:16: characters 4-67
+			$is_valid = ($data !== null) && !Boot::equal($data, 0) && ($data !== false);
+			#src/jotun/utils/Filler.hx:17: characters 4-58
+			$content = HxString::split($content, "{{" . ($path??'null') . "}}")->join($data);
+			#src/jotun/utils/Filler.hx:18: characters 4-86
+			$content = HxString::split($content, "{{show-if:" . ($path??'null') . "}}")->join(($is_valid ? "" : "hidden"));
+			#src/jotun/utils/Filler.hx:19: characters 4-86
+			$content = HxString::split($content, "{{hide-if:" . ($path??'null') . "}}")->join(($is_valid ? "hidden" : ""));
+			#src/jotun/utils/Filler.hx:20: characters 4-29
+			$path = \mb_strtolower($path);
+			#src/jotun/utils/Filler.hx:21: characters 4-58
+			$content = HxString::split($content, "{{" . ($path??'null') . "}}")->join($data);
+			#src/jotun/utils/Filler.hx:22: characters 4-86
+			$content = HxString::split($content, "{{show-if:" . ($path??'null') . "}}")->join(($is_valid ? "" : "hidden"));
+			#src/jotun/utils/Filler.hx:23: characters 4-86
+			$content = HxString::split($content, "{{hide-if:" . ($path??'null') . "}}")->join(($is_valid ? "hidden" : ""));
+		} else {
+			#src/jotun/utils/Filler.hx:25: characters 11-55
+			if (($path !== null) && ($path !== "")) {
+				#src/jotun/utils/Filler.hx:25: characters 40-50
+				$path = ($path??'null') . ".";
+			} else {
+				#src/jotun/utils/Filler.hx:25: characters 53-55
+				$path = "";
+			}
+			#src/jotun/utils/Filler.hx:26: lines 26-31
+			Dice::All($data, function ($p, $v) use (&$content, &$path) {
+				#src/jotun/utils/Filler.hx:27: characters 5-15
+				$p = "" . ($p??'null');
+				#src/jotun/utils/Filler.hx:28: lines 28-30
+				if (\mb_substr($p, 0, 1) !== "_") {
+					#src/jotun/utils/Filler.hx:29: characters 6-44
+					$content = Filler::_apply(($path??'null') . ($p??'null'), $content, $v);
+				}
+			});
+		}
+		#src/jotun/utils/Filler.hx:33: characters 3-17
+		return $content;
+	}
+
+	/**
+	 * Extract number from string
+	 * @param	value
+	 * @return
+	 * 
+	 * @param string $value
+	 * 
+	 * @return int
+	 */
+	public static function extractNumber ($value) {
+		#src/jotun/utils/Filler.hx:93: characters 3-21
+		$s = "";
+		#src/jotun/utils/Filler.hx:94: characters 3-18
+		$i = 0;
+		#src/jotun/utils/Filler.hx:95: lines 95-100
+		while (true) {
+			#src/jotun/utils/Filler.hx:95: characters 10-26
+			$b = mb_strlen($value);
+			$aNeg = $b < 0;
+			$bNeg = $i < 0;
+			#src/jotun/utils/Filler.hx:95: lines 95-100
+			if (!(($aNeg !== $bNeg ? $aNeg : $b > $i))) {
+				break;
+			}
+			#src/jotun/utils/Filler.hx:96: characters 4-50
+			$j = \Std::parseInt(\mb_substr($value, $i, 1));
+			#src/jotun/utils/Filler.hx:97: characters 4-7
+			++$i;
+			#src/jotun/utils/Filler.hx:98: lines 98-99
+			if ($j !== null) {
+				#src/jotun/utils/Filler.hx:99: characters 10-11
+				$s1 = null;
+				if ($j === null) {
+					$s1 = "null";
+				} else {
+					$int = $j;
+					$s1 = \Std::string(($int < 0 ? 4294967296.0 + $int : $int + 0.0));
+				}
+				#src/jotun/utils/Filler.hx:99: characters 5-16
+				$s = ($s??'null') . ($s1??'null') . "";
+			}
+		}
+		#src/jotun/utils/Filler.hx:101: characters 3-22
+		$i = \Std::parseInt($s);
+		#src/jotun/utils/Filler.hx:102: characters 10-27
+		if ($i === null) {
+			#src/jotun/utils/Filler.hx:102: characters 22-23
+			return 0;
+		} else {
+			#src/jotun/utils/Filler.hx:102: characters 26-27
+			return $i;
+		}
+	}
+
+	/**
+	 * Fill a string block with object data
+	 * If data is an Array, build a block for each content object
+	 * @param	value
+	 * @param	data
+	 * @param	sufix
+	 * @return
+	 * 
+	 * @param string $value
+	 * @param string $split
+	 * @param mixed[]|\Array_hx $glue
+	 * @param \Closure $each
+	 * 
+	 * @return string
+	 */
+	public static function splitter ($value, $split, $glue, $each = null) {
+		#src/jotun/utils/Filler.hx:67: characters 3-45
+		$r = HxString::split($value, $split);
+		#src/jotun/utils/Filler.hx:68: lines 68-78
+		if ($r->length > 1) {
+			#src/jotun/utils/Filler.hx:69: lines 69-77
+			Dice::All($r, function ($p, $v) use (&$glue, &$each, &$r) {
+				#src/jotun/utils/Filler.hx:70: lines 70-76
+				if ($p < $glue->length) {
+					#src/jotun/utils/Filler.hx:71: characters 6-30
+					$e = ($glue->arr[$p] ?? null);
+					#src/jotun/utils/Filler.hx:72: lines 72-74
+					if ($each !== null) {
+						#src/jotun/utils/Filler.hx:73: characters 7-18
+						$e = $each($e);
+					}
+					#src/jotun/utils/Filler.hx:75: characters 6-18
+					$r->offsetSet($p, ($v??'null') . \Std::string($e));
+				}
+			});
+		}
+		#src/jotun/utils/Filler.hx:79: characters 3-20
+		return $r->join("");
+	}
+
+	/**
+	 * @param string $value
+	 * @param mixed $data
+	 * @param string $split
+	 * @param mixed[]|\Array_hx $glue
+	 * @param \Closure $each
+	 * 
+	 * @return string
+	 */
+	public static function splitterTo ($value, $data, $split, $glue, $each = null) {
+		#src/jotun/utils/Filler.hx:83: characters 3-26
+		$value = Filler::to($value, $data);
+		#src/jotun/utils/Filler.hx:84: characters 3-44
+		return Filler::splitter($value, $split, $glue, $each);
+	}
+
+	/**
+	 * Fill a string block with object data
+	 * If data is an Array, build a block for each content object
+	 * @param	value
+	 * @param	data
+	 * @param	sufix
+	 * @return
+	 * 
+	 * @param string $value
+	 * @param mixed $data
+	 * @param string $sufix
+	 * 
+	 * @return string
+	 */
+	public static function to ($value, $data, $sufix = null) {
+		#src/jotun/utils/Filler.hx:45: characters 3-21
+		$r = "";
+		#src/jotun/utils/Filler.hx:46: lines 46-54
+		if (($data instanceof \Array_hx)) {
+			#src/jotun/utils/Filler.hx:47: lines 47-51
+			Dice::All($data, function ($p, $v) use (&$sufix, &$r, &$value) {
+				#src/jotun/utils/Filler.hx:48: characters 5-33
+				\Reflect::setField($v, "%0", $p);
+				#src/jotun/utils/Filler.hx:49: characters 5-33
+				$r = ($r??'null') . (Filler::_apply($sufix, $value, $v)??'null');
+				#src/jotun/utils/Filler.hx:50: characters 5-33
+				\Reflect::deleteField($v, "%0");
+			});
+		} else {
+			#src/jotun/utils/Filler.hx:53: characters 4-34
+			$r = Filler::_apply($sufix, $value, $data);
+		}
+		#src/jotun/utils/Filler.hx:55: characters 3-11
+		return $r;
+	}
+}
+
+Boot::registerClass(Filler::class, 'jotun.utils.Filler');

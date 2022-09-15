@@ -1,0 +1,135 @@
+<?php
+/**
+ */
+
+namespace jotun\serial;
+
+use \haxe\io\_BytesData\Container;
+use \php\Boot;
+use \haxe\Json;
+use \haxe\io\Bytes;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Packager {
+	/**
+	 * Decode Base64 encoded Json string to Object or String
+	 * @param	q
+	 * @param	json
+	 * @return
+	 * 
+	 * @param string $q
+	 * @param bool $json
+	 * 
+	 * @return mixed
+	 */
+	public static function decodeBase64 ($q, $json = null) {
+		#src/jotun/serial/Packager.hx:33: characters 3-23
+		$r = null;
+		#src/jotun/serial/Packager.hx:34: lines 34-36
+		try {
+			#src/jotun/serial/Packager.hx:35: characters 8-24
+			$str = $q;
+			$s = \base64_decode($str, true);
+			$r1 = \strlen($s);
+			#src/jotun/serial/Packager.hx:35: characters 4-35
+			$r = (new Bytes($r1, new Container($s)))->toString();
+		} catch(\Throwable $_g) {
+		}
+		#src/jotun/serial/Packager.hx:37: characters 10-71
+		if ($r !== null) {
+			#src/jotun/serial/Packager.hx:37: characters 22-64
+			if ($json && (mb_strlen($r) > 1)) {
+				#src/jotun/serial/Packager.hx:37: characters 46-59
+				return Packager::jsonDecode($r);
+			} else {
+				#src/jotun/serial/Packager.hx:37: characters 62-63
+				return $r;
+			}
+		} else {
+			#src/jotun/serial/Packager.hx:37: characters 67-71
+			return null;
+		}
+	}
+
+	/**
+	 * Encode Object to Base64 encoded Json String
+	 * @param	q
+	 * @return
+	 * 
+	 * @param mixed $q
+	 * 
+	 * @return string
+	 */
+	public static function encodeBase64 ($q) {
+		#src/jotun/serial/Packager.hx:21: lines 21-22
+		if (!is_string($q)) {
+			#src/jotun/serial/Packager.hx:22: characters 4-21
+			$q = Packager::jsonEncode($q);
+		}
+		#src/jotun/serial/Packager.hx:23: characters 24-41
+		$s = $q;
+		$bytes = \strlen($s);
+		#src/jotun/serial/Packager.hx:23: characters 10-42
+		$result = \base64_encode((new Bytes($bytes, new Container($s)))->toString());
+		return $result;
+	}
+
+	/**
+	 * Decode Json string to dynamic Object
+	 * @param	q
+	 * @return
+	 * 
+	 * @param string $q
+	 * 
+	 * @return mixed
+	 */
+	public static function jsonDecode ($q) {
+		#src/jotun/serial/Packager.hx:57: characters 3-23
+		return Json::phpJsonDecode($q);
+	}
+
+	/**
+	 * Encode Object to Json String
+	 * @param	o
+	 * @param	rep
+	 * @param	space
+	 * @return
+	 * 
+	 * @param mixed $o
+	 * @param \Closure $rep
+	 * @param string $space
+	 * 
+	 * @return string
+	 */
+	public static function jsonEncode ($o, $rep = null, $space = null) {
+		#src/jotun/serial/Packager.hx:48: characters 3-43
+		return JsonTool::stringify($o, $rep, $space);
+	}
+
+	/**
+	 * Convert string or object to md5
+	 * @param	o
+	 * @param	base64
+	 * @return
+	 * 
+	 * @param mixed $o
+	 * @param bool $base64
+	 * 
+	 * @return string
+	 */
+	public static function md5Encode ($o, $base64 = null) {
+		#src/jotun/serial/Packager.hx:67: lines 67-70
+		if (is_string($o)) {
+			#src/jotun/serial/Packager.hx:68: characters 4-24
+			return \md5($o);
+		} else {
+			#src/jotun/serial/Packager.hx:70: characters 11-63
+			return \md5(($base64 ? Packager::encodeBase64($o) : Packager::jsonEncode($o)));
+		}
+	}
+}
+
+Boot::registerClass(Packager::class, 'jotun.serial.Packager');

@@ -1,0 +1,97 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db\objects;
+
+use \php\Boot;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class ExtQuery extends Query implements IExtQuery {
+	/**
+	 * @var mixed[]|\Array_hx
+	 */
+	public $data;
+
+	/**
+	 * @param IDataTable $table
+	 * @param mixed[]|\Array_hx $data
+	 * 
+	 * @return void
+	 */
+	public function __construct ($table, $data) {
+		#src/jotun/php/db/objects/ExtQuery.hx:13: characters 3-21
+		parent::__construct($table, true);
+		#src/jotun/php/db/objects/ExtQuery.hx:14: characters 3-39
+		$this->data = ($data !== null ? $data : new \Array_hx());
+	}
+
+	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return void
+	 */
+	public function each ($handler) {
+		#src/jotun/php/db/objects/ExtQuery.hx:18: lines 18-20
+		Dice::Values($this->data, function ($v) use (&$handler) {
+			#src/jotun/php/db/objects/ExtQuery.hx:19: characters 4-29
+			return $handler($v) === true;
+		});
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function first () {
+		#src/jotun/php/db/objects/ExtQuery.hx:28: characters 3-16
+		return $this->one(0);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function last () {
+		#src/jotun/php/db/objects/ExtQuery.hx:32: characters 3-30
+		return $this->one($this->data->length - 1);
+	}
+
+	/**
+	 * @param int $i
+	 * 
+	 * @return mixed
+	 */
+	public function one ($i) {
+		#src/jotun/php/db/objects/ExtQuery.hx:24: characters 10-44
+		if ($i < $this->data->length) {
+			#src/jotun/php/db/objects/ExtQuery.hx:24: characters 30-37
+			return ($this->data->arr[$i] ?? null);
+		} else {
+			#src/jotun/php/db/objects/ExtQuery.hx:24: characters 40-44
+			return null;
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function slice () {
+		#src/jotun/php/db/objects/ExtQuery.hx:36: characters 10-49
+		if ($this->data->length > 0) {
+			#src/jotun/php/db/objects/ExtQuery.hx:36: characters 30-42
+			$_this = $this->data;
+			if ($_this->length > 0) {
+				$_this->length--;
+			}
+			return \array_shift($_this->arr);
+		} else {
+			#src/jotun/php/db/objects/ExtQuery.hx:36: characters 45-49
+			return null;
+		}
+	}
+}
+
+Boot::registerClass(ExtQuery::class, 'jotun.php.db.objects.ExtQuery');

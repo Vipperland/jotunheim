@@ -1,0 +1,162 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db;
+
+use \php\Boot;
+use \jotun\php\db\tools\ICommand;
+use \jotun\php\db\tools\IExtCommand;
+use \jotun\php\db\objects\IDataTable;
+use \jotun\errors\IError;
+
+/**
+ * @author Rafael Moreira
+ */
+interface IGate {
+	/**
+	 * LAst inserted column value
+	 * @param	field
+	 * @param	mode
+	 * @return
+	 * 
+	 * @param string $field
+	 * @param string $mode
+	 * 
+	 * @return mixed
+	 */
+	public function getInsertedID ($field = null, $mode = null) ;
+
+	/**
+	 * Name of Selected database
+	 * @return
+	 * 
+	 * @return string
+	 */
+	public function getName () ;
+
+	/**
+	 * Get name of all tables in the selected database
+	 * @return
+	 * 
+	 * @return string[]|\Array_hx
+	 */
+	public function getTableNames () ;
+
+	/**
+	 * Get all DataTable objects from the selected database
+	 * @return
+	 * 
+	 * @return mixed
+	 */
+	public function getTables () ;
+
+	/**
+	 * @return IError[]|\Array_hx
+	 */
+	public function get_errors () ;
+
+	/**
+	 * @return string[]|\Array_hx
+	 */
+	public function get_log () ;
+
+	/**
+	 * Verify if table exists
+	 * @param	table
+	 * @return
+	 * 
+	 * @param string $table
+	 * 
+	 * @return bool
+	 */
+	public function ifTableExists ($table) ;
+
+	/**
+	 * If the connection is available
+	 * @return
+	 * 
+	 * @return bool
+	 */
+	public function isOpen () ;
+
+	/**
+	 * Open a connection
+	 * @param	token
+	 * @return
+	 * 
+	 * @param Token $token
+	 * @param bool $log
+	 * 
+	 * @return IGate
+	 */
+	public function open ($token, $log = null) ;
+
+	/**
+	 * The query to execute
+	 * @param	query
+	 * @param	parameters
+	 * @param	object
+	 * @param	options
+	 * @return
+	 * 
+	 * @param string $query
+	 * @param mixed $parameters
+	 * @param mixed $options
+	 * 
+	 * @return ICommand
+	 */
+	public function prepare ($query, $parameters = null, $options = null) ;
+
+	/**
+	 *
+	 * @param	query
+	 * @param	parameters
+	 * @return
+	 * 
+	 * @param string $query
+	 * @param mixed $parameters
+	 * 
+	 * @return IExtCommand
+	 */
+	public function query ($query, $parameters = null) ;
+
+	/**
+	 * Show all fields of a table
+	 * @param	table
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public function schema ($table = null) ;
+
+	/**
+	 * Enable/Disable INT to String conversions
+	 * @param	value
+	 * @return
+	 * 
+	 * @param bool $value
+	 * 
+	 * @return IGate
+	 */
+	public function setPdoAttributes ($value) ;
+
+	/**
+	 * Shotcut to table statements and methods
+	 * @param	table
+	 * @return
+	 * 
+	 * @param string $table
+	 * 
+	 * @return IDataTable
+	 */
+	public function table ($table) ;
+}
+
+Boot::registerClass(IGate::class, 'jotun.php.db.IGate');
+Boot::registerGetters('jotun\\php\\db\\IGate', [
+	'log' => true,
+	'errors' => true
+]);

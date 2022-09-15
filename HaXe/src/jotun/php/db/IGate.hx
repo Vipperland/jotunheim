@@ -45,6 +45,11 @@ interface IGate {
 	public function isLogEnabled () : Bool;
 	
 	/**
+	 * Enable logging
+	 */
+	public function enableLog():Void;
+	
+	/**
 	   Name of Selected database
 	   @return
 	**/
@@ -55,7 +60,7 @@ interface IGate {
 	 * @param	token
 	 * @return
 	 */
-	public function open (token:Token, log:Bool = false) : IGate;
+	public function open (token:Token) : IGate;
 	
 	/**
 	 * The query to execute

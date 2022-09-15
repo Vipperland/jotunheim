@@ -1,0 +1,36 @@
+<?php
+/**
+ */
+
+namespace jotun\objects;
+
+use \php\Boot;
+
+/**
+ * @author Rafael Moreira
+ */
+interface IResolve {
+	/**
+	 * @param string $name
+	 * 
+	 * @return void
+	 */
+	public function deleteProp ($name) ;
+
+	/**
+	 * @param string $name
+	 * 
+	 * @return mixed
+	 */
+	public function getProp ($name) ;
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * 
+	 * @return void
+	 */
+	public function setProp ($name, $value) ;
+}
+
+Boot::registerClass(IResolve::class, 'jotun.objects.IResolve');

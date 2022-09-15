@@ -22,8 +22,6 @@ interface IDomain {
 	
 	#if js
 		
-		public var data:IDataCache;
-		
 		public var hash:IFragments;
 		
 	#elseif php
@@ -46,8 +44,6 @@ interface IDomain {
 
 	#if js
 		
-		public function allocate (?expire:UInt=30):IDataCache;
-		
 		public function reload (?force:Bool = false):Void;
 		
 		public function location():String;
@@ -59,6 +55,8 @@ interface IDomain {
 		public function getRequestMethod():String;
 		
 		public function isRequestMethod(q:String):Bool;
+		
+		public function getInput():String;
 		
 	#end
 	

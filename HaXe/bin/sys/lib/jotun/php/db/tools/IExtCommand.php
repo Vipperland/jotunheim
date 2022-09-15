@@ -1,0 +1,65 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db\tools;
+
+use \php\Boot;
+
+/**
+ * @author Rafael Moreira
+ */
+interface IExtCommand extends ICommand {
+	/**
+	 * Execute the command
+	 * @param	handler
+	 * @param	type
+	 * @param	parameters
+	 * @return
+	 * 
+	 * @param \Closure $handler
+	 * @param mixed $type
+	 * @param mixed[]|\Array_hx $parameters
+	 * 
+	 * @return IExtCommand
+	 */
+	public function execute ($handler = null, $type = null, $parameters = null) ;
+
+	/**
+	 * Shortcut only, Similar to Dice.Values(command.result, handler)
+	 * @param	handler
+	 * @return
+	 * 
+	 * @param \Closure $handler
+	 * 
+	 * @return ICommand
+	 */
+	public function fetch ($handler) ;
+
+	/**
+	 * Find params equal one or more value
+	 * @param	params
+	 * @param	values
+	 * @param	limit
+	 * @return
+	 * 
+	 * @param string $param
+	 * @param mixed[]|\Array_hx $values
+	 * @param int $limit
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public function find ($param, $values, $limit = null) ;
+
+	/**
+	 * Count result length by COUNT(*) property or result length
+	 * @return
+	 * 
+	 * @param string $prop
+	 * 
+	 * @return int
+	 */
+	public function length ($prop = null) ;
+}
+
+Boot::registerClass(IExtCommand::class, 'jotun.php.db.tools.IExtCommand');

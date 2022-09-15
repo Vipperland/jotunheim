@@ -77,8 +77,11 @@ class Gate implements IGate {
 		return _logCommands;
 	}
 	
-	public function open(token:Token, log:Bool = false):IGate {
-		_logCommands = log;
+	public function enableLog():Void {
+		_logCommands = true;
+	}
+	
+	public function open(token:Token):IGate {
 		if (!isOpen()) {
 			_token = token;
 			try {

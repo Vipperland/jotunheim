@@ -1,0 +1,37 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db\objects;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Query implements IQuery {
+	/**
+	 * @var bool
+	 */
+	public $success;
+	/**
+	 * @var IDataTable
+	 */
+	public $table;
+
+	/**
+	 * @param IDataTable $table
+	 * @param bool $success
+	 * 
+	 * @return void
+	 */
+	public function __construct ($table, $success) {
+		#src/jotun/php/db/objects/Query.hx:14: characters 3-21
+		$this->table = $table;
+		#src/jotun/php/db/objects/Query.hx:15: characters 3-25
+		$this->success = $success;
+	}
+}
+
+Boot::registerClass(Query::class, 'jotun.php.db.objects.Query');

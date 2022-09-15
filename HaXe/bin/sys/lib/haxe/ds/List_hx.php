@@ -1,0 +1,75 @@
+<?php
+/**
+ */
+
+namespace haxe\ds;
+
+use \php\Boot;
+use \haxe\ds\_List\ListIterator;
+use \haxe\ds\_List\ListNode;
+
+/**
+ * A linked-list of elements. The list is composed of element container objects
+ * that are chained together. It is optimized so that adding or removing an
+ * element does not imply copying the whole list content every time.
+ * @see https://haxe.org/manual/std-List.html
+ */
+class List_hx {
+	/**
+	 * @var ListNode
+	 */
+	public $h;
+	/**
+	 * @var int
+	 * The length of `this` List.
+	 */
+	public $length;
+	/**
+	 * @var ListNode
+	 */
+	public $q;
+
+	/**
+	 * Creates a new empty list.
+	 * 
+	 * @return void
+	 */
+	public function __construct () {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:45: characters 3-13
+		$this->length = 0;
+	}
+
+	/**
+	 * Returns an iterator on the elements of the list.
+	 * 
+	 * @return ListIterator
+	 */
+	public function iterator () {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:161: characters 3-32
+		return new ListIterator($this->h);
+	}
+
+	/**
+	 * Adds element `item` at the beginning of `this` List.
+	 * `this.length` increases by 1.
+	 * 
+	 * @param mixed $item
+	 * 
+	 * @return void
+	 */
+	public function push ($item) {
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:69: characters 3-36
+		$x = new ListNode($item, $this->h);
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:70: characters 3-8
+		$this->h = $x;
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:71: lines 71-72
+		if ($this->q === null) {
+			#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:72: characters 4-9
+			$this->q = $x;
+		}
+		#D:\Toolkits\Haxe\4.2.5\haxe\std/haxe/ds/List.hx:73: characters 3-11
+		$this->length++;
+	}
+}
+
+Boot::registerClass(List_hx::class, 'haxe.ds.List');

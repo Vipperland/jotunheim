@@ -1,0 +1,726 @@
+<?php
+/**
+ */
+
+namespace jotun\utils;
+
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \php\Lib;
+use \jotun\tools\Utils;
+use \php\_NativeArray\NativeArray_Impl_;
+use \php\_Boot\HxClosure;
+use \haxe\ds\ArraySort;
+
+/**
+ * ...
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
+ */
+class Dice {
+	/**
+	 * For each object Value and parameter, call each(paramName,paramValue)
+	 * @param	q		Target object
+	 * @param	each		Parameter and Value handler, return true to stop propagation
+	 * @param	complete	On propagation stop handler, call it with fail param and value
+	 * @return	Last value
+	 * 
+	 * @param mixed $q
+	 * @param mixed $each
+	 * @param \Closure $complete
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function All ($q, $each, $complete = null) {
+		#src/jotun/utils/Dice.hx:30: characters 3-24
+		$v = null;
+		#src/jotun/utils/Dice.hx:31: characters 3-24
+		$p = null;
+		#src/jotun/utils/Dice.hx:32: characters 3-21
+		$i = true;
+		#src/jotun/utils/Dice.hx:33: characters 3-18
+		$k = 0;
+		#src/jotun/utils/Dice.hx:34: lines 34-58
+		if ($q !== null) {
+			#src/jotun/utils/Dice.hx:37: lines 37-39
+			if (Boot::isOfType($q, Boot::getClass(NativeArray_Impl_::class)) || ($q instanceof \Array_hx)) {
+				#src/jotun/utils/Dice.hx:38: characters 6-41
+				$q = Lib::objectOfAssociativeArray($q);
+			}
+			#src/jotun/utils/Dice.hx:41: lines 41-57
+			$_g = 0;
+			$_g1 = \Reflect::fields($q);
+			while ($_g < $_g1->length) {
+				#src/jotun/utils/Dice.hx:41: characters 9-10
+				$p1 = ($_g1->arr[$_g] ?? null);
+				#src/jotun/utils/Dice.hx:41: lines 41-57
+				++$_g;
+				#src/jotun/utils/Dice.hx:42: characters 5-28
+				$v = \Reflect::field($q, $p1);
+				#src/jotun/utils/Dice.hx:45: lines 45-47
+				if (($v instanceof \Closure) || ($v instanceof HxClosure)) {
+					#src/jotun/utils/Dice.hx:46: characters 7-15
+					continue;
+				}
+				#src/jotun/utils/Dice.hx:49: lines 49-56
+				if ($each($p1, $v) === true) {
+					#src/jotun/utils/Dice.hx:50: characters 6-15
+					$i = false;
+					#src/jotun/utils/Dice.hx:51: characters 6-11
+					break;
+				} else {
+					#src/jotun/utils/Dice.hx:53: characters 6-9
+					++$k;
+					#src/jotun/utils/Dice.hx:54: characters 6-14
+					$p1 = null;
+					#src/jotun/utils/Dice.hx:55: characters 6-14
+					$v = null;
+				}
+			}
+		}
+		#src/jotun/utils/Dice.hx:59: characters 3-78
+		$r = new _HxAnon_Dice0($p, $v, $i, $q, $k);
+		#src/jotun/utils/Dice.hx:60: lines 60-62
+		if ($complete !== null) {
+			#src/jotun/utils/Dice.hx:61: characters 4-15
+			$complete($r);
+		}
+		#src/jotun/utils/Dice.hx:63: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * @param mixed $objects
+	 * @param mixed $into
+	 * @param int $blendType
+	 * 
+	 * @return void
+	 */
+	public static function Blend ($objects, $into, $blendType = 0) {
+		#src/jotun/utils/Dice.hx:354: lines 354-383
+		if ($blendType === null) {
+			$blendType = 0;
+		}
+		#src/jotun/utils/Dice.hx:355: lines 355-357
+		if (!($objects instanceof \Array_hx)) {
+			#src/jotun/utils/Dice.hx:356: characters 4-23
+			$objects = \Array_hx::wrap([$objects]);
+		}
+		#src/jotun/utils/Dice.hx:358: lines 358-382
+		Dice::Values($objects, function ($o) use (&$blendType, &$into) {
+			#src/jotun/utils/Dice.hx:359: lines 359-381
+			Dice::All($o, function ($p, $v) use (&$blendType, &$into) {
+				#src/jotun/utils/Dice.hx:360: lines 360-380
+				if ($blendType === 0) {
+					#src/jotun/utils/Dice.hx:362: characters 7-35
+					\Reflect::setField($into, $p, $v);
+				} else if ($blendType === 1) {
+					#src/jotun/utils/Dice.hx:365: lines 365-367
+					if (!\Reflect::hasField($into, $p)) {
+						#src/jotun/utils/Dice.hx:366: characters 8-36
+						\Reflect::setField($into, $p, $v);
+					}
+				} else if ($blendType === 2) {
+					#src/jotun/utils/Dice.hx:370: lines 370-378
+					if (\Reflect::hasField($into, $p)) {
+						#src/jotun/utils/Dice.hx:371: characters 8-22
+						$i = 0;
+						#src/jotun/utils/Dice.hx:372: lines 372-374
+						while (\Reflect::hasField($into, \Std::string($p) . "_" . ($i??'null'))) {
+							#src/jotun/utils/Dice.hx:373: characters 9-12
+							++$i;
+						}
+						#src/jotun/utils/Dice.hx:375: characters 8-46
+						\Reflect::setField($into, $p, \Std::string($p) . "_" . ($i??'null'));
+					} else {
+						#src/jotun/utils/Dice.hx:377: characters 8-36
+						\Reflect::setField($into, $p, $v);
+					}
+				}
+			});
+		});
+	}
+
+	/**
+	 * Execute the method in all object list (obj.method(...args))
+	 * @param	q		Target object
+	 * @param	method	Function name
+	 * @param	args		Function arguments
+	 * 
+	 * @param mixed[]|\Array_hx $q
+	 * @param string $method
+	 * @param mixed[]|\Array_hx $args
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function Call ($q, $method, $args = null) {
+		#src/jotun/utils/Dice.hx:174: characters 3-30
+		if ($args === null) {
+			#src/jotun/utils/Dice.hx:174: characters 21-30
+			$args = new \Array_hx();
+		}
+		#src/jotun/utils/Dice.hx:175: lines 175-184
+		return Dice::All($q, function ($p, $v) use (&$args, &$method) {
+			#src/jotun/utils/Dice.hx:180: characters 6-59
+			\Reflect::callMethod($v, \Reflect::field($v, $method), $args);
+		}, null);
+	}
+
+	/**
+	 * For each object Value call each(value, previous)
+	 * @param	q		Target object
+	 * @param	each		Value handler, return true to stop propagation
+	 * @param	complete	On propagation stop handler, call it with fail value
+	 * 
+	 * @param mixed $q
+	 * @param mixed $each
+	 * @param \Closure $complete
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function Comparer ($q, $each, $complete = null) {
+		#src/jotun/utils/Dice.hx:100: characters 3-27
+		$prev = null;
+		#src/jotun/utils/Dice.hx:101: lines 101-108
+		return Dice::All($q, function ($p, $v) use (&$each, &$prev) {
+			#src/jotun/utils/Dice.hx:103: characters 5-27
+			$r = $each($v, $prev);
+			#src/jotun/utils/Dice.hx:104: characters 5-13
+			$prev = $v;
+			#src/jotun/utils/Dice.hx:105: characters 5-13
+			return $r;
+		}, $complete);
+	}
+
+	/**
+	 * Call a method f(a,b,a==b) while (a<b; ++a)
+	 * @param	from
+	 * @param	to
+	 * @param	each
+	 * @param	complete
+	 * 
+	 * @param mixed $from
+	 * @param mixed $to
+	 * @param \Closure $each
+	 * @param \Closure $complete
+	 * @param int $increment
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function Count ($from, $to, $each, $complete = null, $increment = 1) {
+		#src/jotun/utils/Dice.hx:194: lines 194-209
+		if ($increment === null) {
+			$increment = 1;
+		}
+		#src/jotun/utils/Dice.hx:195: characters 17-35
+		$a = $from;
+		$b = $to;
+		#src/jotun/utils/Dice.hx:195: characters 3-36
+		$a1 = (\is_nan($a) || \is_nan($b) ? \Math::$NaN : \min($a, $b));
+		#src/jotun/utils/Dice.hx:196: characters 17-35
+		$a = $from;
+		$b = $to;
+		#src/jotun/utils/Dice.hx:196: characters 3-36
+		$b1 = (\is_nan($a) || \is_nan($b) ? \Math::$NaN : \max($a, $b));
+		#src/jotun/utils/Dice.hx:197: characters 7-41
+		$tmp = null;
+		if ($increment !== null) {
+			#src/jotun/utils/Dice.hx:197: characters 28-41
+			$aNeg = false;
+			$bNeg = $increment < 0;
+			#src/jotun/utils/Dice.hx:197: characters 7-41
+			$tmp = ($aNeg !== $bNeg ? $aNeg : 1 > $increment);
+		} else {
+			$tmp = true;
+		}
+		#src/jotun/utils/Dice.hx:197: characters 3-56
+		if ($tmp) {
+			#src/jotun/utils/Dice.hx:197: characters 43-56
+			$increment = 1;
+		}
+		#src/jotun/utils/Dice.hx:198: lines 198-202
+		while ($a1 < $b1) {
+			#src/jotun/utils/Dice.hx:199: characters 13-19
+			$a = $a1;
+			#src/jotun/utils/Dice.hx:199: characters 30-44
+			$int = $increment;
+			$a1 = (($int < 0 ? 4294967296.0 + $int : $int + 0.0)) + $a1;
+			#src/jotun/utils/Dice.hx:199: lines 199-201
+			if ($each($a, $b1, Boot::equal($a1, $b1)) === true) {
+				#src/jotun/utils/Dice.hx:200: characters 5-10
+				break;
+			}
+		}
+		#src/jotun/utils/Dice.hx:203: characters 3-23
+		$c = Boot::equal($a1, $b1);
+		#src/jotun/utils/Dice.hx:204: characters 64-75
+		$int = $increment;
+		#src/jotun/utils/Dice.hx:204: characters 3-78
+		$r = new _HxAnon_Dice1($from, $b1, $c, $a1 - (($int < 0 ? 4294967296.0 + $int : $int + 0.0)));
+		#src/jotun/utils/Dice.hx:205: lines 205-207
+		if ($complete !== null) {
+			#src/jotun/utils/Dice.hx:206: characters 4-15
+			$complete($r);
+		}
+		#src/jotun/utils/Dice.hx:208: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * Extract properties from a object and return a new object with then
+	 * @param	q		A valid object
+	 * @param	fields	Named fields to extract
+	 * @return
+	 * 
+	 * @param mixed $q
+	 * @param string[]|\Array_hx $fields
+	 * 
+	 * @return mixed
+	 */
+	public static function Extract ($q, $fields) {
+		#src/jotun/utils/Dice.hx:118: characters 3-22
+		$r = new HxAnon();
+		#src/jotun/utils/Dice.hx:119: lines 119-124
+		Dice::Values($fields, function ($v) use (&$r, &$q) {
+			#src/jotun/utils/Dice.hx:122: characters 5-48
+			\Reflect::setField($r, $v, \Reflect::field($q, $v));
+		});
+		#src/jotun/utils/Dice.hx:125: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * @param mixed[]|\Array_hx $data
+	 * @param int $a
+	 * @param int $b
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public static function List ($data, $a = 0, $b = null) {
+		#src/jotun/utils/Dice.hx:331: lines 331-352
+		if ($a === null) {
+			$a = 0;
+		}
+		#src/jotun/utils/Dice.hx:332: characters 3-32
+		$copy = new \Array_hx();
+		#src/jotun/utils/Dice.hx:333: characters 3-30
+		$len = $data->length;
+		#src/jotun/utils/Dice.hx:334: characters 3-33
+		if ($b === null) {
+			#src/jotun/utils/Dice.hx:334: characters 18-33
+			$b = $data->length;
+		}
+		#src/jotun/utils/Dice.hx:335: characters 6-11
+		$aNeg = $b < 0;
+		$bNeg = $a < 0;
+		#src/jotun/utils/Dice.hx:335: lines 335-350
+		if (($aNeg !== $bNeg ? $aNeg : $b > $a)) {
+			#src/jotun/utils/Dice.hx:336: lines 336-342
+			while (true) {
+				#src/jotun/utils/Dice.hx:336: characters 11-16
+				$aNeg = $b < 0;
+				$bNeg = $a < 0;
+				#src/jotun/utils/Dice.hx:336: lines 336-342
+				if (!(($aNeg !== $bNeg ? $aNeg : $b > $a))) {
+					break;
+				}
+				#src/jotun/utils/Dice.hx:337: characters 9-17
+				$aNeg1 = $a < 0;
+				$bNeg1 = $len < 0;
+				#src/jotun/utils/Dice.hx:337: lines 337-339
+				if (($aNeg1 !== $bNeg1 ? $aNeg1 : $a >= $len)) {
+					#src/jotun/utils/Dice.hx:338: characters 6-11
+					break;
+				}
+				#src/jotun/utils/Dice.hx:340: characters 5-32
+				$copy->offsetSet($copy->length, ($data->arr[$a] ?? null));
+				#src/jotun/utils/Dice.hx:341: characters 5-8
+				++$a;
+			}
+		} else {
+			#src/jotun/utils/Dice.hx:343: characters 12-17
+			$aNeg = $a < 0;
+			$bNeg = $b < 0;
+			#src/jotun/utils/Dice.hx:343: lines 343-350
+			if (($aNeg !== $bNeg ? $aNeg : $a > $b)) {
+				#src/jotun/utils/Dice.hx:344: lines 344-349
+				while (true) {
+					#src/jotun/utils/Dice.hx:344: characters 11-16
+					$aNeg = $a < 0;
+					$bNeg = $b < 0;
+					#src/jotun/utils/Dice.hx:344: lines 344-349
+					if (!(($aNeg !== $bNeg ? $aNeg : $a > $b))) {
+						break;
+					}
+					#src/jotun/utils/Dice.hx:345: characters 9-16
+					$aNeg1 = $len < 0;
+					$bNeg1 = $a < 0;
+					#src/jotun/utils/Dice.hx:345: lines 345-347
+					if (($aNeg1 !== $bNeg1 ? $aNeg1 : $len > $a)) {
+						#src/jotun/utils/Dice.hx:346: characters 6-33
+						$copy->offsetSet($copy->length, ($data->arr[$a] ?? null));
+					}
+					#src/jotun/utils/Dice.hx:348: characters 5-8
+					--$a;
+				}
+			}
+		}
+		#src/jotun/utils/Dice.hx:351: characters 3-14
+		return $copy;
+	}
+
+	/**
+	 * Ammount of values that fit in a table
+	 * @param	list
+	 * @param	values
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $table
+	 * @param mixed $values
+	 * @param int $limit
+	 * 
+	 * @return int
+	 */
+	public static function Match ($table, $values, $limit = 1) {
+		#src/jotun/utils/Dice.hx:233: lines 233-245
+		if ($limit === null) {
+			$limit = 1;
+		}
+		#src/jotun/utils/Dice.hx:234: lines 234-236
+		if (!($values instanceof \Array_hx)) {
+			#src/jotun/utils/Dice.hx:235: characters 4-21
+			$values = \Array_hx::wrap([$values]);
+		}
+		#src/jotun/utils/Dice.hx:237: characters 3-17
+		$r = 0;
+		#src/jotun/utils/Dice.hx:238: lines 238-243
+		Dice::Values($values, function ($v) use (&$table, &$r, &$limit) {
+			#src/jotun/utils/Dice.hx:239: lines 239-241
+			if (\Lambda::indexOf($table, $v) !== -1) {
+				#src/jotun/utils/Dice.hx:240: characters 5-8
+				$r += 1;
+			}
+			#src/jotun/utils/Dice.hx:242: characters 4-25
+			return ($limit -= 1) === 0;
+		});
+		#src/jotun/utils/Dice.hx:244: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * Concat all mixed data into one array
+	 * @param	data
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $data
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public static function Mix ($data) {
+		#src/jotun/utils/Dice.hx:283: characters 3-29
+		$r = new \Array_hx();
+		#src/jotun/utils/Dice.hx:284: characters 3-62
+		Dice::Values($data, function ($v) use (&$r) {
+			#src/jotun/utils/Dice.hx:284: characters 43-58
+			$r = $r->concat($v);
+		});
+		#src/jotun/utils/Dice.hx:285: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * Return the first valid value, if no one found, will return an alternative value
+	 * @param	from
+	 * @param	alt
+	 * @return
+	 * 
+	 * @param mixed $from
+	 * @param mixed $alt
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function One ($from, $alt = null) {
+		#src/jotun/utils/Dice.hx:218: lines 218-223
+		if (($from instanceof \Array_hx)) {
+			#src/jotun/utils/Dice.hx:219: lines 219-222
+			Dice::Values($from, function ($v) use (&$from) {
+				#src/jotun/utils/Dice.hx:220: characters 5-13
+				$from = $v;
+				#src/jotun/utils/Dice.hx:221: characters 5-24
+				return $from === null;
+			});
+		}
+		#src/jotun/utils/Dice.hx:224: characters 23-55
+		$tmp = (Utils::isValid($from) ? $from : $alt);
+		#src/jotun/utils/Dice.hx:224: characters 3-70
+		return new _HxAnon_Dice2($tmp, $from);
+	}
+
+	/**
+	 * For each object Param call each(param)
+	 * @param	q		Target object
+	 * @param	each		Parameter handler, return true to stop propagation
+	 * @param	complete	On propagation stop handler, call it with fail parameter
+	 * 
+	 * @param mixed $q
+	 * @param mixed $each
+	 * @param \Closure $complete
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function Params ($q, $each, $complete = null) {
+		#src/jotun/utils/Dice.hx:74: lines 74-77
+		return Dice::All($q, function ($p, $v) use (&$each) {
+			#src/jotun/utils/Dice.hx:75: characters 37-51
+			return $each($p);
+		}, $complete);
+	}
+
+	/**
+	 *
+	 * @param	table
+	 * @param	values
+	 * 
+	 * @param mixed[]|\Array_hx $table
+	 * @param mixed $values
+	 * 
+	 * @return void
+	 */
+	public static function Put ($table, $values) {
+		#src/jotun/utils/Dice.hx:268: characters 3-54
+		if (!($values instanceof \Array_hx)) {
+			#src/jotun/utils/Dice.hx:268: characters 37-54
+			$values = \Array_hx::wrap([$values]);
+		}
+		#src/jotun/utils/Dice.hx:269: lines 269-274
+		Dice::Values($values, function ($v) use (&$table) {
+			#src/jotun/utils/Dice.hx:270: characters 4-41
+			$i = \Lambda::indexOf($table, $v);
+			#src/jotun/utils/Dice.hx:271: lines 271-273
+			if ($i === -1) {
+				#src/jotun/utils/Dice.hx:272: characters 5-18
+				$table->arr[$table->length++] = $v;
+			}
+		});
+	}
+
+	/**
+	 * Return a random value from the array
+	 * @param	data
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $data
+	 * 
+	 * @return mixed
+	 */
+	public static function Random ($data) {
+		#src/jotun/utils/Dice.hx:294: characters 3-52
+		return ($data->arr[(int)((\mt_rand() / \mt_getrandmax() * $data->length))] ?? null);
+	}
+
+	/**
+	 *
+	 * @param	table
+	 * @param	values
+	 * 
+	 * @param mixed[]|\Array_hx $table
+	 * @param mixed $values
+	 * 
+	 * @return void
+	 */
+	public static function Remove ($table, $values) {
+		#src/jotun/utils/Dice.hx:253: characters 3-54
+		if (!($values instanceof \Array_hx)) {
+			#src/jotun/utils/Dice.hx:253: characters 37-54
+			$values = \Array_hx::wrap([$values]);
+		}
+		#src/jotun/utils/Dice.hx:254: lines 254-259
+		Dice::Values($values, function ($v) use (&$table) {
+			#src/jotun/utils/Dice.hx:255: characters 4-41
+			$i = \Lambda::indexOf($table, $v);
+			#src/jotun/utils/Dice.hx:256: lines 256-258
+			if ($i !== -1) {
+				#src/jotun/utils/Dice.hx:257: characters 5-20
+				$table->remove($v);
+			}
+		});
+	}
+
+	/**
+	 * Sort all data in a vector by key
+	 * @param	data
+	 * @param	key
+	 * @param	numeric
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $data
+	 * @param string $key
+	 * @param bool $numeric
+	 * @param bool $copy
+	 * 
+	 * @return mixed
+	 */
+	public static function Table ($data, $key = null, $numeric = false, $copy = false) {
+		#src/jotun/utils/Dice.hx:304: lines 304-329
+		if ($numeric === null) {
+			$numeric = false;
+		}
+		if ($copy === null) {
+			$copy = false;
+		}
+		#src/jotun/utils/Dice.hx:305: characters 3-64
+		$r = ($copy === true ? (new \Array_hx())->concat($data) : $data);
+		#src/jotun/utils/Dice.hx:306: lines 306-327
+		if ($numeric) {
+			#src/jotun/utils/Dice.hx:308: lines 308-316
+			if ($key !== null) {
+				#src/jotun/utils/Dice.hx:309: lines 309-311
+				ArraySort::sort($r, function ($a, $b) use (&$key) {
+					#src/jotun/utils/Dice.hx:310: characters 13-67
+					if (\Reflect::field($a, $key) < \Reflect::field($b, $key)) {
+						#src/jotun/utils/Dice.hx:310: characters 61-63
+						return -1;
+					} else {
+						#src/jotun/utils/Dice.hx:310: characters 66-67
+						return 1;
+					}
+				});
+			} else {
+				#src/jotun/utils/Dice.hx:314: lines 314-316
+				ArraySort::sort($r, function ($a, $b) {
+					#src/jotun/utils/Dice.hx:315: characters 13-27
+					if ($a < $b) {
+						#src/jotun/utils/Dice.hx:315: characters 21-23
+						return -1;
+					} else {
+						#src/jotun/utils/Dice.hx:315: characters 26-27
+						return 1;
+					}
+				});
+			}
+		} else if ($key !== null) {
+			#src/jotun/utils/Dice.hx:320: lines 320-322
+			ArraySort::sort($r, function ($a, $b) use (&$key) {
+				#src/jotun/utils/Dice.hx:321: characters 5-110
+				return \Reflect::compare(SearchTag::convert(\Reflect::field($a, $key)), SearchTag::convert(\Reflect::field($b, $key)));
+			});
+		} else {
+			#src/jotun/utils/Dice.hx:325: lines 325-327
+			ArraySort::sort($r, function ($a, $b) {
+				#src/jotun/utils/Dice.hx:326: characters 5-70
+				return \Reflect::compare(SearchTag::convert($a), SearchTag::convert($b));
+			});
+		}
+		#src/jotun/utils/Dice.hx:328: characters 3-11
+		return $r;
+	}
+
+	/**
+	 * For each object Value call each(value)
+	 * @param	q		Target object
+	 * @param	each		Value handler, return true to stop propagation
+	 * @param	complete	On propagation stop handler, call it with fail value
+	 * 
+	 * @param mixed $q
+	 * @param mixed $each
+	 * @param \Closure $complete
+	 * 
+	 * @return IDiceRoll
+	 */
+	public static function Values ($q, $each, $complete = null) {
+		#src/jotun/utils/Dice.hx:87: lines 87-90
+		return Dice::All($q, function ($p, $v) use (&$each) {
+			#src/jotun/utils/Dice.hx:88: characters 37-51
+			return $each($v);
+		}, $complete);
+	}
+
+	/**
+	 * Call a mthod for each null value in array
+	 * @param	q
+	 * @param	length
+	 * @param	handler
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $q
+	 * @param int $from
+	 * @param int $length
+	 * @param \Closure $handler
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public static function nullFill ($q, $from, $length, $handler) {
+		#src/jotun/utils/Dice.hx:155: characters 3-25
+		$length = $from + $length;
+		#src/jotun/utils/Dice.hx:156: lines 156-161
+		while ($from < $length) {
+			#src/jotun/utils/Dice.hx:157: lines 157-159
+			if (($q->arr[$from] ?? null) === null) {
+				#src/jotun/utils/Dice.hx:158: characters 5-28
+				$q->offsetSet($from, $handler($from));
+			}
+			#src/jotun/utils/Dice.hx:160: characters 4-10
+			++$from;
+		}
+		#src/jotun/utils/Dice.hx:162: characters 3-11
+		return $q;
+	}
+
+	/**
+	 * Remove NULL elements from Array
+	 * @param	q
+	 * @param stopOnNull
+	 * @return
+	 * 
+	 * @param mixed[]|\Array_hx $q
+	 * @param bool $stopOnNull
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public static function nullSkip ($q, $stopOnNull = null) {
+		#src/jotun/utils/Dice.hx:135: characters 3-29
+		$r = new \Array_hx();
+		#src/jotun/utils/Dice.hx:136: lines 136-143
+		Dice::Values($q, function ($v) use (&$r, &$stopOnNull) {
+			#src/jotun/utils/Dice.hx:137: lines 137-142
+			if ($v !== null) {
+				#src/jotun/utils/Dice.hx:138: characters 5-14
+				$r->arr[$r->length++] = $v;
+				#src/jotun/utils/Dice.hx:139: characters 5-17
+				return false;
+			} else {
+				#src/jotun/utils/Dice.hx:141: characters 5-22
+				return $stopOnNull;
+			}
+		});
+		#src/jotun/utils/Dice.hx:144: characters 3-11
+		return $r;
+	}
+}
+
+class _HxAnon_Dice0 extends HxAnon {
+	function __construct($param, $value, $completed, $object, $keys) {
+		$this->param = $param;
+		$this->value = $value;
+		$this->completed = $completed;
+		$this->object = $object;
+		$this->keys = $keys;
+	}
+}
+
+class _HxAnon_Dice1 extends HxAnon {
+	function __construct($from, $to, $completed, $value) {
+		$this->from = $from;
+		$this->to = $to;
+		$this->completed = $completed;
+		$this->value = $value;
+	}
+}
+
+class _HxAnon_Dice2 extends HxAnon {
+	function __construct($value, $object) {
+		$this->value = $value;
+		$this->object = $object;
+	}
+}
+
+Boot::registerClass(Dice::class, 'jotun.utils.Dice');

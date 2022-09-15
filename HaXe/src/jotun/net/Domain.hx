@@ -4,8 +4,6 @@ package jotun.net;
 	import js.Browser;
 	import js.Syntax;
 	import js.html.Location;
-	import jotun.data.DataCache;
-	import jotun.data.IDataCache;
 	import jotun.dom.Display;
 	import jotun.tools.Utils;
 #elseif php
@@ -37,8 +35,6 @@ class Domain implements IDomain {
 	#if js
 		
 		public var hash:IFragments;
-		
-		public var data:IDataCache;
 		
 	#elseif php
 		
@@ -104,12 +100,6 @@ class Domain implements IDomain {
 	}
 	
 	#if js
-		
-		public function allocate(?expire:UInt = 30):IDataCache {
-			if(data == null)
-				data = new DataCache(host, '/', 86400 * expire);
-			return data;
-		}
 		
 		public function reload(?force:Bool=false):Void {
 			Browser.window.location.reload(force);
@@ -257,6 +247,11 @@ class Domain implements IDomain {
 				}
 			}
 			
+		}
+		
+		public function getInput():String {
+			var data:String = php.Syntax.code("file_get_contents({0})", "php://input");
+			return data != null && data.length > 0 ? data : null;
 		}
 		
 	#end

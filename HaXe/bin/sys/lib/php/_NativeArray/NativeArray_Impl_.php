@@ -1,0 +1,12 @@
+<?php
+/**
+ */
+
+namespace php\_NativeArray;
+
+use \php\Boot;
+
+final class NativeArray_Impl_ {
+}
+
+Boot::registerClass(NativeArray_Impl_::class, 'php._NativeArray.NativeArray_Impl_');

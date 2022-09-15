@@ -581,6 +581,14 @@ class Utils{
 			throw new Error();
 		}
 		
+		static public function extendClass(a:Dynamic, b:Dynamic):Dynamic {
+			trace(Syntax.code("Object"), b, b.prototype);
+			if (b.prototype.isPrototypeOf(a)){
+				a.prototype = Syntax.code("Object").create(b.prototype);
+			}
+			return a;
+		}
+		
 	#end
 	
 }

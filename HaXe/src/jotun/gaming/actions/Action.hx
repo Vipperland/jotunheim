@@ -15,7 +15,11 @@ class Action extends Resolution {
 	
 	public static var cache:Dynamic = {};
 	
-	public static function get(id:String):Action {
+	public static function save(action:Action):Void {
+		Reflect.setField(cache, action.id, action);
+	}
+	
+	public static function load(id:String):Action {
 		return cast Reflect.field(cache, id);
 	}
 	
@@ -32,7 +36,7 @@ class Action extends Resolution {
 		var i:Int = 0;
 		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic){
 			if (Std.isOfType(v, String)){
-				v = Requirement.get(v);
+				v = EventController.loadRequirement(v);
 			}
 			if(v != null){
 				if (Std.isOfType(v, Requirement)){
@@ -49,7 +53,7 @@ class Action extends Resolution {
 			target = requirements.length;
 		}
 		if (Utils.isValid(data.id)){
-			Reflect.setField(cache, data.id, this);
+			EventController.saveAction(this);
 		}
 	}
 	

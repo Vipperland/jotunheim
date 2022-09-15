@@ -1,0 +1,253 @@
+<?php
+/**
+ */
+
+namespace jotun\tools;
+
+use \jotun\serial\Packager;
+use \php\_Boot\HxAnon;
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
+ */
+class Key {
+	/**
+	 * @var string
+	 */
+	static public $TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_CARD;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_CHAR_NAME;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_CURRENCY;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_DATE;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_EMAIL;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_HASH;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_IPV4;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_LETTER;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_NON_URL;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_NUMBER;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_PHONE;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_URL;
+	/**
+	 * @var \EReg
+	 */
+	static public $VALIDATE_USER_NAME;
+	/**
+	 * @var mixed
+	 */
+	static public $_cts;
+	/**
+	 * @var string
+	 */
+	static public $_last_uuid;
+
+	/**
+	 * @param string $id
+	 * 
+	 * @return int
+	 */
+	public static function COUNTER ($id = null) {
+		#src/jotun/tools/Key.hx:19: lines 19-20
+		if ($id === null) {
+			#src/jotun/tools/Key.hx:20: characters 4-17
+			$id = "global";
+		}
+		#src/jotun/tools/Key.hx:21: characters 3-18
+		$v = 0;
+		#src/jotun/tools/Key.hx:22: lines 22-27
+		if (!\Reflect::hasField(Key::$_cts, $id)) {
+			#src/jotun/tools/Key.hx:23: characters 4-33
+			\Reflect::setField(Key::$_cts, $id, 0);
+		} else {
+			#src/jotun/tools/Key.hx:25: characters 4-31
+			$v = \Reflect::field(Key::$_cts, $id);
+			#src/jotun/tools/Key.hx:26: characters 4-35
+			\Reflect::setField(Key::$_cts, $id, $v + 1);
+		}
+		#src/jotun/tools/Key.hx:28: characters 3-11
+		return $v;
+	}
+
+	/**
+	 * @param int $size
+	 * @param string $table
+	 * @param bool $mixCase
+	 * 
+	 * @return string
+	 */
+	public static function GEN ($size = 9, $table = null, $mixCase = true) {
+		#src/jotun/tools/Key.hx:31: lines 31-47
+		if ($size === null) {
+			$size = 9;
+		}
+		if ($mixCase === null) {
+			$mixCase = true;
+		}
+		#src/jotun/tools/Key.hx:32: characters 3-21
+		$s = "";
+		#src/jotun/tools/Key.hx:33: lines 33-35
+		if ($table === null) {
+			#src/jotun/tools/Key.hx:34: characters 4-17
+			$table = Key::$TABLE;
+		}
+		#src/jotun/tools/Key.hx:36: characters 3-29
+		$l = mb_strlen($table);
+		#src/jotun/tools/Key.hx:37: characters 3-23
+		$c = null;
+		#src/jotun/tools/Key.hx:38: lines 38-45
+		while (true) {
+			#src/jotun/tools/Key.hx:38: characters 10-25
+			$a = mb_strlen($s);
+			$aNeg = $size < 0;
+			$bNeg = $a < 0;
+			#src/jotun/tools/Key.hx:38: lines 38-45
+			if (!(($aNeg !== $bNeg ? $aNeg : $size > $a))) {
+				break;
+			}
+			#src/jotun/tools/Key.hx:39: characters 8-38
+			$c = \mb_substr($table, ($l <= 1 ? 0 : \mt_rand(0, $l - 1)), 1);
+			#src/jotun/tools/Key.hx:40: lines 40-43
+			if ($mixCase) {
+				#src/jotun/tools/Key.hx:41: lines 41-42
+				if ((\mt_rand() / \mt_getrandmax()) < .5) {
+					#src/jotun/tools/Key.hx:41: characters 29-48
+					$c = \mb_strtoupper($c);
+				} else {
+					#src/jotun/tools/Key.hx:42: characters 10-29
+					$c = \mb_strtolower($c);
+				}
+			}
+			#src/jotun/tools/Key.hx:44: characters 4-10
+			$s = ($s??'null') . ($c??'null');
+		}
+		#src/jotun/tools/Key.hx:46: characters 3-11
+		return $s;
+	}
+
+	/**
+	 * @param mixed $value
+	 * @param string $prefix
+	 * @param int $len
+	 * 
+	 * @return string
+	 */
+	public static function TAG ($value, $prefix = "0", $len = 11) {
+		#src/jotun/tools/Key.hx:59: lines 59-71
+		if ($prefix === null) {
+			$prefix = "0";
+		}
+		if ($len === null) {
+			$len = 11;
+		}
+		#src/jotun/tools/Key.hx:60: lines 60-64
+		if (!is_string($value)) {
+			#src/jotun/tools/Key.hx:61: characters 4-29
+			$value = \Std::string($value);
+		} else if ($value === null) {
+			#src/jotun/tools/Key.hx:63: characters 4-26
+			$value = Key::COUNTER("tag");
+		}
+		#src/jotun/tools/Key.hx:65: characters 3-28
+		$k = Boot::dynamicField($value, 'length');
+		#src/jotun/tools/Key.hx:66: lines 66-69
+		while ($k < $len) {
+			#src/jotun/tools/Key.hx:67: characters 4-26
+			$value = ($prefix??'null') . \Std::string($value);
+			#src/jotun/tools/Key.hx:68: characters 4-7
+			++$k;
+		}
+		#src/jotun/tools/Key.hx:70: characters 3-15
+		return $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function UUID () {
+		#src/jotun/tools/Key.hx:55: characters 3-60
+		Key::$_last_uuid = Packager::md5Encode(\Std::string(\Date::now()) . "-" . (Key::GEN()??'null'));
+		#src/jotun/tools/Key.hx:56: characters 3-20
+		return Key::$_last_uuid;
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getLastUUID () {
+		#src/jotun/tools/Key.hx:51: characters 3-20
+		return Key::$_last_uuid;
+	}
+
+	/**
+	 * @internal
+	 * @access private
+	 */
+	static public function __hx__init ()
+	{
+		static $called = false;
+		if ($called) return;
+		$called = true;
+
+
+		self::$_cts = new _HxAnon_Key0(0);
+		self::$VALIDATE_DATE = new \EReg("\\d{1,2}/\\d{1,2}/\\d{4}", "");
+		self::$VALIDATE_URL = new \EReg("https?://.+", "");
+		self::$VALIDATE_IPV4 = new \EReg("^\\d{1,3}d{1,3}.\\d{1,3}.\\d{1,3}", "");
+		self::$VALIDATE_CURRENCY = new \EReg("\\d+(.\\d{2})?", "");
+		self::$VALIDATE_EMAIL = new \EReg("^[a-z0-9!'#\$%&*+/=?^_`{|}~-]+(?:\\.[a-z0-9!'#\$%&*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-zA-Z]{2,}\$", "giu");
+		self::$VALIDATE_NUMBER = new \EReg("^\\d{1,}\$", "");
+		self::$VALIDATE_PHONE = new \EReg("^(\\d{10,11})|(\\(\\d{2}\\) \\d{4,5}-\\d{4})\$", "");
+		self::$VALIDATE_LETTER = new \EReg("^[a-zA-Z]{6,}\$", "");
+		self::$VALIDATE_USER_NAME = new \EReg("^[a-zA-Z ]{8,100}\$", "");
+		self::$VALIDATE_CHAR_NAME = new \EReg("^[a-zA-Z ]{8,32}\$", "");
+		self::$VALIDATE_NON_URL = new \EReg("^[A-Za-z0-9._-]{6,24}\$", "");
+		self::$VALIDATE_HASH = new \EReg("^[A-Za-z0-9._-]{35}\$", "");
+		self::$VALIDATE_CARD = new \EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}\$", "");
+	}
+}
+
+class _HxAnon_Key0 extends HxAnon {
+	function __construct($_hx_0) {
+		$this->{"global"} = $_hx_0;
+	}
+}
+
+Boot::registerClass(Key::class, 'jotun.tools.Key');
+Key::__hx__init();

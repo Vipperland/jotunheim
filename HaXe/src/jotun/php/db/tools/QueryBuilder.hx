@@ -58,22 +58,18 @@ class QueryBuilder implements IQueryBuilder {
 		if (Std.isOfType(obj, Clause)) {
 			Dice.Values(obj.conditions, function(v:Dynamic) { 
 				v = _conditions(v, props, joiner, skip);
-				if(v != null)
+				if (v != null){
 					r[r.length] = v;
+				}
 			});
 			s = obj.joiner();
 		}
 		// IF IS AN ARRAY, PARSE INNER OBJECTS
 		else if(Std.isOfType(obj, Array)){
 			Dice.All(obj, function(p:String, v:Dynamic) {
-				if (Std.isOfType(v, Clause)) {
-					v = _conditions(v, props, v.joiner(), skip);
-					if (v != null)
-						r[r.length] = v;
-				}else {
-					v = _conditions(v, props, joiner, skip);
-					if (v != null)
-						r[r.length] = v;
+				v = _conditions(v, props, Std.isOfType(v, Clause) ? v.joiner() : joiner, skip);
+				if (v != null){
+					r[r.length] = v;
 				}
 			});
 		}
@@ -91,12 +87,10 @@ class QueryBuilder implements IQueryBuilder {
 				if (skip){
 					r[r.length] = Filler.splitter(Filler.to(obj.condition, { p:obj.param } ), '?', [obj.value]);
 				}else{
-					r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
+					r[r.length] = Filler.to(obj.condition, { p:obj.param } );
 					if (!obj.skip){
-						r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
 						props[props.length] = obj.value;
 					}
-					
 				}
 			}
 		}

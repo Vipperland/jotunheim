@@ -1,0 +1,237 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db\tools;
+
+use \php\Boot;
+
+/**
+ * @author Rafael Moreira
+ */
+interface IQueryBuilder {
+	/**
+	 * Add a new entry to the table
+	 * @param	table
+	 * @param	parameters
+	 * @return
+	 * 
+	 * @param string $table
+	 * @param mixed $parameters
+	 * 
+	 * @return ICommand
+	 */
+	public function add ($table, $parameters = null) ;
+
+	/**
+	 * Duplicate an entry to same or another table
+	 * @param	from
+	 * @param	to
+	 * @param	clause
+	 * @param	filter
+	 * @param	limit
+	 * @return
+	 * 
+	 * @param string $from
+	 * @param string $to
+	 * @param mixed $clause
+	 * @param \Closure $filter
+	 * @param string $limit
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public function copy ($from, $to, $clause = null, $filter = null, $limit = null) ;
+
+	/**
+	 * Delete an entry
+	 * @param	table
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 * 
+	 * @param string $table
+	 * @param mixed $clause
+	 * @param mixed $order
+	 * @param string $limit
+	 * 
+	 * @return ICommand
+	 */
+	public function delete ($table, $clause = null, $order = null, $limit = null) ;
+
+	/**
+	 * Create a Foreign Key
+	 * @param	table
+	 * @param	name
+	 * @param	key
+	 * @param	target
+	 * @param	field
+	 * @param	delete
+	 * @param	update
+	 * @return
+	 * 
+	 * @param string $table
+	 * @param string $name
+	 * @param string $key
+	 * @param string $target
+	 * @param string $field
+	 * @param string $delete
+	 * @param string $update
+	 * 
+	 * @return ICommand
+	 */
+	public function fKey ($table, $name, $key = null, $target = null, $field = null, $delete = null, $update = null) ;
+
+	/**
+	 * Find any value in any table
+	 * @param	fields
+	 * @param	table
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 * 
+	 * @param mixed $fields
+	 * @param mixed $table
+	 * @param mixed $clause
+	 * @param mixed $order
+	 * @param string $limit
+	 * 
+	 * @return IExtCommand
+	 */
+	public function find ($fields, $table, $clause = null, $order = null, $limit = null) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function fullOuterJoin ($table, $name = null, $clause = null) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	parameters
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function join ($table, $name = null, $clause = null) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function leftJoin ($table, $name = null, $clause = null) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function leftOuterJoin ($table, $name = null, $clause = null) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function outerJoin ($table, $name = null, $clause = null) ;
+
+	/**
+	 * Rename table
+	 * @param	name
+	 * @param	to
+	 * 
+	 * @param string $name
+	 * @param string $to
+	 * 
+	 * @return ICommand
+	 */
+	public function rename ($name, $to) ;
+
+	/**
+	 *
+	 * @param	table
+	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param string $name
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function rightOuterJoin ($table, $name = null, $clause = null) ;
+
+	/**
+	 * Empty all table data
+	 * @return
+	 * 
+	 * @param string $table
+	 * 
+	 * @return ICommand
+	 */
+	public function truncate ($table) ;
+
+	/**
+	 * Update an entry
+	 * @param	table
+	 * @param	clause
+	 * @param	parameters
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 * 
+	 * @param string $table
+	 * @param mixed $clause
+	 * @param mixed $parameters
+	 * @param mixed $order
+	 * @param string $limit
+	 * 
+	 * @return ICommand
+	 */
+	public function update ($table, $clause = null, $parameters = null, $order = null, $limit = null) ;
+}
+
+Boot::registerClass(IQueryBuilder::class, 'jotun.php.db.tools.IQueryBuilder');

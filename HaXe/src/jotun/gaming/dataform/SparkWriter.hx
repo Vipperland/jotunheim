@@ -12,7 +12,7 @@ class SparkWriter {
 	public static var PROP:String = '|';
 	public static var SET:String = ':';
 	public static var TYPE:String = 'q';
-	public static var SPACE:String = '/+';
+	public static var SPACE:String = ' ';
 	
 	public static function convert(value:String, type:String):Dynamic {
 		return switch(type){
@@ -34,7 +34,7 @@ class SparkWriter {
 	   @param	nfo
 	   @return
 	**/
-	public static function parse(c:Spark, o:String, nfo:Dynamic, silent:Bool):Spark {
+	public static function parse(c:Spark, o:String, nfo:Array<String>, silent:Bool):Spark {
 		var obj:Spark = c;
 		var tag:Array<String> = null;
 		var def:Array<String> = null;
@@ -42,7 +42,7 @@ class SparkWriter {
 		Dice.Values(o.split(PROP), function(v:Dynamic){
 			tag = v.split(SET);
 			def = tag.shift().split(TYPE);
-			par = Reflect.field(nfo, def[0]);
+			par = nfo[cast def[0]];
 			v = tag.join(SET).split(SPACE).join(' ');
 			v = convert(v, def[1]);
 			if (silent){
@@ -92,7 +92,7 @@ class SparkWriter {
 			result[count] = p + TYPE + type + SET + value;
 			++count;
 		});
-		return n + (o.id != null ? " " + o.id : "") + " " + result.join(PROP);
+		return n + (o.id != null ? " " + o.id : "") + (result.length > 0 ? " @::" + result.join(PROP) : "");
 	}
 	
 }

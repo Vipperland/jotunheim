@@ -1,0 +1,44 @@
+<?php
+/**
+ */
+
+namespace jotun\errors;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Error implements IError {
+	/**
+	 * @var mixed
+	 */
+	public $code;
+	/**
+	 * @var mixed
+	 */
+	public $message;
+	/**
+	 * @var mixed
+	 */
+	public $object;
+
+	/**
+	 * @param mixed $code
+	 * @param mixed $message
+	 * @param mixed $object
+	 * 
+	 * @return void
+	 */
+	public function __construct ($code, $message, $object = null) {
+		#src/jotun/errors/Error.hx:17: characters 3-23
+		$this->object = $object;
+		#src/jotun/errors/Error.hx:18: characters 3-25
+		$this->message = $message;
+		#src/jotun/errors/Error.hx:19: characters 3-19
+		$this->code = $code;
+	}
+}
+
+Boot::registerClass(Error::class, 'jotun.errors.Error');

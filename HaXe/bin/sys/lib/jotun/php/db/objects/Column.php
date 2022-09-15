@@ -1,0 +1,97 @@
+<?php
+/**
+ */
+
+namespace jotun\php\db\objects;
+
+use \php\_Boot\HxDynamicStr;
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Column {
+	/**
+	 * @var string
+	 */
+	public $charset;
+	/**
+	 * @var string
+	 */
+	public $columnType;
+	/**
+	 * @var string
+	 */
+	public $comment;
+	/**
+	 * @var string
+	 */
+	public $dataType;
+	/**
+	 * @var string
+	 */
+	public $extra;
+	/**
+	 * @var string
+	 */
+	public $key;
+	/**
+	 * @var int
+	 */
+	public $length;
+	/**
+	 * @var string
+	 */
+	public $name;
+	/**
+	 * @var bool
+	 */
+	public $nullable;
+	/**
+	 * @var int
+	 */
+	public $position;
+	/**
+	 * @var string[]|\Array_hx
+	 */
+	public $previleges;
+	/**
+	 * @var string
+	 */
+	public $value;
+
+	/**
+	 * @param mixed $data
+	 * 
+	 * @return void
+	 */
+	public function __construct ($data) {
+		#src/jotun/php/db/objects/Column.hx:34: characters 3-26
+		$this->name = Boot::dynamicField($data, 'COLUMN_NAME');
+		#src/jotun/php/db/objects/Column.hx:35: characters 3-39
+		$this->nullable = Boot::dynamicField($data, 'IS_NULLABLE') === "YES";
+		#src/jotun/php/db/objects/Column.hx:36: characters 3-49
+		$this->position = \Std::parseInt(Boot::dynamicField($data, 'ORDINAL_POSITION'));
+		#src/jotun/php/db/objects/Column.hx:37: characters 3-30
+		$this->value = Boot::dynamicField($data, 'COLUMN_DEFAULT');
+		#src/jotun/php/db/objects/Column.hx:38: characters 3-28
+		$this->dataType = Boot::dynamicField($data, 'DATA_TYPE');
+		#src/jotun/php/db/objects/Column.hx:39: characters 3-32
+		$this->columnType = Boot::dynamicField($data, 'COLUMN_TYPE');
+		#src/jotun/php/db/objects/Column.hx:40: characters 3-24
+		$this->key = Boot::dynamicField($data, 'COLUMN_KEY');
+		#src/jotun/php/db/objects/Column.hx:41: characters 3-21
+		$this->extra = Boot::dynamicField($data, 'EXTRA');
+		#src/jotun/php/db/objects/Column.hx:42: characters 3-36
+		$this->charset = Boot::dynamicField($data, 'CHARACTER_SET_NAME');
+		#src/jotun/php/db/objects/Column.hx:43: characters 3-32
+		$this->comment = Boot::dynamicField($data, 'COLUMN_COMMENT');
+		#src/jotun/php/db/objects/Column.hx:44: characters 3-55
+		$this->length = \Std::parseInt(Boot::dynamicField($data, 'CHARACTER_MAXIMUM_LENGTH'));
+		#src/jotun/php/db/objects/Column.hx:45: characters 3-42
+		$this->previleges = HxDynamicStr::wrap(Boot::dynamicField($data, 'PRIVILEGES'))->split(",");
+	}
+}
+
+Boot::registerClass(Column::class, 'jotun.php.db.objects.Column');
