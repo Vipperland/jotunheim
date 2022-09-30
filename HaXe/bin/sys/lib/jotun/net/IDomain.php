@@ -20,6 +20,11 @@ interface IDomain {
 	/**
 	 * @return string
 	 */
+	public function getInput () ;
+
+	/**
+	 * @return string
+	 */
 	public function getRequestMethod () ;
 
 	/**

@@ -1,0 +1,194 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\dataform;
+
+use \php\_Boot\HxDynamicStr;
+use \php\Boot;
+use \jotun\tools\Flag;
+use \jotun\utils\Dice;
+use \haxe\Json;
+use \php\_Boot\HxString;
+
+/**
+ * ...
+ * @author Rim Project
+ */
+class SparkWriter {
+	/**
+	 * @var string
+	 */
+	static public $PROP = "|";
+	/**
+	 * @var string
+	 */
+	static public $SET = ":";
+	/**
+	 * @var string
+	 */
+	static public $SPACE = " ";
+	/**
+	 * @var string
+	 */
+	static public $TYPE = "q";
+
+	/**
+	 * @param string $value
+	 * @param string $type
+	 * 
+	 * @return mixed
+	 */
+	public static function convert ($value, $type) {
+		#src/jotun/gaming/dataform/SparkWriter.hx:18: lines 18-27
+		if ($type === "B") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:20: characters 15-27
+			return $value === "1";
+		} else if ($type === "F") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:24: characters 15-44
+			return new Flag(\Std::parseInt($value));
+		} else if ($type === "I") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:22: characters 15-34
+			return \Std::parseInt($value);
+		} else if ($type === "N") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:21: characters 15-36
+			return \Std::parseFloat($value);
+		} else if ($type === "O") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:23: characters 15-32
+			return Json::phpJsonDecode($value);
+		} else if ($type === "S") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:19: characters 15-20
+			return $value;
+		} else if ($type === "U") {
+			#src/jotun/gaming/dataform/SparkWriter.hx:25: characters 15-19
+			return null;
+		} else {
+			#src/jotun/gaming/dataform/SparkWriter.hx:26: characters 14-19
+			return $value;
+		}
+	}
+
+	/**
+	 * Object construct by property index
+	 * @param	c
+	 * @param	o
+	 * @param	nfo
+	 * @return
+	 * 
+	 * @param Spark $c
+	 * @param string $o
+	 * @param string[]|\Array_hx $nfo
+	 * @param bool $silent
+	 * 
+	 * @return Spark
+	 */
+	public static function parse ($c, $o, $nfo, $silent) {
+		#src/jotun/gaming/dataform/SparkWriter.hx:38: characters 3-21
+		$obj = $c;
+		#src/jotun/gaming/dataform/SparkWriter.hx:39: characters 3-32
+		$tag = null;
+		#src/jotun/gaming/dataform/SparkWriter.hx:40: characters 3-32
+		$def = null;
+		#src/jotun/gaming/dataform/SparkWriter.hx:41: characters 3-25
+		$par = null;
+		#src/jotun/gaming/dataform/SparkWriter.hx:42: lines 42-53
+		Dice::Values(HxString::split($o, SparkWriter::$PROP), function ($v) use (&$c, &$nfo, &$tag, &$par, &$def, &$silent) {
+			#src/jotun/gaming/dataform/SparkWriter.hx:43: characters 4-22
+			$tag = HxDynamicStr::wrap($v)->split(SparkWriter::$SET);
+			#src/jotun/gaming/dataform/SparkWriter.hx:44: characters 10-21
+			if ($tag->length > 0) {
+				$tag->length--;
+			}
+			#src/jotun/gaming/dataform/SparkWriter.hx:44: characters 4-33
+			$def = HxString::split(\array_shift($tag->arr), SparkWriter::$TYPE);
+			#src/jotun/gaming/dataform/SparkWriter.hx:45: characters 4-26
+			$par = ($nfo->arr[($def->arr[0] ?? null)] ?? null);
+			#src/jotun/gaming/dataform/SparkWriter.hx:46: characters 4-44
+			$v = HxString::split($tag->join(SparkWriter::$SET), SparkWriter::$SPACE)->join(" ");
+			#src/jotun/gaming/dataform/SparkWriter.hx:47: characters 4-26
+			$v = SparkWriter::convert($v, ($def->arr[1] ?? null));
+			#src/jotun/gaming/dataform/SparkWriter.hx:48: lines 48-52
+			if ($silent) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:49: characters 5-32
+				\Reflect::setField($c, $par, $v);
+			} else {
+				#src/jotun/gaming/dataform/SparkWriter.hx:51: characters 5-18
+				$c->set($par, $v);
+			}
+		});
+		#src/jotun/gaming/dataform/SparkWriter.hx:54: characters 3-16
+		$obj->onParse();
+		#src/jotun/gaming/dataform/SparkWriter.hx:55: characters 3-21
+		$obj->allowChanges();
+		#src/jotun/gaming/dataform/SparkWriter.hx:56: characters 3-13
+		return $obj;
+	}
+
+	/**
+	 * Data format to [n 0:a|1:b|2:c]
+	 * @param	o
+	 * @param	n
+	 * @param	nfo
+	 * @return
+	 * 
+	 * @param mixed $o
+	 * @param string $n
+	 * @param mixed $nfo
+	 * 
+	 * @return string
+	 */
+	public static function stringify ($o, $n, $nfo) {
+		#src/jotun/gaming/dataform/SparkWriter.hx:67: characters 3-33
+		$result = new \Array_hx();
+		#src/jotun/gaming/dataform/SparkWriter.hx:68: characters 3-21
+		$count = 0;
+		#src/jotun/gaming/dataform/SparkWriter.hx:69: characters 3-26
+		$type = null;
+		#src/jotun/gaming/dataform/SparkWriter.hx:70: lines 70-94
+		Dice::All($nfo, function ($p, $value) use (&$o, &$count, &$result, &$type) {
+			#src/jotun/gaming/dataform/SparkWriter.hx:71: characters 4-35
+			$value = \Reflect::field($o, $value);
+			#src/jotun/gaming/dataform/SparkWriter.hx:72: lines 72-91
+			if (is_bool($value)) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:73: characters 5-15
+				$type = "B";
+				#src/jotun/gaming/dataform/SparkWriter.hx:74: characters 21-22
+				$value = ($value ? 1 : 0);
+			} else if ((is_float($value) || is_int($value))) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:76: characters 5-15
+				$type = "N";
+			} else if (Boot::isOfType($value, Boot::getClass('Int'))) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:78: characters 5-15
+				$type = "I";
+			} else if (is_string($value)) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:80: characters 5-15
+				$type = "S";
+				#src/jotun/gaming/dataform/SparkWriter.hx:81: characters 5-41
+				$value = HxDynamicStr::wrap($value)->split(" ")->join(SparkWriter::$SPACE);
+			} else if (($value instanceof Flag)) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:83: characters 5-15
+				$type = "F";
+				#src/jotun/gaming/dataform/SparkWriter.hx:84: characters 5-24
+				$value = Boot::dynamicField($value, 'value');
+			} else if ($value !== null) {
+				#src/jotun/gaming/dataform/SparkWriter.hx:86: characters 5-15
+				$type = "O";
+				#src/jotun/gaming/dataform/SparkWriter.hx:87: characters 13-34
+				$value = Json::phpJsonEncode($value, null, null);
+			} else {
+				#src/jotun/gaming/dataform/SparkWriter.hx:89: characters 5-15
+				$type = "U";
+				#src/jotun/gaming/dataform/SparkWriter.hx:90: characters 5-16
+				$value = "-";
+			}
+			#src/jotun/gaming/dataform/SparkWriter.hx:92: characters 4-49
+			$result->offsetSet($count, ($p??'null') . (SparkWriter::$TYPE??'null') . ($type??'null') . (SparkWriter::$SET??'null') . \Std::string($value));
+			#src/jotun/gaming/dataform/SparkWriter.hx:93: characters 4-11
+			$count += 1;
+		});
+		#src/jotun/gaming/dataform/SparkWriter.hx:95: characters 3-102
+		return ($n??'null') . (((Boot::dynamicField($o, 'id') !== null ? " " . \Std::string(Boot::dynamicField($o, 'id')) : ""))??'null') . ((($result->length > 0 ? " @::" . ($result->join(SparkWriter::$PROP)??'null') : ""))??'null');
+	}
+}
+
+Boot::registerClass(SparkWriter::class, 'jotun.gaming.dataform.SparkWriter');

@@ -6,8 +6,9 @@ package jotun.utils;
 
 interface IColor {
   
-	public var name:String;
-	
-	public var color:String;
+	public var a:Int;
+	public var r:Int;
+	public var g:Int;
+	public var b:Int;
 	
 }

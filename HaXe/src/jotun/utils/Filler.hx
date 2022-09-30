@@ -15,12 +15,12 @@ class Filler{
 		}else if (Std.isOfType(data, Float) || Std.isOfType(data, String) || Std.isOfType(data, Bool) || Std.isOfType(data, Int)) {
 			var is_valid:Bool = data != null && data != 0 && data != false;
 			content = content.split("{{" + path + "}}").join(data);
-			content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
-			content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
+			//content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
+			//content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
 			path = path.toLowerCase();
 			content = content.split("{{" + path + "}}").join(data);
-			content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
-			content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
+			//content = content.split("{{show-if:" + path + "}}").join(is_valid ? '' : 'hidden');
+			//content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
 		}else {
 			path = path != null && path != "" ? path + "." : "";
 			Dice.All(data, function(p:String, v:Dynamic) {

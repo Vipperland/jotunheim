@@ -3,7 +3,7 @@ package jotun.dom;
 import haxe.ds.Either;
 import jotun.dom.IDisplay;
 import jotun.events.IDispatcher;
-import jotun.math.IPoint;
+import jotun.math.Point;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.objects.IQuery;
@@ -194,7 +194,7 @@ interface IDisplay extends IQuery {
 	public function getChild(i:Int, ?update:Bool):IDisplay;
 	
 	
-	public function getScroll(?o:IPoint = null):IPoint;
+	public function getScroll(?o:Point = null):Point;
 	
 	public function setScroll(x:Int, y:Int):Void;
 	
@@ -205,7 +205,7 @@ interface IDisplay extends IQuery {
 	 * @param	o
 	 * @return
 	 */
-	public function rect():Dynamic;
+	public function position():Dynamic;
 	
 	/**
 	 * Children count
@@ -407,23 +407,23 @@ interface IDisplay extends IQuery {
 	public function addToBody():IDisplay;
 	
 	/**
-	 * True position in DOM
+	 * True location in DOM
 	 * @return
 	 */
-	public function position():IPoint;
+	public function location():Dynamic;
+	
 	
 	/**
-	 * Fix the element in screen using global positions
-	 * @param	align
+	 * The previous simbling display
 	 * @return
 	 */
-	public function pin(?align:String):IDisplay;
+	public function previous():IDisplay;
 	
 	/**
-	 * Unpin the element form screen
+	 * The next simbling display
 	 * @return
 	 */
-	public function unpin():IDisplay;
+	public function next():IDisplay;
 	
 	/**
 	 * Change the width and height properties
@@ -472,20 +472,6 @@ interface IDisplay extends IQuery {
 	public function filters(name:Dynamic):Void;
 	
 	/**
-	 * Clear all object data
-	 */
-	public function dispose():Void;
-	
-	/**
-	 * Load and write a module in target
-	 * @param	url
-	 * @param	module
-	 * @param	data
-	 * @param	handler
-	 */
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void;
-	
-	/**
 	 * Scroll document for display visibility
 	 * @param	time
 	 * @param	ease
@@ -494,23 +480,6 @@ interface IDisplay extends IQuery {
 	 * @return
 	 */
 	public function lookAt(?y:Int, ?x:Int):IDisplay;
-	
-	/**
-	 * Reload all external loaded <script> tags
-	 */
-	public function reloadScripts():IDisplay;
-	
-	/**
-	 * Load and build external modules spefified by the attribute 'sru-load'
-	 * @param	progress
-	 */
-	public function autoLoad(?progress:IProgress->Void):Void;
-	
-	/**
-	 * Display info in Sirius style
-	 * @return
-	 */
-	public function toString():String;
 	
 	/**
 	 * Invoke click event
@@ -523,7 +492,7 @@ interface IDisplay extends IQuery {
 	 * @param	o
 	 * @return
 	 */
-	public function getScrollBounds(?o:IPoint = null):IPoint;
+	public function getScrollBounds(?o:Point = null):Point;
 	
 	/**
 	 * 
@@ -533,14 +502,30 @@ interface IDisplay extends IQuery {
 	public function removeChildren(min:UInt = 0):IDisplay;
 	
 	/**
-	 * 
+	 * Enable 3D perspective
 	 */
-	public function enablePerspective():Void;
+	public function perspective(value:String = '1000px', origin:String = '50% 50% 0'):Void;
 	
 	/**
 	 * 
 	 * @return
 	 */
 	public function isVisible():Bool;
+	
+	/**
+	 * Reload all external loaded <script> tags
+	 */
+	public function reloadScripts():IDisplay;
+	
+	/**
+	 * Clear all object data
+	 */
+	public function dispose():Void;
+	
+	/**
+	 * Display info in Sirius style
+	 * @return
+	 */
+	public function toString():String;
 	
 }

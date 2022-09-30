@@ -3,7 +3,6 @@ import jotun.Jotun;
 import js.Browser;
 import js.html.Element;
 import js.html.svg.SVGElement;
-import jotun.draw.Paper;
 
 /**
  * ...
@@ -66,8 +65,4 @@ class Svg extends Display {
 		return value;
 	}
 
-	public function draw(paper:Paper, ?stroke:String = "#000000", ?width:Int = 1, ?fill:String = "none"):Void {
-		appendHtml('<path d="' + paper.val() + '" stroke="' + stroke + '" stroke-width="' + width + '" fill="' + fill + '"></path>');
-	}
-	
 }

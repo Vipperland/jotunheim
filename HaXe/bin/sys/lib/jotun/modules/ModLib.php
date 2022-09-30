@@ -271,14 +271,14 @@ class ModLib {
 						#src/jotun/modules/ModLib.hx:122: lines 122-130
 						if (($mod->type === null) || ($mod->type === "null") || ($mod->type === "html")) {
 							#src/jotun/modules/ModLib.hx:123: characters 8-73
-							$content = HxString::split(HxString::split($content, "\x0D\x0A")->join("\x0D"), "\x0A")->join("\x0D");
+							$content = HxString::split(HxString::split($content, "\x0D\x0A")->join("\x0A"), "\x0D")->join("\x0A");
 							#src/jotun/modules/ModLib.hx:124: lines 124-126
 							while (\mb_substr($content, 0, 1) === "\x0D") {
 								#src/jotun/modules/ModLib.hx:125: characters 9-55
 								$content = HxString::substring($content, 1, mb_strlen($content));
 							}
 							#src/jotun/modules/ModLib.hx:127: lines 127-129
-							while (\mb_substr($content, -1, null) === "\x0D") {
+							while (\mb_substr($content, -1, null) === "\x0A") {
 								#src/jotun/modules/ModLib.hx:128: characters 9-59
 								$content = HxString::substring($content, 0, mb_strlen($content) - 1);
 							}

@@ -288,15 +288,16 @@ class HttpRequest {
 				onError(e.toString());
 				return;
 			}
-			var is_json:Bool = Std.isOfType(data, String);
-			if (!Lambda.exists(headers, function(h) return h.header == "Content-Type")){
-				if (is_json){
-					r.setRequestHeader("Content-Type", "application/json");
-				}
+			var is_json:Bool = false;
+			if (Lambda.exists(headers, function(h) return h.header == "Content-Type")){
+				is_json = true;
 			}
 			for( h in headers )
 				r.setRequestHeader(h.header, h.value);
 			if (is_json){
+				if (!Std.isOfType(data, String)){
+					data = Json.stringify(data);
+				}
 				r.send(data);
 			}else{
 				r.send(this.data);

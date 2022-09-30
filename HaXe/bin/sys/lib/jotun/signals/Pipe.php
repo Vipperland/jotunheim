@@ -1,0 +1,168 @@
+<?php
+/**
+ */
+
+namespace jotun\signals;
+
+use \php\Boot;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author Rafael Moreira <rafael@gateofsirius.com>
+ */
+class Pipe implements IPipe {
+	/**
+	 * @var mixed[]|\Array_hx
+	 */
+	public $_l;
+	/**
+	 * @var \Closure
+	 */
+	public $_v;
+	/**
+	 * @var int
+	 */
+	public $calls;
+	/**
+	 * @var IFlow
+	 */
+	public $current;
+	/**
+	 * @var bool
+	 */
+	public $enabled;
+	/**
+	 * @var ISignals
+	 */
+	public $host;
+	/**
+	 * @var string
+	 */
+	public $name;
+	/**
+	 * @var bool
+	 */
+	public $transfer;
+
+	/**
+	 * @param string $name
+	 * @param Signals $host
+	 * 
+	 * @return void
+	 */
+	public function __construct ($name, $host) {
+		#src/jotun/signals/Pipe.hx:19: characters 26-27
+		$this->calls = 0;
+		#src/jotun/signals/Pipe.hx:17: characters 28-32
+		$this->enabled = true;
+		#src/jotun/signals/Pipe.hx:15: characters 29-33
+		$this->transfer = true;
+		#src/jotun/signals/Pipe.hx:28: characters 3-19
+		$this->host = $host;
+		#src/jotun/signals/Pipe.hx:29: characters 3-19
+		$this->name = $name;
+		#src/jotun/signals/Pipe.hx:30: characters 3-10
+		$this->reset();
+	}
+
+	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return IPipe
+	 */
+	public function add ($handler) {
+		#src/jotun/signals/Pipe.hx:34: lines 34-36
+		if (\Lambda::indexOf($this->_l, $handler) === -1) {
+			#src/jotun/signals/Pipe.hx:35: characters 4-20
+			$_this = $this->_l;
+			$_this->arr[$_this->length++] = $handler;
+		}
+		#src/jotun/signals/Pipe.hx:37: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * @param mixed $data
+	 * 
+	 * @return IPipe
+	 */
+	public function call ($data = null) {
+		#src/jotun/signals/Pipe.hx:56: lines 56-70
+		$_gthis = $this;
+		#src/jotun/signals/Pipe.hx:57: lines 57-67
+		if ($this->enabled) {
+			#src/jotun/signals/Pipe.hx:58: characters 4-11
+			++$this->calls;
+			#src/jotun/signals/Pipe.hx:59: characters 4-34
+			$this->current = new Flow($this, $data);
+			#src/jotun/signals/Pipe.hx:60: characters 4-19
+			$this->transfer = true;
+			#src/jotun/signals/Pipe.hx:61: lines 61-65
+			Dice::Values($this->_l, function ($v) use (&$_gthis) {
+				#src/jotun/signals/Pipe.hx:62: characters 5-11
+				$_gthis->_v = $v;
+				#src/jotun/signals/Pipe.hx:63: characters 5-15
+				$v($_gthis->current);
+				#src/jotun/signals/Pipe.hx:64: characters 5-21
+				return !$_gthis->transfer;
+			});
+			#src/jotun/signals/Pipe.hx:66: characters 4-13
+			$this->_v = null;
+		}
+		#src/jotun/signals/Pipe.hx:68: characters 3-17
+		$this->current = null;
+		#src/jotun/signals/Pipe.hx:69: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * @return IPipe
+	 */
+	public function disconnect () {
+		#src/jotun/signals/Pipe.hx:49: lines 49-52
+		if ($this->_v !== null) {
+			#src/jotun/signals/Pipe.hx:50: characters 4-14
+			$this->remove($this->_v);
+			#src/jotun/signals/Pipe.hx:51: characters 4-13
+			$this->_v = null;
+		}
+		#src/jotun/signals/Pipe.hx:53: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return IPipe
+	 */
+	public function remove ($handler) {
+		#src/jotun/signals/Pipe.hx:41: characters 3-43
+		$i = \Lambda::indexOf($this->_l, $handler);
+		#src/jotun/signals/Pipe.hx:42: lines 42-44
+		if ($i !== -1) {
+			#src/jotun/signals/Pipe.hx:43: characters 4-19
+			$this->_l->splice($i, 1);
+		}
+		#src/jotun/signals/Pipe.hx:45: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function reset () {
+		#src/jotun/signals/Pipe.hx:77: characters 3-10
+		$this->_l = new \Array_hx();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function stop () {
+		#src/jotun/signals/Pipe.hx:73: characters 3-19
+		$this->transfer = false;
+	}
+}
+
+Boot::registerClass(Pipe::class, 'jotun.signals.Pipe');

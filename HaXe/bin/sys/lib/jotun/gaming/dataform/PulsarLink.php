@@ -1,0 +1,112 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\dataform;
+
+use \php\Boot;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author
+ */
+class PulsarLink extends SparkCore {
+	/**
+	 * @param string $name
+	 * 
+	 * @return void
+	 */
+	public function __construct ($name) {
+		#src/jotun/gaming/dataform/PulsarLink.hx:12: characters 3-14
+		parent::__construct($name);
+		#src/jotun/gaming/dataform/PulsarLink.hx:13: characters 3-18
+		$this->_deletions = new \Array_hx();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function commit () {
+		#src/jotun/gaming/dataform/PulsarLink.hx:27: lines 27-29
+		$this->each(function ($o) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:28: characters 4-14
+			$o->commit();
+		});
+		#src/jotun/gaming/dataform/PulsarLink.hx:30: characters 3-18
+		$this->_deletions = new \Array_hx();
+	}
+
+	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return void
+	 */
+	public function each ($handler) {
+		#src/jotun/gaming/dataform/PulsarLink.hx:21: lines 21-23
+		Dice::Values($this->_inserts, function ($v) use (&$handler) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 11-34
+			if ($v !== null) {
+				#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 24-34
+				return $handler($v);
+			} else {
+				#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 11-34
+				return false;
+			}
+		});
+	}
+
+	/**
+	 * @return Spark[]|\Array_hx
+	 */
+	public function getData () {
+		#src/jotun/gaming/dataform/PulsarLink.hx:17: characters 3-18
+		return $this->_inserts;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function refresh () {
+		#src/jotun/gaming/dataform/PulsarLink.hx:34: characters 3-18
+		parent::refresh();
+		#src/jotun/gaming/dataform/PulsarLink.hx:35: lines 35-37
+		$this->each(function ($o) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:36: characters 4-15
+			$o->refresh();
+		});
+	}
+
+	/**
+	 * @param bool $changes
+	 * 
+	 * @return string
+	 */
+	public function stringify ($changes = null) {
+		#src/jotun/gaming/dataform/PulsarLink.hx:41: characters 3-21
+		$r = "";
+		#src/jotun/gaming/dataform/PulsarLink.hx:42: characters 3-23
+		$c = null;
+		#src/jotun/gaming/dataform/PulsarLink.hx:43: lines 43-48
+		$this->each(function ($object) use (&$c, &$changes, &$r) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:44: characters 4-33
+			$c = $object->stringify($changes);
+			#src/jotun/gaming/dataform/PulsarLink.hx:45: lines 45-47
+			if ($c !== null) {
+				#src/jotun/gaming/dataform/PulsarLink.hx:46: characters 5-40
+				$r = ($r??'null') . (((mb_strlen($r) > 0 ? "\x0A" : ""))??'null') . ($c??'null');
+			}
+		});
+		#src/jotun/gaming/dataform/PulsarLink.hx:49: characters 3-25
+		$c = $this->_getDelString("-");
+		#src/jotun/gaming/dataform/PulsarLink.hx:50: lines 50-52
+		if ($c !== null) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:51: characters 4-39
+			$r = ($r??'null') . (((mb_strlen($r) > 0 ? "\x0A" : ""))??'null') . ($c??'null');
+		}
+		#src/jotun/gaming/dataform/PulsarLink.hx:53: characters 3-11
+		return $r;
+	}
+}
+
+Boot::registerClass(PulsarLink::class, 'jotun.gaming.dataform.PulsarLink');

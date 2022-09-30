@@ -1,12 +1,11 @@
 package jotun.css;
-import jotun.math.IARGB;
+import jotun.utils.IColor;
 import js.html.Element;
 import jotun.Jotun;
 import jotun.css.CSSGroup;
 import jotun.dom.IDisplay;
 import jotun.dom.Style;
 import jotun.dom.Svg;
-import jotun.math.ARGB;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -68,10 +67,10 @@ class XCode {
 							+ o-stack  to reverse
 				
 				Placement
-				|	cel					AUTO width
+				|	cel		AUTO width
 				|	cel-X (x = 1~12)
 				|	rcell-X (x = 1~12) 	Empty cell
-				|	tag-X (x = 1~12)		Cardinal count
+				|	tag-X (x = 1~12)	Cardinal count
 				
 				Distribuition
 				|	o-arrange			Space around
@@ -91,21 +90,21 @@ class XCode {
 			omnibuild('.cel', '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;');
 			// Pack will align left, center or right
 			omnibuild('.o-left,.o-top-left,.o-bottom-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
-			omnibuild('.h-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
+			omnibuild('.a-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
 			omnibuild('.o-right,.o-top-right,o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
 			// Lift will align top, middle and bottom
 			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
-			omnibuild('.v-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
+			omnibuild('.x-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
 			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', '-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;');
 			// Fill empty spaces around the cells
 			omnibuild('.o-outer-fill', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
 			omnibuild('.o-inner-fill', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
 			// Order by right to left instead of left to right
-			omnibuild('.shelf.o-stack,.hack.o-stack', '-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;');
-			omnibuild('.drawer.o-stack', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');
+			omnibuild('.shelf.o-reverse,.hack.o-stack', '-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;');
+			omnibuild('.drawer.o-reverse', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');
 			// Wrap modes
-			omnibuild('.hack.o-stack', '-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;');
+			omnibuild('.hack.o-reverse', '-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;');
 			Dice.Count(0, 12, function(a:Int, b:Int, c:Bool) {
 				// Create order selectors, positive and negative (-12 to 12)
 				if(a > 0){
@@ -130,13 +129,17 @@ class XCode {
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
+			function cor(i:Int, q:String):String {
+				return '.container'+q+'{max-width:' + i + 'px;}';
+			}
 			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
-			omnibuild('.hidden', 'display:none !important');
-			//css.styleXS += media(CSSGroup.MEDIA_XS_MAX, null, '.hidden-xs{display:none !important;}');
-			//css.styleSM += media(CSSGroup.MEDIA_SM_MAX, null, '.hidden-sm{display:none !important;}');
-			//css.styleMD += media(CSSGroup.MEDIA_MD_MAX, null, '.hidden-md{display:none !important;}');
-			//css.styleLG += media(CSSGroup.MEDIA_LG_MAX, null, '.hidden-lg{display:none !important;}');
-			css.styleXL += '.hidden-xl{display:none !important;}';
+			css.style += '.container-s,.container,.container-l{width:100%;}';
+			css.styleXS += cor(480,'');
+			css.styleSM += cor(540,'');
+			css.styleMD += cor(640,'');
+			css.styleLG += cor(1024,'');
+			css.styleXL += cor(1600, '');
+			omnibuild('.hidden', 'display:none !important;');
 			_createGrid();
 			commit();
 		}
@@ -244,13 +247,12 @@ class XCode {
 		}
 	}
 	
-	static public function stroke(id:String, text:Bool, color:Dynamic, ?strenght:Int, ?blur:Int):String {
-		var c:String = new ARGB(color).hex();
+	static public function stroke(id:String, text:Bool, color:String, ?strenght:Int, ?blur:Int):String {
 		var l:Int = Utils.getValidOne(strenght, 1);
 		var b:Int = Utils.getValidOne(blur, 1);
 		var x:Int = 0;
 		var s:Array<String> = [];
-		var t:String = Utils.getValidOne(blur, 1) + 'px ' + c;
+		var t:String = Utils.getValidOne(blur, 1) + 'px ' + color;
 		while (x < l) {
 			++x;
 			if(x != 0){
@@ -272,11 +274,8 @@ class XCode {
 		return id;
 	}
 	
-	static public function shadow(id:String, text:Bool, color:Dynamic, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
-		if (!Std.isOfType(color, IARGB)){
-			color = new ARGB(color);
-		}
-		var t:ARGB = color;
+	static public function shadow(id:String, text:Bool, color:String, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
+		var cc:IColor = Utils.color(color);
 		var y:Int = 0;
 		var z:Int = Utils.getValidOne(distance, text ? 1 : 5);
 		var a:Int = Utils.getValidOne(direction, 45);
@@ -302,7 +301,7 @@ class XCode {
 			}
 			tx = (cast cos * y);
 			ty = (cast sin * y);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + t.multiply(.8 - (y/z*c)).hex();
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + Utils.colorToCss(cc, .8 - (y/z*c));
 		}
 		y = 0;
 		var oX:Float = cos * z;
@@ -311,7 +310,7 @@ class XCode {
 			++y;
 			tx = (cast cos * y + oX);
 			ty = (cast sin * y + oY);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgba(0,0,0,.1)';
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgb(0 0 0/.1)';
 		}
 		var q:String = (text ? 'text-shadow' : 'box-shadow') + ':' + r.join(',');
 		omnibuild(id, q);

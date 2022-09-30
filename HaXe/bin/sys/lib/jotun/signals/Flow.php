@@ -1,0 +1,37 @@
+<?php
+/**
+ */
+
+namespace jotun\signals;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira <rafael@gateofsirius.com>
+ */
+class Flow implements IFlow {
+	/**
+	 * @var mixed
+	 */
+	public $data;
+	/**
+	 * @var IPipe
+	 */
+	public $pipe;
+
+	/**
+	 * @param IPipe $pipe
+	 * @param mixed $data
+	 * 
+	 * @return void
+	 */
+	public function __construct ($pipe, $data) {
+		#src/jotun/signals/Flow.hx:14: characters 3-19
+		$this->data = $data;
+		#src/jotun/signals/Flow.hx:15: characters 3-19
+		$this->pipe = $pipe;
+	}
+}
+
+Boot::registerClass(Flow::class, 'jotun.signals.Flow');

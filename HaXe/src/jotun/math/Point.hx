@@ -1,13 +1,11 @@
 package jotun.math;
-import jotun.math.IPoint;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose('J_Point')
-class Point implements IPoint {
-	
+class Point {
 	
 	static public function distance(x1:Float, y1:Float, x2:Float, y2:Float):Float {
 		x1 = (x1 - x2);
@@ -57,13 +55,13 @@ class Point implements IPoint {
 		x = y = 0;
 	}
 	
-	public function match(o:IPoint, ?round:Bool):Bool {
+	public function match(o:Point, ?round:Bool):Bool {
 		return round 
 				? Math.round(o.x) == Math.round(x) && Math.round(o.y) == Math.round(y) 
 				: o.x == x && o.y == y;
 	}
 	
-	public function add(q:IPoint):IPoint {
+	public function add(q:Point):Point {
 		x += q.x;
 		y += q.y;
 		return this;

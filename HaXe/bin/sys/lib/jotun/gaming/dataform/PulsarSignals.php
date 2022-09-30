@@ -1,0 +1,41 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\dataform;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author
+ */
+class PulsarSignals {
+	/**
+	 * @var string
+	 */
+	static public $LINK_CREATED = "link_created";
+	/**
+	 * @var string
+	 */
+	static public $LINK_DELETED = "link_deleted";
+	/**
+	 * @var string
+	 */
+	static public $LINK_UPDATED = "link_updated";
+	/**
+	 * @var string
+	 */
+	static public $SPARK_CREATED = "spark_created";
+	/**
+	 * @var string
+	 */
+	static public $SPARK_DELETED = "link_deleted";
+	/**
+	 * @var string
+	 */
+	static public $SPARK_UPDATED = "spark_updated";
+
+}
+
+Boot::registerClass(PulsarSignals::class, 'jotun.gaming.dataform.PulsarSignals');

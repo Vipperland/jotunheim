@@ -16,8 +16,6 @@ package jotun.net;
 
 import haxe.Json;
 import haxe.io.Bytes;
-import jotun.data.Fragments;
-import jotun.data.IFragments;
 import jotun.utils.Dice;
 
 /**
@@ -30,11 +28,11 @@ class Domain implements IDomain {
 	
 	public var port:String;
 	
-	public var url:IFragments;
+	public var url:Array<String>;
 	
 	#if js
 		
-		public var hash:IFragments;
+		public var hash:Array<String>;
 		
 	#elseif php
 		
@@ -63,9 +61,9 @@ class Domain implements IDomain {
 			var l:Location = Browser.window.location;
 			host = l.hostname;
 			port = l.port;
-			hash = new Fragments(l.hash.substr(1), "/");
+			hash = l.hash.split("/");
 			params = Utils.getQueryParams(l.href);
-			url = new Fragments(l.pathname, "/");
+			url = l.pathname.split('/');
 		
 		#elseif php
 		
@@ -78,7 +76,7 @@ class Domain implements IDomain {
 			var boundary:String = _getMultipartKey();
 			
 			if (data.CONTENT_TYPE == 'application/json'){
-				input = Json.parse(Syntax.codeDeref("file_get_contents('php://input')"));
+				input = _getJsonInput();
 			}
 			params = _getParams();
 			
@@ -87,8 +85,7 @@ class Domain implements IDomain {
 				boundary = boundary.split("\r\n")[0];
 				_getRawData(boundary, params);
 			}
-			
-			url = new Fragments(data.SCRIPT_NAME, "/");
+			url = data.SCRIPT_NAME.split('/');
 			
 		#end
 		
@@ -106,7 +103,7 @@ class Domain implements IDomain {
 		}
 		
 		public function location():String {
-			return host + '/' + url.value;
+			return host + '/' + url.join('/');
 		}
 		
 		public static function matchLocation(uri:String):Bool {
@@ -130,6 +127,11 @@ class Domain implements IDomain {
 				return !r;
 			});
 			return r;
+		}
+		
+		private function _getJsonInput():Dynamic {
+			var data:String = getInput();
+			return data != null ? Json.parse(data) : null;
 		}
 		
 		/**
@@ -167,8 +169,8 @@ class Domain implements IDomain {
 			if (data == null) {
 				data = {};
 			}
-			var input:String = Syntax.codeDeref("file_get_contents('php://input')");
-			var result:Array<String> = input.split(boundary);
+			var content:String = Syntax.codeDeref("file_get_contents('php://input')");
+			var result:Array<String> = content.split(boundary);
 			Dice.Values(result, function(v:String) {
 				if (v == null || v.length == 0) {
 					return;
@@ -250,7 +252,7 @@ class Domain implements IDomain {
 		}
 		
 		public function getInput():String {
-			var data:String = php.Syntax.code("file_get_contents({0})", "php://input");
+			var data:String = Syntax.codeDeref("file_get_contents('php://input')");
 			return data != null && data.length > 0 ? data : null;
 		}
 		

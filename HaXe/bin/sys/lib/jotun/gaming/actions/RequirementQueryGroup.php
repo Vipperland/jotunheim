@@ -1,0 +1,83 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \jotun\tools\Utils;
+use \jotun\utils\Dice;
+use \jotun\objects\QueryGroup;
+
+/**
+ * ...
+ * @author
+ */
+class RequirementQueryGroup extends QueryGroup {
+	/**
+	 * @return void
+	 */
+	public function __construct () {
+		#src/jotun/gaming/actions/RequirementQueryGroup.hx:13: characters 3-10
+		parent::__construct();
+	}
+
+	/**
+	 * @param mixed $query
+	 * @param IEventContext $context
+	 * 
+	 * @return mixed
+	 */
+	public function eventRun ($query, $context) {
+		#src/jotun/gaming/actions/RequirementQueryGroup.hx:16: lines 16-40
+		$_gthis = $this;
+		#src/jotun/gaming/actions/RequirementQueryGroup.hx:17: characters 3-27
+		$result = new HxAnon();
+		#src/jotun/gaming/actions/RequirementQueryGroup.hx:18: lines 18-38
+		if ($context->debug) {
+			#src/jotun/gaming/actions/RequirementQueryGroup.hx:19: characters 4-20
+			$idx = 0;
+			#src/jotun/gaming/actions/RequirementQueryGroup.hx:20: lines 20-30
+			Dice::Values($query, function ($single) use (&$_gthis, &$context, &$result, &$idx) {
+				#src/jotun/gaming/actions/RequirementQueryGroup.hx:21: lines 21-29
+				if ($single !== "@result") {
+					#src/jotun/gaming/actions/RequirementQueryGroup.hx:22: characters 6-34
+					$context->requirement = $single;
+					#src/jotun/gaming/actions/RequirementQueryGroup.hx:23: lines 23-28
+					Dice::All($_gthis->units, function ($p, $o) use (&$context, &$single, &$result, &$idx) {
+						#src/jotun/gaming/actions/RequirementQueryGroup.hx:24: characters 7-28
+						$o->ioContext = $context;
+						#src/jotun/gaming/actions/RequirementQueryGroup.hx:25: characters 7-143
+						$_this = $context->log;
+						$x = (Utils::prefix("", $context->ident + 1, "\x09")??'null') . ($single??'null') . "[" . ($p??'null') . "] == " . (Boot::dynamicField($o->proc(\Array_hx::wrap([
+							"@result",
+							$single,
+						]), $result), 'result')[$idx]??'null');
+						$_this->arr[$_this->length++] = $x;
+						#src/jotun/gaming/actions/RequirementQueryGroup.hx:26: characters 7-12
+						$idx += 1;
+						#src/jotun/gaming/actions/RequirementQueryGroup.hx:27: characters 7-16
+						$o->flush();
+					});
+				}
+			});
+			#src/jotun/gaming/actions/RequirementQueryGroup.hx:31: characters 4-30
+			$context->requirement = null;
+		} else {
+			#src/jotun/gaming/actions/RequirementQueryGroup.hx:33: lines 33-37
+			Dice::Values($this->units, function ($o) use (&$query, &$context, &$result) {
+				#src/jotun/gaming/actions/RequirementQueryGroup.hx:34: characters 5-26
+				$o->ioContext = $context;
+				#src/jotun/gaming/actions/RequirementQueryGroup.hx:35: characters 5-26
+				$o->proc($query, $result);
+				#src/jotun/gaming/actions/RequirementQueryGroup.hx:36: characters 5-14
+				$o->flush();
+			});
+		}
+		#src/jotun/gaming/actions/RequirementQueryGroup.hx:39: characters 3-16
+		return $result;
+	}
+}
+
+Boot::registerClass(RequirementQueryGroup::class, 'jotun.gaming.actions.RequirementQueryGroup');

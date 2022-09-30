@@ -1,0 +1,70 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \jotun\utils\Dice;
+use \jotun\objects\QueryGroup;
+
+/**
+ * ...
+ * @author
+ */
+class ActionQueryGroup extends QueryGroup {
+	/**
+	 * @return void
+	 */
+	public function __construct () {
+		#src/jotun/gaming/actions/ActionQueryGroup.hx:13: characters 3-10
+		parent::__construct();
+	}
+
+	/**
+	 * @param mixed $query
+	 * @param IEventContext $context
+	 * 
+	 * @return mixed
+	 */
+	public function eventRun ($query, $context) {
+		#src/jotun/gaming/actions/ActionQueryGroup.hx:16: lines 16-36
+		$_gthis = $this;
+		#src/jotun/gaming/actions/ActionQueryGroup.hx:17: characters 3-27
+		$result = new HxAnon();
+		#src/jotun/gaming/actions/ActionQueryGroup.hx:18: lines 18-34
+		if ($context->debug) {
+			#src/jotun/gaming/actions/ActionQueryGroup.hx:19: lines 19-26
+			Dice::Values($query, function ($single) use (&$_gthis, &$context, &$result) {
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:20: characters 5-28
+				$context->action = $single;
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:21: lines 21-25
+				Dice::Values($_gthis->units, function ($o) use (&$context, &$single, &$result) {
+					#src/jotun/gaming/actions/ActionQueryGroup.hx:22: characters 6-27
+					$o->ioContext = $context;
+					#src/jotun/gaming/actions/ActionQueryGroup.hx:23: characters 6-28
+					$o->proc($single, $result);
+					#src/jotun/gaming/actions/ActionQueryGroup.hx:24: characters 6-15
+					$o->flush();
+				});
+			});
+			#src/jotun/gaming/actions/ActionQueryGroup.hx:27: characters 4-25
+			$context->action = null;
+		} else {
+			#src/jotun/gaming/actions/ActionQueryGroup.hx:29: lines 29-33
+			Dice::Values($this->units, function ($o) use (&$query, &$context, &$result) {
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:30: characters 5-26
+				$o->ioContext = $context;
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:31: characters 5-26
+				$o->proc($query, $result);
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:32: characters 5-14
+				$o->flush();
+			});
+		}
+		#src/jotun/gaming/actions/ActionQueryGroup.hx:35: characters 3-16
+		return $result;
+	}
+}
+
+Boot::registerClass(ActionQueryGroup::class, 'jotun.gaming.actions.ActionQueryGroup');

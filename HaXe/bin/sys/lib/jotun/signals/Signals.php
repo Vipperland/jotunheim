@@ -1,0 +1,128 @@
+<?php
+/**
+ */
+
+namespace jotun\signals;
+
+use \php\Boot;
+
+/**
+ * ...
+ * @author Rafael Moreira <rafael@gateofsirius.com>
+ */
+class Signals implements ISignals {
+	/**
+	 * @var mixed[]|\Array_hx
+	 */
+	public $_l;
+	/**
+	 * @var mixed
+	 */
+	public $object;
+
+	/**
+	 * @param mixed $to
+	 * 
+	 * @return void
+	 */
+	public function __construct ($to) {
+		#src/jotun/signals/Signals.hx:21: characters 3-14
+		$this->object = $to;
+		#src/jotun/signals/Signals.hx:22: characters 3-10
+		$this->reset();
+	}
+
+	/**
+	 * @param string $n
+	 * 
+	 * @return IPipe
+	 */
+	public function _c ($n) {
+		#src/jotun/signals/Signals.hx:15: lines 15-16
+		if (!$this->has($n)) {
+			#src/jotun/signals/Signals.hx:16: characters 4-46
+			\Reflect::setField($this->_l, $n, new Pipe($n, $this));
+		}
+		#src/jotun/signals/Signals.hx:17: characters 3-30
+		return \Reflect::field($this->_l, $n);
+	}
+
+	/**
+	 * @param string $name
+	 * @param \Closure $handler
+	 * 
+	 * @return IPipe
+	 */
+	public function add ($name, $handler = null) {
+		#src/jotun/signals/Signals.hx:38: characters 3-31
+		return $this->_c($name)->add($handler);
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $data
+	 * 
+	 * @return Signals
+	 */
+	public function call ($name, $data = null) {
+		#src/jotun/signals/Signals.hx:42: lines 42-43
+		if ($this->has($name)) {
+			#src/jotun/signals/Signals.hx:43: characters 4-24
+			$this->get($name)->call($data);
+		}
+		#src/jotun/signals/Signals.hx:44: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * @param string $name
+	 * 
+	 * @return IPipe
+	 */
+	public function get ($name) {
+		#src/jotun/signals/Signals.hx:30: characters 3-18
+		return $this->_c($name);
+	}
+
+	/**
+	 * @param string $name
+	 * 
+	 * @return bool
+	 */
+	public function has ($name) {
+		#src/jotun/signals/Signals.hx:26: characters 3-36
+		return \Reflect::hasField($this->_l, $name);
+	}
+
+	/**
+	 * @param string $name
+	 * @param \Closure $handler
+	 * 
+	 * @return IPipe
+	 */
+	public function remove ($name, $handler = null) {
+		#src/jotun/signals/Signals.hx:34: characters 3-34
+		return $this->_c($name)->remove($handler);
+	}
+
+	/**
+	 * @param string $name
+	 * 
+	 * @return void
+	 */
+	public function reset ($name = null) {
+		#src/jotun/signals/Signals.hx:48: lines 48-53
+		if ($name !== null) {
+			#src/jotun/signals/Signals.hx:49: lines 49-50
+			if ($this->has($name)) {
+				#src/jotun/signals/Signals.hx:50: characters 5-22
+				$this->get($name)->reset();
+			}
+		} else {
+			#src/jotun/signals/Signals.hx:52: characters 4-11
+			$this->_l = new \Array_hx();
+		}
+	}
+}
+
+Boot::registerClass(Signals::class, 'jotun.signals.Signals');

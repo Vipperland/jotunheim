@@ -19,23 +19,25 @@ class CSSGroup{
 	
 	public static var MEDIA_PR:String = "print";
 	
-	public static var MEDIA_XS:String = "(min-width:1px)";
+	public static var MEDIA_XS:String = "(min-width:0px)";
 	
-	public static var MEDIA_XS_MAX:String = "(max-width:767px)";
+	public static var MEDIA_XS_MAX:String = "(max-width:480px)";
 	
-	public static var MEDIA_SM:String = "(min-width:768px)";
+	public static var MEDIA_SM:String = "(min-width:481px)";
 	
-	public static var MEDIA_SM_MAX:String = "(max-width:991px)";
+	public static var MEDIA_SM_MAX:String = "(max-width:960px)";
 	
-	public static var MEDIA_MD:String = "(min-width:992px)";
+	public static var MEDIA_MD:String = "(min-width:961px)";
 	
-	public static var MEDIA_MD_MAX:String = "(max-width:1199px)";
+	public static var MEDIA_MD_MAX:String = "(max-width:1280px)";
 	
-	public static var MEDIA_LG:String = "(min-width:1200px)";
+	public static var MEDIA_LG:String = "(min-width:1281px)";
 	
-	public static var MEDIA_LG_MAX:String = "(max-width:1479px)";
+	public static var MEDIA_LG_MAX:String = "(max-width:1920px)";
 	
-	public static var MEDIA_XL:String = "(min-width:1480px)";
+	public static var MEDIA_XL:String = "(min-width:1921px)";
+	
+	public static var MEDIA_XL_MAX:String = "(max-width:3840px)";
 	
 	public var CM:StyleElement;
 	
@@ -154,7 +156,7 @@ class CSSGroup{
 		_write(SM, styleSM, SOF + MEDIA_SM + ' and ' + MEDIA_SM_MAX + "{");
 		_write(MD, styleMD, SOF + MEDIA_MD + ' and ' + MEDIA_MD_MAX + "{");
 		_write(LG, styleLG, SOF + MEDIA_LG + ' and ' + MEDIA_LG_MAX + "{");
-		_write(XL, styleXL, SOF + MEDIA_XL + "{");
+		_write(XL, styleXL, SOF + MEDIA_XL + ' and ' + MEDIA_XL_MAX + "{");
 		_write(PR, stylePR, SOF + MEDIA_PR + "{");
 		reset();
 	}

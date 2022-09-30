@@ -2,7 +2,6 @@ package jotun.dom;
 import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.events.Dispatcher;
-import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.tools.Key;
 import jotun.tools.Utils;
@@ -143,8 +142,8 @@ class Document extends Display {
 	 * @param	o
 	 * @return
 	 */
-	public function getScrollRange(?o:IPoint = null):IPoint {
-		var current:IPoint = getScroll(o);
+	public function getScrollRange(?o:Point = null):Point {
+		var current:Point = getScroll(o);
 		if (body != null) {
 			current.x /= body.maxScrollX();
 			current.y /= body.maxScrollY();
@@ -154,7 +153,7 @@ class Document extends Display {
 		return current;
 	}
 	
-	override public function getScroll(?o:IPoint = null):IPoint {
+	override public function getScroll(?o:Point = null):Point {
 		if (o == null) {
 			o = new Point(0, 0);
 		}
@@ -185,7 +184,7 @@ class Document extends Display {
 		if (Std.isOfType(target, IDisplay)){
 			target = target.element;
 		}
-		var pos:IPoint = Display.getPosition(target);
+		var pos:Point = Utils.getPosition(target);
 		scroll(cast pos.x - offX, cast pos.y - offY);
 	}
 	

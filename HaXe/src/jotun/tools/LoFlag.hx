@@ -8,7 +8,7 @@ import jotun.utils.Dice;
 class LoFlag {
 	
 	public static function fromString(value:String):LoFlag {
-		return (new LoFlag(0)).load(value)
+		return (new LoFlag(0)).load(value);
 	}
 	
 	public static function fromVect(data:Array<Int>):LoFlag {
@@ -32,10 +32,15 @@ class LoFlag {
 		}
 	}
 	
-	public function load(data:String):LoFlag {
-		Dice.All(data.split('-'), function(p:Int, v:String){
-			_flags[_flags.length] = Std.parseInt(v);
-		});
+	public function load(data:Dynamic):LoFlag {
+		if(Std.isOfType(data, String)){
+			Dice.All(data.split('-'), function(p:Int, v:String){
+				_flags[_flags.length] = Std.parseInt(v);
+			});
+		}else if (Std.isOfType(data, Array)){
+			_flags = data;
+		}
+		return this;
 	}
 	
 	public function set(block:Int, flags:Int):LoFlag {
@@ -59,6 +64,10 @@ class LoFlag {
 		var b:Int = Std.int(i / 32);
 		i = (1 << (i % 32));
 		return ((_flags[b])&i)==i;
+	}
+	
+	public function flags():Array<Int> {
+		return _flags;
 	}
 	
 	public function toString():String {

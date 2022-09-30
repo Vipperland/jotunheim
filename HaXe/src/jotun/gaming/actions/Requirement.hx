@@ -1,6 +1,5 @@
 package jotun.gaming.actions;
 import jotun.objects.QueryGroup;
-import js.html.Event;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 

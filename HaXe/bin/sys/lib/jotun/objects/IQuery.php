@@ -1,0 +1,32 @@
+<?php
+/**
+ */
+
+namespace jotun\objects;
+
+use \php\Boot;
+
+/**
+ * @author Rim Project
+ */
+interface IQuery extends IResolve {
+	/**
+	 * @return void
+	 */
+	public function flush () ;
+
+	/**
+	 * @return string[]|\Array_hx
+	 */
+	public function log () ;
+
+	/**
+	 * @param mixed $data
+	 * @param mixed $result
+	 * 
+	 * @return mixed
+	 */
+	public function proc ($data, $result = null) ;
+}
+
+Boot::registerClass(IQuery::class, 'jotun.objects.IQuery');

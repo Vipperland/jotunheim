@@ -69,7 +69,7 @@ class Header {
 			#src/jotun/net/Header.hx:87: lines 87-89
 			if ($f < $t) {
 				#src/jotun/net/Header.hx:88: characters 5-17
-				$copy = ($copy??'null') . "\x0D";
+				$copy = ($copy??'null') . "\x0A";
 			}
 		}
 		#src/jotun/net/Header.hx:91: characters 3-14
@@ -236,7 +236,7 @@ class Header {
 			#src/jotun/net/Header.hx:73: lines 73-75
 			if (($data instanceof \Array_hx)) {
 				#src/jotun/net/Header.hx:74: characters 5-27
-				$data = $data->join("\x0D");
+				$data = $data->join("\x0A");
 			}
 			#src/jotun/net/Header.hx:76: characters 4-34
 			$this->writeData($data, $encode, $chunk);
@@ -258,7 +258,7 @@ class Header {
 			#src/jotun/net/Header.hx:63: lines 63-65
 			if (($data instanceof \Array_hx)) {
 				#src/jotun/net/Header.hx:64: characters 5-27
-				$data = $data->join("\x0D");
+				$data = $data->join("\x0A");
 			}
 			#src/jotun/net/Header.hx:66: characters 4-34
 			$this->writeData($data, $encode, $chunk);

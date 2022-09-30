@@ -29,7 +29,6 @@ import jotun.utils.Dice;
 	import php.Lib;
 	import jotun.php.db.Gate;
 	import jotun.php.db.IGate;
-	import jotun.php.data.Cache;
 	import jotun.net.Header;
 #end
 
@@ -95,8 +94,6 @@ class Jotun {
 				Reflect.deleteField(Jotun, '_loadController');
 				Reflect.deleteField(Jotun, '_loadPool');
 				Reflect.deleteField(Jotun, 'main');
-				Jotun.one('head').autoLoad();
-				Jotun.one('body').autoLoad();
 			}
 		}
 		

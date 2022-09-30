@@ -8,9 +8,6 @@ import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
 import jotun.math.Matrix3D;
 import jotun.objects.Query;
-import jotun.math.ARGB;
-import jotun.math.IARGB;
-import jotun.math.IPoint;
 import jotun.math.Point;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
@@ -21,6 +18,7 @@ import jotun.utils.Dice;
 import jotun.utils.Filler;
 import jotun.utils.IDiceRoll;
 import jotun.utils.ITable;
+import jotun.utils.Reactor;
 import js.Browser;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
@@ -78,16 +76,6 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	/**
-	 * Get a real position of a element
-	 * @param	target
-	 */
-	static public function getPosition(target:Element) {
-		var a:DOMRect = Jotun.document.body.getBounds();
-		var b:DOMRect = target.getBoundingClientRect();
-		return new Point(b.left - a.left, b.top - a.top);
-	}
-	
 	private var _uid:UInt;
 	
 	private var _parent:IDisplay;
@@ -108,235 +96,12 @@ class Display extends Query implements IDisplay {
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
 		if (Std.isOfType(p, String) && v != null) {
-			Reflect.setField(element.style, p, Std.isOfType(v, IARGB) ? v.css() : Std.string(v));
+			Reflect.setField(element.style, p, Std.string(v));
 		}
 	}
 	
 	private function _style_get(p:Dynamic):Dynamic {
 		return Reflect.field(trueStyle(), p);
-	}
-	
-	private function _react_commit_up(o:IDisplay){
-		if (o.data.__co == null){
-			o.data.__co = 0;
-			o.attribute('jtn-commit', 'true');
-		}
-		++o.data.__co;
-	}
-	
-	private function _react_commit_down(o:IDisplay){
-		--o.data.__co;
-		if (o.data.__co == 0){
-			Reflect.deleteField(o.data, '__co');
-			o.clearAttribute('jtn-commit');
-		}
-	}
-	
-	private function _react_fill_after():Void {
-		this.all('[jtn-commit]').add(this).each(function(o:IDisplay){
-			o.data.__cf = true;
-			_react_fill_data(data, null, o);
-			_react_fill_attr(data, null, o);
-			_react_fill_style(data, null, o);
-			_react_fill_class(data, null, o);
-			_react_fill_visibility(data, null, o, 'jtn-show-if');
-			_react_fill_visibility(data, null, o, 'jtn-hide-if');
-			o.data.__cf = false;
-		});
-	}
-	
-	/**
-	 * jtn-data="{{a}} {{b}} {{c}} ..."
-	 * @param	data
-	 * @param	path
-	 * @param	o
-	 */
-	private function _react_fill_data(data:Dynamic, path:String, o:IDisplay){
-		if (o.hasAttribute('jtn-data')){
-			if(path != null){
-				if (o.data.__qd == null){
-					o.data.__qd = o.attribute('jtn-data');
-					_react_commit_up(o);
-				}
-				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
-			}
-			if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
-				o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
-				if (Std.isOfType(o, Input)){
-					o.value(o.data.__qd);
-				}else{
-					o.writeHtml(o.data.__qd);
-				}
-				Reflect.deleteField(o.data, '__qd');
-				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-data');
-				}
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 * @param	data
-	 * @param	path
-	 * @param	o
-	 * @param	attr
-	 */
-	private function _react_fill_visibility(data:Dynamic, path:String, o:IDisplay, attr:String){
-		if (o.hasAttribute(attr)){
-			if(path != null){
-				if (o.data.__qv == null){
-					o.data.__qv = o.attribute(attr);
-					o.data.__qvt = o.hasAttribute(attr + '-score') ? o.hasAttribute(attr + '-score') : o.data.__qv.split(',').length;
-					o.data.__qvs = 0;
-					_react_commit_up(o);
-				}
-				o.data.__qv = o.data.__qv.split('{{' + path + '}}').join(data);
-				o.data.__qvs += 1;
-			}
-			if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
-				if (o.data.__qvs >= o.data.__qvt){
-					if (attr == 'jtn-show-if'){
-						o.show();
-					}else{
-						o.hide();
-					}
-				}else{
-					if (attr == 'jtn-show-if'){
-						o.hide();
-					}else{
-						o.show();
-					}
-				}
-				Reflect.deleteField(o.data, '__qv');
-				Reflect.deleteField(o.data, '__qvt');
-				Reflect.deleteField(o.data, '__qvs');
-				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute(attr);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * jtn-class="{{a}} {{b}} {{c}} ..."
-	 * @param	data
-	 * @param	path
-	 * @param	o
-	 */
-	private function _react_fill_class(data:Dynamic, path:String, o:IDisplay){
-		if (o.hasAttribute('jtn-class')){
-			if(path != null){
-				if (o.data.__qc == null){
-					o.data.__qc = o.attribute('jtn-class');
-					_react_commit_up(o);
-				}
-				o.data.__qc = o.data.__qc.split('{{' + path + '}}').join(data);
-			}
-			if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
-				o.css(o.data.__qc);
-				Reflect.deleteField(o.data, '__qc');
-				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-class');
-				}
-			}
-		}
-	}
-	
-	/**
-	 * jtn-attr="attrA:{{a}},attrB:{{b}},attrC:{{c}},..."
-	 * @param	data
-	 * @param	path
-	 * @param	o
-	 */
-	private function _react_fill_attr(data:Dynamic, path:String, o:IDisplay){
-		if (o.hasAttribute('jtn-attr')){
-			if(path != null){
-				if (o.data.__qa == null){
-					o.data.__qa = o.attribute('jtn-attr');
-					_react_commit_up(o);
-				}
-				o.data.__qa = o.data.__qa.split('{{' + path + '}}').join(data);
-			}
-			if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
-				Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
-					v = v.split(':');
-					o.attribute(v[0], v[1]);
-				});
-				Reflect.deleteField(o.data, '__qa');
-				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-attr');
-				}
-			}
-		}
-	}
-	
-	/**
-	 * jtn-style="paramA:{{a}},paramB:{{b}},paramC:{{c}},..."
-	 * @param	data
-	 * @param	path
-	 * @param	o
-	 */
-	private function _react_fill_style(data:Dynamic, path:String, o:IDisplay){
-		if (o.hasAttribute('jtn-style')){
-			if(path != null){
-				if (o.data.__qs == null){
-					o.data.__qs = o.attribute('jtn-style');
-					_react_commit_up(o);
-				}
-				o.data.__qs = o.data.__qs.split('{{' + path + '}}').join(data);
-			}
-			if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
-				Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
-					v = v.split(':');
-					o.style(v[0], v[1]);
-				});
-				Reflect.deleteField(o.data, '__qs');
-				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-style');
-				}
-			}
-		}
-	}
-	
-	private function _react_fill(data:Dynamic, path:String){
-		if (Std.isOfType(data, String) || Std.isOfType(data, Float) || Std.isOfType(data, Bool)){
-			// Simple write content
-			all('[jtn-data*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_data(data, path, o);
-			});
-			// Write object attributes
-			all('[jtn-attr*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_attr(data, path, o);
-			});
-			// Write object styles
-			all('[jtn-style*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_style(data, path, o);
-			});
-			// Write object classes
-			all('[jtn-class*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_class(data, path, o);
-			});
-			all('[jtn-show-if*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_visibility(data, path, o, 'jtn-show-if');
-			});
-			all('[jtn-hide-if*="{{' + path + '}}"]').add(this).each(function(o:IDisplay){
-				_react_fill_visibility(data, path, o, 'jtn-hide-if');
-			});
-		}else {
-			path = path == '' ? '' : path + '.';
-			Dice.All(data, function(p:String, v:Dynamic){
-				p = '' + p;
-				if (p.substr(0, 1) != '_'){
-					_react_fill(v, path + p);
-				}
-			});
-		}
 	}
 	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
@@ -357,29 +122,15 @@ class Display extends Query implements IDisplay {
 		super();
 	}
 	
-	public function enablePerspective():Void {
+	public function perspective(value:String='1000px', origin:String='50% 50% 0'):Void {
 		style({
-			perspective: '1000px',
-			transformOrigin: '50% 50% 0',
+			perspective: value,
+			transformOrigin: origin,
 		});
 	}
 	
-	public function dispose():Void {
-		if(_uid != -1 && element != null){
-			Reflect.deleteField(_DATA, _uid + '');
-			if(_children != null)
-				_children.dispose();
-			if(events != null)
-				events.dispose();
-			all('[jtn-id]').dispose();
-			remove();
-			element = null;
-			_uid = -1;
-		}
-	}
-	
 	public function exists(q:String):Bool {
-		return element != null && element.querySelector(q) != null;
+		return element.querySelector(q) != null;
 	}
 	
 	public function click():IDisplay {
@@ -400,7 +151,7 @@ class Display extends Query implements IDisplay {
 		return _children;
 	}
 	
-	public function getScrollBounds(?o:IPoint = null):IPoint {
+	public function getScrollBounds(?o:Point = null):Point {
 		if (o == null){
 			o = new Point(element.scrollWidth, element.scrollHeight);
 		}else{
@@ -410,7 +161,7 @@ class Display extends Query implements IDisplay {
 		return o;
 	}
 	
-	public function getScroll(?o:IPoint = null):IPoint {
+	public function getScroll(?o:Point = null):Point {
 		if (o == null){
 			o = new Point(element.scrollLeft, element.scrollTop);
 		}else{
@@ -442,21 +193,8 @@ class Display extends Query implements IDisplay {
 		});
 	}
 	
-	public function rect():Dynamic {
-		return {
-			left: element.scrollLeft,
-			top: element.scrollTop,
-			offsetX: element.offsetLeft,
-			offsetY: element.offsetTop,
-			x: element.offsetLeft - Browser.window.scrollX,
-			y: element.offsetTop - Browser.window.scrollY,
-		};
-	}
-	
 	public function focus():IDisplay {
-		if (element != null){
-			element.focus();
-		}
+		element.focus();
 		return this;
 	}
 	
@@ -542,7 +280,7 @@ class Display extends Query implements IDisplay {
 	
 	public function remove():IDisplay {
 		this._parent = null;
-		if (element != null && element.parentElement != null) element.parentElement.removeChild(element);
+		if (element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
 	}
 	
@@ -887,7 +625,7 @@ class Display extends Query implements IDisplay {
 	
 	public function getVisibility(?offsetY:Int = 0, ?offsetX:Int = 0):UInt {
 		
-		var rect:DOMRect = this.element.getBoundingClientRect();
+		var rect:DOMRect = getBounds();
 		var current:Int = 0;
 		// IS FULLY VISIBLE
 		if (rect.top + offsetY >= 0 && rect.left + offsetX >= 0 && rect.bottom - offsetY <= Utils.viewportHeight() && rect.right - offsetX <= Utils.viewportWidth())
@@ -939,58 +677,8 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function position():IPoint {
-		return getPosition(element);
-	}
-	
-	public function pin(?align:String):IDisplay {
-		var v:Int = null;
-		var h:Int = null;
-		switch(align){
-			case 't' : 		{ v = -1; h = 0; };
-			case 'tl','lt' : 	{ v = -1; h = -1; }
-			case 'l' : 		{ v = 0; h = -1; }
-			case 'bl','lb' : 	{ v = 1; h = -1; }
-			case 'b' : 		{ v = 1; h = 0; }
-			case 'br','rb' : 	{ v = 1; h = 1; }
-			case 'r' : 		{ v = 0; h = 1; }
-			case 'tr','rt' :	{ v = -1; h = 1; }
-			case 'c' :		{ v = 0; h = 0; }
-		}
-		var o:Dynamic = {position:'fixed'};
-		if(h != null){
-			if (h < 0){
-				o.top = 0;
-			}else if (h > 0){
-				o.bottom = 0;
-			}else{
-				o.top = 'calc(50vh - ' + (height()>>1) + 'px)';
-			}
-		}
-		if(v != null){
-			if (v < 0){
-				o.left = 0;
-			}else if (v > 0){
-				o.right = 0;
-			}else{
-				o.left = 'calc(50vw - ' + (width()>>1) + 'px)';
-			}
-		}
-		style(o);
-		css('pinned');
-		return this;
-	}
-	
-	public function unpin():IDisplay {
-		style({
-			position:'',
-			left:'',
-			right:'',
-			bottom:'',
-			top:'',
-		});
-		css('/pinned');
-		return this;
+	public function position():Point {
+		return Utils.getPosition(element);
 	}
 	
 	public function fit(width:Dynamic, height:Dynamic):IDisplay {
@@ -1008,22 +696,6 @@ class Display extends Query implements IDisplay {
 			element.id = value;
 		}
 		return element.id;
-	}
-	
-	public function load(url:String, module:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {
-		if (module != null){
-			if (Jotun.resources.exists(module)){
-				mount(module, data);
-				return;
-			}
-		}
-		Jotun.module(url, url, data, function(r:IRequest) {
-			if (r.success){
-				mount(module, data);
-			} if (handler != null){
-				handler(r);
-			}
-		}, progress);
 	}
 	
 	public function lookAt(?y:Int, ?x:Int):IDisplay {
@@ -1045,25 +717,15 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function autoLoad(?progress:IProgress->Void):Void {
-		all("[jtn-load]").each(function(o:IDisplay){
-			var f:String = o.attribute('jtn-load');
-			var d:Array<String> = f.split('#');
-			o.clearAttribute('jtn-load');
-			o.load(d[0], d.length == 1 ? d[0] : d[1], null, null, progress);
-		});
-	}
-	
 	public function react(data:Dynamic):Void {
 		if (Std.isOfType(data, String)){
 			data = Json.parse(data);
 		}
-		_react_fill(data, '');
-		_react_fill_after();
+		Reactor.apply(this, data);
 	}
 	
 	public function rectangle():Dynamic {
-		var r:DOMRect = element.getBoundingClientRect();
+		var r:DOMRect = getBounds();
 		return {
 			width:r.width,
 			height:r.height,
@@ -1074,8 +736,41 @@ class Display extends Query implements IDisplay {
 		};
 	}
 	
+	public function location():Dynamic {
+		return {
+			left: element.scrollLeft,
+			top: element.scrollTop,
+			offsetX: element.offsetLeft,
+			offsetY: element.offsetTop,
+			x: element.offsetLeft - Browser.window.scrollX,
+			y: element.offsetTop - Browser.window.scrollY,
+		};
+	}
+	
+	public function previous():IDisplay {
+		return Utils.displayFrom(element.previousElementSibling);
+	}
+	
+	public function next():IDisplay {
+		return Utils.displayFrom(element.nextElementSibling);
+	}
+	
+	public function dispose():Void {
+		if(_uid != -1 && element != null){
+			Reflect.deleteField(_DATA, _uid + '');
+			if(_children != null)
+				_children.dispose();
+			if(events != null)
+				events.dispose();
+			all('[jtn-id]').dispose();
+			remove();
+			element = null;
+			_uid = -1;
+		}
+	}
+	
 	public function toString():String {
-		var v:Bool = element != null && element.getBoundingClientRect != null;
+		var v:Bool = element.getBoundingClientRect != null;
 		var data:Dynamic = {
 			id:element.id, 
 			'jtn-id': id,

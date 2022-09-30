@@ -1,12 +1,14 @@
 package jotun.tools;
 import haxe.Json;
 import haxe.Log;
-import jotun.data.DataSet;
+import jotun.math.Point;
 import jotun.math.RNG;
+import jotun.utils.IColor;
 import jotun.utils.IDiceRoll;
 
 #if js
 
+	import js.html.DOMRect;
 	import js.Browser;
 	import js.Syntax;
 	import js.lib.Error;
@@ -29,6 +31,7 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Caption;
 	import jotun.dom.Col;
 	import jotun.dom.DataList;
+	import jotun.dom.Dialog;
 	import jotun.dom.Display;
 	import jotun.dom.Div;
 	import jotun.dom.Document;
@@ -81,12 +84,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Track;
 	import jotun.dom.UL;
 	import jotun.dom.Video;
-	import jotun.draw.Book;
-	import jotun.draw.Paper;
-	import jotun.gaming.actions.Events;
-	import jotun.gaming.dataform.Pulsar;
-	import jotun.gaming.dataform.SparkWriter;
-	import jotun.gaming.dataform.Spark;
 	import jotun.idb.WebDB;
 	import jotun.idb.WebDBAssist;
 	import jotun.idb.WebDBTable;
@@ -94,11 +91,15 @@ import jotun.utils.IDiceRoll;
 	import jotun.utils.SearchTag;
 	import jotun.utils.Singularity;
 	import jotun.signals.Observer;
-	
 #end
 
+import jotun.gaming.actions.Events;
+import jotun.gaming.dataform.Pulsar;
+import jotun.gaming.dataform.SparkWriter;
+import jotun.gaming.dataform.Spark;
 import jotun.serial.Packager;
 import jotun.tools.Flag;
+import jotun.tools.LoFlag;
 import jotun.utils.Dice;
 
 /**
@@ -239,6 +240,15 @@ class Utils{
 			Syntax.code('Object.freeze({0})', data);
 		}
 		
+		/**
+		 * Get a real position of a element
+		 * @param	target
+		 */
+		static public function getPosition(target:Element):Point {
+			var a:DOMRect = Jotun.document.body.getBounds();
+			var b:DOMRect = target.getBoundingClientRect();
+			return new Point(b.left - a.left, b.top - a.top);
+		}
 		
 	#elseif php
 		
@@ -533,6 +543,25 @@ class Utils{
 	
 	public static function rnToBr(value:String):String {
 		return value.split('\r\n').join('<br/>').split('\r').join('<br/>').split('\n').join('<br/>');
+	}
+	
+	/**
+	 * #AARRGGBB OR #RRGGBB
+	 * @param	hex
+	 * @return
+	 */
+	public static function color(hex:String):IColor {
+		var cI:Int = hex.length == 10 ? 3 : (hex.length == 9 ? 2 : 0);
+		return cast {
+			a: hex.length == 9 ? Std.parseInt("0x" + hex.substr(1, 2)) : 255,
+			r: Std.parseInt("0x" + hex.substr(1 + cI, 2)),
+			g: Std.parseInt("0x" + hex.substr(3 + cI, 2)),
+			b: Std.parseInt("0x" + hex.substr(5 + cI, 2)),
+		};
+	}
+	
+	public static function colorToCss(color:IColor, ?multiply:Float):String {
+		return 'rgb(' + Std.int(color.r * multiply) + ' ' + Std.int(color.g * multiply) + ' ' + Std.int(color.b * multiply) + '/' + Utils.toFixed((color.a * multiply) / 255, 2) + ')';
 	}
 	
 	#if php 

@@ -1,6 +1,7 @@
 package;
 
 import haxe.Json;
+import jotun.Jotun;
 import jotun.gaming.dataform.Pulsar;
 import jotun.gaming.dataform.Spark;
 import jotun.idb.WebDB;
@@ -43,6 +44,22 @@ class Test_JS{
 			'	]',
 			']',
 		].join('\r');
+		
+		
+		Jotun.request(
+			'http://127.0.0.100/api/user/register', 
+			{
+				date: "14/02/2014",
+				email: "vipperland@live.com",
+				pwd: "12345678",
+				username: "Vipperland",
+			},
+			'post',
+			function(r){
+				trace(r);
+			},
+			{'Content-Type':'application/json'}
+		);
 		
 	}
 	

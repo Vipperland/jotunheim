@@ -1,0 +1,277 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \jotun\tools\Utils;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author Rim Project
+ */
+class EventController implements IEventDispatcher {
+	/**
+	 * @var \Closure
+	 */
+	static public $_rAction;
+	/**
+	 * @var \Closure
+	 */
+	static public $_rRequirement;
+	/**
+	 * @var \Closure
+	 */
+	static public $_wAction;
+	/**
+	 * @var \Closure
+	 */
+	static public $_wRequirement;
+
+	/**
+	 * @var IEventContext[]|\Array_hx
+	 */
+	public $_chain;
+	/**
+	 * @var bool
+	 */
+	public $_debug;
+	/**
+	 * @var int
+	 */
+	public $_index;
+	/**
+	 * @var mixed
+	 */
+	public $events;
+
+	/**
+	 * @param \Closure $saveAction
+	 * @param \Closure $loadAction
+	 * @param \Closure $saveRequirement
+	 * @param \Closure $loadRequirement
+	 * 
+	 * @return void
+	 */
+	public static function cacheController ($saveAction, $loadAction, $saveRequirement, $loadRequirement) {
+		#src/jotun/gaming/actions/EventController.hx:24: characters 3-24
+		EventController::$_wAction = $saveAction;
+		#src/jotun/gaming/actions/EventController.hx:25: characters 3-24
+		EventController::$_rAction = $loadAction;
+		#src/jotun/gaming/actions/EventController.hx:26: characters 3-34
+		EventController::$_wRequirement = $saveRequirement;
+		#src/jotun/gaming/actions/EventController.hx:27: characters 3-34
+		EventController::$_rRequirement = $loadRequirement;
+	}
+
+	/**
+	 * @param string $id
+	 * 
+	 * @return Action
+	 */
+	public static function loadAction ($id) {
+		#src/jotun/gaming/actions/EventController.hx:31: characters 10-59
+		if (EventController::$_rAction !== null) {
+			#src/jotun/gaming/actions/EventController.hx:31: characters 29-41
+			return (EventController::$_rAction)($id);
+		} else {
+			#src/jotun/gaming/actions/EventController.hx:31: characters 44-59
+			return Action::load($id);
+		}
+	}
+
+	/**
+	 * @param string $id
+	 * 
+	 * @return Requirement
+	 */
+	public static function loadRequirement ($id) {
+		#src/jotun/gaming/actions/EventController.hx:39: characters 10-74
+		if (EventController::$_rRequirement !== null) {
+			#src/jotun/gaming/actions/EventController.hx:39: characters 34-51
+			return (EventController::$_rRequirement)($id);
+		} else {
+			#src/jotun/gaming/actions/EventController.hx:39: characters 54-74
+			return Requirement::load($id);
+		}
+	}
+
+	/**
+	 * @param Action $a
+	 * 
+	 * @return void
+	 */
+	public static function saveAction ($a) {
+		#src/jotun/gaming/actions/EventController.hx:35: characters 3-50
+		if (EventController::$_wAction !== null) {
+			#src/jotun/gaming/actions/EventController.hx:35: characters 22-33
+			(EventController::$_wAction)($a);
+		} else {
+			#src/jotun/gaming/actions/EventController.hx:35: characters 36-50
+			Action::save($a);
+		}
+	}
+
+	/**
+	 * @param Requirement $r
+	 * 
+	 * @return void
+	 */
+	public static function saveRequirement ($r) {
+		#src/jotun/gaming/actions/EventController.hx:43: characters 3-65
+		if (EventController::$_wRequirement !== null) {
+			#src/jotun/gaming/actions/EventController.hx:43: characters 27-43
+			(EventController::$_wRequirement)($r);
+		} else {
+			#src/jotun/gaming/actions/EventController.hx:43: characters 46-65
+			Requirement::save($r);
+		}
+	}
+
+	/**
+	 * @param mixed $data
+	 * @param bool $debug
+	 * 
+	 * @return void
+	 */
+	public function __construct ($data, $debug = null) {
+		#src/jotun/gaming/actions/EventController.hx:84: characters 44-46
+		$this->_chain = new \Array_hx();
+		#src/jotun/gaming/actions/EventController.hx:82: characters 27-28
+		$this->_index = 0;
+		#src/jotun/gaming/actions/EventController.hx:68: lines 68-76
+		$_gthis = $this;
+		#src/jotun/gaming/actions/EventController.hx:69: characters 3-25
+		$this->_debug = $debug === true;
+		#src/jotun/gaming/actions/EventController.hx:70: lines 70-75
+		if ($data !== null) {
+			#src/jotun/gaming/actions/EventController.hx:71: characters 4-17
+			$this->events = $data;
+			#src/jotun/gaming/actions/EventController.hx:72: lines 72-74
+			Dice::All($this->events, function ($p, $v) use (&$_gthis) {
+				#src/jotun/gaming/actions/EventController.hx:73: characters 5-23
+				Events::patch($_gthis);
+			});
+		}
+	}
+
+	/**
+	 * @param mixed $data
+	 * @param string $name
+	 * 
+	 * @return IEventContext
+	 */
+	public function _createContext ($data, $name) {
+		#src/jotun/gaming/actions/EventController.hx:57: lines 57-65
+		return new _HxAnon_EventController0($name, $this->_debug, new \Array_hx(), 0, 0, $data, new \Array_hx());
+	}
+
+	/**
+	 * @param IEventContext $context
+	 * 
+	 * @return void
+	 */
+	public function _onCallAfter ($context) {
+	}
+
+	/**
+	 * @param IEventContext $context
+	 * 
+	 * @return void
+	 */
+	public function _onCallBefore ($context) {
+	}
+
+	/**
+	 * @param IEventContext[]|\Array_hx $chain
+	 * 
+	 * @return void
+	 */
+	public function _onChainEnd ($chain) {
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $data
+	 * 
+	 * @return bool
+	 */
+	public function call ($name, $data = null) {
+		#src/jotun/gaming/actions/EventController.hx:87: lines 87-112
+		if (\Reflect::hasField($this->events, $name)) {
+			#src/jotun/gaming/actions/EventController.hx:88: characters 4-59
+			$context = $this->_createContext($data, $name);
+			#src/jotun/gaming/actions/EventController.hx:89: characters 4-26
+			$context->chain = $this->_index;
+			#src/jotun/gaming/actions/EventController.hx:90: characters 4-35
+			$this->_chain->offsetSet($this->_chain->length, $context);
+			#src/jotun/gaming/actions/EventController.hx:91: lines 91-93
+			if ($this->_index > 0) {
+				#src/jotun/gaming/actions/EventController.hx:92: characters 5-38
+				$context->parent = ($this->_chain->arr[$this->_index - 1] ?? null);
+			}
+			#src/jotun/gaming/actions/EventController.hx:94: characters 4-12
+			++$this->_index;
+			#src/jotun/gaming/actions/EventController.hx:95: characters 4-26
+			$this->_onCallBefore($context);
+			#src/jotun/gaming/actions/EventController.hx:96: characters 4-44
+			\Reflect::field($this->events, $name)->run($context);
+			#src/jotun/gaming/actions/EventController.hx:97: characters 4-12
+			--$this->_index;
+			#src/jotun/gaming/actions/EventController.hx:98: characters 4-25
+			$this->_onCallAfter($context);
+			#src/jotun/gaming/actions/EventController.hx:99: lines 99-102
+			if ($this->_index === 0) {
+				#src/jotun/gaming/actions/EventController.hx:100: characters 5-24
+				$this->_onChainEnd($this->_chain);
+				#src/jotun/gaming/actions/EventController.hx:101: characters 5-16
+				$this->_chain = new \Array_hx();
+			}
+			#src/jotun/gaming/actions/EventController.hx:103: characters 4-15
+			return true;
+		} else {
+			#src/jotun/gaming/actions/EventController.hx:105: lines 105-110
+			if ($this->_debug) {
+				#src/jotun/gaming/actions/EventController.hx:106: characters 5-60
+				$context = $this->_createContext($data, $name);
+				#src/jotun/gaming/actions/EventController.hx:107: characters 5-27
+				$this->_onCallBefore($context);
+				#src/jotun/gaming/actions/EventController.hx:108: characters 5-160
+				$_this = $context->log;
+				$x = (Utils::prefix("", $context->ident + $context->chain, "\x09")??'null') . "≈ EVENT " . ($name??'null') . " [!] Not Found on " . (\Type::getClassName(\Type::getClass($this))??'null');
+				$_this->arr[$_this->length++] = $x;
+				#src/jotun/gaming/actions/EventController.hx:109: characters 5-26
+				$this->_onCallAfter($context);
+			}
+			#src/jotun/gaming/actions/EventController.hx:111: characters 4-16
+			return false;
+		}
+	}
+
+	/**
+	 * @param bool $mode
+	 * 
+	 * @return void
+	 */
+	public function setDebug ($mode) {
+		#src/jotun/gaming/actions/EventController.hx:79: characters 3-16
+		$this->_debug = $mode;
+	}
+}
+
+class _HxAnon_EventController0 extends HxAnon {
+	function __construct($name, $debug, $log, $ident, $ticks, $origin, $history) {
+		$this->name = $name;
+		$this->debug = $debug;
+		$this->log = $log;
+		$this->ident = $ident;
+		$this->ticks = $ticks;
+		$this->origin = $origin;
+		$this->history = $history;
+	}
+}
+
+Boot::registerClass(EventController::class, 'jotun.gaming.actions.EventController');

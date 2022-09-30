@@ -1,0 +1,179 @@
+<?php
+/**
+ */
+
+namespace jotun\objects;
+
+use \php\_Boot\HxDynamicStr;
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \jotun\utils\Dice;
+use \php\_Boot\HxString;
+
+/**
+ * ...
+ * @author Rafael Moreira
+ */
+class Query extends Resolve implements IQuery {
+	/**
+	 * @var mixed
+	 */
+	public $_buffer;
+	/**
+	 * @var string[]|\Array_hx
+	 */
+	public $_log;
+	/**
+	 * @var mixed
+	 */
+	public $_now;
+
+	/**
+	 * @return void
+	 */
+	public function __construct () {
+		#src/jotun/objects/Query.hx:16: characters 3-12
+		$this->_log = new \Array_hx();
+	}
+
+	/**
+	 * @param mixed $data
+	 * 
+	 * @return void
+	 */
+	public function _batchExec ($data) {
+		#src/jotun/objects/Query.hx:42: characters 3-74
+		Dice::Values((($data instanceof \Array_hx) ? $data : HxDynamicStr::wrap($data)->split("\x0A")), Boot::getInstanceClosure($this, '_exec'));
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return void
+	 */
+	public function _exec ($q) {
+		#src/jotun/objects/Query.hx:45: characters 3-24
+		$o = null;
+		#src/jotun/objects/Query.hx:46: characters 10-23
+		if (\mb_substr($q, 0, 1) === "@") {
+			#src/jotun/objects/Query.hx:49: characters 12-26
+			if (\mb_substr($q, 1, 1) === "!") {
+				#src/jotun/objects/Query.hx:51: characters 7-18
+				$this->_now = null;
+			} else {
+				#src/jotun/objects/Query.hx:54: characters 7-51
+				$prop = \mb_substr($q, 1, mb_strlen($q) - 1);
+				#src/jotun/objects/Query.hx:55: lines 55-60
+				if (!\Reflect::hasField($this->_buffer, $prop)) {
+					#src/jotun/objects/Query.hx:56: characters 8-17
+					$this->_now = new \Array_hx();
+					#src/jotun/objects/Query.hx:57: characters 8-45
+					\Reflect::setField($this->_buffer, $prop, $this->_now);
+				} else {
+					#src/jotun/objects/Query.hx:59: characters 8-43
+					$this->_now = \Reflect::field($this->_buffer, $prop);
+				}
+			}
+		} else {
+			#src/jotun/objects/Query.hx:67: lines 67-69
+			while (HxString::indexOf($q, "\x09\x09") !== -1) {
+				#src/jotun/objects/Query.hx:68: characters 6-35
+				$q = HxString::split($q, "\x09\x09")->join(" ");
+			}
+			#src/jotun/objects/Query.hx:70: lines 70-72
+			while (HxString::indexOf($q, "  ") !== -1) {
+				#src/jotun/objects/Query.hx:71: characters 6-33
+				$q = HxString::split($q, "  ")->join(" ");
+			}
+			#src/jotun/objects/Query.hx:74: characters 5-41
+			$tk = HxString::split($q, " ");
+			#src/jotun/objects/Query.hx:76: characters 25-35
+			if ($tk->length > 0) {
+				$tk->length--;
+			}
+			#src/jotun/objects/Query.hx:76: characters 5-36
+			$method = \array_shift($tk->arr);
+			#src/jotun/objects/Query.hx:77: characters 5-30
+			$isMethod = true;
+			#src/jotun/objects/Query.hx:83: lines 83-86
+			if (method_exists($this, $method)) {
+				#src/jotun/objects/Query.hx:84: characters 7-38
+				$o = \Reflect::field($this, $method);
+				#src/jotun/objects/Query.hx:85: characters 7-22
+				$isMethod = true;
+			}
+			#src/jotun/objects/Query.hx:88: lines 88-104
+			if (($o !== null) && $isMethod) {
+				#src/jotun/objects/Query.hx:89: characters 6-27
+				$this->_log->offsetSet($this->_log->length, $q);
+				#src/jotun/objects/Query.hx:91: lines 91-103
+				if ($isMethod) {
+					#src/jotun/objects/Query.hx:92: characters 7-42
+					$o = \Reflect::callMethod($this, $o, $tk);
+					#src/jotun/objects/Query.hx:93: lines 93-97
+					if (($o !== null) && is_string($o) && (HxDynamicStr::wrap($o)->substr(0, 1) === "~")) {
+						#src/jotun/objects/Query.hx:94: characters 8-36
+						$o = HxDynamicStr::wrap($o)->substring(1, Boot::dynamicField($o, 'length'));
+						#src/jotun/objects/Query.hx:95: characters 8-21
+						$this->_batchExec($o);
+						#src/jotun/objects/Query.hx:96: characters 8-16
+						$o = null;
+					}
+				} else {
+					#src/jotun/objects/Query.hx:101: characters 7-16
+					$o = ($tk->arr[0] ?? null);
+					#src/jotun/objects/Query.hx:102: characters 7-40
+					\Reflect::setField($this, $method, $o);
+				}
+			}
+			#src/jotun/objects/Query.hx:105: lines 105-107
+			if (($o !== null) && ($this->_now !== null)) {
+				#src/jotun/objects/Query.hx:106: characters 6-27
+				$this->_now[Boot::dynamicField($this->_now, 'length')] = $o;
+			}
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flush () {
+		#src/jotun/objects/Query.hx:24: characters 3-12
+		$this->_log = new \Array_hx();
+		#src/jotun/objects/Query.hx:25: characters 3-12
+		$this->_now = new \Array_hx();
+	}
+
+	/**
+	 * @return string[]|\Array_hx
+	 */
+	public function log () {
+		#src/jotun/objects/Query.hx:20: characters 3-14
+		return $this->_log;
+	}
+
+	/**
+	 * methodName|property ...parameters|value
+	 * parameters are separated by 'TAB'
+	 * sample:
+	 * 			myFunct	prop1	prop2
+	 * @param	data
+	 * 
+	 * @param mixed $data
+	 * @param mixed $result
+	 * 
+	 * @return mixed
+	 */
+	public function proc ($data, $result = null) {
+		#src/jotun/objects/Query.hx:36: characters 3-41
+		$this->_buffer = ($result !== null ? $result : new HxAnon());
+		#src/jotun/objects/Query.hx:37: characters 3-14
+		$this->_now = null;
+		#src/jotun/objects/Query.hx:38: characters 3-19
+		$this->_batchExec($data);
+		#src/jotun/objects/Query.hx:39: characters 3-17
+		return $this->_buffer;
+	}
+}
+
+Boot::registerClass(Query::class, 'jotun.objects.Query');

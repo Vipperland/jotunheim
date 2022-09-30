@@ -4,8 +4,6 @@ package jotun.net;
 	import php.Lib;
 	import php.NativeArray;
 #end
-import jotun.data.IDataCache;
-import jotun.data.IFragments;
 import jotun.net.IDomainData;
 
 /**
@@ -18,11 +16,11 @@ interface IDomain {
 	
 	public var port:String;
 	
-	public var url:IFragments;
+	public var url:Array<String>;
 	
 	#if js
 		
-		public var hash:IFragments;
+		public var hash:Array<String>;
 		
 	#elseif php
 		

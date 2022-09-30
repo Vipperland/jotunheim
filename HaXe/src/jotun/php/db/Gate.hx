@@ -1,5 +1,6 @@
 package jotun.php.db;
-import jotun.data.IDataSet;
+import jotun.errors.Error;
+import jotun.errors.IError;
 import jotun.php.db.IGate;
 import jotun.php.db.Token;
 import jotun.php.db.objects.DataTable;
@@ -13,8 +14,6 @@ import jotun.php.db.tools.ICommand;
 import jotun.php.db.tools.IExtCommand;
 import jotun.php.db.tools.IQueryBuilder;
 import jotun.php.db.tools.QueryBuilder;
-import jotun.errors.Error;
-import jotun.errors.IError;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import php.Lib;
@@ -110,7 +109,6 @@ class Gate implements IGate {
 	}
 	
 	public function schema(?table:Dynamic):Array<Dynamic> {
-		var r:IDataSet = null;
 		if (!Std.isOfType(table, Array)) {
 			table = [table];
 		}

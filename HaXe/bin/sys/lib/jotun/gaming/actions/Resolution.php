@@ -1,0 +1,138 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\Boot;
+use \jotun\tools\Utils;
+
+/**
+ * ...
+ * @author Rim Project
+ */
+class Resolution {
+	/**
+	 * @var string
+	 */
+	public $_type;
+	/**
+	 * @var bool
+	 */
+	public $cancelOnFail;
+	/**
+	 * @var bool
+	 */
+	public $cancelOnSuccess;
+	/**
+	 * @var string
+	 */
+	public $id;
+	/**
+	 * @var Events
+	 */
+	public $onFail;
+	/**
+	 * @var Events
+	 */
+	public $onSuccess;
+	/**
+	 * @var string[]|\Array_hx
+	 */
+	public $query;
+	/**
+	 * @var bool
+	 */
+	public $reverse;
+
+	/**
+	 * @param string $type
+	 * @param mixed $data
+	 * 
+	 * @return void
+	 */
+	public function __construct ($type, $data) {
+		#src/jotun/gaming/actions/Resolution.hx:28: characters 3-15
+		$this->_type = $type;
+		#src/jotun/gaming/actions/Resolution.hx:29: characters 3-56
+		$this->cancelOnSuccess = Utils::boolean(Boot::dynamicField($data, 'cancelOnSuccess'));
+		#src/jotun/gaming/actions/Resolution.hx:30: characters 3-50
+		$this->cancelOnFail = Utils::boolean(Boot::dynamicField($data, 'cancelOnFail'));
+		#src/jotun/gaming/actions/Resolution.hx:31: characters 3-40
+		$this->reverse = Utils::boolean(Boot::dynamicField($data, 'reverse'));
+		#src/jotun/gaming/actions/Resolution.hx:32: lines 32-37
+		if ((Boot::dynamicField($data, 'query') instanceof \Array_hx)) {
+			#src/jotun/gaming/actions/Resolution.hx:33: characters 4-22
+			$this->query = Boot::dynamicField($data, 'query');
+			#src/jotun/gaming/actions/Resolution.hx:34: characters 4-28
+			$_this = $this->query;
+			$_this->length = \array_unshift($_this->arr, "@result");
+		} else if (Utils::isValid(Boot::dynamicField($data, 'query'))) {
+			#src/jotun/gaming/actions/Resolution.hx:36: characters 4-35
+			$this->query = \Array_hx::wrap([
+				"@result",
+				Boot::dynamicField($data, 'query'),
+			]);
+		}
+		#src/jotun/gaming/actions/Resolution.hx:38: lines 38-40
+		if (Boot::dynamicField($data, 'onSuccess') !== null) {
+			#src/jotun/gaming/actions/Resolution.hx:39: characters 4-64
+			$this->onSuccess = new Events(($this->_type??'null') . ".onSuccess", Boot::dynamicField($data, 'onSuccess'));
+		}
+		#src/jotun/gaming/actions/Resolution.hx:41: lines 41-43
+		if (Boot::dynamicField($data, 'onFail') !== null) {
+			#src/jotun/gaming/actions/Resolution.hx:42: characters 4-55
+			$this->onFail = new Events(($this->_type??'null') . ".onFail", Boot::dynamicField($data, 'onFail'));
+		}
+		#src/jotun/gaming/actions/Resolution.hx:44: characters 3-15
+		$this->id = Boot::dynamicField($data, 'id');
+	}
+
+	/**
+	 * @return int
+	 */
+	public function length () {
+		#src/jotun/gaming/actions/Resolution.hx:63: characters 10-46
+		if ($this->query !== null) {
+			#src/jotun/gaming/actions/Resolution.hx:63: characters 26-42
+			return $this->query->length - 1;
+		} else {
+			#src/jotun/gaming/actions/Resolution.hx:63: characters 45-46
+			return 0;
+		}
+	}
+
+	/**
+	 * @param bool $result
+	 * @param IEventContext $context
+	 * 
+	 * @return bool
+	 */
+	public function resolve ($result, $context) {
+		#src/jotun/gaming/actions/Resolution.hx:48: characters 3-18
+		++$context->ident;
+		#src/jotun/gaming/actions/Resolution.hx:49: lines 49-57
+		if ($result) {
+			#src/jotun/gaming/actions/Resolution.hx:50: lines 50-52
+			if ($this->onSuccess !== null) {
+				#src/jotun/gaming/actions/Resolution.hx:51: characters 5-27
+				$this->onSuccess->run($context);
+			}
+		} else if ($this->onFail !== null) {
+			#src/jotun/gaming/actions/Resolution.hx:55: characters 5-24
+			$this->onFail->run($context);
+		}
+		#src/jotun/gaming/actions/Resolution.hx:58: characters 3-18
+		--$context->ident;
+		#src/jotun/gaming/actions/Resolution.hx:59: characters 10-36
+		if ($this->reverse) {
+			#src/jotun/gaming/actions/Resolution.hx:59: characters 20-27
+			return !$result;
+		} else {
+			#src/jotun/gaming/actions/Resolution.hx:59: characters 30-36
+			return $result;
+		}
+	}
+}
+
+Boot::registerClass(Resolution::class, 'jotun.gaming.actions.Resolution');

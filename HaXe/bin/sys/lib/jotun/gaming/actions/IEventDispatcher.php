@@ -1,0 +1,29 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\Boot;
+
+/**
+ * @author Rim Project
+ */
+interface IEventDispatcher {
+	/**
+	 * @param string $name
+	 * @param mixed $data
+	 * 
+	 * @return bool
+	 */
+	public function call ($name, $data = null) ;
+
+	/**
+	 * @param bool $mode
+	 * 
+	 * @return void
+	 */
+	public function setDebug ($mode) ;
+}
+
+Boot::registerClass(IEventDispatcher::class, 'jotun.gaming.actions.IEventDispatcher');

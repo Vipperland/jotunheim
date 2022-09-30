@@ -1,0 +1,169 @@
+<?php
+/**
+ */
+
+namespace jotun\gaming\actions;
+
+use \php\_Boot\HxAnon;
+use \php\Boot;
+use \jotun\tools\Utils;
+use \jotun\utils\Dice;
+
+/**
+ * ...
+ * @author Rim Project
+ */
+class Events {
+	/**
+	 * @var Action[]|\Array_hx
+	 */
+	public $_data;
+	/**
+	 * @var \Closure
+	 */
+	public $_load;
+	/**
+	 * @var \Closure
+	 */
+	public $_save;
+	/**
+	 * @var string
+	 */
+	public $_type;
+
+	/**
+	 * @param Events $evt
+	 * @param IEventContext $context
+	 * 
+	 * @return void
+	 */
+	public static function _log ($evt, $context) {
+		#src/jotun/gaming/actions/Events.hx:78: characters 3-32
+		$a = $evt->_data->length;
+		#src/jotun/gaming/actions/Events.hx:79: characters 3-197
+		$_this = $context->log;
+		#src/jotun/gaming/actions/Events.hx:79: characters 20-73
+		$x = Utils::prefix("", $context->ident + $context->chain, "\x09");
+		#src/jotun/gaming/actions/Events.hx:79: characters 3-197
+		$_this->arr[$_this->length++] = ($x??'null') . ((($context->chain > 0 ? "└ " : ""))??'null') . "≈ EVENT " . ((($a === 0 ? "" : "CHAIN "))??'null') . ($evt->_type??'null') . ((($a === 0 ? " [!] Empty" : " @" . ($a??'null')))??'null');
+		#src/jotun/gaming/actions/Events.hx:80: lines 80-82
+		if (($context->chain > 0) && ($context->parent->action !== null)) {
+			#src/jotun/gaming/actions/Events.hx:81: characters 4-124
+			$_this = $context->log;
+			$x = (Utils::prefix("", $context->ident + $context->chain + 1, "\x09")??'null') . "├ ACTION [" . ($context->parent->action??'null') . "]";
+			$_this->arr[$_this->length++] = $x;
+		}
+	}
+
+	/**
+	 * @param mixed $data
+	 * 
+	 * @return void
+	 */
+	public static function patch ($data) {
+		#src/jotun/gaming/actions/Events.hx:17: lines 17-24
+		if (Boot::dynamicField($data, 'events') !== null) {
+			#src/jotun/gaming/actions/Events.hx:18: lines 18-23
+			if (!Boot::dynamicField(Boot::dynamicField($data, 'events'), 'patched')) {
+				#src/jotun/gaming/actions/Events.hx:19: characters 5-31
+				Boot::dynamicField($data, 'events')->patched = true;
+				#src/jotun/gaming/actions/Events.hx:20: lines 20-22
+				Dice::All(Boot::dynamicField($data, 'events'), function ($p, $v) use (&$data) {
+					#src/jotun/gaming/actions/Events.hx:21: characters 6-46
+					Boot::dynamicField($data, 'events')->offsetSet($p, new Events($p, $v));
+				});
+			}
+		}
+	}
+
+	/**
+	 * @param string $type
+	 * @param mixed[]|\Array_hx $data
+	 * 
+	 * @return void
+	 */
+	public function __construct ($type, $data) {
+		#src/jotun/gaming/actions/Events.hx:33: characters 3-15
+		$this->_type = $type;
+		#src/jotun/gaming/actions/Events.hx:34: characters 3-14
+		$this->_init($data);
+	}
+
+	/**
+	 * @param mixed[]|\Array_hx $data
+	 * 
+	 * @return void
+	 */
+	public function _init ($data) {
+		#src/jotun/gaming/actions/Events.hx:37: lines 37-57
+		$_gthis = $this;
+		#src/jotun/gaming/actions/Events.hx:38: characters 3-13
+		$this->_data = new \Array_hx();
+		#src/jotun/gaming/actions/Events.hx:39: characters 3-18
+		$i = 0;
+		#src/jotun/gaming/actions/Events.hx:40: characters 3-22
+		$r = new HxAnon();
+		#src/jotun/gaming/actions/Events.hx:41: lines 41-56
+		Dice::All($data, function ($p, $v) use (&$i, &$r, &$_gthis) {
+			#src/jotun/gaming/actions/Events.hx:42: lines 42-44
+			if (is_string($v)) {
+				#src/jotun/gaming/actions/Events.hx:43: characters 5-38
+				$v = EventController::loadAction($v);
+			}
+			#src/jotun/gaming/actions/Events.hx:45: lines 45-55
+			if (($v !== null) && ((Boot::dynamicField($v, 'id') === null) || !\Reflect::hasField($r, Boot::dynamicField($v, 'id')))) {
+				#src/jotun/gaming/actions/Events.hx:46: lines 46-50
+				if (($v instanceof Action)) {
+					#src/jotun/gaming/actions/Events.hx:47: characters 6-18
+					$_gthis->_data->offsetSet($i, $v);
+				} else {
+					#src/jotun/gaming/actions/Events.hx:49: characters 6-53
+					$_gthis->_data->offsetSet($i, new Action(($_gthis->_type??'null') . "[" . ($p??'null') . "]", $v));
+				}
+				#src/jotun/gaming/actions/Events.hx:51: lines 51-53
+				if (Boot::dynamicField($v, 'id') !== null) {
+					#src/jotun/gaming/actions/Events.hx:52: characters 6-34
+					\Reflect::setField($r, Boot::dynamicField($v, 'id'), 1);
+				}
+				#src/jotun/gaming/actions/Events.hx:54: characters 5-8
+				$i += 1;
+			}
+		});
+	}
+
+	/**
+	 * @param IEventContext $context
+	 * 
+	 * @return void
+	 */
+	public function run ($context) {
+		#src/jotun/gaming/actions/Events.hx:60: characters 3-18
+		++$context->ident;
+		#src/jotun/gaming/actions/Events.hx:61: lines 61-67
+		Dice::All($this->_data, function ($p, $a) use (&$context) {
+			#src/jotun/gaming/actions/Events.hx:62: lines 62-66
+			if ($a->run($context, $p)) {
+				#src/jotun/gaming/actions/Events.hx:63: characters 5-29
+				return $a->cancelOnSuccess;
+			} else {
+				#src/jotun/gaming/actions/Events.hx:65: characters 5-26
+				return $a->cancelOnFail;
+			}
+		});
+		#src/jotun/gaming/actions/Events.hx:68: characters 3-18
+		--$context->ident;
+		#src/jotun/gaming/actions/Events.hx:69: lines 69-74
+		if ($context->ident === 0) {
+			#src/jotun/gaming/actions/Events.hx:70: lines 70-73
+			if ($context->debug) {
+				#src/jotun/gaming/actions/Events.hx:71: characters 5-24
+				Events::_log($this, $context);
+				#src/jotun/gaming/actions/Events.hx:72: characters 5-26
+				$_this = $context->log;
+				$_this->arr = \array_reverse($_this->arr);
+			}
+		}
+	}
+}
+
+Boot::registerClass(Events::class, 'jotun.gaming.actions.Events');

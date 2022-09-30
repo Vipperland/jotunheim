@@ -1,5 +1,4 @@
 package jotun.gaming.actions;
-import jotun.dom.Video;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.IEventContext;

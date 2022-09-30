@@ -1,5 +1,4 @@
 package jotun.php.db.tools;
-import jotun.data.IDataSet;
 import jotun.php.db.pdo.Statement;
 import jotun.errors.IError;
 
@@ -38,7 +37,7 @@ interface ICommand {
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:IDataSet->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : ICommand;
+	public function execute (?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : ICommand;
 	
 	/**
 	 * The final value of the query

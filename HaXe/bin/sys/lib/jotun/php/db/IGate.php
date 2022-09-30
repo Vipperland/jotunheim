@@ -15,6 +15,13 @@ use \jotun\errors\IError;
  */
 interface IGate {
 	/**
+	 * Enable logging
+	 * 
+	 * @return void
+	 */
+	public function enableLog () ;
+
+	/**
 	 * LAst inserted column value
 	 * @param	field
 	 * @param	mode
@@ -73,6 +80,14 @@ interface IGate {
 	public function ifTableExists ($table) ;
 
 	/**
+	 * If log is enabled
+	 * @return
+	 * 
+	 * @return bool
+	 */
+	public function isLogEnabled () ;
+
+	/**
 	 * If the connection is available
 	 * @return
 	 * 
@@ -86,11 +101,10 @@ interface IGate {
 	 * @return
 	 * 
 	 * @param Token $token
-	 * @param bool $log
 	 * 
 	 * @return IGate
 	 */
-	public function open ($token, $log = null) ;
+	public function open ($token) ;
 
 	/**
 	 * The query to execute

@@ -1,5 +1,4 @@
 package jotun.php.db.tools;
-import jotun.data.IDataSet;
 
 /**
  * @author Rafael Moreira
@@ -19,14 +18,14 @@ interface IExtCommand extends ICommand {
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:IDataSet->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : IExtCommand;
+	public function execute (?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : IExtCommand;
 	
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)
 	 * @param	handler
 	 * @return
 	 */
-	public function fetch (handler:IDataSet->Bool) : ICommand;
+	public function fetch (handler:Dynamic->Bool) : ICommand;
 	
 	/**
 	 * Count result length by COUNT(*) property or result length
