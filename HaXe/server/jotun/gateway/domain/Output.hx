@@ -51,9 +51,9 @@ class Output {
 		list("errors");
 	}
 	
-	public function log(message:Dynamic):Void {
+	public function log(message:Dynamic, ?list:String = 'trace'):Void {
 		if (_log){
-			list("trace").push(message);
+			this.list(list).push(message);
 		}
 	}
 	

@@ -49,6 +49,10 @@ class ZoneServices extends DomainServices {
 		return _value;
 	}
 	
+	final private function _logService(message:String):Void {
+		output.log(message, "runtime");
+	}
+	
 	public function new(?pass:ZonePass) {
 		_name = Type.getClassName(Type.getClass(this)).split(".").pop();
 		_pass = pass;
@@ -116,20 +120,20 @@ class ZoneServices extends DomainServices {
 				var ZoneName:String = data.shift();
 				_zone = Syntax.construct(Def);
 				_zone._buildup(ZoneName);
-				output.log(toString() + "->carry('" + ZoneName + "')");
+				_logService(toString() + "->carry('" + ZoneName + "')");
 				_zone.carry(this, data);
 				return _zone;
 			}else{
 				if (data.length > 0){
-					output.log(toString() + "->execute(" + data + ")");
+					_logService(toString() + "->execute(" + data + ")");
 				}else{
-					output.log(toString() + "->execute()");
+					_logService(toString() + "->execute()");
 				}
 				_execute(data);
 				return this;
 			}
 		}else{
-			output.log(toString() + "->" + (Def != null ? "carry" : "execute") + "(UNAUTORIZED " + _pass.toString() + ")");
+			_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(UNAUTORIZED " + _pass.toString() + ")");
 			if (input.isAuthenticated()){
 				error(ErrorCodes.SERVICE_UNAUTHORIZED);
 			}else{

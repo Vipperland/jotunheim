@@ -123,14 +123,18 @@ class Output {
 
 	/**
 	 * @param mixed $message
+	 * @param string $list
 	 * 
 	 * @return void
 	 */
-	public function log ($message) {
+	public function log ($message, $list = "trace") {
 		#server/jotun/gateway/domain/Output.hx:55: lines 55-57
+		if ($list === null) {
+			$list = "trace";
+		}
 		if ($this->_log) {
-			#server/jotun/gateway/domain/Output.hx:56: characters 4-31
-			$this->list("trace")->push($message);
+			#server/jotun/gateway/domain/Output.hx:56: characters 4-33
+			$this->list($list)->push($message);
 		}
 	}
 
