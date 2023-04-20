@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+
+	RewriteEngine On
+	RewriteRule .? - [E=Authorization:%{HTTP:Authorization}]
+	
+	RewriteBase /
+	RewriteRule ^(sys)/([^.]+)\.([^/]+)/(.*)$ /$1/$2/$3/$4 [L,NC,B,NE,QSA]
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*)$ /sys/index.php?service=$1 [L,NC,B,NE,QSA]
+	
+</IfModule>

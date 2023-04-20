@@ -1,6 +1,6 @@
 package jotun.gaming.dataform;
 import haxe.Json;
-import jotun.tools.Flag;
+import jotun.logical.Flag;
 import jotun.utils.Dice;
 
 /**

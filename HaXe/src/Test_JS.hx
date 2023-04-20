@@ -17,35 +17,6 @@ class Test_JS{
 	
 	static public function main() {
 		
-		var str:String = [
-			'obj1 {',
-			'	obj2 {',
-			'		a: Hello',
-			'		b: World',
-			'	}',
-			'	a: Hello',
-			'	b: World',
-			'}',
-			'a: Hello',
-			'b: World',
-			'arr1 [',
-			'	{',
-			'		a: Hellow',
-			'		b: World',
-			'	}',
-			'	hi mom!',
-			'	true',
-			'	5',
-			'	[',
-			'		{',
-			'			a: Hello',
-			'			b: World',
-			'		}',
-			'	]',
-			']',
-		].join('\r');
-		
-		
 		Jotun.request(
 			'http://127.0.0.100/api/user/register', 
 			{

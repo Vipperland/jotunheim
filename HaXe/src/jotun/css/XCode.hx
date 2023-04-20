@@ -237,11 +237,32 @@ class XCode {
 	 * @param	seed		INT	
 	 * @param	replace	
 	 */
-	static public function displacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0, ?replace:Bool):Void {
+	static public function displacement(id:String, freq:Float, octaves:Int, scale:Int, ?seed:Int=0, ?replace:Bool = true):Void {
 		if(_filterCheck(id, replace)){
 			var end:String = "<filter id=\"" + id + "\">";
 				end += "<feTurbulence baseFrequency=\"" + freq + "\" numOctaves=\"" + octaves + "\" result=\"noise\" seed=\"" + seed + "\"/>";
-				end += "<feDisplacementMap id=\"displacement\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
+				end += "<feDisplacementMap id=\"" + id + "-map\" in=\"SourceGraphic\" in2=\"noise\" scale=\"" + scale + "\" />";
+				end += "</filter>";
+			_filters.appendHtml(end);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param	id
+	 * @param	data
+	 * @param	width
+	 * @param	height
+	 * @param	x
+	 * @param	y
+	 * @param	replace
+	 */
+	static public function imageFilter(id:String, data:String, width:String, height:String, x:String, y:String, ?replace:Bool = true):Void {
+		if(_filterCheck(id, replace)){
+			var end:String = "<filter id=\"" + id + "\">";
+				end += "<feImage x=\"" + x + "\" y=\"" + y + "\" width=\"" + width + "\" height=\"" + height + "\" result=\"" + id + "-res\" xlink:href=\"" + data + "\"/>";
+				end += "<feDisplacementMap id=\"" + id + "-map\" xChannelSelector=\"R\" yChannelSelector=\"G\" in=\"SourceGraphic\" in2=\"" + id + "-res\" result=\"displacementMap\" color-interpolation-filters=\"sRGB\" scale=\"100\"/>";
+				end += "<feComposite operator=\"in\" in2=\"" + id + "-res\"></feComposite>";
 				end += "</filter>";
 			_filters.appendHtml(end);
 		}
@@ -274,14 +295,14 @@ class XCode {
 		return id;
 	}
 	
-	static public function shadow(id:String, text:Bool, color:String, ?distance:Int, ?direction:Int, ?quality:Int, ?strenght:Int, ?multiplier:Float):String {
+	static public function shadow(id:String, text:Bool, color:String, ?distance:Int, ?direction:Int, ?float:Int, ?steps:Int, ?multiplier:Float):String {
 		var cc:IColor = Utils.color(color);
 		var y:Int = 0;
 		var z:Int = Utils.getValidOne(distance, text ? 1 : 5);
 		var a:Int = Utils.getValidOne(direction, 45);
-		var w:Int = Utils.getValidOne(strenght, 5);
-		var u:Int = Utils.getValidOne(quality, 10);
-		var c:Float = Utils.getValidOne(multiplier, .5);
+		var w:Int = Utils.getValidOne(steps, 5);
+		var u:Int = Utils.getValidOne(float, 10);
+		var c:Float = Utils.getValidOne(multiplier, .5)/1 * .85;
 		var cos:Float = Math.cos(.017453 * a);
 		var sin:Float = Math.sin(.017453 * a);
 		var r:Array<String> = [];
@@ -301,13 +322,16 @@ class XCode {
 			}
 			tx = (cast cos * y);
 			ty = (cast sin * y);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + Utils.colorToCss(cc, .8 - (y/z*c));
+			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + Utils.colorToCss(cc, .85-(y/z*c));
 		}
 		y = 0;
 		var oX:Float = cos * z;
 		var oY:Float = sin * z;
 		while (y < u) {
-			++y;
+			y += w;
+			if (y > u) {
+				y = u;
+			}
 			tx = (cast cos * y + oX);
 			ty = (cast sin * y + oY);
 			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgb(0 0 0/.1)';

@@ -1,6 +1,8 @@
 package jotun.events;
 import jotun.Jotun;
+import jotun.events.IEventGroup;
 import js.Browser;
+import js.Syntax;
 import js.html.CustomEvent;
 import js.html.CustomEventInit;
 import jotun.dom.Display;
@@ -39,10 +41,12 @@ class EventGroup implements IEventGroup {
 	}
 	
 	public function add(handler:IEvent->Void, ?capture:Bool):IEventGroup {
-		if (capture != null)
+		if (capture != null){
 			this.capture = capture;
-		if (handler != null)
+		}
+		if (handler != null){
 			this.events.push(handler);
+		}
 		return this;
 	}
 	
@@ -59,8 +63,9 @@ class EventGroup implements IEventGroup {
 	
 	public function remove(handler:IEvent->Void):IEventGroup {
 		var iof:Int = Lambda.indexOf(this.events, handler);
-		if (iof != -1)
+		if (iof != -1){
 			this.events.splice(iof, 1);
+		}
 		return this;
 	}
 	
@@ -90,7 +95,9 @@ class EventGroup implements IEventGroup {
 	}
 	
 	private function _runner(?e:js.html.Event):Void {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 		var evt:IEvent = new Event(dispatcher, this, e);
 		Dice.Values(events, function(v:Dynamic) {
 			if (v != null){
@@ -107,11 +114,7 @@ class EventGroup implements IEventGroup {
 	
 	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):IEventGroup {
 		this.data = data;
-		if (Jotun.agent.ie){
-			var e:CustomEvent = cast Browser.document.createEvent("CustomEvent");
-			e.initCustomEvent(name, bubbles, cancelable, {});
-			dispatcher.target.element.dispatchEvent(e);
-		}else if (Browser.document.createEvent != null) {
+		if (Browser.document.createEvent != null) {
 			var e:CustomEvent = new CustomEvent(name);
 			e.initEvent(name, bubbles, cancelable);
 			dispatcher.target.element.dispatchEvent(e);
@@ -119,6 +122,14 @@ class EventGroup implements IEventGroup {
 			_runner(null);
 		}
 		this.data = null;
+		return this;
+	}
+	
+	public function cloneFrom(group:IEventGroup):IEventGroup {
+		_pd = (cast group)._pd;
+		enabled = group.enabled;
+		capture = group.capture;
+		events = Syntax.code('[...{0}]', events);
 		return this;
 	}
 	

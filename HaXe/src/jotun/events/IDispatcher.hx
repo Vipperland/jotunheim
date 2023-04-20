@@ -284,5 +284,8 @@ interface IDispatcher {
 	
 	/// Remove all events
 	public function dispose():Void;
-		
+
+	/// Clone all dispatcher events
+	public function cloneFrom(origin:IDispatcher):IDispatcher;
+	
 }

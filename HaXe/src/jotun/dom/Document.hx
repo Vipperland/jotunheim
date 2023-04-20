@@ -116,11 +116,11 @@ class Document extends Display {
 	 * @param	x
 	 * @param	y
 	 */
-	public function scroll(x:Int, y:Int):Void {
+	public function scroll(x:Int, y:Int, ease:Bool = true):Void {
 		Browser.window.scroll(cast {
 			top:y,
 			left:x,
-			behavior: 'smooth',
+			behavior: ease ? 'smooth' : 'auto',
 		});
 	}
 	
@@ -129,11 +129,11 @@ class Document extends Display {
 	 * @param	x
 	 * @param	y
 	 */
-	override public function addScroll(x:Int, y:Int):Void {
+	override public function addScroll(x:Int, y:Int, ease:Bool = true):Void {
 		Browser.window.scrollBy(cast {
 			top:y,
 			left:x,
-			behavior: 'smooth',
+			behavior: ease ? 'smooth' : 'auto',
 		});
 	}
 	
@@ -177,7 +177,7 @@ class Document extends Display {
 	 * @param	offY
 	 * @param	offX
 	 */
-	public function scrollTo(target:Dynamic, offY:Int = 100, offX:Int = 0):Void {
+	public function scrollTo(target:Dynamic, offY:Int = 100, offX:Int = 0, ease:Bool = true):Void {
 		if (Std.isOfType(target, String)){
 			target = Jotun.one(target).element;
 		}
@@ -185,7 +185,7 @@ class Document extends Display {
 			target = target.element;
 		}
 		var pos:Point = Utils.getPosition(target);
-		scroll(cast pos.x - offX, cast pos.y - offY);
+		scroll(cast pos.x - offX, cast pos.y - offY, ease);
 	}
 	
 	/**

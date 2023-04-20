@@ -2,7 +2,7 @@
 #if !php 
 	import jotun.dom.IDisplay;
 #end
-import jotun.tools.Flag;
+import jotun.logical.Flag;
 import jotun.tools.Utils;
 
 /**

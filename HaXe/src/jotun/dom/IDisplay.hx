@@ -198,7 +198,7 @@ interface IDisplay extends IQuery {
 	
 	public function setScroll(x:Int, y:Int):Void;
 	
-	public function addScroll(x:Int, y:Int):Void;
+	public function addScroll(x:Int, y:Int, ease:Bool = true):Void;
 	
 	/**
 	 * Current element scroll offset
@@ -466,6 +466,18 @@ interface IDisplay extends IQuery {
 	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay;
 	
 	/**
+	 * 
+	 * @param	id
+	 * @param	data
+	 * @param	width
+	 * @param	height
+	 * @param	x
+	 * @param	y
+	 * @return
+	 */
+	public function imageFilter(id:String, data:String, width:String, height:String, x:String, y:String):IDisplay;
+	
+	/**
 	 * Apply advanced SVG filters
 	 * @param	name
 	 */
@@ -527,5 +539,24 @@ interface IDisplay extends IQuery {
 	 * @return
 	 */
 	public function toString():String;
+	
+	/**
+	 * Display info in Sirius style
+	 * @return
+	 */
+	public function clone(?deep:Bool):IDisplay;
+	
+	/**
+	 * If object is a clone
+	 * @return
+	 */
+	public function isClone():Bool;
+	
+	/**
+	 * Get original object if is a clone. Original can be null if is disposed.
+	 * @return
+	 */
+	public  function getOriginal():IDisplay;
+	
 	
 }

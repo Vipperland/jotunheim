@@ -101,6 +101,14 @@ class Mail {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * @param	subject
+	 * @param	target    [{name, email}, ...]
+	 * @param	html
+	 * @param	plain
+	 * @return
+	 */
 	public function send(subject:String, target:Dynamic, html:String, plain:String):Bool {
 		if (Std.isOfType(target, Array)){
 			Dice.Values(target, function(v:Dynamic){

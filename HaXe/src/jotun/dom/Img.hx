@@ -17,47 +17,82 @@ class Img extends Display {
 		return cast Jotun.one(q);
 	}
 	
-	public var object:ImageElement;
+	static public function urlToBlob(url:String):Img {
+		var img:Img = new Img();
+		img.loadBinary(url);
+		return img;
+	}
+	
+	static public function blobToSrc(content:String):String {
+		var blob:Blob = new Blob([content], {type: 'image/svg-xml'});
+		return Utils.fileToURL(blob);
+	}
+	
+	private var _loader:XMLHttpRequest;
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createImageElement();
 		super(q, null);
-		object = cast element;
 	}
 	
-	public function src(?value:String):String {
+	public function src(?value:Dynamic):String {
 		var a:ImageElement;
 		if (value != null) {
-			if (value.indexOf('<svg') != -1 && value.indexOf('</svg>') != -1){
-				var blob:Blob = new Blob([value], {type: 'image/svg+xml'});
-				value = (cast Browser.window).URL.createObjectURL(blob);
+			var src:String = null;
+			var evt:Dynamic = {};
+			if (Std.is(value, Blob)){
+				src = Utils.fileToURL(value);
+				evt.blob = value;
+			}else if (value.indexOf('<svg') != -1 && value.indexOf('</svg>') != -1){
+				src = blobToSrc(value);
+				evt.svg = value;
+			}else{
+				src = value;
 			}
-			object.src = value;
+			if (src != value){
+				evt.src = src;
+				(cast element).src = src;
+				events.change().call(false, true, evt);
+			}
+			return src;
+		}else{
+			return (cast element).src;
 		}
-		return object.src;
 	}
 	
 	public function alt(?value:String):String {
-		if (value != null) object.alt = value;
-		return object.alt;
+		if (value != null) (cast element).alt = value;
+		return (cast element).alt;
 	}
 	
 	public function loadBinary(url:String):Void {
-		var req:XMLHttpRequest = new XMLHttpRequest();
-		var url:String = url;
-		req.open('GET', url, true);
-		req.responseType = cast "arraybuffer";
-		req.send(null);
-		req.onload = function(e:Dynamic){
-			var blob = new Blob([e.target.response]);
-			src(Utils.fileToURL(cast blob));
+		abort();
+		_loader = new XMLHttpRequest();
+		_loader.open('GET', url, true);
+		_loader.responseType = cast "arraybuffer";
+		_loader.send(null);
+		_loader.onload = function(e:Dynamic){
+			var blob:Blob = new Blob([e.target.response], {type: 'image/svg-xml'});
+			src(blob);
 			events.progress().call(false, true, {completed:true});
+			abort();
 		}
-		req.onprogress = function(e:Dynamic){
+		_loader.onprogress = function(e:Dynamic){
 			events.progress().call(false, true, e);
 		}
-		req.onerror = function(e:Dynamic){
+		_loader.onerror = function(e:Dynamic){
 			events.error().call(false, true, e);
+			abort();
+		}
+	}
+	
+	private function abort():Void {
+		if (_loader != null){
+			_loader.abort();
+			_loader.onload = null;
+			_loader.onprogress = null;
+			_loader.onerror = null;
+			_loader = null;
 		}
 	}
 	

@@ -17,7 +17,9 @@ interface IEventGroup {
 	
 	public var propagation : Bool;
 	
-	public var data:Dynamic;
+	public var capture : Bool;
+	
+	public var data : Dynamic;
 	
 	public function add (handler:IEvent->Void, ?capture:Bool) : IEventGroup;
 	
@@ -38,5 +40,7 @@ interface IEventGroup {
 	public function reset():IEventGroup;
 	
 	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):IEventGroup;
+	
+	public function cloneFrom(group:IEventGroup):IEventGroup;
 	
 }

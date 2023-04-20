@@ -37,25 +37,9 @@ class Input extends Display {
 	
 	private var _flt:String;
 	
-	private var fillTarget:IDisplay;
-	
 	private var _ioHandler:Input->Void;
 	
 	private function _onFileSelected(e:Dynamic) {
-		var bg:String = null;
-		var ftype:Array<String> = file(0).type.split('/');
-		if (ftype[0] == 'image'){
-			bg = readFile(0);
-		}else{
-			bg = Reflect.hasField(icons, ftype[1]) ? Reflect.field(icons,  ftype[1]) : icons.common;
-		}
-		if(bg != null && fillTarget != null){
-			if (fillTarget.typeOf() == 'IMG'){
-				fillTarget.attribute('src', bg);
-			}else{
-				fillTarget.style({backgroundImage : 'url(' + bg + ')'});
-			}
-		}
 		if (_ioHandler != null){
 			_ioHandler(this);
 		}
@@ -67,11 +51,6 @@ class Input extends Display {
 		}
 		super(q, null);
 		_object = cast element;
-		if (type() == 'file'){
-			if (hasAttribute('display-on')){
-				fillTarget = Jotun.one(attribute('display-on'));
-			}
-		}
 	}
 	
 	public function type(?q:String):String {
@@ -121,6 +100,8 @@ class Input extends Display {
 					}else if (q != null){
 						if (q != ''){
 							return file(q);
+						}else{
+							clearAttribute('jtn-ctrl');
 						}
 					}else{
 						return file(0);
@@ -153,9 +134,6 @@ class Input extends Display {
 	
 	public function clear(?background:String):Void {
 		value('');
-		if (fillTarget != null){
-			fillTarget.style("backgroundImage", background);
-		}
 	}
 	
 	public function isValid():Bool {
@@ -197,7 +175,7 @@ class Input extends Display {
 	}
 	
 	public function readFile(id:UInt = 0):String {
-		return (cast Browser.window).URL.createObjectURL(file());
+		return (cast Browser.window).URL.createObjectURL(file(id));
 	}
 	
 	/**
@@ -206,17 +184,14 @@ class Input extends Display {
 	 * @param	target
 	 * @param	filter
 	 */
-	public function control(handler:Input->Void, ?display:IDisplay, ?mime:Array<String>):Void {
+	public function control(handler:Input->Void, ?mime:Array<String>):Void {
 		_ioHandler = handler;
-		if (display != null){
-			fillTarget = display;
-		}
 		if (mime != null){
 			acceptOnly(mime);
 		}
-		if (attribute('jotun-control') != "ready"){
+		if (attribute('jtn-ctrl') != "ready"){
 			type('file');
-			attribute('jotun-control', "ready");
+			attribute('jtn-ctrl', "ready");
 			this.events.change(_onFileSelected);
 		}
 	}

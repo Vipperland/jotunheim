@@ -30,7 +30,7 @@ class Select extends Display {
 	private var _ioHandler:IEvent->Void;
 	
 	private function _refreshIO(e:IEvent):Void {
-		var c:String = '' + value();
+		var c:String = this.value().toString();
 		var p:String = hasAttribute('current-value') ? attribute('current-value') : null;
 		if (p == null || c != p) {
 			attribute('previous-value', p);
@@ -58,23 +58,30 @@ class Select extends Display {
 		return cast one("option:checked");
 	}
 	
-	public function setValue(i:Int):Void {
+	public function setValue(i:Int, ?evt:Bool):Void {
 		object.selectedIndex = i;
-		events.change().call(true,true);
+		if (evt){
+			events.change().call(true, true);
+		}
 	}
 	
-	public function clearSelected():Void {
+	public function clearSelected(?evt:Bool):Void {
 		getAllSelected().each(cast function(o:Option) {
 			o.object.selected = false;
 		});
+		if (evt){
+			events.change().call(true, true);
+		}
 	}
 	
-	public function selectValue(value:Dynamic):Void {
+	public function selectValue(value:Dynamic, ?evt:Bool):Void {
 		value = Std.string(value);
 		all('option').each(cast function(o:Option) {
 			o.object.selected = o.value() == value;
 		});
-		events.change().call(true, true);
+		if (evt){
+			events.change().call(true, true);
+		}
 	}
 	
 	@:overload(function():String{})

@@ -47,6 +47,8 @@ class Command implements ICommand {
 		if (Std.isOfType(v, String)){
 			return php.Syntax.code('\\PDO::PARAM_STR');
 		} else if (Std.isOfType(v, Float)){
+			return php.Syntax.code('\\PDO::PARAM_STR');
+		}  else if (Std.isOfType(v, Int)){
 			return php.Syntax.code('\\PDO::PARAM_INT');
 		} else if (Std.isOfType(v, Bool)){
 			return php.Syntax.code('\\PDO::PARAM_INT');

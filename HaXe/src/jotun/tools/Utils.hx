@@ -98,7 +98,7 @@ import jotun.gaming.dataform.Pulsar;
 import jotun.gaming.dataform.SparkWriter;
 import jotun.gaming.dataform.Spark;
 import jotun.serial.Packager;
-import jotun.tools.Flag;
+import jotun.logical.Flag;
 import jotun.tools.LoFlag;
 import jotun.utils.Dice;
 
@@ -232,7 +232,7 @@ class Utils{
 			return data;
 		}
 		
-		static public function fileToURL(file:File):String {
+		static public function fileToURL(file:Blob):String {
 			return (cast Browser.window).URL.createObjectURL(file);
 		}
 		
@@ -407,27 +407,6 @@ class Utils{
 		return false;
 	}
 	
-	static public function isBetween(o:Dynamic, min:Int, max:Int):Bool {
-		if(o != null){
-			if (!Std.isOfType(o, Float)){
-				if (Std.isOfType(o, Array) || Std.isOfType(o, String)){
-					o = o.length;
-				}else{
-					return false;
-				}
-			}
-		}else{
-			return false;
-		}
-		if (max == null){
-			return o >= min;
-		}else if (min == null){
-			return o <= max;
-		}else{
-			return o >= min && o <= max;
-		}
-	}
-	
 	/**
 	 * Check if a value is !null or/and length>0 if a string
 	 * @param	o
@@ -470,7 +449,11 @@ class Utils{
 	}
 	
 	static public function boolean(q:Dynamic):Bool {
-		return q == true || q == 1 || q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok" || q == "selected";
+		if (Std.isOfType(q, String)){
+			return q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok" || q == "selected";
+		}else{
+			return q == true || q == 1;
+		}
 	}
 	
 	static public function money(val:Dynamic, s:String = '$', a:String = ',', b:String = '.'):String {
@@ -497,10 +480,6 @@ class Utils{
 			r = '0' + b + (val < 10 ? '0' : '') + val;
 		}
 		return s + r;
-	}
-	
-	static public function stdClone(q:Dynamic):Dynamic {
-		return Json.parse(Json.stringify(q));
 	}
 	
 	static public function paramsOf(o:Dynamic):String {

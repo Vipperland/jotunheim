@@ -1,5 +1,9 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.dom.IDisplay;
+import jotun.dom.Select;
+import jotun.tools.Utils;
+import jotun.utils.Dice;
 import js.Browser;
 import js.html.FormElement;
 
@@ -24,6 +28,25 @@ class Form extends Display {
 	
 	public function submit():Void {
 		object.submit();
+	}
+	
+	public function extract(?handler:String->Dynamic->IDisplay->Void):Dynamic {
+		var result:Dynamic = {};
+		all('[name]').each(function(o:IDisplay):Void {
+			var name:String = o.attribute('name');
+			if (Utils.isValid(name)){
+				var data:Dynamic = {
+					name: name,
+					value: o.value(),
+					object: o,
+				};
+				Reflect.setField(result, name, data);
+				if (handler != null){
+					handler(name, data.value, o);
+				}
+			}
+		});
+		return result;
 	}
 	
 }

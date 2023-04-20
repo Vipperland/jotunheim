@@ -234,7 +234,7 @@ class Reactor {
 	}
 	
 	/**
-	 * jtn-single, remove attribute on apply
+	 * jtn-single, remove attribute on apply, usage: jtn-[cmd]="{{a}} {{b}} ..."
 	 * jtn-data*={{prop}}
 	 * jtn-attr*={{prop}}
 	 * jtn-style*={{prop}}

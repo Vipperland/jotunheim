@@ -63,7 +63,7 @@ class Domain implements IDomain {
 			port = l.port;
 			hash = l.hash.split("/");
 			params = Utils.getQueryParams(l.href);
-			url = l.pathname.split('/');
+			url = l.pathname.substring(1, l.pathname.length).split('/');
 		
 		#elseif php
 		

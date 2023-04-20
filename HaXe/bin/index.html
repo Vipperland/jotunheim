@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8"/>
+		<title>Sirius::Automator</title>
+		<meta name="description" content=""/>
+		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
+		<script type="text/javascript" src="jotun/api.jotun.js"></script>
+		<style>  
+			body,html {
+				width:100%;
+				height:100%;
+				font-family: Tahoma;
+				background-color:#000000;
+				font-family: 'Amatic SC', cursive;
+			}
+			.test3d {
+				width: 100vw;
+				height: 100vh;
+				text-align: center;
+			}
+			
+			.test3d .content {
+				width: 300px;
+				text-align: center;
+				position: absolute;
+			}
+			
+			.test3d .text{
+				text-align: center;
+				color: #ffffff;
+				font-size: 48px;
+				width:100%;
+				margin-top: 20px;
+				display: block;
+			}
+			
+			.test3d .text .info{
+				min-height: 60px;
+				max-height: 40vh;
+				overflow-y: auto;
+			}
+			
+			.test3d .text .title{
+				font-weight: 700;
+			}
+			
+			.images {
+				position: relative;
+			}
+			
+			.fixed {
+				float: left;
+			}
+		
+		</style>
+	</head>
+	<body xcode>
+		<div class="test3d hack o-middle">
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+		</div>
+		<script>
+			Jotun.run(function(){
+			
+				
+				var os = Jotun.all('.test3d .content');
+				var srad = 0;
+				os.each(function(e){
+					e.angle = srad;
+					srad += (360/os.length())>>0;
+					e.perspective();
+					e.parent().perspective();
+				});
+				
+				
+				
+				var txt_d = 100;
+				var txt_t = 30;
+				var dmf_a = 0;
+				var dmf_al = 0;
+				var dmf_c = 0;
+				
+				var chars = "HEY, TYPE HERE!".split("");
+				
+				
+				//(function(){
+				//    var img = J_dom_Img.urlToBlob("https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/ripple512.png");
+				//    img.events.change(function(evt){
+				//	e.one('.filter-target').imageFilter("test", evt.ticket.data.src, '100%', '100%', '0', '0');
+				//    });
+				//})();
+				//
+				//return;
+				
+				J_Ticker.add(function(){
+					XCode.clearDisplacements();
+					XCode.displacement("main", dmf_a, 45, dmf_c>>0, 1, true);
+					dmf_a -= dmf_a * .03;
+					dmf_c -= dmf_c * .03;
+					os.each(function(e){
+						e.rotateY(Math.sin((e.angle-90)*Math.PI/180) * 360);
+						e.rotateX(Math.cos(e.angle*Math.PI/180) * 36);
+						e.translate(0, 0, Math.sin(e.angle*Math.PI/180) * 180);
+						e.scale(Math.cos((e.angle-90)*Math.PI/180), 1, 1);
+						e.angle += .1;
+						e.transform();
+						e.filters("main");
+						
+					});
+					if(dmf_a != dmf_al){
+						dmf_al = dmf_a;
+					}
+					if(chars.length > 0){
+						if(--txt_d <= 0){
+							var c = chars.shift().split(" ").join("&nbsp;");
+							os.each(function(e){
+								e.one('.text .info').appendHtml(c);
+							});
+							txt_d += txt_t;
+							dmf_a += .03;
+							dmf_c += 2;
+						}
+					}
+				});
+				
+				Jotun.document.events.keyDown(function(evt){
+					dmf_a += .03;
+					dmf_c += 6;
+				});
+				
+				Jotun.document.events.click(function(evt){
+					dmf_a += .3;
+					dmf_c += 60;
+					var rnd = Math.random() * 360;
+					os.each(function(e){
+						e.angle += rnd;
+					});
+				});
+				
+				J_Ticker.start();
+				
+			});
+		</script>
+	</body>                                                                               
+</html>

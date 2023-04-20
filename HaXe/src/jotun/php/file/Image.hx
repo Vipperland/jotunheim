@@ -101,13 +101,13 @@ class Image implements IImage {
 					height = Math.round(width / this.width * this.height);
 				}
 			}
-			var newimg:Dynamic = php.Syntax.codeDeref('imagecreatetruecolor', width, height);
+			var newimg:Dynamic = php.Syntax.codeDeref('imagecreatetruecolor({0},{1})', width, height);
 			// Transparency
 			if (newimg != null) {
 				php.Syntax.codeDeref('imagealphablending({0},{1})', newimg, false);
 				php.Syntax.codeDeref('imagesavealpha({0},{1})', newimg, true);
 				var alpha:Dynamic = php.Syntax.codeDeref('imagecolorallocatealpha({0},{1},{2},{3},{4})', newimg, 255, 255, 255, 127);
-				php.Syntax.codeDeref('imagefilledrectangle({0},{1},{2},{3},{4})', newimg, 0, 0, width, height, alpha);
+				php.Syntax.codeDeref('imagefilledrectangle({0},{1},{2},{3},{4},{5})', newimg, 0, 0, width, height, alpha);
 				php.Syntax.codeDeref('imagecopyresampled({0},{1},{2},{3},{4},{5},{6},{7},{8},{9})', newimg, _res, 0, 0, 0, 0, width, height, this.width, this.height);
 				_update(newimg);
 			}

@@ -25,4 +25,8 @@ class Option extends Display {
 		return object.innerText;
 	}
 	
+	public function match(value:String):Bool {
+		return this.value() == value;
+	}
+	
 }

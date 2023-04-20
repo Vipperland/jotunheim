@@ -31,8 +31,11 @@ class Video extends Display {
 	}
 	
 	public function togglePause():Void {
-		if (object.paused)	play();
-		else 				pause();
+		if (object.paused){
+			play();
+		} else {
+			pause();
+		}
 	}
 	
 }

@@ -31,6 +31,10 @@ package gate.sirius.isometric.signal {
 		
 		private var _enterRoom:SignalDispatcher;
 		
+		private var _showRoom:SignalDispatcher;
+		
+		private var _hideRoom:SignalDispatcher;
+		
 		private var _leaveRoom:SignalDispatcher;
 		
 		private var _interaction:SignalDispatcher;
@@ -47,6 +51,8 @@ package gate.sirius.isometric.signal {
 			_tileSearch = new SignalDispatcher(author);
 			_colliderPath = new SignalDispatcher(author);
 			_colliderEnd = new SignalDispatcher(author);
+			_showRoom = new SignalDispatcher(author);
+			_hideRoom = new SignalDispatcher(author);
 			_enterRoom = new SignalDispatcher(author);
 			_leaveRoom = new SignalDispatcher(author);
 			_interaction = new SignalDispatcher(author);
@@ -125,6 +131,16 @@ package gate.sirius.isometric.signal {
 		
 		
 		//public static const ROOM:BiomeRoomSignal;
+		
+		public function get SHOW_ROOM():SignalDispatcher {
+			return _showRoom;
+		}
+		
+		
+		public function get HIDE_ROOM():SignalDispatcher {
+			return _hideRoom;
+		}
+		
 		
 		public function get ENTER_ROOM():SignalDispatcher {
 			return _enterRoom;

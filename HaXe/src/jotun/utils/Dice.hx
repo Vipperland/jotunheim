@@ -134,7 +134,7 @@ class Dice {
 	public static function nullSkip(q:Array<Dynamic>, ?stopOnNull:Bool):Array<Dynamic> {
 		var r:Array<Dynamic> = [];
 		Dice.Values(q, function(v:Dynamic){
-			if (v != null){
+			if (v != null && v != ''){
 				r.push(v);
 				return false;
 			}else{

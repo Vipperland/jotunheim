@@ -14,6 +14,16 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private var _gate:IGate;
 	
+	/**
+	 * 
+	 * 
+	 * var q:Dynamic = Jotun.gate.table('users').findJoin(['users.id as UID','users.name as NAME','state.alt as STATE','city.name as CITY'], [
+			Jotun.gate.builder.leftJoin('user_address', 'address', Clause.EQUAL('address.user_id', 1)),
+			Jotun.gate.builder.leftJoin('location_state', 'state', Clause.CUSTOM('state.id=address.state_id')),
+			Jotun.gate.builder.leftJoin('location_city', 'city', 'city.id=address.city_id'),
+		], Clause.CUSTOM('users.id<30'));
+	 * @param	gate
+	 */
 	public function new(gate:IGate) {
 		_gate = gate;
 	}

@@ -2,6 +2,8 @@ package gate.sirius.isometric.view {
 	import flash.utils.Dictionary;
 	import gate.sirius.isometric.Biome;
 	import gate.sirius.isometric.layout.IBiomeLayout;
+	import gate.sirius.isometric.math.BiomeBox;
+	import gate.sirius.isometric.math.BiomePoint;
 	import gate.sirius.isometric.matter.BiomeMatter;
 	import gate.sirius.isometric.scenes.BiomeRoom;
 	import gate.sirius.isometric.signal.BiomeRoomSignal;
@@ -89,13 +91,15 @@ package gate.sirius.isometric.view {
 		 * @param	id
 		 * @return
 		 */
-		public function showRoom(id:String):BiomeRoom {
+		public function showRoom(id:String, test:Boolean = true):BiomeRoom {
 			var room:BiomeRoom = getRoom(id);
 			if (room && _visibleRooms.indexOf(room) == -1) {
-				_visibleRooms[_visibleRooms.length] = room;
-				_biome.viewport.showArea(room.location, room.bounds, 0, true);
-				_biome.signals.ENTER_ROOM.send(BiomeRoomSignal, true, room);
-				room.behaviours.enter.execute(null, _biome.getTileIn(room.location), room, null);
+				if(!test || testOccupation(room.location, room.bounds, 1)){
+					_visibleRooms[_visibleRooms.length] = room;
+					_biome.viewport.showArea(room.location, room.bounds, 0, true);
+					_biome.signals.SHOW_ROOM.send(BiomeRoomSignal, true, room);
+					room.behaviours.enter.execute(null, _biome.getTileIn(room.location), room, null);
+				}
 			}
 			return room;
 		}
@@ -113,7 +117,7 @@ package gate.sirius.isometric.view {
 				if (iof !== -1) {
 					_visibleRooms.splice(iof, 1);
 					_biome.viewport.hideArea(room.location, room.bounds, 0);
-					_biome.signals.LEAVE_ROOM.send(BiomeRoomSignal, true, room);
+					_biome.signals.HIDE_ROOM.send(BiomeRoomSignal, true, room);
 					room.behaviours.leave.execute(null, _biome.getTileIn(room.location), room, null);
 				}
 			}
@@ -151,7 +155,24 @@ package gate.sirius.isometric.view {
 		public function get visibleRooms():Vector.<BiomeRoom> {
 			return _visibleRooms;
 		}
-	
+		
+		/**
+		 * If room will collide with others
+		 * @param	room
+		 * @return
+		 */
+		public  function testOccupation(location:BiomePoint, bounds:BiomeBox, max:int = 0):Vector.<BiomeRoom> {
+			var result:Vector.<BiomeRoom> = new Vector.<BiomeRoom>();
+			for each (var room:BiomeRoom in _visibleRooms) {
+				if (room.willCollide(location, bounds)){
+					result[result.length] = room;
+					if (--max == 0){
+						break;
+					}
+				}
+			}
+			return result;
+		}
 	
 	}
 

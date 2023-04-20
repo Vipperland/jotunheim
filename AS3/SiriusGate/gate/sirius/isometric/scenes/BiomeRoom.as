@@ -59,9 +59,9 @@ package gate.sirius.isometric.scenes {
 		 * Add various objects to the room
 		 * @param	... objects
 		 */
-		public function addObjects(... objects:Array):void {
+		public function addObjects(objects:Vector.<BiomeMatter>, validate:Boolean, replace:Boolean = false):void {
 			for each (var matter:BiomeMatter in objects) {
-				addObject(matter, false);
+				addObject(matter, validate, replace);
 			}
 		}
 		
@@ -78,9 +78,7 @@ package gate.sirius.isometric.scenes {
 				return false;
 			matter.location.join(_location);
 			if (validate) {
-				if (matter.location.x < leftWall || matter.location.y < topWall || matter.location.z < floor) {
-					return false;
-				} else if (matter.location.x > rightWall || matter.location.y > bottonWall || matter.location.z > roof) {
+				if (matter.location.x < left || matter.location.y < top || matter.location.z < front || matter.location.x > right || matter.location.y > bottom || matter.location.z > back) {
 					return false;
 				} else {
 					for each (p in matter.allocation.current) {
@@ -171,7 +169,7 @@ package gate.sirius.isometric.scenes {
 		/**
 		 * Left/Top Left Wall
 		 */
-		public function get leftWall():int {
+		public function get left():int {
 			return _location.x;
 		}
 		
@@ -179,40 +177,40 @@ package gate.sirius.isometric.scenes {
 		/**
 		 * Right/Botton right Wall
 		 */
-		public function get rightWall():int {
+		public function get right():int {
 			return _location.x + _bounds.width;
 		}
 		
 		
 		/**
-		 * Floor level
+		 * top wall
 		 */
-		public function get floor():int {
+		public function get top():int {
 			return _location.y;
 		}
 		
 		
 		/**
-		 * Roof level
+		 * Bottom Wall
 		 */
-		public function get roof():int {
+		public function get bottom():int {
 			return _location.y + _bounds.height;
 		}
 		
 		
 		/**
-		 * Top/Top Right Wall
+		 * Roof
 		 */
-		public function get topWall():int {
+		public function get front():int {
 			return _location.z;
 		}
 		
 		
 		/**
-		 * Botton/Botton Left Wall
+		 * Floor
 		 */
-		public function get bottonWall():int {
-			return _location.z + bounds.height;
+		public function get back():int {
+			return _location.z + bounds.depth;
 		}
 		
 		
@@ -256,6 +254,17 @@ package gate.sirius.isometric.scenes {
 			}
 			_map = null;
 			_behaviours.dispose();
+		}
+		
+		public function willCollide(position:BiomePoint, bounds:BiomeBox):Boolean {
+			if ((left >= position.x && left <= position.x + bounds.width) || (right >= position.x && right <= position.x + bounds.width)){
+				if ((top >= position.y && top <= position.y + bounds.height) || (bottom >= position.y && bottom <= position.y + bounds.height)){
+					if ((back >= position.z && back <= position.z + bounds.depth) || (front >= position.z && front <= position.z + bounds.depth)){
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 		
 	}

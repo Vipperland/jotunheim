@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project version="2">
+  <!-- Output SWF options -->
+  <output>
+    <movie outputType="Application" />
+    <movie input="" />
+    <movie path="bin\sys" />
+    <movie fps="0" />
+    <movie width="0" />
+    <movie height="0" />
+    <movie version="0" />
+    <movie minorVersion="0" />
+    <movie platform="PHP" />
+    <movie background="#FCFCFC" />
+    <movie preferredSDK="Haxe 4.1.0;4.1.0;" />
+  </output>
+  <!-- Other classes to be compiled into your SWF -->
+  <classpaths>
+    <class path="src" />
+    <class path="server" />
+    <class path="samples\server" />
+  </classpaths>
+  <!-- Build options -->
+  <build>
+    <option directives="" />
+    <option flashStrict="False" />
+    <option noInlineOnDebug="False" />
+    <option mainClass="CustomGateway" />
+    <option enabledebug="False" />
+    <option additional="" />
+  </build>
+  <!-- haxelib libraries -->
+  <haxelib>
+    <!-- example: <library name="..." /> -->
+  </haxelib>
+  <!-- Class files to compile (other referenced classes will automatically be included) -->
+  <compileTargets>
+    <compile path="src\MainPHP.hx" />
+    <compile path="src_extra\praia\admin\ServerMain.hx" />
+    <compile path="src2\praia\admin\ServerMain.hx" />
+    <compile path="server\jotun\admin\ServerMain.hx" />
+    <compile path="samples\server\CustomGateway.hx" />
+  </compileTargets>
+  <!-- Paths to exclude from the Project Explorer tree -->
+  <hiddenPaths>
+    <hidden path="obj" />
+  </hiddenPaths>
+  <!-- Executed before build -->
+  <preBuildCommand />
+  <!-- Executed after build -->
+  <postBuildCommand alwaysRun="False" />
+  <!-- Other project options -->
+  <options>
+    <option showHiddenPaths="False" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="http://127.0.0.7/sys/" />
+  </options>
+  <!-- Plugin storage -->
+  <storage />
+</project>

@@ -1,5 +1,6 @@
 package jotun.events;
 import jotun.dom.IDisplay;
+import jotun.tools.Utils;
 
 /**
  * ...
@@ -20,6 +21,7 @@ class Event implements IEvent {
 	/** Original object Event */
 	public var event:js.html.Event;
 	
+	private var _current:IDisplay;
 	
 	/**
 	 * Create a custom EVT constroller
@@ -44,6 +46,13 @@ class Event implements IEvent {
 	
 	public function description():String {
 		return "[Event{name:" + ticket.name + ",target:" + from.target.typeOf() + "}]";
+	}
+	
+	public function current():IDisplay {
+		if (_current == null){
+			_current = Utils.displayFrom(cast event.currentTarget);
+		}
+		return _current;
 	}
 	
 }

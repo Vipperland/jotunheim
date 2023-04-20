@@ -1,6 +1,8 @@
 package jotun.events;
 import haxe.Log;
 import jotun.dom.IDisplay;
+import jotun.events.IDispatcher;
+import jotun.events.IEventGroup;
 import jotun.utils.Dice;
 
 /**
@@ -19,13 +21,7 @@ class Dispatcher implements IDispatcher {
 	}
 	
 	/** @private */
-	private var _b:Dynamic;
-	
-	/** @private */
 	private var _e:Dynamic;
-	
-	/** @private */
-	private var _i:Dynamic;
 	
 	/**
 	 * Current event target
@@ -38,9 +34,7 @@ class Dispatcher implements IDispatcher {
 	 * @param	q
 	 */
 	public function new(q:IDisplay){
-		_b = { };
 		_e = { };
-		_i = { };
 		target = q;
 	}
 	
@@ -586,11 +580,19 @@ class Dispatcher implements IDispatcher {
 		return on("resize", handler, mode, noDefault, capture);
 	}
 	
-	/**	Remove all events */
+	/** Remove all events */
 	public function dispose():Void {
 		Dice.Values(_e, function(v:IEventGroup) {
 			v.dispose(target);
 		});
+	}
+	
+	/** Clone all event methods */
+	public function cloneFrom(origin:IDispatcher):IDispatcher {
+		Dice.All((cast origin)._e, function(p:String, v:IEventGroup){
+			on(p).cloneFrom(v);
+		});
+		return this;
 	}
 	
 }

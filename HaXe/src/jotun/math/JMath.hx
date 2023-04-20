@@ -18,4 +18,25 @@ class JMath {
 		// ~~((DateTime.Now-DateTime.Parse("yyyy-mm-dd")) / 31557600000)
 	}
 	
+	static public function isBetween(o:Dynamic, min:Int, max:Int):Bool {
+		if(o != null){
+			if (!Std.isOfType(o, Float)){
+				if (Std.isOfType(o, Array) || Std.isOfType(o, String)){
+					o = o.length;
+				}else{
+					return false;
+				}
+			}
+		}else{
+			return false;
+		}
+		if (max == null){
+			return o >= min;
+		}else if (min == null){
+			return o <= max;
+		}else{
+			return o >= min && o <= max;
+		}
+	}
+	
 }

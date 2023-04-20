@@ -26,6 +26,7 @@ import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.File;
 import js.html.FileList;
+import js.html.HtmlElement;
 import js.html.Node;
 
 /**
@@ -176,11 +177,11 @@ class Display extends Query implements IDisplay {
 	}
 	
 	
-	public function addScroll(x:Int, y:Int):Void {
+	public function addScroll(x:Int, y:Int, ease:Bool = true):Void {
 		element.scrollBy(cast {
 			top:y,
 			left:x,
-			behavior:'smooth',
+			behavior: ease ? 'smooth' : 'auto',
 		});
 	}
 	
@@ -484,15 +485,22 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function colorTransform(r:Float, g:Float, b:Float, ?a:Float = 1):IDisplay {
-		var name:String = 'svg_color_' + _uid;
+		var name:String = 'svgColor_' + _uid;
 		XCode.filter(name, a, r, g, b, true);
 		filters(name);
 		return this;
 	}
 	
 	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay {
-		var name:String = 'svg_disp_' + _uid;
+		var name:String = 'svgDisp_' + _uid;
 		XCode.displacement(name, freq, octaves, scale, seed, true);
+		filters(name);
+		return this;
+	}
+	
+	public function imageFilter(id:String, data:String, width:String, height:String, x:String, y:String):IDisplay {
+		var name:String = 'imgFtr_' + _uid;
+		XCode.imageFilter(name, data, width, height, x, y, true);
 		filters(name);
 		return this;
 	}
@@ -767,6 +775,25 @@ class Display extends Query implements IDisplay {
 			element = null;
 			_uid = -1;
 		}
+	}
+	
+	public function clone(?deep:Bool):IDisplay {
+		clearAttribute('jtn-id');
+		var copy:IDisplay = new Display().writeHtml(element.outerHTML).getChild(0);
+		copy.attribute('jtn-copy-of', _uid);
+		attribute('jtn-id', _uid);
+		if (deep){
+			copy.events.cloneFrom(events);
+		}
+		return copy;
+	}
+	
+	public function isClone():Bool {
+		return hasAttribute('jtn-copy-of');
+	}
+	
+	public function getOriginal():IDisplay {
+		return fromGC(Std.int(attribute('jtn-copy-of')));
 	}
 	
 	public function toString():String {

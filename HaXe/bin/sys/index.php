@@ -1,5 +1,4 @@
 <?php
-use \jotun\Jotun;
 
 set_include_path(get_include_path().PATH_SEPARATOR.__DIR__.'/lib');
 spl_autoload_register(
@@ -11,4 +10,4 @@ spl_autoload_register(
 	}
 );
 \php\Boot::__hx__init();
-Jotun::main();
+\CustomGateway::main();

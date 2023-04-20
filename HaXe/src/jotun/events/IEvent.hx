@@ -25,4 +25,6 @@ interface IEvent {
 	/// Event description
 	public function description():String;
 	
+	/// 
+	public function current():IDisplay;
 }

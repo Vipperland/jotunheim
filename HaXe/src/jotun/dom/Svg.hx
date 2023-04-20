@@ -11,10 +11,6 @@ import js.html.svg.SVGElement;
 @:expose("J_dom_Svg")
 class Svg extends Display {
 	
-	public var _tmp_fill:String = '#FF0000';
-	public var _tmp_stoke:String = '#CC0000';
-	public var _tmp_width:Int = 1;
-	
 	static public function get(q:String):Svg {
 		return cast Jotun.one(q);
 	}

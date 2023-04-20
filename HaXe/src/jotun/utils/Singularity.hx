@@ -182,7 +182,10 @@ class Singularity {
 		return i;
 	}
 	
-	public static function channel():String {
+	public static function channel(value:String = null):String {
+		if (value != null && value != ""){
+			_channel = "singularity." + value;
+		}
 		return _channel;
 	}
 	
@@ -198,7 +201,11 @@ class Singularity {
 	private static function _onVisibilityChanged(e:Event):Void {
 		_is_active = (cast Browser.document.visibilityState) == 'visible';
 		_data.visible = _is_active;
-		Jotun.broadcast.send(_channel, {action:'visibility', id:id(), visible:_is_active });
+		Jotun.broadcast.send(_channel, {
+			action:'visibility', 
+			id:id(), 
+			visible:_is_active
+		});
 	}
 	
 	public static function connect(?options:Dynamic):Void {
@@ -224,12 +231,24 @@ class Singularity {
 			};
 			Reflect.setField(_engines, _data.id, _data);
 			Jotun.broadcast.listen(_channel, _onEngine);
-			Jotun.broadcast.send(_channel, {action:'connect', id:_data.id, name:_data.name, url: _data.url, visible: _is_active, time: _data.time });
+			Jotun.broadcast.send(_channel, {
+				action:'connect', 
+				id:_data.id, 
+				name:_data.name, 
+				url: _data.url, 
+				visible: _is_active, 
+				time: _data.time
+			});
 			Browser.document.addEventListener("visibilitychange", _onVisibilityChanged, false);
 			Browser.window.addEventListener("beforeunload", function(e){
 				Browser.document.removeEventListener("visibilitychange", _onVisibilityChanged);
 				_stopVerification();
-				Jotun.broadcast.send(_channel, {action:'disconnect', id:id(), main: _is_main, heir:_getHeir()});
+				Jotun.broadcast.send(_channel, {
+					action:'disconnect', 
+					id:id(), 
+					main: _is_main, 
+					heir:_getHeir()
+				});
 			}, true);
 			_self_activate = Timer.delay(_selfActivate, 1000);
 		}
