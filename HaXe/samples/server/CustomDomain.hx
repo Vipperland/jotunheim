@@ -1,6 +1,6 @@
 package ;
 import jotun.gateway.domain.CustomSessionDomain;
-import jotun.gateway.domain.Domain;
+import jotun.gateway.domain.DomainAccessCore;
 import zones.debug.TestZone;
 
 /**

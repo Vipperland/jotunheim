@@ -5,8 +5,8 @@
 
 namespace jotun\gateway\database;
 
+use \jotun\gateway\domain\OutputCore;
 use \php\Boot;
-use \jotun\gateway\domain\Output;
 use \jotun\Jotun;
 use \jotun\php\db\Token;
 use \jotun\php\db\objects\IDataTable;
@@ -32,8 +32,8 @@ class DataAccess {
 			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:22: characters 4-20
 			return $handler();
 		}
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:24: characters 3-62
-		Output::getInstance()->error(101);
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:24: characters 3-66
+		OutputCore::getInstance()->error(101);
 		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:25: characters 3-15
 		return null;
 	}
@@ -75,8 +75,8 @@ class DataAccess {
 	 * @return void
 	 */
 	public function _dbLog ($message) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:53: characters 3-43
-		Output::getInstance()->log($message, "sql");
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:53: characters 3-47
+		OutputCore::getInstance()->log($message, "sql");
 	}
 
 	/**
@@ -85,8 +85,8 @@ class DataAccess {
 	 * @return void
 	 */
 	public function _error ($code) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:29: characters 3-35
-		Output::getInstance()->error($code);
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:29: characters 3-39
+		OutputCore::getInstance()->error($code);
 	}
 
 	/**
@@ -107,8 +107,8 @@ class DataAccess {
 				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:61: characters 5-17
 				return $table1;
 			} else {
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:63: characters 5-66
-				Output::getInstance()->error(102);
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:63: characters 5-70
+				OutputCore::getInstance()->error(102);
 				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:64: characters 5-17
 				return null;
 			}

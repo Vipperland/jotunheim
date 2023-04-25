@@ -5,15 +5,15 @@
 
 namespace jotun\gateway\domain\zones\session;
 
-use \jotun\gateway\domain\zones\ZoneServices;
 use \php\_Boot\HxAnon;
 use \php\Boot;
+use \jotun\gateway\domain\zones\DomainZoneCore;
 
 /**
  * ...
  * @author
  */
-class SessionZone extends ZoneServices {
+class SessionZone extends DomainZoneCore {
 	/**
 	 * @return void
 	 */

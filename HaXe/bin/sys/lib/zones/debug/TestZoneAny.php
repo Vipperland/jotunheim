@@ -5,16 +5,16 @@
 
 namespace zones\debug;
 
-use \jotun\gateway\domain\zones\ZoneServices;
 use \php\_Boot\HxAnon;
 use \jotun\gateway\domain\zones\NotFoundZone;
 use \php\Boot;
+use \jotun\gateway\domain\zones\DomainZoneCore;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class TestZoneAny extends ZoneServices {
+class TestZoneAny extends DomainZoneCore {
 	/**
 	 * @return void
 	 */

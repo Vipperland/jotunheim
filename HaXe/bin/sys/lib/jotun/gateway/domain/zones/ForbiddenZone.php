@@ -11,7 +11,7 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira
  */
-class ForbiddenZone extends ZoneServices {
+class ForbiddenZone extends DomainZoneCore {
 	/**
 	 * @return void
 	 */

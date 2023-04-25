@@ -1,12 +1,12 @@
 package zones.debug;
-import jotun.gateway.domain.zones.ZoneServices;
+import jotun.gateway.domain.zones.DomainZoneCore;
 import zones.debug.TestZoneAny;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class TestZone extends ZoneServices {
+class TestZone extends DomainZoneCore {
 	
 	override function _buildZoneMap():Void {
 		_setZoneMap({

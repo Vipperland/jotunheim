@@ -11,7 +11,7 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira
  */
-class NotFoundZone extends ZoneServices {
+class NotFoundZone extends DomainZoneCore {
 	/**
 	 * @return void
 	 */

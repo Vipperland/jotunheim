@@ -7,10 +7,10 @@ namespace jotun\gateway\database\objects;
 
 use \jotun\serial\Packager;
 use \php\_Boot\HxAnon;
+use \jotun\gateway\domain\OutputCore;
 use \jotun\gateway\utils\Omnitools;
 use \php\Boot;
 use \jotun\php\db\Clause;
-use \jotun\gateway\domain\Output;
 use \jotun\Jotun;
 use \jotun\tools\Utils;
 use \jotun\gateway\database\SessionDataAccess;
@@ -117,8 +117,8 @@ class ZoneCoreSession extends ZoneCoreObject {
 		}
 		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:138: lines 138-140
 		if ($this->get_carrier() !== null) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:139: characters 4-67
-			Output::getInstance()->object("carrier")->info = $this->get_carrier()->getInfo();
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:139: characters 4-71
+			OutputCore::getInstance()->object("carrier")->info = $this->get_carrier()->getInfo();
 		}
 	}
 
@@ -138,8 +138,8 @@ class ZoneCoreSession extends ZoneCoreObject {
 			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:129: characters 4-10
 			$this->drop();
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:131: characters 3-67
-		Output::getInstance()->registerOAuth(Packager::encodeBase64($token));
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:131: characters 3-71
+		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64($token));
 	}
 
 	/**
@@ -220,8 +220,8 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function revoke () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:144: characters 3-103
-		Output::getInstance()->registerOAuth(Packager::encodeBase64("(y)<=" . "REVOKE"));
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:144: characters 3-107
+		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64("(y)<=" . "REVOKE"));
 	}
 
 	/**

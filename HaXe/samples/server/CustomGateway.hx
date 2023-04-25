@@ -1,23 +1,23 @@
 package ;
-import jotun.gateway.Gateway;
+import jotun.gateway.GatewayCore;
 import jotun.gateway.domain.BasicSessionInput;
-import jotun.gateway.domain.Domain;
-import jotun.gateway.domain.Output;
-import jotun.gateway.domain.OutputPulsar;
+import jotun.gateway.domain.DomainAccessCore;
+import jotun.gateway.domain.OutputCore;
+import jotun.gateway.domain.PulsarOutput;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class CustomGateway extends Gateway {
+class CustomGateway extends GatewayCore {
 
 	static function main() {
-		Gateway.init(
+		GatewayCore.init(
 			CustomGateway, 
-			CustomDomain, 
+			PulsarOutput,
 			CustomDataAccess, 
 			BasicSessionInput,
-			OutputPulsar,
+			CustomDomain, 
 			false
 		);
 	}

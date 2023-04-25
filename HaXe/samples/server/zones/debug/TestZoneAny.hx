@@ -1,5 +1,5 @@
 package zones.debug;
-import jotun.gateway.domain.zones.ZoneServices;
+import jotun.gateway.domain.zones.DomainZoneCore;
 import jotun.gateway.domain.zones.ForbiddenZone;
 import jotun.gateway.domain.zones.NotFoundZone;
 
@@ -7,7 +7,7 @@ import jotun.gateway.domain.zones.NotFoundZone;
  * ...
  * @author Rafael Moreira
  */
-class TestZoneAny extends ZoneServices {
+class TestZoneAny extends DomainZoneCore {
 	
 	override function _buildZoneMap():Void {
 		_setZoneMap({

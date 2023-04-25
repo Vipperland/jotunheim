@@ -5,10 +5,10 @@
 
 namespace jotun\gateway\database\objects;
 
+use \jotun\gateway\domain\OutputCore;
 use \php\Boot;
-use \jotun\gateway\domain\Output;
-use \jotun\gateway\domain\Input;
 use \jotun\gateway\database\DataAccess;
+use \jotun\gateway\domain\InputCore;
 
 /**
  * ...
@@ -20,11 +20,11 @@ class ZoneCoreObject {
 	 */
 	public $_database;
 	/**
-	 * @var Input
+	 * @var InputCore
 	 */
 	public $_input;
 	/**
-	 * @var Output
+	 * @var OutputCore
 	 */
 	public $_output;
 
@@ -76,19 +76,19 @@ class ZoneCoreObject {
 	}
 
 	/**
-	 * @return Input
+	 * @return InputCore
 	 */
 	public function get__input () {
-		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:30: characters 3-29
-		return Input::getInstance();
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:30: characters 3-33
+		return InputCore::getInstance();
 	}
 
 	/**
-	 * @return Output
+	 * @return OutputCore
 	 */
 	public function get__output () {
-		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:25: characters 3-30
-		return Output::getInstance();
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:25: characters 3-34
+		return OutputCore::getInstance();
 	}
 }
 

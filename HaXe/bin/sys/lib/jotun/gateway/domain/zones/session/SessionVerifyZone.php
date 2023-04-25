@@ -5,15 +5,15 @@
 
 namespace jotun\gateway\domain\zones\session;
 
-use \jotun\gateway\domain\zones\ZoneServices;
 use \php\Boot;
 use \jotun\gateway\domain\BasicSessionInput;
+use \jotun\gateway\domain\zones\DomainZoneCore;
 
 /**
  * ...
  * @author
  */
-class SessionVerifyZone extends ZoneServices {
+class SessionVerifyZone extends DomainZoneCore {
 	/**
 	 * @return void
 	 */
