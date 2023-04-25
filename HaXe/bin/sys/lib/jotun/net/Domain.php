@@ -6,6 +6,7 @@
 namespace jotun\net;
 
 use \haxe\io\_BytesData\Container;
+use \jotun\gaming\dataform\Pulsar;
 use \php\_Boot\HxAnon;
 use \php\Boot;
 use \haxe\Exception;
@@ -61,7 +62,7 @@ class Domain implements IDomain {
 	 * @return void
 	 */
 	public function __construct () {
-		#src/jotun/net/Domain.hx:54: characters 3-14
+		#src/jotun/net/Domain.hx:55: characters 3-14
 		$this->_parseURI();
 	}
 
@@ -69,14 +70,14 @@ class Domain implements IDomain {
 	 * @return mixed
 	 */
 	public function _getJsonInput () {
-		#src/jotun/net/Domain.hx:133: characters 4-33
+		#src/jotun/net/Domain.hx:142: characters 4-33
 		$data = $this->getInput();
-		#src/jotun/net/Domain.hx:134: characters 11-49
+		#src/jotun/net/Domain.hx:143: characters 11-49
 		if ($data !== null) {
-			#src/jotun/net/Domain.hx:134: characters 26-42
+			#src/jotun/net/Domain.hx:143: characters 26-42
 			return Json::phpJsonDecode($data);
 		} else {
-			#src/jotun/net/Domain.hx:134: characters 45-49
+			#src/jotun/net/Domain.hx:143: characters 45-49
 			return null;
 		}
 	}
@@ -85,33 +86,33 @@ class Domain implements IDomain {
 	 * @return string
 	 */
 	public function _getMultipartKey () {
-		#src/jotun/net/Domain.hx:202: lines 202-212
+		#src/jotun/net/Domain.hx:211: lines 211-221
 		if ($this->isRequestMethod("POST")) {
-			#src/jotun/net/Domain.hx:203: characters 5-54
+			#src/jotun/net/Domain.hx:212: characters 5-54
 			$a = $_POST;
-			#src/jotun/net/Domain.hx:204: lines 204-206
+			#src/jotun/net/Domain.hx:213: lines 213-215
 			if (get_magic_quotes_gpc()) {
-				#src/jotun/net/Domain.hx:205: characters 6-101
+				#src/jotun/net/Domain.hx:214: characters 6-101
 				reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v);
 			}
-			#src/jotun/net/Domain.hx:207: characters 5-46
+			#src/jotun/net/Domain.hx:216: characters 5-46
 			$post = Lib::hashOfAssociativeArray($a);
-			#src/jotun/net/Domain.hx:208: characters 17-28
+			#src/jotun/net/Domain.hx:217: characters 17-28
 			$data = \array_values(\array_map("strval", \array_keys($post->data)));
 			$_g_current = 0;
 			$_g_length = \count($data);
 			$_g_data = $data;
-			#src/jotun/net/Domain.hx:208: lines 208-211
+			#src/jotun/net/Domain.hx:217: lines 217-220
 			while ($_g_current < $_g_length) {
 				$key = $_g_data[$_g_current++];
-				#src/jotun/net/Domain.hx:209: lines 209-210
+				#src/jotun/net/Domain.hx:218: lines 218-219
 				if (HxString::indexOf($key, "Content-Disposition:_form-data;_name") !== -1) {
-					#src/jotun/net/Domain.hx:210: characters 7-17
+					#src/jotun/net/Domain.hx:219: characters 7-17
 					return $key;
 				}
 			}
 		}
-		#src/jotun/net/Domain.hx:213: characters 4-15
+		#src/jotun/net/Domain.hx:222: characters 4-15
 		return null;
 	}
 
@@ -122,14 +123,14 @@ class Domain implements IDomain {
 	 * @return mixed
 	 */
 	public function _getParams () {
-		#src/jotun/net/Domain.hx:142: characters 4-73
+		#src/jotun/net/Domain.hx:151: characters 4-73
 		$a = array_merge($_GET, $_POST);
-		#src/jotun/net/Domain.hx:143: lines 143-145
+		#src/jotun/net/Domain.hx:152: lines 152-154
 		if (get_magic_quotes_gpc()) {
-			#src/jotun/net/Domain.hx:144: characters 5-100
+			#src/jotun/net/Domain.hx:153: characters 5-100
 			reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v);
 		}
-		#src/jotun/net/Domain.hx:158: characters 5-43
+		#src/jotun/net/Domain.hx:167: characters 5-43
 		return Lib::objectOfAssociativeArray($a);
 	}
 
@@ -145,52 +146,52 @@ class Domain implements IDomain {
 	 * @return mixed
 	 */
 	public function _getRawData ($boundary, $data = null) {
-		#src/jotun/net/Domain.hx:169: lines 169-171
+		#src/jotun/net/Domain.hx:178: lines 178-180
 		if ($data === null) {
-			#src/jotun/net/Domain.hx:170: characters 5-14
+			#src/jotun/net/Domain.hx:179: characters 5-14
 			$data = new HxAnon();
 		}
-		#src/jotun/net/Domain.hx:172: characters 4-78
+		#src/jotun/net/Domain.hx:181: characters 4-78
 		$content = file_get_contents('php://input');
-		#src/jotun/net/Domain.hx:173: characters 4-55
+		#src/jotun/net/Domain.hx:182: characters 4-55
 		$result = HxString::split($content, $boundary);
-		#src/jotun/net/Domain.hx:174: lines 174-195
+		#src/jotun/net/Domain.hx:183: lines 183-204
 		Dice::Values($result, function ($v) use (&$data) {
-			#src/jotun/net/Domain.hx:175: lines 175-177
+			#src/jotun/net/Domain.hx:184: lines 184-186
 			if (($v === null) || (mb_strlen($v) === 0)) {
-				#src/jotun/net/Domain.hx:176: characters 6-12
+				#src/jotun/net/Domain.hx:185: characters 6-12
 				return;
 			}
-			#src/jotun/net/Domain.hx:178: lines 178-194
+			#src/jotun/net/Domain.hx:187: lines 187-203
 			if (HxString::indexOf($v, "Content-Disposition: form-data;") < 30) {
-				#src/jotun/net/Domain.hx:179: characters 6-102
+				#src/jotun/net/Domain.hx:188: characters 6-102
 				$point = HxString::split((HxString::split($v, "Content-Disposition: form-data; name=")->arr[1] ?? null), "\x0D\x0A\x0D\x0A");
-				#src/jotun/net/Domain.hx:180: characters 6-55
+				#src/jotun/net/Domain.hx:189: characters 6-55
 				$param = HxString::split(($point->arr[0] ?? null), "\"")->join("");
-				#src/jotun/net/Domain.hx:181: lines 181-193
+				#src/jotun/net/Domain.hx:190: lines 190-202
 				if (HxString::indexOf($param, "Content-Type:") === -1) {
-					#src/jotun/net/Domain.hx:182: characters 7-52
+					#src/jotun/net/Domain.hx:191: characters 7-52
 					$value = (HxString::split(($point->arr[1] ?? null), "\x0D\x0A")->arr[0] ?? null);
-					#src/jotun/net/Domain.hx:183: lines 183-192
+					#src/jotun/net/Domain.hx:192: lines 192-201
 					if ((mb_strlen($param) > 0) && (mb_strlen($value) > 0) && ($value !== "null")) {
-						#src/jotun/net/Domain.hx:184: lines 184-191
+						#src/jotun/net/Domain.hx:193: lines 193-200
 						if (HxString::indexOf($param, "[]") === -1) {
-							#src/jotun/net/Domain.hx:185: characters 9-45
+							#src/jotun/net/Domain.hx:194: characters 9-45
 							\Reflect::setField($data, $param, $value);
 						} else {
-							#src/jotun/net/Domain.hx:187: lines 187-189
+							#src/jotun/net/Domain.hx:196: lines 196-198
 							if (!\Reflect::hasField($data, $param)) {
-								#src/jotun/net/Domain.hx:188: characters 10-43
+								#src/jotun/net/Domain.hx:197: characters 10-43
 								\Reflect::setField($data, $param, new \Array_hx());
 							}
-							#src/jotun/net/Domain.hx:190: characters 9-47
+							#src/jotun/net/Domain.hx:199: characters 9-47
 							\Reflect::field($data, $param)->push($value);
 						}
 					}
 				}
 			}
 		});
-		#src/jotun/net/Domain.hx:197: characters 4-15
+		#src/jotun/net/Domain.hx:206: characters 4-15
 		return $data;
 	}
 
@@ -198,35 +199,42 @@ class Domain implements IDomain {
 	 * @return void
 	 */
 	public function _parseURI () {
-		#src/jotun/net/Domain.hx:70: characters 4-74
+		#src/jotun/net/Domain.hx:71: characters 4-74
 		$this->data = Lib::objectOfAssociativeArray($_SERVER);
-		#src/jotun/net/Domain.hx:71: characters 4-27
+		#src/jotun/net/Domain.hx:72: characters 4-27
 		$this->port = $this->data->SERVER_PORT;
-		#src/jotun/net/Domain.hx:72: characters 4-25
+		#src/jotun/net/Domain.hx:73: characters 4-25
 		$this->server = (\dirname($_SERVER["SCRIPT_FILENAME"])??'null') . "/";
-		#src/jotun/net/Domain.hx:73: characters 4-28
+		#src/jotun/net/Domain.hx:74: characters 4-28
 		$this->host = $_SERVER["SERVER_NAME"];
-		#src/jotun/net/Domain.hx:74: characters 4-30
+		#src/jotun/net/Domain.hx:75: characters 4-30
 		$this->client = $_SERVER["REMOTE_ADDR"];
-		#src/jotun/net/Domain.hx:76: characters 4-45
+		#src/jotun/net/Domain.hx:77: characters 4-45
 		$boundary = $this->_getMultipartKey();
-		#src/jotun/net/Domain.hx:78: lines 78-80
-		if ($this->data->CONTENT_TYPE === "application/json") {
-			#src/jotun/net/Domain.hx:79: characters 5-28
+		#src/jotun/net/Domain.hx:79: characters 12-29
+		$__hx__switch = ($this->data->CONTENT_TYPE);
+		if ($__hx__switch === "application/json") {
+			#src/jotun/net/Domain.hx:81: characters 6-29
 			$this->input = $this->_getJsonInput();
+		} else if ($__hx__switch === "plain/pulsar") {
+			#src/jotun/net/Domain.hx:84: characters 6-39
+			$this->input = Pulsar::create($this->getInput());
+		} else if ($__hx__switch === "plain/text") {
+			#src/jotun/net/Domain.hx:87: characters 6-24
+			$this->input = $this->getInput();
 		}
-		#src/jotun/net/Domain.hx:81: characters 4-25
+		#src/jotun/net/Domain.hx:90: characters 4-25
 		$this->params = $this->_getParams();
-		#src/jotun/net/Domain.hx:83: lines 83-87
+		#src/jotun/net/Domain.hx:92: lines 92-96
 		if ($boundary !== null) {
-			#src/jotun/net/Domain.hx:84: characters 5-42
+			#src/jotun/net/Domain.hx:93: characters 5-42
 			\Reflect::deleteField($this->params, $boundary);
-			#src/jotun/net/Domain.hx:85: characters 5-41
+			#src/jotun/net/Domain.hx:94: characters 5-41
 			$boundary = (HxString::split($boundary, "\x0D\x0A")->arr[0] ?? null);
-			#src/jotun/net/Domain.hx:86: characters 5-34
+			#src/jotun/net/Domain.hx:95: characters 5-34
 			$this->_getRawData($boundary, $this->params);
 		}
-		#src/jotun/net/Domain.hx:88: characters 4-37
+		#src/jotun/net/Domain.hx:97: characters 4-37
 		$this->url = HxString::split($this->data->SCRIPT_NAME, "/");
 	}
 
@@ -236,13 +244,13 @@ class Domain implements IDomain {
 	 * @return string
 	 */
 	public function getFQDN ($len = 2) {
-		#src/jotun/net/Domain.hx:94: lines 94-97
+		#src/jotun/net/Domain.hx:103: lines 103-106
 		if ($len === null) {
 			$len = 2;
 		}
-		#src/jotun/net/Domain.hx:95: characters 3-41
+		#src/jotun/net/Domain.hx:104: characters 3-41
 		$h = HxString::split($this->host, ".");
-		#src/jotun/net/Domain.hx:96: characters 3-49
+		#src/jotun/net/Domain.hx:105: characters 3-49
 		return $h->splice($h->length - $len, $len)->join(".");
 	}
 
@@ -250,14 +258,14 @@ class Domain implements IDomain {
 	 * @return string
 	 */
 	public function getInput () {
-		#src/jotun/net/Domain.hx:255: characters 4-75
+		#src/jotun/net/Domain.hx:264: characters 4-75
 		$data = file_get_contents('php://input');
-		#src/jotun/net/Domain.hx:256: characters 11-56
+		#src/jotun/net/Domain.hx:265: characters 11-56
 		if (($data !== null) && (mb_strlen($data) > 0)) {
-			#src/jotun/net/Domain.hx:256: characters 45-49
+			#src/jotun/net/Domain.hx:265: characters 45-49
 			return $data;
 		} else {
-			#src/jotun/net/Domain.hx:256: characters 52-56
+			#src/jotun/net/Domain.hx:265: characters 52-56
 			return null;
 		}
 	}
@@ -266,7 +274,7 @@ class Domain implements IDomain {
 	 * @return string
 	 */
 	public function getRequestMethod () {
-		#src/jotun/net/Domain.hx:116: characters 11-44
+		#src/jotun/net/Domain.hx:125: characters 11-44
 		return \mb_strtoupper($this->data->REQUEST_METHOD);
 	}
 
@@ -276,7 +284,7 @@ class Domain implements IDomain {
 	 * @return bool
 	 */
 	public function isRequestMethod ($q) {
-		#src/jotun/net/Domain.hx:120: characters 4-48
+		#src/jotun/net/Domain.hx:129: characters 4-48
 		return $this->getRequestMethod() === \mb_strtoupper($q);
 	}
 
@@ -287,78 +295,78 @@ class Domain implements IDomain {
 	 * @return void
 	 */
 	public function parseFiles ($onPart, $onData) {
-		#src/jotun/net/Domain.hx:217: characters 4-52
+		#src/jotun/net/Domain.hx:226: characters 4-52
 		$files = $_FILES;
-		#src/jotun/net/Domain.hx:218: lines 218-220
+		#src/jotun/net/Domain.hx:227: lines 227-229
 		if (!isset($files)) {
-			#src/jotun/net/Domain.hx:219: characters 5-11
+			#src/jotun/net/Domain.hx:228: characters 5-11
 			return;
 		}
-		#src/jotun/net/Domain.hx:221: characters 4-66
+		#src/jotun/net/Domain.hx:230: characters 4-66
 		$keys = array_keys($files);
-		#src/jotun/net/Domain.hx:222: characters 4-54
+		#src/jotun/net/Domain.hx:231: characters 4-54
 		$parts = \Array_hx::wrap($keys);
-		#src/jotun/net/Domain.hx:223: lines 223-250
+		#src/jotun/net/Domain.hx:232: lines 232-259
 		$_g = 0;
 		while ($_g < $parts->length) {
-			#src/jotun/net/Domain.hx:223: characters 8-12
+			#src/jotun/net/Domain.hx:232: characters 8-12
 			$part = ($parts->arr[$_g] ?? null);
-			#src/jotun/net/Domain.hx:223: lines 223-250
+			#src/jotun/net/Domain.hx:232: lines 232-259
 			++$_g;
-			#src/jotun/net/Domain.hx:224: characters 5-61
+			#src/jotun/net/Domain.hx:233: characters 5-61
 			$info = $_FILES[$part];
-			#src/jotun/net/Domain.hx:225: characters 5-49
+			#src/jotun/net/Domain.hx:234: characters 5-49
 			$tmp = $info["tmp_name"];
-			#src/jotun/net/Domain.hx:226: characters 5-46
+			#src/jotun/net/Domain.hx:235: characters 5-46
 			$file = $info["name"];
-			#src/jotun/net/Domain.hx:227: characters 5-43
+			#src/jotun/net/Domain.hx:236: characters 5-43
 			$err = $info["error"];
-			#src/jotun/net/Domain.hx:228: lines 228-238
+			#src/jotun/net/Domain.hx:237: lines 237-247
 			if ($err > 0) {
-				#src/jotun/net/Domain.hx:229: lines 229-237
+				#src/jotun/net/Domain.hx:238: lines 238-246
 				if ($err === 1) {
-					#src/jotun/net/Domain.hx:230: characters 15-20
+					#src/jotun/net/Domain.hx:239: characters 15-20
 					throw Exception::thrown("The uploaded file exceeds the max size of " . \Std::string(ini_get("upload_max_filesize")));
 				} else if ($err === 2) {
-					#src/jotun/net/Domain.hx:231: characters 15-20
+					#src/jotun/net/Domain.hx:240: characters 15-20
 					throw Exception::thrown("The uploaded file exceeds the max file size directive specified in the HTML form (max is" . \Std::string(ini_get("post_max_size")) . ")");
 				} else if ($err === 3) {
-					#src/jotun/net/Domain.hx:232: characters 15-20
+					#src/jotun/net/Domain.hx:241: characters 15-20
 					throw Exception::thrown("The uploaded file was only partially uploaded");
 				} else if ($err === 4) {
-					#src/jotun/net/Domain.hx:233: characters 15-23
+					#src/jotun/net/Domain.hx:242: characters 15-23
 					continue;
 				} else if ($err === 6) {
-					#src/jotun/net/Domain.hx:234: characters 15-20
+					#src/jotun/net/Domain.hx:243: characters 15-20
 					throw Exception::thrown("Missing a temporary folder");
 				} else if ($err === 7) {
-					#src/jotun/net/Domain.hx:235: characters 15-20
+					#src/jotun/net/Domain.hx:244: characters 15-20
 					throw Exception::thrown("Failed to write file to disk");
 				} else if ($err === 8) {
-					#src/jotun/net/Domain.hx:236: characters 15-20
+					#src/jotun/net/Domain.hx:245: characters 15-20
 					throw Exception::thrown("File upload stopped by extension");
 				}
 			}
-			#src/jotun/net/Domain.hx:239: characters 5-23
+			#src/jotun/net/Domain.hx:248: characters 5-23
 			$onPart($part, $file);
-			#src/jotun/net/Domain.hx:240: lines 240-249
+			#src/jotun/net/Domain.hx:249: lines 249-258
 			if ("" !== $file) {
-				#src/jotun/net/Domain.hx:241: characters 6-59
+				#src/jotun/net/Domain.hx:250: characters 6-59
 				$h = fopen($tmp,"r");
-				#src/jotun/net/Domain.hx:242: characters 6-23
+				#src/jotun/net/Domain.hx:251: characters 6-23
 				$bsize = 8192;
-				#src/jotun/net/Domain.hx:243: lines 243-247
+				#src/jotun/net/Domain.hx:252: lines 252-256
 				while (!feof($h)) {
-					#src/jotun/net/Domain.hx:244: characters 7-71
+					#src/jotun/net/Domain.hx:253: characters 7-71
 					$buf = fread($h,$bsize);
-					#src/jotun/net/Domain.hx:245: characters 7-61
+					#src/jotun/net/Domain.hx:254: characters 7-61
 					$size = strlen($buf);
-					#src/jotun/net/Domain.hx:246: characters 14-33
+					#src/jotun/net/Domain.hx:255: characters 14-33
 					$tmp1 = \strlen($buf);
-					#src/jotun/net/Domain.hx:246: characters 7-43
+					#src/jotun/net/Domain.hx:255: characters 7-43
 					$onData(new Bytes($tmp1, new Container($buf)), 0, $size);
 				}
-				#src/jotun/net/Domain.hx:248: characters 6-40
+				#src/jotun/net/Domain.hx:257: characters 6-40
 				fclose($h);
 			}
 		}
@@ -370,18 +378,18 @@ class Domain implements IDomain {
 	 * @return bool
 	 */
 	public function require ($params) {
-		#src/jotun/net/Domain.hx:123: lines 123-130
+		#src/jotun/net/Domain.hx:132: lines 132-139
 		$_gthis = $this;
-		#src/jotun/net/Domain.hx:124: characters 4-22
+		#src/jotun/net/Domain.hx:133: characters 4-22
 		$r = true;
-		#src/jotun/net/Domain.hx:125: lines 125-128
+		#src/jotun/net/Domain.hx:134: lines 134-137
 		Dice::Values($params, function ($v) use (&$r, &$_gthis) {
-			#src/jotun/net/Domain.hx:126: characters 5-41
+			#src/jotun/net/Domain.hx:135: characters 5-41
 			$r = \Reflect::hasField($_gthis->params, $v);
-			#src/jotun/net/Domain.hx:127: characters 5-14
+			#src/jotun/net/Domain.hx:136: characters 5-14
 			return !$r;
 		});
-		#src/jotun/net/Domain.hx:129: characters 4-12
+		#src/jotun/net/Domain.hx:138: characters 4-12
 		return $r;
 	}
 }

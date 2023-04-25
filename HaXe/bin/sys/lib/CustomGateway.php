@@ -5,6 +5,8 @@
 
 use \jotun\gateway\Gateway;
 use \php\Boot;
+use \jotun\gateway\domain\BasicSessionInput;
+use \jotun\gateway\domain\OutputPulsar;
 
 /**
  * ...
@@ -15,15 +17,15 @@ class CustomGateway extends Gateway {
 	 * @return void
 	 */
 	public static function main () {
-		#samples/server/CustomGateway.hx:12: characters 3-81
-		Gateway::init(Boot::getClass(CustomGateway::class), Boot::getClass(\CustomDomain::class), Boot::getClass(\CustomDataAccess::class), true, true, false);
+		#samples/server/CustomGateway.hx:15: lines 15-22
+		Gateway::init(Boot::getClass(CustomGateway::class), Boot::getClass(\CustomDomain::class), Boot::getClass(\CustomDataAccess::class), Boot::getClass(BasicSessionInput::class), Boot::getClass(OutputPulsar::class), false);
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomGateway.hx:9: lines 9-15
+		#samples/server/CustomGateway.hx:12: lines 12-25
 		parent::__construct();
 	}
 }

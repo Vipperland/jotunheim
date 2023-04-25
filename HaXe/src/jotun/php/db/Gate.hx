@@ -32,9 +32,7 @@ class Gate implements IGate {
 	
 	private var _errors:Array<IError>;
 	
-	private var _log:Array<String>;
-	
-	private var _logCommands:Bool;
+	private var _onLog:Array<String->Void>;
 	
 	public var builder:IQueryBuilder;
 	
@@ -42,9 +40,6 @@ class Gate implements IGate {
 	
 	public var errors(get, null):Array<IError>;
 	public function get_errors():Array<IError> { return _errors; }
-	
-	public var log(get, null):Array<String>;
-	public function get_log():Array<String> { return _log; }
 	
 	public function getName():String {
 		return _token.db;
@@ -62,8 +57,7 @@ class Gate implements IGate {
 	
 	public function new() {
 		_errors = [];
-		_log = [];
-		_logCommands = false;
+		_onLog = [];
 		_tables = { };
 		builder = new QueryBuilder(this);
 	}
@@ -72,12 +66,11 @@ class Gate implements IGate {
 		return _db != null && errors.length == 0;
 	}
 	
-	public function isLogEnabled():Bool {
-		return _logCommands;
-	}
-	
-	public function enableLog():Void {
-		_logCommands = true;
+	public function listen(handler:String->Void):IGate {
+		if (_onLog.indexOf(handler) == -1){
+			_onLog[_onLog.length] = handler;
+		}
+		return this;
 	}
 	
 	public function open(token:Token):IGate {
@@ -99,12 +92,12 @@ class Gate implements IGate {
 		if (isOpen()) {
 			pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
 		}
-		command = new Command(pdo, query, parameters, _errors, _logCommands ? _log : null);
+		command = new Command(pdo, query, parameters, _errors, _log);
 		return command;
 	}
 	
 	public function query(query:String, ?parameters:Dynamic = null):IExtCommand {
-		command = new ExtCommand(isOpen() ? _db : null, query, parameters, _errors, _logCommands ? _log : null);
+		command = new ExtCommand(isOpen() ? _db : null, query, parameters, _errors, _log);
 		return cast command;
 	}
 	
@@ -156,6 +149,12 @@ class Gate implements IGate {
 	
 	public function ifTableExists(table:String):Bool {
 		return getTableNames().indexOf(table) != -1;
+	}
+	
+	private function _log(message:String):Void {
+		Dice.Values(_onLog, function(v:String->Void){
+			v(message);
+		});
 	}
 	
 }

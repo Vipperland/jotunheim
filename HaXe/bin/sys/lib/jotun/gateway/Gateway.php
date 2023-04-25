@@ -8,7 +8,8 @@ namespace jotun\gateway;
 use \php\Boot;
 use \jotun\gateway\domain\Output;
 use \jotun\Jotun;
-use \jotun\gateway\domain\Input;
+use \jotun\tools\Utils;
+use \jotun\gateway\database\DataAccess;
 
 /**
  * ...
@@ -24,7 +25,7 @@ class Gateway {
 	 * @return Gateway
 	 */
 	public static function getInstance () {
-		#server/jotun/gateway/Gateway.hx:18: characters 3-13
+		#src+extras/gateway/jotun/gateway/Gateway.hx:20: characters 3-13
 		return Gateway::$_ME;
 	}
 
@@ -32,55 +33,55 @@ class Gateway {
 	 * @param mixed $TGateway
 	 * @param mixed $TDomain
 	 * @param mixed $TDataAccess
-	 * @param bool $log
-	 * @param bool $logdb
+	 * @param mixed $TInput
+	 * @param mixed $TOutput
 	 * @param bool $maintenance
 	 * 
 	 * @return void
 	 */
-	public static function init ($TGateway, $TDomain, $TDataAccess, $log, $logdb, $maintenance) {
-		#server/jotun/gateway/Gateway.hx:31: characters 3-29
+	public static function init ($TGateway, $TDomain, $TDataAccess, $TInput, $TOutput, $maintenance) {
+		#src+extras/gateway/jotun/gateway/Gateway.hx:33: characters 3-29
 		new $TGateway->phpClassName();
-		#server/jotun/gateway/Gateway.hx:33: characters 3-24
+		#src+extras/gateway/jotun/gateway/Gateway.hx:35: characters 3-24
 		Jotun::$header->access();
-		#server/jotun/gateway/Gateway.hx:36: lines 36-38
-		if ($logdb) {
-			#server/jotun/gateway/Gateway.hx:37: characters 4-26
-			Jotun::$gate->enableLog();
-		}
-		#server/jotun/gateway/Gateway.hx:41: lines 41-43
-		if ($log) {
-			#server/jotun/gateway/Gateway.hx:42: characters 4-25
-			Output::get_ME()->enableLog();
-		}
-		#server/jotun/gateway/Gateway.hx:45: characters 3-32
-		new $TDataAccess->phpClassName();
-		#server/jotun/gateway/Gateway.hx:48: characters 3-11
-		Input::get_ME();
-		#server/jotun/gateway/Gateway.hx:51: characters 3-12
-		Output::get_ME();
-		#server/jotun/gateway/Gateway.hx:54: lines 54-58
+		#src+extras/gateway/jotun/gateway/Gateway.hx:38: characters 3-28
+		new $TOutput->phpClassName();
+		#src+extras/gateway/jotun/gateway/Gateway.hx:41: characters 3-27
+		new $TInput->phpClassName();
+		#src+extras/gateway/jotun/gateway/Gateway.hx:44: lines 44-59
 		if (!$maintenance) {
-			#server/jotun/gateway/Gateway.hx:55: characters 4-29
+			#src+extras/gateway/jotun/gateway/Gateway.hx:46: lines 46-48
+			if (Utils::boolean(Boot::dynamicField(Jotun::$domain->params, 'log'))) {
+				#src+extras/gateway/jotun/gateway/Gateway.hx:47: characters 5-37
+				Output::getInstance()->enableLog();
+			}
+			#src+extras/gateway/jotun/gateway/Gateway.hx:50: characters 4-33
+			new $TDataAccess->phpClassName();
+			#src+extras/gateway/jotun/gateway/Gateway.hx:52: lines 52-54
+			if (Utils::boolean(Boot::dynamicField(Jotun::$domain->params, 'dblog'))) {
+				#src+extras/gateway/jotun/gateway/Gateway.hx:53: characters 5-41
+				DataAccess::getInstance()->enableLog();
+			}
+			#src+extras/gateway/jotun/gateway/Gateway.hx:56: characters 4-29
 			new $TDomain->phpClassName();
 		} else {
-			#server/jotun/gateway/Gateway.hx:57: characters 4-48
-			Output::get_ME()->error(1);
+			#src+extras/gateway/jotun/gateway/Gateway.hx:58: characters 4-59
+			Output::getInstance()->error(1);
 		}
-		#server/jotun/gateway/Gateway.hx:61: characters 3-20
-		Output::get_ME()->flush();
+		#src+extras/gateway/jotun/gateway/Gateway.hx:62: characters 3-31
+		Output::getInstance()->flush();
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/Gateway.hx:22: lines 22-26
+		#src+extras/gateway/jotun/gateway/Gateway.hx:24: lines 24-28
 		if (Gateway::$_ME === null) {
-			#server/jotun/gateway/Gateway.hx:23: characters 4-14
+			#src+extras/gateway/jotun/gateway/Gateway.hx:25: characters 4-14
 			Gateway::$_ME = $this;
 		} else {
-			#server/jotun/gateway/Gateway.hx:25: characters 4-9
+			#src+extras/gateway/jotun/gateway/Gateway.hx:27: characters 4-9
 			throw new \ErrorException("Gateway is a Singleton");
 		}
 	}

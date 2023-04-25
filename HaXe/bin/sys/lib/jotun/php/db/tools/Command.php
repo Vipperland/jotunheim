@@ -23,7 +23,7 @@ class Command implements ICommand {
 	 */
 	public $_errors;
 	/**
-	 * @var string[]|\Array_hx
+	 * @var \Closure
 	 */
 	public $_log;
 	/**
@@ -56,7 +56,7 @@ class Command implements ICommand {
 	 * @param string $query
 	 * @param mixed[]|\Array_hx $parameters
 	 * @param IError[]|\Array_hx $errors
-	 * @param string[]|\Array_hx $log
+	 * @param \Closure $log
 	 * 
 	 * @return void
 	 */
@@ -182,8 +182,8 @@ class Command implements ICommand {
 			}
 			#src/jotun/php/db/tools/Command.hx:92: lines 92-94
 			if ($this->_log !== null) {
-				#src/jotun/php/db/tools/Command.hx:93: characters 5-64
-				$this->_log->offsetSet($this->_log->length, ((($this->success ? "[1]" : "[0]"))??'null') . " " . ($this->log()??'null'));
+				#src/jotun/php/db/tools/Command.hx:93: characters 5-50
+				($this->_log)(((($this->success ? "[1]" : "[0]"))??'null') . " " . ($this->log()??'null'));
 			}
 		} else {
 			#src/jotun/php/db/tools/Command.hx:96: characters 4-83

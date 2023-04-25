@@ -17,8 +17,9 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="server" />
     <class path="samples\server" />
+    <class path="src+extras\gateway" />
+    <class path="src+extras\basic+gateway" />
   </classpaths>
   <!-- Build options -->
   <build>

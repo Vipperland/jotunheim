@@ -6,13 +6,11 @@
 namespace jotun\gateway\domain;
 
 use \jotun\gateway\domain\zones\ZoneServices;
-use \php\_Boot\HxAnon;
 use \php\Boot;
 use \jotun\Jotun;
 use \jotun\tools\Utils;
 use \jotun\utils\Dice;
 use \php\_Boot\HxString;
-use \jotun\gateway\domain\zones\session\SessionZone;
 
 /**
  * ...
@@ -28,7 +26,7 @@ class Domain extends ZoneServices {
 	 * @return Domain
 	 */
 	public static function getInstance () {
-		#server/jotun/gateway/domain/Domain.hx:21: characters 3-13
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:21: characters 3-13
 		return Domain::$_me;
 	}
 
@@ -47,36 +45,28 @@ class Domain extends ZoneServices {
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/Domain.hx:44: lines 44-46
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:38: lines 38-40
 		if (Domain::$_me !== null) {
-			#server/jotun/gateway/domain/Domain.hx:45: characters 4-9
+			#src+extras/gateway/jotun/gateway/domain/Domain.hx:39: characters 4-9
 			throw new \ErrorException("Domain is a Singleton");
 		}
-		#server/jotun/gateway/domain/Domain.hx:47: characters 3-13
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:41: characters 3-13
 		Domain::$_me = $this;
-		#server/jotun/gateway/domain/Domain.hx:48: characters 3-10
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:42: characters 3-10
 		parent::__construct();
-		#server/jotun/gateway/domain/Domain.hx:49: characters 3-29
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:43: characters 3-29
 		$this->carry($this, $this->getServices());
-		#server/jotun/gateway/domain/Domain.hx:50: characters 3-54
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:44: characters 3-54
 		\Reflect::deleteField(Jotun::$domain->params, "service");
-	}
-
-	/**
-	 * @return void
-	 */
-	public function _buildZoneMap () {
-		#server/jotun/gateway/domain/Domain.hx:25: lines 25-27
-		$this->_setZoneMap(new HxAnon(["session" => Boot::getClass(SessionZone::class)]));
 	}
 
 	/**
 	 * @return string[]|\Array_hx
 	 */
 	public function getServices () {
-		#server/jotun/gateway/domain/Domain.hx:54: characters 3-75
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:48: characters 3-75
 		$service = Utils::getValidOne(Boot::dynamicField(Jotun::$domain->params, 'service'), "");
-		#server/jotun/gateway/domain/Domain.hx:55: characters 3-48
+		#src+extras/gateway/jotun/gateway/domain/Domain.hx:49: characters 3-48
 		return Dice::nullSkip(HxString::split($service, "/"));
 	}
 }

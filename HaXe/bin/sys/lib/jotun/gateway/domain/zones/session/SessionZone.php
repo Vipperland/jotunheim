@@ -18,7 +18,7 @@ class SessionZone extends ZoneServices {
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/zones/session/SessionZone.hx:17: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionZone.hx:17: characters 3-10
 		parent::__construct();
 	}
 
@@ -26,7 +26,7 @@ class SessionZone extends ZoneServices {
 	 * @return void
 	 */
 	public function _buildZoneMap () {
-		#server/jotun/gateway/domain/zones/session/SessionZone.hx:11: lines 11-13
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionZone.hx:11: lines 11-13
 		$this->_setZoneMap(new HxAnon(["verify" => Boot::getClass(SessionVerifyZone::class)]));
 	}
 }

@@ -22,24 +22,19 @@ class DataAccess {
 	static public $_instance;
 
 	/**
-	 * @var IDataTable
-	 */
-	public $user_session;
-
-	/**
 	 * @param mixed $handler
 	 * 
 	 * @return mixed
 	 */
 	public static function execute ($handler) {
-		#server/jotun/gateway/database/DataAccess.hx:24: lines 24-26
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:21: lines 21-23
 		if (DataAccess::$_instance !== null) {
-			#server/jotun/gateway/database/DataAccess.hx:25: characters 4-20
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:22: characters 4-20
 			return $handler();
 		}
-		#server/jotun/gateway/database/DataAccess.hx:27: characters 3-51
-		Output::get_ME()->error(101);
-		#server/jotun/gateway/database/DataAccess.hx:28: characters 3-15
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:24: characters 3-62
+		Output::getInstance()->error(101);
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:25: characters 3-15
 		return null;
 	}
 
@@ -47,7 +42,7 @@ class DataAccess {
 	 * @return DataAccess
 	 */
 	public static function getInstance () {
-		#server/jotun/gateway/database/DataAccess.hx:20: characters 3-19
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:17: characters 3-19
 		return DataAccess::$_instance;
 	}
 
@@ -57,21 +52,31 @@ class DataAccess {
 	 * @return void
 	 */
 	public function __construct ($token) {
-		#server/jotun/gateway/database/DataAccess.hx:36: lines 36-38
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:33: lines 33-35
 		if (DataAccess::$_instance !== null) {
-			#server/jotun/gateway/database/DataAccess.hx:37: characters 4-9
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:34: characters 4-9
 			throw new \ErrorException("DataAccess is a Singleton");
 		}
-		#server/jotun/gateway/database/DataAccess.hx:39: characters 3-19
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:36: characters 3-19
 		DataAccess::$_instance = $this;
-		#server/jotun/gateway/database/DataAccess.hx:40: lines 40-44
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:37: lines 37-41
 		if (!Jotun::$gate->isOpen()) {
-			#server/jotun/gateway/database/DataAccess.hx:41: lines 41-43
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:38: lines 38-40
 			if (!Jotun::$gate->open($token)->isOpen()) {
-				#server/jotun/gateway/database/DataAccess.hx:42: characters 5-46
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:39: characters 5-46
 				$this->_error(100);
 			}
 		}
+	}
+
+	/**
+	 * @param string $message
+	 * 
+	 * @return void
+	 */
+	public function _dbLog ($message) {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:53: characters 3-43
+		Output::getInstance()->log($message, "sql");
 	}
 
 	/**
@@ -80,8 +85,8 @@ class DataAccess {
 	 * @return void
 	 */
 	public function _error ($code) {
-		#server/jotun/gateway/database/DataAccess.hx:32: characters 3-24
-		Output::get_ME()->error($code);
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:29: characters 3-35
+		Output::getInstance()->error($code);
 	}
 
 	/**
@@ -91,43 +96,40 @@ class DataAccess {
 	 * @return IDataTable
 	 */
 	public function _tryAssemble ($table, $Def) {
-		#server/jotun/gateway/database/DataAccess.hx:52: lines 52-61
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:57: lines 57-66
 		return DataAccess::execute(function () use (&$table, &$Def) {
-			#server/jotun/gateway/database/DataAccess.hx:53: characters 4-51
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:58: characters 4-51
 			$table1 = Jotun::$gate->table($table);
-			#server/jotun/gateway/database/DataAccess.hx:54: lines 54-60
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:59: lines 59-65
 			if ($table1 !== null) {
-				#server/jotun/gateway/database/DataAccess.hx:55: characters 5-27
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:60: characters 5-27
 				$table1->setClassObj($Def);
-				#server/jotun/gateway/database/DataAccess.hx:56: characters 5-17
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:61: characters 5-17
 				return $table1;
 			} else {
-				#server/jotun/gateway/database/DataAccess.hx:58: characters 5-55
-				Output::get_ME()->error(102);
-				#server/jotun/gateway/database/DataAccess.hx:59: characters 5-17
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:63: characters 5-66
+				Output::getInstance()->error(102);
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:64: characters 5-17
 				return null;
 			}
 		});
 	}
 
 	/**
-	 * @return IDataTable
+	 * @return void
 	 */
-	public function get_user_session () {
-		#server/jotun/gateway/database/DataAccess.hx:66: characters 3-27
-		return $this->user_session;
+	public function enableLog () {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:49: characters 3-28
+		Jotun::$gate->listen(Boot::getInstanceClosure($this, '_dbLog'));
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isConnected () {
-		#server/jotun/gateway/database/DataAccess.hx:48: characters 3-27
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:45: characters 3-27
 		return DataAccess::$_instance !== null;
 	}
 }
 
 Boot::registerClass(DataAccess::class, 'jotun.gateway.database.DataAccess');
-Boot::registerGetters('jotun\\gateway\\database\\DataAccess', [
-	'user_session' => true
-]);

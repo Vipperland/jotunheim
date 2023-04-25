@@ -8,6 +8,7 @@ namespace jotun\gateway\domain\zones\session;
 use \jotun\serial\Packager;
 use \jotun\gateway\domain\zones\ZoneServices;
 use \php\Boot;
+use \jotun\gateway\domain\BasicSessionInput;
 
 /**
  * ...
@@ -18,7 +19,7 @@ class SessionVerifyTestZone extends ZoneServices {
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:21: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:22: characters 3-10
 		parent::__construct();
 	}
 
@@ -26,7 +27,7 @@ class SessionVerifyTestZone extends ZoneServices {
 	 * @return void
 	 */
 	public function _buildZoneMap () {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:12: characters 3-15
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:13: characters 3-15
 		$this->setEndZone();
 	}
 
@@ -36,10 +37,10 @@ class SessionVerifyTestZone extends ZoneServices {
 	 * @return void
 	 */
 	public function _execute ($data) {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:16: characters 3-89
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:17: characters 3-89
 		$testToken = Packager::encodeBase64("(y)=>" . (($data->arr[0] ?? null)??'null'));
-		#server/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:17: characters 3-32
-		$this->get_input()->setTestToken($testToken);
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyTestZone.hx:18: characters 3-58
+		(Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->setTestToken($testToken);
 	}
 }
 

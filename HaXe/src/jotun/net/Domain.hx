@@ -16,6 +16,7 @@ package jotun.net;
 
 import haxe.Json;
 import haxe.io.Bytes;
+import jotun.gaming.dataform.Pulsar;
 import jotun.utils.Dice;
 
 /**
@@ -75,8 +76,16 @@ class Domain implements IDomain {
 			
 			var boundary:String = _getMultipartKey();
 			
-			if (data.CONTENT_TYPE == 'application/json'){
-				input = _getJsonInput();
+			switch (data.CONTENT_TYPE){
+				case 'application/json' : {
+					input = _getJsonInput();
+				}
+				case 'plain/pulsar' : {
+					input = Pulsar.create(getInput());
+				}
+				case 'plain/text' : {
+					input = getInput();
+				}
 			}
 			params = _getParams();
 			

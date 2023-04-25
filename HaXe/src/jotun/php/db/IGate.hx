@@ -28,26 +28,17 @@ interface IGate {
 	public var errors(get, null):Array<IError>;
 	
 	/**
-	 * Query runtime log
-	 */
-	public var log(get, null):Array<String>;
-	
-	/**
 	 * If the connection is available
 	 * @return
 	 */
 	public function isOpen () : Bool;
 	
 	/**
-	 * If log is enabled
+	 * register query execution
+	 * @param	handler
 	 * @return
 	 */
-	public function isLogEnabled () : Bool;
-	
-	/**
-	 * Enable logging
-	 */
-	public function enableLog():Void;
+	public function listen(handler:String->Void):IGate;
 	
 	/**
 	   Name of Selected database

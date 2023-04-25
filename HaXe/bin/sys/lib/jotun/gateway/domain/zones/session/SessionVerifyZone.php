@@ -6,8 +6,8 @@
 namespace jotun\gateway\domain\zones\session;
 
 use \jotun\gateway\domain\zones\ZoneServices;
-use \php\_Boot\HxAnon;
 use \php\Boot;
+use \jotun\gateway\domain\BasicSessionInput;
 
 /**
  * ...
@@ -18,16 +18,10 @@ class SessionVerifyZone extends ZoneServices {
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:16: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:11: characters 3-10
 		parent::__construct();
-	}
-
-	/**
-	 * @return void
-	 */
-	public function _buildZoneMap () {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:10: lines 10-12
-		$this->_setZoneMap(new HxAnon(["test" => Boot::getClass(SessionVerifyTestZone::class)]));
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:12: characters 3-15
+		$this->setEndZone();
 	}
 
 	/**
@@ -36,12 +30,42 @@ class SessionVerifyZone extends ZoneServices {
 	 * @return void
 	 */
 	public function _execute ($data) {
-		#server/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:20: lines 20-23
-		if ($this->get_input()->session !== null) {
-			#server/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:21: characters 4-38
-			$this->get_input()->session->exposeUserInfo(true);
-			#server/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:22: characters 4-27
-			$this->get_input()->session->refresh();
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:31: lines 31-36
+		if ((Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->session !== null) {
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:32: characters 4-63
+			(Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->session->exposeCarrier(true);
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:33: characters 4-20
+			$this->_fetchData($data);
+		} else {
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:35: characters 4-58
+			$this->error((Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->getTokenSatus());
+		}
+	}
+
+	/**
+	 * @param string[]|\Array_hx $data
+	 * 
+	 * @return void
+	 */
+	public function _fetchData ($data) {
+		#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:16: lines 16-27
+		if (($data !== null) && ($data->length > 0)) {
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:17: characters 23-35
+			if ($data->length > 0) {
+				$data->length--;
+			}
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:17: characters 4-36
+			$param = \array_shift($data->arr);
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:18: lines 18-25
+			if ($param === "+refresh") {
+				#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:20: characters 6-55
+				(Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->session->refresh();
+			} else if ($param === "+user") {
+				#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:23: characters 6-61
+				(Boot::typedCast(Boot::getClass(BasicSessionInput::class), $this->get_input()))->session->exposeCarrier();
+			}
+			#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:26: characters 4-20
+			$this->_fetchData($data);
 		}
 	}
 }

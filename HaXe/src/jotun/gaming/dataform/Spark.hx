@@ -96,13 +96,14 @@ class Spark extends SparkCore {
 		SparkWriter.parse(this, data, _getProps(), true);
 	}
 	
-	public function set(prop:String, value:Dynamic):Void {
+	public function set(prop:String, value:Dynamic):Spark {
 		if (_changes != null && Reflect.field(this, prop) != value){
 			if (_changes.indexOf(prop) == -1){
 				_changes.push(prop);
 			}
 		}
 		Reflect.setField(this, prop, value);
+		return this;
 	}
 	
 	public function prop(name:String):Dynamic {

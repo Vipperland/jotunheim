@@ -45,9 +45,9 @@ class Spark extends SparkCore {
 	 * @return void
 	 */
 	public function allowChanges () {
-		#src/jotun/gaming/dataform/Spark.hx:113: lines 113-115
+		#src/jotun/gaming/dataform/Spark.hx:114: lines 114-116
 		if ($this->_changes === null) {
-			#src/jotun/gaming/dataform/Spark.hx:114: characters 4-12
+			#src/jotun/gaming/dataform/Spark.hx:115: characters 4-12
 			$this->commit();
 		}
 	}
@@ -56,11 +56,11 @@ class Spark extends SparkCore {
 	 * @return Spark
 	 */
 	public function clone () {
-		#src/jotun/gaming/dataform/Spark.hx:128: characters 3-34
+		#src/jotun/gaming/dataform/Spark.hx:129: characters 3-34
 		$o = new Spark($this->_name);
-		#src/jotun/gaming/dataform/Spark.hx:129: characters 3-23
+		#src/jotun/gaming/dataform/Spark.hx:130: characters 3-23
 		$o->parse($this->stringify());
-		#src/jotun/gaming/dataform/Spark.hx:130: characters 3-11
+		#src/jotun/gaming/dataform/Spark.hx:131: characters 3-11
 		return $o;
 	}
 
@@ -68,9 +68,9 @@ class Spark extends SparkCore {
 	 * @return void
 	 */
 	public function commit () {
-		#src/jotun/gaming/dataform/Spark.hx:123: characters 3-16
+		#src/jotun/gaming/dataform/Spark.hx:124: characters 3-16
 		$this->_changes = new \Array_hx();
-		#src/jotun/gaming/dataform/Spark.hx:124: characters 3-18
+		#src/jotun/gaming/dataform/Spark.hx:125: characters 3-18
 		$this->_deletions = new \Array_hx();
 	}
 
@@ -78,12 +78,12 @@ class Spark extends SparkCore {
 	 * @return bool
 	 */
 	public function isChanged () {
-		#src/jotun/gaming/dataform/Spark.hx:119: characters 10-51
+		#src/jotun/gaming/dataform/Spark.hx:120: characters 10-51
 		if ($this->_changes !== null) {
-			#src/jotun/gaming/dataform/Spark.hx:119: characters 31-50
+			#src/jotun/gaming/dataform/Spark.hx:120: characters 31-50
 			return $this->_changes->length > 0;
 		} else {
-			#src/jotun/gaming/dataform/Spark.hx:119: characters 10-51
+			#src/jotun/gaming/dataform/Spark.hx:120: characters 10-51
 			return false;
 		}
 	}
@@ -92,7 +92,7 @@ class Spark extends SparkCore {
 	 * @return bool
 	 */
 	public function isIndexable () {
-		#src/jotun/gaming/dataform/Spark.hx:134: characters 3-35
+		#src/jotun/gaming/dataform/Spark.hx:135: characters 3-35
 		return Pulsar::isIndexable($this->_name);
 	}
 
@@ -153,7 +153,7 @@ class Spark extends SparkCore {
 	 * @return mixed
 	 */
 	public function prop ($name) {
-		#src/jotun/gaming/dataform/Spark.hx:109: characters 3-35
+		#src/jotun/gaming/dataform/Spark.hx:110: characters 3-35
 		return \Reflect::field($this, $name);
 	}
 
@@ -161,7 +161,7 @@ class Spark extends SparkCore {
 	 * @param string $prop
 	 * @param mixed $value
 	 * 
-	 * @return void
+	 * @return Spark
 	 */
 	public function set ($prop, $value) {
 		#src/jotun/gaming/dataform/Spark.hx:100: lines 100-104
@@ -175,6 +175,8 @@ class Spark extends SparkCore {
 		}
 		#src/jotun/gaming/dataform/Spark.hx:105: characters 3-38
 		\Reflect::setField($this, $prop, $value);
+		#src/jotun/gaming/dataform/Spark.hx:106: characters 3-14
+		return $this;
 	}
 
 	/**

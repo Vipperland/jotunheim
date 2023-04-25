@@ -21,16 +21,22 @@ class Pulsar {
 	
 	public static var ID_SIZE:Int = 32;
 	
-	private static var _dictio:Dynamic = {};
+	private static var _dictio:Dynamic = {
+		"*": {
+			'Construct': Spark, 
+			Properties: "*", 
+			Indexable: false, 
+			Tag: false 
+		}
+	};
 	
-	public static function map(name:String, props:Array<String>, object:Dynamic = null, indexable:Bool = true, tageable:Bool = true):Void {
-		if(object != null){
+	public static function map(name:String, props:Dynamic, object:Dynamic = null, indexable:Bool = true, tageable:Bool = true):Void {
+		if (object == null){
+			object = Spark;
+		}else{
 			#if js
 				object = Spark.inheritance(object);
 			#end
-				
-		}else{
-			object = Spark;
 		}
 		Reflect.setField(_dictio, name, {'Construct':object == null ? Spark : object, Properties:props, Indexable: indexable, Tag:tageable });
 	}
@@ -67,6 +73,18 @@ class Pulsar {
 	
 	public static function propertiesOf(name:String):Array<String> {
 		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Properties : null;
+	}
+	
+	public static function extract(data:Dynamic):Array<String> {
+		var a:Array<String> = [];
+		Dice.Params(data, function(p:Dynamic){
+			a[a.length] = p;
+		});
+		return a;
+	}
+	
+	public static function create(data:String):Pulsar {
+		return new Pulsar(data);
 	}
 	
 	private var _open_links:Dynamic;
@@ -285,6 +303,7 @@ class Pulsar {
 		var c:String = null;
 		Dice.Values(_open_links, function(list:PulsarLink){
 			if (name == null || list.is(name)){
+				//r += list.getName();
 				c = list.stringify(changes);
 				if (c != null){
 					if (r.length > 0){
@@ -321,7 +340,7 @@ class Pulsar {
 	}
 	
 	public function link(name:String):PulsarLink {
-		return Reflect.field(_open_links, name);
+		return _getOrCreate(name);
 	}
 	
 	public function links():Array<PulsarLink> {

@@ -1,4 +1,5 @@
 package jotun.net;
+import jotun.gaming.dataform.Pulsar;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
 import php.Lib;
@@ -67,13 +68,10 @@ class Header {
 		}
 	}
 	
-	public function setSRU(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
+	public function setPulsar(?data:Pulsar, ?encode:Bool, ?chunk:Int):Void {
 		content(TEXT);
 		if (data != null){
-			if (Std.isOfType(data, Array)){
-				data = data.join('\n');
-			}
-			writeData(data, encode, chunk);
+			writeData(data.toString(encode), encode, chunk);
 		}
 	}
 	

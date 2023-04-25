@@ -12,24 +12,18 @@ use \jotun\gateway\database\DataAccess;
  * ...
  * @author
  */
-class DomainServices {
+class DomainServices extends DomainIOCore {
 	/**
 	 * @var DataAccess
 	 */
 	public $database;
-	/**
-	 * @var Input
-	 */
-	public $input;
-	/**
-	 * @var Output
-	 */
-	public $output;
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
+		#src+extras/gateway/jotun/gateway/domain/DomainServices.hx:25: characters 3-10
+		parent::__construct();
 	}
 
 	/**
@@ -38,9 +32,9 @@ class DomainServices {
 	 * @return bool
 	 */
 	public function error ($id) {
-		#server/jotun/gateway/domain/DomainServices.hx:29: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/DomainServices.hx:20: characters 3-19
 		$this->get_output()->error($id);
-		#server/jotun/gateway/domain/DomainServices.hx:30: characters 3-15
+		#src+extras/gateway/jotun/gateway/domain/DomainServices.hx:21: characters 3-15
 		return false;
 	}
 
@@ -48,30 +42,12 @@ class DomainServices {
 	 * @return DataAccess
 	 */
 	public function get_database () {
-		#server/jotun/gateway/domain/DomainServices.hx:15: characters 3-34
+		#src+extras/gateway/jotun/gateway/domain/DomainServices.hx:16: characters 3-34
 		return DataAccess::getInstance();
-	}
-
-	/**
-	 * @return Input
-	 */
-	public function get_input () {
-		#server/jotun/gateway/domain/DomainServices.hx:25: characters 3-18
-		return Input::get_ME();
-	}
-
-	/**
-	 * @return Output
-	 */
-	public function get_output () {
-		#server/jotun/gateway/domain/DomainServices.hx:20: characters 3-19
-		return Output::get_ME();
 	}
 }
 
 Boot::registerClass(DomainServices::class, 'jotun.gateway.domain.DomainServices');
 Boot::registerGetters('jotun\\gateway\\domain\\DomainServices', [
-	'input' => true,
-	'output' => true,
 	'database' => true
 ]);

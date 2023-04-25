@@ -48,18 +48,6 @@ class ErrorCodes {
 	 * @var int
 	 */
 	const SERVICE_UNAUTHORIZED = 401;
-	/**
-	 * @var int
-	 */
-	const SESSION_CREATION_ERROR = 2000;
-	/**
-	 * @var int
-	 */
-	const SESSION_INVALID_PARAMETERS = 2010;
-	/**
-	 * @var int
-	 */
-	const SESSION_USER_NOT_FOUND = 2020;
 
 }
 

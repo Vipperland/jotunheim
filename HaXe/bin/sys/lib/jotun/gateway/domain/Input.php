@@ -5,14 +5,11 @@
 
 namespace jotun\gateway\domain;
 
-use \jotun\serial\Packager;
 use \jotun\gateway\domain\zones\pass\ZonePass;
 use \php\Boot;
-use \jotun\gateway\database\objects\ZoneCoreSession;
 use \jotun\Jotun;
-use \jotun\tools\Utils;
 use \jotun\utils\Dice;
-use \php\_Boot\HxString;
+use \jotun\gateway\domain\zones\pass\IPassCarrier;
 
 /**
  * ...
@@ -22,12 +19,16 @@ class Input {
 	/**
 	 * @var Input
 	 */
-	static public $ME;
+	static public $_instance;
 
 	/**
 	 * @var string
 	 */
 	public $_testToken;
+	/**
+	 * @var IPassCarrier
+	 */
+	public $carrier;
 	/**
 	 * @var mixed
 	 */
@@ -36,80 +37,63 @@ class Input {
 	 * @var mixed
 	 */
 	public $params;
-	/**
-	 * @var ZoneCoreSession
-	 */
-	public $session;
 
 	/**
 	 * @return Input
 	 */
-	public static function get_ME () {
-		#server/jotun/gateway/domain/Input.hx:18: lines 18-20
-		if (Input::$ME === null) {
-			#server/jotun/gateway/domain/Input.hx:19: characters 4-20
-			Input::$ME = new Input();
-		}
-		#server/jotun/gateway/domain/Input.hx:21: characters 3-12
-		return Input::$ME;
+	public static function getInstance () {
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:20: characters 3-19
+		return Input::$_instance;
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/Input.hx:33: characters 3-31
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:37: lines 37-39
+		if (Input::$_instance !== null) {
+			#src+extras/gateway/jotun/gateway/domain/Input.hx:38: characters 4-9
+			throw new \ErrorException("gateway.Input is a Singleton");
+		}
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:40: characters 3-19
+		Input::$_instance = $this;
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:41: characters 3-31
 		$this->params = Jotun::$domain->params;
-		#server/jotun/gateway/domain/Input.hx:34: characters 3-30
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:42: characters 3-30
 		$this->object = Jotun::$domain->input;
-		#server/jotun/gateway/domain/Input.hx:35: characters 3-19
-		$this->_loadAuthToken();
 	}
 
 	/**
-	 * @return void
+	 * @return string
 	 */
-	final public function _loadAuthToken () {
-		#server/jotun/gateway/domain/Input.hx:39: characters 3-54
-		$authorization = Jotun::$header->getOAuth();
-		#server/jotun/gateway/domain/Input.hx:40: lines 40-42
-		if (($this->_testToken !== null) && !Utils::isValid($authorization)) {
-			#server/jotun/gateway/domain/Input.hx:41: characters 4-30
-			$authorization = $this->_testToken;
-		}
-		#server/jotun/gateway/domain/Input.hx:43: lines 43-56
-		if ($authorization !== null) {
-			#server/jotun/gateway/domain/Input.hx:44: characters 4-56
-			$authorization = Packager::decodeBase64($authorization);
-			#server/jotun/gateway/domain/Input.hx:45: lines 45-55
-			if (\mb_substr($authorization, 0, mb_strlen("(y)=>")) === "(y)=>") {
-				#server/jotun/gateway/domain/Input.hx:46: characters 5-104
-				$authorization = HxString::substring($authorization, mb_strlen("(y)=>"), mb_strlen($authorization));
-				#server/jotun/gateway/domain/Input.hx:47: characters 5-36
-				$this->session = new ZoneCoreSession();
-				#server/jotun/gateway/domain/Input.hx:48: lines 48-54
-				if ($this->session->loadFromToken($authorization)) {
-					#server/jotun/gateway/domain/Input.hx:49: characters 6-27
-					$this->session->exposeToken();
-				} else {
-					#server/jotun/gateway/domain/Input.hx:51: characters 6-26
-					$authorization = null;
-					#server/jotun/gateway/domain/Input.hx:52: characters 6-22
-					$this->session->revoke();
-					#server/jotun/gateway/domain/Input.hx:53: characters 6-20
-					$this->session = null;
-				}
-			}
-		}
+	final public function getInput () {
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:52: characters 3-33
+		return Jotun::$domain->getInput();
+	}
+
+	/**
+	 * @return string
+	 */
+	final public function getInputJson () {
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:56: characters 3-33
+		return Jotun::$domain->getInput();
+	}
+
+	/**
+	 * @return IPassCarrier
+	 */
+	public function get_carrier () {
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:32: characters 3-22
+		return $this->carrier;
 	}
 
 	/**
 	 * @return bool
 	 */
 	final public function hasAnyParam () {
-		#server/jotun/gateway/domain/Input.hx:60: lines 60-62
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:46: lines 46-48
 		return Dice::Params($this->params, function ($p) {
-			#server/jotun/gateway/domain/Input.hx:61: characters 4-15
+			#src+extras/gateway/jotun/gateway/domain/Input.hx:47: characters 4-15
 			return true;
 		})->param !== null;
 	}
@@ -120,12 +104,12 @@ class Input {
 	 * @return bool
 	 */
 	final public function hasAuthentication ($pass) {
-		#server/jotun/gateway/domain/Input.hx:77: characters 10-61
-		if ($this->isAuthenticated()) {
-			#server/jotun/gateway/domain/Input.hx:77: characters 31-61
-			return $pass->validate($this->session->get_carrier());
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:64: characters 10-50
+		if ($this->hasPass()) {
+			#src+extras/gateway/jotun/gateway/domain/Input.hx:64: characters 23-50
+			return $pass->validate($this->get_carrier());
 		} else {
-			#server/jotun/gateway/domain/Input.hx:77: characters 10-61
+			#src+extras/gateway/jotun/gateway/domain/Input.hx:64: characters 10-50
 			return false;
 		}
 	}
@@ -133,28 +117,13 @@ class Input {
 	/**
 	 * @return bool
 	 */
-	final public function isAuthenticated () {
-		#server/jotun/gateway/domain/Input.hx:73: characters 3-25
-		return $this->session !== null;
-	}
-
-	/**
-	 * @param string $token
-	 * 
-	 * @return void
-	 */
-	final public function setTestToken ($token) {
-		#server/jotun/gateway/domain/Input.hx:66: characters 3-21
-		$this->_testToken = $token;
-		#server/jotun/gateway/domain/Input.hx:67: lines 67-69
-		if ($this->_testToken !== null) {
-			#server/jotun/gateway/domain/Input.hx:68: characters 4-20
-			$this->_loadAuthToken();
-		}
+	final public function hasPass () {
+		#src+extras/gateway/jotun/gateway/domain/Input.hx:60: characters 3-30
+		return $this->get_carrier() !== null;
 	}
 }
 
 Boot::registerClass(Input::class, 'jotun.gateway.domain.Input');
 Boot::registerGetters('jotun\\gateway\\domain\\Input', [
-	'ME' => true
+	'carrier' => true
 ]);

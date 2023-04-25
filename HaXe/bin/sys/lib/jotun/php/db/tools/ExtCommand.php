@@ -24,7 +24,7 @@ class ExtCommand implements IExtCommand {
 	 */
 	public $_errors;
 	/**
-	 * @var string[]|\Array_hx
+	 * @var \Closure
 	 */
 	public $_log;
 	/**
@@ -61,7 +61,7 @@ class ExtCommand implements IExtCommand {
 	 * @param string $query
 	 * @param mixed[]|\Array_hx $parameters
 	 * @param IError[]|\Array_hx $errors
-	 * @param string[]|\Array_hx $log
+	 * @param \Closure $log
 	 * 
 	 * @return void
 	 */
@@ -181,8 +181,8 @@ class ExtCommand implements IExtCommand {
 			}
 			#src/jotun/php/db/tools/ExtCommand.hx:90: lines 90-92
 			if ($this->_log !== null) {
-				#src/jotun/php/db/tools/ExtCommand.hx:91: characters 5-64
-				$this->_log->offsetSet($this->_log->length, ((($this->success ? "[1]" : "[0]"))??'null') . " " . ($this->log()??'null'));
+				#src/jotun/php/db/tools/ExtCommand.hx:91: characters 5-50
+				($this->_log)(((($this->success ? "[1]" : "[0]" . " "))??'null') . ($this->log()??'null'));
 			}
 		} else {
 			#src/jotun/php/db/tools/ExtCommand.hx:94: characters 4-83

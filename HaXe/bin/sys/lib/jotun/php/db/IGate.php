@@ -16,13 +16,6 @@ use \jotun\errors\IError;
  */
 interface IGate {
 	/**
-	 * Enable logging
-	 * 
-	 * @return void
-	 */
-	public function enableLog () ;
-
-	/**
 	 * LAst inserted column value
 	 * @param	field
 	 * @param	mode
@@ -65,11 +58,6 @@ interface IGate {
 	public function get_errors () ;
 
 	/**
-	 * @return string[]|\Array_hx
-	 */
-	public function get_log () ;
-
-	/**
 	 * Verify if table exists
 	 * @param	table
 	 * @return
@@ -81,20 +69,23 @@ interface IGate {
 	public function ifTableExists ($table) ;
 
 	/**
-	 * If log is enabled
-	 * @return
-	 * 
-	 * @return bool
-	 */
-	public function isLogEnabled () ;
-
-	/**
 	 * If the connection is available
 	 * @return
 	 * 
 	 * @return bool
 	 */
 	public function isOpen () ;
+
+	/**
+	 * register query execution
+	 * @param	handler
+	 * @return
+	 * 
+	 * @param \Closure $handler
+	 * 
+	 * @return IGate
+	 */
+	public function listen ($handler) ;
 
 	/**
 	 * Open a connection
@@ -172,6 +163,5 @@ interface IGate {
 
 Boot::registerClass(IGate::class, 'jotun.php.db.IGate');
 Boot::registerGetters('jotun\\php\\db\\IGate', [
-	'log' => true,
 	'errors' => true
 ]);

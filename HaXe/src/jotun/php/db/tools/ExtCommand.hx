@@ -20,7 +20,7 @@ class ExtCommand implements IExtCommand {
 	
 	private var _errors:Array<IError>;
 	
-	private var _log:Array<String>;
+	private var _log:String->Void;
 	
 	// PDO::FETCH_ASSOC = 2
 	// PDO::FETCH_OBJ = 5
@@ -36,7 +36,7 @@ class ExtCommand implements IExtCommand {
 	public var errors(get, null):Array<IError>;
 	private function get_errors():Array<IError> { return _errors; }
 
-	public function new(conn:Connection, query:String, parameters:Array<Dynamic>, errors:Array<IError>, log:Array<String>) {
+	public function new(conn:Connection, query:String, parameters:Array<Dynamic>, errors:Array<IError>, log:String->Void) {
 		_log = log;
 		_errors = errors;
 		_query = query;
@@ -88,7 +88,7 @@ class ExtCommand implements IExtCommand {
 				}
 			}
 			if (_log != null) {
-				_log[_log.length] = (success ? "[1]" : "[0]") + " " + log();
+				_log((success ? "[1]" : "[0]" + " ") + log());
 			}
 		}else {
 			errors[errors.length] = new Error(0, "A connection with database is required.");

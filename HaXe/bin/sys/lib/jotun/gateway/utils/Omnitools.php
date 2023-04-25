@@ -26,21 +26,21 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function dmYToUnixtime ($date) {
-		#server/jotun/gateway/utils/Omnitools.hx:61: lines 61-70
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:61: lines 61-70
 		if (($date !== null) && (mb_strlen($date) === 10)) {
-			#server/jotun/gateway/utils/Omnitools.hx:62: characters 4-66
+			#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:62: characters 4-66
 			$darr = HxString::split(HxString::split($date, "/")->join("-"), "-");
-			#server/jotun/gateway/utils/Omnitools.hx:63: lines 63-65
+			#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:63: lines 63-65
 			if (mb_strlen(($darr->arr[0] ?? null)) !== 4) {
-				#server/jotun/gateway/utils/Omnitools.hx:64: characters 5-19
+				#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:64: characters 5-19
 				$darr->arr = \array_reverse($darr->arr);
 			}
-			#server/jotun/gateway/utils/Omnitools.hx:66: characters 4-25
+			#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:66: characters 4-25
 			$date = $darr->join("-");
-			#server/jotun/gateway/utils/Omnitools.hx:67: characters 4-42
+			#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:67: characters 4-42
 			return \Date::fromString($date)->getTime();
 		} else {
-			#server/jotun/gateway/utils/Omnitools.hx:69: characters 4-12
+			#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:69: characters 4-12
 			return 0;
 		}
 	}
@@ -52,7 +52,7 @@ class Omnitools {
 	 * @return string
 	 */
 	public static function genRandomIDx32 () {
-		#server/jotun/gateway/utils/Omnitools.hx:43: characters 3-59
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:43: characters 3-59
 		return Packager::md5Encode((Key::GEN(16)??'null') . "." . (Omnitools::timeNow()??'null'));
 	}
 
@@ -63,7 +63,7 @@ class Omnitools {
 	 * @return string
 	 */
 	public static function genRandomIDx65 () {
-		#server/jotun/gateway/utils/Omnitools.hx:35: characters 3-79
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:35: characters 3-79
 		return (Packager::md5Encode(Key::GEN(32))??'null') . "." . (Packager::md5Encode(Omnitools::timeNow())??'null');
 	}
 
@@ -77,7 +77,7 @@ class Omnitools {
 	 * @return bool
 	 */
 	public static function testBirthdate ($time) {
-		#server/jotun/gateway/utils/Omnitools.hx:52: characters 3-35
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:52: characters 3-35
 		return JMath::calcAge($time) >= 18;
 	}
 
@@ -91,7 +91,7 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function timeFromNow ($hours) {
-		#server/jotun/gateway/utils/Omnitools.hx:27: characters 3-38
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:27: characters 3-38
 		return Omnitools::timeNow() + $hours * 360000;
 	}
 
@@ -102,7 +102,7 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function timeNow () {
-		#server/jotun/gateway/utils/Omnitools.hx:18: characters 3-30
+		#src+extras/gateway/jotun/gateway/utils/Omnitools.hx:18: characters 3-30
 		return \Date::now()->getTime();
 	}
 }

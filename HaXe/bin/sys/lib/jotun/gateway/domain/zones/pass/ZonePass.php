@@ -30,12 +30,12 @@ class ZonePass {
 	 * @return ZonePass
 	 */
 	public static function get_CARRIER_PASS () {
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:13: lines 13-15
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:13: lines 13-15
 		if (ZonePass::$CARRIER_PASS === null) {
-			#server/jotun/gateway/domain/zones/pass/ZonePass.hx:14: characters 4-37
+			#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:14: characters 4-37
 			ZonePass::$CARRIER_PASS = new ZonePass(0, 0);
 		}
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:16: characters 3-22
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:16: characters 3-22
 		return ZonePass::$CARRIER_PASS;
 	}
 
@@ -46,9 +46,9 @@ class ZonePass {
 	 * @return void
 	 */
 	public function __construct ($read, $write) {
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:23: characters 3-20
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:23: characters 3-20
 		$this->_read = $read;
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:24: characters 3-22
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:24: characters 3-22
 		$this->_write = $write;
 	}
 
@@ -56,18 +56,18 @@ class ZonePass {
 	 * @return bool
 	 */
 	public function isCarrier () {
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 10-61
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 10-61
 		if ($this !== ZonePass::get_CARRIER_PASS()) {
-			#server/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 34-61
+			#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 34-61
 			if ($this->_read === 0) {
-				#server/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 49-60
+				#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 49-60
 				return $this->_write === 0;
 			} else {
-				#server/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 34-61
+				#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 34-61
 				return false;
 			}
 		} else {
-			#server/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 10-61
+			#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:32: characters 10-61
 			return true;
 		}
 	}
@@ -76,7 +76,7 @@ class ZonePass {
 	 * @return string
 	 */
 	public function toString () {
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:36: characters 3-46
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:36: characters 3-46
 		return "[r=" . ($this->_read??'null') . ",w=" . ($this->_write??'null') . "]";
 	}
 
@@ -86,18 +86,18 @@ class ZonePass {
 	 * @return bool
 	 */
 	public function validate ($carrier) {
-		#server/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 10-93
+		#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 10-93
 		if (($this->_read === 0) || $carrier->canRead($this->_read)) {
-			#server/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 52-93
+			#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 52-93
 			if ($this->_write !== 0) {
-				#server/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 68-92
+				#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 68-92
 				return $carrier->canWrite($this->_write);
 			} else {
-				#server/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 52-93
+				#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 52-93
 				return true;
 			}
 		} else {
-			#server/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 10-93
+			#src+extras/gateway/jotun/gateway/domain/zones/pass/ZonePass.hx:28: characters 10-93
 			return false;
 		}
 	}

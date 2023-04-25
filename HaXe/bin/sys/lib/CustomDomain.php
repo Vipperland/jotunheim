@@ -6,18 +6,18 @@
 use \php\_Boot\HxAnon;
 use \php\Boot;
 use \zones\debug\TestZone;
-use \jotun\gateway\domain\Domain;
+use \jotun\gateway\domain\CustomSessionDomain;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class CustomDomain extends Domain {
+class CustomDomain extends CustomSessionDomain {
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomDomain.hx:19: characters 3-10
+		#samples/server/CustomDomain.hx:20: characters 3-10
 		parent::__construct();
 	}
 
@@ -25,9 +25,9 @@ class CustomDomain extends Domain {
 	 * @return void
 	 */
 	public function _buildZoneMap () {
-		#samples/server/CustomDomain.hx:12: lines 12-14
+		#samples/server/CustomDomain.hx:13: lines 13-15
 		$this->_setZoneMap(new HxAnon(["test" => Boot::getClass(TestZone::class)]));
-		#samples/server/CustomDomain.hx:15: characters 3-24
+		#samples/server/CustomDomain.hx:16: characters 3-24
 		parent::_buildZoneMap();
 	}
 }

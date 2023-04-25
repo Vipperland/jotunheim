@@ -37,13 +37,9 @@ class Gate implements IGate {
 	 */
 	public $_errors;
 	/**
-	 * @var string[]|\Array_hx
+	 * @var \Closure[]|\Array_hx
 	 */
-	public $_log;
-	/**
-	 * @var bool
-	 */
-	public $_logCommands;
+	public $_onLog;
 	/**
 	 * @var mixed
 	 */
@@ -64,33 +60,32 @@ class Gate implements IGate {
 	 * @var IError[]|\Array_hx
 	 */
 	public $errors;
-	/**
-	 * @var string[]|\Array_hx
-	 */
-	public $log;
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#src/jotun/php/db/Gate.hx:64: characters 3-15
+		#src/jotun/php/db/Gate.hx:59: characters 3-15
 		$this->_errors = new \Array_hx();
-		#src/jotun/php/db/Gate.hx:65: characters 3-12
-		$this->_log = new \Array_hx();
-		#src/jotun/php/db/Gate.hx:66: characters 3-23
-		$this->_logCommands = false;
-		#src/jotun/php/db/Gate.hx:67: characters 3-16
+		#src/jotun/php/db/Gate.hx:60: characters 3-14
+		$this->_onLog = new \Array_hx();
+		#src/jotun/php/db/Gate.hx:61: characters 3-16
 		$this->_tables = new HxAnon();
-		#src/jotun/php/db/Gate.hx:68: characters 3-35
+		#src/jotun/php/db/Gate.hx:62: characters 3-35
 		$this->builder = new QueryBuilder($this);
 	}
 
 	/**
+	 * @param string $message
+	 * 
 	 * @return void
 	 */
-	public function enableLog () {
-		#src/jotun/php/db/Gate.hx:80: characters 3-22
-		$this->_logCommands = true;
+	public function _log ($message) {
+		#src/jotun/php/db/Gate.hx:155: lines 155-157
+		Dice::Values($this->_onLog, function ($v) use (&$message) {
+			#src/jotun/php/db/Gate.hx:156: characters 4-14
+			$v($message);
+		});
 	}
 
 	/**
@@ -100,25 +95,25 @@ class Gate implements IGate {
 	 * @return mixed
 	 */
 	public function getInsertedID ($field = null, $mode = null) {
-		#src/jotun/php/db/Gate.hx:54: characters 3-80
+		#src/jotun/php/db/Gate.hx:49: characters 3-80
 		$r = ($field !== null ? $this->_db->lastInsertId($field) : $this->_db->lastInsertId());
-		#src/jotun/php/db/Gate.hx:55: lines 55-60
+		#src/jotun/php/db/Gate.hx:50: lines 50-55
 		if ($mode === null) {
-			#src/jotun/php/db/Gate.hx:59: characters 14-22
+			#src/jotun/php/db/Gate.hx:54: characters 14-22
 			return $r;
 		} else {
-			#src/jotun/php/db/Gate.hx:55: characters 10-14
+			#src/jotun/php/db/Gate.hx:50: characters 10-14
 			if ($mode === "bool") {
-				#src/jotun/php/db/Gate.hx:58: characters 18-41
+				#src/jotun/php/db/Gate.hx:53: characters 18-41
 				return Utils::boolean($r);
 			} else if ($mode === "float") {
-				#src/jotun/php/db/Gate.hx:57: characters 19-43
+				#src/jotun/php/db/Gate.hx:52: characters 19-43
 				return \Std::parseFloat($r);
 			} else if ($mode === "int") {
-				#src/jotun/php/db/Gate.hx:56: characters 17-39
+				#src/jotun/php/db/Gate.hx:51: characters 17-39
 				return \Std::parseInt($r);
 			} else {
-				#src/jotun/php/db/Gate.hx:59: characters 14-22
+				#src/jotun/php/db/Gate.hx:54: characters 14-22
 				return $r;
 			}
 		}
@@ -128,7 +123,7 @@ class Gate implements IGate {
 	 * @return string
 	 */
 	public function getName () {
-		#src/jotun/php/db/Gate.hx:50: characters 3-19
+		#src/jotun/php/db/Gate.hx:45: characters 3-19
 		return $this->_token->db;
 	}
 
@@ -136,14 +131,14 @@ class Gate implements IGate {
 	 * @return string[]|\Array_hx
 	 */
 	public function getTableNames () {
-		#src/jotun/php/db/Gate.hx:142: characters 3-28
+		#src/jotun/php/db/Gate.hx:135: characters 3-28
 		$r = new \Array_hx();
-		#src/jotun/php/db/Gate.hx:143: lines 143-145
+		#src/jotun/php/db/Gate.hx:136: lines 136-138
 		Dice::Values($this->query("show tables")->execute()->result, function ($v) use (&$r) {
-			#src/jotun/php/db/Gate.hx:144: characters 4-26
+			#src/jotun/php/db/Gate.hx:137: characters 4-26
 			Dice::Values($v, Boot::getInstanceClosure($r, 'push'));
 		});
-		#src/jotun/php/db/Gate.hx:146: characters 3-11
+		#src/jotun/php/db/Gate.hx:139: characters 3-11
 		return $r;
 	}
 
@@ -151,16 +146,16 @@ class Gate implements IGate {
 	 * @return mixed
 	 */
 	public function getTables () {
-		#src/jotun/php/db/Gate.hx:149: lines 149-155
+		#src/jotun/php/db/Gate.hx:142: lines 142-148
 		$_gthis = $this;
-		#src/jotun/php/db/Gate.hx:150: characters 3-22
+		#src/jotun/php/db/Gate.hx:143: characters 3-22
 		$r = new HxAnon();
-		#src/jotun/php/db/Gate.hx:151: lines 151-153
+		#src/jotun/php/db/Gate.hx:144: lines 144-146
 		Dice::Values($this->getTableNames(), function ($v) use (&$r, &$_gthis) {
-			#src/jotun/php/db/Gate.hx:152: characters 4-36
+			#src/jotun/php/db/Gate.hx:145: characters 4-36
 			\Reflect::setField($r, $v, $_gthis->table($v));
 		});
-		#src/jotun/php/db/Gate.hx:154: characters 3-11
+		#src/jotun/php/db/Gate.hx:147: characters 3-11
 		return $r;
 	}
 
@@ -168,16 +163,8 @@ class Gate implements IGate {
 	 * @return IError[]|\Array_hx
 	 */
 	public function get_errors () {
-		#src/jotun/php/db/Gate.hx:44: characters 47-61
+		#src/jotun/php/db/Gate.hx:42: characters 47-61
 		return $this->_errors;
-	}
-
-	/**
-	 * @return string[]|\Array_hx
-	 */
-	public function get_log () {
-		#src/jotun/php/db/Gate.hx:47: characters 44-55
-		return $this->_log;
 	}
 
 	/**
@@ -186,30 +173,37 @@ class Gate implements IGate {
 	 * @return bool
 	 */
 	public function ifTableExists ($table) {
-		#src/jotun/php/db/Gate.hx:158: characters 3-46
+		#src/jotun/php/db/Gate.hx:151: characters 3-46
 		return $this->getTableNames()->indexOf($table) !== -1;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isLogEnabled () {
-		#src/jotun/php/db/Gate.hx:76: characters 3-22
-		return $this->_logCommands;
+	public function isOpen () {
+		#src/jotun/php/db/Gate.hx:66: characters 10-43
+		if ($this->_db !== null) {
+			#src/jotun/php/db/Gate.hx:66: characters 25-43
+			return $this->get_errors()->length === 0;
+		} else {
+			#src/jotun/php/db/Gate.hx:66: characters 10-43
+			return false;
+		}
 	}
 
 	/**
-	 * @return bool
+	 * @param \Closure $handler
+	 * 
+	 * @return IGate
 	 */
-	public function isOpen () {
-		#src/jotun/php/db/Gate.hx:72: characters 10-43
-		if ($this->_db !== null) {
-			#src/jotun/php/db/Gate.hx:72: characters 25-43
-			return $this->get_errors()->length === 0;
-		} else {
-			#src/jotun/php/db/Gate.hx:72: characters 10-43
-			return false;
+	public function listen ($handler) {
+		#src/jotun/php/db/Gate.hx:70: lines 70-72
+		if ($this->_onLog->indexOf($handler) === -1) {
+			#src/jotun/php/db/Gate.hx:71: characters 4-35
+			$this->_onLog->offsetSet($this->_onLog->length, $handler);
 		}
+		#src/jotun/php/db/Gate.hx:73: characters 3-14
+		return $this;
 	}
 
 	/**
@@ -218,32 +212,32 @@ class Gate implements IGate {
 	 * @return IGate
 	 */
 	public function open ($token) {
-		#src/jotun/php/db/Gate.hx:84: lines 84-93
+		#src/jotun/php/db/Gate.hx:77: lines 77-86
 		if (!$this->isOpen()) {
-			#src/jotun/php/db/Gate.hx:85: characters 4-18
+			#src/jotun/php/db/Gate.hx:78: characters 4-18
 			$this->_token = $token;
-			#src/jotun/php/db/Gate.hx:86: lines 86-91
+			#src/jotun/php/db/Gate.hx:79: lines 79-84
 			try {
-				#src/jotun/php/db/Gate.hx:87: characters 5-78
+				#src/jotun/php/db/Gate.hx:80: characters 5-78
 				$this->_db = Database::connect($token->host, $token->user, $token->pass, $token->options);
-				#src/jotun/php/db/Gate.hx:88: characters 5-27
+				#src/jotun/php/db/Gate.hx:81: characters 5-27
 				$this->setPdoAttributes(true);
 			} catch(\Throwable $_g) {
-				#src/jotun/php/db/Gate.hx:89: characters 12-13
+				#src/jotun/php/db/Gate.hx:82: characters 12-13
 				$e = Exception::caught($_g)->unwrap();
-				#src/jotun/php/db/Gate.hx:90: characters 5-11
+				#src/jotun/php/db/Gate.hx:83: characters 5-11
 				$tmp = $this->get_errors();
-				#src/jotun/php/db/Gate.hx:90: characters 12-25
+				#src/jotun/php/db/Gate.hx:83: characters 12-25
 				$tmp1 = $this->get_errors()->length;
-				#src/jotun/php/db/Gate.hx:90: characters 39-50
+				#src/jotun/php/db/Gate.hx:83: characters 39-50
 				$tmp2 = $e->getCode();
-				#src/jotun/php/db/Gate.hx:90: characters 5-67
+				#src/jotun/php/db/Gate.hx:83: characters 5-67
 				$tmp->offsetSet($tmp1, new Error($tmp2, $e->getMessage()));
 			}
-			#src/jotun/php/db/Gate.hx:92: characters 4-18
+			#src/jotun/php/db/Gate.hx:85: characters 4-18
 			$this->command = null;
 		}
-		#src/jotun/php/db/Gate.hx:94: characters 3-14
+		#src/jotun/php/db/Gate.hx:87: characters 3-14
 		return $this;
 	}
 
@@ -255,16 +249,16 @@ class Gate implements IGate {
 	 * @return ICommand
 	 */
 	public function prepare ($query, $parameters = null, $options = null) {
-		#src/jotun/php/db/Gate.hx:98: characters 3-28
+		#src/jotun/php/db/Gate.hx:91: characters 3-28
 		$pdo = null;
-		#src/jotun/php/db/Gate.hx:99: lines 99-101
+		#src/jotun/php/db/Gate.hx:92: lines 92-94
 		if ($this->isOpen()) {
-			#src/jotun/php/db/Gate.hx:100: characters 4-76
+			#src/jotun/php/db/Gate.hx:93: characters 4-76
 			$pdo = $this->_db->prepare($query, Boot::deref((($options === null ? new \Array_hx() : $options)))->arr);
 		}
-		#src/jotun/php/db/Gate.hx:102: characters 3-85
-		$this->command = new Command($pdo, $query, $parameters, $this->_errors, ($this->_logCommands ? $this->_log : null));
-		#src/jotun/php/db/Gate.hx:103: characters 3-17
+		#src/jotun/php/db/Gate.hx:95: characters 3-63
+		$this->command = new Command($pdo, $query, $parameters, $this->_errors, Boot::getInstanceClosure($this, '_log'));
+		#src/jotun/php/db/Gate.hx:96: characters 3-17
 		return $this->command;
 	}
 
@@ -275,11 +269,11 @@ class Gate implements IGate {
 	 * @return IExtCommand
 	 */
 	public function query ($query, $parameters = null) {
-		#src/jotun/php/db/Gate.hx:107: characters 28-49
+		#src/jotun/php/db/Gate.hx:100: characters 28-49
 		$tmp = ($this->isOpen() ? $this->_db : null);
-		#src/jotun/php/db/Gate.hx:107: characters 3-106
-		$this->command = new ExtCommand($tmp, $query, $parameters, $this->_errors, ($this->_logCommands ? $this->_log : null));
-		#src/jotun/php/db/Gate.hx:108: characters 3-22
+		#src/jotun/php/db/Gate.hx:100: characters 3-84
+		$this->command = new ExtCommand($tmp, $query, $parameters, $this->_errors, Boot::getInstanceClosure($this, '_log'));
+		#src/jotun/php/db/Gate.hx:101: characters 3-22
 		return $this->command;
 	}
 
@@ -289,26 +283,26 @@ class Gate implements IGate {
 	 * @return mixed[]|\Array_hx
 	 */
 	public function schema ($table = null) {
-		#src/jotun/php/db/Gate.hx:112: lines 112-114
+		#src/jotun/php/db/Gate.hx:105: lines 105-107
 		if (!($table instanceof \Array_hx)) {
-			#src/jotun/php/db/Gate.hx:113: characters 4-19
+			#src/jotun/php/db/Gate.hx:106: characters 4-19
 			$table = \Array_hx::wrap([$table]);
 		}
-		#src/jotun/php/db/Gate.hx:115: characters 3-34
+		#src/jotun/php/db/Gate.hx:108: characters 3-34
 		$tables = new \Array_hx();
-		#src/jotun/php/db/Gate.hx:117: characters 4-43
+		#src/jotun/php/db/Gate.hx:110: characters 4-43
 		$clausule = Clause::EQUAL("TABLE_SCHEMA", $this->_token->db);
-		#src/jotun/php/db/Gate.hx:116: lines 116-119
+		#src/jotun/php/db/Gate.hx:109: lines 109-112
 		$clausule1 = Clause::AND(\Array_hx::wrap([
 			$clausule,
 			Clause::OR($tables),
 		]));
-		#src/jotun/php/db/Gate.hx:120: lines 120-122
+		#src/jotun/php/db/Gate.hx:113: lines 113-115
 		Dice::Values($table, function ($v) use (&$tables) {
-			#src/jotun/php/db/Gate.hx:121: characters 4-57
+			#src/jotun/php/db/Gate.hx:114: characters 4-57
 			$tables->offsetSet($tables->length, Clause::EQUAL("TABLE_NAME", $v));
 		});
-		#src/jotun/php/db/Gate.hx:123: characters 3-84
+		#src/jotun/php/db/Gate.hx:116: characters 3-84
 		return $this->builder->find("*", "INFORMATION_SCHEMA.COLUMNS", $clausule1)->execute()->result;
 	}
 
@@ -318,15 +312,15 @@ class Gate implements IGate {
 	 * @return IGate
 	 */
 	public function setPdoAttributes ($value) {
-		#src/jotun/php/db/Gate.hx:127: characters 3-76
+		#src/jotun/php/db/Gate.hx:120: characters 3-76
 		$this->_db->setAttribute(\PDO::ATTR_STRINGIFY_FETCHES, $value);
-		#src/jotun/php/db/Gate.hx:128: characters 3-75
+		#src/jotun/php/db/Gate.hx:121: characters 3-75
 		$this->_db->setAttribute(\PDO::ATTR_EMULATE_PREPARES, $value);
-		#src/jotun/php/db/Gate.hx:129: characters 3-83
+		#src/jotun/php/db/Gate.hx:122: characters 3-83
 		$this->_db->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, $value);
-		#src/jotun/php/db/Gate.hx:130: characters 3-104
+		#src/jotun/php/db/Gate.hx:123: characters 3-104
 		$this->_db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-		#src/jotun/php/db/Gate.hx:131: characters 3-14
+		#src/jotun/php/db/Gate.hx:124: characters 3-14
 		return $this;
 	}
 
@@ -336,18 +330,17 @@ class Gate implements IGate {
 	 * @return IDataTable
 	 */
 	public function table ($table) {
-		#src/jotun/php/db/Gate.hx:135: lines 135-137
+		#src/jotun/php/db/Gate.hx:128: lines 128-130
 		if (!\Reflect::hasField($this->_tables, $table)) {
-			#src/jotun/php/db/Gate.hx:136: characters 4-64
+			#src/jotun/php/db/Gate.hx:129: characters 4-64
 			\Reflect::setField($this->_tables, $table, new DataTable($table, $this));
 		}
-		#src/jotun/php/db/Gate.hx:138: characters 3-39
+		#src/jotun/php/db/Gate.hx:131: characters 3-39
 		return \Reflect::field($this->_tables, $table);
 	}
 }
 
 Boot::registerClass(Gate::class, 'jotun.php.db.Gate');
 Boot::registerGetters('jotun\\php\\db\\Gate', [
-	'log' => true,
 	'errors' => true
 ]);

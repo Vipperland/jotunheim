@@ -40,7 +40,7 @@ class ZoneCoreObject {
 	 * @return mixed
 	 */
 	public function RunSQL ($handler) {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:20: characters 3-37
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:20: characters 3-37
 		return DataAccess::execute($handler);
 	}
 
@@ -51,9 +51,9 @@ class ZoneCoreObject {
 	 * @return bool
 	 */
 	public function _error ($id, $not = null) {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:34: characters 3-20
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:34: characters 3-20
 		$this->get__output()->error($id);
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:35: characters 3-15
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:35: characters 3-15
 		return false;
 	}
 
@@ -63,7 +63,7 @@ class ZoneCoreObject {
 	 * @return bool
 	 */
 	public function _hasError ($id) {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:39: characters 3-30
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:39: characters 3-30
 		return $this->get__output()->hasError($id);
 	}
 
@@ -71,7 +71,7 @@ class ZoneCoreObject {
 	 * @return DataAccess
 	 */
 	public function get__database () {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:16: characters 3-34
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:16: characters 3-34
 		return DataAccess::getInstance();
 	}
 
@@ -79,16 +79,16 @@ class ZoneCoreObject {
 	 * @return Input
 	 */
 	public function get__input () {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:30: characters 3-18
-		return Input::get_ME();
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:30: characters 3-29
+		return Input::getInstance();
 	}
 
 	/**
 	 * @return Output
 	 */
 	public function get__output () {
-		#server/jotun/gateway/database/objects/ZoneCoreObject.hx:25: characters 3-19
-		return Output::get_ME();
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:25: characters 3-30
+		return Output::getInstance();
 	}
 }
 

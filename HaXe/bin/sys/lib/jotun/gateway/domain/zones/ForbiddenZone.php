@@ -16,7 +16,7 @@ class ForbiddenZone extends ZoneServices {
 	 * @return void
 	 */
 	public function __construct () {
-		#server/jotun/gateway/domain/zones/ForbiddenZone.hx:11: characters 3-10
+		#src+extras/gateway/jotun/gateway/domain/zones/ForbiddenZone.hx:11: characters 3-10
 		parent::__construct();
 	}
 }

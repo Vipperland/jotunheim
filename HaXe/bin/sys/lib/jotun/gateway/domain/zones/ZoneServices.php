@@ -31,13 +31,13 @@ class ZoneServices extends DomainServices {
 	 */
 	public $_parent;
 	/**
-	 * @var ZonePass
-	 */
-	public $_pass;
-	/**
 	 * @var int
 	 */
 	public $_readFlag;
+	/**
+	 * @var ZonePass
+	 */
+	public $_requiredPass;
 	/**
 	 * @var mixed
 	 */
@@ -73,20 +73,20 @@ class ZoneServices extends DomainServices {
 	 * @return void
 	 */
 	public function __construct ($pass = null) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:19: lines 19-21
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:19: lines 19-21
 		$this->_defaultMap = new HxAnon(["*" => Boot::getClass(NotFoundZone::class)]);
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:57: characters 11-66
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:57: characters 11-66
 		$_this = HxString::split(\Type::getClassName(\Type::getClass($this)), ".");
 		if ($_this->length > 0) {
 			$_this->length--;
 		}
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:57: characters 3-66
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:57: characters 3-66
 		$this->_name = \array_pop($_this->arr);
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:58: characters 3-15
-		$this->_pass = $pass;
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:59: characters 3-18
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:58: characters 3-23
+		$this->_requiredPass = $pass;
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:59: characters 3-18
 		$this->_buildZoneMap();
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:60: characters 3-10
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:60: characters 3-10
 		parent::__construct();
 	}
 
@@ -110,9 +110,9 @@ class ZoneServices extends DomainServices {
 	 * @return void
 	 */
 	public function _execute ($data) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:110: lines 110-112
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:110: lines 110-112
 		if ($this->_defaultMap !== null) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:111: characters 4-39
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:111: characters 4-39
 			$this->error(403);
 		}
 	}
@@ -123,7 +123,7 @@ class ZoneServices extends DomainServices {
 	 * @return void
 	 */
 	final public function _logService ($message) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:53: characters 3-33
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:53: characters 3-33
 		$this->get_output()->log($message, "runtime");
 	}
 
@@ -133,22 +133,22 @@ class ZoneServices extends DomainServices {
 	 * @return mixed
 	 */
 	public function _prefab ($data) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:97: lines 97-105
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:97: lines 97-105
 		if ($data->length > 0) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:98: characters 4-30
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:98: characters 4-30
 			$name = ($data->arr[0] ?? null);
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:99: characters 4-35
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:99: characters 4-35
 			$map = $this->getZoneMap();
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:100: lines 100-104
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:100: lines 100-104
 			if (\Reflect::hasField($map, $name)) {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:101: characters 5-36
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:101: characters 5-36
 				return \Reflect::field($map, $name);
 			} else if (\Reflect::hasField($map, "*")) {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:103: characters 5-35
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:103: characters 5-35
 				return \Reflect::field($map, "*");
 			}
 		}
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:106: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:106: characters 3-14
 		return null;
 	}
 
@@ -158,7 +158,7 @@ class ZoneServices extends DomainServices {
 	 * @return void
 	 */
 	final public function _setParent ($parent) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:82: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:82: characters 3-19
 		$this->_parent = $parent;
 	}
 
@@ -168,11 +168,11 @@ class ZoneServices extends DomainServices {
 	 * @return void
 	 */
 	final public function _setZoneMap ($data) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:75: lines 75-79
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:75: lines 75-79
 		$_gthis = $this;
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:76: lines 76-78
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:76: lines 76-78
 		Dice::All($data, function ($p, $v) use (&$_gthis) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:77: characters 4-39
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:77: characters 4-39
 			\Reflect::setField($_gthis->_defaultMap, $p, $v);
 		});
 	}
@@ -184,56 +184,56 @@ class ZoneServices extends DomainServices {
 	 * @return ZoneServices
 	 */
 	final public function carry ($parent, $data) {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:116: characters 3-21
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:116: characters 3-21
 		$this->_setParent($parent);
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:117: characters 3-35
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:117: characters 3-35
 		$Def = $this->_prefab($data);
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:118: lines 118-143
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:118: lines 118-143
 		if ($this->hasValidPass()) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:119: lines 119-134
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:119: lines 119-134
 			if ($Def !== null) {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:120: characters 27-39
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:120: characters 27-39
 				if ($data->length > 0) {
 					$data->length--;
 				}
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:120: characters 5-40
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:120: characters 5-40
 				$ZoneName = \array_shift($data->arr);
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:121: characters 5-34
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:121: characters 5-34
 				$this->_zone = new $Def->phpClassName();
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:122: characters 5-29
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:122: characters 5-29
 				$this->_zone->_buildup($ZoneName);
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:123: characters 5-60
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:123: characters 5-60
 				$this->_logService(($this->toString()??'null') . "->carry('" . ($ZoneName??'null') . "')");
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:124: characters 5-28
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:124: characters 5-28
 				$this->_zone->carry($this, $data);
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:125: characters 5-17
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:125: characters 5-17
 				return $this->_zone;
 			} else {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:127: lines 127-131
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:127: lines 127-131
 				if ($data->length > 0) {
-					#server/jotun/gateway/domain/zones/ZoneServices.hx:128: characters 6-57
+					#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:128: characters 6-57
 					$this->_logService(($this->toString()??'null') . "->execute(" . \Std::string($data) . ")");
 				} else {
-					#server/jotun/gateway/domain/zones/ZoneServices.hx:130: characters 6-45
+					#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:130: characters 6-45
 					$this->_logService(($this->toString()??'null') . "->execute()");
 				}
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:132: characters 5-19
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:132: characters 5-19
 				$this->_execute($data);
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:133: characters 5-16
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:133: characters 5-16
 				return $this;
 			}
 		} else {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:136: characters 4-115
-			$this->_logService(($this->toString()??'null') . "->" . ((($Def !== null ? "carry" : "execute"))??'null') . "(UNAUTORIZED " . ($this->_pass->toString()??'null') . ")");
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:137: lines 137-141
-			if ($this->get_input()->isAuthenticated()) {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:138: characters 5-43
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:136: characters 4-123
+			$this->_logService(($this->toString()??'null') . "->" . ((($Def !== null ? "carry" : "execute"))??'null') . "(UNAUTORIZED " . ($this->_requiredPass->toString()??'null') . ")");
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:137: lines 137-141
+			if ($this->get_input()->hasPass()) {
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:138: characters 5-43
 				$this->error(401);
 			} else {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:140: characters 5-37
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:140: characters 5-37
 				$this->error(2);
 			}
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:142: characters 4-15
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:142: characters 4-15
 			return null;
 		}
 	}
@@ -242,7 +242,7 @@ class ZoneServices extends DomainServices {
 	 * @return mixed
 	 */
 	public function getZoneMap () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:89: characters 3-21
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:89: characters 3-21
 		return $this->_defaultMap;
 	}
 
@@ -250,7 +250,7 @@ class ZoneServices extends DomainServices {
 	 * @return string
 	 */
 	public function get_name () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:31: characters 3-15
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:31: characters 3-15
 		return $this->_name;
 	}
 
@@ -258,7 +258,7 @@ class ZoneServices extends DomainServices {
 	 * @return ZoneServices
 	 */
 	public function get_parent () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:43: characters 3-17
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:43: characters 3-17
 		return $this->_parent;
 	}
 
@@ -266,7 +266,7 @@ class ZoneServices extends DomainServices {
 	 * @return mixed
 	 */
 	public function get_value () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:49: characters 3-16
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:49: characters 3-16
 		return $this->_value;
 	}
 
@@ -274,7 +274,7 @@ class ZoneServices extends DomainServices {
 	 * @return ZoneServices
 	 */
 	public function get_zone () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:37: characters 3-15
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:37: characters 3-15
 		return $this->_zone;
 	}
 
@@ -282,12 +282,12 @@ class ZoneServices extends DomainServices {
 	 * @return bool
 	 */
 	final public function hasValidPass () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 10-107
-		if (!(($this->_pass === null) || ($this->get_input()->isAuthenticated() && $this->_pass->isCarrier()))) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 77-107
-			return $this->get_input()->hasAuthentication($this->_pass);
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 10-123
+		if (!(($this->_requiredPass === null) || ($this->get_input()->hasPass() && $this->_requiredPass->isCarrier()))) {
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 85-123
+			return $this->get_input()->hasAuthentication($this->_requiredPass);
 		} else {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 10-107
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:72: characters 10-123
 			return true;
 		}
 	}
@@ -296,34 +296,34 @@ class ZoneServices extends DomainServices {
 	 * @return bool
 	 */
 	final public function isPassRequired () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:68: characters 3-23
-		return $this->_pass !== null;
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:68: characters 3-31
+		return $this->_requiredPass !== null;
 	}
 
 	/**
 	 * @return void
 	 */
 	final public function setEndZone () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:64: characters 3-21
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:64: characters 3-21
 		$this->_defaultMap = null;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function toString () {
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:147: characters 3-23
+	final public function toString () {
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:147: characters 3-23
 		$val = "";
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:148: lines 148-158
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:148: lines 148-158
 		if ($this->_value !== null) {
-			#server/jotun/gateway/domain/zones/ZoneServices.hx:149: lines 149-157
+			#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:149: lines 149-157
 			if (!($this->_value instanceof \Array_hx) && !is_string($this->_value) && !(is_float($this->_value) || is_int($this->_value)) && !is_bool($this->_value)) {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:150: lines 150-154
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:150: lines 150-154
 				if (\Reflect::hasField($this->_value, "toString")) {
-					#server/jotun/gateway/domain/zones/ZoneServices.hx:151: characters 6-29
+					#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:151: characters 6-29
 					$val = HxDynamicStr::wrap($this->_value)->toString();
 				} else {
-					#server/jotun/gateway/domain/zones/ZoneServices.hx:153: characters 12-69
+					#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:153: characters 12-69
 					$_this = HxString::split(\Type::getClassName(\Type::getClass($this->_value)), ".");
 					if ($_this->length > 0) {
 						$_this->length--;
@@ -331,11 +331,11 @@ class ZoneServices extends DomainServices {
 					$val = \array_pop($_this->arr);
 				}
 			} else {
-				#server/jotun/gateway/domain/zones/ZoneServices.hx:156: characters 5-17
+				#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:156: characters 5-17
 				$val = $this->_value;
 			}
 		}
-		#server/jotun/gateway/domain/zones/ZoneServices.hx:159: characters 3-33
+		#src+extras/gateway/jotun/gateway/domain/zones/ZoneServices.hx:159: characters 3-33
 		return ($this->_name??'null') . "[" . ($val??'null') . "]";
 	}
 

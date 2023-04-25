@@ -1,4 +1,5 @@
 package ;
+import jotun.gateway.domain.CustomSessionDomain;
 import jotun.gateway.domain.Domain;
 import zones.debug.TestZone;
 
@@ -6,7 +7,7 @@ import zones.debug.TestZone;
  * ...
  * @author Rafael Moreira
  */
-class CustomDomain extends Domain {
+class CustomDomain extends CustomSessionDomain {
 
 	override function _buildZoneMap():Void {
 		_setZoneMap({
