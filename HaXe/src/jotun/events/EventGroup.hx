@@ -37,6 +37,7 @@ class EventGroup implements IEventGroup {
 		this.dispatcher = dispatcher;
 		this.name = name;
 		this.enabled = true;
+		this.propagation = true;
 		this.events = [];
 	}
 	

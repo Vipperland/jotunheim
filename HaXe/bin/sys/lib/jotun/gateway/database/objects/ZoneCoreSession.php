@@ -8,7 +8,7 @@ namespace jotun\gateway\database\objects;
 use \jotun\serial\Packager;
 use \php\_Boot\HxAnon;
 use \jotun\gateway\domain\OutputCore;
-use \jotun\gateway\utils\Omnitools;
+use \jotun\utils\Omnitools;
 use \php\Boot;
 use \jotun\php\db\Clause;
 use \jotun\Jotun;

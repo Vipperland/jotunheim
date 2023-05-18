@@ -10,7 +10,7 @@ import jotun.tools.Utils;
 import jotun.gateway.database.objects.ZoneCoreObject;
 import jotun.gateway.domain.OutputCore;
 import jotun.gateway.errors.ErrorCodes;
-import jotun.gateway.utils.Omnitools;
+import jotun.utils.Omnitools;
 
 /**
  * ...

@@ -1,7 +1,7 @@
 package jotun.gateway.domain;
 import jotun.Jotun;
 import jotun.gateway.domain.InputCore;
-import jotun.gateway.utils.Omnitools;
+import jotun.utils.Omnitools;
 import php.ErrorException;
 
 /**

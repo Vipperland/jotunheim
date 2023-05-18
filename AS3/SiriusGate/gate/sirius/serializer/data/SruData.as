@@ -36,6 +36,8 @@ package gate.sirius.serializer.data {
 		
 		static private const REFERENCE_FILE_NAME:String = "file";
 		
+		static private const TRACE_CALL:String = "^";
+		
 		static private const QUERY:String = "@";
 		
 		static private const PARAMETER_SET:String = "=";
@@ -88,8 +90,18 @@ package gate.sirius.serializer.data {
 		
 		public var fileName:String;
 		
-		private function _parseValue(value:String):* {
-			value = _getLineValue(value);
+		private function _directExtLineValue(value:String):* {
+			switch (value) {
+				case "^trace":  {
+					return trace as Function;
+				}
+				default:  {
+					return _directLineValue(value);
+				}
+			}
+		}
+		
+		private function _directLineValue(value:String):* {
 			switch (value) {
 				case "true":  {
 					return true;
@@ -102,12 +114,26 @@ package gate.sirius.serializer.data {
 				}
 				default:  {
 					if (value.length < 22) {
-						if (!isNaN(Number(value)))
+						if (!isNaN(Number(value))){
 							return Number(value);
+						}
 					}
 				}
 			}
 			return value;
+		}
+		
+		private function _parseValue(value:String):* {
+			value = _getLineValue(value);
+			return _directLineValue(value);
+		}
+		
+		
+		private function _fetch(values:Array):Array {
+			for (var p:* in values){
+				values[p] = _directExtLineValue(values[p]);
+			}
+			return values;
 		}
 		
 		
@@ -258,6 +284,15 @@ package gate.sirius.serializer.data {
 			}
 		}
 		
+		public function isTraceCall():Boolean {
+			if (command == TRACE_CALL){
+				trace(1);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		
 		private function _parseReference():void {
 			paramValueBuffer = lineClear.substr(1, lineLength - 1).split(REFERENCE_SPLIT);
@@ -331,7 +366,7 @@ package gate.sirius.serializer.data {
 			for (var p:String in paramValueBuffer){
 				paramValueBuffer[p] = _getLineValue(paramValueBuffer[p]);
 			}
-			return paramValueBuffer;
+			return _fetch(paramValueBuffer);
 		}
 		
 		
@@ -369,7 +404,7 @@ package gate.sirius.serializer.data {
 		
 		// [Hello World!(string)] | [true|false(boolean)] | [0xFF|3.14|360(number)]
 		public function getLineValue():* {
-			return _parseValue(lineValue);
+			return _directLineValue(lineValue);
 		}
 		
 		
@@ -398,7 +433,7 @@ package gate.sirius.serializer.data {
 		
 		// @myQueryName [prop1 prop2 ... propN]
 		public function getQueryArguments():Array {
-			return paramValueBuffer;
+			return _fetch(paramValueBuffer);
 		}
 		
 		

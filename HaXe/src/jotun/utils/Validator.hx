@@ -1,4 +1,4 @@
-package jotun.gateway.utils;
+package jotun.utils;
 
 /**
  * ...

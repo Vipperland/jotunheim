@@ -25,19 +25,28 @@ class Select extends Display {
 		return cast Jotun.one(q);
 	}
 	
-	public var object:SelectElement;
+	private var _object(get, null):SelectElement;
+	private function get__object():SelectElement {
+		return cast element;
+	}
 	
 	private var _ioHandler:IEvent->Void;
 	
-	private function _refreshIO(e:IEvent):Void {
+	private function _updateValue():Bool {
 		var c:String = this.value().toString();
 		var p:String = hasAttribute('current-value') ? attribute('current-value') : null;
 		if (p == null || c != p) {
 			attribute('previous-value', p);
 			attribute('current-value', c);
-			if (_ioHandler != null){
-				_ioHandler(e);
-			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private function _refreshIO(e:IEvent):Void {
+		if (_updateValue() && _ioHandler != null){
+			_ioHandler(e);
 		}
 	}
 	
@@ -46,7 +55,6 @@ class Select extends Display {
 			q = Browser.document.createSelectElement();
 		}
 		super(q, null);
-		object = cast element;
 		events.change(_refreshIO);
 	}
 	
@@ -59,7 +67,7 @@ class Select extends Display {
 	}
 	
 	public function setValue(i:Int, ?evt:Bool):Void {
-		object.selectedIndex = i;
+		_object.selectedIndex = i;
 		if (evt){
 			events.change().call(true, true);
 		}
@@ -67,7 +75,7 @@ class Select extends Display {
 	
 	public function clearSelected(?evt:Bool):Void {
 		getAllSelected().each(cast function(o:Option) {
-			o.object.selected = false;
+			o.select();
 		});
 		if (evt){
 			events.change().call(true, true);
@@ -77,7 +85,7 @@ class Select extends Display {
 	public function selectValue(value:Dynamic, ?evt:Bool):Void {
 		value = Std.string(value);
 		all('option').each(cast function(o:Option) {
-			o.object.selected = o.value() == value;
+			(cast o.element).selected = o.value() == value;
 		});
 		if (evt){
 			events.change().call(true, true);
@@ -103,16 +111,16 @@ class Select extends Display {
 	
 	public function hasValue():Bool {
 		var i:UInt = 0;
-		if(object.selectedOptions != null){
-			while (i < object.selectedOptions.length) {
-				var o:OptionElement = cast object.selectedOptions.item(i++);
+		if(_object.selectedOptions != null){
+			while (i < _object.selectedOptions.length) {
+				var o:OptionElement = cast _object.selectedOptions.item(i++);
 				if (!o.disabled){
 					return true;
 				}
 			}
 		}else{
-			while (i < object.options.length) {
-				var o:OptionElement = cast object.options[i++];
+			while (i < _object.options.length) {
+				var o:OptionElement = cast _object.options[i++];
 				if (o.selected && !o.disabled){
 					return true;
 				}

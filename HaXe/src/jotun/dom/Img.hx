@@ -49,12 +49,13 @@ class Img extends Display {
 			}else{
 				src = value;
 			}
+			value = (cast element).src;
 			if (src != value){
 				evt.src = src;
 				(cast element).src = src;
 				events.change().call(false, true, evt);
 			}
-			return src;
+			return value;
 		}else{
 			return (cast element).src;
 		}

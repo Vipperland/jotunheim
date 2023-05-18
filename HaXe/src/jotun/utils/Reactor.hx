@@ -2,6 +2,7 @@ package jotun.utils;
 import jotun.dom.IDisplay;
 import jotun.dom.Input;
 import jotun.tools.Utils;
+import js.Syntax;
 import js.html.Element;
 
 /**
@@ -157,8 +158,8 @@ class Reactor {
 			}
 			if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
 				Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
-					v = v.split(':');
-					o.attribute(v[0], v[1]);
+					v = v.split(":");
+					o.attribute(v.shift(), v.join(":"));
 				});
 				Reflect.deleteField(o.data, '__qa');
 				_react_commit_down(o);
@@ -186,8 +187,8 @@ class Reactor {
 			}
 			if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
 				Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
-					v = v.split(':');
-					o.style(v[0], v[1]);
+					v = v.split(":");
+					o.attribute(v.shift(), v.join(":"));
 				});
 				Reflect.deleteField(o.data, '__qs');
 				_react_commit_down(o);

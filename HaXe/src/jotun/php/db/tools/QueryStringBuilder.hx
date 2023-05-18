@@ -169,4 +169,18 @@ class QueryStringBuilder {
 		return 'FULL ' + outerJoin(table, name, clause);
 	}
 	
+	static private var _enabled:Bool = false;
+	
+	static public function cryptoSet(value:String, key:String):String {
+		return "/AES_ENCRYPT('" + value + "', '" + key + "')";
+	}
+	
+	static public function cryptoSelect(field:String, key:String):String {
+		return "/CAST(AES_DECRYPT(" + field + ",'" + key + "') AS char(255)) as " + field;
+	}
+	
+	static public function decryptoSet(field:String, key:String):String {
+		return "/CAST(AES_DECRYPT(" + field + ",'" + key + "') AS char(255))";
+	}
+	
 }

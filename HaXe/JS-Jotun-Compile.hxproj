@@ -48,8 +48,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Webserver" />
-    <option testMovieCommand="bin/index.html" />
+    <option testMovie="OpenDocument" />
+    <option testMovieCommand="http://127.0.0.7/" />
   </options>
   <!-- Plugin storage -->
   <storage />

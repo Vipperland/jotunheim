@@ -161,7 +161,7 @@ package gate.sirius.serializer {
 		/**
 		 * @private
 		 */
-		private var _tempObject:Object;
+		private var _tempResult:Array;
 		
 		/**
 		 * @private
@@ -458,8 +458,10 @@ package gate.sirius.serializer {
 				}
 				
 				// check if file name is present, for more detailed error
-				if (_data.isReference())
+				if (_data.isReference()){
 					continue;
+				}
+				
 				
 				// check if function call and create arguments buffer
 				// ~method
@@ -493,6 +495,8 @@ package gate.sirius.serializer {
 					ticket = ParseTicket.GATE.search(_data.getQueryName());
 					if (!ticket.run(_currentObject, _data.getQueryArguments())){
 						_signals.ERROR.send(SruErrorSignal, true, ticket.error, _data.currentLine, _data.lineValue, 2003, ticket.stack, _data.fileName);
+					}else{
+						_tempResult[_tempResult.length] = ticket.result;
 					}
 					continue;
 				}
@@ -501,7 +505,7 @@ package gate.sirius.serializer {
 					// Check if param:Class or #Class
 					if (_data.isObjectPush()) {	// Check if [#] (push)
 						_pushObject(_currentObject, _data.getObjectType(), _data.pathOpen, _data.argumentBuffer);
-					} else {				// Create parameter for [param]:Class or [param] {
+					} else {			// Create parameter for [param]:Class or [param] {
 						_createObject(_currentObject, _data.getObjectType(), _data.getParamName(), _data.pathOpen, _data.argumentBuffer);
 					}
 					continue;
@@ -512,7 +516,7 @@ package gate.sirius.serializer {
 					continue;
 				}
 				
-				if (_data.isValueSet()) { // default value
+				if (_data.isValueSet()) { 		// default value
 					try {
 						_data.writeProperty(_currentObject);
 					} catch (e:Error) {
@@ -612,6 +616,7 @@ package gate.sirius.serializer {
 			}
 			_mainObject = mergeTo || new SruObject();
 			_currentObject = _mainObject;
+			_tempResult = [];
 			_resetTargets();
 			_data.push(value);
 			if (onComplete !== null){
@@ -688,6 +693,7 @@ class ParseTicket {
 	
 	public var stack:String;
 	
+	public var result:Object;
 	
 	public function ParseTicket() {
 	}
@@ -706,7 +712,7 @@ class ParseTicket {
 		if (obj && param in obj) {
 			lastArgsLength = args.length;
 			try {
-				(obj[param] as Function).apply(to, args);
+				result = (obj[param] as Function).apply(to, args);
 			} catch (e:Error) {
 				error = "Error on call " + lastQueryName + "(args:" + lastArgsLength + ")";
 				stack = e.getStackTrace();
@@ -770,7 +776,6 @@ class MethodTicket {
 	
 	
 	public function call():Boolean {
-		trace('MAIN>', path, openPath, target.length);
 		_result = ParseTicket.GATE.search(path).run(to, target);
 		this.to = null;
 		this.openPath = null;

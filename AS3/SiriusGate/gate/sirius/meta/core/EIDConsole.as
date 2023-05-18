@@ -16,7 +16,7 @@ package gate.sirius.meta.core {
 			if (!method) {
 				Console.pushErrorMsg("EIDIConsole.jscall method is required.");
 			}else {
-				Console.pushMedMsg("EIDIConsole[ExternalInterface:" + ExternalInterface.available + "] " + method + "(" + SruEncoder.encode(args) + ")");
+				Console.pushMedMsg("EIDIConsole[" + ExternalInterface.available + "] " + method + "(" + SruEncoder.encode(args) + ")");
 				if (ExternalInterface.available) {
 					args.unshift(method);
 					r = ExternalInterface.call.apply(null, args);

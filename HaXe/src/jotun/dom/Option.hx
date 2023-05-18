@@ -9,24 +9,29 @@ import js.html.OptionElement;
 @:expose("J_dom_Option")
 class Option extends Display {
 	
-	public var object:OptionElement;
-	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createOptionElement();
 		super(q, null);
-		object = cast element;
 	}
 	
 	override public function value(?q:Dynamic):Dynamic {
-		return object.value;
+		return attribute('value', q);
 	}
 	
 	public function label():String {
-		return object.innerText;
+		return cast (element, OptionElement).innerText;
 	}
 	
 	public function match(value:String):Bool {
 		return this.value() == value;
+	}
+	
+	public function select():Void {
+		cast (element, OptionElement).selected = true;
+	}
+	
+	override public function disable():Void {
+		cast (element, OptionElement).disabled = true;
 	}
 	
 }

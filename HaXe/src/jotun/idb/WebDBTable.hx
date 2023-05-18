@@ -118,11 +118,12 @@ class WebDBTable {
 	public function each(handler:Dynamic->Bool):Request {
 		_error = null;
 		return _request_io(_table.openCursor(), function(h:WebDBTable):Void{
-			if (_result != null){
-				if (handler(_result.value) != true){
-					js.Syntax.code('_gthis._result.continue()');
-				}
-			}
+			/**
+				let key = _result.primaryKey;
+				let value = _result.value;
+				_result.continue();
+			 */
+			handler(_result);
 		});
 	}
 	
@@ -133,5 +134,11 @@ class WebDBTable {
 	public function getResult():Dynamic {
 		return _result;
 	}
+	
+	//public function callNext():Void {
+		//if (_result != null){
+			//Syntax.code('{0}.continue();', _result);
+		//}
+	//}
 	
 }

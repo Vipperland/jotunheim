@@ -6,7 +6,7 @@
 namespace jotun\gateway\domain;
 
 use \jotun\gaming\dataform\Pulsar;
-use \jotun\gateway\utils\Omnitools;
+use \jotun\utils\Omnitools;
 use \php\Boot;
 use \jotun\gaming\dataform\SparkCore;
 use \jotun\Jotun;

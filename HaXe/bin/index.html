@@ -89,87 +89,19 @@
 				</div>
 			</div>
 		</div>
-		<script>
-			Jotun.run(function(){
-			
-				
-				var os = Jotun.all('.test3d .content');
-				var srad = 0;
-				os.each(function(e){
-					e.angle = srad;
-					srad += (360/os.length())>>0;
-					e.perspective();
-					e.parent().perspective();
-				});
-				
-				
-				
-				var txt_d = 100;
-				var txt_t = 30;
-				var dmf_a = 0;
-				var dmf_al = 0;
-				var dmf_c = 0;
-				
-				var chars = "HEY, TYPE HERE!".split("");
-				
-				
-				//(function(){
-				//    var img = J_dom_Img.urlToBlob("https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/ripple512.png");
-				//    img.events.change(function(evt){
-				//	e.one('.filter-target').imageFilter("test", evt.ticket.data.src, '100%', '100%', '0', '0');
-				//    });
-				//})();
-				//
-				//return;
-				
-				J_Ticker.add(function(){
-					XCode.clearDisplacements();
-					XCode.displacement("main", dmf_a, 45, dmf_c>>0, 1, true);
-					dmf_a -= dmf_a * .03;
-					dmf_c -= dmf_c * .03;
-					os.each(function(e){
-						e.rotateY(Math.sin((e.angle-90)*Math.PI/180) * 360);
-						e.rotateX(Math.cos(e.angle*Math.PI/180) * 36);
-						e.translate(0, 0, Math.sin(e.angle*Math.PI/180) * 180);
-						e.scale(Math.cos((e.angle-90)*Math.PI/180), 1, 1);
-						e.angle += .1;
-						e.transform();
-						e.filters("main");
-						
-					});
-					if(dmf_a != dmf_al){
-						dmf_al = dmf_a;
-					}
-					if(chars.length > 0){
-						if(--txt_d <= 0){
-							var c = chars.shift().split(" ").join("&nbsp;");
-							os.each(function(e){
-								e.one('.text .info').appendHtml(c);
-							});
-							txt_d += txt_t;
-							dmf_a += .03;
-							dmf_c += 2;
-						}
-					}
-				});
-				
-				Jotun.document.events.keyDown(function(evt){
-					dmf_a += .03;
-					dmf_c += 6;
-				});
-				
-				Jotun.document.events.click(function(evt){
-					dmf_a += .3;
-					dmf_c += 60;
-					var rnd = Math.random() * 360;
-					os.each(function(e){
-						e.angle += rnd;
-					});
-				});
-				
-				J_Ticker.start();
-				
+		<script type="module">
+		
+			import {Realms} from './modules/dist/classes/core/Realms.class.js';
+			Realms.expose();
+			Realms.events.listen('*', function(event){
+				trace(event);
 			});
+			Realms.init({
+				name:'JotunTest',
+				version: 1,
+				structure: {},
+			});
+			
 		</script>
 	</body>                                                                               
 </html>

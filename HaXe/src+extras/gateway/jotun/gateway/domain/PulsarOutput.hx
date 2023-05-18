@@ -5,7 +5,7 @@ import jotun.gaming.dataform.PulsarLink;
 import jotun.gaming.dataform.Spark;
 import jotun.gaming.dataform.SparkCore;
 import jotun.gateway.domain.OutputCore;
-import jotun.gateway.utils.Omnitools;
+import jotun.utils.Omnitools;
 import jotun.utils.Dice;
 import php.Lib;
 
