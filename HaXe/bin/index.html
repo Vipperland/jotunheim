@@ -93,13 +93,21 @@
 		
 			import {Realms} from './modules/dist/classes/core/Realms.class.js';
 			Realms.expose();
-			Realms.events.listen('*', function(event){
-				trace(event);
+			Realms.events.listen('*', function(e){
+				if(e.data && e.data.authentication){
+					e.authentication = e.data.authentication.toString();
+				}
+				if(e.event == 'singularity'){
+					e.singularity = Singularity.toString();
+				}
+				trace(e);
 			});
-			Realms.init({
-				name:'JotunTest',
-				version: 1,
-				structure: {},
+			Realms.init('test.realms', {
+				db: {
+					name:'JotunTest',
+					version: 1,
+					structure: {},
+				}
 			});
 			
 		</script>

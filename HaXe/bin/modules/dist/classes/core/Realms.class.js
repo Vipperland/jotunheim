@@ -3,19 +3,24 @@ import {RealmsEvents} from './RealmsEvents.class.js';
 import {RealmsLocale} from './RealmsLocale.class.js';
 import {RealmsDatabase} from './RealmsDatabase.class.js';
 import {RealmsRequest} from './RealmsRequest.class.js';
+import {RealmsAuthentication} from './RealmsAuthentication.class.js';
 import {RealmsTimer} from './RealmsTimer.class.js';
 
 /*
 
 	Event oauthstatus
-		request		Needs to be updated
-		refresh		Initial 
+		timeout		Needs to be updated
+		updated		Local token or user changed 
+		revoked		Token is invalidated by server or client
+		invalid		Token has an invalid value
+		expired		Token has expired
 
 */
 
 export class Realms {
 
 	static #_busy;
+	static #_authentication;
 	static #_oauth;
 	static #_user;
 	static #_queue = [];
@@ -30,8 +35,8 @@ export class Realms {
 			if(ticket != null){
 				Realms.#_busy = true;
 				var h = { 'Content-Type':'application/json' };
-				if(Realms.#_oauth != null){
-					var oauth = J_Packager.encodeBase64('(y)=>' + Realms.#_getOAuth());
+				if(this.#_authentication.valid){
+					var oauth = this.#_authentication.header;
 					if(oauth){
 						h.authorization = oauth;
 					}
@@ -39,7 +44,7 @@ export class Realms {
 				if(ticket.url.substr(0,1)=='/'){
 					ticket.url = '/api' + ticket.url;
 				}
-				trace('[API] (y) ' + (h.authorization?'*':'') + '=> ' + ticket.url + ' => ', ticket.data);
+				trace('[API] (y) ' + (h.authorization?'*':'') + '=> ' + ticket.url + ' : ', ticket.data);
 				Jotun.request(ticket.url, ticket.data, (ticket.method || 'GET').toUpperCase(), Delegator.create(this, function(result){
 					var data;
 					if(result.error){
@@ -60,13 +65,8 @@ export class Realms {
 						}
 					}
 					var oauth = result.headers ? result.headers['authorization'] || result.headers['Authorization'] : '';
-					data.authentication = {
-						identity: this.#_oauth != null,
-						revoked: false,
-						expired: false,
-					};
-					this.#_events.call('request', { ticket: ticket, request: data });
-					if(ticket.updateOAuth != true && (oauth == null || oauth == this.#_oauth)){
+					this.#_events.call('request', { ticket: ticket, request: data, authentication: this.#_authentication.publicToken});
+					if(ticket.updateOAuth != true && (oauth == null || this.#_authentication.match(oauth))){
 						this.#_logBefore(data, ticket.callback);
 					}else {
 						this.#_verifyOAuth(oauth, data, ticket.callback);
@@ -94,71 +94,92 @@ export class Realms {
 		return new Date().getTime();
 	}
 	
-	static init(dbInfo){
+	static init(instance, config){
+		if(config == null){
+			config = {
+				auth: null,
+				db: {},
+			};
+		}
 		this.#_locale = new RealmsLocale();
-		if(dbInfo != null){
-			this.#_database = new RealmsDatabase(dbInfo.name || 'realms.db', dbInfo.version || 1, dbInfo.structure || {});
-			this.#_database.get('oauth', Delegator.create(this, function(value){
-				if(value != null){
-					this.#_oauth = value.key;
-					this.#_user = value.user;
-					if(this.#_timer.elapsed(value.time) > 1){
-						this.#_sendOAuthStatus('request');
-					}
+		this.#_database = new RealmsDatabase(config.db.name || 'realms.db', config.db.version || 1, config.db.structure || {});
+		this.#_authentication = new RealmsAuthentication(config.auth || {});
+		Singularity.signals.add('onMain', Delegator.create(this, this.#_singularityProxy));
+		Singularity.signals.add('onVisibility', Delegator.create(this, this.#_singularityProxy));
+		Singularity.signals.add('onConnect', Delegator.create(this, this.#_singularityShare));
+		Singularity.signals.add('onDisconnect', Delegator.create(this, this.#_singularityProxy));
+		Singularity.signals.add('onSync', Delegator.create(this, this.#_singularityProxy));
+		Singularity.connect(instance);
+		this.#_initOAuth();
+		this.#_testOAuth();
+	}
+	
+	static #_initOAuth(){
+		this.#_database.get('oauth', Delegator.create(this, function(value){
+			if(value != null){
+				this.#_updateAuthentication(value.key, value.user, value.time);
+			}
+			this.#_sendOAuthStatus('updated');
+		}));
+	}
+	
+	static #_updateAuthentication(key, user, time){
+		this.#_authentication.update(key, user, time);
+		if(this.#_authentication.time.hours.elapsed() >= 1){
+			this.#_sendOAuthStatus('timeout');
+		}else{
+			Singularity.sync({
+				authentication: {
+					key:value.key,
+					user:value.user,
+					time:data.time
 				}
-				this.#_sendOAuthStatus('refresh');
-			}));
+			});
 		}
 	}
 	
-	static #_sendOAuthStatus(status){
-		this.#_events.call('oauthstatus', {status: status, token: this.#_getOAuth(), user: this.#_user });
+	static #_singularityShare(event){
+		this.#_singularityProxy(event);
 	}
 	
-	//static #_refreshOAuth(){
-		//Realms.request('/session/verify', null, 'get', function(result){
-			//if(result.success){ }
-		//}).forceUpdate();
-	//}
+	static #_singularityProxy(event){
+		this.#_events.call('singularity', event);
+	}
+	
+	static #_sendOAuthStatus(status){
+		this.#_events.call('oauthstatus', {status: status, authentication: this.#_authentication.publicToken});
+	}
+	
+	static #_testOAuth(){
+		this.request('/sys/session/verify', null, 'get', function(result){
+			if(result.success){ }
+		}).forceUpdate();
+	}
 
 	static #_cancel(){
 		Realms.#_queue = [];
 		Realms.#_busy = false;
 	}
 
-	static #_getOAuth(){
-		return Realms.#_oauth != null ? J_Packager.decodeBase64(Realms.#_oauth).split('(y)<=').pop() : null;
-	}
-
 	static #_verifyOAuth(oauth, data, callback){
-		var tmp = J_Packager.decodeBase64(oauth);
-		if(tmp.substr(0, 5) == '(y)<='){
-			tmp = tmp.split('(y)<=').pop();
-			switch(tmp.toUpperCase()){
-				case 'EXPIRED' : {
-					this.#_sendOAuthStatus('expired');
-				}
-				case 'REVOKE' : {
-					this.#_sendOAuthStatus('revoked');
-				}
-				case 'INVALID' : {
-					Realms.#_oauth = null;
-					this.#_sendOAuthStatus('invalid');
-					this.#_database.del('oauth', Delegator.create(this, function(){
-						Realms.#_logBefore(data, callback);
+		var state = this.#_authentication.validate(oauth);
+		if(state.valid){
+			var time = this.timer.value;
+			if(state.expired || state.revoked || state.invalid){
+				this.#_updateAuthentication(oauth, null, null);
+				this.#_database.del('oauth', Delegator.create(this, function(){
+					this.#_logBefore(data, callback);
+				}));
+				this.#_sendOAuthStatus(event);
+			}else{
+				if(data.user != null){
+					this.#_updateAuthentication(oauth, data.user, time);
+					this.#_database.replace('oauth', { key:oauth, time:time, user:data.user }, Delegator.create(this, function(o){
+						this.#_logBefore(data, callback);
+						this.#_sendOAuthStatus('updated');
 					}));
-					break;
-				}
-				default : {
-					Realms.#_oauth = oauth;
-					if(data.user != null){
-						Realms.#_user = data.user;
-						this.#_database.replace('oauth', { key:oauth, time:this.timer.now, user:data.user }, Delegator.create(this, function(o){
-							this.#_logBefore(data, callback);
-							this.#_sendOAuthStatus('updated');
-						}));
-					}
-					break;
+				}else{
+					this.#_updateAuthentication(oauth, null, null);
 				}
 			}
 		}

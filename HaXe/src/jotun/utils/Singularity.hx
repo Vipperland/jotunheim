@@ -25,7 +25,7 @@ class Singularity {
 	
 	private static var _self_activate:Timer;
 	
-	public static var signals:Signals = new Signals({});
+	public static var signals:Signals = new Signals(Singularity);
 	
 	static private function _selfActivate():Void {
 		_checkIfUnique();
@@ -216,7 +216,7 @@ class Singularity {
 					_name = options.name;
 				}
 				if (options.channel != null){
-					_name = options.channel;
+					_channel = options.channel;
 				}
 			}
 			_is_active = (cast Browser.document.visibilityState) != 'visible' ? false : true;
@@ -255,11 +255,21 @@ class Singularity {
 	}
 	
 	static public function isMain():Bool {
-		return _is_main;
+		return _is_main == true;
 	}
 	
 	static public function isActive():Bool {
-		return _is_active;
+		return _is_active == true;
+	}
+	
+	static public function toString():String {
+		var ids:Array<String> = [];
+		Dice.Values(_engines, function(v:Dynamic){
+			if(v.id != id()){
+				ids.push(v.id);
+			}
+		});
+		return "[Singularity(id=" + id() + ",main=" + isMain() + ",instances=[" + ids.join(',') + "],connections=" + count() + ",channel=" + _channel + ")]";
 	}
 	
 }

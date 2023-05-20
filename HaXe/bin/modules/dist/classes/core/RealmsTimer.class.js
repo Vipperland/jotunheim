@@ -79,6 +79,10 @@ export class RealmsTimer {
 		this.#_bind = time;
 		return this;
 	}
+	unbind(){
+		this.#_bind = null;
+		return this;
+	}
 	elapsed(time){
 		return this.value - (time || this.binded);
 	}

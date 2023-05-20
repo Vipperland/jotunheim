@@ -9082,7 +9082,7 @@ jotun_utils_Singularity.connect = function(options) {
 				jotun_utils_Singularity._name = options.name;
 			}
 			if(options.channel != null) {
-				jotun_utils_Singularity._name = options.channel;
+				jotun_utils_Singularity._channel = options.channel;
 			}
 		}
 		jotun_utils_Singularity._is_active = window.document.visibilityState != "visible" ? false : true;
@@ -9104,6 +9104,15 @@ jotun_utils_Singularity.isMain = function() {
 };
 jotun_utils_Singularity.isActive = function() {
 	return jotun_utils_Singularity._is_active;
+};
+jotun_utils_Singularity.toString = function() {
+	var ids = [];
+	jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
+		if(v.id != jotun_utils_Singularity.id()) {
+			ids.push(v.id);
+		}
+	});
+	return "[Singularity(id=" + jotun_utils_Singularity.id() + ",main=" + Std.string(jotun_utils_Singularity._is_main) + ",instances=[" + ids.join(",") + "],connections=" + jotun_utils_Singularity.count() + ",channel=" + jotun_utils_Singularity._channel + ")]";
 };
 var jotun_utils_Table = $hx_exports["J_Table"] = function() {
 };
@@ -9832,7 +9841,7 @@ jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jo
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Singularity._channel = "singularity.engine";
-jotun_utils_Singularity.signals = new jotun_signals_Signals({ });
+jotun_utils_Singularity.signals = new jotun_signals_Signals(jotun_utils_Singularity);
 jotun_utils_Table._trash = [];
 jotun_Jotun.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
