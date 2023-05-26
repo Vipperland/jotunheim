@@ -18,6 +18,10 @@ use \php\_Boot\HxString;
  */
 class BasicSessionInput extends InputCore {
 	/**
+	 * @var string
+	 */
+	public $_testToken;
+	/**
 	 * @var int
 	 */
 	public $_tokenStatus;
@@ -42,13 +46,13 @@ class BasicSessionInput extends InputCore {
 	 * @return void
 	 */
 	public function _disposeSession ($status) {
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:35: characters 3-24
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:37: characters 3-24
 		$this->_tokenStatus = $status;
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:36: lines 36-39
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:38: lines 38-41
 		if ($this->session !== null) {
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:37: characters 4-20
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:39: characters 4-20
 			$this->session->revoke();
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:38: characters 4-18
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:40: characters 4-18
 			$this->session = null;
 		}
 	}
@@ -57,43 +61,43 @@ class BasicSessionInput extends InputCore {
 	 * @return void
 	 */
 	public function _loadAuthToken () {
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:43: characters 3-54
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:45: characters 3-54
 		$authorization = Jotun::$header->getOAuth();
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:44: lines 44-46
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:46: lines 46-48
 		if (($this->_testToken !== null) && !Utils::isValid($authorization)) {
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:45: characters 4-30
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:47: characters 4-30
 			$authorization = $this->_testToken;
 		}
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:47: lines 47-67
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:49: lines 49-68
 		if (Utils::isValid($authorization)) {
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:48: characters 4-56
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:50: characters 4-56
 			$authorization = Packager::decodeBase64($authorization);
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:49: lines 49-64
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:51: lines 51-65
 			if (\mb_substr($authorization, 0, mb_strlen("(y)=>")) === "(y)=>") {
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:50: characters 5-104
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:52: characters 5-104
 				$authorization = HxString::substring($authorization, mb_strlen("(y)=>"), mb_strlen($authorization));
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:51: characters 5-36
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:53: characters 5-36
 				$this->session = new ZoneCoreSession();
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:52: lines 52-61
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:54: lines 54-62
 				if ($this->session->load($authorization)) {
-					#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:53: lines 53-58
+					#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:55: lines 55-59
 					if ($this->session->isValid()) {
-						#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:54: characters 7-28
+						#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:56: characters 7-28
 						$this->session->exposeToken();
 					} else {
-						#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:57: characters 7-55
+						#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:58: characters 7-55
 						$this->_disposeSession(1060);
 					}
 				} else {
-					#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:60: characters 6-51
+					#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:61: characters 6-51
 					$this->_disposeSession(1020);
 				}
 			} else {
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:63: characters 5-53
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:64: characters 5-53
 				$this->_disposeSession(1010);
 			}
 		} else {
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:66: characters 4-53
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:67: characters 4-53
 			$this->_disposeSession(1000);
 		}
 	}
@@ -112,11 +116,11 @@ class BasicSessionInput extends InputCore {
 	 * @return void
 	 */
 	public function setTestToken ($token) {
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:28: characters 3-21
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:30: characters 3-21
 		$this->_testToken = $token;
-		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:29: lines 29-31
+		#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:31: lines 31-33
 		if ($this->_testToken !== null) {
-			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:30: characters 4-20
+			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:32: characters 4-20
 			$this->_loadAuthToken();
 		}
 	}

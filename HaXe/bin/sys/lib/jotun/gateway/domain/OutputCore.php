@@ -7,18 +7,24 @@ namespace jotun\gateway\domain;
 
 use \php\_Boot\HxDynamicStr;
 use \php\Boot;
+use \jotun\logical\Flag;
 use \jotun\Jotun;
+use \jotun\gateway\objects\InputCoreCarrier;
 
 /**
  * ...
  * @author
  */
-class OutputCore {
+class OutputCore extends InputCoreCarrier {
 	/**
 	 * @var OutputCore
 	 */
 	static public $_instance;
 
+	/**
+	 * @var int
+	 */
+	public $_chunk_size;
 	/**
 	 * @var mixed
 	 */
@@ -26,13 +32,21 @@ class OutputCore {
 	/**
 	 * @var bool
 	 */
+	public $_encode_out;
+	/**
+	 * @var bool
+	 */
 	public $_log;
+	/**
+	 * @var bool
+	 */
+	public $_stopped;
 
 	/**
 	 * @return OutputCore
 	 */
 	public static function getInstance () {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:15: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:18: characters 3-19
 		return OutputCore::$_instance;
 	}
 
@@ -42,23 +56,17 @@ class OutputCore {
 	 * @return void
 	 */
 	public function __construct ($data) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:23: lines 23-25
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:32: lines 32-34
 		if (OutputCore::$_instance !== null) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:24: characters 4-9
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:33: characters 4-9
 			throw new \ErrorException("gateway.Output is a Singleton");
 		}
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:26: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:35: characters 3-19
 		OutputCore::$_instance = $this;
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:27: characters 3-15
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:36: characters 3-15
 		$this->_data = $data;
-	}
-
-	/**
-	 * @return void
-	 */
-	public function enableLog () {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:39: characters 3-14
-		$this->_log = true;
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:37: characters 3-10
+		parent::__construct();
 	}
 
 	/**
@@ -68,13 +76,13 @@ class OutputCore {
 	 * @return void
 	 */
 	public function error ($code, $check = false) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:49: lines 49-51
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:66: lines 66-68
 		if ($check === null) {
 			$check = false;
 		}
-		if (!$check || !$this->hasError($code)) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:50: characters 4-29
-			$this->list("errors")->push($code);
+		if (!$this->_stopped && (!$check || !$this->hasError($code))) {
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:67: characters 4-31
+			$this->list("errors")->insert($code);
 		}
 	}
 
@@ -89,9 +97,25 @@ class OutputCore {
 	 * 
 	 * @return bool
 	 */
-	public function hasError ($code) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:55: characters 3-44
+	final public function hasError ($code) {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:72: characters 3-44
 		return !Boot::equal(HxDynamicStr::wrap($this->list("errors"))->indexOf($code), -1);
+	}
+
+	/**
+	 * @return bool
+	 */
+	final public function isLogEnabled () {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:87: characters 3-22
+		return $this->_log === true;
+	}
+
+	/**
+	 * @return bool
+	 */
+	final public function isStopped () {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:83: characters 3-26
+		return $this->_stopped === true;
 	}
 
 	/**
@@ -100,7 +124,7 @@ class OutputCore {
 	 * @return mixed
 	 */
 	public function list ($name) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:35: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:50: characters 3-14
 		return null;
 	}
 
@@ -111,14 +135,31 @@ class OutputCore {
 	 * @return void
 	 */
 	public function log ($message, $list = "trace") {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:43: lines 43-45
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:60: lines 60-62
 		if ($list === null) {
 			$list = "trace";
 		}
 		if ($this->_log) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:44: characters 4-33
-			$this->list($list)->push($message);
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:61: characters 4-35
+			$this->list($list)->insert($message);
 		}
+	}
+
+	/**
+	 * @param bool $output
+	 * @param int $chunk
+	 * 
+	 * @return void
+	 */
+	final public function mode ($output, $chunk = 40) {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:40: lines 40-43
+		if ($chunk === null) {
+			$chunk = 40;
+		}
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:41: characters 3-23
+		$this->_encode_out = $output;
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:42: characters 3-22
+		$this->_chunk_size = $chunk;
 	}
 
 	/**
@@ -127,7 +168,7 @@ class OutputCore {
 	 * @return mixed
 	 */
 	public function object ($name) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:31: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:46: characters 3-14
 		return null;
 	}
 
@@ -137,8 +178,21 @@ class OutputCore {
 	 * @return void
 	 */
 	public function registerOAuth ($token) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:62: characters 3-31
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:79: characters 3-31
 		Jotun::$header->setOAuth($token);
+	}
+
+	/**
+	 * @param int $value
+	 * 
+	 * @return void
+	 */
+	public function setOptions ($value) {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:54: lines 54-56
+		if (Flag::FTest($value, 1)) {
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:55: characters 4-15
+			$this->_log = true;
+		}
 	}
 }
 

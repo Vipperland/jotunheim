@@ -18,21 +18,21 @@ class CustomDataAccess extends SessionDataAccess {
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomDataAccess.hx:15: characters 3-46
-		parent::__construct(Token::localhost("pipastudios_admin"));
+		#samples/server/CustomDataAccess.hx:15: characters 3-43
+		parent::__construct(Token::localhost("realms_gateway"));
 	}
 
 	/**
 	 * @return IDataTable
 	 */
-	public function get_user_session () {
+	public function get_sessions () {
 		#samples/server/CustomDataAccess.hx:19: lines 19-21
-		if ($this->user_session === null) {
-			#samples/server/CustomDataAccess.hx:20: characters 4-72
-			$this->user_session = $this->_tryAssemble("pa_user_session", Boot::getClass(ZoneCoreSession::class));
+		if ($this->sessions === null) {
+			#samples/server/CustomDataAccess.hx:20: characters 4-68
+			$this->sessions = $this->_tryAssemble("pa_user_session", Boot::getClass(ZoneCoreSession::class));
 		}
-		#samples/server/CustomDataAccess.hx:22: characters 3-27
-		return $this->user_session;
+		#samples/server/CustomDataAccess.hx:22: characters 3-23
+		return $this->sessions;
 	}
 }
 

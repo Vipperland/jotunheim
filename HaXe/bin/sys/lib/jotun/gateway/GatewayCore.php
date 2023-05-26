@@ -7,9 +7,11 @@ namespace jotun\gateway;
 
 use \jotun\gateway\domain\OutputCore;
 use \php\Boot;
+use \jotun\logical\Flag;
 use \jotun\Jotun;
-use \jotun\tools\Utils;
-use \jotun\gateway\database\DataAccess;
+use \jotun\gateway\domain\zones\DomainZoneCore;
+use \jotun\gateway\database\SessionDataAccess;
+use \jotun\gateway\domain\InputCore;
 
 /**
  * ...
@@ -19,14 +21,31 @@ class GatewayCore {
 	/**
 	 * @var GatewayCore
 	 */
-	static public $_ME;
+	static public $_instance;
+
+	/**
+	 * @var SessionDataAccess
+	 */
+	public $_database;
+	/**
+	 * @var DomainZoneCore
+	 */
+	public $_domain;
+	/**
+	 * @var InputCore
+	 */
+	public $_input;
+	/**
+	 * @var OutputCore
+	 */
+	public $_output;
 
 	/**
 	 * @return GatewayCore
 	 */
 	public static function getInstance () {
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:20: characters 3-13
-		return GatewayCore::$_ME;
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:23: characters 3-19
+		return GatewayCore::$_instance;
 	}
 
 	/**
@@ -37,61 +56,64 @@ class GatewayCore {
 	 * @param	TInput
 	 * @param	TDomain
 	 * @param	maintenance
+	 * @param	onInit
 	 * 
 	 * @param mixed $TGateway
 	 * @param mixed $TOutput
 	 * @param mixed $TDataAccess
 	 * @param mixed $TInput
 	 * @param mixed $TDomain
-	 * @param bool $maintenance
+	 * @param int $options
 	 * 
 	 * @return void
 	 */
-	public static function init ($TGateway, $TOutput, $TDataAccess, $TInput, $TDomain, $maintenance) {
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:42: characters 3-29
-		new $TGateway->phpClassName();
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:44: characters 3-24
+	public static function init ($TGateway, $TOutput, $TDataAccess, $TInput, $TDomain, $options) {
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:38: characters 3-56
+		$gateway = new $TGateway->phpClassName();
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:40: characters 3-24
 		Jotun::$header->access();
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:47: characters 3-28
-		new $TOutput->phpClassName();
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:50: lines 50-71
-		if (!$maintenance) {
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:52: lines 52-54
-			if (Utils::boolean(Boot::dynamicField(Jotun::$domain->params, 'log'))) {
-				#src+extras/gateway/jotun/gateway/GatewayCore.hx:53: characters 5-41
-				OutputCore::getInstance()->enableLog();
-			}
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:56: characters 4-33
-			new $TDataAccess->phpClassName();
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:58: lines 58-60
-			if (Utils::boolean(Boot::dynamicField(Jotun::$domain->params, 'dblog'))) {
-				#src+extras/gateway/jotun/gateway/GatewayCore.hx:59: characters 5-41
-				DataAccess::getInstance()->enableLog();
-			}
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:63: characters 4-28
-			new $TInput->phpClassName();
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:65: characters 4-29
-			new $TDomain->phpClassName();
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:43: characters 3-46
+		$gateway->_output = new $TOutput->phpClassName();
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:46: lines 46-63
+		if (!Flag::FTest($options, 16)) {
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:49: characters 4-45
+			$gateway->_input = new $TInput->phpClassName();
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:51: characters 4-39
+			$gateway->_output->setOptions($options);
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:53: characters 4-53
+			$gateway->_database = new $TDataAccess->phpClassName();
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:55: characters 4-41
+			$gateway->_database->setOptions($options);
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:57: characters 4-47
+			$gateway->_domain = new $TDomain->phpClassName();
 		} else {
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:69: characters 4-63
-			OutputCore::getInstance()->error(1);
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:61: characters 4-54
+			$gateway->_output->error(1);
 		}
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:74: characters 3-35
-		OutputCore::getInstance()->flush();
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:66: characters 3-18
+		$gateway->flush();
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#src+extras/gateway/jotun/gateway/GatewayCore.hx:24: lines 24-28
-		if (GatewayCore::$_ME === null) {
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:25: characters 4-14
-			GatewayCore::$_ME = $this;
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:76: lines 76-80
+		if (GatewayCore::$_instance === null) {
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:77: characters 4-20
+			GatewayCore::$_instance = $this;
 		} else {
-			#src+extras/gateway/jotun/gateway/GatewayCore.hx:27: characters 4-9
+			#src+extras/gateway/jotun/gateway/GatewayCore.hx:79: characters 4-9
 			throw new \ErrorException("Gateway is a Singleton");
 		}
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flush () {
+		#src+extras/gateway/jotun/gateway/GatewayCore.hx:86: characters 3-18
+		$this->_output->flush();
 	}
 }
 

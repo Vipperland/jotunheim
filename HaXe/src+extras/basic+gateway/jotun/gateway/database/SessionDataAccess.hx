@@ -14,10 +14,9 @@ class SessionDataAccess extends DataAccess {
 		super(token);
 	}
 	
-	public var user_session(get, null):IDataTable;
-	private function get_user_session():IDataTable {
-		return _tryAssemble('rp_data_session', ZoneCoreSession);
+	public var sessions(get, null):IDataTable;
+	private function get_sessions():IDataTable {
+		return _tryAssemble('sessions', ZoneCoreSession);
 	}
-	
 	
 }

@@ -14,43 +14,6 @@ use \php\Boot;
  */
 class StringTools {
 	/**
-	 * Returns the character code at position `index` of String `s`, or an
-	 * end-of-file indicator at if `position` equals `s.length`.
-	 * This method is faster than `String.charCodeAt()` on some platforms, but
-	 * the result is unspecified if `index` is negative or greater than
-	 * `s.length`.
-	 * End of file status can be checked by calling `StringTools.isEof()` with
-	 * the returned value as argument.
-	 * This operation is not guaranteed to work if `s` contains the `\0`
-	 * character.
-	 * 
-	 * @param string $s
-	 * @param int $index
-	 * 
-	 * @return int
-	 */
-	public static function fastCodeAt ($s, $index) {
-		#D:\Toolkits\Haxe\4.3.0\haxe\std/php/_std/StringTools.hx:121: characters 3-76
-		$char = ($index === 0 ? $s : mb_substr($s, $index, 1));
-		#D:\Toolkits\Haxe\4.3.0\haxe\std/php/_std/StringTools.hx:122: lines 122-123
-		if ($char === "") {
-			#D:\Toolkits\Haxe\4.3.0\haxe\std/php/_std/StringTools.hx:123: characters 4-12
-			return 0;
-		}
-		#D:\Toolkits\Haxe\4.3.0\haxe\std/php/_std/StringTools.hx:124: characters 10-30
-		$code = ord($char[0]);
-		if ($code < 192) {
-			return $code;
-		} else if ($code < 224) {
-			return (($code - 192) << 6) + ord($char[1]) - 128;
-		} else if ($code < 240) {
-			return (($code - 224) << 12) + ((ord($char[1]) - 128) << 6) + ord($char[2]) - 128;
-		} else {
-			return (($code - 240) << 18) + ((ord($char[1]) - 128) << 12) + ((ord($char[2]) - 128) << 6) + ord($char[3]) - 128;
-		}
-	}
-
-	/**
 	 * Concatenates `c` to `s` until `s.length` is at least `l`.
 	 * If `c` is the empty String `""` or if `l` does not exceed `s.length`,
 	 * `s` is returned unchanged.

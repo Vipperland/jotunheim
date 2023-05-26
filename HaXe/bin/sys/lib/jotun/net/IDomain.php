@@ -36,6 +36,42 @@ interface IDomain {
 	public function isRequestMethod ($q) ;
 
 	/**
+	 * @param string $q
+	 * @param string $split
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public function paramAsArray ($q, $split = null) ;
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return bool
+	 */
+	public function paramAsBool ($q) ;
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return float
+	 */
+	public function paramAsFloat ($q) ;
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return int
+	 */
+	public function paramAsInt ($q) ;
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return mixed
+	 */
+	public function paramAsObject ($q) ;
+
+	/**
 	 * @param \Closure $onPart
 	 * @param \Closure $onData
 	 * 

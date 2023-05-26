@@ -5,7 +5,6 @@ package jotun.net;
 	import js.Syntax;
 	import js.html.Location;
 	import jotun.dom.Display;
-	import jotun.tools.Utils;
 #elseif php
 	import php.Lib;
 	import php.NativeArray;
@@ -18,6 +17,7 @@ import haxe.Json;
 import haxe.io.Bytes;
 import jotun.gaming.dataform.Pulsar;
 import jotun.utils.Dice;
+import jotun.tools.Utils;
 
 /**
  * ...
@@ -266,5 +266,27 @@ class Domain implements IDomain {
 		}
 		
 	#end
+	
+	public function paramAsBool(q:String):Bool {
+		return Utils.boolean(Reflect.field(params, q));
+	}
+	
+	public function paramAsInt(q:String):Int {
+		return Std.parseInt(Reflect.field(params, q));
+	}
+	
+	public function paramAsFloat(q:String):Float {
+		return Std.parseFloat(Reflect.field(params, q));
+	}
+	
+	public function paramAsArray(q:String, ?split:String = ','):Array<Dynamic> {
+		q = Reflect.field(params, q);
+		return q != null ? q.split(split) : [];
+	}
+	
+	public function paramAsObject(q:String):Dynamic {
+		q = Reflect.field(params, q);
+		return (q != null) ? Json.parse(q) : {};
+	}
 	
 }

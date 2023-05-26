@@ -40,8 +40,8 @@ class ZoneCoreObject {
 	 * @return mixed
 	 */
 	public function RunSQL ($handler) {
-		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:20: characters 3-37
-		return DataAccess::execute($handler);
+		#src+extras/gateway/jotun/gateway/database/objects/ZoneCoreObject.hx:20: characters 3-36
+		return $this->get__database()->execute($handler);
 	}
 
 	/**

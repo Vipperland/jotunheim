@@ -138,19 +138,19 @@ class Utils {
 	public static function boolean ($q) {
 		#src/jotun/tools/Utils.hx:452: lines 452-456
 		if (is_string($q)) {
-			#src/jotun/tools/Utils.hx:453: characters 11-97
-			if (!(($q === "1") || ($q === "true") || ($q === "yes") || ($q === "accept") || ($q === "ok"))) {
-				#src/jotun/tools/Utils.hx:453: characters 82-97
-				return $q === "selected";
+			#src/jotun/tools/Utils.hx:453: characters 11-109
+			if (!(($q === "1") || ($q === "true") || ($q === "yes") || ($q === "accept") || ($q === "ok") || ($q === "selected"))) {
+				#src/jotun/tools/Utils.hx:453: characters 101-109
+				return $q === "y";
 			} else {
-				#src/jotun/tools/Utils.hx:453: characters 11-97
+				#src/jotun/tools/Utils.hx:453: characters 11-109
 				return true;
 			}
 		} else if ($q !== true) {
-			#src/jotun/tools/Utils.hx:455: characters 24-30
-			return Boot::equal($q, 1);
+			#src/jotun/tools/Utils.hx:455: characters 24-29
+			return $q > 0;
 		} else {
-			#src/jotun/tools/Utils.hx:455: characters 11-30
+			#src/jotun/tools/Utils.hx:455: characters 11-29
 			return true;
 		}
 	}

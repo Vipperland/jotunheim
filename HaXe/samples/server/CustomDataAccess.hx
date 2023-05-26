@@ -12,14 +12,14 @@ import jotun.php.db.objects.IDataTable;
 class CustomDataAccess extends SessionDataAccess {
 
 	public function new() {
-		super(Token.localhost("pipastudios_admin"));
+		super(Token.localhost("realms_gateway"));
 	}
 	
-	override function get_user_session():IDataTable {
-		if (this.user_session == null){
-			this.user_session = _tryAssemble("pa_user_session", ZoneCoreSession);
+	override function get_sessions():IDataTable {
+		if (this.sessions == null){
+			this.sessions = _tryAssemble("pa_user_session", ZoneCoreSession);
 		}
-		return this.user_session;
+		return this.sessions;
 	}
 	
 }

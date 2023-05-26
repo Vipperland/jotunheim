@@ -1,6 +1,9 @@
 package jotun.gateway.domain;
 import jotun.Jotun;
 import jotun.gateway.domain.InputCore;
+import jotun.gateway.flags.GatewayOptions;
+import jotun.gateway.objects.InputCoreCarrier;
+import jotun.logical.Flag;
 import jotun.utils.Omnitools;
 import php.ErrorException;
 
@@ -8,7 +11,7 @@ import php.ErrorException;
  * ...
  * @author 
  */
-class OutputCore {
+class OutputCore extends InputCoreCarrier {
 	
 	static private var _instance:OutputCore;
 	static public function getInstance():OutputCore {
@@ -16,6 +19,12 @@ class OutputCore {
 	}
 	
 	private var _log:Bool;
+	
+	private var _stopped:Bool;
+	
+	private var _encode_out:Bool;
+	
+	private var _chunk_size:Int;
 	
 	private var _data:Dynamic;
 	
@@ -25,6 +34,12 @@ class OutputCore {
 		}
 		_instance = this;
 		_data = data;
+		super();
+	}
+	
+	final public function mode(output:Bool, ?chunk:Int = 40):Void {
+		_encode_out = output;
+		_chunk_size = chunk;
 	}
 	
 	public function object(name:String):Dynamic {
@@ -35,23 +50,25 @@ class OutputCore {
 		return null;
 	}
 	
-	public function enableLog():Void {
-		_log = true;
+	public function setOptions(value:Int):Void {
+		if (Flag.FTest(value, GatewayOptions.INFO)){
+			_log = true;
+		}
 	}
 	
 	public function log(message:Dynamic, ?list:String = 'trace'):Void {
 		if (_log){
-			this.list(list).push(message);
+			this.list(list).insert(message);
 		}
 	}
 	
 	public function error(code:Int, check:Bool = false):Void {
-		if (!check || !hasError(code)){
-			list("errors").push(code);
+		if (!_stopped && (!check || !hasError(code))){
+			list("errors").insert(code);
 		}
 	}
 	
-	public function hasError(code:Int):Bool{
+	final public function hasError(code:Int):Bool{
 		return list("errors").indexOf(code) != -1;
 	}
 	
@@ -60,6 +77,14 @@ class OutputCore {
 	
 	public function registerOAuth(token:String):Void {
 		Jotun.header.setOAuth(token);
+	}
+	
+	final public function isStopped():Bool {
+		return _stopped == true;
+	}
+	
+	final public function isLogEnabled():Bool {
+		return _log == true;
 	}
 	
 }

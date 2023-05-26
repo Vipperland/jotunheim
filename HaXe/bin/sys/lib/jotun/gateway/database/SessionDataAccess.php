@@ -18,7 +18,7 @@ class SessionDataAccess extends DataAccess {
 	/**
 	 * @var IDataTable
 	 */
-	public $user_session;
+	public $sessions;
 
 	/**
 	 * @param Token $token
@@ -33,13 +33,13 @@ class SessionDataAccess extends DataAccess {
 	/**
 	 * @return IDataTable
 	 */
-	public function get_user_session () {
-		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:19: characters 3-58
-		return $this->_tryAssemble("rp_data_session", Boot::getClass(ZoneCoreSession::class));
+	public function get_sessions () {
+		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:19: characters 3-51
+		return $this->_tryAssemble("sessions", Boot::getClass(ZoneCoreSession::class));
 	}
 }
 
 Boot::registerClass(SessionDataAccess::class, 'jotun.gateway.database.SessionDataAccess');
 Boot::registerGetters('jotun\\gateway\\database\\SessionDataAccess', [
-	'user_session' => true
+	'sessions' => true
 ]);

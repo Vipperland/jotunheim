@@ -6,14 +6,14 @@
 namespace jotun\gateway\domain;
 
 use \php\Boot;
-use \jotun\gateway\objects\InputOutputCore;
+use \jotun\gateway\objects\OutputCoreCarrier;
 use \jotun\gateway\database\DataAccess;
 
 /**
  * ...
  * @author
  */
-class DomainServicesCore extends InputOutputCore {
+class DomainServicesCore extends OutputCoreCarrier {
 	/**
 	 * @var DataAccess
 	 */

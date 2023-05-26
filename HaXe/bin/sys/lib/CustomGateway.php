@@ -6,6 +6,8 @@
 use \jotun\gateway\GatewayCore;
 use \php\Boot;
 use \jotun\gateway\domain\BasicSessionInput;
+use \jotun\Jotun;
+use \jotun\gateway\domain\JsonOutput;
 use \jotun\gateway\domain\PulsarOutput;
 
 /**
@@ -17,16 +19,28 @@ class CustomGateway extends GatewayCore {
 	 * @return void
 	 */
 	public static function main () {
-		#samples/server/CustomGateway.hx:15: lines 15-22
-		GatewayCore::init(Boot::getClass(CustomGateway::class), Boot::getClass(PulsarOutput::class), Boot::getClass(\CustomDataAccess::class), Boot::getClass(BasicSessionInput::class), Boot::getClass(\CustomDomain::class), false);
+		#samples/server/CustomGateway.hx:18: characters 3-59
+		$hasPulsar = Jotun::$domain->paramAsBool("pulsar");
+		#samples/server/CustomGateway.hx:19: lines 19-26
+		GatewayCore::init(Boot::getClass(CustomGateway::class), ($hasPulsar ? Boot::getClass(PulsarOutput::class) : Boot::getClass(JsonOutput::class)), Boot::getClass(\CustomDataAccess::class), Boot::getClass(BasicSessionInput::class), Boot::getClass(\CustomDomain::class), 15);
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomGateway.hx:12: lines 12-25
+		#samples/server/CustomGateway.hx:15: lines 15-34
 		parent::__construct();
+	}
+
+	/**
+	 * @return void
+	 */
+	public function flush () {
+		#samples/server/CustomGateway.hx:30: characters 3-50
+		$this->_output->mode($this->_input->paramAsBool("encoded"), 40);
+		#samples/server/CustomGateway.hx:31: characters 3-16
+		parent::flush();
 	}
 }
 

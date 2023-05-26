@@ -12,6 +12,9 @@ export class RealmsLocale {
 			}
 			return '%' + q + '%';
 		}
+		add(o){
+			this.#_lib.push(o.locale == null ? {locale:o} : o);
+		}
 		get(q){
 			var v;
 			q = (q+'').split(' ');

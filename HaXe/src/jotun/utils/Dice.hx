@@ -249,14 +249,17 @@ class Dice {
 	 * @param	table
 	 * @param	values
 	 */
-	public static function Remove(table:Array<Dynamic>, values:Dynamic):Void {
-		if (!Std.isOfType(values, Array)) values = [values];
+	public static function Remove(table:Array<Dynamic>, values:Dynamic):Array<Dynamic> {
+		var r:Array<Dynamic> = [];
+		if (!Std.isOfType(values, Array)) {
+			values = [values];
+		}
 		Dice.Values(values, function(v:Dynamic) {
-			var i:Int = Lambda.indexOf(table, v);
-			if (i != -1) {
-				table.remove(v);
+			if(table.remove(v)){
+				r[r.length] = v;
 			}
 		});
+		return r;
 	}
 	
 	/**
@@ -265,7 +268,9 @@ class Dice {
 	 * @param	values
 	 */
 	public static function Put(table:Array<Dynamic>, values:Dynamic):Void {
-		if (!Std.isOfType(values, Array)) values = [values];
+		if (!Std.isOfType(values, Array)) {
+			values = [values];
+		}
 		Dice.Values(values, function(v:Dynamic) {
 			var i:Int = Lambda.indexOf(table, v);
 			if (i == -1) {

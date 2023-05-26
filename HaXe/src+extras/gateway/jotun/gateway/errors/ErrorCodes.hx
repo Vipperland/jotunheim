@@ -10,9 +10,7 @@ class ErrorCodes {
 	
 	static public inline var MAINTENANCE_MODE:Int = 1;
 	
-	static public inline var LOGIN_REQUIRED:Int = 2;
-	
-	// ============================== DATABASE
+	// ============================== DATABASE (Errors 100 ~ 199 are reserved to database)
 	
 	static public inline var DATABASE_CONNECT_ERROR:Int = 100;
 	
@@ -24,9 +22,13 @@ class ErrorCodes {
 	
 	static public inline var SERVICE_UNAUTHORIZED:Int = 401;
 	
+	static public inline var SERVICE_LOGIN_REQUIRED:Int = 402;
+	
 	static public inline var SERVICE_FORBIDDEN:Int = 403;
 	
 	static public inline var SERVICE_NOT_FOUND:Int = 404;
+	
+	static public inline var SERVICE_NOT_ACCEPTABLE:Int = 406;
 	
 	
 }

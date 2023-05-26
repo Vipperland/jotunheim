@@ -1,5 +1,7 @@
 package jotun.gateway.domain.zones.session;
 import jotun.gateway.domain.BasicSessionInput;
+import jotun.gateway.errors.ErrorCodes;
+import jotun.utils.Dice;
 
 /**
  * ...
@@ -10,18 +12,27 @@ class SessionVerifyZone extends DomainZoneCore {
 	public function new() {
 		super();
 		setEndZone();
+		setDatabaseRequired();
 	}
 	
 	private function _fetchData(data:Array<String>):Void {
 		if (data != null && data.length > 0){
 			var param:String = data.shift();
-			switch (param){
-				case '+refresh' : {
-					cast (input, BasicSessionInput).session.refresh();
-				}
-				case '+user' : {
-					cast (input, BasicSessionInput).session.exposeCarrier();
-				}
+			if (param.substr(0, 1) == '+'){
+				var actions:Array<String> = param.substring(1, param.length).split(',');
+				Dice.Values(actions, function(v:String):Void {
+					switch (v){
+						case 'refresh' : {
+							cast (input, BasicSessionInput).session.refresh();
+						}
+						case 'user' : {
+							cast (input, BasicSessionInput).session.exposeCarrier();
+						}
+						default : {
+							output.error(ErrorCodes.SERVICE_NOT_ACCEPTABLE);
+						}
+					}
+				});
 			}
 			_fetchData(data);
 		}

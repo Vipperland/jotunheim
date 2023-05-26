@@ -41,9 +41,6 @@ export class Realms {
 						h.authorization = oauth;
 					}
 				}
-				if(ticket.url.substr(0,1)=='/'){
-					ticket.url = '/api' + ticket.url;
-				}
 				trace('[API] (y) ' + (h.authorization?'*':'') + '=> ' + ticket.url + ' : ', ticket.data);
 				Jotun.request(ticket.url, ticket.data, (ticket.method || 'GET').toUpperCase(), Delegator.create(this, function(result){
 					var data;
@@ -153,7 +150,7 @@ export class Realms {
 	static #_testOAuth(){
 		this.request('/sys/session/verify', null, 'get', function(result){
 			if(result.success){ }
-		}).forceUpdate();
+		}).authenticate();
 	}
 
 	static #_cancel(){

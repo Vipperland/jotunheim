@@ -26,6 +26,8 @@ class DomainZoneCore extends DomainServicesCore {
 	private var _name:String;
 	private var _requiredPass:ZonePass;
 	
+	private var _dbRequired:Bool;
+	
 	public var name(get, null):String;
 	private function get_name():String {
 		return _name;
@@ -62,6 +64,14 @@ class DomainZoneCore extends DomainServicesCore {
 	
 	final public function setEndZone():Void {
 		_defaultMap = null;
+	}
+	
+	final public function setDatabaseRequired():Void {
+		_dbRequired = true;
+	}
+	
+	final private function isDatabaseRequired():Bool {
+		return _dbRequired == true;
 	}
 	
 	final private function isPassRequired():Bool {
@@ -124,12 +134,18 @@ class DomainZoneCore extends DomainServicesCore {
 				_zone.carry(this, data);
 				return _zone;
 			}else{
+				var dbPassed:Bool = !isDatabaseRequired() || database.isConnected();
+				
 				if (data.length > 0){
-					_logService(toString() + "->execute(" + data + ")");
+					_logService(toString() + "->execute(" + data + ") " + (dbPassed ? "SUCCESS" : "DB_REQUIRED"));
 				}else{
-					_logService(toString() + "->execute()");
+					_logService(toString() + "->execute() " + (dbPassed ? "SUCCESS" : "DB_REQUIRED"));
 				}
-				_execute(data);
+				if (dbPassed){
+					_execute(data);
+				}else{
+					output.error(ErrorCodes.DATABASE_UNAVAILABLE);
+				}
 				return this;
 			}
 		}else{
@@ -137,7 +153,7 @@ class DomainZoneCore extends DomainServicesCore {
 			if (input.hasPass()){
 				error(ErrorCodes.SERVICE_UNAUTHORIZED);
 			}else{
-				error(ErrorCodes.LOGIN_REQUIRED);
+				error(ErrorCodes.SERVICE_LOGIN_REQUIRED);
 			}
 			return null;
 		}
@@ -155,6 +171,14 @@ class DomainZoneCore extends DomainServicesCore {
 			}else{
 				val = _value;
 			}
+		}
+		if (_defaultMap == null){
+			val += val.length > 0 ? ',' : '';
+			val += 'EndZone';
+		}
+		if (isDatabaseRequired()){
+			val += val.length > 0 ? ',' : '';
+			val += 'DatabaseRequired';
 		}
 		return _name + "[" + val + "]";
 	}

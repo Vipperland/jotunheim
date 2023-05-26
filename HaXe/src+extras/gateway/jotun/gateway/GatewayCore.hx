@@ -1,9 +1,12 @@
 package jotun.gateway;
-import jotun.gateway.database.DataAccess;
+import jotun.gateway.database.SessionDataAccess;
 import jotun.gateway.domain.DomainAccessCore;
 import jotun.gateway.domain.InputCore;
 import jotun.gateway.domain.OutputCore;
+import jotun.gateway.domain.zones.DomainZoneCore;
 import jotun.gateway.errors.ErrorCodes;
+import jotun.gateway.flags.GatewayOptions;
+import jotun.logical.Flag;
 import jotun.tools.Utils;
 import jotun.utils.SingletonLock;
 import php.ErrorException;
@@ -15,17 +18,9 @@ import php.Syntax;
  */
 class GatewayCore {
 
-	static private var _ME:GatewayCore;
+	static private var _instance:GatewayCore;
 	static public function getInstance():GatewayCore {
-		return _ME;
-	}
-	
-	public function new() {
-		if (_ME == null){
-			_ME = this;
-		}else{
-			throw new  ErrorException("Gateway is a Singleton");
-		}
+		return _instance;
 	}
 	
 	/**
@@ -36,43 +31,59 @@ class GatewayCore {
 	 * @param	TInput
 	 * @param	TDomain
 	 * @param	maintenance
+	 * @param	onInit
 	 */
-	static public function init(TGateway:Dynamic, TOutput:Dynamic, TDataAccess:Dynamic, TInput:Dynamic, TDomain:Dynamic, maintenance:Bool):Void {
+	static public function init(TGateway:Dynamic, TOutput:Dynamic, TDataAccess:Dynamic, TInput:Dynamic, TDomain:Dynamic, options:Int):Void {
 		
-		Syntax.construct(TGateway);
+		var gateway:GatewayCore = Syntax.construct(TGateway);
 		
 		Jotun.header.access();
 		
 		// Init OUTPUT interface
-		Syntax.construct(TOutput);
+		gateway._output = Syntax.construct(TOutput);
 		
 		// If functional mode, init domain services
-		if (!maintenance){
-			
-			if (Utils.boolean(Jotun.domain.params.log)){
-				OutputCore.getInstance().enableLog();
-			}
-			
-			Syntax.construct(TDataAccess);
-			
-			if (Utils.boolean(Jotun.domain.params.dblog)){
-				DataAccess.getInstance().enableLog();
-			}
+		if (!Flag.FTest(options, GatewayOptions.MAINTENANCE)){
 			
 			// Init INPUT interface
-			Syntax.construct(TInput);
+			gateway._input = Syntax.construct(TInput);
 			
-			Syntax.construct(TDomain);
+			gateway._output.setOptions(options);
+			
+			gateway._database = Syntax.construct(TDataAccess);
+			
+			gateway._database.setOptions(options);
+			
+			gateway._domain = Syntax.construct(TDomain);
 			
 		}else{
 			
-			OutputCore.getInstance().error(ErrorCodes.MAINTENANCE_MODE);
+			gateway._output.error(ErrorCodes.MAINTENANCE_MODE);
 			
 		}
 		
 		// Output all parsed data frm zone services
-		OutputCore.getInstance().flush();
+		gateway.flush();
 		
+	}
+	
+	private var _database:SessionDataAccess;
+	private var _domain:DomainZoneCore;
+	private var _input:InputCore;
+	private var _output:OutputCore;
+	
+	public function new() {
+		if (_instance == null){
+			_instance = this;
+		}else{
+			throw new  ErrorException("Gateway is a Singleton");
+		}
+	}
+	
+	
+	
+	public function flush():Void {
+		_output.flush();
 	}
 	
 }

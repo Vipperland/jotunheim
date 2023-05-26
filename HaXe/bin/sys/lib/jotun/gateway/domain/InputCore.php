@@ -9,6 +9,7 @@ use \jotun\gateway\domain\zones\pass\ZonePass;
 use \php\Boot;
 use \jotun\Jotun;
 use \jotun\utils\Dice;
+use \haxe\Json;
 use \jotun\gateway\domain\zones\pass\IPassCarrier;
 
 /**
@@ -21,10 +22,6 @@ class InputCore {
 	 */
 	static public $_instance;
 
-	/**
-	 * @var string
-	 */
-	public $_testToken;
 	/**
 	 * @var IPassCarrier
 	 */
@@ -42,7 +39,7 @@ class InputCore {
 	 * @return InputCore
 	 */
 	public static function getInstance () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:20: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:21: characters 3-19
 		return InputCore::$_instance;
 	}
 
@@ -50,16 +47,16 @@ class InputCore {
 	 * @return void
 	 */
 	public function __construct () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:37: lines 37-39
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:36: lines 36-38
 		if (InputCore::$_instance !== null) {
-			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:38: characters 4-9
+			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:37: characters 4-9
 			throw new \ErrorException("gateway.Input is a Singleton");
 		}
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:40: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:39: characters 3-19
 		InputCore::$_instance = $this;
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:41: characters 3-31
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:40: characters 3-31
 		$this->params = Jotun::$domain->params;
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:42: characters 3-30
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:41: characters 3-30
 		$this->object = Jotun::$domain->input;
 	}
 
@@ -67,7 +64,7 @@ class InputCore {
 	 * @return string
 	 */
 	final public function getInput () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:52: characters 3-33
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:51: characters 3-33
 		return Jotun::$domain->getInput();
 	}
 
@@ -75,15 +72,15 @@ class InputCore {
 	 * @return string
 	 */
 	final public function getInputJson () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:56: characters 3-33
-		return Jotun::$domain->getInput();
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:55: characters 10-45
+		return Json::phpJsonDecode(Jotun::$domain->getInput());
 	}
 
 	/**
 	 * @return IPassCarrier
 	 */
 	public function get_carrier () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:32: characters 3-22
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:31: characters 3-22
 		return $this->carrier;
 	}
 
@@ -91,11 +88,11 @@ class InputCore {
 	 * @return bool
 	 */
 	final public function hasAnyParam () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:46: lines 46-48
-		return Dice::Params($this->params, function ($p) {
-			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:47: characters 4-15
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:45: lines 45-47
+		return !Dice::Params($this->params, function ($p) {
+			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:46: characters 4-15
 			return true;
-		})->param !== null;
+		})->completed;
 	}
 
 	/**
@@ -104,12 +101,12 @@ class InputCore {
 	 * @return bool
 	 */
 	final public function hasAuthentication ($pass) {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:64: characters 10-50
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:63: characters 10-50
 		if ($this->hasPass()) {
-			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:64: characters 23-50
+			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:63: characters 23-50
 			return $pass->validate($this->get_carrier());
 		} else {
-			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:64: characters 10-50
+			#src+extras/gateway/jotun/gateway/domain/InputCore.hx:63: characters 10-50
 			return false;
 		}
 	}
@@ -118,8 +115,62 @@ class InputCore {
 	 * @return bool
 	 */
 	final public function hasPass () {
-		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:60: characters 3-30
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:59: characters 3-30
 		return $this->get_carrier() !== null;
+	}
+
+	/**
+	 * @param string $q
+	 * @param string $split
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	final public function paramAsArray ($q, $split = ",") {
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:79: characters 3-45
+		if ($split === null) {
+			$split = ",";
+		}
+		return Jotun::$domain->paramAsArray($q, $split);
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return bool
+	 */
+	final public function paramAsBool ($q) {
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:67: characters 3-37
+		return Jotun::$domain->paramAsBool($q);
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return float
+	 */
+	final public function paramAsFloat ($q) {
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:75: characters 3-38
+		return Jotun::$domain->paramAsFloat($q);
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return int
+	 */
+	final public function paramAsInt ($q) {
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:71: characters 3-36
+		return Jotun::$domain->paramAsInt($q);
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return mixed
+	 */
+	final public function paramAsObject ($q) {
+		#src+extras/gateway/jotun/gateway/domain/InputCore.hx:83: characters 3-39
+		return Jotun::$domain->paramAsObject($q);
 	}
 }
 

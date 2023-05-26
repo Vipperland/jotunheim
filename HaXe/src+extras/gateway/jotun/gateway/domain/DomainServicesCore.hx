@@ -1,12 +1,12 @@
 package jotun.gateway.domain;
 import jotun.gateway.database.DataAccess;
-import jotun.gateway.objects.InputOutputCore;
+import jotun.gateway.objects.OutputCoreCarrier;
 
 /**
  * ...
  * @author 
  */
-class DomainServicesCore extends InputOutputCore {
+class DomainServicesCore extends OutputCoreCarrier {
 
 	public var database(get, null):DataAccess;
 	private function get_database():DataAccess {

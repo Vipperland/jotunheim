@@ -27,10 +27,6 @@ class ErrorCodes {
 	/**
 	 * @var int
 	 */
-	const LOGIN_REQUIRED = 2;
-	/**
-	 * @var int
-	 */
 	const MAINTENANCE_MODE = 1;
 	/**
 	 * @var int
@@ -40,6 +36,14 @@ class ErrorCodes {
 	 * @var int
 	 */
 	const SERVICE_FORBIDDEN = 403;
+	/**
+	 * @var int
+	 */
+	const SERVICE_LOGIN_REQUIRED = 402;
+	/**
+	 * @var int
+	 */
+	const SERVICE_NOT_ACCEPTABLE = 406;
 	/**
 	 * @var int
 	 */

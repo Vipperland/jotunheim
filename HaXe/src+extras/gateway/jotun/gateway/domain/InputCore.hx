@@ -1,4 +1,5 @@
 package jotun.gateway.domain;
+import haxe.Json;
 import jotun.Jotun;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.serial.Packager;
@@ -19,8 +20,6 @@ class InputCore {
 	static public function getInstance():InputCore {
 		return _instance;
 	}
-	
-	private var _testToken:String;
 	
 	public var carrier(get, null):IPassCarrier;
 	
@@ -43,9 +42,9 @@ class InputCore {
 	}
 	
 	final public function hasAnyParam():Bool {
-		return Dice.Params(params, function(p:String){
+		return !Dice.Params(params, function(p:String){
 			return true;
-		}).param != null;
+		}).completed;
 	}
 	
 	final public function getInput():String {
@@ -53,7 +52,7 @@ class InputCore {
 	}
 	
 	final public function getInputJson():String {
-		return Jotun.domain.getInput();
+		return Json.parse(Jotun.domain.getInput());
 	}
 	
 	final public function hasPass():Bool {
@@ -62,6 +61,26 @@ class InputCore {
 	
 	final public function hasAuthentication(pass:ZonePass):Bool {
 		return hasPass() && pass.validate(this.carrier);
+	}
+	
+	final public function paramAsBool(q:String):Bool {
+		return Jotun.domain.paramAsBool(q);
+	}
+	
+	final public function paramAsInt(q:String):Int {
+		return Jotun.domain.paramAsInt(q);
+	}
+	
+	final public function paramAsFloat(q:String):Float {
+		return Jotun.domain.paramAsFloat(q);
+	}
+	
+	final public function paramAsArray(q:String, ?split:String = ','):Array<Dynamic> {
+		return Jotun.domain.paramAsArray(q, split);
+	}
+	
+	final public function paramAsObject(q:String):Dynamic {
+		return Jotun.domain.paramAsObject(q);
 	}
 	
 }

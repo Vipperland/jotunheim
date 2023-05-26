@@ -450,9 +450,9 @@ class Utils{
 	
 	static public function boolean(q:Dynamic):Bool {
 		if (Std.isOfType(q, String)){
-			return q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok" || q == "selected";
+			return q == "1" || q == "true" || q == "yes" || q == "accept" || q == "ok" || q == "selected" || q == "y";
 		}else{
-			return q == true || q == 1;
+			return q == true || q > 0;
 		}
 	}
 	

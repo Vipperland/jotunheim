@@ -11,6 +11,7 @@ use \php\_Boot\HxAnon;
 use \php\Boot;
 use \haxe\Exception;
 use \php\Lib;
+use \jotun\tools\Utils;
 use \jotun\utils\Dice;
 use \haxe\Json;
 use \php\_Boot\HxString;
@@ -286,6 +287,77 @@ class Domain implements IDomain {
 	public function isRequestMethod ($q) {
 		#src/jotun/net/Domain.hx:129: characters 4-48
 		return $this->getRequestMethod() === \mb_strtoupper($q);
+	}
+
+	/**
+	 * @param string $q
+	 * @param string $split
+	 * 
+	 * @return mixed[]|\Array_hx
+	 */
+	public function paramAsArray ($q, $split = ",") {
+		#src/jotun/net/Domain.hx:282: lines 282-285
+		if ($split === null) {
+			$split = ",";
+		}
+		#src/jotun/net/Domain.hx:283: characters 3-31
+		$q = \Reflect::field($this->params, $q);
+		#src/jotun/net/Domain.hx:284: characters 10-41
+		if ($q !== null) {
+			#src/jotun/net/Domain.hx:284: characters 22-36
+			return HxString::split($q, $split);
+		} else {
+			#src/jotun/net/Domain.hx:284: characters 39-41
+			return new \Array_hx();
+		}
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return bool
+	 */
+	public function paramAsBool ($q) {
+		#src/jotun/net/Domain.hx:271: characters 3-49
+		return Utils::boolean(\Reflect::field($this->params, $q));
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return float
+	 */
+	public function paramAsFloat ($q) {
+		#src/jotun/net/Domain.hx:279: characters 3-50
+		return \Std::parseFloat(\Reflect::field($this->params, $q));
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return int
+	 */
+	public function paramAsInt ($q) {
+		#src/jotun/net/Domain.hx:275: characters 3-48
+		return \Std::parseInt(\Reflect::field($this->params, $q));
+	}
+
+	/**
+	 * @param string $q
+	 * 
+	 * @return mixed
+	 */
+	public function paramAsObject ($q) {
+		#src/jotun/net/Domain.hx:288: characters 3-31
+		$q = \Reflect::field($this->params, $q);
+		#src/jotun/net/Domain.hx:289: characters 10-42
+		if ($q !== null) {
+			#src/jotun/net/Domain.hx:289: characters 24-37
+			return Json::phpJsonDecode($q);
+		} else {
+			#src/jotun/net/Domain.hx:289: characters 40-42
+			return new HxAnon();
+		}
 	}
 
 	/**

@@ -9100,10 +9100,10 @@ jotun_utils_Singularity.connect = function(options) {
 	}
 };
 jotun_utils_Singularity.isMain = function() {
-	return jotun_utils_Singularity._is_main;
+	return jotun_utils_Singularity._is_main == true;
 };
 jotun_utils_Singularity.isActive = function() {
-	return jotun_utils_Singularity._is_active;
+	return jotun_utils_Singularity._is_active == true;
 };
 jotun_utils_Singularity.toString = function() {
 	var ids = [];
@@ -9112,7 +9112,7 @@ jotun_utils_Singularity.toString = function() {
 			ids.push(v.id);
 		}
 	});
-	return "[Singularity(id=" + jotun_utils_Singularity.id() + ",main=" + Std.string(jotun_utils_Singularity._is_main) + ",instances=[" + ids.join(",") + "],connections=" + jotun_utils_Singularity.count() + ",channel=" + jotun_utils_Singularity._channel + ")]";
+	return "[Singularity(id=" + jotun_utils_Singularity.id() + ",main=" + Std.string(jotun_utils_Singularity.isMain()) + ",instances=[" + ids.join(",") + "],connections=" + jotun_utils_Singularity.count() + ",channel=" + jotun_utils_Singularity._channel + ")]";
 };
 var jotun_utils_Table = $hx_exports["J_Table"] = function() {
 };

@@ -24,6 +24,8 @@ class BasicSessionInput extends InputCore {
 		_loadAuthToken();
 	}
 	
+	private var _testToken:String;
+	
 	public function setTestToken(token:String):Void {
 		_testToken = token;
 		if (_testToken != null){
@@ -52,7 +54,6 @@ class BasicSessionInput extends InputCore {
 				if (session.load(authorization)){
 					if (session.isValid()){
 						session.exposeToken();
-						
 					}else{
 						_disposeSession(SessionErrorCodes.TOKEN_EXPIRED);
 					}

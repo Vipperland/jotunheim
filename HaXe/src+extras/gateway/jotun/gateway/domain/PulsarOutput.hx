@@ -5,6 +5,8 @@ import jotun.gaming.dataform.PulsarLink;
 import jotun.gaming.dataform.Spark;
 import jotun.gaming.dataform.SparkCore;
 import jotun.gateway.domain.OutputCore;
+import jotun.gateway.flags.GatewayOptions;
+import jotun.logical.Flag;
 import jotun.utils.Omnitools;
 import jotun.utils.Dice;
 import php.Lib;
@@ -17,6 +19,23 @@ class PulsarOutput extends OutputCore {
 
 	public function new() {
 		super(new Pulsar());
+	}
+	
+	override public function setOptions(value:Int):Void {
+		if (Flag.FTest(value, GatewayOptions.DEBUG)){
+			Pulsar.map("_logp", ['name','value'], Spark, false, false);
+			Pulsar.map("_logo", ['value'], Spark, false, false);
+			Dice.All(input.params, function(p:String, v:String){
+				this.list('_input').insert(new Spark('_logp').set('name', p).set('value', v));
+			});
+			if (input.object != null){
+				this.list('_input').insert(new Spark('_logo').set('value', input.object));
+			}
+		}
+		super.setOptions(value);
+		if (_log){
+			Pulsar.map("_logq", ['message'], Spark, false, false);
+		}
 	}
 	
 	override public function object(name:String):SparkCore {
@@ -32,24 +51,19 @@ class PulsarOutput extends OutputCore {
 	
 	override public function log(message:Dynamic, ?list:String = 'trace'):Void {
 		if (_log){
-			this.list('_logs').insert(new Spark('q').set('r', message));
+			this.list('_logs').insert(new Spark('_logq').set('message', message));
 		}
 	}
 	
 	override public function error(code:Int, check:Bool = false):Void {
-		this.list('errors').insert(new Spark('q').set('r', code));
+		this.list('errors').insert(new Spark('error').set('code', code));
 	}
 	
 	override public function flush():Void {
-		Pulsar.map("q", ['r'], Spark, false, false);
+		Pulsar.map("error", ['code'], Spark, false, false);
 		Pulsar.map("time", ['value'], Spark, false, false);
-		//Lib.dump(Input.getInstance().params);
-		if (_log){
-			Pulsar.map("_input", ['s','o'], Spark, false, false);
-			_data.insert(new Spark('_input').set('s', InputCore.getInstance().params).set('o', InputCore.getInstance().object));
-		}
 		_data.insert(new Spark('time').set('value', Omnitools.timeNow()));
-		Jotun.header.setPulsar(_data, false);
+		Jotun.header.setPulsar(_data, _encode_out, _chunk_size);
 	}
 	
 	

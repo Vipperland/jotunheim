@@ -60,4 +60,13 @@ interface IDomain {
 	
 	public function getFQDN(?len:Int = 2):String;
 	
+	public function paramAsBool(q:String):Bool;
+	
+	public function paramAsInt(q:String):Int;
+	
+	public function paramAsFloat(q:String):Float;
+	
+	public function paramAsArray(q:String, ?split:String = ','):Array<Dynamic>;
+	
+	public function paramAsObject(q:String):Dynamic;
 }

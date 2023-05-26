@@ -11,6 +11,7 @@ use \jotun\gateway\domain\OutputCore;
 use \jotun\utils\Omnitools;
 use \php\Boot;
 use \jotun\php\db\Clause;
+use \jotun\logical\Flag;
 use \jotun\Jotun;
 use \jotun\tools\Utils;
 use \jotun\gateway\database\SessionDataAccess;
@@ -20,7 +21,7 @@ use \jotun\gateway\domain\zones\pass\IPassCarrier;
  * ...
  * @author
  */
-class ZoneCoreSession extends ZoneCoreObject {
+class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 	/**
 	 * @var string
 	 */
@@ -43,6 +44,10 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 */
 	public $_ip;
 	/**
+	 * @var int
+	 */
+	public $_read;
+	/**
 	 * @var string
 	 */
 	public $_token;
@@ -55,6 +60,10 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 */
 	public $_upd;
 	/**
+	 * @var int
+	 */
+	public $_write;
+	/**
 	 * @var IPassCarrier
 	 */
 	public $carrier;
@@ -63,7 +72,7 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function __construct () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:47: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:53: characters 3-10
 		parent::__construct();
 	}
 
@@ -71,20 +80,40 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return IPassCarrier
 	 */
 	public function _loadCarrier () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:43: characters 3-14
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:49: characters 3-14
 		return null;
+	}
+
+	/**
+	 * @param int $read
+	 * 
+	 * @return bool
+	 */
+	public function canRead ($read) {
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:170: characters 3-33
+		return Flag::FTest($this->_read, $read);
+	}
+
+	/**
+	 * @param int $write
+	 * 
+	 * @return bool
+	 */
+	public function canWrite ($write) {
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:174: characters 3-35
+		return Flag::FTest($this->_write, $write);
 	}
 
 	/**
 	 * @return void
 	 */
 	public function drop () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:105: lines 105-109
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:117: lines 117-121
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:106: lines 106-108
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:118: lines 118-120
 		$this->RunSQL(function () use (&$_gthis) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:107: characters 4-94
-			(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_user_session()->deleteOne(Clause::EQUAL("_token", $_gthis->_token));
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:119: characters 4-90
+			(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_sessions()->deleteOne(Clause::EQUAL("_token", $_gthis->_token));
 		});
 	}
 
@@ -92,32 +121,35 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function dropAll () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:111: lines 111-117
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:123: lines 123-129
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:112: lines 112-116
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:124: lines 124-128
 		if ($this->isValid()) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:113: lines 113-115
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:125: lines 125-127
 			$this->RunSQL(function () use (&$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:114: characters 5-88
-				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_user_session()->delete(Clause::EQUAL("_uid", $_gthis->_uid));
+				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:126: characters 5-84
+				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_sessions()->delete(Clause::EQUAL("_uid", $_gthis->_uid));
 			});
 		}
 	}
 
 	/**
+	 *
+	 * @param	force
+	 * 
 	 * @param bool $force
 	 * 
 	 * @return void
 	 */
 	public function exposeCarrier ($force = null) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:135: lines 135-137
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:151: lines 151-153
 		if (($this->get_carrier() === null) && $force) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:136: characters 4-18
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:152: characters 4-18
 			$this->_loadCarrier();
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:138: lines 138-140
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:154: lines 154-156
 		if ($this->get_carrier() !== null) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:139: characters 4-71
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:155: characters 4-71
 			OutputCore::getInstance()->object("carrier")->info = $this->get_carrier()->getInfo();
 		}
 	}
@@ -126,27 +158,35 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function exposeToken () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:124: characters 3-53
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:136: characters 3-53
 		$token = "(y)<=";
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:125: lines 125-130
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:137: lines 137-142
 		if ($this->isValid()) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:126: characters 4-19
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:138: characters 4-19
 			$token = ($token??'null') . ($this->_token??'null');
 		} else {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:128: characters 4-22
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:140: characters 4-22
 			$token = ($token??'null') . "EXPIRED";
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:129: characters 4-10
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:141: characters 4-10
 			$this->drop();
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:131: characters 3-71
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:143: characters 3-71
 		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64($token));
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getInfo () {
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:178: characters 3-14
+		return null;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getToken () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:120: characters 3-33
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:132: characters 3-33
 		return "(y)<=" . ($this->_token??'null');
 	}
 
@@ -154,7 +194,7 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return IPassCarrier
 	 */
 	public function get_carrier () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:39: characters 3-24
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:44: characters 3-24
 		return $this->_loadCarrier();
 	}
 
@@ -162,7 +202,7 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return bool
 	 */
 	public function isValid () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:93: characters 3-52
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:105: characters 3-52
 		return (Omnitools::timeFromNow(168) - $this->_upd) > 0;
 	}
 
@@ -172,29 +212,33 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return bool
 	 */
 	public function load ($oauth) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:77: lines 77-90
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:87: lines 87-102
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:78: lines 78-80
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:88: lines 88-90
 		$current = $this->RunSQL(function () use (&$_gthis, &$oauth) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:79: characters 4-103
-			return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_user_session()->findOne("*", Clause::EQUAL("_token", $oauth));
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:89: characters 4-99
+			return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_sessions()->findOne("*", Clause::EQUAL("_token", $oauth));
 		});
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:81: lines 81-88
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:91: lines 91-100
 		if ($current !== null) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:82: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:92: characters 4-23
 			$this->_uid = $current->_uid;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:83: characters 4-27
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:93: characters 4-27
 			$this->_token = $current->_token;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:84: characters 4-21
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:94: characters 4-21
 			$this->_ip = $current->_ip;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:85: characters 4-29
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:95: characters 4-29
 			$this->_device = $current->_device;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:86: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:96: characters 4-25
+			$this->_read = $current->_read;
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:97: characters 4-27
+			$this->_write = $current->_write;
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:98: characters 4-23
 			$this->_ctd = $current->_ctd;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:87: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:99: characters 4-23
 			$this->_upd = $current->_upd;
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:89: characters 3-25
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:101: characters 3-25
 		return $current !== null;
 	}
 
@@ -202,71 +246,81 @@ class ZoneCoreSession extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function refresh () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:96: lines 96-103
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:108: lines 108-115
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:97: lines 97-102
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:109: lines 109-114
 		if (($this->_uid !== null) && ($this->_token !== null)) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:98: characters 4-30
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:110: characters 4-30
 			$this->_upd = Omnitools::timeNow();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:99: lines 99-101
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:111: lines 111-113
 			$this->RunSQL(function () use (&$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:100: characters 5-108
-				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_user_session()->updateOne(new HxAnon(["_upd" => $_gthis->_upd]), Clause::EQUAL("_token", $_gthis->_token));
+				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:112: characters 5-104
+				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_sessions()->updateOne(new HxAnon(["_upd" => $_gthis->_upd]), Clause::EQUAL("_token", $_gthis->_token));
 			});
 		}
 	}
 
 	/**
+	 * Remove auhtorization from header
+	 * 
 	 * @return void
 	 */
 	public function revoke () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:144: characters 3-107
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:163: characters 3-107
 		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64("(y)<=" . "REVOKE"));
 	}
 
 	/**
 	 * @param string $id
 	 * @param string $device
+	 * @param int $read
+	 * @param int $write
 	 * 
 	 * @return bool
 	 */
-	public function save ($id, $device) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:50: lines 50-75
+	public function save ($id, $device, $read, $write) {
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:56: lines 56-85
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:51: lines 51-74
+		#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:57: lines 57-84
 		if (($this->_token === null) && ($this->_uid === null)) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:52: characters 4-13
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:58: characters 4-13
 			$this->_uid = $id;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:53: characters 4-39
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:59: characters 4-39
 			$this->_token = Omnitools::genRandomIDx65();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:54: characters 4-29
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:60: characters 4-29
 			$this->_ip = Jotun::$domain->client;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:55: characters 4-43
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:61: characters 4-43
 			$this->_device = Utils::getValidOne($device, "");
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:56: characters 4-30
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:62: characters 4-16
+			$this->_read = $read;
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:63: characters 4-18
+			$this->_write = $write;
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:64: characters 4-30
 			$this->_ctd = Omnitools::timeNow();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:57: characters 4-15
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:65: characters 4-15
 			$this->_upd = $this->_ctd;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:58: lines 58-71
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:66: lines 66-81
 			if (Boot::dynamicField($this->RunSQL(function () use (&$id, &$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:59: lines 59-66
-				return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_user_session()->add(new HxAnon([
+				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:67: lines 67-76
+				return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_sessions()->add(new HxAnon([
 					"_uid" => $id,
 					"_token" => $_gthis->_token,
 					"_ip" => $_gthis->_ip,
 					"_device" => $_gthis->_device,
+					"_read" => $_gthis->_read,
+					"_write" => $_gthis->_write,
 					"_ctd" => $_gthis->_ctd,
 					"_upd" => $_gthis->_upd,
 				]));
 			}), 'success')) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:68: characters 5-16
+				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:78: characters 5-16
 				return true;
 			} else {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:70: characters 5-52
+				#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:80: characters 5-52
 				return $this->_error(1030);
 			}
 		} else {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:73: characters 4-55
+			#src+extras/basic+gateway/jotun/gateway/database/objects/ZoneCoreSession.hx:83: characters 4-55
 			return $this->_error(1040);
 		}
 	}
