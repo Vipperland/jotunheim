@@ -51,11 +51,11 @@ class JsonTool {
 	 * @return string
 	 */
 	public static function stringify ($o, $replacer = null, $space = null) {
-		#src/jotun/serial/JsonTool.hx:30: characters 3-83
+		#src/jotun/serial/JsonTool.hx:34: characters 3-83
 		$printer = new JsonTool(($replacer !== null ? $replacer : JsonTool::$customReplacer), $space);
-		#src/jotun/serial/JsonTool.hx:31: characters 3-23
+		#src/jotun/serial/JsonTool.hx:35: characters 3-23
 		$printer->write("", $o);
-		#src/jotun/serial/JsonTool.hx:32: characters 3-32
+		#src/jotun/serial/JsonTool.hx:36: characters 3-32
 		return $printer->buf->b;
 	}
 
@@ -66,15 +66,15 @@ class JsonTool {
 	 * @return void
 	 */
 	public function __construct ($replacer, $space) {
-		#src/jotun/serial/JsonTool.hx:42: characters 3-27
+		#src/jotun/serial/JsonTool.hx:46: characters 3-27
 		$this->replacer = $replacer;
-		#src/jotun/serial/JsonTool.hx:43: characters 3-22
+		#src/jotun/serial/JsonTool.hx:47: characters 3-22
 		$this->indent = $space;
-		#src/jotun/serial/JsonTool.hx:44: characters 3-30
+		#src/jotun/serial/JsonTool.hx:48: characters 3-30
 		$this->pretty = $space !== null;
-		#src/jotun/serial/JsonTool.hx:45: characters 3-16
+		#src/jotun/serial/JsonTool.hx:49: characters 3-16
 		$this->nind = 0;
-		#src/jotun/serial/JsonTool.hx:52: characters 3-24
+		#src/jotun/serial/JsonTool.hx:55: characters 3-24
 		$this->buf = new \StringBuf();
 	}
 
@@ -84,7 +84,7 @@ class JsonTool {
 	 * @return void
 	 */
 	public function classString ($v) {
-		#src/jotun/serial/JsonTool.hx:143: characters 3-60
+		#src/jotun/serial/JsonTool.hx:151: characters 3-60
 		$this->fieldsString($v, \Type::getInstanceFields(\Type::getClass($v)));
 	}
 
@@ -95,90 +95,90 @@ class JsonTool {
 	 * @return void
 	 */
 	public function fieldsString ($v, $fields) {
-		#src/jotun/serial/JsonTool.hx:151: characters 3-20
+		#src/jotun/serial/JsonTool.hx:159: characters 3-20
 		$_this = $this->buf;
 		$_this->b = ($_this->b??'null') . (\mb_chr(123)??'null');
-		#src/jotun/serial/JsonTool.hx:152: characters 3-27
+		#src/jotun/serial/JsonTool.hx:160: characters 3-27
 		$len = $fields->length;
-		#src/jotun/serial/JsonTool.hx:153: characters 3-22
+		#src/jotun/serial/JsonTool.hx:161: characters 3-22
 		$last = $len - 1;
-		#src/jotun/serial/JsonTool.hx:154: characters 3-20
+		#src/jotun/serial/JsonTool.hx:162: characters 3-20
 		$first = true;
-		#src/jotun/serial/JsonTool.hx:155: characters 13-17
+		#src/jotun/serial/JsonTool.hx:163: characters 13-17
 		$_g = 0;
-		#src/jotun/serial/JsonTool.hx:155: characters 17-20
+		#src/jotun/serial/JsonTool.hx:163: characters 17-20
 		$_g1 = $len;
-		#src/jotun/serial/JsonTool.hx:155: lines 155-181
+		#src/jotun/serial/JsonTool.hx:163: lines 163-198
 		while ($_g < $_g1) {
-			#src/jotun/serial/JsonTool.hx:155: characters 13-20
+			#src/jotun/serial/JsonTool.hx:163: characters 13-20
 			$i = $_g++;
-			#src/jotun/serial/JsonTool.hx:156: characters 4-22
+			#src/jotun/serial/JsonTool.hx:164: characters 4-22
 			$f = ($fields->arr[$i] ?? null);
-			#src/jotun/serial/JsonTool.hx:157: characters 4-36
+			#src/jotun/serial/JsonTool.hx:165: characters 4-36
 			$value = \Reflect::field($v, $f);
-			#src/jotun/serial/JsonTool.hx:158: characters 8-33
+			#src/jotun/serial/JsonTool.hx:166: characters 8-33
 			$f1 = $value;
-			#src/jotun/serial/JsonTool.hx:158: lines 158-159
+			#src/jotun/serial/JsonTool.hx:166: lines 166-168
 			if (($f1 instanceof \Closure) || ($f1 instanceof HxClosure)) {
-				#src/jotun/serial/JsonTool.hx:159: characters 5-13
+				#src/jotun/serial/JsonTool.hx:167: characters 5-13
 				continue;
 			}
-			#src/jotun/serial/JsonTool.hx:163: characters 4-67
+			#src/jotun/serial/JsonTool.hx:174: lines 174-176
 			if (is_string($f) && (\mb_substr($f, 0, 1) === "_")) {
-				#src/jotun/serial/JsonTool.hx:163: characters 59-67
+				#src/jotun/serial/JsonTool.hx:175: characters 5-13
 				continue;
 			}
-			#src/jotun/serial/JsonTool.hx:164: lines 164-168
+			#src/jotun/serial/JsonTool.hx:178: lines 178-183
 			if ($first) {
-				#src/jotun/serial/JsonTool.hx:165: characters 5-11
+				#src/jotun/serial/JsonTool.hx:179: characters 6-12
 				$this->nind++;
-				#src/jotun/serial/JsonTool.hx:166: characters 5-18
+				#src/jotun/serial/JsonTool.hx:180: characters 6-19
 				$first = false;
 			} else {
-				#src/jotun/serial/JsonTool.hx:168: characters 5-22
+				#src/jotun/serial/JsonTool.hx:182: characters 6-23
 				$_this = $this->buf;
 				$_this->b = ($_this->b??'null') . (\mb_chr(44)??'null');
 			}
-			#src/jotun/serial/JsonTool.hx:169: characters 4-10
+			#src/jotun/serial/JsonTool.hx:184: characters 5-11
 			if ($this->pretty) {
 				$_this1 = $this->buf;
 				$_this1->b = ($_this1->b??'null') . (\mb_chr(10)??'null');
 			}
-			#src/jotun/serial/JsonTool.hx:170: characters 4-10
+			#src/jotun/serial/JsonTool.hx:185: characters 5-11
 			if ($this->pretty) {
 				$v1 = \StringTools::lpad("", $this->indent, $this->nind * mb_strlen($this->indent));
 				$this->buf->add($v1);
 			}
-			#src/jotun/serial/JsonTool.hx:171: characters 4-12
+			#src/jotun/serial/JsonTool.hx:186: characters 5-13
 			$this->quote($f);
-			#src/jotun/serial/JsonTool.hx:172: characters 4-21
+			#src/jotun/serial/JsonTool.hx:187: characters 5-22
 			$_this2 = $this->buf;
 			$_this2->b = ($_this2->b??'null') . (\mb_chr(58)??'null');
-			#src/jotun/serial/JsonTool.hx:173: lines 173-174
+			#src/jotun/serial/JsonTool.hx:188: lines 188-190
 			if ($this->pretty) {
-				#src/jotun/serial/JsonTool.hx:174: characters 5-22
+				#src/jotun/serial/JsonTool.hx:189: characters 6-23
 				$_this3 = $this->buf;
 				$_this3->b = ($_this3->b??'null') . (\mb_chr(32)??'null');
 			}
-			#src/jotun/serial/JsonTool.hx:175: characters 4-19
+			#src/jotun/serial/JsonTool.hx:191: characters 5-20
 			$this->write($f, $value);
-			#src/jotun/serial/JsonTool.hx:176: lines 176-180
+			#src/jotun/serial/JsonTool.hx:193: lines 193-197
 			if ($i === $last) {
-				#src/jotun/serial/JsonTool.hx:177: characters 5-11
+				#src/jotun/serial/JsonTool.hx:194: characters 5-11
 				$this->nind--;
-				#src/jotun/serial/JsonTool.hx:178: characters 5-11
+				#src/jotun/serial/JsonTool.hx:195: characters 5-11
 				if ($this->pretty) {
 					$_this4 = $this->buf;
 					$_this4->b = ($_this4->b??'null') . (\mb_chr(10)??'null');
 				}
-				#src/jotun/serial/JsonTool.hx:179: characters 5-11
+				#src/jotun/serial/JsonTool.hx:196: characters 5-11
 				if ($this->pretty) {
 					$v2 = \StringTools::lpad("", $this->indent, $this->nind * mb_strlen($this->indent));
 					$this->buf->add($v2);
 				}
 			}
 		}
-		#src/jotun/serial/JsonTool.hx:182: characters 3-20
+		#src/jotun/serial/JsonTool.hx:199: characters 3-20
 		$_this = $this->buf;
 		$_this->b = ($_this->b??'null') . (\mb_chr(125)??'null');
 	}
@@ -187,9 +187,9 @@ class JsonTool {
 	 * @return void
 	 */
 	public function ipad () {
-		#src/jotun/serial/JsonTool.hx:57: lines 57-58
+		#src/jotun/serial/JsonTool.hx:60: lines 60-62
 		if ($this->pretty) {
-			#src/jotun/serial/JsonTool.hx:58: characters 4-59
+			#src/jotun/serial/JsonTool.hx:61: characters 4-59
 			$v = \StringTools::lpad("", $this->indent, $this->nind * mb_strlen($this->indent));
 			$this->buf->add($v);
 		}
@@ -199,9 +199,9 @@ class JsonTool {
 	 * @return void
 	 */
 	public function newl () {
-		#src/jotun/serial/JsonTool.hx:62: lines 62-63
+		#src/jotun/serial/JsonTool.hx:66: lines 66-68
 		if ($this->pretty) {
-			#src/jotun/serial/JsonTool.hx:63: characters 4-22
+			#src/jotun/serial/JsonTool.hx:67: characters 4-22
 			$_this = $this->buf;
 			$_this->b = ($_this->b??'null') . (\mb_chr(10)??'null');
 		}
@@ -213,7 +213,7 @@ class JsonTool {
 	 * @return void
 	 */
 	public function objString ($v) {
-		#src/jotun/serial/JsonTool.hx:147: characters 3-37
+		#src/jotun/serial/JsonTool.hx:155: characters 3-37
 		$this->fieldsString($v, \Reflect::fields($v));
 	}
 
@@ -223,46 +223,46 @@ class JsonTool {
 	 * @return void
 	 */
 	public function quote ($s) {
-		#src/jotun/serial/JsonTool.hx:192: characters 3-20
+		#src/jotun/serial/JsonTool.hx:209: characters 3-20
 		$_this = $this->buf;
 		$_this->b = ($_this->b??'null') . (\mb_chr(34)??'null');
-		#src/jotun/serial/JsonTool.hx:193: characters 3-13
+		#src/jotun/serial/JsonTool.hx:210: characters 3-13
 		$i = 0;
-		#src/jotun/serial/JsonTool.hx:194: characters 3-25
+		#src/jotun/serial/JsonTool.hx:211: characters 3-25
 		$length = mb_strlen($s);
-		#src/jotun/serial/JsonTool.hx:198: lines 198-240
+		#src/jotun/serial/JsonTool.hx:215: lines 215-259
 		while ($i < $length) {
-			#src/jotun/serial/JsonTool.hx:199: characters 4-45
+			#src/jotun/serial/JsonTool.hx:216: characters 4-45
 			$c = \StringTools::unsafeCodeAt($s, $i++);
-			#src/jotun/serial/JsonTool.hx:200: lines 200-239
+			#src/jotun/serial/JsonTool.hx:217: lines 217-258
 			if ($c === 8) {
-				#src/jotun/serial/JsonTool.hx:212: characters 6-16
+				#src/jotun/serial/JsonTool.hx:229: characters 6-16
 				$this->buf->add("\\b");
 			} else if ($c === 9) {
-				#src/jotun/serial/JsonTool.hx:210: characters 6-16
+				#src/jotun/serial/JsonTool.hx:227: characters 6-16
 				$this->buf->add("\\t");
 			} else if ($c === 10) {
-				#src/jotun/serial/JsonTool.hx:206: characters 6-16
+				#src/jotun/serial/JsonTool.hx:223: characters 6-16
 				$this->buf->add("\\n");
 			} else if ($c === 12) {
-				#src/jotun/serial/JsonTool.hx:214: characters 6-16
+				#src/jotun/serial/JsonTool.hx:231: characters 6-16
 				$this->buf->add("\\f");
 			} else if ($c === 13) {
-				#src/jotun/serial/JsonTool.hx:208: characters 6-16
+				#src/jotun/serial/JsonTool.hx:225: characters 6-16
 				$this->buf->add("\\r");
 			} else if ($c === 34) {
-				#src/jotun/serial/JsonTool.hx:202: characters 6-16
+				#src/jotun/serial/JsonTool.hx:219: characters 6-16
 				$this->buf->add("\\\"");
 			} else if ($c === 92) {
-				#src/jotun/serial/JsonTool.hx:204: characters 6-17
+				#src/jotun/serial/JsonTool.hx:221: characters 6-17
 				$this->buf->add("\\\\");
 			} else {
-				#src/jotun/serial/JsonTool.hx:237: characters 6-16
+				#src/jotun/serial/JsonTool.hx:256: characters 6-16
 				$_this = $this->buf;
 				$_this->b = ($_this->b??'null') . (\mb_chr($c)??'null');
 			}
 		}
-		#src/jotun/serial/JsonTool.hx:245: characters 3-20
+		#src/jotun/serial/JsonTool.hx:265: characters 3-20
 		$_this = $this->buf;
 		$_this->b = ($_this->b??'null') . (\mb_chr(34)??'null');
 	}
@@ -274,136 +274,136 @@ class JsonTool {
 	 * @return void
 	 */
 	public function write ($k, $v) {
-		#src/jotun/serial/JsonTool.hx:67: lines 67-68
+		#src/jotun/serial/JsonTool.hx:72: lines 72-74
 		if ($this->replacer !== null) {
-			#src/jotun/serial/JsonTool.hx:68: characters 4-5
+			#src/jotun/serial/JsonTool.hx:73: characters 4-5
 			$v = ($this->replacer)($k, $v);
 		}
-		#src/jotun/serial/JsonTool.hx:69: characters 11-25
+		#src/jotun/serial/JsonTool.hx:75: characters 11-25
 		$_g = \Type::typeof($v);
 		$__hx__switch = ($_g->index);
 		if ($__hx__switch === 0) {
-			#src/jotun/serial/JsonTool.hx:121: characters 5-16
+			#src/jotun/serial/JsonTool.hx:129: characters 5-16
 			$this->buf->add("null");
 		} else if ($__hx__switch === 1) {
-			#src/jotun/serial/JsonTool.hx:75: characters 5-52
+			#src/jotun/serial/JsonTool.hx:81: characters 5-52
 			$this->buf->add($v);
 		} else if ($__hx__switch === 2) {
-			#src/jotun/serial/JsonTool.hx:77: characters 5-51
+			#src/jotun/serial/JsonTool.hx:83: characters 5-51
 			$v1 = (\is_finite($v) ? \Std::string($v) : "null");
 			$this->buf->add($v1);
 		} else if ($__hx__switch === 3) {
-			#src/jotun/serial/JsonTool.hx:119: characters 5-68
+			#src/jotun/serial/JsonTool.hx:127: characters 5-68
 			$this->buf->add(($v ? "true" : "false"));
 		} else if ($__hx__switch === 4) {
-			#src/jotun/serial/JsonTool.hx:73: characters 5-17
+			#src/jotun/serial/JsonTool.hx:79: characters 5-17
 			$this->fieldsString($v, \Reflect::fields($v));
 		} else if ($__hx__switch === 5) {
-			#src/jotun/serial/JsonTool.hx:79: characters 5-19
+			#src/jotun/serial/JsonTool.hx:85: characters 5-19
 			$this->buf->add("\"<fun>\"");
 		} else if ($__hx__switch === 6) {
-			#src/jotun/serial/JsonTool.hx:80: characters 16-17
+			#src/jotun/serial/JsonTool.hx:86: characters 16-17
 			$c = $_g->params[0];
-			#src/jotun/serial/JsonTool.hx:81: lines 81-114
+			#src/jotun/serial/JsonTool.hx:87: lines 87-122
 			if ($c === Boot::getClass('String')) {
-				#src/jotun/serial/JsonTool.hx:82: characters 6-14
+				#src/jotun/serial/JsonTool.hx:88: characters 6-14
 				$this->quote($v);
 			} else if ($c === Boot::getClass(\Array_hx::class)) {
-				#src/jotun/serial/JsonTool.hx:84: characters 6-31
+				#src/jotun/serial/JsonTool.hx:90: characters 6-31
 				$v1 = $v;
-				#src/jotun/serial/JsonTool.hx:85: characters 6-23
+				#src/jotun/serial/JsonTool.hx:91: characters 6-23
 				$_this = $this->buf;
 				$_this->b = ($_this->b??'null') . (\mb_chr(91)??'null');
-				#src/jotun/serial/JsonTool.hx:87: characters 6-25
+				#src/jotun/serial/JsonTool.hx:92: characters 6-25
 				$len = $v1->length;
-				#src/jotun/serial/JsonTool.hx:88: characters 6-25
+				#src/jotun/serial/JsonTool.hx:93: characters 6-25
 				$last = $len - 1;
-				#src/jotun/serial/JsonTool.hx:89: characters 16-20
+				#src/jotun/serial/JsonTool.hx:94: characters 16-20
 				$_g1 = 0;
-				#src/jotun/serial/JsonTool.hx:89: characters 20-23
+				#src/jotun/serial/JsonTool.hx:94: characters 20-23
 				$_g2 = $len;
-				#src/jotun/serial/JsonTool.hx:89: lines 89-102
+				#src/jotun/serial/JsonTool.hx:94: lines 94-108
 				while ($_g1 < $_g2) {
-					#src/jotun/serial/JsonTool.hx:89: characters 16-23
+					#src/jotun/serial/JsonTool.hx:94: characters 16-23
 					$i = $_g1++;
-					#src/jotun/serial/JsonTool.hx:90: lines 90-93
+					#src/jotun/serial/JsonTool.hx:95: lines 95-99
 					if ($i > 0) {
-						#src/jotun/serial/JsonTool.hx:91: characters 8-25
+						#src/jotun/serial/JsonTool.hx:96: characters 8-25
 						$_this = $this->buf;
 						$_this->b = ($_this->b??'null') . (\mb_chr(44)??'null');
 					} else {
-						#src/jotun/serial/JsonTool.hx:93: characters 8-14
+						#src/jotun/serial/JsonTool.hx:98: characters 8-14
 						$this->nind++;
 					}
-					#src/jotun/serial/JsonTool.hx:94: characters 7-13
+					#src/jotun/serial/JsonTool.hx:100: characters 7-13
 					if ($this->pretty) {
 						$_this1 = $this->buf;
 						$_this1->b = ($_this1->b??'null') . (\mb_chr(10)??'null');
 					}
-					#src/jotun/serial/JsonTool.hx:95: characters 7-13
+					#src/jotun/serial/JsonTool.hx:101: characters 7-13
 					if ($this->pretty) {
 						$v2 = \StringTools::lpad("", $this->indent, $this->nind * mb_strlen($this->indent));
 						$this->buf->add($v2);
 					}
-					#src/jotun/serial/JsonTool.hx:96: characters 7-21
+					#src/jotun/serial/JsonTool.hx:102: characters 7-21
 					$this->write($i, ($v1->arr[$i] ?? null));
-					#src/jotun/serial/JsonTool.hx:97: lines 97-101
+					#src/jotun/serial/JsonTool.hx:103: lines 103-107
 					if ($i === $last) {
-						#src/jotun/serial/JsonTool.hx:98: characters 8-14
+						#src/jotun/serial/JsonTool.hx:104: characters 8-14
 						$this->nind--;
-						#src/jotun/serial/JsonTool.hx:99: characters 8-14
+						#src/jotun/serial/JsonTool.hx:105: characters 8-14
 						if ($this->pretty) {
 							$_this2 = $this->buf;
 							$_this2->b = ($_this2->b??'null') . (\mb_chr(10)??'null');
 						}
-						#src/jotun/serial/JsonTool.hx:100: characters 8-14
+						#src/jotun/serial/JsonTool.hx:106: characters 8-14
 						if ($this->pretty) {
 							$v3 = \StringTools::lpad("", $this->indent, $this->nind * mb_strlen($this->indent));
 							$this->buf->add($v3);
 						}
 					}
 				}
-				#src/jotun/serial/JsonTool.hx:103: characters 6-23
+				#src/jotun/serial/JsonTool.hx:109: characters 6-23
 				$_this = $this->buf;
 				$_this->b = ($_this->b??'null') . (\mb_chr(93)??'null');
 			} else if ($c === Boot::getClass(StringMap::class)) {
-				#src/jotun/serial/JsonTool.hx:105: characters 6-43
+				#src/jotun/serial/JsonTool.hx:111: characters 6-43
 				$v1 = $v;
-				#src/jotun/serial/JsonTool.hx:106: characters 6-17
+				#src/jotun/serial/JsonTool.hx:112: characters 6-17
 				$o = new HxAnon();
-				#src/jotun/serial/JsonTool.hx:107: characters 16-24
+				#src/jotun/serial/JsonTool.hx:113: characters 16-24
 				$data = \array_values(\array_map("strval", \array_keys($v1->data)));
 				$_g_current = 0;
 				$_g_length = \count($data);
 				$_g_data = $data;
-				#src/jotun/serial/JsonTool.hx:107: lines 107-108
+				#src/jotun/serial/JsonTool.hx:113: lines 113-115
 				while ($_g_current < $_g_length) {
 					$k = $_g_data[$_g_current++];
-					#src/jotun/serial/JsonTool.hx:108: characters 7-39
+					#src/jotun/serial/JsonTool.hx:114: characters 7-39
 					\Reflect::setField($o, $k, ($v1->data[$k] ?? null));
 				}
-				#src/jotun/serial/JsonTool.hx:109: characters 6-18
+				#src/jotun/serial/JsonTool.hx:116: characters 6-18
 				$v1 = $o;
 				$this->fieldsString($v1, \Reflect::fields($v1));
 			} else if ($c === Boot::getClass(\Date::class)) {
-				#src/jotun/serial/JsonTool.hx:111: characters 6-21
+				#src/jotun/serial/JsonTool.hx:118: characters 6-21
 				$v1 = $v;
-				#src/jotun/serial/JsonTool.hx:112: characters 6-25
+				#src/jotun/serial/JsonTool.hx:119: characters 6-25
 				$this->quote($v1->toString());
 			} else {
-				#src/jotun/serial/JsonTool.hx:114: characters 6-20
+				#src/jotun/serial/JsonTool.hx:121: characters 6-20
 				$this->classString($v);
 			}
 		} else if ($__hx__switch === 7) {
-			#src/jotun/serial/JsonTool.hx:115: characters 15-16
+			#src/jotun/serial/JsonTool.hx:123: characters 15-16
 			$_g1 = $_g->params[0];
-			#src/jotun/serial/JsonTool.hx:116: characters 5-31
+			#src/jotun/serial/JsonTool.hx:124: characters 5-31
 			$i = $v->index;
-			#src/jotun/serial/JsonTool.hx:117: characters 5-23
+			#src/jotun/serial/JsonTool.hx:125: characters 5-23
 			$v = \Std::string($i);
 			$this->buf->add($v);
 		} else if ($__hx__switch === 8) {
-			#src/jotun/serial/JsonTool.hx:71: characters 5-17
+			#src/jotun/serial/JsonTool.hx:77: characters 5-17
 			$this->buf->add("\"???\"");
 		}
 	}
@@ -420,25 +420,25 @@ class JsonTool {
 
 
 		self::$customReplacer = function ($a, $b) {
-			#src/jotun/serial/JsonTool.hx:22: lines 22-24
+			#src/jotun/serial/JsonTool.hx:22: lines 22-26
 			if (is_string($a)) {
-				#src/jotun/serial/JsonTool.hx:23: characters 4-42
+				#src/jotun/serial/JsonTool.hx:23: lines 23-25
 				if (HxDynamicStr::wrap($a)->substr(0, 1) === "_") {
-					#src/jotun/serial/JsonTool.hx:23: characters 31-42
+					#src/jotun/serial/JsonTool.hx:24: characters 5-16
 					return null;
 				}
 			}
-			#src/jotun/serial/JsonTool.hx:25: characters 3-44
+			#src/jotun/serial/JsonTool.hx:27: lines 27-29
 			if (($b instanceof Flag)) {
-				#src/jotun/serial/JsonTool.hx:25: characters 30-44
+				#src/jotun/serial/JsonTool.hx:28: characters 4-18
 				return Boot::dynamicField($b, 'value');
 			}
-			#src/jotun/serial/JsonTool.hx:26: characters 10-32
+			#src/jotun/serial/JsonTool.hx:30: characters 10-32
 			if ($b === null) {
-				#src/jotun/serial/JsonTool.hx:26: characters 24-28
+				#src/jotun/serial/JsonTool.hx:30: characters 24-28
 				return null;
 			} else {
-				#src/jotun/serial/JsonTool.hx:26: characters 31-32
+				#src/jotun/serial/JsonTool.hx:30: characters 31-32
 				return $b;
 			}
 		};

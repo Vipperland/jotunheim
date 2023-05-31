@@ -1,6 +1,6 @@
 package jotun.gateway.domain;
 import jotun.errors.SessionErrorCodes;
-import jotun.gateway.database.objects.ZoneCoreSession;
+import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.domain.InputCore;
 import jotun.serial.Packager;
 import jotun.tools.Utils;
@@ -13,7 +13,7 @@ class BasicSessionInput extends InputCore {
 
 	private var _tokenStatus:Int;
 	
-	public var session:ZoneCoreSession;
+	public var session:UserSessionObject;
 	
 	public function getTokenSatus():Int {
 		return _tokenStatus;
@@ -48,9 +48,9 @@ class BasicSessionInput extends InputCore {
 		}
 		if (Utils.isValid(authorization)){
 			authorization = Packager.decodeBase64(authorization);
-			if (authorization.substr(0, ZoneCoreSession.OAUTH_HEAD_IN.length) == ZoneCoreSession.OAUTH_HEAD_IN){
-				authorization = authorization.substring(ZoneCoreSession.OAUTH_HEAD_IN.length, authorization.length);
-				session = new ZoneCoreSession();
+			if (authorization.substr(0, UserSessionObject.OAUTH_HEAD_IN.length) == UserSessionObject.OAUTH_HEAD_IN){
+				authorization = authorization.substring(UserSessionObject.OAUTH_HEAD_IN.length, authorization.length);
+				session = new UserSessionObject();
 				if (session.load(authorization)){
 					if (session.isValid()){
 						session.exposeToken();

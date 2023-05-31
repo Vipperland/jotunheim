@@ -1,5 +1,6 @@
 package jotun.tools;
 import jotun.utils.Dice;
+import js.Syntax;
 
 /**
  * ...
@@ -10,17 +11,24 @@ class Ticker {
 	
 	private static var _uid:Int;
 	
+	private static var _counter:Int = 0;
+	
 	private static var _pool_high:Array<Float->Void> = [];
 	
 	private static var _pool_low:Array<Void->Void> = [];
 	
-	private static var _ltime:Int = 0;
+	private static var _pool_delayed:Array<IDelayedCall> = [];
+	
+	private static var _ptime:Float = 0;
+	
+	private static var _ltime:Float = 0;
 	
 	private static var _etime:Float = 0;
 	
 	private static function _calcElapsed():Void {
 		var ctime = js.Syntax.code("Date.now()");
-		_etime += (ctime - _ltime) * 0.001;
+		_ptime = (ctime - _ltime) * 0.001;
+		_etime += _ptime;
 		_ltime = ctime;
 	}
 	
@@ -31,6 +39,32 @@ class Ticker {
 				v(_etime);
 			}
 		});
+		_calcElapsed();
+		var shift:Int = 0;
+		Dice.All(_pool_delayed, function(p:Int, v:IDelayedCall) {
+			if (v != null){
+				if(shift < p){
+					_pool_delayed[shift] = v;
+					_pool_delayed[p] = null;
+				}
+				v.elapsed += _ptime;
+				if (v.elapsed > v.delay){
+					v.elapsed -= v.delay;
+					++v.ticket.count;
+					v.callback(v.ticket);
+					if(--v.count <= 0 || v.ticket.cancelled){
+						_pool_delayed[p] = null;
+					}else{
+						++shift;
+					}
+				}else{
+					++shift;
+				}
+			}
+		});
+		if (shift < _pool_delayed.length){
+			_pool_delayed.splice(shift, _pool_delayed.length);
+		}
 		_calcElapsed();
 		if (_etime >= 1){
 			Dice.All(_pool_low, function(p:Int, v:Dynamic) {
@@ -58,7 +92,7 @@ class Ticker {
 		_uid = null;
 	}
 	
-	public static function add(handler:Float->Void):Void {
+	public static function addHigh(handler:Float->Void):Void {
 		if (handler == null) {
 			return;
 		}
@@ -68,7 +102,7 @@ class Ticker {
 		}
 	}
 	
-	public static function addLow(handler:Void->Void):Void {
+	public static function addLower(handler:Void->Void):Void {
 		if (handler == null) {
 			return;
 		}
@@ -79,19 +113,60 @@ class Ticker {
 	}
 	
 	public static function remove(handler:Dynamic):Void {
-		if (handler == null) return;
-		var iof:Int = _pool_high.indexOf(handler);
-		if (iof != -1){
-			_pool_high.splice(iof, 1);
+		if (handler == null) {
+			return;
+		}
+		if (Std.isOfType(handler, Float)){
+			for (i in 0..._pool_delayed.length){
+				if (_pool_delayed[i].id == handler){
+					_pool_delayed[i] = null;
+				}
+			}
 		}else{
-			iof = _pool_low.indexOf(handler);
+			var iof:Int = _pool_high.indexOf(handler);
 			if (iof != -1){
-				_pool_low.splice(iof, 1);
+				_pool_high.splice(iof, 1);
+			}else{
+				iof = _pool_low.indexOf(handler);
+				if (iof != -1){
+					_pool_low.splice(iof, 1);
+				}
 			}
 		}
+		
 	}
 	
-	public static function delay(handler:Dynamic, time:Float, ?args:Array<Dynamic>):Void {
+	public static function delay(callback:Dynamic, time:Float, ?count:Int = 1, ?data:Dynamic = null):Int {
+		var call:IDelayedCall = cast {
+			id: _counter++,
+			delay: time,
+			elapsed: 0,
+			count: count,
+			callback: callback,
+			ticket: new CallTicket(data),
+		}
+		_pool_delayed[_pool_delayed.length] = call;
+		return call.id;
 	}
 	
+}
+private class CallTicket {
+	public var data:Dynamic;
+	public var cancelled:Bool;
+	public var count:Int;
+	public function new(data:Dynamic){
+		this.data = data;
+		this.count = 0;
+	}
+	public function cancel():Void {
+		this.cancelled = true;
+	}
+}
+private interface IDelayedCall {
+	public var id:Int;
+	public var delay:Float;
+	public var elapsed:Float;
+	public var count:Int;
+	public var callback:CallTicket->Void;
+	public var ticket:CallTicket;
 }

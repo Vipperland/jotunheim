@@ -34,7 +34,7 @@ class PulsarOutput extends OutputCore {
 		}
 		super.setOptions(value);
 		if (_log){
-			Pulsar.map("_logq", ['message'], Spark, false, false);
+			Pulsar.map("_logq", ['*'], Spark, false, false);
 		}
 	}
 	
@@ -51,7 +51,7 @@ class PulsarOutput extends OutputCore {
 	
 	override public function log(message:Dynamic, ?list:String = 'trace'):Void {
 		if (_log){
-			this.list('_logs').insert(new Spark('_logq').set('message', message));
+			this.list('_logs').insert(new Spark('_logq').set('*', message));
 		}
 	}
 	
@@ -61,8 +61,10 @@ class PulsarOutput extends OutputCore {
 	
 	override public function flush():Void {
 		Pulsar.map("error", ['code'], Spark, false, false);
-		Pulsar.map("time", ['value'], Spark, false, false);
-		_data.insert(new Spark('time').set('value', Omnitools.timeNow()));
+		Pulsar.map("time", ['*'], Spark, false, false);
+		Pulsar.map("status", ['*'], Spark, false, false);
+		_data.insert(new Spark('status').set('*', _status));
+		_data.insert(new Spark('time').set('*', Omnitools.timeNow()));
 		Jotun.header.setPulsar(_data, _encode_out, _chunk_size);
 	}
 	

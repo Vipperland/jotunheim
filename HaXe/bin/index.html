@@ -90,11 +90,13 @@
 			</div>
 		</div>
 		<script type="module">
-		
 			import {Realms} from './modules/dist/classes/core/Realms.class.js';
 			Realms.expose();
 			Realms.events.listen('*', function(e){
-				if(e.data && e.data.authentication){
+				if(e.event == 'oauthstatus'){
+					return;
+				}
+				if(e.event == 'request' && e.data && e.data.authentication){
 					e.authentication = e.data.authentication.toString();
 				}
 				if(e.event == 'singularity'){
@@ -102,14 +104,15 @@
 				}
 				trace(e);
 			});
-			Realms.init('test.realms', {
+			Realms.open({
+				name: 'test.realms',
+				pulsar: true,
 				db: {
 					name:'JotunTest',
 					version: 1,
 					structure: {},
 				}
 			});
-			
 		</script>
 	</body>                                                                               
 </html>

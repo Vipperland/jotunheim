@@ -4,9 +4,9 @@
  */
 
 use \php\Boot;
-use \jotun\gateway\database\objects\ZoneCoreSession;
 use \jotun\php\db\Token;
 use \jotun\php\db\objects\IDataTable;
+use \database\objects\CustomSessionObject;
 use \jotun\gateway\database\SessionDataAccess;
 
 /**
@@ -18,21 +18,21 @@ class CustomDataAccess extends SessionDataAccess {
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomDataAccess.hx:15: characters 3-43
-		parent::__construct(Token::localhost("realms_gateway"));
+		#samples/server/CustomDataAccess.hx:16: characters 3-44
+		parent::__construct(Token::localhost("rp_gateway_core"));
 	}
 
 	/**
 	 * @return IDataTable
 	 */
-	public function get_sessions () {
-		#samples/server/CustomDataAccess.hx:19: lines 19-21
-		if ($this->sessions === null) {
-			#samples/server/CustomDataAccess.hx:20: characters 4-68
-			$this->sessions = $this->_tryAssemble("pa_user_session", Boot::getClass(ZoneCoreSession::class));
+	public function get_session () {
+		#samples/server/CustomDataAccess.hx:20: lines 20-22
+		if ($this->session === null) {
+			#samples/server/CustomDataAccess.hx:21: characters 4-71
+			$this->session = $this->_tryAssemble("rp_user_session", Boot::getClass(CustomSessionObject::class));
 		}
-		#samples/server/CustomDataAccess.hx:22: characters 3-23
-		return $this->sessions;
+		#samples/server/CustomDataAccess.hx:23: characters 3-22
+		return $this->session;
 	}
 }
 

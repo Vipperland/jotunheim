@@ -19,9 +19,9 @@ class PulsarLink extends SparkCore {
 	 * @return void
 	 */
 	public function __construct ($name) {
-		#src/jotun/gaming/dataform/PulsarLink.hx:12: characters 3-14
+		#src/jotun/gaming/dataform/PulsarLink.hx:13: characters 3-14
 		parent::__construct($name);
-		#src/jotun/gaming/dataform/PulsarLink.hx:13: characters 3-18
+		#src/jotun/gaming/dataform/PulsarLink.hx:14: characters 3-18
 		$this->_deletions = new \Array_hx();
 	}
 
@@ -29,51 +29,96 @@ class PulsarLink extends SparkCore {
 	 * @return void
 	 */
 	public function commit () {
-		#src/jotun/gaming/dataform/PulsarLink.hx:27: lines 27-29
+		#src/jotun/gaming/dataform/PulsarLink.hx:22: lines 22-24
 		$this->each(function ($o) {
-			#src/jotun/gaming/dataform/PulsarLink.hx:28: characters 4-14
+			#src/jotun/gaming/dataform/PulsarLink.hx:23: characters 4-14
 			$o->commit();
 		});
-		#src/jotun/gaming/dataform/PulsarLink.hx:30: characters 3-18
+		#src/jotun/gaming/dataform/PulsarLink.hx:25: characters 3-18
 		$this->_deletions = new \Array_hx();
 	}
 
 	/**
+	 * @param string $name
 	 * @param \Closure $handler
+	 * @param Spark[]|\Array_hx $merge
 	 * 
-	 * @return void
+	 * @return Spark[]|\Array_hx
 	 */
-	public function each ($handler) {
-		#src/jotun/gaming/dataform/PulsarLink.hx:21: lines 21-23
-		Dice::Values($this->_inserts, function ($v) use (&$handler) {
-			#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 11-34
-			if ($v !== null) {
-				#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 24-34
-				return $handler($v);
-			} else {
-				#src/jotun/gaming/dataform/PulsarLink.hx:22: characters 11-34
-				return false;
-			}
+	public function filter ($name = null, $handler = null, $merge = null) {
+		#src/jotun/gaming/dataform/PulsarLink.hx:70: lines 70-72
+		if ($merge === null) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:71: characters 4-14
+			$merge = new \Array_hx();
+		}
+		#src/jotun/gaming/dataform/PulsarLink.hx:73: lines 73-76
+		$this->each(function ($v) use (&$name, &$handler, &$merge) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:74: characters 4-34
+			$v->filter($name, $handler, $merge);
+			#src/jotun/gaming/dataform/PulsarLink.hx:75: characters 4-16
+			return false;
 		});
+		#src/jotun/gaming/dataform/PulsarLink.hx:77: characters 3-15
+		return $merge;
 	}
 
 	/**
 	 * @return Spark[]|\Array_hx
 	 */
 	public function getData () {
-		#src/jotun/gaming/dataform/PulsarLink.hx:17: characters 3-18
+		#src/jotun/gaming/dataform/PulsarLink.hx:18: characters 3-18
 		return $this->_inserts;
+	}
+
+	/**
+	 * @param mixed[]|\Array_hx $o
+	 * 
+	 * @return mixed
+	 */
+	public function getObject ($o = null) {
+		#src/jotun/gaming/dataform/PulsarLink.hx:56: lines 56-66
+		if ($this->isSingle()) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:57: characters 4-32
+			return ($this->_inserts->arr[0] ?? null)->prop("*");
+		} else {
+			#src/jotun/gaming/dataform/PulsarLink.hx:59: lines 59-61
+			if ($o === null) {
+				#src/jotun/gaming/dataform/PulsarLink.hx:60: characters 5-11
+				$o = new \Array_hx();
+			}
+			#src/jotun/gaming/dataform/PulsarLink.hx:62: lines 62-64
+			Dice::Values($this->_inserts, function ($v) use (&$o) {
+				#src/jotun/gaming/dataform/PulsarLink.hx:63: characters 5-19
+				$v->getObject($o);
+			});
+			#src/jotun/gaming/dataform/PulsarLink.hx:65: characters 4-12
+			return $o;
+		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isSingle () {
+		#src/jotun/gaming/dataform/PulsarLink.hx:52: characters 10-63
+		if ($this->_inserts->length === 1) {
+			#src/jotun/gaming/dataform/PulsarLink.hx:52: characters 34-63
+			return ($this->_inserts->arr[0] ?? null)->prop("*") !== null;
+		} else {
+			#src/jotun/gaming/dataform/PulsarLink.hx:52: characters 10-63
+			return false;
+		}
 	}
 
 	/**
 	 * @return void
 	 */
 	public function refresh () {
-		#src/jotun/gaming/dataform/PulsarLink.hx:34: characters 3-18
+		#src/jotun/gaming/dataform/PulsarLink.hx:29: characters 3-18
 		parent::refresh();
-		#src/jotun/gaming/dataform/PulsarLink.hx:35: lines 35-37
+		#src/jotun/gaming/dataform/PulsarLink.hx:30: lines 30-32
 		$this->each(function ($o) {
-			#src/jotun/gaming/dataform/PulsarLink.hx:36: characters 4-15
+			#src/jotun/gaming/dataform/PulsarLink.hx:31: characters 4-15
 			$o->refresh();
 		});
 	}
@@ -84,28 +129,28 @@ class PulsarLink extends SparkCore {
 	 * @return string
 	 */
 	public function stringify ($changes = null) {
-		#src/jotun/gaming/dataform/PulsarLink.hx:41: characters 3-21
+		#src/jotun/gaming/dataform/PulsarLink.hx:36: characters 3-21
 		$r = "";
-		#src/jotun/gaming/dataform/PulsarLink.hx:42: characters 3-23
+		#src/jotun/gaming/dataform/PulsarLink.hx:37: characters 3-23
 		$c = null;
-		#src/jotun/gaming/dataform/PulsarLink.hx:43: lines 43-48
+		#src/jotun/gaming/dataform/PulsarLink.hx:38: lines 38-43
 		$this->each(function ($object) use (&$c, &$changes, &$r) {
-			#src/jotun/gaming/dataform/PulsarLink.hx:44: characters 4-33
+			#src/jotun/gaming/dataform/PulsarLink.hx:39: characters 4-33
 			$c = $object->stringify($changes);
-			#src/jotun/gaming/dataform/PulsarLink.hx:45: lines 45-47
+			#src/jotun/gaming/dataform/PulsarLink.hx:40: lines 40-42
 			if ($c !== null) {
-				#src/jotun/gaming/dataform/PulsarLink.hx:46: characters 5-40
+				#src/jotun/gaming/dataform/PulsarLink.hx:41: characters 5-40
 				$r = ($r??'null') . (((mb_strlen($r) > 0 ? "\x0A" : ""))??'null') . ($c??'null');
 			}
 		});
-		#src/jotun/gaming/dataform/PulsarLink.hx:49: characters 3-25
+		#src/jotun/gaming/dataform/PulsarLink.hx:44: characters 3-25
 		$c = $this->_getDelString("-");
-		#src/jotun/gaming/dataform/PulsarLink.hx:50: lines 50-52
+		#src/jotun/gaming/dataform/PulsarLink.hx:45: lines 45-47
 		if ($c !== null) {
-			#src/jotun/gaming/dataform/PulsarLink.hx:51: characters 4-39
+			#src/jotun/gaming/dataform/PulsarLink.hx:46: characters 4-39
 			$r = ($r??'null') . (((mb_strlen($r) > 0 ? "\x0A" : ""))??'null') . ($c??'null');
 		}
-		#src/jotun/gaming/dataform/PulsarLink.hx:53: characters 3-11
+		#src/jotun/gaming/dataform/PulsarLink.hx:48: characters 3-11
 		return $r;
 	}
 }

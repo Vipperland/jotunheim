@@ -5,6 +5,7 @@
 
 namespace jotun\net;
 
+use \jotun\gaming\dataform\Pulsar;
 use \php\Boot;
 use \jotun\errors\Error;
 use \haxe\Json;
@@ -45,15 +46,15 @@ class Request implements IRequest {
 	 * @return void
 	 */
 	public function __construct ($success, $data, $error = null, $url = null, $headers = null) {
-		#src/jotun/net/Request.hx:22: characters 3-17
+		#src/jotun/net/Request.hx:23: characters 3-17
 		$this->url = $url;
-		#src/jotun/net/Request.hx:23: characters 3-21
+		#src/jotun/net/Request.hx:24: characters 3-21
 		$this->error = $error;
-		#src/jotun/net/Request.hx:24: characters 3-19
+		#src/jotun/net/Request.hx:25: characters 3-19
 		$this->data = $data;
-		#src/jotun/net/Request.hx:25: characters 3-25
-		$this->success = $success;
 		#src/jotun/net/Request.hx:26: characters 3-25
+		$this->success = $success;
+		#src/jotun/net/Request.hx:27: characters 3-25
 		$this->headers = $headers;
 	}
 
@@ -63,7 +64,7 @@ class Request implements IRequest {
 	 * @return string
 	 */
 	public function getHeader ($name) {
-		#src/jotun/net/Request.hx:36: characters 3-52
+		#src/jotun/net/Request.hx:41: characters 3-52
 		return \Reflect::field($this->headers, \mb_strtolower($name));
 	}
 
@@ -71,14 +72,22 @@ class Request implements IRequest {
 	 * @return mixed
 	 */
 	public function object () {
-		#src/jotun/net/Request.hx:32: characters 10-67
+		#src/jotun/net/Request.hx:33: characters 10-67
 		if (($this->data !== null) && (mb_strlen($this->data) > 1)) {
-			#src/jotun/net/Request.hx:32: characters 44-60
+			#src/jotun/net/Request.hx:33: characters 44-60
 			return Json::phpJsonDecode($this->data);
 		} else {
-			#src/jotun/net/Request.hx:32: characters 63-67
+			#src/jotun/net/Request.hx:33: characters 63-67
 			return null;
 		}
+	}
+
+	/**
+	 * @return Pulsar
+	 */
+	public function pulsar () {
+		#src/jotun/net/Request.hx:37: characters 3-29
+		return Pulsar::create($this->data);
 	}
 }
 

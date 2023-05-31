@@ -97,7 +97,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function add ($parameters = null) {
-		#src/jotun/php/db/objects/DataTable.hx:87: characters 3-81
+		#src/jotun/php/db/objects/DataTable.hx:93: characters 3-81
 		return new Query($this, $this->_gate->builder->add($this->_name, $parameters)->execute()->success);
 	}
 
@@ -107,16 +107,16 @@ class DataTable implements IDataTable {
 	 * @return IQuery[]|\Array_hx
 	 */
 	public function addAll ($parameters = null) {
-		#src/jotun/php/db/objects/DataTable.hx:78: lines 78-84
+		#src/jotun/php/db/objects/DataTable.hx:84: lines 84-90
 		$_gthis = $this;
-		#src/jotun/php/db/objects/DataTable.hx:79: characters 3-28
+		#src/jotun/php/db/objects/DataTable.hx:85: characters 3-28
 		$r = new \Array_hx();
-		#src/jotun/php/db/objects/DataTable.hx:80: lines 80-82
+		#src/jotun/php/db/objects/DataTable.hx:86: lines 86-88
 		Dice::All($parameters, function ($v) use (&$r, &$_gthis, &$parameters) {
-			#src/jotun/php/db/objects/DataTable.hx:81: characters 4-33
+			#src/jotun/php/db/objects/DataTable.hx:87: characters 4-33
 			$r->offsetSet($r->length, $_gthis->add($parameters));
 		});
-		#src/jotun/php/db/objects/DataTable.hx:83: characters 3-11
+		#src/jotun/php/db/objects/DataTable.hx:89: characters 3-11
 		return $r;
 	}
 
@@ -124,7 +124,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function clear () {
-		#src/jotun/php/db/objects/DataTable.hx:135: characters 3-64
+		#src/jotun/php/db/objects/DataTable.hx:141: characters 3-64
 		return new Query($this, $this->_gate->builder->truncate($this->_name)->success);
 	}
 
@@ -137,7 +137,7 @@ class DataTable implements IDataTable {
 	 * @return IExtQuery
 	 */
 	public function copy ($toTable, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:127: characters 3-86
+		#src/jotun/php/db/objects/DataTable.hx:133: characters 3-86
 		return new ExtQuery($this, $this->_gate->builder->copy($this->_name, $toTable, $clause, $order, $limit));
 	}
 
@@ -149,7 +149,7 @@ class DataTable implements IDataTable {
 	 * @return IExtQuery
 	 */
 	public function copyOne ($toTable, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:131: characters 3-93
+		#src/jotun/php/db/objects/DataTable.hx:137: characters 3-93
 		return new ExtQuery($this, ($this->_gate->builder->copy($this->_name, $toTable, $clause, $order, Limit::$ONE)->arr[0] ?? null));
 	}
 
@@ -161,7 +161,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function delete ($clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:119: characters 3-94
+		#src/jotun/php/db/objects/DataTable.hx:125: characters 3-94
 		return new Query($this, $this->_gate->builder->delete($this->_name, $clause, $order, $limit)->execute()->success);
 	}
 
@@ -172,7 +172,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function deleteOne ($clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:123: characters 3-98
+		#src/jotun/php/db/objects/DataTable.hx:129: characters 3-98
 		return new Query($this, $this->_gate->builder->delete($this->_name, $clause, $order, Limit::$ONE)->execute()->success);
 	}
 
@@ -182,7 +182,7 @@ class DataTable implements IDataTable {
 	 * @return bool
 	 */
 	public function exists ($clause = null) {
-		#src/jotun/php/db/objects/DataTable.hx:159: characters 10-39
+		#src/jotun/php/db/objects/DataTable.hx:165: characters 10-39
 		$a = $this->length($clause, Limit::$ONE);
 		$aNeg = $a < 0;
 		$bNeg = false;
@@ -202,7 +202,7 @@ class DataTable implements IDataTable {
 	 * @return IExtQuery
 	 */
 	public function find ($fields = null, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:91: characters 3-133
+		#src/jotun/php/db/objects/DataTable.hx:97: characters 3-133
 		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $this->_name, $clause, $order, $limit)->execute(null, $this->_class)->result);
 	}
 
@@ -216,14 +216,14 @@ class DataTable implements IDataTable {
 	 * @return IExtQuery
 	 */
 	public function findJoin ($fields, $tables, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:95: lines 95-97
+		#src/jotun/php/db/objects/DataTable.hx:101: lines 101-103
 		if (!($tables instanceof \Array_hx)) {
-			#src/jotun/php/db/objects/DataTable.hx:96: characters 4-21
+			#src/jotun/php/db/objects/DataTable.hx:102: characters 4-21
 			$tables = \Array_hx::wrap([$tables]);
 		}
-		#src/jotun/php/db/objects/DataTable.hx:98: characters 3-24
+		#src/jotun/php/db/objects/DataTable.hx:104: characters 3-24
 		$tables->unshift($this->_name);
-		#src/jotun/php/db/objects/DataTable.hx:99: characters 3-134
+		#src/jotun/php/db/objects/DataTable.hx:105: characters 3-134
 		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $tables, $clause, $order, $limit)->execute(null, $this->_class)->result);
 	}
 
@@ -235,7 +235,7 @@ class DataTable implements IDataTable {
 	 * @return mixed
 	 */
 	public function findOne ($fields = null, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:103: characters 3-56
+		#src/jotun/php/db/objects/DataTable.hx:109: characters 3-56
 		return $this->find($fields, $clause, $order, Limit::$ONE)->first();
 	}
 
@@ -248,7 +248,7 @@ class DataTable implements IDataTable {
 	 * @return mixed
 	 */
 	public function findOneJoin ($fields, $tables, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:107: characters 3-68
+		#src/jotun/php/db/objects/DataTable.hx:113: characters 3-68
 		return $this->findJoin($fields, $tables, $clause, $order, Limit::$ONE)->first();
 	}
 
@@ -281,12 +281,12 @@ class DataTable implements IDataTable {
 	 * @return Column
 	 */
 	public function getColumn ($name) {
-		#src/jotun/php/db/objects/DataTable.hx:188: lines 188-190
+		#src/jotun/php/db/objects/DataTable.hx:194: lines 194-196
 		if ($this->hasColumn($name)) {
-			#src/jotun/php/db/objects/DataTable.hx:189: characters 8-38
+			#src/jotun/php/db/objects/DataTable.hx:195: characters 8-38
 			return \Reflect::field($this->getInfo(), $name);
 		} else {
-			#src/jotun/php/db/objects/DataTable.hx:190: characters 8-12
+			#src/jotun/php/db/objects/DataTable.hx:196: characters 8-12
 			return null;
 		}
 	}
@@ -295,7 +295,7 @@ class DataTable implements IDataTable {
 	 * @return mixed
 	 */
 	public function getErrors () {
-		#src/jotun/php/db/objects/DataTable.hx:194: characters 3-22
+		#src/jotun/php/db/objects/DataTable.hx:200: characters 3-22
 		return $this->_gate->get_errors();
 	}
 
@@ -330,12 +330,34 @@ class DataTable implements IDataTable {
 	}
 
 	/**
+	 * @param mixed $Def
+	 * 
+	 * @return bool
+	 */
+	public function hasClassObj ($Def) {
+		#src/jotun/php/db/objects/DataTable.hx:63: characters 10-51
+		if ($this->_class !== null) {
+			#src/jotun/php/db/objects/DataTable.hx:63: characters 28-51
+			if (!(!$Def)) {
+				#src/jotun/php/db/objects/DataTable.hx:63: characters 37-50
+				return Boot::equal($Def, $this->_class);
+			} else {
+				#src/jotun/php/db/objects/DataTable.hx:63: characters 28-51
+				return true;
+			}
+		} else {
+			#src/jotun/php/db/objects/DataTable.hx:63: characters 10-51
+			return false;
+		}
+	}
+
+	/**
 	 * @param string $name
 	 * 
 	 * @return bool
 	 */
 	public function hasColumn ($name) {
-		#src/jotun/php/db/objects/DataTable.hx:184: characters 3-43
+		#src/jotun/php/db/objects/DataTable.hx:190: characters 3-43
 		return \Reflect::hasField($this->getInfo(), $name);
 	}
 
@@ -346,7 +368,7 @@ class DataTable implements IDataTable {
 	 * @return int
 	 */
 	public function length ($clause = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:155: characters 3-92
+		#src/jotun/php/db/objects/DataTable.hx:161: characters 3-92
 		return $this->_gate->builder->find("COUNT(*)", $this->_name, $clause, null, $limit)->execute()->length();
 	}
 
@@ -361,7 +383,7 @@ class DataTable implements IDataTable {
 	 * @return ICommand
 	 */
 	public function link ($id, $key, $table, $field, $del = "RESTRICT", $update = "RESTRICT") {
-		#src/jotun/php/db/objects/DataTable.hx:175: characters 3-81
+		#src/jotun/php/db/objects/DataTable.hx:181: characters 3-81
 		if ($del === null) {
 			$del = "RESTRICT";
 		}
@@ -377,17 +399,17 @@ class DataTable implements IDataTable {
 	 * @return mixed
 	 */
 	public function optimize ($paramaters) {
-		#src/jotun/php/db/objects/DataTable.hx:168: characters 3-32
+		#src/jotun/php/db/objects/DataTable.hx:174: characters 3-32
 		$desc = $this->getInfo();
-		#src/jotun/php/db/objects/DataTable.hx:169: characters 3-126
+		#src/jotun/php/db/objects/DataTable.hx:175: characters 3-126
 		Dice::All($paramaters, function ($p, $v) use (&$paramaters, &$desc) {
-			#src/jotun/php/db/objects/DataTable.hx:169: characters 56-122
+			#src/jotun/php/db/objects/DataTable.hx:175: characters 56-122
 			if (!\Reflect::hasField($desc, $p)) {
-				#src/jotun/php/db/objects/DataTable.hx:169: characters 88-122
+				#src/jotun/php/db/objects/DataTable.hx:175: characters 88-122
 				\Reflect::deleteField($paramaters, $p);
 			}
 		});
-		#src/jotun/php/db/objects/DataTable.hx:170: characters 3-20
+		#src/jotun/php/db/objects/DataTable.hx:176: characters 3-20
 		return $paramaters;
 	}
 
@@ -398,16 +420,16 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function query ($data, $params = null) {
-		#src/jotun/php/db/objects/DataTable.hx:139: characters 3-41
+		#src/jotun/php/db/objects/DataTable.hx:145: characters 3-41
 		$data = Filler::to($data, new HxAnon(["table" => $this->_name]));
-		#src/jotun/php/db/objects/DataTable.hx:140: characters 3-40
+		#src/jotun/php/db/objects/DataTable.hx:146: characters 3-40
 		$iof = HxString::indexOf($data, "SELECT");
-		#src/jotun/php/db/objects/DataTable.hx:141: lines 141-145
+		#src/jotun/php/db/objects/DataTable.hx:147: lines 147-151
 		if (($iof !== -1) && ($iof < 6) && (HxString::indexOf($data, "FROM", $iof + 1) !== -1)) {
-			#src/jotun/php/db/objects/DataTable.hx:142: characters 4-73
+			#src/jotun/php/db/objects/DataTable.hx:148: characters 4-73
 			return new ExtQuery($this, $this->_gate->query($data, $params)->execute()->result);
 		} else {
-			#src/jotun/php/db/objects/DataTable.hx:144: characters 4-73
+			#src/jotun/php/db/objects/DataTable.hx:150: characters 4-73
 			return new Query($this, $this->_gate->prepare($data, $params)->execute()->success);
 		}
 	}
@@ -418,11 +440,11 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function rename ($to) {
-		#src/jotun/php/db/objects/DataTable.hx:149: characters 3-26
+		#src/jotun/php/db/objects/DataTable.hx:155: characters 3-26
 		$old = $this->_name;
-		#src/jotun/php/db/objects/DataTable.hx:150: characters 3-13
+		#src/jotun/php/db/objects/DataTable.hx:156: characters 3-13
 		$this->_name = $to;
-		#src/jotun/php/db/objects/DataTable.hx:151: characters 3-64
+		#src/jotun/php/db/objects/DataTable.hx:157: characters 3-64
 		return new Query($this, $this->_gate->builder->rename($old, $to)->success);
 	}
 
@@ -433,15 +455,15 @@ class DataTable implements IDataTable {
 	 * @return IDataTable
 	 */
 	public function restrict ($fields, $times = 0) {
-		#src/jotun/php/db/objects/DataTable.hx:67: lines 67-71
+		#src/jotun/php/db/objects/DataTable.hx:73: lines 73-77
 		if ($times === null) {
 			$times = 0;
 		}
-		#src/jotun/php/db/objects/DataTable.hx:68: characters 3-20
+		#src/jotun/php/db/objects/DataTable.hx:74: characters 3-20
 		$this->_restrict = $times;
-		#src/jotun/php/db/objects/DataTable.hx:69: characters 3-19
+		#src/jotun/php/db/objects/DataTable.hx:75: characters 3-19
 		$this->_fields = $fields;
-		#src/jotun/php/db/objects/DataTable.hx:70: characters 3-14
+		#src/jotun/php/db/objects/DataTable.hx:76: characters 3-14
 		return $this;
 	}
 
@@ -451,9 +473,12 @@ class DataTable implements IDataTable {
 	 * @return IDataTable
 	 */
 	public function setClassObj ($value) {
-		#src/jotun/php/db/objects/DataTable.hx:63: characters 3-17
-		$this->_class = $value;
-		#src/jotun/php/db/objects/DataTable.hx:64: characters 3-14
+		#src/jotun/php/db/objects/DataTable.hx:67: lines 67-69
+		if (!Boot::equal($this->_class, $value)) {
+			#src/jotun/php/db/objects/DataTable.hx:68: characters 4-18
+			$this->_class = $value;
+		}
+		#src/jotun/php/db/objects/DataTable.hx:70: characters 3-14
 		return $this;
 	}
 
@@ -464,9 +489,9 @@ class DataTable implements IDataTable {
 	 * @return int
 	 */
 	public function sum ($field, $clause = null) {
-		#src/jotun/php/db/objects/DataTable.hx:163: characters 3-122
+		#src/jotun/php/db/objects/DataTable.hx:169: characters 3-122
 		$command = $this->_gate->builder->find("SUM(" . ($field??'null') . ") as _SumResult_", $this->_name, $clause, null, null)->execute();
-		#src/jotun/php/db/objects/DataTable.hx:164: characters 3-125
+		#src/jotun/php/db/objects/DataTable.hx:170: characters 3-125
 		return Utils::getValidOne(($command->result->length > 0 ? \Std::parseInt(\Reflect::field(($command->result->arr[0] ?? null), "_SumResult_")) : 0), 0);
 	}
 
@@ -476,7 +501,7 @@ class DataTable implements IDataTable {
 	 * @return ICommand
 	 */
 	public function unlink ($id) {
-		#src/jotun/php/db/objects/DataTable.hx:179: characters 3-49
+		#src/jotun/php/db/objects/DataTable.hx:185: characters 3-49
 		return $this->_gate->builder->fKey($this->_name, $id)->execute();
 	}
 
@@ -484,9 +509,9 @@ class DataTable implements IDataTable {
 	 * @return IDataTable
 	 */
 	public function unrestrict () {
-		#src/jotun/php/db/objects/DataTable.hx:74: characters 3-16
+		#src/jotun/php/db/objects/DataTable.hx:80: characters 3-16
 		$this->_fields = "*";
-		#src/jotun/php/db/objects/DataTable.hx:75: characters 3-14
+		#src/jotun/php/db/objects/DataTable.hx:81: characters 3-14
 		return $this;
 	}
 
@@ -499,7 +524,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function update ($parameters = null, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:111: characters 3-106
+		#src/jotun/php/db/objects/DataTable.hx:117: characters 3-106
 		return new Query($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, $limit)->execute()->success);
 	}
 
@@ -511,7 +536,7 @@ class DataTable implements IDataTable {
 	 * @return IQuery
 	 */
 	public function updateOne ($parameters = null, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:115: characters 3-110
+		#src/jotun/php/db/objects/DataTable.hx:121: characters 3-110
 		return new Query($this, $this->_gate->builder->update($this->_name, $clause, $parameters, $order, Limit::$ONE)->execute()->success);
 	}
 }

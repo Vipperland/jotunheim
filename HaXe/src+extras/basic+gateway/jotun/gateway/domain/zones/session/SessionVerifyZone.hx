@@ -29,7 +29,7 @@ class SessionVerifyZone extends DomainZoneCore {
 							cast (input, BasicSessionInput).session.exposeCarrier();
 						}
 						default : {
-							output.error(ErrorCodes.SERVICE_NOT_ACCEPTABLE);
+							output.setStatus(ErrorCodes.SERVICE_NOT_ACCEPTABLE);
 						}
 					}
 				});

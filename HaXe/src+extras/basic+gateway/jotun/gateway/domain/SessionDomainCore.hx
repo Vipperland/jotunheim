@@ -6,7 +6,7 @@ import jotun.gateway.domain.zones.session.SessionZone;
  * ...
  * @author Rafael Moreira
  */
-class CustomSessionDomain extends DomainAccessCore {
+class SessionDomainCore extends DomainAccessCore {
 
 	override function _buildZoneMap():Void {
 		_setZoneMap({

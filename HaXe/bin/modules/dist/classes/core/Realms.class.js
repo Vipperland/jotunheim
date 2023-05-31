@@ -2,9 +2,11 @@ import {Delegator} from './Delegator.class.js';
 import {RealmsEvents} from './RealmsEvents.class.js';
 import {RealmsLocale} from './RealmsLocale.class.js';
 import {RealmsDatabase} from './RealmsDatabase.class.js';
+import {RealmsHeartbeat} from './RealmsHeartbeat.class.js';
 import {RealmsRequest} from './RealmsRequest.class.js';
 import {RealmsAuthentication} from './RealmsAuthentication.class.js';
 import {RealmsTimer} from './RealmsTimer.class.js';
+import {RealmsSparkError} from './sparks/RealmsSparkError.class.js';
 
 /*
 
@@ -19,6 +21,8 @@ import {RealmsTimer} from './RealmsTimer.class.js';
 
 export class Realms {
 
+	static #_config;
+	static #_pulsar;
 	static #_busy;
 	static #_authentication;
 	static #_oauth;
@@ -28,6 +32,7 @@ export class Realms {
 	static #_locale;
 	static #_events = new RealmsEvents();
 	static #_timer = RealmsTimer.now();
+	static #_heartbeat;
 
 	static #_callNext(){
 		if(!Realms.#_busy && Realms.#_queue.length > 0){
@@ -41,32 +46,15 @@ export class Realms {
 						h.authorization = oauth;
 					}
 				}
-				trace('[API] (y) ' + (h.authorization?'*':'') + '=> ' + ticket.url + ' : ', ticket.data);
+				this.#_logPreCall(ticket, h.authorization);
 				Jotun.request(ticket.url, ticket.data, (ticket.method || 'GET').toUpperCase(), Delegator.create(this, function(result){
-					var data;
-					if(result.error){
-						data = {
-							errors: [result.error.message.split('#').pop()],
-						};
-					}else{
-						data = result.object();
-					}
-					data.success = data.errors.length == 0;
-					if(!data.success){
-						for(var error in data.errors){
-							var code = data.errors[error];
-							data.errors[error] = {
-								code: code,
-								message: this.locale.get('E_' + code),
-							};
-						}
-					}
+					var data = ticket.parseData(result, this.locale);
 					var oauth = result.headers ? result.headers['authorization'] || result.headers['Authorization'] : '';
 					this.#_events.call('request', { ticket: ticket, request: data, authentication: this.#_authentication.publicToken});
 					if(ticket.updateOAuth != true && (oauth == null || this.#_authentication.match(oauth))){
-						this.#_logBefore(data, ticket.callback);
+						this.#_logAfterCall(data, ticket);
 					}else {
-						this.#_verifyOAuth(oauth, data, ticket.callback);
+						this.#_verifyOAuth(oauth, data, ticket);
 					}
 					this.#_busy = false;
 					this.#_callNext();
@@ -91,24 +79,63 @@ export class Realms {
 		return new Date().getTime();
 	}
 	
-	static init(instance, config){
+	static #_init(config, callback){
 		if(config == null){
 			config = {
+				name: null,
 				auth: null,
 				db: {},
 			};
 		}
+		if(config.auth == null){
+			config.auth = {};
+		}
+		this.#_config = config;
+		this.#_heartbeat = new RealmsHeartbeat();
 		this.#_locale = new RealmsLocale();
 		this.#_database = new RealmsDatabase(config.db.name || 'realms.db', config.db.version || 1, config.db.structure || {});
-		this.#_authentication = new RealmsAuthentication(config.auth || {});
-		Singularity.signals.add('onMain', Delegator.create(this, this.#_singularityProxy));
-		Singularity.signals.add('onVisibility', Delegator.create(this, this.#_singularityProxy));
-		Singularity.signals.add('onConnect', Delegator.create(this, this.#_singularityShare));
-		Singularity.signals.add('onDisconnect', Delegator.create(this, this.#_singularityProxy));
-		Singularity.signals.add('onSync', Delegator.create(this, this.#_singularityProxy));
-		Singularity.connect(instance);
+		this.#_authentication = new RealmsAuthentication(config.auth);
+		Singularity.signals.add('onMain', Delegator.create(this, this.#_singularMain));
+		//Singularity.signals.add('onVisibility', Delegator.create(this, this.#_singularProxy));
+		Singularity.signals.add('onConnect', Delegator.create(this, this.#_singularShare));
+		Singularity.signals.add('onDisconnect', Delegator.create(this, this.#_singularProxy));
+		Singularity.signals.add('onSync', Delegator.create(this, this.#_singularProxy));
+		Singularity.connect(config.name);
+		if(config.pulsar){
+			this.pulsar();
+		}
 		this.#_initOAuth();
 		this.#_testOAuth();
+		if(callback != null){
+			callback();
+		}
+	}
+	
+	static open(config, callback){
+		Jotun.run(Delegator.create(this, this.#_init, config, callback));
+	}
+	
+	static pulsar(...map){
+		if(this.#_pulsar != true){
+			this.#_pulsar = true;
+			Dice.Values([
+				["_input"],
+				["_logs"],
+				["_logp", ['name','value']],
+				["_logo", ['value']],
+				["_logq", ['*']],
+				["_logq", ['*']],
+				["errors"],
+				["error", ['code','message']],
+				["time", ['*']],
+				["status", ['*']]
+			], function(v){
+				Pulsar.map.apply(null, v);
+			});
+		}
+		Dice.Values(map, function(v){
+			Pulsar.map.apply(null, v);
+		});
 	}
 	
 	static #_initOAuth(){
@@ -135,16 +162,27 @@ export class Realms {
 		}
 	}
 	
-	static #_singularityShare(event){
-		this.#_singularityProxy(event);
+	static #_singularMain(event){
+		this.#_initMainRoutines();
+		this.#_singularProxy(event);
 	}
 	
-	static #_singularityProxy(event){
+	static #_singularShare(event){
+		this.#_singularProxy(event);
+	}
+	
+	static #_singularProxy(event){
 		this.#_events.call('singularity', event);
 	}
 	
 	static #_sendOAuthStatus(status){
 		this.#_events.call('oauthstatus', {status: status, authentication: this.#_authentication.publicToken});
+	}
+	
+	static #_initMainRoutines(){
+		if(Singularity.isMain()){
+			this.#_heartbeat.start();
+		}
 	}
 	
 	static #_testOAuth(){
@@ -158,21 +196,21 @@ export class Realms {
 		Realms.#_busy = false;
 	}
 
-	static #_verifyOAuth(oauth, data, callback){
+	static #_verifyOAuth(oauth, data, ticket){
 		var state = this.#_authentication.validate(oauth);
 		if(state.valid){
 			var time = this.timer.value;
 			if(state.expired || state.revoked || state.invalid){
 				this.#_updateAuthentication(oauth, null, null);
 				this.#_database.del('oauth', Delegator.create(this, function(){
-					this.#_logBefore(data, callback);
+					this.#_logAfterCall(data, ticket);
 				}));
 				this.#_sendOAuthStatus(event);
 			}else{
 				if(data.user != null){
 					this.#_updateAuthentication(oauth, data.user, time);
 					this.#_database.replace('oauth', { key:oauth, time:time, user:data.user }, Delegator.create(this, function(o){
-						this.#_logBefore(data, callback);
+						this.#_logAfterCall(data, ticket);
 						this.#_sendOAuthStatus('updated');
 					}));
 				}else{
@@ -182,15 +220,17 @@ export class Realms {
 		}
 	}
 
-	static #_logBefore(data, callback){
-		trace('[API] (y) <=', data);
-		if(callback != null){
-			callback(data);
-		}
+	static #_logPreCall(ticket, oauth){
+		trace('[API] ' + this.#_authentication.signout + (oauth?'*':'') + ' @ ' + ticket.url + ' : ', ticket.dataOut());
+	}
+
+	static #_logAfterCall(data, callback){
+		trace('[API] ' + this.#_authentication.signout + ' @ ', ticket.dataIn());
+		ticket.sync();
 	}
 
 	static request(url, data, method, callback, important){
-		var ticket = new RealmsRequest(url, data, method, callback, important);
+		var ticket = new RealmsRequest(url, data, method, callback, this.#_pulsar);
 		if(important){
 			this.#_queue.unshift(ticket);
 		}else{

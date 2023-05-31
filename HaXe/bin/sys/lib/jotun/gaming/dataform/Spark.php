@@ -5,6 +5,7 @@
 
 namespace jotun\gaming\dataform;
 
+use \php\_Boot\HxAnon;
 use \php\Boot;
 use \jotun\utils\Dice;
 use \php\_Boot\HxString;
@@ -29,16 +30,8 @@ class Spark extends SparkCore {
 	 * @return void
 	 */
 	public function __construct ($name) {
-		#src/jotun/gaming/dataform/Spark.hx:34: characters 3-14
+		#src/jotun/gaming/dataform/Spark.hx:24: characters 3-14
 		parent::__construct($name);
-	}
-
-	/**
-	 * @return string[]|\Array_hx
-	 */
-	public function _getProps () {
-		#src/jotun/gaming/dataform/Spark.hx:30: characters 3-36
-		return Pulsar::propertiesOf($this->_name);
 	}
 
 	/**
@@ -75,6 +68,56 @@ class Spark extends SparkCore {
 	}
 
 	/**
+	 * @param mixed[]|\Array_hx $o
+	 * 
+	 * @return mixed
+	 */
+	public function getObject ($o = null) {
+		#src/jotun/gaming/dataform/Spark.hx:138: lines 138-158
+		$_gthis = $this;
+		#src/jotun/gaming/dataform/Spark.hx:139: lines 139-157
+		if ($this->_inserts->length > 0) {
+			#src/jotun/gaming/dataform/Spark.hx:140: lines 140-142
+			if ($o === null) {
+				#src/jotun/gaming/dataform/Spark.hx:141: characters 5-11
+				$o = new \Array_hx();
+			}
+			#src/jotun/gaming/dataform/Spark.hx:143: lines 143-145
+			Dice::Values($this->_inserts, function ($v) use (&$o) {
+				#src/jotun/gaming/dataform/Spark.hx:144: characters 5-27
+				$x = $v->getObject($o);
+				$o->arr[$o->length++] = $x;
+			});
+			#src/jotun/gaming/dataform/Spark.hx:146: characters 4-12
+			return $o;
+		} else if ($this->prop("*") !== null) {
+			#src/jotun/gaming/dataform/Spark.hx:148: characters 4-20
+			return $this->prop("*");
+		} else {
+			#src/jotun/gaming/dataform/Spark.hx:150: characters 4-23
+			$r = new HxAnon();
+			#src/jotun/gaming/dataform/Spark.hx:151: lines 151-155
+			Dice::Values($this->getProps(), function ($v) use (&$r, &$_gthis) {
+				#src/jotun/gaming/dataform/Spark.hx:152: lines 152-154
+				if ($v !== "*") {
+					#src/jotun/gaming/dataform/Spark.hx:153: characters 6-52
+					\Reflect::setField($r, $v, \Reflect::field($_gthis, $v));
+				}
+			});
+			#src/jotun/gaming/dataform/Spark.hx:156: characters 4-12
+			return $r;
+		}
+	}
+
+	/**
+	 * @return string[]|\Array_hx
+	 */
+	public function getProps () {
+		#src/jotun/gaming/dataform/Spark.hx:20: characters 3-36
+		return Pulsar::propertiesOf($this->_name);
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function isChanged () {
@@ -105,8 +148,8 @@ class Spark extends SparkCore {
 	 * @return void
 	 */
 	public function merge ($data) {
-		#src/jotun/gaming/dataform/Spark.hx:96: characters 3-51
-		SparkWriter::parse($this, $data, $this->_getProps(), true);
+		#src/jotun/gaming/dataform/Spark.hx:86: characters 3-50
+		SparkWriter::parse($this, $data, $this->getProps(), true);
 	}
 
 	/**
@@ -119,31 +162,31 @@ class Spark extends SparkCore {
 	 * @return bool
 	 */
 	public function parse ($data) {
-		#src/jotun/gaming/dataform/Spark.hx:74: characters 3-41
+		#src/jotun/gaming/dataform/Spark.hx:64: characters 3-41
 		$i = HxString::split($data, " ");
-		#src/jotun/gaming/dataform/Spark.hx:75: lines 75-87
+		#src/jotun/gaming/dataform/Spark.hx:65: lines 65-77
 		if (($i->arr[0] ?? null) === $this->_name) {
-			#src/jotun/gaming/dataform/Spark.hx:76: lines 76-82
+			#src/jotun/gaming/dataform/Spark.hx:66: lines 66-72
 			if ($i->length > 2) {
-				#src/jotun/gaming/dataform/Spark.hx:77: characters 5-14
+				#src/jotun/gaming/dataform/Spark.hx:67: characters 5-14
 				$this->id = ($i->arr[1] ?? null);
-				#src/jotun/gaming/dataform/Spark.hx:78: characters 5-16
+				#src/jotun/gaming/dataform/Spark.hx:68: characters 5-16
 				$data = ($i->arr[2] ?? null);
 			} else {
-				#src/jotun/gaming/dataform/Spark.hx:80: characters 5-14
+				#src/jotun/gaming/dataform/Spark.hx:70: characters 5-14
 				$this->id = null;
-				#src/jotun/gaming/dataform/Spark.hx:81: characters 5-16
+				#src/jotun/gaming/dataform/Spark.hx:71: characters 5-16
 				$data = ($i->arr[1] ?? null);
 			}
-			#src/jotun/gaming/dataform/Spark.hx:83: lines 83-86
+			#src/jotun/gaming/dataform/Spark.hx:73: lines 73-76
 			if ($data !== null) {
-				#src/jotun/gaming/dataform/Spark.hx:84: characters 5-54
-				SparkWriter::parse($this, $data, $this->_getProps(), false);
-				#src/jotun/gaming/dataform/Spark.hx:85: characters 5-16
+				#src/jotun/gaming/dataform/Spark.hx:74: characters 5-53
+				SparkWriter::parse($this, $data, $this->getProps(), false);
+				#src/jotun/gaming/dataform/Spark.hx:75: characters 5-16
 				return true;
 			}
 		}
-		#src/jotun/gaming/dataform/Spark.hx:88: characters 3-15
+		#src/jotun/gaming/dataform/Spark.hx:78: characters 3-15
 		return false;
 	}
 
@@ -164,18 +207,18 @@ class Spark extends SparkCore {
 	 * @return Spark
 	 */
 	public function set ($prop, $value) {
-		#src/jotun/gaming/dataform/Spark.hx:100: lines 100-104
+		#src/jotun/gaming/dataform/Spark.hx:90: lines 90-94
 		if (($this->_changes !== null) && !Boot::equal(\Reflect::field($this, $prop), $value)) {
-			#src/jotun/gaming/dataform/Spark.hx:101: lines 101-103
+			#src/jotun/gaming/dataform/Spark.hx:91: lines 91-93
 			if ($this->_changes->indexOf($prop) === -1) {
-				#src/jotun/gaming/dataform/Spark.hx:102: characters 5-24
+				#src/jotun/gaming/dataform/Spark.hx:92: characters 5-24
 				$_this = $this->_changes;
 				$_this->arr[$_this->length++] = $prop;
 			}
 		}
-		#src/jotun/gaming/dataform/Spark.hx:105: characters 3-38
+		#src/jotun/gaming/dataform/Spark.hx:95: characters 3-38
 		\Reflect::setField($this, $prop, $value);
-		#src/jotun/gaming/dataform/Spark.hx:106: characters 3-14
+		#src/jotun/gaming/dataform/Spark.hx:96: characters 3-14
 		return $this;
 	}
 
@@ -188,49 +231,70 @@ class Spark extends SparkCore {
 	 * @return string
 	 */
 	public function stringify ($changes = null) {
-		#src/jotun/gaming/dataform/Spark.hx:41: lines 41-66
+		#src/jotun/gaming/dataform/Spark.hx:31: lines 31-56
 		$_gthis = $this;
-		#src/jotun/gaming/dataform/Spark.hx:42: characters 3-23
+		#src/jotun/gaming/dataform/Spark.hx:32: characters 3-23
 		$r = null;
-		#src/jotun/gaming/dataform/Spark.hx:43: characters 3-23
+		#src/jotun/gaming/dataform/Spark.hx:33: characters 3-23
 		$c = null;
-		#src/jotun/gaming/dataform/Spark.hx:44: lines 44-46
+		#src/jotun/gaming/dataform/Spark.hx:34: lines 34-36
 		if (!$changes || $this->isChanged()) {
-			#src/jotun/gaming/dataform/Spark.hx:45: characters 4-76
-			$r = SparkWriter::stringify($this, $this->_name, ($changes ? $this->_changes : $this->_getProps()));
+			#src/jotun/gaming/dataform/Spark.hx:35: characters 4-75
+			$r = SparkWriter::stringify($this, $this->_name, ($changes ? $this->_changes : $this->getProps()));
 		}
-		#src/jotun/gaming/dataform/Spark.hx:47: lines 47-57
+		#src/jotun/gaming/dataform/Spark.hx:37: lines 37-47
 		Dice::Values($this->_inserts, function ($v) use (&$c, &$changes, &$r, &$_gthis) {
-			#src/jotun/gaming/dataform/Spark.hx:48: lines 48-56
+			#src/jotun/gaming/dataform/Spark.hx:38: lines 38-46
 			if ($v !== null) {
-				#src/jotun/gaming/dataform/Spark.hx:49: characters 5-29
+				#src/jotun/gaming/dataform/Spark.hx:39: characters 5-29
 				$c = $v->stringify($changes);
-				#src/jotun/gaming/dataform/Spark.hx:50: lines 50-55
+				#src/jotun/gaming/dataform/Spark.hx:40: lines 40-45
 				if ($c !== null) {
-					#src/jotun/gaming/dataform/Spark.hx:51: lines 51-53
+					#src/jotun/gaming/dataform/Spark.hx:41: lines 41-43
 					if ($r === null) {
-						#src/jotun/gaming/dataform/Spark.hx:52: characters 7-27
+						#src/jotun/gaming/dataform/Spark.hx:42: characters 7-27
 						$r = ($_gthis->_name??'null') . " " . ($_gthis->id??'null');
 					}
-					#src/jotun/gaming/dataform/Spark.hx:54: characters 6-20
+					#src/jotun/gaming/dataform/Spark.hx:44: characters 6-20
 					$r = ($r??'null') . "\x0A>" . ($c??'null');
 				}
 			}
 		});
-		#src/jotun/gaming/dataform/Spark.hx:58: characters 3-25
+		#src/jotun/gaming/dataform/Spark.hx:48: characters 3-25
 		$c = $this->_getDelString("/");
-		#src/jotun/gaming/dataform/Spark.hx:59: lines 59-64
+		#src/jotun/gaming/dataform/Spark.hx:49: lines 49-54
 		if ($c !== null) {
-			#src/jotun/gaming/dataform/Spark.hx:60: lines 60-62
+			#src/jotun/gaming/dataform/Spark.hx:50: lines 50-52
 			if ($r === null) {
-				#src/jotun/gaming/dataform/Spark.hx:61: characters 5-25
+				#src/jotun/gaming/dataform/Spark.hx:51: characters 5-25
 				$r = ($this->_name??'null') . " " . ($this->id??'null');
 			}
-			#src/jotun/gaming/dataform/Spark.hx:63: characters 4-39
+			#src/jotun/gaming/dataform/Spark.hx:53: characters 4-39
 			$r = ($r??'null') . (((mb_strlen($r) > 0 ? "\x0A" : ""))??'null') . ($c??'null');
 		}
-		#src/jotun/gaming/dataform/Spark.hx:65: characters 3-11
+		#src/jotun/gaming/dataform/Spark.hx:55: characters 3-11
 		return $r;
+	}
+
+	/**
+	 * @param string $prop
+	 * 
+	 * @return Spark
+	 */
+	public function unset ($prop) {
+		#src/jotun/gaming/dataform/Spark.hx:100: lines 100-104
+		if (($this->_changes !== null) && (\Reflect::field($this, $prop) !== null)) {
+			#src/jotun/gaming/dataform/Spark.hx:101: lines 101-103
+			if ($this->_changes->indexOf($prop) === -1) {
+				#src/jotun/gaming/dataform/Spark.hx:102: characters 5-24
+				$_this = $this->_changes;
+				$_this->arr[$_this->length++] = $prop;
+			}
+		}
+		#src/jotun/gaming/dataform/Spark.hx:105: characters 3-34
+		\Reflect::deleteField($this, $prop);
+		#src/jotun/gaming/dataform/Spark.hx:106: characters 3-14
+		return $this;
 	}
 }
 

@@ -24,21 +24,22 @@ class Pulsar {
 	private static var _dictio:Dynamic = {
 		"*": {
 			'Construct': Spark, 
-			Properties: "*", 
+			Properties: null, 
 			Indexable: false, 
-			Tag: false 
+			Tag: false ,
 		}
 	};
 	
-	public static function map(name:String, props:Dynamic, object:Dynamic = null, indexable:Bool = true, tageable:Bool = true):Void {
+	public static function map(name:String, props:Dynamic, object:Dynamic = null, indexable:Bool = false, tageable:Bool = true):Void {
 		if (object == null){
 			object = Spark;
-		}else{
-			#if js
-				object = Spark.inheritance(object);
-			#end
 		}
-		Reflect.setField(_dictio, name, {'Construct':object == null ? Spark : object, Properties:props, Indexable: indexable, Tag:tageable });
+		Reflect.setField(_dictio, name, {
+			'Construct':object == null ? Spark : object, 
+			Properties: props == null ? null : props, 
+			Indexable: indexable == true, 
+			Tag: tageable == true,
+		});
 	}
 	
 	public static function construct(name:String, r:Array<String>):Spark {
@@ -69,6 +70,10 @@ class Pulsar {
 	
 	public static function isIndexable(name:String):Bool {
 		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Indexable : false;
+	}
+	
+	static public function isList(name:String) {
+		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).IsList : false;
 	}
 	
 	public static function propertiesOf(name:String):Array<String> {
@@ -214,7 +219,9 @@ class Pulsar {
 		Dice.Values(i, function(v:String){
 			var q:Array<String> = v.split(' @::');
 			var r:Array<String> = q[0].split(' ');
-			r[r.length] = q[1];
+			if (q.length > 1){
+				r[r.length] = q[1];
+			}
 			if (r.length > 0){
 				v = r[0];
 				var cmd:String = v.substring(0, 1);
@@ -281,7 +288,7 @@ class Pulsar {
 	}
 	
 	private function _encode(r:String):String {
-		var r:String = Packager.encodeBase64(r);
+		r = Packager.encodeBase64(r);
 		var i:Int = 0;
 		while (r.substr(r.length - 1, 1) == '='){
 			r = r.substring(0, r.length - 1);
@@ -345,7 +352,9 @@ class Pulsar {
 	
 	public function links():Array<PulsarLink> {
 		var r:Array<PulsarLink> = [];
-		Dice.Values(_open_links, r.push);
+		Dice.Values(_open_links, function(v){
+			r.push(v);
+		});
 		return r;
 	}
 	
@@ -371,6 +380,18 @@ class Pulsar {
 		var o:Pulsar = new Pulsar();
 		o.parse(toString(false));
 		return o;
+	}
+	
+	public function getObject():Dynamic {
+		var r:Dynamic = {};
+		Dice.All(_open_links, function(p:String, v:PulsarLink){
+			if (!Reflect.hasField(r, p)){
+				Reflect.setField(r, p, v.getObject(v.isSingle() ? null : []));
+			}else {
+				v.getObject(Reflect.field(r, p));
+			}
+		});
+		return r;
 	}
 	
 }

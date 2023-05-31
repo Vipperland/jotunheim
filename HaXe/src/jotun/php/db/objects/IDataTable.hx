@@ -24,6 +24,12 @@ interface IDataTable {
 	public function getInfo():Dynamic;
 	
 	/**
+	 * If has a class definition for fetch
+	 * @return
+	 */
+	public function hasClassObj(Def:Dynamic):Bool;
+	
+	/**
 	 * Default Constructor Object for SELECT
 	 * @param	value
 	 * @return

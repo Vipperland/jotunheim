@@ -38,6 +38,10 @@ class OutputCore extends InputCoreCarrier {
 	 */
 	public $_log;
 	/**
+	 * @var int
+	 */
+	public $_status;
+	/**
 	 * @var bool
 	 */
 	public $_stopped;
@@ -56,16 +60,18 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	public function __construct ($data) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:32: lines 32-34
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:34: lines 34-36
 		if (OutputCore::$_instance !== null) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:33: characters 4-9
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:35: characters 4-9
 			throw new \ErrorException("gateway.Output is a Singleton");
 		}
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:35: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:37: characters 3-16
+		$this->_status = 200;
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:38: characters 3-19
 		OutputCore::$_instance = $this;
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:36: characters 3-15
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:39: characters 3-15
 		$this->_data = $data;
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:37: characters 3-10
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:40: characters 3-10
 		parent::__construct();
 	}
 
@@ -76,12 +82,12 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	public function error ($code, $check = false) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:66: lines 66-68
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:69: lines 69-71
 		if ($check === null) {
 			$check = false;
 		}
 		if (!$this->_stopped && (!$check || !$this->hasError($code))) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:67: characters 4-31
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:70: characters 4-31
 			$this->list("errors")->insert($code);
 		}
 	}
@@ -93,12 +99,20 @@ class OutputCore extends InputCoreCarrier {
 	}
 
 	/**
+	 * @return int
+	 */
+	final public function getStatus () {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:83: characters 3-17
+		return $this->_status;
+	}
+
+	/**
 	 * @param int $code
 	 * 
 	 * @return bool
 	 */
 	final public function hasError ($code) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:72: characters 3-44
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:75: characters 3-44
 		return !Boot::equal(HxDynamicStr::wrap($this->list("errors"))->indexOf($code), -1);
 	}
 
@@ -106,7 +120,7 @@ class OutputCore extends InputCoreCarrier {
 	 * @return bool
 	 */
 	final public function isLogEnabled () {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:87: characters 3-22
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:98: characters 3-22
 		return $this->_log === true;
 	}
 
@@ -114,7 +128,7 @@ class OutputCore extends InputCoreCarrier {
 	 * @return bool
 	 */
 	final public function isStopped () {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:83: characters 3-26
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:94: characters 3-26
 		return $this->_stopped === true;
 	}
 
@@ -124,7 +138,7 @@ class OutputCore extends InputCoreCarrier {
 	 * @return mixed
 	 */
 	public function list ($name) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:50: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:53: characters 3-14
 		return null;
 	}
 
@@ -135,12 +149,12 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	public function log ($message, $list = "trace") {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:60: lines 60-62
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:63: lines 63-65
 		if ($list === null) {
 			$list = "trace";
 		}
 		if ($this->_log) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:61: characters 4-35
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:64: characters 4-35
 			$this->list($list)->insert($message);
 		}
 	}
@@ -152,13 +166,13 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	final public function mode ($output, $chunk = 40) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:40: lines 40-43
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:43: lines 43-46
 		if ($chunk === null) {
 			$chunk = 40;
 		}
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:41: characters 3-23
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:44: characters 3-23
 		$this->_encode_out = $output;
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:42: characters 3-22
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:45: characters 3-22
 		$this->_chunk_size = $chunk;
 	}
 
@@ -168,7 +182,7 @@ class OutputCore extends InputCoreCarrier {
 	 * @return mixed
 	 */
 	public function object ($name) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:46: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:49: characters 3-14
 		return null;
 	}
 
@@ -178,7 +192,7 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	public function registerOAuth ($token) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:79: characters 3-31
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:90: characters 3-31
 		Jotun::$header->setOAuth($token);
 	}
 
@@ -188,11 +202,21 @@ class OutputCore extends InputCoreCarrier {
 	 * @return void
 	 */
 	public function setOptions ($value) {
-		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:54: lines 54-56
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:57: lines 57-59
 		if (Flag::FTest($value, 1)) {
-			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:55: characters 4-15
+			#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:58: characters 4-15
 			$this->_log = true;
 		}
+	}
+
+	/**
+	 * @param int $code
+	 * 
+	 * @return void
+	 */
+	final public function setStatus ($code) {
+		#src+extras/gateway/jotun/gateway/domain/OutputCore.hx:79: characters 3-17
+		$this->_status = $code;
 	}
 }
 

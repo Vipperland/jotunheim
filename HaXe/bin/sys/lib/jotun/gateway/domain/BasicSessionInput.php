@@ -7,10 +7,10 @@ namespace jotun\gateway\domain;
 
 use \jotun\serial\Packager;
 use \php\Boot;
-use \jotun\gateway\database\objects\ZoneCoreSession;
 use \jotun\Jotun;
 use \jotun\tools\Utils;
 use \php\_Boot\HxString;
+use \jotun\gateway\database\objects\UserSessionObject;
 
 /**
  * ...
@@ -26,7 +26,7 @@ class BasicSessionInput extends InputCore {
 	 */
 	public $_tokenStatus;
 	/**
-	 * @var ZoneCoreSession
+	 * @var UserSessionObject
 	 */
 	public $session;
 
@@ -74,10 +74,10 @@ class BasicSessionInput extends InputCore {
 			$authorization = Packager::decodeBase64($authorization);
 			#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:51: lines 51-65
 			if (\mb_substr($authorization, 0, mb_strlen("(y)=>")) === "(y)=>") {
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:52: characters 5-104
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:52: characters 5-106
 				$authorization = HxString::substring($authorization, mb_strlen("(y)=>"), mb_strlen($authorization));
-				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:53: characters 5-36
-				$this->session = new ZoneCoreSession();
+				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:53: characters 5-38
+				$this->session = new UserSessionObject();
 				#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:54: lines 54-62
 				if ($this->session->load($authorization)) {
 					#src+extras/basic+gateway/jotun/gateway/domain/BasicSessionInput.hx:55: lines 55-59

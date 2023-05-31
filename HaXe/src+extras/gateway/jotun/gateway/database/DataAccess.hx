@@ -20,7 +20,9 @@ class DataAccess extends OutputCoreCarrier {
 		return _instance;
 	}
 	
-	public function _error(code:Int):Void {
+	private var _tables:Dynamic;
+	
+	final public function _error(code:Int):Void {
 		output.error(code);
 	}
 	
@@ -31,13 +33,13 @@ class DataAccess extends OutputCoreCarrier {
 		_instance = this;
 		if (!Jotun.gate.isOpen()){
 			if (!Jotun.gate.open(token).isOpen()){
-				_error(ErrorCodes.DATABASE_CONNECT_ERROR);
+				output.setStatus(ErrorCodes.DATABASE_CONNECT_ERROR);
 			}
 		}
 		super();
 	}
 	
-	public function isConnected():Bool {
+	final public function isConnected():Bool {
 		return _instance != null && Jotun.gate.isOpen();
 	}
 	
@@ -45,7 +47,6 @@ class DataAccess extends OutputCoreCarrier {
 		if (isConnected()){
 			return handler();
 		}
-		output.error(ErrorCodes.DATABASE_UNAVAILABLE);
 		return null;
 	}
 	
@@ -55,18 +56,19 @@ class DataAccess extends OutputCoreCarrier {
 		}
 	}
 	
-	private function _dbLog(message:String):Void {
+	final private function _dbLog(message:String):Void {
 		output.log(message, 'sql');
 	}
 	
-	private function _tryAssemble(table:String, Def:Dynamic):IDataTable {
+	final private function _tryAssemble(table:String, Def:Dynamic):IDataTable {
 		return execute(function(){
 			var table:IDataTable = Jotun.gate.table(table);
 			if (table != null){
-				table.setClassObj(Def);
-				return table;
+				return table.setClassObj(Def);
 			}else{
-				output.error(ErrorCodes.DATABASE_MISSING_TABLE);
+				if (output.getStatus() == 200){
+					output.error(ErrorCodes.DATABASE_MISSING_TABLE);
+				}
 				return  null;
 			}
 		});

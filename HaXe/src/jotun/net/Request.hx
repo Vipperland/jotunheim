@@ -1,6 +1,7 @@
 package jotun.net;
 import haxe.Json;
 import jotun.errors.Error;
+import jotun.gaming.dataform.Pulsar;
 
 /**
  * ...
@@ -30,6 +31,10 @@ class Request implements IRequest {
 	
 	public function object():Dynamic {
 		return data != null && data.length > 1 ? Json.parse(data) : null;
+	}
+	
+	public function pulsar():Pulsar {
+		return Pulsar.create(data);
 	}
 	
 	public function getHeader(name:String):String {

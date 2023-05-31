@@ -132,6 +132,25 @@ class SparkCore {
 	}
 
 	/**
+	 * @param \Closure $handler
+	 * 
+	 * @return void
+	 */
+	public function each ($handler) {
+		#src/jotun/gaming/dataform/SparkCore.hx:145: lines 145-147
+		Dice::Values($this->_inserts, function ($v) use (&$handler) {
+			#src/jotun/gaming/dataform/SparkCore.hx:146: characters 11-34
+			if ($v !== null) {
+				#src/jotun/gaming/dataform/SparkCore.hx:146: characters 24-34
+				return $handler($v);
+			} else {
+				#src/jotun/gaming/dataform/SparkCore.hx:146: characters 11-34
+				return false;
+			}
+		});
+	}
+
+	/**
 	 * @param string $id
 	 * 
 	 * @return bool
@@ -139,6 +158,38 @@ class SparkCore {
 	public function exists ($id) {
 		#src/jotun/gaming/dataform/SparkCore.hx:58: characters 3-40
 		return \Reflect::hasField($this->_indexed, $id);
+	}
+
+	/**
+	 * @param string $name
+	 * @param \Closure $handler
+	 * @param Spark[]|\Array_hx $merge
+	 * 
+	 * @return Spark[]|\Array_hx
+	 */
+	public function filter ($name = null, $handler = null, $merge = null) {
+		#src/jotun/gaming/dataform/SparkCore.hx:151: lines 151-153
+		if ($merge === null) {
+			#src/jotun/gaming/dataform/SparkCore.hx:152: characters 4-14
+			$merge = new \Array_hx();
+		}
+		#src/jotun/gaming/dataform/SparkCore.hx:154: lines 154-162
+		Dice::Values($this->_inserts, function ($v) use (&$name, &$handler, &$merge) {
+			#src/jotun/gaming/dataform/SparkCore.hx:155: lines 155-160
+			if (($name === null) || ($v->_name === $name)) {
+				#src/jotun/gaming/dataform/SparkCore.hx:156: characters 5-28
+				$merge->offsetSet($merge->length, $v);
+				#src/jotun/gaming/dataform/SparkCore.hx:157: lines 157-159
+				if ($handler !== null) {
+					#src/jotun/gaming/dataform/SparkCore.hx:158: characters 6-23
+					return $handler($v);
+				}
+			}
+			#src/jotun/gaming/dataform/SparkCore.hx:161: characters 4-16
+			return false;
+		});
+		#src/jotun/gaming/dataform/SparkCore.hx:163: characters 3-15
+		return $merge;
 	}
 
 	/**

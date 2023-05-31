@@ -59,8 +59,14 @@ class DataTable implements IDataTable {
 		_restrict = 0;
 	}
 	
+	public function hasClassObj(Def:Dynamic):Bool {
+		return _class != null && (!Def || Def == _class);
+	}
+	
 	public function setClassObj(value:Dynamic):IDataTable {
-		_class = value;
+		if (_class != value){
+			_class = value;
+		}
 		return this;
 	}
 	

@@ -20,6 +20,8 @@ class OutputCore extends InputCoreCarrier {
 	
 	private var _log:Bool;
 	
+	private var _status:Int;
+	
 	private var _stopped:Bool;
 	
 	private var _encode_out:Bool;
@@ -32,6 +34,7 @@ class OutputCore extends InputCoreCarrier {
 		if (_instance != null){
 			throw new ErrorException("gateway.Output is a Singleton");
 		}
+		_status = 200;
 		_instance = this;
 		_data = data;
 		super();
@@ -70,6 +73,14 @@ class OutputCore extends InputCoreCarrier {
 	
 	final public function hasError(code:Int):Bool{
 		return list("errors").indexOf(code) != -1;
+	}
+	
+	final public function setStatus(code:Int):Void {
+		_status = code;
+	}
+	
+	final public function getStatus():Int {
+		return _status;
 	}
 	
 	public function flush():Void {

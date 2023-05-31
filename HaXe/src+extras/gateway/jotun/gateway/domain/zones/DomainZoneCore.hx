@@ -118,7 +118,7 @@ class DomainZoneCore extends DomainServicesCore {
 	
 	private function _execute(data:Array<String>):Void {
 		if (_defaultMap != null){
-			error(ErrorCodes.SERVICE_FORBIDDEN);
+			output.setStatus(ErrorCodes.SERVICE_FORBIDDEN);
 		}
 	}
 	
@@ -141,9 +141,9 @@ class DomainZoneCore extends DomainServicesCore {
 				}else{
 					_logService(toString() + "->execute() " + (dbPassed ? "SUCCESS" : "DB_REQUIRED"));
 				}
-				if (dbPassed){
+				if (dbPassed && output.getStatus() == 200){
 					_execute(data);
-				}else{
+				}else {
 					output.error(ErrorCodes.DATABASE_UNAVAILABLE);
 				}
 				return this;
@@ -151,9 +151,9 @@ class DomainZoneCore extends DomainServicesCore {
 		}else{
 			_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(UNAUTORIZED " + _requiredPass.toString() + ")");
 			if (input.hasPass()){
-				error(ErrorCodes.SERVICE_UNAUTHORIZED);
+				output.setStatus(ErrorCodes.SERVICE_UNAUTHORIZED);
 			}else{
-				error(ErrorCodes.SERVICE_LOGIN_REQUIRED);
+				output.setStatus(ErrorCodes.SERVICE_LOGIN_REQUIRED);
 			}
 			return null;
 		}

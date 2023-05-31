@@ -26,8 +26,8 @@ class NotFoundZone extends DomainZoneCore {
 	 * @return void
 	 */
 	public function _execute ($data) {
-		#src+extras/gateway/jotun/gateway/domain/zones/NotFoundZone.hx:11: characters 3-38
-		$this->error(404);
+		#src+extras/gateway/jotun/gateway/domain/zones/NotFoundZone.hx:11: characters 3-49
+		$this->get_output()->setStatus(404);
 	}
 }
 

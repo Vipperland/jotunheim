@@ -12,21 +12,11 @@ import jotun.utils.Dice;
 @:expose("Spark")
 class Spark extends SparkCore {
 	
-	#if js
-		public static function inheritance(obj:Dynamic):Dynamic{
-			//if (!Syntax.code("Spark.prototype.isPrototypeOf({0})", obj)){
-				//obj.prototype = Syntax.code("Object.create(Spark.prototype)");
-			//}
-			//return obj;
-			return Utils.extendClass(obj, Spark);
-		}
-	#end
-		
 	private var _changes:Array<String>;
 	
 	public var id:String;
 	
-	private function _getProps():Array<String> {
+	private function getProps():Array<String> {
 		return Pulsar.propertiesOf(_name);
 	}
 	
@@ -42,7 +32,7 @@ class Spark extends SparkCore {
 		var r:String = null;
 		var c:String = null;
 		if (!changes || isChanged()){
-			r = SparkWriter.stringify(this, _name, changes ? _changes : _getProps());
+			r = SparkWriter.stringify(this, _name, changes ? _changes : getProps());
 		}
 		Dice.Values(_inserts, function(v:Spark){
 			if (v != null){
@@ -81,7 +71,7 @@ class Spark extends SparkCore {
 				data = i[1];
 			}
 			if (data != null){
-				SparkWriter.parse(this, data, _getProps(), false);
+				SparkWriter.parse(this, data, getProps(), false);
 				return true;
 			}
 		}
@@ -93,7 +83,7 @@ class Spark extends SparkCore {
 	   @param	data
 	**/
 	public function merge(data:String):Void {
-		SparkWriter.parse(this, data, _getProps(), true);
+		SparkWriter.parse(this, data, getProps(), true);
 	}
 	
 	public function set(prop:String, value:Dynamic):Spark {
@@ -103,6 +93,16 @@ class Spark extends SparkCore {
 			}
 		}
 		Reflect.setField(this, prop, value);
+		return this;
+	}
+	
+	public function unset(prop:String):Spark {
+		if (_changes != null && Reflect.field(this, prop) != null){
+			if (_changes.indexOf(prop) == -1){
+				_changes.push(prop);
+			}
+		}
+		Reflect.deleteField(this, prop);
 		return this;
 	}
 	
@@ -133,6 +133,28 @@ class Spark extends SparkCore {
 	
 	public function isIndexable():Bool {
 		return Pulsar.isIndexable(_name);
+	}
+	
+	public function getObject(?o:Array<Dynamic>):Dynamic {
+		if (_inserts.length > 0){
+			if (o == null) {
+				o = [];
+			}
+			Dice.Values(_inserts, function(v:Spark){
+				o.push(v.getObject(o));
+			});
+			return o;
+		}else if (prop('*') != null){
+			return prop('*');
+		}else{
+			var r:Dynamic = {};
+			Dice.Values(getProps(), function(v:String){
+				if(v != '*'){
+					Reflect.setField(r, v, Reflect.field(this, v));
+				}
+			});
+			return r;
+		}
 	}
 	
 }

@@ -76,8 +76,8 @@ class SessionVerifyZone extends DomainZoneCore {
 						#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:29: characters 8-63
 						(Boot::typedCast(Boot::getClass(BasicSessionInput::class), $_gthis->get_input()))->session->exposeCarrier();
 					} else {
-						#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:32: characters 8-55
-						$_gthis->get_output()->error(406);
+						#src+extras/basic+gateway/jotun/gateway/domain/zones/session/SessionVerifyZone.hx:32: characters 8-59
+						$_gthis->get_output()->setStatus(406);
 					}
 				});
 			}

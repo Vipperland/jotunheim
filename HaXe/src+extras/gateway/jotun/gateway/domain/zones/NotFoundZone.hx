@@ -8,7 +8,7 @@ import jotun.gateway.errors.ErrorCodes;
 class NotFoundZone extends DomainZoneCore {
 	
 	override function _execute(data:Array<String>):Void {
-		error(ErrorCodes.SERVICE_NOT_FOUND);
+		output.setStatus(ErrorCodes.SERVICE_NOT_FOUND);
 	}
 	
 	public function new() {

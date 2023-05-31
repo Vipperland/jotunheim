@@ -26,9 +26,9 @@ class ObjectManipulator {
 	 * @return void
 	 */
 	public function __construct ($data, $indexable) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:74: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:75: characters 3-19
 		$this->data = $data;
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:75: characters 3-29
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:76: characters 3-29
 		$this->indexable = $indexable;
 	}
 
@@ -39,25 +39,25 @@ class ObjectManipulator {
 	 * @return bool
 	 */
 	public function _test ($obj, $value) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:114: lines 114-128
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:115: lines 115-129
 		$_gthis = $this;
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:115: lines 115-127
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:116: lines 116-128
 		return !Dice::Values($obj, function ($v) use (&$obj, &$_gthis, &$value) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:116: lines 116-126
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:117: lines 117-127
 			if ($v !== null) {
-				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:117: lines 117-123
+				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:118: lines 118-124
 				if ($_gthis->isIterable($v)) {
-					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:118: characters 6-23
+					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:119: characters 6-23
 					return Boot::equal($v, $value);
 				} else if (\Reflect::hasField($_gthis->get_data(), "id")) {
-					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:120: characters 6-28
+					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:121: characters 6-28
 					return Boot::equal(Boot::dynamicField($obj, 'id'), $value);
 				} else {
-					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:122: characters 6-28
+					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:123: characters 6-28
 					return $_gthis->_test($v, $value);
 				}
 			} else {
-				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:125: characters 5-17
+				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:126: characters 5-17
 				return false;
 			}
 		})->completed;
@@ -70,19 +70,19 @@ class ObjectManipulator {
 	 * @return mixed
 	 */
 	public function delete ($id, $silent = null) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:90: lines 90-94
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:91: lines 91-95
 		if ($this->get_indexable()) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:91: characters 11-38
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:92: characters 11-38
 			$_this = Dice::Remove($this->get_data(), $id);
 			if ($_this->length > 0) {
 				$_this->length--;
 			}
 			return \array_pop($_this->arr);
 		} else if (!$this->isIterable($id)) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:93: characters 4-33
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:94: characters 4-33
 			\Reflect::deleteField($this->get_data(), $id);
 		}
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:95: characters 3-12
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:96: characters 3-12
 		return $id;
 	}
 
@@ -92,7 +92,7 @@ class ObjectManipulator {
 	 * @return bool
 	 */
 	public function exists ($id) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:131: characters 3-25
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:132: characters 3-25
 		return $this->_test($this->get_data(), $id);
 	}
 
@@ -100,7 +100,7 @@ class ObjectManipulator {
 	 * @return mixed
 	 */
 	public function get_data () {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:66: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:67: characters 3-14
 		return $this->data;
 	}
 
@@ -108,7 +108,7 @@ class ObjectManipulator {
 	 * @return bool
 	 */
 	public function get_indexable () {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:60: characters 3-19
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:61: characters 3-19
 		return $this->indexable;
 	}
 
@@ -118,32 +118,32 @@ class ObjectManipulator {
 	 * @return int
 	 */
 	public function indexOf ($value) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:98: lines 98-112
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:99: lines 99-113
 		$_gthis = $this;
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:99: lines 99-111
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:100: lines 100-112
 		if ($this->get_indexable()) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:100: characters 4-30
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:101: characters 4-30
 			return HxDynamicStr::wrap($this->get_data())->indexOf($value);
 		} else if ($this->isIterable($value)) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:102: lines 102-108
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:103: lines 103-109
 			if (Dice::Values($this->get_data(), function ($v) use (&$_gthis, &$value) {
-				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:103: lines 103-107
+				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:104: lines 104-108
 				if (\Reflect::hasField($_gthis->get_data(), "id")) {
-					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:104: characters 6-29
+					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:105: characters 6-29
 					return Boot::equal(Boot::dynamicField($_gthis->get_data(), 'id'), $value);
 				} else {
-					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:106: characters 6-18
+					#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:107: characters 6-18
 					return false;
 				}
 			})->completed) {
-				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:108: characters 19-21
+				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:109: characters 19-21
 				return -1;
 			} else {
-				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:108: characters 24-25
+				#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:109: characters 24-25
 				return 0;
 			}
 		} else {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:110: characters 4-13
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:111: characters 4-13
 			return -1;
 		}
 	}
@@ -154,18 +154,18 @@ class ObjectManipulator {
 	 * @return bool
 	 */
 	public function insert ($o) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:79: lines 79-85
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:80: lines 80-86
 		if ($this->get_indexable()) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:80: characters 4-16
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:81: characters 4-16
 			$this->get_data()->push($o);
 		} else if (\Reflect::hasField($o, "id")) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:82: characters 4-35
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:83: characters 4-35
 			\Reflect::setField($this->get_data(), Boot::dynamicField($o, 'id'), $o);
 		} else {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:84: characters 4-16
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:85: characters 4-16
 			return false;
 		}
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:86: characters 3-14
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:87: characters 3-14
 		return true;
 	}
 
@@ -175,12 +175,12 @@ class ObjectManipulator {
 	 * @return bool
 	 */
 	public function isIterable ($value) {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:70: characters 10-116
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:71: characters 10-116
 		if (($value !== null) && !is_string($value) && !(is_float($value) || is_int($value))) {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:70: characters 90-116
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:71: characters 90-116
 			return !is_bool($value);
 		} else {
-			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:70: characters 10-116
+			#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:71: characters 10-116
 			return false;
 		}
 	}

@@ -36,9 +36,11 @@ class JsonOutput extends OutputCore {
 	 * @return void
 	 */
 	public function flush () {
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:50: characters 3-35
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:50: characters 3-25
+		$this->_data->status = $this->_status;
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:51: characters 3-35
 		$this->_data->time = Omnitools::timeNow();
-		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:51: characters 3-56
+		#src+extras/gateway/jotun/gateway/domain/JsonOutput.hx:52: characters 3-56
 		Jotun::$header->setJSON($this->_data, $this->_encode_out, $this->_chunk_size);
 	}
 

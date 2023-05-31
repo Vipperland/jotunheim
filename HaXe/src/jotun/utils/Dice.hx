@@ -162,8 +162,6 @@ class Dice {
 		return q;
 	}
 	
-	
-	
 	/**
 	 * Execute the method in all object list (obj.method(...args))
 	 * @param	q		Target object

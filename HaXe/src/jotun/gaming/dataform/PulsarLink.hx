@@ -1,5 +1,6 @@
 package jotun.gaming.dataform;
 import jotun.gaming.dataform.PulsarLink;
+import jotun.gaming.dataform.Spark;
 import jotun.utils.Dice;
 
 /**
@@ -7,7 +8,7 @@ import jotun.utils.Dice;
  * @author 
  */
 class PulsarLink extends SparkCore {
-
+	
 	public function new(name:String) {
 		super(name);
 		_deletions = [];
@@ -15,12 +16,6 @@ class PulsarLink extends SparkCore {
 	
 	public function getData():Array<Spark> {
 		return _inserts;
-	}
-	
-	public function each(handler:Spark->Bool){
-		Dice.Values(_inserts, function(v:Spark){
-			return v != null && handler(v);
-		});
 	}
 	
 	public function commit():Void {
@@ -51,6 +46,35 @@ class PulsarLink extends SparkCore {
 			r += (r.length > 0 ? '\n' : '') + c;
 		}
 		return r;
+	}
+	
+	public function isSingle():Bool {
+		return _inserts.length == 1 && _inserts[0].prop('*') != null;
+	}
+	
+	public function getObject(?o:Array<Dynamic>):Dynamic {
+		if (isSingle()){
+			return _inserts[0].prop('*');
+		}else{
+			if (o == null) {
+				o = [];
+			}
+			Dice.Values(_inserts, function(v:Spark){
+				v.getObject(o);
+			});
+			return o;
+		}
+	}
+	
+	override public function filter(?name:String, ?handler:Spark->Bool, ?merge:Array<Spark>):Array<Spark> {
+		if (merge == null){
+			merge = [];
+		}
+		each(function(v:Spark):Bool{
+			v.filter(name, handler, merge);
+			return false;
+		});
+		return merge;
 	}
 	
 }

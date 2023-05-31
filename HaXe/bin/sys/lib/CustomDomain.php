@@ -6,13 +6,13 @@
 use \php\_Boot\HxAnon;
 use \php\Boot;
 use \zones\debug\TestZone;
-use \jotun\gateway\domain\CustomSessionDomain;
+use \jotun\gateway\domain\SessionDomainCore;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class CustomDomain extends CustomSessionDomain {
+class CustomDomain extends SessionDomainCore {
 	/**
 	 * @return void
 	 */

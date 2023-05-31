@@ -47,6 +47,7 @@ class JsonOutput extends OutputCore {
 	}
 	
 	override public function flush():Void {
+		_data.status = _status;
 		_data.time = Omnitools.timeNow();
 		Jotun.header.setJSON(_data, _encode_out, _chunk_size);
 	}

@@ -20,9 +20,13 @@ class JsonTool {
 	
 	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
 		if (Std.isOfType(a, String)) {
-			if (a.substr(0, 1) == "_") return null;
+			if (a.substr(0, 1) == "_") {
+				return null;
+			}
 		}
-		if (Std.isOfType(b, Flag)) return b.value;
+		if (Std.isOfType(b, Flag)) {
+			return b.value;
+		}
 		return (b == null) ? null : b; 
 	};
 	
@@ -43,7 +47,6 @@ class JsonTool {
 		this.indent = space;
 		this.pretty = space != null;
 		this.nind = 0;
-
 		#if flash
 		buf = new flash.utils.ByteArray();
 		buf.endian = flash.utils.Endian.BIG_ENDIAN;
@@ -54,18 +57,21 @@ class JsonTool {
 	}
 
 	inline function ipad():Void {
-		if (pretty)
+		if (pretty){
 			add(StringTools.lpad('', indent, nind * indent.length));
+		}
 	}
 
 	inline function newl():Void {
-		if (pretty)
+		if (pretty){
 			addChar('\n'.code);
+		}
 	}
 
 	function write(k:Dynamic, v:Dynamic) {
-		if (replacer != null)
+		if (replacer != null){
 			v = replacer(k, v);
+		}
 		switch (Type.typeof(v)) {
 			case TUnknown:
 				add('"???"');
@@ -78,19 +84,19 @@ class JsonTool {
 			case TFunction:
 				add('"<fun>"');
 			case TClass(c):
-				if (c == String)
+				if (c == String){
 					quote(v);
-				else if (c == Array) {
+				}else if (c == Array) {
 					var v:Array<Dynamic> = v;
 					addChar('['.code);
-
 					var len = v.length;
 					var last = len - 1;
 					for (i in 0...len) {
-						if (i > 0)
-							addChar(','.code)
-						else
+						if (i > 0){
+							addChar(','.code);
+						} else {
 							nind++;
+						}
 						newl();
 						ipad();
 						write(i, v[i]);
@@ -104,14 +110,16 @@ class JsonTool {
 				} else if (c == haxe.ds.StringMap) {
 					var v:haxe.ds.StringMap<Dynamic> = v;
 					var o = {};
-					for (k in v.keys())
+					for (k in v.keys()){
 						Reflect.setField(o, k, v.get(k));
+					}
 					objString(o);
 				} else if (c == Date) {
 					var v:Date = v;
 					quote(v.toString());
-				} else
+				} else{
 					classString(v);
+				}
 			case TEnum(_):
 				var i = Type.enumIndex(v);
 				add(Std.string(i));
@@ -155,24 +163,33 @@ class JsonTool {
 		for (i in 0...len) {
 			var f = fields[i];
 			var value = Reflect.field(v, f);
-			if (Reflect.isFunction(value))
+			if (Reflect.isFunction(value)){
 				continue;
+			}
 			#if !php
-				if ( Std.isOfType(value, IDisplay) ) value = displayStringfy(cast value);
+				if ( Std.isOfType(value, IDisplay) ) {
+					value = displayStringfy(cast value);
+				}
 			#end
-			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") continue;
-			if (first) {
-				nind++;
-				first = false;
-			} else
-				addChar(','.code);
-			newl();
-			ipad();
-			quote(f);
-			addChar(':'.code);
-			if (pretty)
-				addChar(' '.code);
-			write(f, value);
+			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") {
+				continue;
+			}
+			//if (value != null){
+				if (first) {
+					nind++;
+					first = false;
+				} else {
+					addChar(','.code);
+				}
+				newl();
+				ipad();
+				quote(f);
+				addChar(':'.code);
+				if (pretty){
+					addChar(' '.code);
+				}
+				write(f, value);
+			//}
 			if (i == last) {
 				nind--;
 				newl();
@@ -214,10 +231,11 @@ class JsonTool {
 					add('\\f');
 				default:
 					#if flash
-					if (c >= 128)
+					if (c >= 128){
 						add(String.fromCharCode(c))
-					else
+					} else {
 						addChar(c);
+					}
 					#elseif hl
 					if (prev >= 0) {
 						if (c >= 0xD800 && c <= 0xDFFF) {
@@ -228,10 +246,11 @@ class JsonTool {
 							prev = c;
 						}
 					} else {
-						if (c >= 0xD800 && c <= 0xDFFF)
+						if (c >= 0xD800 && c <= 0xDFFF){
 							prev = c;
-						else
+						} else {
 							addChar(c);
+						}
 					}
 					#else
 					addChar(c);
@@ -239,8 +258,9 @@ class JsonTool {
 			}
 		}
 		#if hl
-		if (prev >= 0)
+		if (prev >= 0){
 			addChar("□".code);
+		}
 		#end
 		addChar('"'.code);
 	}

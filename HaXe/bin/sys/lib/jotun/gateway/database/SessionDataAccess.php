@@ -6,9 +6,11 @@
 namespace jotun\gateway\database;
 
 use \php\Boot;
-use \jotun\gateway\database\objects\ZoneCoreSession;
+use \jotun\gateway\database\objects\UserObject;
+use \jotun\gateway\database\objects\UserPwdObject;
 use \jotun\php\db\Token;
 use \jotun\php\db\objects\IDataTable;
+use \jotun\gateway\database\objects\UserSessionObject;
 
 /**
  * ...
@@ -18,7 +20,15 @@ class SessionDataAccess extends DataAccess {
 	/**
 	 * @var IDataTable
 	 */
-	public $sessions;
+	public $session;
+	/**
+	 * @var IDataTable
+	 */
+	public $user;
+	/**
+	 * @var IDataTable
+	 */
+	public $user_pwd;
 
 	/**
 	 * @param Token $token
@@ -26,20 +36,38 @@ class SessionDataAccess extends DataAccess {
 	 * @return void
 	 */
 	public function __construct ($token) {
-		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:14: characters 3-15
+		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:16: characters 3-15
 		parent::__construct($token);
 	}
 
 	/**
 	 * @return IDataTable
 	 */
-	public function get_sessions () {
-		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:19: characters 3-51
-		return $this->_tryAssemble("sessions", Boot::getClass(ZoneCoreSession::class));
+	public function get_session () {
+		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:21: characters 3-57
+		return $this->_tryAssemble("user_session", Boot::getClass(UserSessionObject::class));
+	}
+
+	/**
+	 * @return IDataTable
+	 */
+	public function get_user () {
+		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:26: characters 3-42
+		return $this->_tryAssemble("user", Boot::getClass(UserObject::class));
+	}
+
+	/**
+	 * @return IDataTable
+	 */
+	public function get_user_pwd () {
+		#src+extras/basic+gateway/jotun/gateway/database/SessionDataAccess.hx:31: characters 3-49
+		return $this->_tryAssemble("user_pwd", Boot::getClass(UserPwdObject::class));
 	}
 }
 
 Boot::registerClass(SessionDataAccess::class, 'jotun.gateway.database.SessionDataAccess');
 Boot::registerGetters('jotun\\gateway\\database\\SessionDataAccess', [
-	'sessions' => true
+	'user_pwd' => true,
+	'user' => true,
+	'session' => true
 ]);

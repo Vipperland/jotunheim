@@ -141,4 +141,26 @@ class SparkCore {
 		}
 	}
 	
+	public function each(handler:Spark->Bool){
+		Dice.Values(_inserts, function(v:Spark){
+			return v != null && handler(v);
+		});
+	}
+	
+	public function filter(?name:String, ?handler:Spark->Bool, ?merge:Array<Spark>):Array<Spark> {
+		if (merge == null){
+			merge = [];
+		}
+		Dice.Values(_inserts, function(v:Spark){
+			if (name == null || v._name == name){
+				merge[merge.length] = v;
+				if (handler != null){
+					return handler(v);
+				}
+			}
+			return false;
+		});
+		return merge;
+	}
+	
 }

@@ -47,11 +47,15 @@ class PulsarOutput extends OutputCore {
 	public function flush () {
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:63: characters 3-53
 		Pulsar::map("error", \Array_hx::wrap(["code"]), Boot::getClass(Spark::class), false, false);
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:64: characters 3-53
-		Pulsar::map("time", \Array_hx::wrap(["value"]), Boot::getClass(Spark::class), false, false);
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:65: characters 3-68
-		$this->_data->insert((new Spark("time"))->set("value", Omnitools::timeNow()));
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:66: characters 3-58
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:64: characters 3-49
+		Pulsar::map("time", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:65: characters 3-51
+		Pulsar::map("status", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:66: characters 3-54
+		$this->_data->insert((new Spark("status"))->set("*", $this->_status));
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:67: characters 3-64
+		$this->_data->insert((new Spark("time"))->set("*", Omnitools::timeNow()));
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:68: characters 3-58
 		Jotun::$header->setPulsar($this->_data, $this->_encode_out, $this->_chunk_size);
 	}
 
@@ -77,8 +81,8 @@ class PulsarOutput extends OutputCore {
 			$list = "trace";
 		}
 		if ($this->_log) {
-			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:54: characters 4-73
-			$this->list("_logs")->insert((new Spark("_logq"))->set("message", $message));
+			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:54: characters 4-67
+			$this->list("_logs")->insert((new Spark("_logq"))->set("*", $message));
 		}
 	}
 
@@ -129,8 +133,8 @@ class PulsarOutput extends OutputCore {
 		parent::setOptions($value);
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:36: lines 36-38
 		if ($this->_log) {
-			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:37: characters 4-57
-			Pulsar::map("_logq", \Array_hx::wrap(["message"]), Boot::getClass(Spark::class), false, false);
+			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:37: characters 4-51
+			Pulsar::map("_logq", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
 		}
 	}
 }

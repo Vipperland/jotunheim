@@ -17,7 +17,7 @@ import jotun.utils.Omnitools;
  * ...
  * @author 
  */
-class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
+class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 
 	static public inline var OAUTH_HEAD_IN:String = "(y)=>";
 	
@@ -64,7 +64,7 @@ class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 			_ctd = Omnitools.timeNow();
 			_upd = _ctd;
 			if (RunSQL(function(){
-				return cast (_database, SessionDataAccess).sessions.add({
+				return cast (_database, SessionDataAccess).session.add({
 					_uid: id,
 					_token: _token,
 					_ip: _ip,
@@ -85,8 +85,8 @@ class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 	}
 	
 	public function load(oauth:String):Bool {
-		var current:ZoneCoreSession = RunSQL(function(){
-			return cast (_database, SessionDataAccess).sessions.findOne("*", Clause.EQUAL('_token', oauth));
+		var current:UserSessionObject = RunSQL(function(){
+			return cast (_database, SessionDataAccess).session.findOne("*", Clause.EQUAL('_token', oauth));
 		});
 		if (current != null){
 			_uid = current._uid;
@@ -109,21 +109,21 @@ class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 		if (_uid != null && _token != null){
 			_upd = Omnitools.timeNow();
 			RunSQL(function(){
-				cast (_database, SessionDataAccess).sessions.updateOne({_upd:_upd}, Clause.EQUAL("_token", _token));
+				cast (_database, SessionDataAccess).session.updateOne({_upd:_upd}, Clause.EQUAL("_token", _token));
 			});
 		}
 	}
 	
 	public function drop():Void {
 		RunSQL(function(){
-			cast (_database, SessionDataAccess).sessions.deleteOne(Clause.EQUAL("_token", _token));
+			cast (_database, SessionDataAccess).session.deleteOne(Clause.EQUAL("_token", _token));
 		});
 	}
 	
 	public function dropAll():Void {
 		if (isValid()){
 			RunSQL(function(){
-				cast (_database, SessionDataAccess).sessions.delete(Clause.EQUAL("_uid", _uid));
+				cast (_database, SessionDataAccess).session.delete(Clause.EQUAL("_uid", _uid));
 			});
 		}
 	}
@@ -133,7 +133,7 @@ class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 	}
 	
 	public function exposeToken():Void {
-		var token:String = ZoneCoreSession.OAUTH_HEAD_OUT;
+		var token:String = UserSessionObject.OAUTH_HEAD_OUT;
 		if(isValid()){
 			token += _token;
 		}else{
@@ -160,7 +160,7 @@ class ZoneCoreSession extends ZoneCoreObject implements IPassCarrier {
 	 * Remove auhtorization from header
 	 */
 	public function revoke():Void {
-		OutputCore.getInstance().registerOAuth(Packager.encodeBase64(ZoneCoreSession.OAUTH_HEAD_OUT + 'REVOKE'));
+		OutputCore.getInstance().registerOAuth(Packager.encodeBase64(UserSessionObject.OAUTH_HEAD_OUT + 'REVOKE'));
 	}
 	
 	

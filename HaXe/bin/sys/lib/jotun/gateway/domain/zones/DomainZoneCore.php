@@ -116,8 +116,8 @@ class DomainZoneCore extends DomainServicesCore {
 	public function _execute ($data) {
 		#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:120: lines 120-122
 		if ($this->_defaultMap !== null) {
-			#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:121: characters 4-39
-			$this->error(403);
+			#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:121: characters 4-50
+			$this->get_output()->setStatus(403);
 		}
 	}
 
@@ -224,7 +224,7 @@ class DomainZoneCore extends DomainServicesCore {
 					$this->_logService(($this->toString()??'null') . "->execute() " . ((($dbPassed ? "SUCCESS" : "DB_REQUIRED"))??'null'));
 				}
 				#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:144: lines 144-148
-				if ($dbPassed) {
+				if ($dbPassed && ($this->get_output()->getStatus() === 200)) {
 					#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:145: characters 6-20
 					$this->_execute($data);
 				} else {
@@ -239,11 +239,11 @@ class DomainZoneCore extends DomainServicesCore {
 			$this->_logService(($this->toString()??'null') . "->" . ((($Def !== null ? "carry" : "execute"))??'null') . "(UNAUTORIZED " . ($this->_requiredPass->toString()??'null') . ")");
 			#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:153: lines 153-157
 			if ($this->get_input()->hasPass()) {
-				#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:154: characters 5-43
-				$this->error(401);
+				#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:154: characters 5-54
+				$this->get_output()->setStatus(401);
 			} else {
-				#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:156: characters 5-45
-				$this->error(402);
+				#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:156: characters 5-56
+				$this->get_output()->setStatus(402);
 			}
 			#src+extras/gateway/jotun/gateway/domain/zones/DomainZoneCore.hx:158: characters 4-15
 			return null;

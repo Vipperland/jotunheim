@@ -5,7 +5,7 @@ import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.serial.Packager;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
-import jotun.gateway.database.objects.ZoneCoreSession;
+import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.domain.OutputCore;
 import jotun.gateway.domain.zones.pass.ZonePass;
 import php.ErrorException;

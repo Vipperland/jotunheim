@@ -23,6 +23,11 @@ class DataAccess extends OutputCoreCarrier {
 	static public $_instance;
 
 	/**
+	 * @var mixed
+	 */
+	public $_tables;
+
+	/**
 	 * @return DataAccess
 	 */
 	public static function getInstance () {
@@ -36,22 +41,22 @@ class DataAccess extends OutputCoreCarrier {
 	 * @return void
 	 */
 	public function __construct ($token) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:28: lines 28-30
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:30: lines 30-32
 		if (DataAccess::$_instance !== null) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:29: characters 4-9
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:31: characters 4-9
 			throw new \ErrorException("DataAccess is a Singleton");
 		}
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:31: characters 3-19
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:33: characters 3-19
 		DataAccess::$_instance = $this;
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:32: lines 32-36
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:34: lines 34-38
 		if (!Jotun::$gate->isOpen()) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:33: lines 33-35
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:35: lines 35-37
 			if (!Jotun::$gate->open($token)->isOpen()) {
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:34: characters 5-46
-				$this->_error(100);
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:36: characters 5-56
+				$this->get_output()->setStatus(100);
 			}
 		}
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:37: characters 3-10
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:39: characters 3-10
 		parent::__construct();
 	}
 
@@ -60,8 +65,8 @@ class DataAccess extends OutputCoreCarrier {
 	 * 
 	 * @return void
 	 */
-	public function _dbLog ($message) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:59: characters 3-29
+	final public function _dbLog ($message) {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:60: characters 3-29
 		$this->get_output()->log($message, "sql");
 	}
 
@@ -70,8 +75,8 @@ class DataAccess extends OutputCoreCarrier {
 	 * 
 	 * @return void
 	 */
-	public function _error ($code) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:24: characters 3-21
+	final public function _error ($code) {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:26: characters 3-21
 		$this->get_output()->error($code);
 	}
 
@@ -81,23 +86,24 @@ class DataAccess extends OutputCoreCarrier {
 	 * 
 	 * @return IDataTable
 	 */
-	public function _tryAssemble ($table, $Def) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:62: lines 62-73
+	final public function _tryAssemble ($table, $Def) {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:63: lines 63-75
 		$_gthis = $this;
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:63: lines 63-72
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:64: lines 64-74
 		return $this->execute(function () use (&$table, &$_gthis, &$Def) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:64: characters 4-51
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:65: characters 4-51
 			$table1 = Jotun::$gate->table($table);
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:65: lines 65-71
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:66: lines 66-73
 			if ($table1 !== null) {
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:66: characters 5-27
-				$table1->setClassObj($Def);
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:67: characters 5-17
-				return $table1;
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:67: characters 5-34
+				return $table1->setClassObj($Def);
 			} else {
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:69: characters 5-52
-				$_gthis->get_output()->error(102);
-				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:70: characters 5-17
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:69: lines 69-71
+				if ($_gthis->get_output()->getStatus() === 200) {
+					#src+extras/gateway/jotun/gateway/database/DataAccess.hx:70: characters 6-53
+					$_gthis->get_output()->error(102);
+				}
+				#src+extras/gateway/jotun/gateway/database/DataAccess.hx:72: characters 5-17
 				return null;
 			}
 		});
@@ -109,27 +115,25 @@ class DataAccess extends OutputCoreCarrier {
 	 * @return mixed
 	 */
 	public function execute ($handler) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:45: lines 45-47
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:47: lines 47-49
 		if ($this->isConnected()) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:46: characters 4-20
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:48: characters 4-20
 			return $handler();
 		}
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:48: characters 3-48
-		$this->get_output()->error(101);
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:49: characters 3-14
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:50: characters 3-14
 		return null;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isConnected () {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:41: characters 10-50
+	final public function isConnected () {
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:43: characters 10-50
 		if (DataAccess::$_instance !== null) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:41: characters 31-50
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:43: characters 31-50
 			return Jotun::$gate->isOpen();
 		} else {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:41: characters 10-50
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:43: characters 10-50
 			return false;
 		}
 	}
@@ -140,9 +144,9 @@ class DataAccess extends OutputCoreCarrier {
 	 * @return void
 	 */
 	public function setOptions ($value) {
-		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:53: lines 53-55
+		#src+extras/gateway/jotun/gateway/database/DataAccess.hx:54: lines 54-56
 		if (Flag::FTest($value, 8)) {
-			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:54: characters 4-29
+			#src+extras/gateway/jotun/gateway/database/DataAccess.hx:55: characters 4-29
 			Jotun::$gate->listen(Boot::getInstanceClosure($this, '_dbLog'));
 		}
 	}

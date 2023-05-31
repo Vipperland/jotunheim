@@ -92,6 +92,12 @@ export class RealmsAuthentication {
 	get user(){
 		return this.#_user;
 	}
+	get signin(){
+		return this.#_i;
+	}
+	get signout(){
+		return this.#_o;
+	}
 	update(key, user, time){
 		if(key != null){
 			this.#_state = this.#_extract(token);

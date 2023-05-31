@@ -198,6 +198,16 @@ interface IDataTable {
 	public function get_name () ;
 
 	/**
+	 * If has a class definition for fetch
+	 * @return
+	 * 
+	 * @param mixed $Def
+	 * 
+	 * @return bool
+	 */
+	public function hasClassObj ($Def) ;
+
+	/**
 	 * If table as a specified column name
 	 * @param	name
 	 * @return

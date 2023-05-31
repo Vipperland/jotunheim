@@ -32,9 +32,9 @@ class Test_JS{
 			//{'Content-Type':'application/json'}
 		//);
 		
-		Pulsar.map(Spark, 'user', ['name', 'email']);
-		Pulsar.map(Spark, 'color', ['name']);
-		Pulsar.map(Spark, 'animal', ['name']);
+		Pulsar.map('user', ['name', 'email'], Spark);
+		Pulsar.map('color', ['name'], Spark);
+		Pulsar.map('animal', ['name'], Spark);
 		
 		var t:String = [
 			"user 0:alpha|1:user@alpha.com",

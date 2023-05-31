@@ -590,7 +590,6 @@ class Utils{
 		}
 		
 		static public function extendClass(a:Dynamic, b:Dynamic):Dynamic {
-			trace(Syntax.code("Object"), b, b.prototype);
 			if (b.prototype.isPrototypeOf(a)){
 				a.prototype = Syntax.code("Object").create(b.prototype);
 			}
