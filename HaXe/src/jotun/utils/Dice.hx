@@ -321,12 +321,12 @@ class Dice {
 		// objA.key < objB.key
 		else if(key != null)
 			ArraySort.sort(r, function (a:Dynamic, b:Dynamic):Int {
-				return Reflect.compare(SearchTag.convert(Reflect.field(a, key)),SearchTag.convert(Reflect.field(b, key)));
+				return Reflect.compare(SearchTag.clear(Reflect.field(a, key)),SearchTag.clear(Reflect.field(b, key)));
 			});
 		// STR a < STR b
 		else
 			ArraySort.sort(r, function (a:Int, b:Int):Int {
-				return Reflect.compare(SearchTag.convert(a),SearchTag.convert(b));
+				return Reflect.compare(SearchTag.clear(a),SearchTag.clear(b));
 			});
 		return r;
 	}

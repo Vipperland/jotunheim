@@ -48,7 +48,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="https://jotunheim.localhost/sys/" />
+    <option testMovieCommand="https://jotunheim.dev.localhost/sys/" />
   </options>
   <!-- Plugin storage -->
   <storage />

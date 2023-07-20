@@ -7,17 +7,20 @@ package jotun.utils;
 @:expose('J_SearchTag')
 class SearchTag {
 	
-	private static var _M:Dynamic = [['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c']];
+	private static var _M:Dynamic = [
+		['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], ['ê', 'e'], ['é', 'e'], ['è', 'e'], ['î', 'i'], ['í', 'i'], ['ì', 'i'], ['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'], ['ú', 'u'], ['ù', 'u'], ['û', 'u'], ['ç', 'c'],
+		['[', ''], [']', '']
+	];
 	
 	private static var _E:EReg = ~/^[a-z0-9]/g;
 	
-	public static function from(value:Dynamic):SearchTag {
+	public static function create(value:Dynamic):SearchTag {
 		if (!Std.isOfType(value, SearchTag))
 			value = new SearchTag(value);
 		return value;
 	}
 	
-	public static function convert(data:Dynamic, space:String = "+"):String {
+	public static function clear(data:Dynamic, space:String = "+"):String {
 		data = Std.string(data).toLowerCase();
 		//data = data.substr(0,1) + _E.replace(data, '');
 		var i:Int = 0;
@@ -46,7 +49,7 @@ class SearchTag {
 	private function add(values:Dynamic):Void {
 		values = Std.isOfType(values, Array) ? values : [values];
 		Dice.Values(values, function(v:Dynamic) {
-			v = convert(v);
+			v = clear(v);
 			var iof = Lambda.indexOf(this.tags, v);
 			if (iof == -1)
 				this.tags[this.tags.length] = v;
@@ -55,7 +58,7 @@ class SearchTag {
 	
 	
 	public function remove(values:Dynamic):Void {
-		values = from(values).tags;
+		values = create(values).tags;
 		Dice.Values(values, function(v:String) {
 			var iof = Lambda.indexOf(this.tags, v);
 			if (iof != -1)
@@ -66,7 +69,7 @@ class SearchTag {
 	
 	public function compare(values:Dynamic, ?equality:Bool = false):Float {
 		var tag:String = _tag();
-		values = from(values).tags;
+		values = create(values).tags;
 		var total:UInt = values.length;
 		var count:UInt = Dice.Values(values, function(v:String) {
 			if (equality)
@@ -79,13 +82,13 @@ class SearchTag {
 	
 	public function equal(values:Dynamic):Bool {
 		var tag:String = _tag();
-		values = from(values).tags;
+		values = create(values).tags;
 		return Dice.Values(values, function(v:String) { return tag.indexOf('|' + v + '|') == -1; } ).completed;
 	}
 	
 	public function contains(values:Dynamic):Bool {
 		var tag:String = _tag();
-		values = from(values).tags;
+		values = create(values).tags;
 		return !Dice.Values(values, function(v:String) { return tag.indexOf(v) != -1; } ).completed;
 	}
 	

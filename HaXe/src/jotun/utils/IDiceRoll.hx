@@ -5,7 +5,7 @@ package jotun.utils;
  */
 
 interface IDiceRoll {
-	// Last param
+	// Current object
 	public var object:Dynamic;
 	// Last param
 	public var param:Dynamic;

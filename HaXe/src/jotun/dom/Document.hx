@@ -104,7 +104,7 @@ class Document extends Display {
 		Jotun.all("[jtn-module]").each(function(o:IDisplay){
 			var n:String = o.attribute('module-name');
 			if (n == null){
-				n = 'module' + Key.GEN();
+				n = 'DocumentRoot';
 			}
 			Jotun.resources.register(n, o.element.innerHTML);
 			o.dispose();

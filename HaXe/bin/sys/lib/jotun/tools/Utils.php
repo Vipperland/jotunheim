@@ -425,25 +425,6 @@ class Utils {
 	}
 
 	/**
-	 * data.split('{').join('').split('}').join('<br/>')
-	 * @param	o
-	 * @return
-	 * 
-	 * @param mixed $o
-	 * @param bool $type
-	 * @param bool $html
-	 * 
-	 * @return string
-	 */
-	public static function jotunStringify ($o, $type = true, $html = null) {
-		#src/jotun/tools/Utils.hx:350: characters 3-41
-		if ($type === null) {
-			$type = true;
-		}
-		return Utils::_jstring($o, "", "", $type, $html);
-	}
-
-	/**
 	 * @param mixed $val
 	 * @param string $s
 	 * @param string $a
@@ -610,6 +591,25 @@ class Utils {
 			$t = "";
 		}
 		return number_format($n,$i,$s,$t);
+	}
+
+	/**
+	 * data.split('{').join('').split('}').join('<br/>')
+	 * @param	o
+	 * @return
+	 * 
+	 * @param mixed $o
+	 * @param bool $type
+	 * @param bool $html
+	 * 
+	 * @return string
+	 */
+	public static function toJtnString ($o, $type = true, $html = null) {
+		#src/jotun/tools/Utils.hx:350: characters 3-41
+		if ($type === null) {
+			$type = true;
+		}
+		return Utils::_jstring($o, "", "", $type, $html);
 	}
 
 	/**

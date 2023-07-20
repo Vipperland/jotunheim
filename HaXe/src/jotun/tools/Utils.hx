@@ -346,7 +346,7 @@ class Utils{
 	 * @param	o
 	 * @return
 	 */
-	static public function jotunStringify(o:Dynamic, type:Bool = true, ?html:Bool):String {
+	static public function toJtnString(o:Dynamic, type:Bool = true, ?html:Bool):String {
 		return _jstring(o, '', '', type, html);
 	}
 	

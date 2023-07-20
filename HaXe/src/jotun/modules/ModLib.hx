@@ -6,12 +6,14 @@ import jotun.utils.Dice;
 import jotun.utils.Filler;
 
 #if js
+	import js.lib.Error;
 	import js.html.Image;
 	import jotun.dom.Style;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Display;
 	import jotun.dom.Script;
 #elseif php
+	import php.Error;
 	import php.Lib;
 	import sys.FileSystem;
 	import sys.io.File;
@@ -109,10 +111,10 @@ class ModLib {
 							mod.name = file;
 						}else if (mod.name == "[]"){
 							path += '[]';
-							Jotun.log("		ModLib => PUSH " + mod.name, 1);
+							Jotun.log("		@ PUSH " + mod.name, 1);
 						}else{
 							path += '#' + mod.name;
-							Jotun.log("		ModLib => NAME " + mod.name, 1);
+							Jotun.log("		@ NAME " + mod.name, 1);
 						}
 						if (exists(mod.name)){
 							Jotun.log("	ModLib => !!! OVERRIDING " + path, 2);
@@ -132,9 +134,23 @@ class ModLib {
 							Jotun.log("	ModLib => " + path + " INCLUDING MODULES...", 1);
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
+									// injection with custom data
+									Dice.All(content.split("{{@include:" + v + ",data:"), function(p:Int, v2:String):Void {
+										if (p > 0){
+											var pieces:String = v2.split("}}")[0] + "}";
+											try {
+												var data:Dynamic = Json.parse(pieces);
+												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(get(v, data));
+											}catch (e:Error){
+												Jotun.log("	ModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".", 1);
+											}
+										}
+									});
+									// injection with no data
 									content = content.split("{{@include:" + v + "}}").join(get(v));
+									Jotun.log("		@ MERGING " + v + "... OK!", 1);
 								} else{
-									Jotun.log("		ModLib => MISSING '" + v + "'", 2);
+									Jotun.log("		@ MISSING '" + v + "'", 2);
 								}
 							});
 						}
@@ -142,8 +158,9 @@ class ModLib {
 							Jotun.log("	ModLib => " + path + " INJECTING MODULES...", 1);
 							if (exists(mod.inject)){
 								content = get(mod.inject).split("{{@injection}}").join(content);
+								Jotun.log("		@ MERGING " + v + "... OK!", 1);
 							}else{
-								Jotun.log("		ModLib => MISSING '" + v + "'", 2);
+								Jotun.log("		@ MISSING '" + v + "'", 2);
 							}
 						}
 						if (mod.data != null){

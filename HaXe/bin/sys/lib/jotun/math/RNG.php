@@ -37,14 +37,23 @@ class RNG {
 	}
 
 	/**
-	 * @param int $a
-	 * @param int $b
+	 * @param float $a
+	 * @param float $b
 	 * 
-	 * @return int
+	 * @return float
 	 */
 	public function between ($a, $b) {
-		#src/jotun/math/RNG.hx:35: characters 10-42
-		return (int)(($this->get() * (++$b - $a) + $a));
+		#src/jotun/math/RNG.hx:35: lines 35-39
+		if ($a > $b) {
+			#src/jotun/math/RNG.hx:36: characters 4-13
+			$a += $b;
+			#src/jotun/math/RNG.hx:37: characters 4-13
+			$b = $a - $b;
+			#src/jotun/math/RNG.hx:38: characters 4-13
+			$a -= $b;
+		}
+		#src/jotun/math/RNG.hx:40: characters 3-31
+		return $this->get() * ($b - $a) + $a;
 	}
 
 	/**
@@ -72,25 +81,25 @@ class RNG {
 	 * @return float
 	 */
 	public function last () {
-		#src/jotun/math/RNG.hx:47: characters 3-12
+		#src/jotun/math/RNG.hx:52: characters 3-12
 		return $this->_l;
 	}
 
 	/**
-	 * @param int $a
+	 * @param float $a
 	 * 
-	 * @return int
+	 * @return float
 	 */
 	public function max ($a) {
-		#src/jotun/math/RNG.hx:39: characters 10-32
-		return (int)(($this->get() * ++$a));
+		#src/jotun/math/RNG.hx:44: characters 10-30
+		return (int)(($this->get() * $a));
 	}
 
 	/**
 	 * @return float
 	 */
 	public function seed () {
-		#src/jotun/math/RNG.hx:43: characters 3-12
+		#src/jotun/math/RNG.hx:48: characters 3-12
 		return $this->_s;
 	}
 

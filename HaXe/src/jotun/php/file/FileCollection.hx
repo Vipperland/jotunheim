@@ -83,4 +83,8 @@ class FileCollection {
 		return r;
 	}
 	
+	public function each(method:FileInfo->Void):Void {
+		Dice.Values(list, method);
+	}
+	
 }

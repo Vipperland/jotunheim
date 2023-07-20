@@ -35,6 +35,16 @@ class Image implements IImage {
 	 */
 	public var type:Int;
 	
+	public function getExtension():String {
+		switch(type){
+			case 1 : return 'gif';
+			case 2 : return 'jpg';
+			case 3 : return 'png';
+			case 6 : return 'bmp';
+		}
+		return null;
+	}
+	
 	private function _update(resource:Dynamic):Void {
 		dispose();
 		_res = resource;
@@ -182,7 +192,7 @@ class Image implements IImage {
 	 * @param	type
 	 * @return
 	 */
-	public function save(?name:String, ?type:Int, ?qty:Int):Bool {
+	public function save(?name:String, ?type:Dynamic, ?quality:Int):Bool {
 		if(isValid()){
 			if (type == null){
 				type = this.type;
@@ -192,10 +202,10 @@ class Image implements IImage {
 			}
 			try {
 				switch(type) {
-					case 1 : php.Syntax.codeDeref('imagegif({0},{1})', _res, name);
-					case 3 : php.Syntax.codeDeref('imagepng({0},{1})', _res, name);
-					case 6 : php.Syntax.codeDeref('imagewbmp({0},{1})', _res, name);
-					default : php.Syntax.codeDeref('imagejpeg({0},{1},{2})', _res, name, qty != null ? qty : 80);
+					case 1, "gif", "GIF" : php.Syntax.codeDeref('imagegif({0},{1})', _res, name);
+					case 3, "png", "PNG" : php.Syntax.codeDeref('imagepng({0},{1})', _res, name);
+					case 6, "wbmp", "WBMP" : php.Syntax.codeDeref('imagewbmp({0},{1})', _res, name);
+					default : php.Syntax.codeDeref('imagejpeg({0},{1},{2})', _res, name, quality != null ? quality : 90);
 				}
 				return true;
 			} catch (e:Dynamic) {

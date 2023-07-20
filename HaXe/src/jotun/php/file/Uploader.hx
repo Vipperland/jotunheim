@@ -25,9 +25,12 @@ class Uploader {
 	private static var _path:String = '/';
 	
 	private static var _autoRename:Bool;
+	
+	private static var _log_method:String->Dynamic->Void;
 
-	private static var _extensions:Array<String> = ['jpg','gif',null,'png',null,null,'wbmp'];
-
+	public static function onLog(method:String->Dynamic->Void):Void {
+		_log_method = method;
+	}
 	
 	public static function createPath(q:String):Void {
 		var p:String = '';
@@ -36,9 +39,16 @@ class Uploader {
 				p += v + '/';
 				if (!FileSystem.exists(p) || !FileSystem.isDirectory(p)){
 					php.Syntax.codeDeref("mkdir({0},{1})", p, php.Syntax.codeDeref('0777'));
+					_log('path:created', q);
 				}
 			}
 		});
+	}
+	
+	static function _log(action:String, message:Dynamic):Void {
+		if(_log_method != null){
+			_log_method(action, message);
+		}
 	}
 	
 	public static function save(path:String, ?sizes:Array<Dynamic>, ?rename:Bool = true):FileCollection {
@@ -57,21 +67,12 @@ class Uploader {
 					createPath(q.path);
 				}
 			});
+			_log('image:sizes', sizes);
 		}
 		
 		_verify();
 		
 		return files;
-	}
-	
-	static private function _getType(file:String):String {
-		var ext:String = file.split(".").pop().toLowerCase();
-		switch (ext) {
-			case "jpg", "jpeg", "png", "gif" : 
-				return "image";
-			default : 
-				return "document";
-		}
 	}
 	
 	static private function _verify() {
@@ -92,15 +93,14 @@ class Uploader {
 						if (fileStream != null){
 							fileStream.close();
 						}
-						// Get file type
-						var type:String = _getType(name);
-						if (type != null) {
-							// Generate new filename
-							var nName:String = _autoRename ? Jotun.tick + '_' + Key.GEN(8) + '.' + name.split(".").pop() : name;
-							// save file to disk
-							fileStream = File.write(_path + nName, true);
-							files.add(part, new FileInfo(type, name, nName));
-						}
+						// Generate new filename
+						var ext:String = name.split(".").pop();
+						var nName:String = _autoRename ? Jotun.tick + '_' + Key.GEN(8) + '.' + ext : name;
+						// save file to disk
+						fileStream = File.write(_path + nName, true);
+						var file:FileInfo = new FileInfo(ext, name, nName);
+						files.add(part, file);
+						_log('uploaded', file);
 					}
 				}else {
 					fileStream = null;
@@ -123,52 +123,67 @@ class Uploader {
 		if (_sizes != null){
 			var image:IImage = new Image();
 			Dice.Values(files.list, function(v:FileInfo) {
-				if (v.type == "image") {
+				if (v.image) {
 					v.sizes = [];
 					var delete = false;
-					Dice.All(_sizes, function(p:String, s:Dynamic){
+					// size.type = EXTENSION
+					// v.type = EXTENSION
+					// image.type = INT
+					Dice.All(_sizes, function(p:String, trfm:Dynamic){
+						
 						var o:String = _path + v.output;
+						
 						image.open(o);
-						if (s.create || (s.type != null && v.type != _extensions[s.type])){
-							// Create a copy if size is smaller
-							if (s.path != null){
-								o = s.path + v.output;
-							}
-							image.fit(s.width, s.height);
-							o = _rename(o, s.sufix, _extensions[s.type]);
-							if (s.renameFunc != null){
-								o = s.renameFunc(o);
-							}
-							image.save(o, s.type);
-							v.sizes.push(o);
-						}else if (s.width != null && s.height != null && image.isOutBounds(s.width, s.height)){
-							// Create a copy with new size
-							image.fit(s.width, s.height);
-							o = _rename(o, s.sufix, _extensions[s.type]);
-							if (s.renameFunc != null){
-								o = s.renameFunc(o);
-							}
-							image.save(o, s.type);
-							v.sizes.push(o);
+						
+						var create:Bool = trfm.create == true;
+						var resize:Bool = trfm.width != null && trfm.height != null && image.isOutBounds(trfm.width, trfm.height);
+						var convert:Bool = trfm.type != null && v.type != trfm.type;
+						var rename:Bool = trfm.renameFunc != null;
+						
+						if (trfm.path != null){
+							o = trfm.path + v.output;
 						}
-						if (s.rename){
-							if (s.renameFunc != null){
-								o = s.renameFunc(o);
-							}
-							image.save(o);
+						
+						if(rename){
+							o = _rename(o, trfm.sufix, trfm.type);
 						}
-						if (!delete && s.delete){
+						
+						if (trfm.renameFunc != null){
+							o = trfm.renameFunc(o);
+						}
+						
+						if(resize){
+							image.fit(trfm.width, trfm.height);
+						}
+						
+						if (create || rename || resize || convert){
+							image.save(o, trfm.type, trfm.quality);
+							if(trfm.id == null){
+								trfm.id = image.width + 'x' + image.height;
+							}
+							v.sizes.push(cast { width: image.width, image: trfm.height, url: o, id: trfm.id });
+							_log('changed', { file: v, size: trfm, created: create, rename: rename, resize: resize, convert: convert });
+						}
+						
+						if (!delete && trfm.delete){
 							delete = true;
 						}
+						
 					});
-					if (delete){
-						v.output = null;
-						image.delete();
+					if (delete && image.isValid()){
+						image.open(_path + v.output);
+						_delete(image);
 					}
 				}
 			});
 		}
 		
+	}
+	
+	private static function _delete(image:IImage):Void {
+		image.delete();
+		image.dispose();
+		_log('deleted', { file: image });
 	}
 	
 	private static function _rename(o:String, p:String, t:String):String {

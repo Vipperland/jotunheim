@@ -13,5 +13,4 @@ class CustomZoneCoreObject extends ZoneCoreObject {
 		return DomainAccessCore.getInstance();
 	}
 	
-	
 }

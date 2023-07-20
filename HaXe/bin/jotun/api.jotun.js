@@ -1656,10 +1656,10 @@ jotun_modules_ModLib.prototype = {
 							mod.name = file;
 						} else if(mod.name == "[]") {
 							path += "[]";
-							jotun_Jotun.log("\t\tModLib => PUSH " + mod.name,1);
+							jotun_Jotun.log("\t\t@ PUSH " + mod.name,1);
 						} else {
 							path += "#" + mod.name;
-							jotun_Jotun.log("\t\tModLib => NAME " + mod.name,1);
+							jotun_Jotun.log("\t\t@ NAME " + mod.name,1);
 						}
 						if(_gthis.exists(mod.name)) {
 							jotun_Jotun.log("\tModLib => !!! OVERRIDING " + path,2);
@@ -1675,9 +1675,25 @@ jotun_modules_ModLib.prototype = {
 							jotun_Jotun.log("\tModLib => " + path + " INCLUDING MODULES...",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
+									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
+										if(p > 0) {
+											var pieces = v2.split("}}")[0] + "}";
+											try {
+												var data = JSON.parse(pieces);
+												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(_gthis.get(v,data));
+											} catch( _g ) {
+												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
+													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",1);
+												} else {
+													throw _g;
+												}
+											}
+										}
+									});
 									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
+									jotun_Jotun.log("\t\t@ MERGING " + v + "... OK!",1);
 								} else {
-									jotun_Jotun.log("\t\tModLib => MISSING '" + v + "'",2);
+									jotun_Jotun.log("\t\t@ MISSING '" + v + "'",2);
 								}
 							});
 						}
@@ -1685,8 +1701,9 @@ jotun_modules_ModLib.prototype = {
 							jotun_Jotun.log("\tModLib => " + path + " INJECTING MODULES...",1);
 							if(_gthis.exists(mod.inject)) {
 								content = _gthis.get(mod.inject).split("{{@injection}}").join(content);
+								jotun_Jotun.log("\t\t@ MERGING " + v + "... OK!",1);
 							} else {
-								jotun_Jotun.log("\t\tModLib => MISSING '" + v + "'",2);
+								jotun_Jotun.log("\t\t@ MISSING '" + v + "'",2);
 							}
 						}
 						if(mod.data != null) {
@@ -1780,7 +1797,7 @@ jotun_modules_ModLib.prototype = {
 				try {
 					data = JSON.parse(val);
 				} catch( _g ) {
-					console.log("src/jotun/modules/ModLib.hx:254:","Parsing error for MOD:[" + name + "]");
+					console.log("src/jotun/modules/ModLib.hx:271:","Parsing error for MOD:[" + name + "]");
 					data = null;
 				}
 			}
@@ -2606,6 +2623,12 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		}
 	}
 	,value: function(q) {
+		if(this.element.isContentEditable) {
+			if(q != null) {
+				this.element.innerHTML = q;
+			}
+			return this.element.innerHTML;
+		}
 		if(q != null) {
 			this.attribute("value",q);
 		}
@@ -3974,7 +3997,7 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		jotun_Jotun.all("[jtn-module]").each(function(o) {
 			var n = o.attribute("module-name");
 			if(n == null) {
-				n = "module" + jotun_tools_Key.GEN();
+				n = "embed";
 			}
 			jotun_Jotun.resources.register(n,o.element.innerHTML);
 			o.dispose();
@@ -7581,7 +7604,7 @@ jotun_math_Point.prototype = {
 	}
 	,__class__: jotun_math_Point
 };
-var jotun_math_RNG = $hx_exports["J_math_RNG"] = function(seed) {
+var jotun_math_RNG = $hx_exports["JRNG"] = function(seed) {
 	if(seed == null) {
 		seed = Math.random();
 	}
@@ -7604,10 +7627,15 @@ jotun_math_RNG.prototype = {
 		return this._l;
 	}
 	,between: function(a,b) {
-		return this.get() * (++b - a) + a | 0;
+		if(a > b) {
+			a += b;
+			b = a - b;
+			a -= b;
+		}
+		return this.get() * (b - a) + a;
 	}
 	,max: function(a) {
-		return this.get() * ++a | 0;
+		return this.get() * a | 0;
 	}
 	,seed: function() {
 		return this._s;
@@ -8783,7 +8811,7 @@ jotun_tools_Utils.toString = function(o,json) {
 		return Std.string(o);
 	}
 };
-jotun_tools_Utils.jotunStringify = function(o,type,html) {
+jotun_tools_Utils.toJtnString = function(o,type,html) {
 	if(type == null) {
 		type = true;
 	}
@@ -9192,11 +9220,11 @@ jotun_utils_Dice.Table = function(data,key,numeric,copy) {
 		}
 	} else if(key != null) {
 		haxe_ds_ArraySort.sort(r,function(a,b) {
-			return Reflect.compare(jotun_utils_SearchTag.convert(Reflect.field(a,key)),jotun_utils_SearchTag.convert(Reflect.field(b,key)));
+			return Reflect.compare(jotun_utils_SearchTag.clear(Reflect.field(a,key)),jotun_utils_SearchTag.clear(Reflect.field(b,key)));
 		});
 	} else {
 		haxe_ds_ArraySort.sort(r,function(a,b) {
-			return Reflect.compare(jotun_utils_SearchTag.convert(a),jotun_utils_SearchTag.convert(b));
+			return Reflect.compare(jotun_utils_SearchTag.clear(a),jotun_utils_SearchTag.clear(b));
 		});
 	}
 	return r;
@@ -9676,13 +9704,13 @@ var jotun_utils_SearchTag = $hx_exports["J_SearchTag"] = function(tags) {
 	this.add(tags);
 };
 jotun_utils_SearchTag.__name__ = "jotun.utils.SearchTag";
-jotun_utils_SearchTag.from = function(value) {
+jotun_utils_SearchTag.create = function(value) {
 	if(!((value) instanceof jotun_utils_SearchTag)) {
 		value = new jotun_utils_SearchTag(value);
 	}
 	return value;
 };
-jotun_utils_SearchTag.convert = function(data,space) {
+jotun_utils_SearchTag.clear = function(data,space) {
 	if(space == null) {
 		space = "+";
 	}
@@ -9708,7 +9736,7 @@ jotun_utils_SearchTag.prototype = {
 			values = [values];
 		}
 		jotun_utils_Dice.Values(values,function(v) {
-			v = jotun_utils_SearchTag.convert(v);
+			v = jotun_utils_SearchTag.clear(v);
 			var iof = Lambda.indexOf(_gthis.tags,v);
 			if(iof == -1) {
 				_gthis.tags[_gthis.tags.length] = v;
@@ -9717,7 +9745,7 @@ jotun_utils_SearchTag.prototype = {
 	}
 	,remove: function(values) {
 		var _gthis = this;
-		values = jotun_utils_SearchTag.from(values).tags;
+		values = jotun_utils_SearchTag.create(values).tags;
 		jotun_utils_Dice.Values(values,function(v) {
 			var iof = Lambda.indexOf(_gthis.tags,v);
 			if(iof != -1) {
@@ -9730,7 +9758,7 @@ jotun_utils_SearchTag.prototype = {
 			equality = false;
 		}
 		var tag = this._tag();
-		values = jotun_utils_SearchTag.from(values).tags;
+		values = jotun_utils_SearchTag.create(values).tags;
 		var total = values.length;
 		var count = jotun_utils_Dice.Values(values,function(v) {
 			if(equality) {
@@ -9743,14 +9771,14 @@ jotun_utils_SearchTag.prototype = {
 	}
 	,equal: function(values) {
 		var tag = this._tag();
-		values = jotun_utils_SearchTag.from(values).tags;
+		values = jotun_utils_SearchTag.create(values).tags;
 		return jotun_utils_Dice.Values(values,function(v) {
 			return tag.indexOf("|" + v + "|") == -1;
 		}).completed;
 	}
 	,contains: function(values) {
 		var tag = this._tag();
-		values = jotun_utils_SearchTag.from(values).tags;
+		values = jotun_utils_SearchTag.create(values).tags;
 		return !jotun_utils_Dice.Values(values,function(v) {
 			return tag.indexOf(v) != -1;
 		}).completed;
@@ -10663,7 +10691,7 @@ jotun_tools_Ticker._ptime = 0;
 jotun_tools_Ticker._ltime = 0;
 jotun_tools_Ticker._etime = 0;
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
-jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"]];
+jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["[",""],["]",""]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
 jotun_utils_Singularity._channel = "singularity.engine";
 jotun_utils_Singularity.signals = new jotun_signals_Signals(jotun_utils_Singularity);

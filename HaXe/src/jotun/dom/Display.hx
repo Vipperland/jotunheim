@@ -7,12 +7,8 @@ import jotun.dom.IDisplay;
 import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
 import jotun.math.Matrix3D;
-import jotun.objects.Query;
 import jotun.math.Point;
-import jotun.net.IProgress;
-import jotun.net.IRequest;
-import jotun.serial.Packager;
-import jotun.tools.Ticker;
+import jotun.objects.Query;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -26,7 +22,6 @@ import js.html.DOMTokenList;
 import js.html.Element;
 import js.html.File;
 import js.html.FileList;
-import js.html.HtmlElement;
 import js.html.Node;
 
 /**
@@ -456,6 +451,12 @@ class Display extends Query implements IDisplay {
 	@:overload(function():FileList{})
 	@:overload(function(?q:String):String{})
 	public function value(?q:Dynamic):Dynamic {
+		if(element.isContentEditable){
+			if (q != null){
+				element.innerHTML = q;
+			}
+			return element.innerHTML;
+		}
 		if (q != null){
 			attribute('value', q);
 		}

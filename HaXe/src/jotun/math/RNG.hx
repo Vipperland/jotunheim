@@ -4,7 +4,7 @@ package jotun.math;
  * ...
  * @author Rim Project
  */
-@:expose("J_math_RNG")
+@:expose("JRNG")
 class RNG {
 	
 	private var _s:Float;
@@ -31,12 +31,17 @@ class RNG {
 		return _l;
 	}
 	
-	public function between(a:Int, b:Int):Int {
-		return Std.int(get() * ((++b) - a) + a);
+	public function between(a:Float, b:Float):Float {
+		if (a > b){
+			a = a + b;
+			b = a - b;
+			a = a - b;
+		}
+		return get() * ((b) - a) + a;
 	}
 	
-	public function max(a:Int):Int {
-		return Std.int(get() * (++a));
+	public function max(a:Float):Float {
+		return Std.int(get() * (a));
 	}
 	
 	public function seed():Float {

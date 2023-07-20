@@ -4,7 +4,15 @@ package jotun.php.file;
  * @author Rafael Moreira <vipperland[at]live.com>
  */
 interface IImage {
-  
+	
+	public var width:Int;
+	
+	public var height:Int;
+	
+	public var type:Int;
+	
+	function getExtension():String;
+	
 	function open(file:Dynamic):IImage;
 	
 	function resample(width:UInt, height:UInt, ?ratio:Bool = true):IImage;
@@ -15,7 +23,7 @@ interface IImage {
 	
 	function isOutBounds(width:Int, height:Int):Bool;
 	
-	function save(?name:String, ?type:UInt, ?qty:Int):Bool;
+	function save(?name:String, ?type:Dynamic, ?quality:Int):Bool;
 	
 	function dispose():Void;
 	

@@ -23,7 +23,9 @@ class PulsarOutput extends OutputCore {
 	
 	override public function setOptions(value:Int):Void {
 		if (Flag.FTest(value, GatewayOptions.DEBUG)){
-			Pulsar.map("_logp", ['name','value'], Spark, false, false);
+			// _logp > input params
+			Pulsar.map("_logp", ['name', 'value'], Spark, false, false);
+			// _logo > input object (json input:/)
 			Pulsar.map("_logo", ['value'], Spark, false, false);
 			Dice.All(input.params, function(p:String, v:String){
 				this.list('_input').insert(new Spark('_logp').set('name', p).set('value', v));

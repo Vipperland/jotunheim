@@ -2,6 +2,7 @@ package jotun.php.data;
 import php.Lib;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
+import php.Syntax;
 import sys.io.File;
 
 /**
@@ -25,7 +26,7 @@ class Mail {
 	private var _host:String;
 
 	private function _sendRaw(subject:String, target:Dynamic, html:String, plain:String):Void {
-		var boundary:String = "_Part_" + untyped __php__("md5(uniqid(rand()))");
+		var boundary:String = "_Part_" + Syntax.codeDeref("md5(uniqid(rand()))");
 		var header:String = _genHeader(boundary);
 		var message:String = _genMessage(boundary, html, plain);
 		if (!Lib.mail(target.name + ' <' + target.email + '>', subject, Filler.to(message, target), header, '-f ' + _from_email)){
@@ -55,16 +56,16 @@ class Mail {
 	
 	private function _genHeader(boundary:String):String {
 		return [
-			"Message-ID: <" + untyped __php__("sha1(microtime(true))") + "@" + _host + ">",
+			"Message-ID: <" + Syntax.codeDeref("sha1(microtime(true))") + "@" + _host + ">",
 			"From: " + _from_name  + " <" + _from_email + ">",
 			"X-Sender: " + _from_name  + " <" + _from_email + ">",
 			"Reply-To: " + _from_name  + " <" + _from_email+ ">",
 			"Return-Path: " + _from_name + " <" + _bounce_to + ">",
 			"Organization: " + _organization,
 			"MIME-Version: 1.0",
-			"Date: " + untyped __php__("date('r')"),
+			"Date: " + Syntax.codeDeref("date('r')"),
 			"X-Priority: 3",
-			"X-Mailer: PHP " + untyped __php__("phpversion()"),
+			"X-Mailer: PHP " + Syntax.codeDeref("phpversion()"),
 			"Content-Type: multipart/alternative; boundary=\"" + boundary + "\"",
 		].join("\r\n");
 	}
