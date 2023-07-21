@@ -1684,7 +1684,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.require != null) {
 							var incT = mod.require.length;
 							var incC = 1;
-							jotun_Jotun.log("\tModLib => " + path + " INCLUDING MODULES... (" + incT + ")",1);
+							jotun_Jotun.log("\t\t\tINCLUDING MODULES IN '" + path + "' (" + incT + ")",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
@@ -1695,7 +1695,7 @@ jotun_modules_ModLib.prototype = {
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(_gthis.get(v,data));
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",3);
+													jotun_Jotun.log("\t\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
 												} else {
 													throw _g;
 												}
@@ -1703,9 +1703,9 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
-									jotun_Jotun.log("\t\t@ MERGING " + v + "... OK! (" + incC + "/" + incT + ")",1);
+									jotun_Jotun.log("\t\t\t\t@ INCLUDED '" + v + "' (" + incC + "/" + incT + ")",1);
 								} else {
-									jotun_Jotun.log("\t\t@ MISSING '" + v + "' (" + incC + "/" + incT + ")",3);
+									jotun_Jotun.log("\t\t\t\t@ MISSING '" + v + "' (" + incC + "/" + incT + ")",3);
 								}
 								incC += 1;
 							});
@@ -1713,7 +1713,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.inject != null) {
 							var injT = mod.require.length;
 							var injC = 1;
-							jotun_Jotun.log("\tModLib => INJECTING " + mod.name + " IN MODULES... (" + injT + ")",1);
+							jotun_Jotun.log("\t\t\tINJECTING MODULES IN '" + path + "' (" + injT + ")",1);
 							jotun_utils_Dice.Values(mod.inject,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@inject:" + v + ",data:"),function(p,v2) {
@@ -1724,7 +1724,7 @@ jotun_modules_ModLib.prototype = {
 												content = _gthis.get(v,data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",3);
+													jotun_Jotun.log("\t\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
 												} else {
 													throw _g;
 												}
@@ -1732,9 +1732,9 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = _gthis.get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									jotun_Jotun.log("\t\t@ MERGING IN " + v + "... OK! (" + injC + "/" + injT + ")",1);
+									jotun_Jotun.log("\t\t\t\t@ INJECTED '" + v + "' (" + injC + "/" + injT + ")",1);
 								} else {
-									jotun_Jotun.log("\t\t@ MISSING '" + v + "' (" + injC + "/" + injT + ")",3);
+									jotun_Jotun.log("\t\t\t\t@ MISSING '" + v + "' (" + injC + "/" + injT + ")",3);
 								}
 							});
 						}
@@ -1759,7 +1759,7 @@ jotun_modules_ModLib.prototype = {
 									return false;
 								} catch( _g ) {
 									var e = haxe_Exception.caught(_g).unwrap();
-									jotun_Jotun.log("\tModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
+									jotun_Jotun.log("\t\t\tERROR! Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
 								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
 								jotun_Jotun.document.head.bind(content,mod.type,mod.name);
