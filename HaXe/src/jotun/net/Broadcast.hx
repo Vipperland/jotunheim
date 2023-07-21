@@ -1,5 +1,6 @@
 package jotun.net;
 import haxe.Json;
+import jotun.data.Logger;
 import jotun.events.Event;
 import jotun.tools.Key;
 import jotun.tools.Ticker;
@@ -57,7 +58,7 @@ class Broadcast {
 	
 	private function _proccessMsg(channel:String, data:Dynamic):Void {
 		if (!_muted && channel.substr(0, 12) != 'singularity.'){
-			Jotun.log(['[BROADCAST <<] CHANNEL {' + channel + '} @ DATA RECEIVED', data]);
+			Jotun.log(['<< CHANNEL {' + channel + '} @ DATA RECEIVED', data], Logger.BROADCAST);
 		}
 		Dice.Values(Reflect.field(_listeners, channel), function(handler:Dynamic->Void){
 			handler(data);
@@ -101,13 +102,13 @@ class Broadcast {
 				events = [];
 				Reflect.setField(_listeners, channel, events);
 				if (!_muted && channel.substr(0, 12) != 'singularity.'){
-					Jotun.log(['[BROADCAST ++] CHANNEL {' + channel + '} CONNECTED']);
+					Jotun.log(['++ CHANNEL {' + channel + '} CONNECTED'], Logger.BROADCAST);
 				}
 			}
 			events.push(handler);
 		}else{
 			if (!_muted && channel.substr(0, 12) != 'singularity.'){
-				Jotun.log(['[BROADCAST !!] CHANNEL {' + channel + '} NOT CONNECTED (null)']);
+				Jotun.log(['!! CHANNEL {' + channel + '} NOT CONNECTED (null)'], Logger.BROADCAST);
 			}
 		}
 	}
@@ -124,7 +125,7 @@ class Broadcast {
 						Reflect.deleteField(_channels, channel);
 					}
 					if (!_muted && channel.substr(0, 12) != 'singularity.'){
-						Jotun.log(['[BROADCAST --] CHANNEL {' + channel + '} DISCONNECTED']);
+						Jotun.log(['-- CHANNEL {' + channel + '} DISCONNECTED'], Logger.BROADCAST);
 					}
 				}
 			}
@@ -133,7 +134,7 @@ class Broadcast {
 	
 	public function send(channel:String, data:Dynamic){
 		if (!_muted && channel.substr(0, 12) != 'singularity.'){
-			Jotun.log(['[BROADCAST >>] CHANNEL {' + channel + '} @ DATA SENT', data]);
+			Jotun.log(['>> CHANNEL {' + channel + '} @ DATA SENT', data], Logger.BROADCAST);
 		}
 		if (_channels != null){
 			_openChannel(channel).postMessage(data);

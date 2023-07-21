@@ -2,7 +2,11 @@ package jotun.data;
 import haxe.Log;
 #if js
 	import jotun.dom.IDisplay;
+	import js.Syntax;
+#elseif php
+	import php.Lib;
 #end
+import jotun.logical.Flag;
 import jotun.net.IRequest;
 import jotun.utils.Dice;
 
@@ -10,14 +14,27 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class Logger{
+class Logger {
+	
+	public static inline var MESSAGE:Int = 0;
+	public static inline var SYSTEM:Int = 1;
+	public static inline var WARNING:Int = 2;
+	public static inline var ERROR:Int = 3;
+	public static inline var TODO:Int = 4;
+	public static inline var QUERY:Int = 5;
+	public static inline var BROADCAST:Int = 6;
+	public static inline var OBSOLETE:Int = 7;
 	
 	private var _events:Array<Dynamic->Int->Void>;
 	
-	private var _level:Int = 4;
+	private var _level:Flag = new Flag(MESSAGE | SYSTEM | WARNING | ERROR);
 	
-	public function maxLvLog(i:Int):Void {
-		_level = i;
+	public function enable(i:Int):Void {
+		_level.put(i);
+	}
+	
+	public function disable(i:Int):Void {
+		_level.drop(i);
 	}
 	
 	public function new() {
@@ -53,31 +70,33 @@ class Logger{
 	
 	public function dump(q:Dynamic):Void {
 		#if js
-			js.Syntax.code("console.log").apply(null, q);
+			Syntax.code("console.log").apply(null, q);
 		#elseif php
-			php.Lib.dump(q);
+			Lib.dump(q);
 		#end
 	}
 	
 	public function query(q:Dynamic, type:Int):Void {
-		if (type > _level){
+		if (!_level.test(type)){
 			return;
 		}
-		var t:String = switch(type) {
-			case 0 : "[MESSAGE] ";
-			case 1 : "[>SYSTEM] ";
-			case 2 : "[WARNING] ";
-			case 3 : "[!ERROR!] ";
-			case 4 : "[//TODO*] ";
-			case 5 : "[$QUERY*] ";
-			default : "";
-		}
-		#if js
-			if (t != null && Std.isOfType(q, Array)){
-				q.unshift(t);
-			}else{
-				q = [t, q];
+		var t:String = "";
+		if(type != null){
+			t = switch(type) {
+				case 0 : "[MESSAGE] ";
+				case 1 : "[>SYSTEM] ";
+				case 2 : "[WARNING] ";
+				case 3 : "[!ERROR!] ";
+				case 4 : "[//TODO*] ";
+				case 5 : "[$QUERY*] ";
+				case 6 : "[BRDCAST] ";
+				case 7 : "[OBSOLET] ";
+				default : "";
 			}
+		}
+		
+		#if js
+			q = [t, q];
 		#end
 		dump(q);
 	}

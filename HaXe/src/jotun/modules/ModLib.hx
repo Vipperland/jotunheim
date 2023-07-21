@@ -1,6 +1,7 @@
 package jotun.modules;
 import haxe.Json;
 import jotun.Jotun;
+import jotun.data.Logger;
 import jotun.serial.Packager;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -12,6 +13,7 @@ import jotun.utils.Filler;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Display;
 	import jotun.dom.Script;
+	import jotun.utils.ITable;
 #elseif php
 	import php.Error;
 	import php.Lib;
@@ -25,10 +27,13 @@ import jotun.utils.Filler;
  */
 class ModLib {
 	
+	private static var _init:Bool;
+	
 	private static var CACHE:Dynamic = { };
 	
 	private static var DATA:Dynamic = {
 		buffer:[],
+		images:{},
 	};
 	
 	#if js
@@ -39,6 +44,10 @@ class ModLib {
 			Dice.Values(_onMount, function(v:IDisplay->String->Void) { v(object, module); } );
 		}
 		
+		/**
+		 * After successful create a dom object from ModLib
+		 * @param	handler
+		 */
 		public function onMount(handler:IDisplay->String->Void):Void {
 			if (Lambda.indexOf(_onMount, handler) == -1){
 				_onMount[_onMount.length] = handler;
@@ -54,18 +63,20 @@ class ModLib {
 		return data;
 	}
 	
-	public var data:Dynamic;
-	
 	public function new() {
-		data = DATA;
-		_predata = [];
+		if (_init != true){
+			_init = true;
+			_predata = [];
+		}else{
+			throw new Error("Can't create instance of ModLib. Use Jotun.resources instead of new ModLib().");
+		}
 	}
 	
 	/**
-	 * Pre filter input data
+	 * Pre filter all get data
 	 * @param	handler
 	 */
-	public function onDataOut(handler:String->Dynamic->Dynamic):Void {
+	public function onDataRequest(handler:String->Dynamic->Dynamic):Void {
 		if (Lambda.indexOf(_predata, handler) == -1){
 			_predata[_predata.length] = handler;
 		}
@@ -91,13 +102,14 @@ class ModLib {
 	 * Register a module
 	 * @param	file
 	 * @param	content
+	 * @param	data
 	 */
-	public function register(file:String, content:String, ?data:Dynamic):Void {
+	public function register(file:String, content:String):Void {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");
 		if (sur.length > 1) {
-			Jotun.log("ModLib => PARSING " + file, 1);
+			Jotun.log("ModLib => PARSING " + file, Logger.SYSTEM);
 			#if js 
 				var mountAfter:Array<IMod> = [];
 			#end
@@ -111,13 +123,13 @@ class ModLib {
 							mod.name = file;
 						}else if (mod.name == "[]"){
 							path += '[]';
-							Jotun.log("		@ PUSH " + mod.name, 1);
+							Jotun.log("		@ PUSH " + mod.name, Logger.SYSTEM);
 						}else{
 							path += '#' + mod.name;
-							Jotun.log("		@ NAME " + mod.name, 1);
+							Jotun.log("		@ NAME " + mod.name, Logger.SYSTEM);
 						}
 						if (exists(mod.name)){
-							Jotun.log("	ModLib => !!! OVERRIDING " + path, 2);
+							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.WARNING);
 						}
 						var end:Int = v.indexOf("/EOF;");
 						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
@@ -131,10 +143,12 @@ class ModLib {
 							}
 						}
 						if (mod.require != null) {
-							Jotun.log("	ModLib => " + path + " INCLUDING MODULES...", 1);
+							var incT:Int = mod.require.length;
+							var incC:Int = 1;
+							Jotun.log("	ModLib => " + path + " INCLUDING MODULES... (" + incT + ")", Logger.SYSTEM);
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
-									// injection with custom data
+									// inclusion with custom data
 									Dice.All(content.split("{{@include:" + v + ",data:"), function(p:Int, v2:String):Void {
 										if (p > 0){
 											var pieces:String = v2.split("}}")[0] + "}";
@@ -142,56 +156,81 @@ class ModLib {
 												var data:Dynamic = Json.parse(pieces);
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(get(v, data));
 											}catch (e:Error){
-												Jotun.log("	ModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".", 1);
+												Jotun.log("	ModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
 											}
 										}
 									});
-									// injection with no data
+									// inclusion with no custom data
 									content = content.split("{{@include:" + v + "}}").join(get(v));
-									Jotun.log("		@ MERGING " + v + "... OK!", 1);
+									Jotun.log("		@ MERGING " + v + "... OK! (" + incC + "/" + incT + ")", Logger.SYSTEM);
 								} else{
-									Jotun.log("		@ MISSING '" + v + "'", 2);
+									Jotun.log("		@ MISSING '" + v + "' (" + incC + "/" + incT + ")", Logger.ERROR);
 								}
+								++incC;
 							});
 						}
 						if (mod.inject != null) {
-							Jotun.log("	ModLib => " + path + " INJECTING MODULES...", 1);
-							if (exists(mod.inject)){
-								content = get(mod.inject).split("{{@injection}}").join(content);
-								Jotun.log("		@ MERGING " + v + "... OK!", 1);
-							}else{
-								Jotun.log("		@ MISSING '" + v + "'", 2);
-							}
+							var injT:Int = mod.require.length;
+							var injC:Int = 1;
+							Jotun.log("	ModLib => INJECTING " + mod.name + " IN MODULES... (" + injT + ")", Logger.SYSTEM);
+							Dice.Values(mod.inject, function(v:String) {
+								if (exists(v)){
+									// injection with custom data
+									Dice.All(content.split("{{@inject:" + v + ",data:"), function(p:Int, v2:String):Void {
+										if (p > 0){
+											var pieces:String = v2.split("}}")[0] + "}";
+											try {
+												var data:Dynamic = Json.parse(pieces);
+												content = get(v, data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
+											}catch (e:Error){
+												Jotun.log("	ModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
+											}
+										}
+									});
+									// injection with no custom data
+									content = get(v).split("{{@inject:" + mod.name + "}}").join(content);
+									Jotun.log("		@ MERGING IN " + v + "... OK! (" + injC + "/" + injT + ")", 1);
+								}else{
+									Jotun.log("		@ MISSING '" + v + "' (" + injC + "/" + injT + ")", Logger.ERROR);
+								}
+							});
 						}
 						if (mod.data != null){
 							mod.data = Json.parse(mod.data);
 							content = Filler.to(content, mod.data);
 						}
-						if (mod.wrap != null){
-							content = content.split('\r\n').join(mod.wrap).split('\n').join(mod.wrap).split('\r').join(mod.wrap);
+						if (mod.replace != null){
+							Dice.Values(mod.replace, function(v:Array<String>){
+								content = content.split(v[0]).join(v[1]);
+							});
+						}
+						if (mod.type != null) {
+							if (mod.type == 'data'){
+								try {
+									content = Json.parse(content);
+									if (mod.name == '[]'){
+										DATA.buffer.push(content);
+									}else{
+										Reflect.setField(DATA, mod.name, content);
+									}
+									return false;
+								}catch (e:Dynamic){
+									Jotun.log("	ModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
+								}
+							}
+							#if js
+								// ============================= JS ONLY =============================
+								else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
+									Jotun.document.head.bind(content, mod.type, mod.name);
+									content = '';
+								}
+							#end
+							else if (mod.type == 'image') {
+								Reflect.setField(DATA.images, mod.name, content);
+							}
 						}
 						#if js
 							// ============================= JS ONLY =============================
-							if (mod.type != null) {
-								if (mod.type == 'data'){
-									try {
-										if (mod.name == '[]'){
-											DATA.buffer.push(Json.parse(content));
-										}else{
-											Reflect.setField(this.data, mod.name, Json.parse(content));
-										}
-										return false;
-									}catch (e:Dynamic){
-										Jotun.log("	ModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, 3);
-									}
-								}else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
-									Jotun.document.head.bind(content, mod.type, mod.id);
-									content = '';
-								}else if (mod.type.substring(0,6)  == 'image/') {
-									var img:Image = new Image();
-									img.src = "data:" + mod.type + "," +Packager.encodeBase64(content);
-								}
-							}
 							if (mod.target != null) {
 								mountAfter[mountAfter.length] = mod;
 							}
@@ -201,23 +240,32 @@ class ModLib {
 						Reflect.setField(CACHE, n, content);
 						Reflect.setField(CACHE, '@' + n, path);
 					}else {
-						Jotun.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", 3);
+						Jotun.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", Logger.ERROR);
 					}
 				}
 				return false;
 			});
 			#if js 
+				// ============================= JS ONLY =============================
 				if (mountAfter.length > 0){
 					Dice.Values(mountAfter, function(v:IMod){
-						var o:IDisplay = Jotun.one(v.target);
-						if (o != null){
-							o.mount(v.name, v.data, v.index);
+						var o:ITable = null;
+						var idx:Int = -1;
+						if(Std.isOfType(v.target, Array)){
+							o = Jotun.all(v.target[0]);
+							idx = v.target[1];
+						}else{
+							o = Jotun.all(v.target);
 						}
+						o.each(function(target:IDisplay):Void{
+							target.mount(v.name, v.data, idx);
+						});
 					});
 				}
 			#end
 		}else {
 			#if js
+				// ============================= JS ONLY =============================
 				var ext:String = file.split('.').pop();
 				switch(ext){
 					case 'css' : {
@@ -247,33 +295,52 @@ class ModLib {
 	 * Get module content
 	 * @param	name
 	 * @param	data
+	 * @param	alt
 	 * @return
 	 */
-	public function get(name:String, ?data:Dynamic):String {
+	public function get(name:String, ?data:Dynamic, ?alt:String):String {
 		name = name.toLowerCase();
 		if (!exists(name)) {
-			return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+			return alt != null ? alt : "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		}
 		var content:String = Reflect.field(CACHE, name);
 		data = _sanitize(name, data);
 		return (data != null) ? Filler.to(content, data) : content;
 	}
 	
-	public function getObj(name:String, ?data:Dynamic):Dynamic {
+	/**
+	 * Get module content as json object
+	 * @param	name
+	 * @param	data
+	 * @return
+	 */
+	public function object(name:String, ?data:Dynamic):Dynamic {
 		if (Reflect.hasField(DATA, name)){
 			data = Reflect.field(DATA, name);
 		}else{
-			var val:String = get(name, data);
+			var val:String = get(name, data, '');
 			if (val != null){
 				try {
 					data = Json.parse(val);
 				}catch (e:Dynamic){
-					trace("Parsing error for MOD:[" + name+"]");
+					Jotun.log("	ModLib => Can't create object for [Module:" + name + "]", Logger.ERROR);
 					data = null;
 				}
 			}
 		}
 		return data;
+	}
+	
+	public function image(name:String):String {
+		return Reflect.field(DATA.images, name);
+	}
+	
+	public function buffer(?name:String):Dynamic {
+		if(name != null && name != ''){
+			return Reflect.field(DATA, name);
+		}else{
+			return DATA.buffer;
+		}
 	}
 	
 	#if php
@@ -303,7 +370,41 @@ class ModLib {
 			Lib.print(get(name, data));
 		}
 		
+		/**
+		 * Write module with custom data in the flow to be imported by Jotun Client
+		 * @param	name
+		 * @param	data
+		 * @param	repeat
+		 * @param	sufix
+		 */
+		public function export(name:Dynamic, ?data:Dynamic):Void {
+			Lib.print("<noscript jtn-module>");
+			if (Std.isOfType(name, Array)){
+				Dice.Values(name, function(v:Dynamic){
+					if(Std.isOfType(v, String)){
+						Lib.print('[Module:{"name":"' + name + '"}]\r');
+						print(get(name, data));
+					}else if(Reflect.hasField(v, 'info')){
+						Lib.print('[Module:');
+						Lib.print(Json.stringify(v.info));
+						Lib.print(']\r');
+						print(v.name, v.data);
+					}
+				});
+			}else{
+				Lib.print('[Module:{"name":"' + name + '"}]\r');
+				get(name, data);
+			}
+			Lib.print("</noscript>");
+		}
+		
 	#elseif js
+		
+		public function domImage(name:String):Image {
+			var img:Image = new Image();
+			img.src = image(name);
+			return img;
+		}
 		
 		// ============================= JS ONLY =============================
 		/**
@@ -318,7 +419,7 @@ class ModLib {
 			}
 			var signature:String = Reflect.field(CACHE, '@' + module.toLowerCase());
 			var result:IDisplay = new Display().writeHtml(get(module, data));
-			result.children().attribute('sru-mod', signature);
+			result.children().attribute('jtn-mod', signature);
 			if (data != null){
 				result.react(data);
 			}
@@ -332,10 +433,12 @@ class ModLib {
 
 /*
 	[Module:{
-		"type"		:"css|js|style|script|json|data",		// Unique module identifier
-		"name"		:"testModule",						// Unique module identifier
-		"target"		:"selector",							// Auto append module in target selector
-		"require"	:["modA","modB","...","modN"],			// Dependencies that will be writed in module
-		"inject"		:"modName",							// Inject this content in another module and override with the result
+		"name": "",
+		"type": "",
+		"require": [],
+		"inject": [],
+		"replace": [],
+		"data": {},
+		"target": null,
 	}]
 */

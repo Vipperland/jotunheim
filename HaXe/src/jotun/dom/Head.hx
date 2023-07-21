@@ -48,7 +48,7 @@ class Head extends Display{
 					}
 				}
 				if (s != null) {
-					s.attribute('module-id', Utils.isValid(id) ? id : '');
+					s.attribute('jtn-mod', Utils.getValidOne(id, 'anonymous'));
 					addChild(s);
 					return s;
 				}

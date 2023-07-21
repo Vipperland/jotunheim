@@ -1191,7 +1191,7 @@ jotun_net_Broadcast.prototype = {
 	}
 	,_proccessMsg: function(channel,data) {
 		if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
-			jotun_Jotun.log(["[BROADCAST <<] CHANNEL {" + channel + "} @ DATA RECEIVED",data]);
+			jotun_Jotun.log(["<< CHANNEL {" + channel + "} @ DATA RECEIVED",data],6);
 		}
 		jotun_utils_Dice.Values(Reflect.field(this._listeners,channel),function(handler) {
 			handler(data);
@@ -1207,12 +1207,12 @@ jotun_net_Broadcast.prototype = {
 				events = [];
 				this._listeners[channel] = events;
 				if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
-					jotun_Jotun.log(["[BROADCAST ++] CHANNEL {" + channel + "} CONNECTED"]);
+					jotun_Jotun.log(["++ CHANNEL {" + channel + "} CONNECTED"],6);
 				}
 			}
 			events.push(handler);
 		} else if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
-			jotun_Jotun.log(["[BROADCAST !!] CHANNEL {" + channel + "} NOT CONNECTED (null)"]);
+			jotun_Jotun.log(["!! CHANNEL {" + channel + "} NOT CONNECTED (null)"],6);
 		}
 	}
 	,unlisten: function(channel,handler) {
@@ -1227,7 +1227,7 @@ jotun_net_Broadcast.prototype = {
 						Reflect.deleteField(this._channels,channel);
 					}
 					if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
-						jotun_Jotun.log(["[BROADCAST --] CHANNEL {" + channel + "} DISCONNECTED"]);
+						jotun_Jotun.log(["-- CHANNEL {" + channel + "} DISCONNECTED"],6);
 					}
 				}
 			}
@@ -1235,7 +1235,7 @@ jotun_net_Broadcast.prototype = {
 	}
 	,send: function(channel,data) {
 		if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
-			jotun_Jotun.log(["[BROADCAST >>] CHANNEL {" + channel + "} @ DATA SENT",data]);
+			jotun_Jotun.log([">> CHANNEL {" + channel + "} @ DATA SENT",data],6);
 		}
 		if(this._channels != null) {
 			this._openChannel(channel).postMessage(data);
@@ -1507,7 +1507,7 @@ jotun_net_Loader.prototype = {
 	,__class__: jotun_net_Loader
 };
 var jotun_data_Logger = function() {
-	this._level = 4;
+	this._level = new jotun_logical_Flag(3);
 	this._events = [];
 	this._events[0] = $bind(this,this.query);
 };
@@ -1515,8 +1515,11 @@ jotun_data_Logger.__name__ = "jotun.data.Logger";
 jotun_data_Logger.prototype = {
 	_events: null
 	,_level: null
-	,maxLvLog: function(i) {
-		this._level = i;
+	,enable: function(i) {
+		this._level.put(i);
+	}
+	,disable: function(i) {
+		this._level.drop(i);
 	}
 	,mute: function() {
 		if(Lambda.indexOf(this._events,$bind(this,this.query)) != -1) {
@@ -1540,37 +1543,41 @@ jotun_data_Logger.prototype = {
 		console.log.apply(null,q);
 	}
 	,query: function(q,type) {
-		if(type > this._level) {
+		if(!this._level.test(type)) {
 			return;
 		}
-		var t;
-		switch(type) {
-		case 0:
-			t = "[MESSAGE] ";
-			break;
-		case 1:
-			t = "[>SYSTEM] ";
-			break;
-		case 2:
-			t = "[WARNING] ";
-			break;
-		case 3:
-			t = "[!ERROR!] ";
-			break;
-		case 4:
-			t = "[//TODO*] ";
-			break;
-		case 5:
-			t = "[$QUERY*] ";
-			break;
-		default:
-			t = "";
+		var t = "";
+		if(type != null) {
+			switch(type) {
+			case 0:
+				t = "[MESSAGE] ";
+				break;
+			case 1:
+				t = "[>SYSTEM] ";
+				break;
+			case 2:
+				t = "[WARNING] ";
+				break;
+			case 3:
+				t = "[!ERROR!] ";
+				break;
+			case 4:
+				t = "[//TODO*] ";
+				break;
+			case 5:
+				t = "[$QUERY*] ";
+				break;
+			case 6:
+				t = "[BRDCAST] ";
+				break;
+			case 7:
+				t = "[OBSOLET] ";
+				break;
+			default:
+				t = "";
+			}
 		}
-		if(t != null && ((q) instanceof Array)) {
-			q.unshift(t);
-		} else {
-			q = [t,q];
-		}
+		q = [t,q];
 		this.dump(q);
 	}
 	,showConsole: function(url) {
@@ -1600,8 +1607,12 @@ jotun_data_Logger.prototype = {
 };
 var jotun_modules_ModLib = function() {
 	this._onMount = [];
-	this.data = jotun_modules_ModLib.DATA;
-	this._predata = [];
+	if(jotun_modules_ModLib._init != true) {
+		jotun_modules_ModLib._init = true;
+		this._predata = [];
+	} else {
+		throw new Error("Can't create instance of ModLib. Use Jotun.resources instead of new ModLib().");
+	}
 };
 jotun_modules_ModLib.__name__ = "jotun.modules.ModLib";
 jotun_modules_ModLib.prototype = {
@@ -1623,8 +1634,7 @@ jotun_modules_ModLib.prototype = {
 		});
 		return data;
 	}
-	,data: null
-	,onDataOut: function(handler) {
+	,onDataRequest: function(handler) {
 		if(Lambda.indexOf(this._predata,handler) == -1) {
 			this._predata[this._predata.length] = handler;
 		}
@@ -1638,7 +1648,7 @@ jotun_modules_ModLib.prototype = {
 			Reflect.deleteField(jotun_modules_ModLib.CACHE,module);
 		}
 	}
-	,register: function(file,content,data) {
+	,register: function(file,content) {
 		var _gthis = this;
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
@@ -1672,7 +1682,9 @@ jotun_modules_ModLib.prototype = {
 							while(HxOverrides.substr(content,-1,null) == "\n") content = content.substring(0,content.length - 1);
 						}
 						if(mod.require != null) {
-							jotun_Jotun.log("\tModLib => " + path + " INCLUDING MODULES...",1);
+							var incT = mod.require.length;
+							var incC = 1;
+							jotun_Jotun.log("\tModLib => " + path + " INCLUDING MODULES... (" + incT + ")",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
@@ -1683,7 +1695,7 @@ jotun_modules_ModLib.prototype = {
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(_gthis.get(v,data));
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",1);
+													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",3);
 												} else {
 													throw _g;
 												}
@@ -1691,35 +1703,58 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
-									jotun_Jotun.log("\t\t@ MERGING " + v + "... OK!",1);
+									jotun_Jotun.log("\t\t@ MERGING " + v + "... OK! (" + incC + "/" + incT + ")",1);
 								} else {
-									jotun_Jotun.log("\t\t@ MISSING '" + v + "'",2);
+									jotun_Jotun.log("\t\t@ MISSING '" + v + "' (" + incC + "/" + incT + ")",3);
 								}
+								incC += 1;
 							});
 						}
 						if(mod.inject != null) {
-							jotun_Jotun.log("\tModLib => " + path + " INJECTING MODULES...",1);
-							if(_gthis.exists(mod.inject)) {
-								content = _gthis.get(mod.inject).split("{{@injection}}").join(content);
-								jotun_Jotun.log("\t\t@ MERGING " + v + "... OK!",1);
-							} else {
-								jotun_Jotun.log("\t\t@ MISSING '" + v + "'",2);
-							}
+							var injT = mod.require.length;
+							var injC = 1;
+							jotun_Jotun.log("\tModLib => INJECTING " + mod.name + " IN MODULES... (" + injT + ")",1);
+							jotun_utils_Dice.Values(mod.inject,function(v) {
+								if(_gthis.exists(v)) {
+									jotun_utils_Dice.All(content.split("{{@inject:" + v + ",data:"),function(p,v2) {
+										if(p > 0) {
+											var pieces = v2.split("}}")[0] + "}";
+											try {
+												var data = JSON.parse(pieces);
+												content = _gthis.get(v,data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
+											} catch( _g ) {
+												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
+													jotun_Jotun.log("\tModLib => " + path + " ERROR: Can't parse module injection data for " + v + ".",3);
+												} else {
+													throw _g;
+												}
+											}
+										}
+									});
+									content = _gthis.get(v).split("{{@inject:" + mod.name + "}}").join(content);
+									jotun_Jotun.log("\t\t@ MERGING IN " + v + "... OK! (" + injC + "/" + injT + ")",1);
+								} else {
+									jotun_Jotun.log("\t\t@ MISSING '" + v + "' (" + injC + "/" + injT + ")",3);
+								}
+							});
 						}
 						if(mod.data != null) {
 							mod.data = JSON.parse(mod.data);
 							content = jotun_utils_Filler.to(content,mod.data);
 						}
-						if(mod.wrap != null) {
-							content = content.split("\r\n").join(mod.wrap).split("\n").join(mod.wrap).split("\r").join(mod.wrap);
+						if(mod.replace != null) {
+							jotun_utils_Dice.Values(mod.replace,function(v) {
+								content = content.split(v[0]).join(v[1]);
+							});
 						}
 						if(mod.type != null) {
 							if(mod.type == "data") {
 								try {
+									content = JSON.parse(content);
 									if(mod.name == "[]") {
-										jotun_modules_ModLib.DATA.buffer.push(JSON.parse(content));
+										jotun_modules_ModLib.DATA.buffer.push(content);
 									} else {
-										_gthis.data[mod.name] = JSON.parse(content);
+										jotun_modules_ModLib.DATA[mod.name] = content;
 									}
 									return false;
 								} catch( _g ) {
@@ -1727,11 +1762,10 @@ jotun_modules_ModLib.prototype = {
 									jotun_Jotun.log("\tModLib => Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
 								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
-								jotun_Jotun.document.head.bind(content,mod.type,mod.id);
+								jotun_Jotun.document.head.bind(content,mod.type,mod.name);
 								content = "";
-							} else if(mod.type.substring(0,6) == "image/") {
-								var img = new Image();
-								img.src = "data:" + mod.type + "," + jotun_serial_Packager.encodeBase64(content);
+							} else if(mod.type == "image") {
+								jotun_modules_ModLib.DATA.images[mod.name] = content;
 							}
 						}
 						if(mod.target != null) {
@@ -1748,10 +1782,17 @@ jotun_modules_ModLib.prototype = {
 			});
 			if(mountAfter.length > 0) {
 				jotun_utils_Dice.Values(mountAfter,function(v) {
-					var o = jotun_Jotun.one(v.target);
-					if(o != null) {
-						o.mount(v.name,v.data,v.index);
+					var o = null;
+					var idx = -1;
+					if(((v.target) instanceof Array)) {
+						o = jotun_Jotun.all(v.target[0]);
+						idx = v.target[1];
+					} else {
+						o = jotun_Jotun.all(v.target);
 					}
+					o.each(function(target) {
+						target.mount(v.name,v.data,idx);
+					});
 				});
 			}
 		} else {
@@ -1775,10 +1816,14 @@ jotun_modules_ModLib.prototype = {
 			}
 		}
 	}
-	,get: function(name,data) {
+	,get: function(name,data,alt) {
 		name = name.toLowerCase();
 		if(!this.exists(name)) {
-			return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+			if(alt != null) {
+				return alt;
+			} else {
+				return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
+			}
 		}
 		var content = Reflect.field(jotun_modules_ModLib.CACHE,name);
 		data = this._sanitize(name,data);
@@ -1788,21 +1833,36 @@ jotun_modules_ModLib.prototype = {
 			return content;
 		}
 	}
-	,getObj: function(name,data) {
+	,object: function(name,data) {
 		if(Object.prototype.hasOwnProperty.call(jotun_modules_ModLib.DATA,name)) {
 			data = Reflect.field(jotun_modules_ModLib.DATA,name);
 		} else {
-			var val = this.get(name,data);
+			var val = this.get(name,data,"");
 			if(val != null) {
 				try {
 					data = JSON.parse(val);
 				} catch( _g ) {
-					console.log("src/jotun/modules/ModLib.hx:271:","Parsing error for MOD:[" + name + "]");
+					jotun_Jotun.log("\tModLib => Can't create object for [Module:" + name + "]",3);
 					data = null;
 				}
 			}
 		}
 		return data;
+	}
+	,image: function(name) {
+		return Reflect.field(jotun_modules_ModLib.DATA.images,name);
+	}
+	,buffer: function(name) {
+		if(name != null && name != "") {
+			return Reflect.field(jotun_modules_ModLib.DATA,name);
+		} else {
+			return jotun_modules_ModLib.DATA.buffer;
+		}
+	}
+	,domImage: function(name) {
+		var img = new Image();
+		img.src = this.image(name);
+		return img;
 	}
 	,build: function(module,data) {
 		if(jotun_Jotun.agent.mobile && this.exists(module + "::mobile")) {
@@ -1810,7 +1870,7 @@ jotun_modules_ModLib.prototype = {
 		}
 		var signature = Reflect.field(jotun_modules_ModLib.CACHE,"@" + module.toLowerCase());
 		var result = new jotun_dom_Display().writeHtml(this.get(module,data));
-		result.children().attribute("sru-mod",signature);
+		result.children().attribute("jtn-mod",signature);
 		if(data != null) {
 			result.react(data);
 		}
@@ -3997,7 +4057,7 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		jotun_Jotun.all("[jtn-module]").each(function(o) {
 			var n = o.attribute("module-name");
 			if(n == null) {
-				n = "embed";
+				n = "DocumentRoot";
 			}
 			jotun_Jotun.resources.register(n,o.element.innerHTML);
 			o.dispose();
@@ -4327,7 +4387,7 @@ jotun_dom_Head.prototype = $extend(jotun_dom_Display.prototype,{
 					s = null;
 				}
 				if(s != null) {
-					s.attribute("module-id",jotun_tools_Utils.isValid(id) ? id : "");
+					s.attribute("jtn-mod",jotun_tools_Utils.getValidOne(id,"anonymous"));
 					this.addChild(s);
 					return s;
 				}
@@ -7649,15 +7709,13 @@ var jotun_modules_IMod = function() { };
 jotun_modules_IMod.__name__ = "jotun.modules.IMod";
 jotun_modules_IMod.__isInterface__ = true;
 jotun_modules_IMod.prototype = {
-	id: null
-	,name: null
-	,target: null
+	name: null
 	,require: null
 	,inject: null
 	,type: null
-	,wrap: null
+	,replace: null
 	,data: null
-	,index: null
+	,target: null
 	,__class__: jotun_modules_IMod
 };
 var jotun_net_HttpRequest = function(url) {
@@ -10636,8 +10694,16 @@ jotun_tools_Key.VALIDATE_CHAR_NAME = new EReg("^[a-zA-Z ]{8,32}$","");
 jotun_tools_Key.VALIDATE_NON_URL = new EReg("^[A-Za-z0-9._-]{6,24}$","");
 jotun_tools_Key.VALIDATE_HASH = new EReg("^[A-Za-z0-9._-]{35}$","");
 jotun_tools_Key.VALIDATE_CARD = new EReg("\\d{4}-\\d{4}-\\d{4}-\\d{4}$","");
+jotun_data_Logger.MESSAGE = 0;
+jotun_data_Logger.SYSTEM = 1;
+jotun_data_Logger.WARNING = 2;
+jotun_data_Logger.ERROR = 3;
+jotun_data_Logger.TODO = 4;
+jotun_data_Logger.QUERY = 5;
+jotun_data_Logger.BROADCAST = 6;
+jotun_data_Logger.OBSOLETE = 7;
 jotun_modules_ModLib.CACHE = { };
-jotun_modules_ModLib.DATA = { buffer : []};
+jotun_modules_ModLib.DATA = { buffer : [], images : { }};
 jotun_Jotun._loaded = false;
 jotun_Jotun.resources = new jotun_modules_ModLib();
 jotun_Jotun.domain = new jotun_net_Domain();

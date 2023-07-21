@@ -1,6 +1,6 @@
 export class RealmsLocale {
 		#_null = {};
-		#_lib = Jotun.resources.data.buffer || this.#_null;
+		#_lib = Jotun.resources.buffer() || this.#_null;
 		#_get(q){
 			var v;
 			var i = this.#_lib.length;

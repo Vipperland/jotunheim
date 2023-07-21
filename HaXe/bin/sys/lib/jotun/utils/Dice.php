@@ -617,14 +617,14 @@ class Dice {
 		} else if ($key !== null) {
 			#src/jotun/utils/Dice.hx:323: lines 323-325
 			ArraySort::sort($r, function ($a, $b) use (&$key) {
-				#src/jotun/utils/Dice.hx:324: characters 5-110
-				return \Reflect::compare(SearchTag::convert(\Reflect::field($a, $key)), SearchTag::convert(\Reflect::field($b, $key)));
+				#src/jotun/utils/Dice.hx:324: characters 5-106
+				return \Reflect::compare(SearchTag::clear(\Reflect::field($a, $key)), SearchTag::clear(\Reflect::field($b, $key)));
 			});
 		} else {
 			#src/jotun/utils/Dice.hx:328: lines 328-330
 			ArraySort::sort($r, function ($a, $b) {
-				#src/jotun/utils/Dice.hx:329: characters 5-70
-				return \Reflect::compare(SearchTag::convert($a), SearchTag::convert($b));
+				#src/jotun/utils/Dice.hx:329: characters 5-66
+				return \Reflect::compare(SearchTag::clear($a), SearchTag::clear($b));
 			});
 		}
 		#src/jotun/utils/Dice.hx:331: characters 3-11

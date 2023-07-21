@@ -50,8 +50,9 @@ class Display extends Query implements IDisplay {
 	 * @return
 	 */
 	public static function fromGC(id:UInt):IDisplay {
-		if (_DATA[id] != null)
+		if (_DATA[id] != null){
 			return _DATA[id];
+		}
 		return null;
 	}
 	
@@ -101,12 +102,14 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function new(?q:Dynamic = null, ?t:Element = null) {
-		if (q == null)
+		if (q == null){
 			q = Browser.document.createDivElement();
-		if (Reflect.hasField(q, 'element'))
+		}
+		if (Reflect.hasField(q, 'element')){
 			element = q.element;
-		else
+		} else {
 			element = q;
+		}
 		if (element != cast Browser.document) {
 			_getattr = element.getAttribute != null;
 			_setattr = element.setAttribute != null;
@@ -195,8 +198,9 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function getChild(i:Int, ?update:Bool):IDisplay {
-		if (_children == null || update == true)
+		if (_children == null || update == true){
 			_children = children();
+		}
 		return cast _children.obj(i);
 	}
 	
@@ -205,15 +209,17 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function index():Int {
-		if(parent() != null)
+		if (parent() != null){
 			return _parent.indexOf(this);
-		else
+		} else{
 			return -1;
+		}
 	}
 	
 	public function setIndex(i:UInt):IDisplay {
-		if(parent() != null)
+		if (parent() != null){
 			_parent.addChild(this, i);
+		}
 		return this;
 	}
 	
@@ -222,8 +228,9 @@ class Display extends Query implements IDisplay {
 		var len = chd.length;
 		var cnt = 0;
 		while (cnt < len) {
-			if (cast chd.item(cnt) == q.element)
+			if (cast chd.item(cnt) == q.element){
 				break;
+			}
 			++cnt;
 		}
 		return cnt == len ? -1 : cnt;
@@ -243,9 +250,9 @@ class Display extends Query implements IDisplay {
 	
 	public function addChildren(q:ITable, ?at:Int = -1):IDisplay {
 		var l:IDisplay = null;
-		if (at == -1)
+		if (at == -1){
 			q.each(cast addChild);
-		else {
+		} else {
 			q.each(function(o:IDisplay) {
 				addChild(o, at++);
 			});
@@ -269,8 +276,9 @@ class Display extends Query implements IDisplay {
 	
 	public function removeChildren(min:UInt = 0):IDisplay {
 		var t:UInt = children().length();
-		while (t > min)
+		while (t > min){
 			removeChild(getChild(--t));
+		}
 		return this;
 	}
 	
@@ -361,17 +369,21 @@ class Display extends Query implements IDisplay {
 					var c:String = v.substr(0, 1);
 					if (c == "*") {
 						v = v.substr(1, v.length - 1);
-						if (cl.contains(v)) 
+						if (cl.contains(v)) {
 							cl.remove(v);
-						else if (!cl.contains(v)) 
+						}
+						else if (!cl.contains(v)) {
 							cl.add(v);
+						}
 					}else if (c == "/") {
 						v = v.substr(1, v.length - 1);
-						if (cl.contains(v)) 
+						if (cl.contains(v)) {
 							cl.remove(v);
+						}
 					}else {
-						if (!cl.contains(v)) 
+						if (!cl.contains(v)) {
 							cl.add(v);
+						}
 					}
 				}
 			});
@@ -410,17 +422,20 @@ class Display extends Query implements IDisplay {
 		if (name != null) {
 			var t:String = Reflect.field(element, name);
 			if (t != null) {
-				if (value != null)
+				if (value != null){
 					Reflect.setField(element, name, value);
+				}
 				return Reflect.field(element, name);
 			}
 			if (value != null) {
-				if (_setattr)
+				if (_setattr){
 					element.setAttribute(name, value);
+				}
 				return value;
 			}
-			if(_getattr)
+			if (_getattr){
 				return element.getAttribute(name);
+			}
 		}
 		return null;
 	}
@@ -555,8 +570,9 @@ class Display extends Query implements IDisplay {
 			element.innerHTML = "";
 		}else{
 			var i:Int = element.childNodes.length;
-			while (i-- > 0)
+			while (i-- > 0){
 				element.removeChild(element.childNodes.item(i));
+			}
 		}
 		return this;
 	}
@@ -567,12 +583,14 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function parent(levels:UInt=0):IDisplay {
-		if (_parent == null && element.parentElement != null)
+		if (_parent == null && element.parentElement != null){
 			_parent = Utils.displayFrom(element.parentElement);
-		if (levels > 0)
+		}
+		if (levels > 0){
 			return _parent.parent(--levels);
-		else
+		} else {
 			return _parent;
+		}
 	}
 	
 	public function parentQuery(q:String):IDisplay {
