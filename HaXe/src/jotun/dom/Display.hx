@@ -3,6 +3,7 @@ package jotun.dom;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.css.XCode;
+import jotun.data.Logger;
 import jotun.dom.IDisplay;
 import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
@@ -34,8 +35,6 @@ class Display extends Query implements IDisplay {
 	
 	private static var _CNT:UInt = 0;
 	
-	private static var _IDLE_IDX:UInt = 0;
-	
 	private static var _DATA:Dynamic = {};
 	
 	/**
@@ -60,41 +59,47 @@ class Display extends Query implements IDisplay {
 	 * Remove all display from cache if not in dom
 	 * @param	secure
 	 */
-	static public function clearCache(?force:Bool):Void {
-		if (force) {
-			_DATA = [];
-		}else{
-			Dice.Values(_DATA, function(v:IDisplay) {
-				if (v.element == null || !v.element.isConnected) {
-					Reflect.deleteField(_DATA, '' + v.id());
-				}
-			});
+	static public function clearCache():Void {
+		var count:Int = 0;
+		Dice.Values(_DATA, function(v:IDisplay) {
+			if (v.element == null || !v.element.isConnected) {
+				v.dispose();
+				++count;
+			}
+		});
+		if(count > 0){
+			Jotun.log('CACHE: ' + count + ' removed', Logger.SYSTEM);
 		}
 	}
 	
 	/**
 	 * Remove all idle elements from cache
 	 */
-	static public function clearIdles(?timed:Bool):Void {
-		var time:Int = timed ? (cast Date.now().getTime()) >> 0 : 0;
-		var idle:Int = null;
+	static public function clearIdles():Void {
+		var time:Int = (cast Date.now().getTime()) >> 0;
+		var count:Int = 0;
+		var idle:Int = 0;
+		var awaken:Int = 0;
 		Dice.Values(_DATA, function(v:IDisplay):Void {
 			if(v.element != null){
 				if (!v.element.isConnected){
-					if(timed){
-						if(!v.data().idleTime){
-							v.data().idleTime = time;
-						}else{
-							if(time - v.data().idleTime > 1800000){
-								v.dispose();
-							}
-						}
+					if(v.data().idleTime == null){
+						v.data().idleTime = time;
 					}else{
-						v.dispose();
+						if((time - v.data().idleTime) > 1800000){
+							v.dispose();
+							++count;
+						}
 					}
+				}else if(v.data().idleTime != null){
+					Reflect.deleteField(v.data(), 'idleTime');
+					++awaken;
 				}
 			}
 		});
+		if(count > 0){
+			Jotun.log('CACHE: ' + count + ' removed, ' + idle + ' idle, ' + awaken + ' awaken', Logger.SYSTEM);
+		}
 	}
 	
 	private var _uid:UInt;

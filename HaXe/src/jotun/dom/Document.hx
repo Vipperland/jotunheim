@@ -4,6 +4,7 @@ import jotun.css.XCode;
 import jotun.events.Dispatcher;
 import jotun.math.Point;
 import jotun.tools.Key;
+import jotun.tools.Ticker;
 import jotun.tools.Utils;
 import jotun.utils.ITable;
 import js.Browser;
@@ -99,6 +100,9 @@ class Document extends Display {
 		body = new Body(js.Syntax.code("document.body"));
 		if (body.hasAttribute('xcode')){
 			XCode.reset();
+		}
+		if (body.hasAttribute('xcache')){
+			Ticker.enableCacheControl(Std.parseInt(body.attribute('xcache')));
 		}
 		Jotun.all("[jtn-module]").each(function(o:IDisplay){
 			var n:String = o.attribute('module-name');

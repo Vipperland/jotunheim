@@ -2,7 +2,6 @@ package jotun.modules;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.data.Logger;
-import jotun.serial.Packager;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
 

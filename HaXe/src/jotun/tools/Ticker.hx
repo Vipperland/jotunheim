@@ -26,10 +26,17 @@ class Ticker {
 	
 	private static var _etime:Float = 0;
 	
-	private static var _cache_ctrl:Bool = false;
+	private static var _cache_ctrl:Bool;
+	
+	private static var _cache_time:Int = 0;
+	
+	private static var _cache_delay:Int = 60;
 	
 	private static function _clearCache():Void {
-		Display.clearIdles(true);
+		if (++_cache_time >= _cache_delay){
+			Display.clearIdles();
+			_cache_time = 0;
+		}
 	}
 	
 	private static function _calcElapsed():Void {
@@ -156,8 +163,11 @@ class Ticker {
 		return call.id;
 	}
 	
-	public static function enableCacheControl():Void {
-		if (!_cache_ctrl){
+	public static function enableCacheControl(time:Int):Void {
+		if(time > 0){
+			_cache_delay = time;
+		}
+		if (_cache_ctrl != true){
 			_cache_ctrl = true;
 			addLower(_clearCache);
 			start();

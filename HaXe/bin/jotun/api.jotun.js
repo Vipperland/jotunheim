@@ -2350,37 +2350,41 @@ jotun_dom_Display.ofKind = function(q) {
 jotun_dom_Display.fromGC = function(id) {
 	return Reflect.field(jotun_dom_Display._DATA,"" + (id == null ? "null" : Std.string(UInt.toFloat(id))));
 };
-jotun_dom_Display.clearCache = function(force) {
-	if(force) {
-		jotun_dom_Display._DATA = [];
-	} else {
-		jotun_utils_Dice.Values(jotun_dom_Display._DATA,function(v) {
-			if(v.element == null || !v.element.isConnected) {
-				var tmp = jotun_dom_Display._DATA;
-				var tmp1 = v.id();
-				Reflect.deleteField(tmp,"" + (tmp1 == null ? "null" : Std.string(UInt.toFloat(tmp1))));
-			}
-		});
+jotun_dom_Display.clearCache = function() {
+	var count = 0;
+	jotun_utils_Dice.Values(jotun_dom_Display._DATA,function(v) {
+		if(v.element == null || !v.element.isConnected) {
+			v.dispose();
+			count += 1;
+		}
+	});
+	if(count > 0) {
+		jotun_Jotun.log("CACHE: " + count + " removed",1);
 	}
 };
-jotun_dom_Display.clearIdles = function(timed) {
-	var time = timed ? new Date().getTime() : 0;
-	var idle = null;
+jotun_dom_Display.clearIdles = function() {
+	var time = new Date().getTime();
+	var count = 0;
+	var idle = 0;
+	var awaken = 0;
 	jotun_utils_Dice.Values(jotun_dom_Display._DATA,function(v) {
 		if(v.element != null) {
 			if(!v.element.isConnected) {
-				if(timed) {
-					if(!v.data().idleTime) {
-						v.data().idleTime = time;
-					} else if(time - v.data().idleTime > 1800000) {
-						v.dispose();
-					}
-				} else {
+				if(v.data().idleTime == null) {
+					v.data().idleTime = time;
+				} else if(time - v.data().idleTime > 1800000) {
 					v.dispose();
+					count += 1;
 				}
+			} else if(v.data().idleTime != null) {
+				Reflect.deleteField(v.data(),"idleTime");
+				awaken += 1;
 			}
 		}
 	});
+	if(count > 0) {
+		jotun_Jotun.log("CACHE: " + count + " removed, " + idle + " idle, " + awaken + " awaken",1);
+	}
 };
 jotun_dom_Display.__super__ = jotun_objects_Query;
 jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
@@ -4127,6 +4131,9 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		this.body = new jotun_dom_Body(document.body);
 		if(this.body.hasAttribute("xcode")) {
 			jotun_css_XCode.reset();
+		}
+		if(this.body.hasAttribute("xcache")) {
+			jotun_tools_Ticker.enableCacheControl(Std.parseInt(this.body.attribute("xcache")));
 		}
 		jotun_Jotun.all("[jtn-module]").each(function(o) {
 			var n = o.attribute("module-name");
@@ -8702,7 +8709,10 @@ var jotun_tools_Ticker = function() { };
 $hx_exports["J_Ticker"] = jotun_tools_Ticker;
 jotun_tools_Ticker.__name__ = "jotun.tools.Ticker";
 jotun_tools_Ticker._clearCache = function() {
-	jotun_dom_Display.clearIdles(true);
+	if(++jotun_tools_Ticker._cache_time >= jotun_tools_Ticker._cache_delay) {
+		jotun_dom_Display.clearIdles();
+		jotun_tools_Ticker._cache_time = 0;
+	}
 };
 jotun_tools_Ticker._calcElapsed = function() {
 	var ctime = Date.now();
@@ -8816,8 +8826,11 @@ jotun_tools_Ticker.delay = function(callback,time,count,data) {
 	jotun_tools_Ticker._pool_delayed[jotun_tools_Ticker._pool_delayed.length] = call;
 	return call.id;
 };
-jotun_tools_Ticker.enableCacheControl = function() {
-	if(!jotun_tools_Ticker._cache_ctrl) {
+jotun_tools_Ticker.enableCacheControl = function(time) {
+	if(time > 0) {
+		jotun_tools_Ticker._cache_delay = time;
+	}
+	if(jotun_tools_Ticker._cache_ctrl != true) {
 		jotun_tools_Ticker._cache_ctrl = true;
 		jotun_tools_Ticker.addLower(jotun_tools_Ticker._clearCache);
 		jotun_tools_Ticker.start();
@@ -10687,7 +10700,6 @@ jotun_css_CSSGroup.MEDIA_LG_MAX = "(max-width:1920px)";
 jotun_css_CSSGroup.MEDIA_XL = "(min-width:1921px)";
 jotun_css_CSSGroup.MEDIA_XL_MAX = "(max-width:3840px)";
 jotun_dom_Display._CNT = 0;
-jotun_dom_Display._IDLE_IDX = 0;
 jotun_dom_Display._DATA = { };
 jotun_css_XCode.css = new jotun_css_CSSGroup();
 jotun_css_XCode._inits = { reset : false, grid : false};
@@ -10719,7 +10731,8 @@ jotun_tools_Ticker._pool_delayed = [];
 jotun_tools_Ticker._ptime = 0;
 jotun_tools_Ticker._ltime = 0;
 jotun_tools_Ticker._etime = 0;
-jotun_tools_Ticker._cache_ctrl = false;
+jotun_tools_Ticker._cache_time = 0;
+jotun_tools_Ticker._cache_delay = 60;
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["[",""],["]",""]];
 jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
