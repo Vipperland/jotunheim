@@ -1655,11 +1655,16 @@ jotun_modules_ModLib.prototype = {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur = content.split("[!MOD!]");
+		var total = sur.length - 1;
+		var count = 0;
+		var errors = 0;
+		var fdata = 0;
 		if(sur.length > 1) {
-			jotun_Jotun.log("ModLib => PARSING " + file,1);
+			jotun_Jotun.log("ModLib => PARSING " + file + " MODULES (~" + total + ")",1);
 			var mountAfter = [];
 			jotun_utils_Dice.All(sur,function(p,v) {
 				if(p > 0) {
+					count += 1;
 					var i = v.indexOf("}]");
 					if(i != -1) {
 						var mod = JSON.parse("{" + HxOverrides.substr(v,0,i) + "}");
@@ -1671,7 +1676,7 @@ jotun_modules_ModLib.prototype = {
 							jotun_Jotun.log("\t\t@ PUSH " + mod.name,1);
 						} else {
 							path += "#" + mod.name;
-							jotun_Jotun.log("\t\t@ NAME " + mod.name,1);
+							jotun_Jotun.log("\t\t@ NAME " + mod.name + " (" + count + "/" + total + ")",1);
 						}
 						if(_gthis.exists(mod.name)) {
 							jotun_Jotun.log("\tModLib => !!! OVERRIDING " + path,2);
@@ -1686,7 +1691,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.require != null) {
 							var incT = mod.require.length;
 							var incC = 1;
-							jotun_Jotun.log("\t\t\tINCLUDING MODULES IN '" + path + "' (" + incT + ")",1);
+							jotun_Jotun.log("\t\t\t> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
@@ -1705,9 +1710,9 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
-									jotun_Jotun.log("\t\t\t\t@ INCLUDED '" + v + "' (" + incC + "/" + incT + ")",1);
+									jotun_Jotun.log("\t\t\t\t+ INCLUDED '" + v + "' #" + incC,1);
 								} else {
-									jotun_Jotun.log("\t\t\t\t@ MISSING '" + v + "' (" + incC + "/" + incT + ")",3);
+									jotun_Jotun.log("\t\t\t\t- MISSING '" + v + "' #" + incC,3);
 								}
 								incC += 1;
 							});
@@ -1715,7 +1720,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.inject != null) {
 							var injT = mod.require.length;
 							var injC = 1;
-							jotun_Jotun.log("\t\t\tINJECTING MODULES IN '" + path + "' (" + injT + ")",1);
+							jotun_Jotun.log("\t\t\tINJECTING MODULES IN '" + mod.name + "' (" + injT + ")",1);
 							jotun_utils_Dice.Values(mod.inject,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@inject:" + v + ",data:"),function(p,v2) {
@@ -1734,9 +1739,9 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = _gthis.get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									jotun_Jotun.log("\t\t\t\t@ INJECTED '" + v + "' (" + injC + "/" + injT + ")",1);
+									jotun_Jotun.log("\t\t\t\t+ INJECTED '" + v + "' #" + injC,1);
 								} else {
-									jotun_Jotun.log("\t\t\t\t@ MISSING '" + v + "' (" + injC + "/" + injT + ")",3);
+									jotun_Jotun.log("\t\t\t\t- MISSING '" + v + "' #" + injC,3);
 								}
 							});
 						}
@@ -1752,6 +1757,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.type != null) {
 							if(mod.type == "data") {
 								try {
+									fdata += 1;
 									content = JSON.parse(content);
 									if(mod.name == "[]") {
 										jotun_modules_ModLib.DATA.buffer.push(content);
@@ -1761,6 +1767,7 @@ jotun_modules_ModLib.prototype = {
 									return false;
 								} catch( _g ) {
 									var e = haxe_Exception.caught(_g).unwrap();
+									errors += 1;
 									jotun_Jotun.log("\t\t\tERROR! Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
 								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
@@ -1797,6 +1804,7 @@ jotun_modules_ModLib.prototype = {
 					});
 				});
 			}
+			jotun_Jotun.log("\t\t! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors,1);
 		} else {
 			var ext = file.split(".").pop();
 			switch(ext) {
@@ -4123,7 +4131,7 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		jotun_Jotun.all("[jtn-module]").each(function(o) {
 			var n = o.attribute("module-name");
 			if(n == null) {
-				n = "DocumentRoot";
+				n = "Root";
 			}
 			jotun_Jotun.resources.register(n,o.element.innerHTML);
 			o.dispose();

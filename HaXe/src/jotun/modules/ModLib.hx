@@ -108,13 +108,18 @@ class ModLib {
 		content = content.split("[module:{").join("[!MOD!]");
 		content = content.split("[Module:{").join("[!MOD!]");
 		var sur:Array<String> = content.split("[!MOD!]");
+		var total:Int = sur.length - 1;
+		var count:Int = 0;
+		var errors:Int = 0;
+		var fdata:Int = 0;
 		if (sur.length > 1) {
-			Jotun.log("ModLib => PARSING " + file, Logger.SYSTEM);
+			Jotun.log("ModLib => PARSING " + file + " MODULES (~" + total + ")", Logger.SYSTEM);
 			#if js 
 				var mountAfter:Array<IMod> = [];
 			#end
 			Dice.All(sur, function(p:Int, v:String) {
-				if(p > 0){
+				if (p > 0){
+					++count;
 					var i:Int = v.indexOf("}]");
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
@@ -126,7 +131,7 @@ class ModLib {
 							Jotun.log("		@ PUSH " + mod.name, Logger.SYSTEM);
 						}else{
 							path += '#' + mod.name;
-							Jotun.log("		@ NAME " + mod.name, Logger.SYSTEM);
+							Jotun.log("		@ NAME " + mod.name + " (" + count + "/" + total + ")", Logger.SYSTEM);
 						}
 						if (exists(mod.name)){
 							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.WARNING);
@@ -145,7 +150,7 @@ class ModLib {
 						if (mod.require != null) {
 							var incT:Int = mod.require.length;
 							var incC:Int = 1;
-							Jotun.log("			INCLUDING MODULES IN '" + path + "' (" + incT + ")", Logger.SYSTEM);
+							Jotun.log("			> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")", Logger.SYSTEM);
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
 									// inclusion with custom data
@@ -162,9 +167,9 @@ class ModLib {
 									});
 									// inclusion with no custom data
 									content = content.split("{{@include:" + v + "}}").join(get(v));
-									Jotun.log("				@ INCLUDED '" + v + "' (" + incC + "/" + incT + ")", Logger.SYSTEM);
+									Jotun.log("				+ INCLUDED '" + v + "' #" + incC, Logger.SYSTEM);
 								} else{
-									Jotun.log("				@ MISSING '" + v + "' (" + incC + "/" + incT + ")", Logger.ERROR);
+									Jotun.log("				- MISSING '" + v + "' #" + incC, Logger.ERROR);
 								}
 								++incC;
 							});
@@ -172,7 +177,7 @@ class ModLib {
 						if (mod.inject != null) {
 							var injT:Int = mod.require.length;
 							var injC:Int = 1;
-							Jotun.log("			INJECTING MODULES IN '" + path + "' (" + injT + ")", Logger.SYSTEM);
+							Jotun.log("			INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
 							Dice.Values(mod.inject, function(v:String) {
 								if (exists(v)){
 									// injection with custom data
@@ -189,9 +194,9 @@ class ModLib {
 									});
 									// injection with no custom data
 									content = get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									Jotun.log("				@ INJECTED '" + v + "' (" + injC + "/" + injT + ")", 1);
+									Jotun.log("				+ INJECTED '" + v + "' #" + injC, 1);
 								}else{
-									Jotun.log("				@ MISSING '" + v + "' (" + injC + "/" + injT + ")", Logger.ERROR);
+									Jotun.log("				- MISSING '" + v + "' #" + injC, Logger.ERROR);
 								}
 							});
 						}
@@ -207,6 +212,7 @@ class ModLib {
 						if (mod.type != null) {
 							if (mod.type == 'data'){
 								try {
+									++fdata;
 									content = Json.parse(content);
 									if (mod.name == '[]'){
 										DATA.buffer.push(content);
@@ -215,6 +221,7 @@ class ModLib {
 									}
 									return false;
 								}catch (e:Dynamic){
+									++errors;
 									Jotun.log("			ERROR! Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
 								}
 							}
@@ -263,6 +270,7 @@ class ModLib {
 					});
 				}
 			#end
+			Jotun.log("		! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors, Logger.SYSTEM);
 		}else {
 			#if js
 				// ============================= JS ONLY =============================
