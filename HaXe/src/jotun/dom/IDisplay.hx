@@ -34,7 +34,7 @@ interface IDisplay extends IQuery {
 	/**
 	 * Custom data
 	 */
-	public var data:Dynamic;
+	public function data():Dynamic;
 	/**
 	 * Check if a selector exists
 	 * @return
@@ -316,6 +316,22 @@ interface IDisplay extends IQuery {
 	 * @param	data
 	 */
 	public function react(data:Dynamic):Void;
+	
+	/**
+	 * Enable autonomous render proccess
+	 */
+	public function connect():Void;
+	
+	/**
+	 * Disable autonomous render proccess
+	 */
+	public function disconnect():Void;
+	
+	/**
+	 * Set autonomous render method callback
+	 * @param	method
+	 */
+	public function setRenderRequest(method:IDisplay->Float->Void):Void;
 	
 	/**
 	 * Remove all elements or set innerHTML to empty

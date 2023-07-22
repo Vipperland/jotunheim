@@ -23,9 +23,10 @@ class Body extends Display {
 	private var _body:BodyElement;
 	
 	public function new(?q:Element) {
-		if (q == null) q = Browser.document.createBodyElement();
+		if (q == null) {
+			q = Browser.document.createBodyElement();
+		}
 		super(q, null);
-		_body = cast this.element;
 		Browser.window.addEventListener('resize', _wResize);
 	}
 	
@@ -34,11 +35,11 @@ class Body extends Display {
 	}
 	
 	public function maxScrollX():Int {
-		return _body.scrollWidth - Utils.viewportWidth();
+		return (cast element).scrollWidth - Utils.viewportWidth();
 	}
 	
 	public function maxScrollY():Int {
-		return _body.scrollHeight - Utils.viewportHeight();
+		return (cast element).scrollHeight - Utils.viewportHeight();
 	}
 	
 }

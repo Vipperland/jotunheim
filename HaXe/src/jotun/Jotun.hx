@@ -123,14 +123,16 @@ class Jotun {
 		 * @return
 		 */
 		static public function one(?q:String = "*", ?t:Dynamic = null):IDisplay {
-			if (t == null)
+			if (t == null){
 				t = Browser.document.querySelector(q);
-			else
+			} else{
 				t = t.querySelector(q);
-			if (t != null)
+			}
+			if (t != null){
 				t = Utils.displayFrom(t);
-			else
+			} else{
 				log("Find => No result on selector (" + q + ")", 5);
+			}
 			return t;
 		}
 		
@@ -333,9 +335,8 @@ class Jotun {
 	 * 
 	 * 
 	 * 
-	 * 		Sirius unique attributes:
-	 * 			jtn-id			For unique or shared data, all elements with same jotun-id share the same data.
+	 * 		Jotun unique attributes:
+	 * 			jtn-id			Unique ID for shared data controller, all elements with same id share the same data object
 	 * 			jtn-dom			For type idenfication and fast display conversion.
-	 * 			jtn-load			Load and build an external module (sru="url#module")
 	 * 			
 	 */

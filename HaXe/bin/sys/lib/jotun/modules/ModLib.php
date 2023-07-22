@@ -383,14 +383,14 @@ class ModLib {
 							$incT = $mod->require->length;
 							#src/jotun/modules/ModLib.hx:147: characters 8-25
 							$incC = 1;
-							#src/jotun/modules/ModLib.hx:148: characters 8-95
-							Jotun::log("\x09ModLib => " . ($path??'null') . " INCLUDING MODULES... (" . ($incT??'null') . ")", 1);
+							#src/jotun/modules/ModLib.hx:148: characters 8-89
+							Jotun::log("\x09\x09\x09INCLUDING MODULES IN '" . ($path??'null') . "' (" . ($incT??'null') . ")", 1);
 							#src/jotun/modules/ModLib.hx:149: lines 149-170
-							Dice::Values($mod->require, function ($v) use (&$incT, &$incC, &$_gthis, &$content, &$path) {
+							Dice::Values($mod->require, function ($v) use (&$incT, &$incC, &$_gthis, &$content) {
 								#src/jotun/modules/ModLib.hx:150: lines 150-168
 								if ($_gthis->exists($v)) {
 									#src/jotun/modules/ModLib.hx:152: lines 152-162
-									Dice::All(HxString::split($content, "{{@include:" . ($v??'null') . ",data:"), function ($p, $v2) use (&$_gthis, &$content, &$v, &$path) {
+									Dice::All(HxString::split($content, "{{@include:" . ($v??'null') . ",data:"), function ($p, $v2) use (&$_gthis, &$content, &$v) {
 										#src/jotun/modules/ModLib.hx:153: lines 153-161
 										if ($p > 0) {
 											#src/jotun/modules/ModLib.hx:154: characters 12-56
@@ -402,18 +402,18 @@ class ModLib {
 												#src/jotun/modules/ModLib.hx:157: characters 13-101
 												$content = HxString::split($content, "{{@include:" . ($v??'null') . ",data:" . ($pieces??'null') . "}}")->join($_gthis->get($v, $data));
 											} catch(\Error $e) {
-												#src/jotun/modules/ModLib.hx:159: characters 13-119
-												Jotun::log("\x09ModLib => " . ($path??'null') . " ERROR: Can't parse module injection data for " . ($v??'null') . ".", 3);
+												#src/jotun/modules/ModLib.hx:159: characters 13-99
+												Jotun::log("\x09\x09\x09\x09ERROR: Can't parse module injection data for " . ($v??'null') . ".", 3);
 											}
 										}
 									});
 									#src/jotun/modules/ModLib.hx:164: characters 10-72
 									$content = HxString::split($content, "{{@include:" . ($v??'null') . "}}")->join($_gthis->get($v));
-									#src/jotun/modules/ModLib.hx:165: characters 10-94
-									Jotun::log("\x09\x09@ MERGING " . ($v??'null') . "... OK! (" . ($incC??'null') . "/" . ($incT??'null') . ")", 1);
+									#src/jotun/modules/ModLib.hx:165: characters 10-92
+									Jotun::log("\x09\x09\x09\x09@ INCLUDED '" . ($v??'null') . "' (" . ($incC??'null') . "/" . ($incT??'null') . ")", 1);
 								} else {
-									#src/jotun/modules/ModLib.hx:167: characters 10-88
-									Jotun::log("\x09\x09@ MISSING '" . ($v??'null') . "' (" . ($incC??'null') . "/" . ($incT??'null') . ")", 3);
+									#src/jotun/modules/ModLib.hx:167: characters 10-90
+									Jotun::log("\x09\x09\x09\x09@ MISSING '" . ($v??'null') . "' (" . ($incC??'null') . "/" . ($incT??'null') . ")", 3);
 								}
 								#src/jotun/modules/ModLib.hx:169: characters 9-15
 								$incC += 1;
@@ -425,14 +425,14 @@ class ModLib {
 							$injT = $mod->require->length;
 							#src/jotun/modules/ModLib.hx:174: characters 8-25
 							$injC = 1;
-							#src/jotun/modules/ModLib.hx:175: characters 8-102
-							Jotun::log("\x09ModLib => INJECTING " . ($mod->name??'null') . " IN MODULES... (" . ($injT??'null') . ")", 1);
+							#src/jotun/modules/ModLib.hx:175: characters 8-89
+							Jotun::log("\x09\x09\x09INJECTING MODULES IN '" . ($path??'null') . "' (" . ($injT??'null') . ")", 1);
 							#src/jotun/modules/ModLib.hx:176: lines 176-196
-							Dice::Values($mod->inject, function ($v) use (&$mod, &$_gthis, &$content, &$injC, &$injT, &$path) {
+							Dice::Values($mod->inject, function ($v) use (&$mod, &$_gthis, &$content, &$injC, &$injT) {
 								#src/jotun/modules/ModLib.hx:177: lines 177-195
 								if ($_gthis->exists($v)) {
 									#src/jotun/modules/ModLib.hx:179: lines 179-189
-									Dice::All(HxString::split($content, "{{@inject:" . ($v??'null') . ",data:"), function ($p, $v2) use (&$_gthis, &$content, &$v, &$path) {
+									Dice::All(HxString::split($content, "{{@inject:" . ($v??'null') . ",data:"), function ($p, $v2) use (&$_gthis, &$content, &$v) {
 										#src/jotun/modules/ModLib.hx:180: lines 180-188
 										if ($p > 0) {
 											#src/jotun/modules/ModLib.hx:181: characters 12-56
@@ -444,18 +444,18 @@ class ModLib {
 												#src/jotun/modules/ModLib.hx:184: characters 13-100
 												$content = HxString::split($_gthis->get($v, $data), "{{@inject:" . ($v??'null') . ",data:" . ($pieces??'null') . "}}")->join($content);
 											} catch(\Error $e) {
-												#src/jotun/modules/ModLib.hx:186: characters 13-119
-												Jotun::log("\x09ModLib => " . ($path??'null') . " ERROR: Can't parse module injection data for " . ($v??'null') . ".", 3);
+												#src/jotun/modules/ModLib.hx:186: characters 13-99
+												Jotun::log("\x09\x09\x09\x09ERROR: Can't parse module injection data for " . ($v??'null') . ".", 3);
 											}
 										}
 									});
 									#src/jotun/modules/ModLib.hx:191: characters 10-78
 									$content = HxString::split($_gthis->get($v), "{{@inject:" . ($mod->name??'null') . "}}")->join($content);
-									#src/jotun/modules/ModLib.hx:192: characters 10-85
-									Jotun::log("\x09\x09@ MERGING IN " . ($v??'null') . "... OK! (" . ($injC??'null') . "/" . ($injT??'null') . ")", 1);
+									#src/jotun/modules/ModLib.hx:192: characters 10-80
+									Jotun::log("\x09\x09\x09\x09@ INJECTED '" . ($v??'null') . "' (" . ($injC??'null') . "/" . ($injT??'null') . ")", 1);
 								} else {
-									#src/jotun/modules/ModLib.hx:194: characters 10-88
-									Jotun::log("\x09\x09@ MISSING '" . ($v??'null') . "' (" . ($injC??'null') . "/" . ($injT??'null') . ")", 3);
+									#src/jotun/modules/ModLib.hx:194: characters 10-90
+									Jotun::log("\x09\x09\x09\x09@ MISSING '" . ($v??'null') . "' (" . ($injC??'null') . "/" . ($injT??'null') . ")", 3);
 								}
 							});
 						}
@@ -497,8 +497,8 @@ class ModLib {
 								} catch(\Throwable $_g) {
 									#src/jotun/modules/ModLib.hx:217: characters 17-18
 									$e = Exception::caught($_g)->unwrap();
-									#src/jotun/modules/ModLib.hx:218: characters 10-111
-									Jotun::log("\x09ModLib => Can't parse DATA[" . ($mod->name??'null') . "] \x0A\x0A " . ($content??'null') . "\x0A\x0A" . \Std::string($e), 3);
+									#src/jotun/modules/ModLib.hx:218: characters 10-110
+									Jotun::log("\x09\x09\x09ERROR! Can't parse DATA[" . ($mod->name??'null') . "] \x0A\x0A " . ($content??'null') . "\x0A\x0A" . \Std::string($e), 3);
 								}
 							} else if ($mod->type === "image") {
 								#src/jotun/modules/ModLib.hx:229: characters 9-57

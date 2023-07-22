@@ -161,7 +161,7 @@ class Utils{
 			var id:UInt = null;
 			var type:String = null;
 			if (t.hasAttribute != null) {
-				id = (cast t.getAttribute('jtn-id')) * 1;
+				id = (cast t)._uid;
 				if (id == null) {
 					type = cast t.getAttribute('jtn-dom');
 					if (type == null){

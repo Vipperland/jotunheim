@@ -71,9 +71,8 @@ class Document extends Display {
 	public function new() {
 		if(__doc__ == null){
 			super(cast Browser.document);
-			element = Browser.document.documentElement;
+			element = cast Browser.document;
 			head = new Head(Browser.document.head);
-			events = new Dispatcher(this);
 			__doc__ = this;
 			__init__();
 		}else {

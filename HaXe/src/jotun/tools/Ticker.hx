@@ -1,4 +1,5 @@
 package jotun.tools;
+import jotun.dom.Display;
 import jotun.utils.Dice;
 import js.Syntax;
 
@@ -24,6 +25,12 @@ class Ticker {
 	private static var _ltime:Float = 0;
 	
 	private static var _etime:Float = 0;
+	
+	private static var _cache_ctrl:Bool = false;
+	
+	private static function _clearCache():Void {
+		Display.clearIdles(true);
+	}
 	
 	private static function _calcElapsed():Void {
 		var ctime = js.Syntax.code("Date.now()");
@@ -147,6 +154,20 @@ class Ticker {
 		}
 		_pool_delayed[_pool_delayed.length] = call;
 		return call.id;
+	}
+	
+	public static function enableCacheControl():Void {
+		if (!_cache_ctrl){
+			_cache_ctrl = true;
+			addLower(_clearCache);
+			start();
+		}
+	}
+	
+	public static function disableCacheControl():Void {
+		if (_cache_ctrl){
+			remove(_clearCache);
+		}
 	}
 	
 }

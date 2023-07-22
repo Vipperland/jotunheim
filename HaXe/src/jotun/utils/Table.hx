@@ -23,18 +23,20 @@ class Table implements ITable {
 	static private var _trash:Array<ITable> = [];
 	static public function recycle(q:String, ?t:Element):ITable {
 		var r:ITable = null;
-		if (_trash.length > 0)
+		if (_trash.length > 0){
 			r = _trash.pop();
-		else
+		} else {
 			r = new Table();
+		}
 		return r.scan(q, t);
 	}
 	
 	static public function create():ITable {
-		if (_trash.length > 0)
+		if (_trash.length > 0){
 			return _trash.pop().reset();
-		else
+		} else{
 			return new Table();
+		}
 	}
 	
 	//static public function em
@@ -66,7 +68,7 @@ class Table implements ITable {
 			var ind:UInt = 0;
 			while(ind < len){
 				element = cast result.item(ind);
-				if (element != null){
+				if (element != null && element.nodeName != '#text'){
 					obj = Utils.displayFrom(element);
 					content[ind] = obj;
 				}
@@ -77,10 +79,12 @@ class Table implements ITable {
 	
 	public function scan(q:String, ?t:Element):ITable {
 		reset();
-		if (q == null)
+		if (q == null){
 			q = "*";
-		if (t == null)
+		}
+		if (t == null){
 			t = cast Browser.document.body;
+		}
 		fill(q != "*" ? t.querySelectorAll(q) : t.childNodes);
 		return this;
 	}
@@ -203,14 +207,6 @@ class Table implements ITable {
 	
 	/* ============================== EVENT BATCH ============================================================================================== */
 	
-	public function onWheel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("wheel", handler, mode); }
-
-	public function onCopy(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("copy", handler, mode); }
-
-	public function onCut(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("cut", handler, mode); }
-
-	public function onPaste(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("paste", handler, mode); }
-
 	public function onAbort(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("abort", handler, mode); }
 
 	public function onBlur(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("blur", handler, mode); }
@@ -219,41 +215,13 @@ class Table implements ITable {
 
 	public function onFocusOut(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("focusout", handler, mode); }
 
-	public function onCanPlay(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("canplay", handler, mode); }
-
-	public function onCanPlayThrough(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("canplaythrough", handler, mode); }
-
 	public function onChange(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("change", handler, mode); }
 
 	public function onClick(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("click", handler, mode); }
 
-	public function onContextMenu(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("contextmenu", handler, mode); }
-
 	public function onDblClick(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dblclick", handler, mode); }
 
-	public function onDrag(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("drag", handler, mode); }
-
-	public function onDragEnd(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dragend", handler, mode); }
-
-	public function onDragEnter(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dragenter", handler, mode); }
-
-	public function onDragLeave(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dragleave", handler, mode); }
-
-	public function onDragOver(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dragover", handler, mode); }
-
-	public function onDragStart(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("dragstart", handler, mode); }
-
-	public function onDrop(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("drop", handler, mode); }
-
-	public function onDurationChange(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("durationchange", handler, mode); }
-
-	public function onEmptied(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("emptied", handler, mode); }
-
-	public function onEnded(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("ended", handler, mode); }
-
-	public function onInput(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("input", handler, mode); }
-
-	public function onInvalid(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("invalid", handler, mode); }
+	public function onError(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("error", handler, mode); }
 
 	public function onKeyDown(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("keydown", handler, mode); }
 
@@ -262,12 +230,6 @@ class Table implements ITable {
 	public function onKeyUp(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("keyup", handler, mode); }
 
 	public function onLoad(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("load", handler, mode); }
-
-	public function onLoadedData(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("loadeddata", handler, mode); }
-
-	public function onLoadedMetadata(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("loadedmetadata", handler, mode); }
-
-	public function onLoadStart(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("loadstart", handler, mode); }
 
 	public function onMouseDown(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("mousedown", handler, mode); }
 
@@ -283,65 +245,7 @@ class Table implements ITable {
 
 	public function onMouseUp(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("mouseup", handler, mode); }
 
-	public function onPause(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pause", handler, mode); }
-
-	public function onPlay(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("play", handler, mode); }
-
-	public function onPlaying(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("playing", handler, mode); }
-
-	public function onProgress(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("progress", handler, mode); }
-
-	public function onRateChange(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("ratechange", handler, mode); }
-
-	public function onReset(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("reset", handler, mode); }
-
 	public function onScroll(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("scroll", handler, mode); }
-
-	public function onSeeked(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("seeked", handler, mode); }
-
-	public function onSeeking(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("seeking", handler, mode); }
-
-	public function onSelect(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("select", handler, mode); }
-
-	public function onShow(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("show", handler, mode); }
-
-	public function onStalled(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("stalled", handler, mode); }
-
-	public function onSubmit(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("submit", handler, mode); }
-
-	public function onSuspend(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("suspend", handler, mode); }
-
-	public function onTimeUpdate(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("timeupdate", handler, mode); }
-
-	public function onVolumeChange(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("volumechange", handler, mode); }
-
-	public function onWaiting(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("waiting", handler, mode); }
-
-	public function onPointerCancel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointercancel", handler, mode); }
-
-	public function onPointerDown(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerdown", handler, mode); }
-
-	public function onPointerUp(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerup", handler, mode); }
-
-	public function onPointerMove(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointermove", handler, mode); }
-
-	public function onPointerOut(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerout", handler, mode); }
-
-	public function onPointerOver(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerover", handler, mode); }
-
-	public function onPointerEnter(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerenter", handler, mode); }
-
-	public function onPointerLeave(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerleave", handler, mode); }
-
-	public function onGotPointerCapture(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("gotpointercapture", handler, mode); }
-
-	public function onLostPointerCapture(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("lostpointercapture", handler, mode); }
-
-	public function onPointerLockChange(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerlockchange", handler, mode); }
-
-	public function onPointerLockError(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("pointerlockerror", handler, mode); }
-
-	public function onError(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("error", handler, mode); }
 
 	public function onTouchStart(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("touchstart", handler, mode); }
 
@@ -351,10 +255,8 @@ class Table implements ITable {
 
 	public function onTouchCancel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("touchcancel", handler, mode); }
 	
+	public function onWheel(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("wheel", handler, mode); }
+
 	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable { return on("visibility", handler, mode); }
 	
-	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):ITable { 
-		return each(function(o:IDisplay) {	o.events.focusOverall(handler, mode); });
-	}
-
 }

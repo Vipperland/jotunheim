@@ -190,21 +190,6 @@ interface ITable {
 	public function merge (?tables:Array<Table>) : ITable;
 	
 	/// Event
-	public function onWheel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onCopy (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onCut (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPaste (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onAbort (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
 	public function onBlur (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
@@ -214,59 +199,17 @@ interface ITable {
 	public function onFocusOut (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
-	public function onCanPlay (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onCanPlayThrough (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
 	public function onChange (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
 	public function onClick (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
-	public function onContextMenu (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
 	public function onDblClick (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
-	public function onDrag (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDragEnd (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDragEnter (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDragLeave (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDragOver (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDragStart (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDrop (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onDurationChange (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onEmptied (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onEnded (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onInput (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onInvalid (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
+	public function onError (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
+	
 	/// Event
 	public function onKeyDown (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
@@ -278,16 +221,7 @@ interface ITable {
 
 	/// Event
 	public function onLoad (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onLoadedData (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onLoadedMetadata (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onLoadStart (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
+	
 	/// Event
 	public function onMouseDown (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
@@ -310,94 +244,7 @@ interface ITable {
 	public function onMouseUp (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
-	public function onPause (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPlay (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPlaying (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onProgress (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onRateChange (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onReset (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
 	public function onScroll (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onSeeked (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onSeeking (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onSelect (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onShow (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onStalled (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onSubmit (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onSuspend (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onTimeUpdate (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onVolumeChange (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onWaiting (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerCancel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerDown (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerUp (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerMove (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerOut (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerOver (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerEnter (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerLeave (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onGotPointerCapture (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onLostPointerCapture (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerLockChange (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onPointerLockError (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
-
-	/// Event
-	public function onError (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 
 	/// Event
 	public function onTouchStart (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
@@ -412,9 +259,9 @@ interface ITable {
 	public function onTouchCancel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 	
 	/// Event
-	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic):ITable;
-	
-	/// Event (mouseOver, mouseOut, click))
-	public function focusOverall(handler:IEvent->Void, ?mode:Dynamic):ITable;
+	public function onWheel (?handler:IEvent->Void, ?mode:Dynamic) : ITable;
+
+	/// Event
+	public function onVisibility(?handler:IEvent->Void, ?mode:Dynamic) : ITable;
 	
 }

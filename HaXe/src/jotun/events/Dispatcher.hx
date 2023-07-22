@@ -20,13 +20,15 @@ class Dispatcher implements IDispatcher {
 		e.event.preventDefault();
 	}
 	
-	/** @private */
-	private var _e:Dynamic;
-	
 	/**
 	 * Current event target
 	 */
 	public var target : IDisplay;
+	
+	/** @private */
+	private function _e():Dynamic {
+		return target.data()._events;
+	}
 	
 	/**
 	 * Creates a new DISP (custom event dispatcher) instance
@@ -34,7 +36,7 @@ class Dispatcher implements IDispatcher {
 	 * @param	q
 	 */
 	public function new(q:IDisplay){
-		_e = { };
+		q.data()._events = { };
 		target = q;
 	}
 	
@@ -49,9 +51,9 @@ class Dispatcher implements IDispatcher {
 		if (!hasEvent(name)) {
 			dis = new EventGroup(this, name);
 			dis.prepare(target);
-			Reflect.setField(_e, name, dis);
+			Reflect.setField(_e(), name, dis);
 		}else {
-			dis = Reflect.field(_e, name);
+			dis = Reflect.field(_e(), name);
 		}
 		return dis;
 	}
@@ -62,7 +64,7 @@ class Dispatcher implements IDispatcher {
 	 * @return
 	 */
 	public function hasEvent(name:String):Bool {
-		return Reflect.hasField(_e, name);
+		return Reflect.hasField(_e(), name);
 	}
 	
 	
@@ -70,7 +72,7 @@ class Dispatcher implements IDispatcher {
 	 * Start Element events
 	 */
 	public function apply():Void {
-		Dice.Values(_e, function(v:IEventGroup){
+		Dice.Values(_e(), function(v:IEventGroup){
 			v.prepare(target);
 		});
 	}
@@ -99,14 +101,6 @@ class Dispatcher implements IDispatcher {
 			}
 		}
 		return ie;
-	}
-	
-	public function focusOverall(handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):Dynamic {
-		return {
-			"over":mouseOver(handler, mode),
-			"out":mouseOut(handler, mode),
-			"click":click(handler, mode),
-		}
 	}
 	
 	/** Event */
@@ -582,14 +576,14 @@ class Dispatcher implements IDispatcher {
 	
 	/** Remove all events */
 	public function dispose():Void {
-		Dice.Values(_e, function(v:IEventGroup) {
+		Dice.Values(_e(), function(v:IEventGroup) {
 			v.dispose(target);
 		});
 	}
 	
 	/** Clone all event methods */
 	public function cloneFrom(origin:IDispatcher):IDispatcher {
-		Dice.All((cast origin)._e, function(p:String, v:IEventGroup){
+		Dice.All((cast origin)._e(), function(p:String, v:IEventGroup){
 			on(p).cloneFrom(v);
 		});
 		return this;

@@ -42,9 +42,6 @@ interface IDispatcher {
 	 */
 	public function on (type:String, ?handler:Dynamic, ?mode:Int, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 
-	/// Mouse OVER, OUT and DOWN Events
-	public function focusOverall(handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : Dynamic;
-	
 	/// Event
 	public function added (?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool) : IEventGroup;
 	

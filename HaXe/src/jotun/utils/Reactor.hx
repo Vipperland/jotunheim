@@ -11,32 +11,38 @@ import js.html.Element;
  */
 class Reactor {
 	
+	static private function _react_clear(o:IDisplay, attr:String, prop:String){
+		if (o.hasAttribute(attr)){
+			o.clearAttribute(prop);
+		}
+	}
+	
 	static private function _react_commit_up(o:IDisplay){
-		if (o.data.__co == null){
-			o.data.__co = 0;
+		if (o.data().__co == null){
+			o.data().__co = 0;
 			o.attribute('jtn-commit', 'true');
 		}
-		++o.data.__co;
+		++o.data().__co;
 	}
 	
 	static private function _react_commit_down(o:IDisplay){
-		--o.data.__co;
-		if (o.data.__co == 0){
-			Reflect.deleteField(o.data, '__co');
+		--o.data().__co;
+		if (o.data().__co == 0){
+			Reflect.deleteField(o.data(), '__co');
 			o.clearAttribute('jtn-commit');
 		}
 	}
 	
 	static private function _react_fill_after(to:IDisplay):Void {
 		to.all('[jtn-commit]').add(to).each(function(o:IDisplay){
-			o.data.__cf = true;
-			_react_fill_data(to.data, null, o);
-			_react_fill_attr(to.data, null, o);
-			_react_fill_style(to.data, null, o);
-			_react_fill_class(to.data, null, o);
-			_react_fill_visibility(to.data, null, o, 'jtn-show-if');
-			_react_fill_visibility(to.data, null, o, 'jtn-hide-if');
-			o.data.__cf = false;
+			o.data().__cf = true;
+			_react_fill_data(to.data(), null, o);
+			_react_fill_attr(to.data(), null, o);
+			_react_fill_style(to.data(), null, o);
+			_react_fill_class(to.data(), null, o);
+			_react_fill_visibility(to.data(), null, o, 'jtn-show-if');
+			_react_fill_visibility(to.data(), null, o, 'jtn-hide-if');
+			o.data().__cf = false;
 		});
 	}
 	
@@ -49,24 +55,22 @@ class Reactor {
 	static private function _react_fill_data(data:Dynamic, path:String, o:IDisplay){
 		if (o.hasAttribute('jtn-data')){
 			if(path != null){
-				if (o.data.__qd == null){
-					o.data.__qd = o.attribute('jtn-data');
+				if (o.data().__qd == null){
+					o.data().__qd = o.attribute('jtn-data');
 					_react_commit_up(o);
 				}
-				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
+				o.data().__qd = o.data().__qd.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
-				o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
+			if (o.data().__cf || o.data().__qd.indexOf('{{') == -1){
+				o.data().__qd = Std.isOfType(o.data().__qd, String) ? Utils.rnToBr(o.data().__qd) : o.data().__qd;
 				if (Std.isOfType(o, Input)){
-					o.value(o.data.__qd);
+					o.value(o.data().__qd);
 				}else{
-					o.writeHtml(o.data.__qd);
+					o.writeHtml(o.data().__qd);
 				}
-				Reflect.deleteField(o.data, '__qd');
+				Reflect.deleteField(o.data(), '__qd');
 				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-data');
-				}
+				_react_clear(o, 'jtn-single', 'jtn-data');
 			}
 		}
 	}
@@ -81,17 +85,17 @@ class Reactor {
 	static private function _react_fill_visibility(data:Dynamic, path:String, o:IDisplay, attr:String){
 		if (o.hasAttribute(attr)){
 			if(path != null){
-				if (o.data.__qv == null){
-					o.data.__qv = o.attribute(attr);
-					o.data.__qvt = o.hasAttribute(attr + '-score') ? o.hasAttribute(attr + '-score') : o.data.__qv.split(',').length;
-					o.data.__qvs = 0;
+				if (o.data().__qv == null){
+					o.data().__qv = o.attribute(attr);
+					o.data().__qvt = o.hasAttribute(attr + '-score') ? o.hasAttribute(attr + '-score') : o.data().__qv.split(',').length;
+					o.data().__qvs = 0;
 					_react_commit_up(o);
 				}
-				o.data.__qv = o.data.__qv.split('{{' + path + '}}').join(data);
-				o.data.__qvs += 1;
+				o.data().__qv = o.data().__qv.split('{{' + path + '}}').join(data);
+				o.data().__qvs += 1;
 			}
-			if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
-				if (o.data.__qvs >= o.data.__qvt){
+			if (o.data().__cf || o.data().__qv.indexOf('{{') == -1){
+				if (o.data().__qvs >= o.data().__qvt){
 					if (attr == 'jtn-show-if'){
 						o.show();
 					}else{
@@ -104,13 +108,11 @@ class Reactor {
 						o.show();
 					}
 				}
-				Reflect.deleteField(o.data, '__qv');
-				Reflect.deleteField(o.data, '__qvt');
-				Reflect.deleteField(o.data, '__qvs');
+				Reflect.deleteField(o.data(), '__qv');
+				Reflect.deleteField(o.data(), '__qvt');
+				Reflect.deleteField(o.data(), '__qvs');
 				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute(attr);
-				}
+				_react_clear(o, 'jtn-single', attr);
 			}
 		}
 	}
@@ -124,19 +126,17 @@ class Reactor {
 	static private function _react_fill_class(data:Dynamic, path:String, o:IDisplay){
 		if (o.hasAttribute('jtn-class')){
 			if(path != null){
-				if (o.data.__qc == null){
-					o.data.__qc = o.attribute('jtn-class');
+				if (o.data().__qc == null){
+					o.data().__qc = o.attribute('jtn-class');
 					_react_commit_up(o);
 				}
-				o.data.__qc = o.data.__qc.split('{{' + path + '}}').join(data);
+				o.data().__qc = o.data().__qc.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
-				o.css(o.data.__qc);
-				Reflect.deleteField(o.data, '__qc');
+			if (o.data().__cf || o.data().__qc.indexOf('{{') == -1){
+				o.css(o.data().__qc);
+				Reflect.deleteField(o.data(), '__qc');
 				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-class');
-				}
+				_react_clear(o, 'jtn-single', 'jtn-class');
 			}
 		}
 	}
@@ -150,22 +150,20 @@ class Reactor {
 	static private function _react_fill_attr(data:Dynamic, path:String, o:IDisplay){
 		if (o.hasAttribute('jtn-attr')){
 			if(path != null){
-				if (o.data.__qa == null){
-					o.data.__qa = o.attribute('jtn-attr');
+				if (o.data().__qa == null){
+					o.data().__qa = o.attribute('jtn-attr');
 					_react_commit_up(o);
 				}
-				o.data.__qa = o.data.__qa.split('{{' + path + '}}').join(data);
+				o.data().__qa = o.data().__qa.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
-				Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
+			if (o.data().__cf || o.data().__qa.indexOf('{{') == -1){
+				Dice.Values(o.data().__qa.split(','), function(v:Dynamic){
 					v = v.split(":");
 					o.attribute(v.shift(), v.join(":"));
 				});
-				Reflect.deleteField(o.data, '__qa');
+				Reflect.deleteField(o.data(), '__qa');
 				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-attr');
-				}
+				_react_clear(o, 'jtn-single', 'jtn-attr');
 			}
 		}
 	}
@@ -179,22 +177,20 @@ class Reactor {
 	static private function _react_fill_style(data:Dynamic, path:String, o:IDisplay){
 		if (o.hasAttribute('jtn-style')){
 			if(path != null){
-				if (o.data.__qs == null){
-					o.data.__qs = o.attribute('jtn-style');
+				if (o.data().__qs == null){
+					o.data().__qs = o.attribute('jtn-style');
 					_react_commit_up(o);
 				}
-				o.data.__qs = o.data.__qs.split('{{' + path + '}}').join(data);
+				o.data().__qs = o.data().__qs.split('{{' + path + '}}').join(data);
 			}
-			if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
-				Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
+			if(o.data().__cf || o.data().__qs.indexOf('{{') == -1){
+				Dice.Values(o.data().__qs.split(','), function(v:Dynamic){
 					v = v.split(":");
 					o.attribute(v.shift(), v.join(":"));
 				});
-				Reflect.deleteField(o.data, '__qs');
+				Reflect.deleteField(o.data(), '__qs');
 				_react_commit_down(o);
-				if (o.hasAttribute('jtn-single')){
-					o.clearAttribute('jtn-style');
-				}
+				_react_clear(o, 'jtn-single', 'jtn-style');
 			}
 		}
 	}
