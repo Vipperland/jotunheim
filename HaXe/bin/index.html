@@ -113,6 +113,18 @@
 					structure: {},
 				}
 			});
+			
+			
+			class ClassB2 extends Spark {
+				constructor(name){
+					super(name);
+					trace('>ClassB2', this.getName());
+				}
+			}
+			
+			new ClassB2('ClassB2');
+			
+			
 		</script>
 	</body>                                                                               
 </html>

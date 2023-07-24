@@ -14,7 +14,7 @@ for /R %%a in (%dir%\*.js) do (
 		::ECHO .  [  ] SKIPPED %%a
 		set skip=0
 	) ELSE (
-		.\tools\jsmin.exe <%%~fa >%%~dpa%%~na.min.js "Rafael Moreira <vipperland@live.com>"
+		jsmin.exe <%%~fa >%%~dpa%%~na.min.js "Rafael Moreira <vipperland@live.com>"
 		ECHO .  [OK] MINIFIED %%a
 	)
 )

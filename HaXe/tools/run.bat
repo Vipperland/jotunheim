@@ -1,6 +1,7 @@
 @echo off
 
-call .\tools\minify bin\sirius
-call .\tools\minify bin\sirius\plugins
+call .\tools\minify bin\jotun
+call .\tools\minify bin\jotun\plugins
 
-explorer "http://127.0.0.7/"
+explorer "https://jotunheim.dev.localhost/"
+pause;

@@ -26,19 +26,22 @@ class Pulsar {
 			'Construct': Spark, 
 			Properties: null, 
 			Indexable: false, 
-			Tag: false ,
+			Tag: false,
 		}
 	};
 	
-	public static function map(name:String, props:Dynamic, object:Dynamic = null, indexable:Bool = false, tageable:Bool = true):Void {
-		if (object == null){
-			object = Spark;
-		}
+	/**
+	 * 
+	 * @param	name			Pulsar object name
+	 * @param	props		Object props to be mapped
+	 * @param	objClass		Object Class to initialize
+	 * @param	indexable		If true, generate an alphanumeric 32 length unique ID for each instance
+	 */
+	public static function map(name:String, props:Dynamic, objClass:Dynamic = null, indexable:Bool = false):Void {
 		Reflect.setField(_dictio, name, {
-			'Construct':object == null ? Spark : object, 
+			'Construct':objClass == null ? Spark : objClass, 
 			Properties: props == null ? null : props, 
 			Indexable: indexable == true, 
-			Tag: tageable == true,
 		});
 	}
 	
@@ -48,11 +51,7 @@ class Pulsar {
 		var indexable:Bool;
 		if (Reflect.hasField(_dictio, name)){
 			O = Reflect.field(_dictio, name);
-			if (O.Tag){
-				o = Syntax.construct(O.Construct, name);
-			}else{
-				o = Syntax.construct(O.Construct);
-			}
+			o = Syntax.construct(O.Construct, name);
 		}
 		if (o != null){
 			if (r.length == 3){
@@ -197,6 +196,7 @@ class Pulsar {
 	/**
 	   
 	   @param	data
+	   @return length
 	**/
 	public function parse(data:String):Int {
 		if (data.substr(0, 1) == '#'){
@@ -237,7 +237,7 @@ class Pulsar {
 							}else{
 								o = construct(v, r);
 								if (l.insert(o)){
-									len += 1;
+									++len;
 									_onObjectAdd(o);
 								}
 							}
@@ -270,7 +270,7 @@ class Pulsar {
 									l.refresh();
 								}
 								l = o;
-								len += 1;
+								++len;
 								_onLinkAdd(o);
 							}else{
 								l = null;

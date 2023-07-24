@@ -56,7 +56,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	/**
-	 * Remove all display from cache if not in dom
+	 * Remove all display from cache if not connected
 	 * @param	secure
 	 */
 	static public function clearCache():Void {
@@ -73,32 +73,35 @@ class Display extends Query implements IDisplay {
 	}
 	
 	/**
-	 * Remove all idle elements from cache
+	 * Remove all idle elements from cache if not connected
 	 */
 	static public function clearIdles():Void {
 		var time:Int = (cast Date.now().getTime()) >> 0;
 		var count:Int = 0;
 		var idle:Int = 0;
-		var awaken:Int = 0;
+		var awake:Int = 0;
 		Dice.Values(_DATA, function(v:IDisplay):Void {
 			if(v.element != null){
 				if (!v.element.isConnected){
 					if(v.data().idleTime == null){
 						v.data().idleTime = time;
+						++idle;
 					}else{
-						if((time - v.data().idleTime) > 1800000){
+						if((time - v.data().idleTime) > 900000){
 							v.dispose();
 							++count;
+						}else{
+							++idle;
 						}
 					}
 				}else if(v.data().idleTime != null){
 					Reflect.deleteField(v.data(), 'idleTime');
-					++awaken;
+					++awake;
 				}
 			}
 		});
-		if(count > 0){
-			Jotun.log('CACHE: ' + count + ' removed, ' + idle + ' idle, ' + awaken + ' awaken', Logger.SYSTEM);
+		if(count > 0 || idle > 0 || awake > 0){
+			Jotun.log('CACHE: ' + count + ' removed, ' + idle + ' idle, ' + awake + ' awake', Logger.SYSTEM);
 		}
 	}
 	

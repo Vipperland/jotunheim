@@ -2366,24 +2366,27 @@ jotun_dom_Display.clearIdles = function() {
 	var time = new Date().getTime();
 	var count = 0;
 	var idle = 0;
-	var awaken = 0;
+	var awake = 0;
 	jotun_utils_Dice.Values(jotun_dom_Display._DATA,function(v) {
 		if(v.element != null) {
 			if(!v.element.isConnected) {
 				if(v.data().idleTime == null) {
 					v.data().idleTime = time;
-				} else if(time - v.data().idleTime > 1800000) {
+					idle += 1;
+				} else if(time - v.data().idleTime > 900000) {
 					v.dispose();
 					count += 1;
+				} else {
+					idle += 1;
 				}
 			} else if(v.data().idleTime != null) {
 				Reflect.deleteField(v.data(),"idleTime");
-				awaken += 1;
+				awake += 1;
 			}
 		}
 	});
-	if(count > 0) {
-		jotun_Jotun.log("CACHE: " + count + " removed, " + idle + " idle, " + awaken + " awaken",1);
+	if(count > 0 || idle > 0 || awake > 0) {
+		jotun_Jotun.log("CACHE: " + count + " removed, " + idle + " idle, " + awake + " awake",1);
 	}
 };
 jotun_dom_Display.__super__ = jotun_objects_Query;
@@ -6697,17 +6700,11 @@ var jotun_gaming_dataform_Pulsar = function(data) {
 };
 $hx_exports["Pulsar"] = jotun_gaming_dataform_Pulsar;
 jotun_gaming_dataform_Pulsar.__name__ = "jotun.gaming.dataform.Pulsar";
-jotun_gaming_dataform_Pulsar.map = function(name,props,object,indexable,tageable) {
-	if(tageable == null) {
-		tageable = true;
-	}
+jotun_gaming_dataform_Pulsar.map = function(name,props,objClass,indexable) {
 	if(indexable == null) {
 		indexable = false;
 	}
-	if(object == null) {
-		object = jotun_gaming_dataform_Spark;
-	}
-	jotun_gaming_dataform_Pulsar._dictio[name] = { "Construct" : object == null ? jotun_gaming_dataform_Spark : object, Properties : props == null ? null : props, Indexable : indexable == true, Tag : tageable == true};
+	jotun_gaming_dataform_Pulsar._dictio[name] = { "Construct" : objClass == null ? jotun_gaming_dataform_Spark : objClass, Properties : props == null ? null : props, Indexable : indexable == true};
 };
 jotun_gaming_dataform_Pulsar.construct = function(name,r) {
 	var O = null;
@@ -6715,11 +6712,7 @@ jotun_gaming_dataform_Pulsar.construct = function(name,r) {
 	var indexable;
 	if(Object.prototype.hasOwnProperty.call(jotun_gaming_dataform_Pulsar._dictio,name)) {
 		O = Reflect.field(jotun_gaming_dataform_Pulsar._dictio,name);
-		if(O.Tag) {
-			o = new O.Construct(name);
-		} else {
-			o = new O.Construct();
-		}
+		o = new O.Construct(name);
 	}
 	if(o != null) {
 		if(r.length == 3) {
@@ -9251,11 +9244,9 @@ jotun_tools_Utils.stackTrace = function() {
 jotun_tools_Utils.throwError = function() {
 	throw new Error();
 };
-jotun_tools_Utils.extendClass = function(a,b) {
-	if(b.prototype.isPrototypeOf(a)) {
-		a.prototype = Object.create(b.prototype);
-	}
-	return a;
+jotun_tools_Utils.fnExtendClass = function(fn,obj) {
+	fn.prototype = Object.create(obj.prototype);
+	return fn;
 };
 var jotun_utils_Dice = function() { };
 $hx_exports["Dice"] = jotun_utils_Dice;
