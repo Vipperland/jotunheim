@@ -140,7 +140,9 @@ export class Biome {
 	collision(x1,y1,x2,y2,filter){
 		var r = [];
 		if(filter == null) {
-			filter = r.push;
+			filter = function(o){
+				r.push(o);
+			}
 		}
 		this.map(x1,y1,x2,y2,function(t){
 			t.objects(filter);
@@ -148,7 +150,7 @@ export class Biome {
 		return r;
 	}
 	under(x,y,filter){
-		return this.collision(x,y,x+1,y+1,filter);
+		return this.collision(x,y,x,y,filter);
 	}
 }
 class BiomeArea {

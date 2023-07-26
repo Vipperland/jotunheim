@@ -11,6 +11,7 @@ export class RoomObject {
 	#_data;
 	#_room;
 	#_visible;
+	#_pending;
 	#_updated;
 	#_options;
 	#_tile;
@@ -23,7 +24,7 @@ export class RoomObject {
 	constructor(name, x, y, width, height, options, data){
 		this.#_id = '' + OBJECT_UID++;
 		this.#_name = name;
-		this.#_data = data;
+		this.#_data = data || {};
 		this.#_options = options || BiomeConstants.TILE_WALKABLE;
 		this.#_tile = new Positionable(x, y, width, height);
 	}
@@ -73,13 +74,15 @@ export class RoomObject {
 		return this.room && this.#_visible;
 	}
 	#_load(){
-		this.room.biome.map(this.room.x + this.#_tile.x, this.room.y + this.#_tile.y, this.room.x + this.#_tile.w, this.room.y + this.#_tile.h, function(t){
-			t.load(this);
+		let object = this;
+		this.room.biome.map(this.left, this.top, this.right, this.bottom, function(t){
+			t.load(object);
 		});
 	}
 	#_unload(){
-		this.room.biome.map(this.room.x + this.#_tile.x, this.room.y + this.#_tile.y, this.room.x + this.#_tile.w, this.room.y + this.#_tile.h, function(t){
-			t.unload(this);
+		let object = this;
+		this.room.biome.map(this.left, this.top, this.right, this.bottom, function(t){
+			t.unload(object);
 		});
 	}
 	load(){
@@ -95,6 +98,8 @@ export class RoomObject {
 		if(this.visible){
 			this.room = null;
 			this.#_visible = false;
+			this.#_updated = false;
+			this.#_pending = false;
 			this.#_unload();
 			return true;
 		}else{
@@ -104,11 +109,20 @@ export class RoomObject {
 	update(){
 		if(!this.#_updated && this.visible){
 			this.#_updated = true;
+			this.#_pending = true;
 			this.room.queue(this);
 		}
 	}
+	commit(){
+		if(this.#_pending == true){
+			this.#_pending = false;
+			return true;
+		}else{
+			return false;
+		}
+	}
 	normalize(){
-		if(this.#_updated){
+		if(this.#_updated == true){
 			this.#_updated = false;
 			if(this.room && this.room.biome){
 				this.#_unload();

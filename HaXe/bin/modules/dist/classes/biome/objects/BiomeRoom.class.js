@@ -154,6 +154,10 @@ export class BiomeRoom {
 		}
 	}
 	queue(object){
-		this.#_updated.push(object);
+		if(object.commit()){
+			this.#_updated.push(object);
+		}
+	}
+	sort(){
 	}
 }
