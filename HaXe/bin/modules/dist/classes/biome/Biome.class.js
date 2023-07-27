@@ -3,51 +3,32 @@
  * @author Rafael Moreira
  */
 import {BiomeConstants} from './data/BiomeConstants.class.js';
+import {BiomeGrid} from './data/BiomeGrid.class.js';
 import {BiomeHeart} from './events/BiomeHeart.class.js';
-import {Iterator} from './math/Iterator.class.js';
 import {BiomeRoom} from './objects/BiomeRoom.class.js';
-import {BiomeTile} from './objects/BiomeTile.class.js';
 export class Biome {
-	#_tiles;
+	#_grid;
 	#_rooms;
 	#_loaded;
 	#_heart;
 	#_area;
+	get constants(){
+		return BiomeConstants;
+	}
 	get heart(){
 		return this.#_heart;
 	}
 	get area(){
-		return this.#_area;
+		return this.#_grid.area;
 	}
-	constructor(){
-		this.#_tiles = [];
+	constructor(tw,th){
 		this.#_rooms = {};
 		this.#_loaded = [];
-		this.#_heart = new BiomeHeart();
-		this.#_area = new BiomeArea();
-	}
-	#_create(x1,y1,x2,y2){
-		let tx = x1;
-		let ty = null;
-		let t;
-		while(y1<=y2){
-			if(this.#_tiles[y1] == null){
-				this.#_tiles[y1] = [];
-			}
-			ty = this.#_tiles[y1];
-			while(x1<=x2){
-				t = new BiomeTile(x1,y1);
-				ty[x1] = t;
-				this.#_heart.call(BiomeConstants.EVT_TILE_CREATED, t);
-				++x1;
-			}
-			x1 = tx;
-			++y1;
-		}
-		this.#_area.fit(x1,y1,x2,y2);
+		this.#_heart = new BiomeHeart(this);
+		this.#_grid = new BiomeGrid(this);
 	}
 	exists(x,y){
-		return this.#_tiles[y] != null && this.#_tiles[y][x] != null;
+		return this.#_grid.exists(x,y);
 	}
 	/*
 		Create/Add a Biome Room and allocate tiles 
@@ -56,7 +37,7 @@ export class Biome {
 		if(typeof room == 'string'){
 			room = new BiomeRoom(room, x, y, width, height, walls || BiomeConstants.WALL_ALL, data);
 		}
-		this.#_create(room.left, room.top, room.right, room.bottom);
+		this.#_grid.create(room.left, room.top, room.right, room.bottom);
 		this.#_rooms[room.name] = room;
 		room.biome = this;
 		this.#_heart.call(BiomeConstants.EVT_ROOM_ADDED, room);
@@ -119,84 +100,28 @@ export class Biome {
 			}
 		}
 	}
+	tile(x,y){
+		return this.#_grid.tile(x,y);
+	}
+	tiles(x1,y1,x2,y2){
+		return this.#_grid.tiles(x1,y1,x2,y2);
+	}
 	/*
 		Iterate valid tiles in an area, calls fn(tile)
 	*/
-	map(x1,y1,x2,y2,fn){
-		if(x1 < this.#_area.left){
-			x1 = this.#_area.left;
-		}
-		if(x2 > this.#_area.right){
-			x2 = his.#_area.right;
-		}
-		if(y1 < this.#_area.top){
-			y1 = this.#_area.top;
-		}
-		if(y2 > this.#_area.bottom){
-			y2 = this.#_area.bottom;
-		}
-		Iterator.map(this.#_tiles,x1,y1,x2,y2,fn);
+	map(x1,y1,x2,y2,filter){
+		return this.#_grid.map(x1,y1,x2,y2,filter);
 	}
 	collision(x1,y1,x2,y2,filter){
-		var r = [];
-		if(filter == null) {
-			filter = function(o){
-				r.push(o);
-			}
-		}
-		this.map(x1,y1,x2,y2,function(t){
-			t.objects(filter);
-		});
-		return r;
+		return this.map(x1,y1,x2,y2,filter);
 	}
 	under(x,y,filter){
 		return this.collision(x,y,x,y,filter);
 	}
-}
-class BiomeArea {
-	#_x1;
-	#_x2;
-	#_y1;
-	#_y2;
-	constructor(){
-		this.#_x1 = 0xFFFFFFFF;
-		this.#_x2 = 0xFFFFFFFF;
-		this.#_y1 = 0;
-		this.#_y2 = 0;
+	signal(x,y,distance,filter){
+		//this.#_grid.signal(this.#_grid,x,y,distance,filter);
 	}
-	fit(x1,y1,x2,y2){
-		if(y1 < this.#_y1){
-			this.#_y1 = y1;
-		}
-		if(y2 > this.#_y2){
-			this.#_y2 = y2;
-		}
-		if(x1 < this.#_x1){
-			this.#_x1 = x1;
-		}
-		if(x2 > this.#_x2){
-			this.#_x2 = x2;
-		}
-	}
-	get left(){
-		return this.#_x1;
-	}
-	get right(){
-		return this.#_x2;
-	}
-	get top(){
-		return this.#_y1;
-	}
-	get bottom(){
-		return this.#_y2;
-	}
-	get width(){
-		return this.#_x2 - this.#_x1;
-	}
-	get height(){
-		return this.#_y2 - this.#_y1;
-	}
-	get size(){
-		return this.width * this.height;
+	raycast(source, movement, distance, filter){
+		return this.#_grid.raycast(source, movement, distance, filter);
 	}
 }

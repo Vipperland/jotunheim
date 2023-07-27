@@ -14,7 +14,8 @@ export class RoomObject {
 	#_pending;
 	#_updated;
 	#_options;
-	#_tile;
+	#_position;
+	#_blocked;
 	#_test(flag){
 		return (this.#_options & flag) == flag;
 	}
@@ -26,10 +27,19 @@ export class RoomObject {
 		this.#_name = name;
 		this.#_data = data || {};
 		this.#_options = options || BiomeConstants.TILE_WALKABLE;
-		this.#_tile = new Positionable(x, y, width, height);
+		this.#_position = new Positionable(x, y, width, height);
+	}
+	get room(){
+		return this.#_room;
+	}
+	set room(value){
+		this.#_room = value;
 	}
 	get isWalkable(){
-		return this.#_test(BiomeConstants.TILE_WALKABLE);
+		return !this.#_blocked && this.#_test(BiomeConstants.TILE_WALKABLE);
+	}
+	get isSolid(){
+		return this.#_test(BiomeConstants.TILE_SOLID);
 	}
 	get data(){
 		return this.#_data;
@@ -41,37 +51,37 @@ export class RoomObject {
 		return this.#_name;
 	}
 	get top(){
-		return this.room.top + this.#_tile.yT;
+		return this.room.top + this.#_position.yT;
 	}
 	get left(){
-		return this.room.left + this.#_tile.xT;
+		return this.room.left + this.#_position.xT;
 	}
 	get bottom(){
-		return this.room.top +this.#_tile.yT + this.#_tile.hT;
+		return this.room.top +this.#_position.yT + this.#_position.hT;
 	}
 	get right(){
-		return this.room.left + this.#_tile.xT + this.#_tile.wT;
+		return this.room.left + this.#_position.xT + this.#_position.wT;
 	}
 	get biomeX(){
-		return (this.room ? this.room.left + this.#_tile.xT: 0);
+		return (this.room ? this.room.left + this.#_position.xT: 0);
 	}
 	get biomeY(){
-		return (this.room ? this.room.top + this.#_tile.yT: 0);
+		return (this.room ? this.room.top + this.#_position.yT: 0);
 	}
 	get biomePivotX(){
-		return this.left + (this.#_tile.wT >> 1);
+		return this.left + (this.#_position.wT >> 1);
 	}
 	get biomePivotY(){
-		return this.top + (this.#_tile.hT >> 1);
-	}
-	get room(){
-		return this.#_room;
-	}
-	set room(value){
-		this.#_room = value;
+		return this.top + (this.#_position.hT >> 1);
 	}
 	get visible(){
 		return this.room && this.#_visible;
+	}
+	block(value){
+		this.#_blocked = value;
+	}
+	get blocked(){
+		return this.#_blocked;
 	}
 	#_load(){
 		let object = this;
@@ -126,7 +136,7 @@ export class RoomObject {
 			this.#_updated = false;
 			if(this.room && this.room.biome){
 				this.#_unload();
-				this.#_tile.sync();
+				this.#_position.sync();
 				this.#_load();
 			}
 			return true;
@@ -135,22 +145,51 @@ export class RoomObject {
 		}
 	}
 	move(x,y){
-		this.#_tile.move(x,y);
+		this.#_position.move(x,y);
 	}
 	scale(w,h){
-		this.#_tile.scale(w,h);
+		this.#_position.scale(w,h);
+	}
+	get position(){
+		return this.#_position;
+	}
+	get tx(){
+		return this.#_room.biome.area.tx(this.biomeX);
+	}
+	get ty(){
+		return this.#_room.biome.area.ty(this.biomeY);
 	}
 	collision(filter){
 		if(this.visible){
 			return this.room.biome.collision(this.left, this.top, this.right, this.bottom, filter);
 		}
 	}
-	neighboors(filter){
+	signal(distance,filter){
+		return this.room.biome.signal(this.biomePivotX, this.biomePivotY, distance, filter);
 	}
-	ray(direction, filter){
-		if(this.#_testf(direction, BiomeConstants.TOP)){
-			
+	raycast(direction, distance, filter){
+		switch(direction){
+			case BiomeConstants.TOP : {
+				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.top, this.right, this.top), [{x:0,y:-1}], distance, filter);
+				break;
+			}
+			case BiomeConstants.RIGHT : {
+				return this.room.biome.raycast(this.room.biome.tiles(this.right, this.top, this.right, this.bottom), [{x:1,y:0}], distance, filter);
+				break;
+			}
+			case BiomeConstants.BOTTOM : {
+				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom), [{x:0,y:1}], distance, filter);
+				break;
+			}
+			case BiomeConstants.LEFT : {
+				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.top, this.left, this.bottom), [{x:-1,y:0}], distance, filter);
+				break;
+			}
 		}
+		return null;
+	}
+	toString(){
+		return "[RomObject{id:" + this.id + ",name:" + this.name + ",x:" + this.biomeX + ",y:" + this.biomeY + ",width:" + this.position.width + ",height:" + this.position.height + "}]";
 	}
 	
 }
