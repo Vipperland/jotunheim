@@ -179,22 +179,22 @@ export class BiomeTile {
 	}
 	neighbors(scanner){
 		scanner = BiomeUtils.scanner(scanner);
-		scanner.put(this.tileTop);
-		scanner.put(this.tileRight);
-		scanner.put(this.tileBottom);
-		scanner.put(this.tileLeft);
+		scanner.add(this.tileTop);
+		scanner.add(this.tileRight);
+		scanner.add(this.tileBottom);
+		scanner.add(this.tileLeft);
 		return scanner;
 	}
 	surroundings(scanner){
 		scanner = BiomeUtils.scanner(scanner);
-		scanner.put(this.tileTop);
-		scanner.put(this.tileTopRight);
-		scanner.put(this.tileRight);
-		scanner.put(this.tileBottomRight);
-		scanner.put(this.tileBottom);
-		scanner.put(this.tileBottomLeft);
-		scanner.put(this.tileLeft);
-		scanner.put(this.tileTopLeft);
+		scanner.add(this.tileTop);
+		scanner.add(this.tileTopRight);
+		scanner.add(this.tileRight);
+		scanner.add(this.tileBottomRight);
+		scanner.add(this.tileBottom);
+		scanner.add(this.tileBottomLeft);
+		scanner.add(this.tileLeft);
+		scanner.add(this.tileTopLeft);
 		return scanner;
 	}
 	toString(){

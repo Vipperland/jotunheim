@@ -139,7 +139,8 @@ export class Biome {
 	rooms(filter){
 		filter = BiomeUtils.scanner(filter);
 		for(let i=0; i<this.#_rooms.length; ++i){
-			if(filter(this.#_rooms[i]) == false){
+			filter.add(this.#_rooms[i]);
+			if(!filter.active){
 				break;
 			}
 		}
@@ -154,7 +155,8 @@ export class Biome {
 		filter = BiomeUtils.scanner(filter);
 		for(let i=0; i<this.#_rooms.length; ++i){
 			if(this.#_rooms[i].inside(x, y)){
-				if(filter(this.#_rooms[i]) == false){
+				filter.add(this.#_rooms[i]);
+				if(!filter.active){
 					break;
 				}
 			}
@@ -192,41 +194,36 @@ export class Biome {
 		return this.#_grid.tile(x,y).objects(filter);
 	}
 	/*
-		Iterate valid tiles in an area, calls fx(tile)
+		Iterate valid tiles in an area using two locations, calls fx(tile)
 			biome.map(x1, y1, x2, y2, fx);
-		or
-			biome.map(from{x,y}, to{x,y}, fx)
 	*/
-	map(...args){
-		switch(args.length){
-			case 5 : 
-			case 4 : 
-				return this.#_grid.map.apply(this.#_grid, args);
-			case 3 :
-			case 2 :
-				let a = args[0];
-				let b = args[1];
-				return this.#_grid.map(a.x, a.y, b.x, b.y, args[2]);
-		}
+	map(x1, y1, x2, y2, filter){
+		return this.#_grid.map(x1, y1, x2, y2, filter);
+	}
+	/*
+		Iterate valid tiles in an area using two tiles, calls fx(tile)
+			biome.map(x1, y1, x2, y2, fx);
+	*/
+	map2(a, b, filter){
+		return this.#_grid.map(a.x, a.y, b.x, b.y, filter);
 	}
 	/*
 		Find a path from a location to another location
-			biome.find(x1, y1, x2, y2, fx);
-		or
-			biome.find(from{x,y}, to{x,y}, fx)
+			biome.find(x1, y1, x2, y2, room, fx);
 	*/
-	find(...args){
-		switch(args.length){
-			case 5 : 
-			case 4 : 
-				return this.#_grid.find.apply(this.#_grid, args);
-			case 3 :
-			case 2 :
-				let a = args[0];
-				let b = args[1];
-				return this.#_grid.find(a.x, a.y, b.x, b.y, args[2]);
+	find(x1, y1, x2, y2, room, filter){
+		if(room == null || room.inside(x1, y1, 1) && room.inside(x2, y2, 1)){
+			return this.#_grid.find(x1, y1, x2, y2, room, filter);
+		}else{
+			null;
 		}
-		return null;
+	}
+	/*
+		Find a path from a tile to another tile
+			biome.find(tile, tile, room, fx);
+	*/
+	find2(a, b, room, filter){
+		return this.find(a.x, a.y, b.x, b.y, room, filter);
 	}
 	/*
 		Cast a line to any direction from source tiles and apply a movement path on each interaction, then calls fx(tile)

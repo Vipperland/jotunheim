@@ -182,9 +182,12 @@ export class BiomeGrid {
 		}
 		return scanner;
 	}
-	find(x1,y1,x2,y2,scanner){
+	/*
+		Use A* algorithm to fint a path between two locations, can be limited by a room area
+	*/
+	find(x1,y1,x2,y2,room,scanner){
 		scanner = BiomeUtils.scanner(scanner);
-		scanner.data = new AStar(this.tile(x1,y1),this.tile(x2,y2),scanner);
+		scanner.data = new AStar(this.tile(x1,y1),this.tile(x2,y2),room,scanner);
 		scanner.data.exec();
 		return scanner;
 	}
@@ -194,18 +197,27 @@ class AStar {
 	closed;
 	start;
 	end;
+	room;
 	scanner;
-	constructor(start,end,scanner){
+	constructor(start,end,room,scanner){
 		this.start = start;
 		this.end = end;
+		this.room = room;
 		this.scanner = scanner;
 		this.open = [];
 		this.closed = [];
 		scanner.result.push(start);
 	}
+	#_limit(tile){
+		return this.room.inside(tile.x, tile.y);
+	}
 	#_neighbors(tile){
 		if(tile.astar.neighbors == null){
-			tile.astar.neighbors = tile.neighbors();
+			if(this.room == null){
+				tile.astar.neighbors = tile.neighbors();
+			}else{
+				tile.astar.neighbors = tile.neighbors(this.#_limit.bind(this));
+			}
 		}
 		return tile.astar.neighbors;
 	}

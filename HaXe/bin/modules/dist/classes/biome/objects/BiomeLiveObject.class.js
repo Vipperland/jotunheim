@@ -7,6 +7,7 @@ export class BiomeLiveObject extends BiomeObject {
 	#_proxy;
 	#_frame;
 	#_enabled;
+	#_behavious;
 	#_render(time){
 		if(this.#_enabled && this.#_frame.active){
 			this.render(time);
@@ -21,8 +22,12 @@ export class BiomeLiveObject extends BiomeObject {
 	constructor(name, x, y, width, height, options, data){
 		super(name, x, y, width, height, options, data);
 		this.#_enabled = true;
+		this.#_behavious = [];
 	}
 	render(){
+		for (let i = 0; i < this.#_behavious; i++) {
+			this.#_behavious[i].update(this);
+		}
 	}
 	load(){
 		if(super.load()){

@@ -15,7 +15,7 @@ export class BiomeRoom {
 	#_pending;
 	#_visible;
 	#_doors;
-	#_tile;
+	#_position;
 	#_test(flag,opt){
 		return (flag & opt) == opt;
 	}
@@ -29,7 +29,7 @@ export class BiomeRoom {
 		this.#_objects = [];
 		this.#_updated = [];
 		this.#_doors = [];
-		this.#_tile = new BiomeLocation(x, y, width, height);
+		this.#_position = new BiomeLocation(x, y, width, height);
 	}
 	/*
 		The name of this room
@@ -43,42 +43,42 @@ export class BiomeRoom {
 			room.top
 	*/
 	get top(){
-		return this.#_tile.top;
+		return this.#_position.top;
 	}
 	/*
 		The left bound of this room
 			room.left
 	*/
 	get left(){
-		return this.#_tile.left;
+		return this.#_position.left;
 	}
 	/*
 		The bottom bound of this room
 			room.bottom
 	*/
 	get bottom(){
-		return this.#_tile.bottom;
+		return this.#_position.bottom;
 	}
 	/*
 		The right bound of this room
 			room.right
 	*/
 	get right(){
-		return this.#_tile.right;
+		return this.#_position.right;
 	}
 	/*
 		The center X point of this room
 			room.visible
 	*/
 	get centerX(){
-		return this.#_tile.xT + (this.#_tile.wT >> 1);
+		return this.#_position.xT + (this.#_position.wT >> 1);
 	}
 	/*
 		The center Y point of this room
 			room.visible
 	*/
 	get centerY(){
-		return this.#_tile.yT + (this.#_tile.hT >> 1);
+		return this.#_position.yT + (this.#_position.hT >> 1);
 	}
 	/*
 		If room is loaded in Biome
@@ -91,13 +91,14 @@ export class BiomeRoom {
 		Check if a coordinate is inside this room
 			room.inside(x, y);
 	*/
-	inside(x, y){
+	inside(x, y, border){
 		return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
 	}
+	/*
+		Check if location is on the border
+	*/
 	border(x, y){
-		x = (x == this.left -1 || x == this.right + 1);
-		y = (y == this.top -1 || y == this.bottom + 1);
-		return (x || y) && (x != y);
+		return ((x == this.left -1 || x == this.right + 1) && (y >= this.top && y <= this.bottom)) || ((y == this.top -1 || y == this.bottom + 1) && (x >= this.left && x <= this.right));
 	}
 	/*
 		Check if a tile in inside this room
@@ -240,7 +241,7 @@ export class BiomeRoom {
 		this.biome.lock(this.right + 1, this.top - 1, this.right + 1, this.bottom);
 		this.biome.lock(this.left, this.bottom + 1, this.right + 1, this.bottom + 1);
 		this.biome.lock(this.left - 1, this.top, this.left - 1, this.bottom + 1);
-		doors(function(t){
+		this.doors(function(t){
 			t.unlock();
 		});
 	}

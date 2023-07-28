@@ -5,50 +5,43 @@
 import {BiomeUtils} from './BiomeUtils.class.js';
 export class BiomeScan {
 	data;
-	max;
 	result;
-	#_length;
 	#_filter;
 	#_active;
-	constructor(filter, max){
+	#_index;
+	#_current;
+	constructor(filter){
 		this.result = [];
 		this.#_filter = filter;
-		this.#_length = 0;
 		this.#_active = true;
-		this.max = max || 0;
+		this.#_index = 0;
 	}
 	/*
 		If scanner is active
+			scan.active;
 	*/
 	get active(){
 		return this.#_active;
 	}
 	/*
-		Result count
-	*/
-	get length(){
-		return this.#_length;
-	}
-	/*
 		Calls a fx(value), if filter function does not exists or return result is true, the object will added to scanner result
+			scan.add(value);
 	*/
 	add(value){
 		if(this.test(value)){
-			this.result[this.#_length] = value;
-			++this.#_length;
-			if(this.#_length == this.max){
-				this.stop();
-			}
+			this.result.push(value);
 		}
 	}
 	/*
 		Check if a condition is true for a value
+			scan.test(any);
 	*/
 	test(value){
 		return this.#_filter == null || this.#_filter(value, this) == true;
 	}
 	/*
 		Ignores the filter fuction and add the object into scanner result if not null
+			scan.put(value);
 	*/
 	put(value){
 		if(value != null){
@@ -57,11 +50,12 @@ export class BiomeScan {
 	}
 	/*
 		Call filter function for each argument
+			scan.call(...values);
 	*/
-	call(...args){
+	call(...values){
 		if(this.#_filter != null){
-			for (let i = 0; i < args.length; i++) {
-				if(!this.test(value)){
+			for (let i = 0; i < values.length; i++) {
+				if(!this.test(values[i])){
 					break;
 				}
 			}
@@ -69,12 +63,14 @@ export class BiomeScan {
 	}
 	/*
 		Stop scanner process
+			scan.stop();
 	*/
 	stop(){
 		this.#_active = false;
 	}
 	/*
 		Scan each value in result and call fx(value);
+			scan.each(function(o){ ... });
 	*/
 	each(filter){
 		filter = BiomeUtils.scanner(filter);
@@ -86,7 +82,31 @@ export class BiomeScan {
 		}
 		return filter;
 	}
-	get(index){
-		return this.result[index];
+	remove(...values){
+		for (let i = 0; i < values.length; i++) {
+			let iof = this.result.indexOf(value);
+			if(iof != -1){
+				this.result.splice(iof, 1);
+			}
+		}
+	}
+	/* 
+		Cursor for iteraction
+			scan.next;
+	*/
+	get next(){
+		if(this.#_index < this.result.length){
+			this.#_current = this.result[this.#_index++];
+			return true;
+		}else {
+			return false;
+		}
+	}
+	/* 
+		Current value in the cursor
+			scan.current;
+	*/
+	get current(){
+		return this.#_current;
 	}
 }
