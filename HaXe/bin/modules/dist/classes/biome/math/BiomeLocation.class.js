@@ -2,7 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-export class BiomePoint {
+export class BiomeLocation {
 	x;
 	y;
 	w;

@@ -4,7 +4,7 @@
  */
 import {BiomeConstants} from '../data/BiomeConstants.class.js';
 import {BiomeUtils} from '../data/BiomeUtils.class.js';
-import {BiomePoint} from '../math/BiomePoint.class.js';
+import {BiomeLocation} from '../math/BiomeLocation.class.js';
 var OBJECT_UID = 0;
 export class BiomeObject {
 	#_id;
@@ -28,7 +28,7 @@ export class BiomeObject {
 		this.#_name = name;
 		this.#_data = data || {};
 		this.#_options = options || BiomeConstants.TILE_WALKABLE;
-		this.#_position = new BiomePoint(x, y, width, height);
+		this.#_position = new BiomeLocation(x, y, width, height);
 	}
 	get room(){
 		return this.#_room;
@@ -171,14 +171,14 @@ export class BiomeObject {
 	**/
 	outerTiles(){
 		var tiles = BiomeUtils.scanner();
-		this.room.biome.tiles(this.left-1, this.top-1, this.right+1, this.top-1, tiles);
-		this.room.biome.tiles(this.right+1, this.top, this.right+1, this.bottom, tiles);
-		this.room.biome.tiles(this.left-1, this.top, this.left-1, this.bottom, tiles);
-		this.room.biome.tiles(this.left-1, this.bottom+1, this.right+1, this.bottom+1, tiles);
+		this.room.biome.map(this.left-1, this.top-1, this.right+1, this.top-1, tiles);
+		this.room.biome.map(this.right+1, this.top, this.right+1, this.bottom, tiles);
+		this.room.biome.map(this.left-1, this.top, this.left-1, this.bottom, tiles);
+		this.room.biome.map(this.left-1, this.bottom+1, this.right+1, this.bottom+1, tiles);
 		return tiles.result;
 	}
 	innerTiles(){
-		return this.room.biome.tiles(this.left, this.top, this.right, this.bottom, null);
+		return this.room.biome.map(this.left, this.top, this.right, this.bottom, null);
 	}
 	collision(filter){
 		if(this.visible){
@@ -192,34 +192,34 @@ export class BiomeObject {
 		var tiles = BiomeUtils.scanner();
 		switch(direction){
 			case BiomeConstants.TOP : {
-				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
+				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				tiles.data = [{x:0,y:-1}];
 				break;
 			}
 			case BiomeConstants.TOP_RIGHT : {
-				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
-				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
+				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
+				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				tiles.data = [{x:1,y:-1}];
 				break;
 			}
 			case BiomeConstants.RIGHT : {
-				this.room.biome.tiles(this.right, this.top, this.right, this.bottom, tiles);
+				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
 				tiles.data = [{x:1,y:0}];
 				break;
 			}
 			case BiomeConstants.BOTTOM_RIGHT : {
-				this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom, tiles);
-				this.room.biome.tiles(this.right, this.top, this.right, this.bottom, tiles);
+				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
+				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
 				tiles.data = [{x:1,y:1}];
 				break;
 			}
 			case BiomeConstants.BOTTOM : {
-				this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom, tiles);
+				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
 				tiles.data = [{x:0,y:1}];
 				break;
 			}
 			case BiomeConstants.LEFT : {
-				this.room.biome.tiles(this.left, this.top, this.left, this.bottom, tiles);
+				this.room.biome.map(this.left, this.top, this.left, this.bottom, tiles);
 				tiles.data = [{x:-1,y:0}];
 				break;
 			}

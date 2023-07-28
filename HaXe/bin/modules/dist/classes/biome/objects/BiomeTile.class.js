@@ -20,6 +20,7 @@ export class BiomeTile {
 	#_data;
 	#_astar;
 	#_locked;
+	#_junctions;
 	#_put(os,o){
 		if(o != null){
 			os[os.length] = o;
@@ -33,6 +34,7 @@ export class BiomeTile {
 		this.#_objects = [];
 		this.#_biome = biome;
 		this.#_locked = false;
+		this.#_junctions = [];
 		this.#_astar = {
 			f:0,
 			g:0,
@@ -41,7 +43,7 @@ export class BiomeTile {
 		this.#_data = {};
 	}
 	set locked(value){
-		this.#_locked = value == true;
+		this.#_locked = this.#_junctions.length == 0 && value == true;
 	}
 	get locked(){
 		return this.#_locked == true;
@@ -162,6 +164,15 @@ export class BiomeTile {
 		if(iof != -1){
 			this.#_objects.splice(iof, 1);
 		}
+	}
+	junction(room){
+		if(!this.#_junctions.contains(room)){
+			this.#_junctions.push(room);
+			this.#_locked = false;
+		}
+	}
+	equals(x, y){
+		return this.x == x && this.y == y;
 	}
 	next(x,y){
 		return this.#_biome.tile(this.x + x, this.y + y);

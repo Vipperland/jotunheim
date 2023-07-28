@@ -11,9 +11,15 @@ export class BiomeGrid {
 	#_tiles;
 	#_area; 
 	#_biome; 
+	/*
+		The tile grid [y,x]
+	*/
 	get tiles(){
 		return this.#_tiles;
 	}
+	/*
+		The grid area
+	*/
 	get area(){
 		return this.#_area;
 	}
@@ -22,6 +28,9 @@ export class BiomeGrid {
 		this.#_biome = biome;
 		this.#_area = new BiomeArea(tw, th);
 	}
+	/*
+		Creates tiles in grid
+	*/
 	create(x1,y1,x2,y2){
 		let tx = x1;
 		let ty = null;
@@ -42,6 +51,9 @@ export class BiomeGrid {
 			++y1;
 		}
 	}
+	/*
+		Iterate valid tiles in a area and calls fx(tile), can't go out of bounds
+	*/
 	map(x1,y1,x2,y2,scanner){
 		++x2;
 		++y2;
@@ -75,6 +87,9 @@ export class BiomeGrid {
 		}
 		return scanner;
 	}
+	/*
+		Iterate points in a area and calls fx(x,y), can't go out of bounds
+	*/
 	point(x1,y1,x2,y2,scanner){
 		++x2;
 		++y2;
@@ -105,15 +120,27 @@ export class BiomeGrid {
 		}
 		return scanner;
 	}
+	/*
+		If tile point exists
+	*/
 	exists(x,y){
 		return this.#_tiles[y] != null && this.#_tiles[y][x] != null;
 	}
+	/*
+		Get a single tile in a location
+	*/
 	tile(x,y){
 		return this.#_tiles[y][x];
 	}
+	/*
+		Get all tiles in a location
+	*/
 	tiles(x1,y1,x2,y2,filter){
 		return this.map(x1,y1,x2,y2,filter).result;
 	}
+	/* 
+		Cast a line to any direction from source tiles and apply a movement path on each interaction, then calls fx(tile)
+	*/
 	raycast(source, movement, distance, scanner){
 		scanner = BiomeUtils.scanner(scanner);
 		let moved = 0;
