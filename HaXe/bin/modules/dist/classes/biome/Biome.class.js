@@ -40,11 +40,11 @@ export class Biome {
 		Create a new Biome, with tile width and height as params
 			The tile width and height represents the position of an object in orthogonal and isometric space
 	*/
-	constructor(tw,th){
+	constructor(tw,th,fps){
 		this.#_rooms = new Array();
 		this.#_loaded = new Array();
 		this.#_heart = new BiomeHeart(this);
-		this.#_core = new BiomeCore(this);
+		this.#_core = new BiomeCore(this, fps);
 		this.#_grid = new BiomeGrid(this, tw, th);
 	}
 	/*
@@ -167,7 +167,7 @@ export class Biome {
 	*/
 	update(){
 		let room;
-		for(let i=0; i<this.#_rooms.length; ++i){
+		for(let i=0; i<this.#_loaded.length; ++i){
 			room = this.#_loaded[i];
 			if(room.updated(function(o){
 				if(o.normalize()){

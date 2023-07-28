@@ -8,24 +8,52 @@ export class BiomeCore {
 	#_time;
 	#_runables;
 	#_lenght;
+	#_frametime;
+	#_frametarget;
+	#_fpsChannels;
+	#_fpsChannel;
+	#_init(){
+		var target = 1000/this.#_frametarget;
+		var diff = target/this.#_frametarget;
+		for (let i = 0; i < this.#_frametarget; i++) {
+			this.#_fpsChannels[i] = new FrameChannel(target, diff * i);
+		}
+		setInterval(this.#_render.bind(this), 1);
+	}
 	#_render(){
 		if(!this.#_paused){
 			let time = Date.now();
-			let elapsed = time - this.#_time;
+			this.#_frametime = time - this.#_time;
 			for (let i = 0; i < this.#_lenght; i++) {
-				this.#_runables[i](elapsed);
+				this.#_runables[i]();
+			}
+			for (let i = 0; i < this.#_frametarget; i++) {
+				this.#_fpsChannels[i].tick(this.#_frametime);
 			}
 			this.#_time  = time;
 			this.#_biome.update();
 		}
 	}
-	constructor(biome){
+	get frameChannel(){
+		if(this.#_fpsChannel >= this.#_frametarget){
+			this.#_fpsChannel -= this.#_frametarget;
+		}
+		return this.#_fpsChannels[this.#_fpsChannel++].info;
+	}
+	constructor(biome, fps){
 		this.#_time = Date.now();
 		this.#_biome = biome;
 		this.#_paused = false;
 		this.#_runables = [];
 		this.#_lenght = 0;
-		setInterval(this.#_render.bind(this), 1);
+		this.#_frametime = 0;
+		this.#_frametarget = fps || 60;
+		this.#_fpsChannel = 0;
+		this.#_fpsChannels = [];
+		this.#_init();
+	}
+	frameRate(){
+		return this.#_frametime;
 	}
 	add(handler){
 		if(!this.#_runables.includes(handler)){
@@ -49,7 +77,6 @@ export class BiomeCore {
 	delay(handler, delay, repeat, ...args){
 		return new DelayedMethod(this, handler, delay, repeat, args);
 	}
-	
 }
 class DelayedMethod {
 	#_elapsed;
@@ -90,5 +117,33 @@ class DelayedMethod {
 			this.#_method = null;
 			this.#_args = null;
 		}
+	}
+}
+class FrameChannel {
+	#_count;
+	#_target;
+	info;
+	constructor(target, start){
+		this.#_target = target;
+		this.#_count = start;
+		this.info = new FrameActivation(target);
+	}
+	tick(time){
+		if(this.info.active){
+			this.#_count -= this.#_target;
+		}
+		this.#_count += time;
+		this.info.active = this.#_count >= this.#_target;
+	}
+}
+class FrameActivation {
+	#_time;
+	active;
+	get time(){
+		return this.#_time;
+	}
+	constructor(time){
+		this.active = false;
+		this.#_time = time;
 	}
 }

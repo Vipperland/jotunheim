@@ -36,6 +36,9 @@ export class BiomeObject {
 	set room(value){
 		this.#_room = value;
 	}
+	get biome(){
+		return this.room.biome;
+	}
 	get isWalkable(){
 		return !this.#_blocked && this.#_test(BiomeConstants.TILE_WALKABLE);
 	}

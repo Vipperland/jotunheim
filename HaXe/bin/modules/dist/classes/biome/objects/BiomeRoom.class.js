@@ -4,6 +4,7 @@
  */
 import {BiomeTile} from './BiomeTile.class.js';
 import {BiomeObject} from './BiomeObject.class.js';
+import {BiomeLiveObject} from './BiomeLiveObject.class.js';
 import {BiomeConstants} from '../data/BiomeConstants.class.js';
 import {BiomeLocation} from '../math/BiomeLocation.class.js';
 
