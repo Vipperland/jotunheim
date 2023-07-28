@@ -15,7 +15,6 @@ export class BiomeScan {
 		this.#_length = 0;
 		this.#_active = true;
 		this.max = max || 0;
-		this.data = {};
 	}
 	get active(){
 		return this.#_active;
@@ -32,15 +31,25 @@ export class BiomeScan {
 			}
 		}
 	}
+	test(value){
+		return this.#_filter == null || this.#_filter(value, this);
+	}
+	put(value){
+		if(value != null){
+			this.add(value);
+		}
+	}
 	call(){
-		this.#_filter.apply(this, arguments);
+		this.#_filter.apply(this, Array.from(arguments));
 	}
 	stop(){
 		this.#_active = false;
 	}
-	each(fx){
-		for(var i in this.result){
-			fx(this.result[i]);
+	each(filter){
+		for (let i = 0; i < this.result.length; i++) {
+			if(filter(this.result[i]) == false){
+				break;
+			}
 		}
 	}
 	get(index){

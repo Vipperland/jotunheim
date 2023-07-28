@@ -4,6 +4,7 @@
  */
 import {BiomeConstants} from './data/BiomeConstants.class.js';
 import {BiomeGrid} from './data/BiomeGrid.class.js';
+import {BiomeUtils} from './data/BiomeUtils.class.js';
 import {BiomeHeart} from './events/BiomeHeart.class.js';
 import {BiomeRoom} from './objects/BiomeRoom.class.js';
 export class Biome {
@@ -37,7 +38,7 @@ export class Biome {
 		if(typeof room == 'string'){
 			room = new BiomeRoom(room, x, y, width, height, walls || BiomeConstants.WALL_ALL, data);
 		}
-		this.#_grid.create(room.left, room.top, room.right, room.bottom);
+		this.#_grid.create(room.left, room.top, room.right+1, room.bottom+1);
 		this.#_rooms[room.name] = room;
 		room.biome = this;
 		this.#_heart.call(BiomeConstants.EVT_ROOM_ADDED, room);
@@ -103,8 +104,8 @@ export class Biome {
 	tile(x,y){
 		return this.#_grid.tile(x,y);
 	}
-	tiles(x1,y1,x2,y2){
-		return this.#_grid.tiles(x1,y1,x2,y2);
+	tiles(x1,y1,x2,y2,filter){
+		return this.#_grid.tiles(x1,y1,x2,y2,filter);
 	}
 	/*
 		Iterate valid tiles in an area, calls fn(tile)
@@ -118,10 +119,24 @@ export class Biome {
 	under(x,y,filter){
 		return this.collision(x,y,x,y,filter);
 	}
-	signal(x,y,distance,filter){
-		//this.#_grid.signal(this.#_grid,x,y,distance,filter);
+	find(x1,y1,x2,y2,filter){
+		return this.#_grid.find(x1, y1, x2, y2, filter);
 	}
 	raycast(source, movement, distance, filter){
 		return this.#_grid.raycast(source, movement, distance, filter);
+	}
+	objects(filter){
+		filter = BiomeUtils.scanner(filter);
+		let stop;
+		for(let i=0; i<this.#_loaded.length; ++i){
+			this.#_loaded[i].objects(function(o){
+				stop = true;
+				return filter.add(o);
+			});
+			if(stop){
+				break;
+			}
+		}
+		return filter;
 	}
 }

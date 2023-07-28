@@ -9,6 +9,8 @@ export class BiomeArea {
 	#_y2;
 	#_tw;
 	#_th;
+	#_htw;
+	#_hth;
 	constructor(width, height){
 		this.#_x1 = 0xFFFFFFFF;
 		this.#_x2 = 0;
@@ -16,6 +18,8 @@ export class BiomeArea {
 		this.#_y2 = 0;
 		this.#_tw = width || 1;
 		this.#_th = height || 1;
+		this.#_htw = this.#_tw * .5;
+		this.#_hth = this.#_th * .5;
 	}
 	fit(x1,y1,x2,y2){
 		if(y1 < this.#_y1){
@@ -66,5 +70,11 @@ export class BiomeArea {
 	}
 	ty(y){
 		return y * this.#_th;
+	}
+	ax(x, y){
+		return (x - y) * this.#_htw;
+	}
+	ay(y, x){
+		return (x + y) * this.#_hth;
 	}
 }

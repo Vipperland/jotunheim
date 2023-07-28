@@ -3,9 +3,10 @@
  * @author Rafael Moreira
  */
 import {BiomeConstants} from '../data/BiomeConstants.class.js';
-import {Positionable} from '../math/Positionable.class.js';
+import {BiomeUtils} from '../data/BiomeUtils.class.js';
+import {BiomePoint} from '../math/BiomePoint.class.js';
 var OBJECT_UID = 0;
-export class RoomObject {
+export class BiomeObject {
 	#_id;
 	#_name;
 	#_data;
@@ -27,7 +28,7 @@ export class RoomObject {
 		this.#_name = name;
 		this.#_data = data || {};
 		this.#_options = options || BiomeConstants.TILE_WALKABLE;
-		this.#_position = new Positionable(x, y, width, height);
+		this.#_position = new BiomePoint(x, y, width, height);
 	}
 	get room(){
 		return this.#_room;
@@ -57,10 +58,16 @@ export class RoomObject {
 		return this.room.left + this.#_position.xT;
 	}
 	get bottom(){
-		return this.room.top +this.#_position.yT + this.#_position.hT;
+		return this.room.top +this.#_position.yT + this.#_position.hT - 1;
 	}
 	get right(){
-		return this.room.left + this.#_position.xT + this.#_position.wT;
+		return this.room.left + this.#_position.xT + this.#_position.wT - 1;
+	}
+	get localX(){
+		return this.#_position.xT;
+	}
+	get localY(){
+		return this.#_position.yT;
 	}
 	get biomeX(){
 		return (this.room ? this.room.left + this.#_position.xT: 0);
@@ -159,6 +166,20 @@ export class RoomObject {
 	get ty(){
 		return this.#_room.biome.area.ty(this.biomeY);
 	}
+	/**
+		
+	**/
+	outerTiles(){
+		var tiles = BiomeUtils.scanner();
+		this.room.biome.tiles(this.left-1, this.top-1, this.right+1, this.top-1, tiles);
+		this.room.biome.tiles(this.right+1, this.top, this.right+1, this.bottom, tiles);
+		this.room.biome.tiles(this.left-1, this.top, this.left-1, this.bottom, tiles);
+		this.room.biome.tiles(this.left-1, this.bottom+1, this.right+1, this.bottom+1, tiles);
+		return tiles.result;
+	}
+	innerTiles(){
+		return this.room.biome.tiles(this.left, this.top, this.right, this.bottom, null);
+	}
 	collision(filter){
 		if(this.visible){
 			return this.room.biome.collision(this.left, this.top, this.right, this.bottom, filter);
@@ -168,25 +189,48 @@ export class RoomObject {
 		return this.room.biome.signal(this.biomePivotX, this.biomePivotY, distance, filter);
 	}
 	raycast(direction, distance, filter){
+		var tiles = BiomeUtils.scanner();
 		switch(direction){
 			case BiomeConstants.TOP : {
-				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.top, this.right, this.top), [{x:0,y:-1}], distance, filter);
+				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
+				tiles.data = [{x:0,y:-1}];
+				break;
+			}
+			case BiomeConstants.TOP_RIGHT : {
+				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
+				this.room.biome.tiles(this.left, this.top, this.right, this.top, tiles);
+				tiles.data = [{x:1,y:-1}];
 				break;
 			}
 			case BiomeConstants.RIGHT : {
-				return this.room.biome.raycast(this.room.biome.tiles(this.right, this.top, this.right, this.bottom), [{x:1,y:0}], distance, filter);
+				this.room.biome.tiles(this.right, this.top, this.right, this.bottom, tiles);
+				tiles.data = [{x:1,y:0}];
+				break;
+			}
+			case BiomeConstants.BOTTOM_RIGHT : {
+				this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom, tiles);
+				this.room.biome.tiles(this.right, this.top, this.right, this.bottom, tiles);
+				tiles.data = [{x:1,y:1}];
 				break;
 			}
 			case BiomeConstants.BOTTOM : {
-				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom), [{x:0,y:1}], distance, filter);
+				this.room.biome.tiles(this.left, this.bottom, this.right, this.bottom, tiles);
+				tiles.data = [{x:0,y:1}];
 				break;
 			}
 			case BiomeConstants.LEFT : {
-				return this.room.biome.raycast(this.room.biome.tiles(this.left, this.top, this.left, this.bottom), [{x:-1,y:0}], distance, filter);
+				this.room.biome.tiles(this.left, this.top, this.left, this.bottom, tiles);
+				tiles.data = [{x:-1,y:0}];
 				break;
 			}
 		}
-		return null;
+		return this.room.biome.raycast(tiles.result, tiles.data, distance, filter);
+	}
+	path(x, y, filter){
+		return this.room.biome.find(this.x, this.y, x, y, filter);
+	}
+	near(filter){
+		return this.room.objects(filter);
 	}
 	toString(){
 		return "[RomObject{id:" + this.id + ",name:" + this.name + ",x:" + this.biomeX + ",y:" + this.biomeY + ",width:" + this.position.width + ",height:" + this.position.height + "}]";

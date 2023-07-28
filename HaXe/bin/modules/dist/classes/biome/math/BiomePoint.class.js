@@ -2,7 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-export class Positionable {
+export class BiomePoint {
 	x;
 	y;
 	w;
@@ -29,10 +29,10 @@ export class Positionable {
 		return this.xT;
 	}
 	get bottom(){
-		return this.yT + this.hT;
+		return this.yT + this.hT - 1;
 	}
 	get right(){
-		return this.xT + this.wT;
+		return this.xT + this.wT - 1;
 	}
 	get width(){
 		return this.wT;

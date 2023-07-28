@@ -3,9 +3,9 @@
  * @author Rafael Moreira
  */
 import {BiomeTile} from './BiomeTile.class.js';
-import {RoomObject} from './RoomObject.class.js';
+import {BiomeObject} from './BiomeObject.class.js';
 import {BiomeConstants} from '../data/BiomeConstants.class.js';
-import {Positionable} from '../math/Positionable.class.js';
+import {BiomePoint} from '../math/BiomePoint.class.js';
 
 export class BiomeRoom {
 	#_name;
@@ -23,22 +23,22 @@ export class BiomeRoom {
 		this.#_objects = [];
 		this.#_updated = [];
 		this.#_walls = walls;
-		this.#_tile = new Positionable(x, y, width, height);
+		this.#_tile = new BiomePoint(x, y, width, height);
 	}
 	get name(){
 		return this.#_name;
 	}
 	get top(){
-		return this.#_tile.yT;
+		return this.#_tile.top;
 	}
 	get left(){
-		return this.#_tile.xT;
+		return this.#_tile.left;
 	}
 	get bottom(){
-		return this.#_tile.yT + this.#_tile.hT;
+		return this.#_tile.bottom;
 	}
 	get right(){
-		return this.#_tile.xT + this.#_tile.wT;
+		return this.#_tile.right;
 	}
 	get centerX(){
 		return this.#_tile.xT + (this.#_tile.wT >> 1);
@@ -58,19 +58,20 @@ export class BiomeRoom {
 	isTileInside(tile){
 		return this.isPosInside(tile.x, tile.y);
 	}
-	map(fn){
+	map(filter){
 		if(this.biome != null){
-			this.biome.map(this.left, this.top, this.right, this.bottom, fn);
+			this.biome.map(this.left, this.top, this.right, this.bottom, filter);
 		}
 	}
 	add(object, x, y, width, height, data){
 		if(typeof object == 'string'){
-			object = new RoomObject(object, x, y, width, height, data);
+			object = new BiomeObject(object, x, y, width, height, data);
 		}
 		this.#_objects.push(object);
 		if(this.visible){
 			this.update(object);
 		}
+		return object;
 	}
 	remove(object){
 		var iof = this.objects.indexOf(o);
@@ -137,15 +138,19 @@ export class BiomeRoom {
 	isWalled(flags){
 		return this.#_test(this.#_walls, flags);
 	}
-	objects(fn){
-		for(var o in this.#_objects){
-			fn(this.#_objects[o]);
+	objects(filter){
+		for(let i=0; i<this.#_objects.length; ++i){
+			if(filter(this.#_objects[i]) == false){
+				break;
+			}
 		}
 	}
-	updated(fn){
+	updated(filter){
 		if(this.#_updated.length > 0){
-			for(var o in this.#_updated){
-				fn(this.#_updated[o]);
+			for(let i=0; i<this.#_updated.length; ++i){
+				if(filter(this.#_updated[i]) == false){
+					break;
+				}
 			}
 			this.#_updated = [];
 			return true;
