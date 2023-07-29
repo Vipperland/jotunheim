@@ -28,7 +28,7 @@ export class BiomeScan {
 			scan.add(value);
 	*/
 	add(value){
-		if(this.test(value)){
+		if(value != null && this.test(value)){
 			this.result.push(value);
 		}
 	}

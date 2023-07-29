@@ -4,18 +4,15 @@
  */
 import {BiomeScan} from './BiomeScan.class.js';
 export class BiomeUtils {
-	static concat(){
-		var result = [];
-		var args = Array.from(arguments);
-		for(var i in args){
-			result = result.concat(args[i]);
+	/*
+		Create a BiomeScanner interface if filter is a function or null
+			BiomeUtils.scanner(function | scanner);
+	*/
+	static scanner(filter){		
+		if(filter == null || !(filter instanceof BiomeScan)){
+			return new BiomeScan(filter);
+		} else{
+			return filter;
 		}
-		return result;
-	}
-	static scanner(from){		
-		if(from == null || !(from instanceof BiomeScan)){
-			from = new BiomeScan(from);
-		}
-		return from;
 	}
 }

@@ -21,12 +21,23 @@ export class BiomeHeart {
 		this.events = {};
 		this.#_biome = biome;
 	}
+	/*
+		Dispatches a hearthbeat with data for all listeners
+	*/
 	call(event, data){
 		this.#_execute(this.#_get(event), data);
 	}
+	/*
+		Listen for hearthbeats
+			biome.heart.listen(name, onHeartbeat);
+	*/
 	listen(event, handler){
 		this.#_get(event).push(handler);
 	}
+	/*
+		Unlisten hearthbeats
+			biome.heart.unlisten(name, onHeartbeat);
+	*/
 	unlisten(event, handler){
 		var evts = this.#_get(event);
 		for(var e in evts){

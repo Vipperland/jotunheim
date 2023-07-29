@@ -10,7 +10,9 @@ export class BiomeLiveObject extends BiomeObject {
 	#_behavious;
 	#_render(time){
 		if(this.#_enabled && this.#_frame.active){
-			this.render(time);
+			for (let i = 0; i < this.#_behavious; i++) {
+				this.#_behavious[i].update(this);
+			}
 		}
 	}
 	set enabled(value){
@@ -24,11 +26,6 @@ export class BiomeLiveObject extends BiomeObject {
 		this.#_enabled = true;
 		this.#_behavious = [];
 	}
-	render(){
-		for (let i = 0; i < this.#_behavious; i++) {
-			this.#_behavious[i].update(this);
-		}
-	}
 	load(){
 		if(super.load()){
 			this.#_proxy = this.#_render.bind(this);
@@ -40,6 +37,17 @@ export class BiomeLiveObject extends BiomeObject {
 		if(super.unload()){
 			this.biome.core.remove(this.#_proxy);
 			this.#_proxy = null;
+		}
+	}
+	add(behaviour){
+		if(!this.#_behavious.includes(fx)){
+			this.#_behavious.push(fx);
+		}
+	}
+	remove(behaviour){
+		let iof = this.#_behavious.includes(fx);
+		if(iof != -1){
+			this.#_behavious.splice(iof, 1);
 		}
 	}
 }

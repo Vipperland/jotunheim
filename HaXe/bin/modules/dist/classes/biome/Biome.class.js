@@ -70,7 +70,7 @@ export class Biome {
 			room = new BiomeRoom(room.name, room.x, room.y, room.width, room.height, room.data);
 		}
 		if(!this.#_rooms.includes(room)){
-			this.#_grid.create(room.left, room.top, room.right+1, room.bottom+1);
+			this.#_grid.create(room.left, room.top, room.right, room.bottom);
 			this.#_rooms.push(room);
 			room.biome = this;
 			this.#_heart.call(BiomeConstants.EVT_ROOM_ADDED, room);
@@ -132,6 +132,15 @@ export class Biome {
 		}
 	}
 	/*
+		Unload all loaded rooms
+			biome.purge();
+	*/
+	purge(){
+		for(let i=0; i<this.#_loaded.length; ++i){
+			this.#_loaded[i].unload();
+		}
+	}
+	/*
 		Call fx(room) for each room added in this Biome
 			biome.rooms(function(r){
 			})
@@ -184,14 +193,14 @@ export class Biome {
 		Get tile in a position
 			biome.tile(x, y);
 	*/
-	tile(x,y){
-		return this.#_grid.tile(x,y);
+	tile(x, y){
+		return this.#_grid.tile(x, y);
 	}
 	/*
 		Get all objects in a point, calls fx(object) for each
 	*/
 	under(x,y,filter){
-		return this.#_grid.tile(x,y).objects(filter);
+		return this.#_grid.tile(x, y).objects(filter);
 	}
 	/*
 		Iterate valid tiles in an area using two locations, calls fx(tile)
@@ -252,7 +261,7 @@ export class Biome {
 		return filter;
 	}
 	/* 
-		Set tiles in an area as locked in find() during A*
+		Set tiles in an area as locked to pathfind
 			biome.lock(x1, y1, x2, y2);
 	*/
 	lock(x1,y1,x2,y2){
@@ -261,7 +270,7 @@ export class Biome {
 		});
 	}
 	/* 
-		Set tiles in an area as unlocked in find() during A*
+		Set tiles in an area as unlocked to pathfind
 			biome.unlock(x1, y1, x2, y2);
 	*/
 	unlock(x1,y1,x2,y2){

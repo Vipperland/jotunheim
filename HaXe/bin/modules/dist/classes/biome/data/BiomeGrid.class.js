@@ -42,9 +42,11 @@ export class BiomeGrid {
 			}
 			ty = this.#_tiles[y1];
 			while(x1<x2){
-				t = new BiomeTile(x1,y1,this.#_biome);
-				ty[x1] = t;
-				this.#_biome.heart.call(BiomeConstants.EVT_TILE_CREATED, t);
+				if(ty[x1] == null){
+					t = new BiomeTile(x1,y1,this.#_biome);
+					ty[x1] = t;
+					this.#_biome.heart.call(BiomeConstants.EVT_TILE_CREATED, t);
+				}
 				++x1;
 			}
 			x1 = tx;
@@ -54,10 +56,10 @@ export class BiomeGrid {
 	/*
 		Iterate valid tiles in a area and calls fx(tile), can't go out of bounds
 	*/
-	map(x1,y1,x2,y2,scanner){
+	map(x1,y1,x2,y2,filter){
 		++x2;
 		++y2;
-		scanner = BiomeUtils.scanner(scanner);
+		filter = BiomeUtils.scanner(filter);
 		if(x1 < this.#_area.left){
 			x1 = this.#_area.left;
 		}
@@ -76,8 +78,8 @@ export class BiomeGrid {
 		main: while(y1<y2){
 			ty = this.#_tiles[y1];
 			while(x1<x2){
-				scanner.add(ty[x1]);
-				if(!scanner.active){
+				filter.add(ty[x1]);
+				if(!filter.active){
 					break main;
 				}
 				++x1;
@@ -85,15 +87,15 @@ export class BiomeGrid {
 			x1 = tx;
 			++y1;
 		}
-		return scanner;
+		return filter;
 	}
 	/*
 		Iterate points in a area and calls fx(x,y), can't go out of bounds
 	*/
-	point(x1,y1,x2,y2,scanner){
+	point(x1,y1,x2,y2,filter){
 		++x2;
 		++y2;
-		scanner = BiomeUtils.scanner(scanner);
+		filter = BiomeUtils.scanner(filter);
 		if(x1 < this.#_area.left){
 			x1 = this.#_area.left;
 		}
@@ -108,9 +110,9 @@ export class BiomeGrid {
 		}
 		let tx = x1;
 		main: while(y1<y2){
-			while(x1<x2 && result.active){
-				scanner.call(x1, y1);
-				if(!scanner.active){
+			while(x1<x2 && filter.active){
+				filter.call(x1, y1);
+				if(!filter.active){
 					break main;
 				}
 				++x1;
@@ -118,13 +120,33 @@ export class BiomeGrid {
 			x1 = tx;
 			++y1;
 		}
-		return scanner;
+		return filter;
 	}
 	/*
 		If tile point exists
 	*/
 	exists(x,y){
 		return this.#_tiles[y] != null && this.#_tiles[y][x] != null;
+	}
+	/*
+		Force a tile creation, if not exists
+	*/
+	fill(x, y){
+		let c = this.#_tiles[y];
+		if(c == null){
+			c = [];
+			this.#_tiles[y] = c;
+		}
+		let r = c[x];
+		let t;
+		if(r == null){
+			t = new BiomeTile(x, y, this.#_biome);
+			this.#_tiles[y][x] = t;
+			this.#_biome.heart.call(BiomeConstants.EVT_TILE_CREATED, t);
+			return t;
+		} else {
+			return r[x];
+		}
 	}
 	/*
 		Get a single tile in a location
@@ -183,12 +205,13 @@ export class BiomeGrid {
 		return scanner;
 	}
 	/*
-		Use A* algorithm to fint a path between two locations, can be limited by a room area
+		Use A* algorithm to find a path between two locations, can be limited by a room area
 	*/
 	find(x1,y1,x2,y2,room,scanner){
 		scanner = BiomeUtils.scanner(scanner);
-		scanner.data = new AStar(this.tile(x1,y1),this.tile(x2,y2),room,scanner);
-		scanner.data.exec();
+		let pathfinder = new AStar(this.tile(x1,y1),this.tile(x2,y2),room,scanner);
+		scanner.data.pathfinder = pathfinder;
+		scanner.data.success = pathfinder.exec();
 		return scanner;
 	}
 }
@@ -199,6 +222,7 @@ class AStar {
 	end;
 	room;
 	scanner;
+	#_proxy;
 	constructor(start,end,room,scanner){
 		this.start = start;
 		this.end = end;
@@ -216,7 +240,10 @@ class AStar {
 			if(this.room == null){
 				tile.astar.neighbors = tile.neighbors();
 			}else{
-				tile.astar.neighbors = tile.neighbors(this.#_limit.bind(this));
+				if(this.#_proxy == null){
+					this.#_proxy = this.#_limit.bind(this);
+				}
+				tile.astar.neighbors = tile.neighbors(this.#_proxy);
 			}
 		}
 		return tile.astar.neighbors;
@@ -268,7 +295,12 @@ class AStar {
 				}
 			}
 		}
+		this.#_proxy = null;
+		this.open = null;
+		this.closed = null;
+		this.start = null;
+		this.end = null;
+		this.room = null;
 		return false;
-		
 	}
 }

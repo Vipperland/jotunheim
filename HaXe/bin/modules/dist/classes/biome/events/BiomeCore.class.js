@@ -34,11 +34,22 @@ export class BiomeCore {
 			this.#_biome.update();
 		}
 	}
+	/*
+		Return a timed controlled channel to distribute processes. The frameChannel.active indicates when a frame can be executed.
+			biome.core.frameChannel
+	*/
 	get frameChannel(){
 		if(this.#_fpsChannel >= this.#_frametarget){
 			this.#_fpsChannel -= this.#_frametarget;
 		}
 		return this.#_fpsChannels[this.#_fpsChannel++].info;
+	}
+	/*
+		Indicates if processor is active
+			biome.core.active
+	*/
+	get active(){
+		return this.#_paused != true;
 	}
 	constructor(biome, fps){
 		this.#_time = Date.now();
@@ -52,15 +63,27 @@ export class BiomeCore {
 		this.#_fpsChannels = [];
 		this.#_init();
 	}
+	/*
+		Last frame time execution
+			biome.core.frameRate
+	*/
 	frameRate(){
 		return this.#_frametime;
 	}
+	/*
+		Register a method to be executed in runtime processor
+			biome.core.add(method);
+	*/
 	add(handler){
 		if(!this.#_runables.includes(handler)){
 			this.#_runables[this.#_lenght] = handler;
 			++this.#_lenght;
 		}
 	}
+	/*
+		Remove a method to be executed in runtime processor
+			biome.core.remove(method);
+	*/
 	remove(handler){
 		var iof = this.#_runables.indexOf(handler);
 		if(iof != -1){
@@ -68,12 +91,23 @@ export class BiomeCore {
 			--this.#_lenght;
 		}
 	}
+	/*
+		Pause Biome processor
+			biome.core.pause();
+	*/
 	pause(){
 		this.#_paused = true;
 	}
-	unpause(){
+	/*
+		Resume Biome processor
+			biome.core.resume();
+	*/
+	resume(){
 		this.#_paused = false;
 	}
+	/*
+		Call a delayed function using the processor. If paused, delayed calls will wait for resume time.
+	*/
 	delay(handler, delay, repeat, ...args){
 		return new DelayedMethod(this, handler, delay, repeat, args);
 	}

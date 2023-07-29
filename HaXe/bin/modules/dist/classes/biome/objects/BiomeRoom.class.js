@@ -6,6 +6,7 @@ import {BiomeTile} from './BiomeTile.class.js';
 import {BiomeObject} from './BiomeObject.class.js';
 import {BiomeLiveObject} from './BiomeLiveObject.class.js';
 import {BiomeConstants} from '../data/BiomeConstants.class.js';
+import {BiomeUtils} from '../data/BiomeUtils.class.js';
 import {BiomeLocation} from '../math/BiomeLocation.class.js';
 
 export class BiomeRoom {
@@ -95,7 +96,7 @@ export class BiomeRoom {
 		return x >= this.left && y >= this.top && x <= this.right && y <= this.bottom;
 	}
 	/*
-		Check if location is on the border
+		Check if location is on the border outside, but not in the diagonal corners
 	*/
 	border(x, y){
 		return ((x == this.left -1 || x == this.right + 1) && (y >= this.top && y <= this.bottom)) || ((y == this.top -1 || y == this.bottom + 1) && (x >= this.left && x <= this.right));
@@ -125,15 +126,22 @@ export class BiomeRoom {
 		return object;
 	}
 	/* 
-		Set enter/exit point in this room for extra instructions 
+		Set enter/exit point in this room for extra instructions. Doors can only be created between rooms.
 		Doors need to be outside the room, in the border tiles
 			room.doors();
 	*/
-	door(tile){
-		if(border(tile.x, tile.y) && !this.#_doors.contains(tile)){
-			this.#_doors.push(tile);
-			tile.junction(this);
+	door(x, y){
+		x += this.left;
+		y += this.top;
+		if(this.biome.area.inside(x, y)){
+			let tile = this.biome.tile(x, y);
+			if(this.border(tile.x, tile.y) && !this.#_doors.includes(tile)){
+				this.#_doors.push(tile);
+				tile.junction(this);
+				return true;
+			}
 		}
+		throw new Error("Biome: Can't create door(x:" + x + ",y:" + y + ") junction. Doors can only be added in gaps between rooms.");
 	}
 	/*
 		Call fx(tile) on each enter/exit points in this room
@@ -141,11 +149,14 @@ export class BiomeRoom {
 			});
 	*/
 	doors(filter){
+		filter = BiomeUtils.scanner(filter);
 		for(let i=0; i<this.#_doors.length; ++i){
-			if(filter(this.#_doors[i]) == false){
+			filter.add(this.#_doors[i]);
+			if(!filter.active){
 				break;
 			}
 		}
+		return filter;
 	}
 	/*
 		Remove an object from room
@@ -233,35 +244,18 @@ export class BiomeRoom {
 		}
 	}
 	/*
-		Lock all tiles sorrounding this room, except for doors entries
-			room.lock();
-	*/
-	lock(){
-		this.biome.lock(this.left - 1, this.top - 1, this.right, this.top - 1);
-		this.biome.lock(this.right + 1, this.top - 1, this.right + 1, this.bottom);
-		this.biome.lock(this.left, this.bottom + 1, this.right + 1, this.bottom + 1);
-		this.biome.lock(this.left - 1, this.top, this.left - 1, this.bottom + 1);
-		this.doors(function(t){
-			t.unlock();
-		});
-	}
-	/*
-		Unlock all tiles sorrounding this room
-			room.unlock();
-	*/
-	unlock(){
-		this.biome.unlock(this.left - 1, this.top - 1, this.right, this.top - 1);
-		this.biome.unlock(this.right + 1, this.top - 1, this.right + 1, this.bottom);
-		this.biome.unlock(this.left, this.bottom + 1, this.right + 1, this.bottom + 1);
-		this.biome.unlock(this.left - 1, this.top, this.left - 1, this.bottom + 1);
-	}
-	/*
 		Runs fx(tile) for each tile in this room
 			room.map(function(t){
 			});
 	*/
 	map(filter){
-		this.biome.map(this.left, this.top, this.right, this.bottom, filter);
+		return this.biome.map(this.left, this.top, this.right, this.bottom, filter);
+	}
+	/*
+		Get room tile from [x,y] offsets
+	*/
+	tile(x, y){
+		return this.biome.tile(this.left + x, this.right + y);
 	}
 	/*
 		Call fx(object) for each added object in room
@@ -269,14 +263,16 @@ export class BiomeRoom {
 			});
 	*/
 	objects(filter){
+		filter = BiomeUtils.scanner(filter);
 		for(let i=0; i<this.#_objects.length; ++i){
-			if(filter(this.#_objects[i]) == false){
+			filter.add(this.#_objects[i]);
+			if(!filter.active){
 				break;
 			}
 		}
 	}
 	/*
-		Get all updated objects
+		Get all updated objects. This method don't use filter scanner for optimizations.
 			room.updated(function(o){
 			});
 	*/
@@ -303,6 +299,20 @@ export class BiomeRoom {
 			this.#_updated.push(object);
 		}
 	}
-	sort(){
+	/*
+		Return all rooms linked to this by doors
+	*/
+	neighbors(filter){
+		filter = BiomeUtils.scanner(filter);
+		let origin = this;
+		function j(r){
+			if(r != origin && !filter.result.includes(r)){
+				filter.add(r);
+			}
+		}
+		this.doors(function(d){
+			d.junctions(j);
+		});
+		return filter;
 	}
 }

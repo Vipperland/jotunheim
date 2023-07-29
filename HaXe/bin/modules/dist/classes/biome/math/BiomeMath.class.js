@@ -19,7 +19,6 @@ export class BiomeMath {
 		if(y1 < 0) {
 			y1 = -y1;
 		}
-		let h = x1 * x1 + y1 * y1;
-		return Math.sqrt(h);
+		return Math.sqrt(x1 * x1 + y1 * y1);
 	}
 }
