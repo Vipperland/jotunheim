@@ -89,7 +89,7 @@ class Loader implements ILoader {
 			#end
 		}
 		if (headers != null){
-			Dice.All(headers, function(p:String, v:Dynamic){
+			Dice.All(headers, function(p:String, v:Dynamic):Void {
 				r.setHeader(p, v);
 			});
 		}

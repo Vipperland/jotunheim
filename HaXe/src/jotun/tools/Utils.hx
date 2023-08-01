@@ -3,8 +3,10 @@ import haxe.Json;
 import haxe.Log;
 import jotun.math.Point;
 import jotun.math.RNG;
+import jotun.utils.Delegate;
 import jotun.utils.IColor;
 import jotun.utils.IDiceRoll;
+import jotun.utils.Recycler;
 
 #if js
 
@@ -108,7 +110,7 @@ import jotun.utils.Dice;
  */
 @:expose("J_Utils")
 class Utils{
-
+	
 	#if js
 		public static function matchMedia(value:String):Bool {
 			return Browser.window.matchMedia(value).matches;
@@ -306,7 +308,7 @@ class Utils{
 	
 	static public function replaceQuery(url:String, params:Dynamic){
 		var current:Dynamic = getQueryParams(url);
-		Dice.All(params, function(p:String, v:Dynamic){
+		Dice.All(params, function(p:String, v:Dynamic):Void {
 			Reflect.setField(current, p, v);
 		});
 		return createQueryParams(url.split('?')[0], current);
@@ -318,7 +320,7 @@ class Utils{
 	 */
 	static public function clearArray(path:Array<String>, ?filter:Dynamic):Array<Dynamic> {
 		var copy:Array<String> = [];
-		Dice.Values(path, function(v:Dynamic) {
+		Dice.Values(path, function(v:Dynamic):Void {
 			if (v != null && v != "" && (filter == null || filter(v))) {
 				copy[copy.length] = v;
 			}
@@ -364,7 +366,7 @@ class Utils{
 			b += '<div class="block">';
 		}
 		i = i + (h ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '\t');
-		Dice.All(o, function(p:String, v:Dynamic) {
+		Dice.All(o, function(p:String, v:Dynamic):Void {
 			if (v == null){
 				b += i + p + ":* = null\n";
 			}
@@ -484,7 +486,7 @@ class Utils{
 	
 	static public function paramsOf(o:Dynamic):String {
 		var r:Array<String> = [];
-		Dice.All(o, function(p:String, v:Dynamic){
+		Dice.All(o, function(p:String, v:Dynamic):Void {
 			if(isValid(v) && !isFunction(v)){
 				if (Std.isOfType(v, Float)){
 					v = Std.string(v);

@@ -19,7 +19,7 @@ class SparkCore {
 		var r:String = null;
 		if (_deletions != null && _deletions.length > 0){
 			r = '';
-			Dice.All(_deletions, function(p:Int, v:String){
+			Dice.All(_deletions, function(p:Int, v:String):Void {
 				r += (p == 0 ? '' : '\n') + pre + v;
 			});
 		}

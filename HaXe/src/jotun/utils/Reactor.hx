@@ -221,7 +221,7 @@ class Reactor {
 			});
 		}else {
 			path = path == '' ? '' : path + '.';
-			Dice.All(data, function(p:String, v:Dynamic){
+			Dice.All(data, function(p:String, v:Dynamic):Void {
 				p = '' + p;
 				if (p.substr(0, 1) != '_'){
 					_react_fill(to, v, path + p);

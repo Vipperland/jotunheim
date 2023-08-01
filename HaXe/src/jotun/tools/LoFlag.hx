@@ -34,7 +34,7 @@ class LoFlag {
 	
 	public function load(data:Dynamic):LoFlag {
 		if(Std.isOfType(data, String)){
-			Dice.All(data.split('-'), function(p:Int, v:String){
+			Dice.All(data.split('-'), function(p:Int, v:String):Void {
 				_flags[_flags.length] = Std.parseInt(v);
 			});
 		}else if (Std.isOfType(data, Array)){

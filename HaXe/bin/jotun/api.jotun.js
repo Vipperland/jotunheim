@@ -9248,10 +9248,28 @@ jotun_tools_Utils.fnExtendClass = function(fn,obj) {
 	fn.prototype = Object.create(obj.prototype);
 	return fn;
 };
-var jotun_utils_Dice = function() { };
+var jotun_utils_Delegate = function() { };
+$hx_exports["Delegator"] = jotun_utils_Delegate;
+jotun_utils_Delegate.__name__ = "jotun.utils.Delegate";
+jotun_utils_Delegate.create = function(handler,context) {
+	var $l=arguments.length;
+	var args = new Array($l>2?$l-2:0);
+	for(var $i=2;$i<$l;++$i){args[$i-2]=arguments[$i];}
+	return function() {
+		var $l=arguments.length;
+		var args2 = new Array($l>0?$l-0:0);
+		for(var $i=0;$i<$l;++$i){args2[$i-0]=arguments[$i];}
+		var args1 = args.concat(args2);
+		handler.apply(context,args1);
+	};
+};
+var jotun_utils_Dice = function(data) {
+	this.data = data;
+	this.reset();
+};
 $hx_exports["Dice"] = jotun_utils_Dice;
 jotun_utils_Dice.__name__ = "jotun.utils.Dice";
-jotun_utils_Dice.All = function(q,each,complete) {
+jotun_utils_Dice.All = function(q,each) {
 	var v = null;
 	var p = null;
 	var i = true;
@@ -9274,28 +9292,25 @@ jotun_utils_Dice.All = function(q,each,complete) {
 		}
 	}
 	var r = { param : p, value : v, completed : i, object : q, keys : k};
-	if(complete != null) {
-		complete(r);
-	}
 	return r;
 };
-jotun_utils_Dice.Params = function(q,each,complete) {
+jotun_utils_Dice.Params = function(q,each) {
 	return jotun_utils_Dice.All(q,function(p,v) {
-		return each(p);
-	},complete);
+		each(p);
+	});
 };
-jotun_utils_Dice.Values = function(q,each,complete) {
+jotun_utils_Dice.Values = function(q,each) {
 	return jotun_utils_Dice.All(q,function(p,v) {
-		return each(v);
-	},complete);
+		each(v);
+	});
 };
-jotun_utils_Dice.Comparer = function(q,each,complete) {
+jotun_utils_Dice.Comparer = function(q,each) {
 	var prev = null;
 	return jotun_utils_Dice.All(q,function(p,v) {
 		var r = each(v,prev);
 		prev = v;
 		return r;
-	},complete);
+	});
 };
 jotun_utils_Dice.Extract = function(q,fields) {
 	var r = { };
@@ -9332,7 +9347,7 @@ jotun_utils_Dice.Call = function(q,method,args) {
 	}
 	return jotun_utils_Dice.All(q,function(p,v) {
 		v[method].apply(q,args);
-	},null);
+	});
 };
 jotun_utils_Dice.Count = function(from,to,each,complete,increment) {
 	if(increment == null) {
@@ -9441,14 +9456,24 @@ jotun_utils_Dice.Table = function(data,key,numeric,copy) {
 				}
 			});
 		}
-	} else if(key != null) {
-		haxe_ds_ArraySort.sort(r,function(a,b) {
-			return Reflect.compare(jotun_utils_SearchTag.clear(Reflect.field(a,key)),jotun_utils_SearchTag.clear(Reflect.field(b,key)));
-		});
 	} else {
-		haxe_ds_ArraySort.sort(r,function(a,b) {
-			return Reflect.compare(jotun_utils_SearchTag.clear(a),jotun_utils_SearchTag.clear(b));
-		});
+		var cache = { };
+		var cached = function(q) {
+			if(!Object.prototype.hasOwnProperty.call(cache,q)) {
+				var value = jotun_utils_SearchTag.clear(q);
+				cache[q] = value;
+			}
+			return Reflect.field(cache,q);
+		};
+		if(key != null) {
+			haxe_ds_ArraySort.sort(r,function(a,b) {
+				return Reflect.compare(cached(Reflect.field(a,key)),cached(Reflect.field(b,key)));
+			});
+		} else {
+			haxe_ds_ArraySort.sort(r,function(a,b) {
+				return Reflect.compare(cached(a),cached(b));
+			});
+		}
 	}
 	return r;
 };
@@ -9525,6 +9550,20 @@ jotun_utils_Dice.Children = function(of,each,complete) {
 		},complete);
 	}
 	return r;
+};
+jotun_utils_Dice.prototype = {
+	data: null
+	,cursor: null
+	,next: function() {
+		return this.cursor++ < this.data.length;
+	}
+	,current: function() {
+		return this.data[this.cursor];
+	}
+	,reset: function() {
+		this.cursor = -1;
+	}
+	,__class__: jotun_utils_Dice
 };
 var jotun_utils_Filler = function() { };
 $hx_exports["J_Filler"] = jotun_utils_Filler;
@@ -9625,6 +9664,15 @@ jotun_utils_IDiceRoll.prototype = {
 	,end: null
 	,children: null
 	,__class__: jotun_utils_IDiceRoll
+};
+var jotun_utils_IRecyclable = function() { };
+jotun_utils_IRecyclable.__name__ = "jotun.utils.IRecyclable";
+jotun_utils_IRecyclable.__isInterface__ = true;
+jotun_utils_IRecyclable.prototype = {
+	isDisposed: null
+	,dispose: null
+	,build: null
+	,__class__: jotun_utils_IRecyclable
 };
 var jotun_utils_ITable = function() { };
 jotun_utils_ITable.__name__ = "jotun.utils.ITable";
@@ -9872,6 +9920,36 @@ jotun_utils_Reactor.apply = function(to,data) {
 	jotun_utils_Reactor._react_fill(to,data,"");
 	jotun_utils_Reactor._react_fill_after(to);
 };
+var jotun_utils_Recycler = function(Object1) {
+	this._cache = [];
+	this._Object = Object1;
+};
+$hx_exports["J_Recycler"] = jotun_utils_Recycler;
+jotun_utils_Recycler.__name__ = "jotun.utils.Recycler";
+jotun_utils_Recycler.prototype = {
+	_cache: null
+	,_Object: null
+	,drop: function(object) {
+		if(!object.isDisposed) {
+			object.dispose();
+		}
+		this._cache[this._cache.length] = object;
+	}
+	,get: function() {
+		var $l=arguments.length;
+		var rest = new Array($l>0?$l-0:0);
+		for(var $i=0;$i<$l;++$i){rest[$i-0]=arguments[$i];}
+		var object = null;
+		if(this._cache.length == 0) {
+			object = new this._Object(rest);
+		} else {
+			object = this._cache.pop();
+			$bind(object,object.build).apply(object,rest.slice());
+		}
+		return object;
+	}
+	,__class__: jotun_utils_Recycler
+};
 var jotun_utils_SearchTag = function(tags) {
 	tags = [];
 	this.add(tags);
@@ -9884,11 +9962,7 @@ jotun_utils_SearchTag.create = function(value) {
 	}
 	return value;
 };
-jotun_utils_SearchTag.clear = function(data,space) {
-	if(space == null) {
-		space = "+";
-	}
-	data = Std.string(data).toLowerCase();
+jotun_utils_SearchTag._clear = function(data,space) {
 	var i = 0;
 	var l = jotun_utils_SearchTag._M.length;
 	while(i < l) {
@@ -9898,6 +9972,13 @@ jotun_utils_SearchTag.clear = function(data,space) {
 	data = data.split(" ").join(space);
 	data = data.split("\t").join(space);
 	return data;
+};
+jotun_utils_SearchTag.clear = function(data,space) {
+	if(space == null) {
+		space = "+";
+	}
+	data = Std.string(data).toLowerCase();
+	return jotun_utils_SearchTag._clear(data,space);
 };
 jotun_utils_SearchTag.prototype = {
 	tags: null
@@ -9910,7 +9991,7 @@ jotun_utils_SearchTag.prototype = {
 			values = [values];
 		}
 		jotun_utils_Dice.Values(values,function(v) {
-			v = jotun_utils_SearchTag.clear(v);
+			v = jotun_utils_SearchTag._clear(v,"+");
 			var iof = Lambda.indexOf(_gthis.tags,v);
 			if(iof == -1) {
 				_gthis.tags[_gthis.tags.length] = v;
@@ -9945,15 +10026,13 @@ jotun_utils_SearchTag.prototype = {
 	}
 	,equal: function(values) {
 		var tag = this._tag();
-		values = jotun_utils_SearchTag.create(values).tags;
-		return jotun_utils_Dice.Values(values,function(v) {
+		return jotun_utils_Dice.Values(jotun_utils_SearchTag.create(values).tags,function(v) {
 			return tag.indexOf("|" + v + "|") == -1;
 		}).completed;
 	}
 	,contains: function(values) {
 		var tag = this._tag();
-		values = jotun_utils_SearchTag.create(values).tags;
-		return !jotun_utils_Dice.Values(values,function(v) {
+		return !jotun_utils_Dice.Values(jotun_utils_SearchTag.create(values).tags,function(v) {
 			return tag.indexOf(v) != -1;
 		}).completed;
 	}
@@ -9974,7 +10053,7 @@ jotun_utils_Singularity._stopVerification = function() {
 jotun_utils_Singularity._checkIfUnique = function() {
 	if(!jotun_utils_Singularity._is_main) {
 		jotun_utils_Singularity._is_main = jotun_utils_Dice.Values(jotun_utils_Singularity._engines,function(v) {
-			return v.main;
+			return;
 		}).completed;
 		jotun_utils_Singularity._syncMain();
 	}
@@ -10211,8 +10290,8 @@ jotun_utils_Table.prototype = {
 		});
 		return t;
 	}
-	,flush: function(handler,complete) {
-		jotun_utils_Dice.Values(this.content,handler,complete);
+	,flush: function(handler) {
+		jotun_utils_Dice.Values(this.content,handler);
 		return this;
 	}
 	,first: function() {
@@ -10725,8 +10804,7 @@ jotun_tools_Ticker._etime = 0;
 jotun_tools_Ticker._cache_time = 0;
 jotun_tools_Ticker._cache_delay = 60;
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
-jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["[",""],["]",""]];
-jotun_utils_SearchTag._E = new EReg("^[a-z0-9]","g");
+jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["ñ","n"]];
 jotun_utils_Singularity._channel = "singularity.engine";
 jotun_utils_Singularity.signals = new jotun_signals_Signals(jotun_utils_Singularity);
 jotun_utils_Table._trash = [];

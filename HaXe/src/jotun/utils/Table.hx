@@ -101,8 +101,8 @@ class Table implements ITable {
 		return t;
 	}
 	
-	public function flush(handler:IDisplay->Void, ?complete:IDiceRoll->Void):ITable {
-		Dice.Values(content, handler, complete);
+	public function flush(handler:IDisplay->Void):ITable {
+		Dice.Values(content, handler);
 		return this;
 	}
 	

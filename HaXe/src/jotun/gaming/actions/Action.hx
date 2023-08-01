@@ -34,7 +34,7 @@ class Action extends Resolution {
 		// Construct Requirement Objects
 		requirements = [];
 		var i:Int = 0;
-		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic){
+		Dice.All(data.requirements, function(p:Dynamic, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
 				v = EventController.loadRequirement(v);
 			}

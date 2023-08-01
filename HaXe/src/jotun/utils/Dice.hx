@@ -1,5 +1,6 @@
 package jotun.utils;
 import haxe.ds.ArraySort;
+import jotun.tools.Key;
 import jotun.tools.Utils;
 import jotun.utils.IDiceRoll;
 
@@ -26,7 +27,8 @@ class Dice {
 	 * @param	complete	On propagation stop handler, call it with fail param and value
 	 * @return	Last value
 	 */
-	public static function All(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
+	@:overload(function(q:Dynamic, each:Dynamic->Dynamic->Void):IDiceRoll {})
+	public static function All(q:Dynamic, each:Dynamic->Dynamic->Bool):IDiceRoll {
 		var v:Dynamic = null;
 		var p:Dynamic = null;
 		var i:Bool = true;
@@ -46,7 +48,7 @@ class Dice {
 						continue;
 					}
 				#end
-				if (each(p, v) == true) {
+				if ((cast each(p, v)) == true) {
 					i = false;
 					break;
 				}else {
@@ -56,10 +58,13 @@ class Dice {
 				}
 			}
 		}
-		var r:IDiceRoll = cast { param:p, value:v, completed:i, object:q, keys:k };
-		if (complete != null) {
-			complete(r);
-		}
+		var r:IDiceRoll = cast {
+			param:p,
+			value:v, 
+			completed:i,
+			object:q, 
+			keys:k 
+		};
 		return r;
 		
 	}
@@ -70,24 +75,19 @@ class Dice {
 	 * @param	each		Parameter handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail parameter
 	 */
-	public static function Params(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
-		return All(q, 
-			function(p:Dynamic, v:Dynamic) { return each(p); }, 
-			complete
-		);
+	@:overload(function(q:Dynamic, each:Dynamic->Bool,):IDiceRoll {})
+	public static function Params(q:Dynamic, each:Dynamic->Void):IDiceRoll {
+		return All(q, function(p:Dynamic, v:Dynamic) { return each(p); } );
 	}
 	
 	/**
 	 * For each object Value call each(value)
 	 * @param	q		Target object
 	 * @param	each		Value handler, return true to stop propagation
-	 * @param	complete	On propagation stop handler, call it with fail value
 	 */
-	public static function Values(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
-		return All(q, 
-			function(p:Dynamic, v:Dynamic) { return each(v); }, 
-			complete
-		);
+	@:overload(function(q:Dynamic, each:Dynamic->Bool):IDiceRoll {})
+	public static function Values(q:Dynamic, each:Dynamic->Void):IDiceRoll {
+		return All(q, function(p:Dynamic, v:Dynamic) { return each(v); } );
 	}
 	
 	/**
@@ -96,15 +96,14 @@ class Dice {
 	 * @param	each		Value handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail value
 	 */
-	public static function Comparer(q:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null):IDiceRoll {
+	public static function Comparer(q:Dynamic, each:Dynamic->Dynamic->Bool):IDiceRoll {
 		var prev:Dynamic = null;
 		return All(q, 
 			function(p:Dynamic, v:Dynamic) {
 				var r = each(v, prev);
 				prev = v;
 				return r;
-			}, 
-			complete
+			}
 		);
 	}
 	
@@ -116,12 +115,7 @@ class Dice {
 	 */
 	public static function Extract(q:Dynamic, fields:Array<String>):Dynamic {
 		var r:Dynamic = {};
-		Values(
-			fields, 
-			function(v:String){
-				Reflect.setField(r, v, Reflect.field(q, v));
-			}
-		);
+		Values(fields, function(v:String){ Reflect.setField(r, v, Reflect.field(q, v)); } );
 		return r;
 	}
 	
@@ -171,14 +165,13 @@ class Dice {
 	public static function Call(q:Array<Dynamic>, method:String, ?args:Array<Dynamic>):IDiceRoll {
 		if (args == null) args = [];
 		return All(q,
-			function(p:Dynamic, v:Dynamic) {
+			function(p:Dynamic, v:Dynamic):Void {
 				#if js
 					js.Syntax.code("v[method].apply({0},{1})", q, args);
 				#elseif php
 					Reflect.callMethod(v, Reflect.field(v, method), args); 
 				#end
-			},
-			null
+			}
 		);
 	}
 	
@@ -298,7 +291,7 @@ class Dice {
 	}
 	
 	/**
-	 * Sort all data in a vector by key
+	 * Sort all data in a vector, case insensitive, special characteres of a string will be changed for better result (á=a,é=e,ñ=n,...etc)
 	 * @param	data
 	 * @param	key
 	 * @param	numeric
@@ -308,26 +301,39 @@ class Dice {
 		var r:Array<Dynamic> = copy == true ? [].concat(data) : data;
 		if (numeric) {
 			// INT objA.key < INT objB.key
-			if(key != null)
+			if(key != null) {
 				ArraySort.sort(r, function (a:Int, b:Int):Int {
 					return Reflect.field(a, key) < Reflect.field(b, key) ? -1 : 1;
 				});
+			}
 			// INT a < INT b
-			else
+			else {
 				ArraySort.sort(r, function (a:Int, b:Int):Int {
 					return a < b ? -1 : 1;
 				});
+			}
+		}else {
+			// try to cache to minimize cpu usage
+			var cache:Dynamic = { };
+			function cached(q:String):String {
+				if(!Reflect.hasField(cache, q)){
+					Reflect.setField(cache, q, SearchTag.clear(q));
+				}
+				return Reflect.field(cache, q);
+			}
+			// objA.key < objB.key
+			if (key != null){
+				ArraySort.sort(r, function (a:Dynamic, b:Dynamic):Int {
+					return Reflect.compare(cached(Reflect.field(a, key)), cached(Reflect.field(b, key)));
+				});
+			} 
+			// STR a < STR b
+			else {
+				ArraySort.sort(r, function (a:Dynamic, b:Dynamic):Int {
+					return Reflect.compare(cached(a),cached(b));
+				});
+			}
 		}
-		// objA.key < objB.key
-		else if(key != null)
-			ArraySort.sort(r, function (a:Dynamic, b:Dynamic):Int {
-				return Reflect.compare(SearchTag.clear(Reflect.field(a, key)),SearchTag.clear(Reflect.field(b, key)));
-			});
-		// STR a < STR b
-		else
-			ArraySort.sort(r, function (a:Int, b:Int):Int {
-				return Reflect.compare(SearchTag.clear(a),SearchTag.clear(b));
-			});
 		return r;
 	}
 	
@@ -410,5 +416,26 @@ class Dice {
 		}
 	
 	#end
+	
+	public var data:Array<Dynamic>;
+	
+	public var cursor:Int;
+	
+	public function new(data:Array<Dynamic>){
+		this.data = data;
+		reset();
+	}
+	
+	public function next():Bool {
+		return cursor++ < data.length;
+	}
+	
+	public function current():Dynamic {
+		return data[cursor];
+	}
+	
+	public function reset():Void {
+		cursor = -1;
+	}
 	
 }

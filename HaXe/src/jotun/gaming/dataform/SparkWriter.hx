@@ -67,7 +67,7 @@ class SparkWriter {
 		var result:Array<String> = [];
 		var count:Int = 0;
 		var type:String = null;
-		Dice.All(nfo, function(p:Int, value:Dynamic){
+		Dice.All(nfo, function(p:Int, value:Dynamic):Void {
 			value = Reflect.field(o, value);
 			if (Std.isOfType(value, Bool)){
 				type = 'B';

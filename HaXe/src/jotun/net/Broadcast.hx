@@ -35,8 +35,8 @@ class Broadcast {
 	}
 	
 	public function disconnect():Void {
-		Dice.All(_channels, function(p:String, v:Dynamic){
-			Dice.Values(Reflect.field(_listeners, p), function(v1:Dynamic){
+		Dice.All(_channels, function(p:String, v:Dynamic):Void {
+			Dice.Values(Reflect.field(_listeners, p), function(v1:Dynamic):Void {
 				unlisten(p, v1);
 			});
 		});

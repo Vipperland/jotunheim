@@ -148,7 +148,7 @@ class XCode {
 	static public function style(selector:String, value:Dynamic, ?mode:String):Void {
 		if (!Std.isOfType(value, String)){
 			var r:String = '';
-			Dice.All(value, function(p:String, v:Dynamic) {
+			Dice.All(value, function(p:String, v:Dynamic):Void {
 				r += (r == '' ? '' : ';') + (p + ': ' + v);
 			});
 			value = r;
@@ -348,7 +348,7 @@ class XCode {
 		}
 		var css:String = '@keyframes ' + name + '{';
 		var len:Int = values.length;
-		Dice.All(values, function(p:String, v:Dynamic){
+		Dice.All(values, function(p:String, v:Dynamic):Void {
 			var i:Int = Std.int(Std.parseInt(p) / len);
 			css += i + '%{' + v + '}'; 
 		});

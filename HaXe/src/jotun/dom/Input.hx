@@ -222,7 +222,7 @@ class Input extends Display {
 	
 	public function filesToObject(?o:Dynamic):Dynamic {
 		if (o == null){ o = {}; }
-		Dice.All(filesToArray(), function(p:String, v:Blob){
+		Dice.All(filesToArray(), function(p:String, v:Blob):Void {
 			Reflect.setField(o, 'file_' + p, v);
 		});
 		return o;

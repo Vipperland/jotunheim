@@ -43,7 +43,7 @@ interface ITable {
 	 * @param	c
 	 * @return
 	 */
-	public function flush(handler:IDisplay->Void, ?complete:IDiceRoll->Void) : ITable;
+	public function flush(handler:IDisplay->Void) : ITable;
 	
 	/**
 	 * Get the first element

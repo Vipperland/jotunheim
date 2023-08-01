@@ -583,7 +583,7 @@ class Dispatcher implements IDispatcher {
 	
 	/** Clone all event methods */
 	public function cloneFrom(origin:IDispatcher):IDispatcher {
-		Dice.All((cast origin)._e(), function(p:String, v:IEventGroup){
+		Dice.All((cast origin)._e(), function(p:String, v:IEventGroup):Void {
 			on(p).cloneFrom(v);
 		});
 		return this;

@@ -6,6 +6,7 @@ export class BiomeCore {
 	#_biome;
 	#_paused;
 	#_time;
+	#_time_id;
 	#_runables;
 	#_lenght;
 	#_frametime;
@@ -18,7 +19,6 @@ export class BiomeCore {
 		for (let i = 0; i < this.#_frametarget; i++) {
 			this.#_fpsChannels[i] = new FrameChannel(target, diff * i);
 		}
-		setInterval(this.#_render.bind(this), 1);
 	}
 	#_render(){
 		if(!this.#_paused){
@@ -54,7 +54,7 @@ export class BiomeCore {
 	constructor(biome, fps){
 		this.#_time = Date.now();
 		this.#_biome = biome;
-		this.#_paused = false;
+		this.#_paused = true;
 		this.#_runables = [];
 		this.#_lenght = 0;
 		this.#_frametime = 0;
@@ -96,14 +96,21 @@ export class BiomeCore {
 			biome.core.pause();
 	*/
 	pause(){
-		this.#_paused = true;
+		if(this.#_paused == false && this.#_time_id != null){
+			clearInterval(this.#_time_id);
+			this.#_time_id = null;
+			this.#_paused = true;
+		}
 	}
 	/*
 		Resume Biome processor
 			biome.core.resume();
 	*/
 	resume(){
-		this.#_paused = false;
+		if(this.#_paused == true && this.#_time_id == null){
+			this.#_time_id = setInterval(this.#_render.bind(this), 1);
+			this.#_paused = false;
+		}
 	}
 	/*
 		Call a delayed function using the processor. If paused, delayed calls will wait for resume time.

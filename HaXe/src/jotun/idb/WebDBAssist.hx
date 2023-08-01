@@ -23,9 +23,9 @@ class WebDBAssist {
 			WebDB.open(_name, _version, function(db:WebDB){
 				_db = db;
 				if (_db.isUpgradeNeeded()){
-					Dice.All(_layout, function(p:String, v:Dynamic){
+					Dice.All(_layout, function(p:String, v:Dynamic):Void {
 						var t:WebDBTable = db.createTable(p, v.create);
-						Dice.All(v.indexes, function(p1:Dynamic, v1:Dynamic){
+						Dice.All(v.indexes, function(p1:Dynamic, v1:Dynamic):Void {
 							t.addIndex(p1+'_idx', p1, v1.indexes[p1]);
 						});
 					});

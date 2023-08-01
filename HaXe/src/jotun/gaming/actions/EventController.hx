@@ -69,7 +69,7 @@ class EventController implements IEventDispatcher  {
 		_debug = debug == true;
 		if(data != null){
 			events = data;
-			Dice.All(events, function(p:String, v:Dynamic){
+			Dice.All(events, function(p:String, v:Dynamic):Void {
 				Events.patch(this); 
 			});
 		}

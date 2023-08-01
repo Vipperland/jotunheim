@@ -384,7 +384,7 @@ class Pulsar {
 	
 	public function getObject():Dynamic {
 		var r:Dynamic = {};
-		Dice.All(_open_links, function(p:String, v:PulsarLink){
+		Dice.All(_open_links, function(p:String, v:PulsarLink):Void {
 			if (!Reflect.hasField(r, p)){
 				Reflect.setField(r, p, v.getObject(v.isSingle() ? null : []));
 			}else {

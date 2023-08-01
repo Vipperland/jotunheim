@@ -47,7 +47,7 @@ class Ticker {
 	}
 	
 	private static function _tickAll():Void {
-		Dice.All(_pool_high, function(p:Int, v:Dynamic) {
+		Dice.All(_pool_high, function(p:Int, v:Dynamic):Void {
 			if (v != null) {
 				_calcElapsed();
 				v(_etime);
@@ -55,7 +55,7 @@ class Ticker {
 		});
 		_calcElapsed();
 		var shift:Int = 0;
-		Dice.All(_pool_delayed, function(p:Int, v:IDelayedCall) {
+		Dice.All(_pool_delayed, function(p:Int, v:IDelayedCall):Void {
 			if (v != null){
 				if(shift < p){
 					_pool_delayed[shift] = v;
@@ -81,7 +81,7 @@ class Ticker {
 		}
 		_calcElapsed();
 		if (_etime >= 1){
-			Dice.All(_pool_low, function(p:Int, v:Dynamic) {
+			Dice.All(_pool_low, function(p:Int, v:Dynamic):Void {
 				if (v != null) {
 					v();
 				}

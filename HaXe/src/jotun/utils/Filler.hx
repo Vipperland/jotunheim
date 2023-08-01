@@ -23,7 +23,7 @@ class Filler{
 			//content = content.split("{{hide-if:" + path + "}}").join(is_valid ? 'hidden' : '');
 		}else {
 			path = path != null && path != "" ? path + "." : "";
-			Dice.All(data, function(p:String, v:Dynamic) {
+			Dice.All(data, function(p:String, v:Dynamic):Void {
 				p = '' + p;
 				if (p.substr(0, 1) != '_'){
 					content = _apply(path + p, content, v);
@@ -44,7 +44,7 @@ class Filler{
 	static public function to(value:String, data:Dynamic, ?sufix:String):String {
 		var r:String = "";
 		if (Std.isOfType(data, Array)) {
-			Dice.All(data, function(p:Int, v:Dynamic) {
+			Dice.All(data, function(p:Int, v:Dynamic):Void {
 				Reflect.setField(v, '%0', p);
 				r += _apply(sufix, value, v);
 				Reflect.deleteField(v, '%0');
@@ -66,7 +66,7 @@ class Filler{
 	static public function splitter(value:String, split:String, glue:Array<Dynamic>, ?each:Dynamic->String):String {
 		var r:Array<String>  = value.split(split);
 		if(r.length > 1){
-			Dice.All(r, function(p:Dynamic, v:String) {
+			Dice.All(r, function(p:Dynamic, v:String):Void {
 				if (p < glue.length){
 					var e:Dynamic = glue[p];
 					if (each != null) {

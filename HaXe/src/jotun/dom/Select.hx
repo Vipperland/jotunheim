@@ -133,7 +133,7 @@ class Select extends Display {
 	public function add(option:Dynamic):Dynamic {
 		if (Std.isOfType(option, Array)){
 			var r:Array<Option> = [];
-			Dice.All(option, function(p:Int, v:Dynamic){
+			Dice.All(option, function(p:Int, v:Dynamic):Void {
 				r[p] = cast mount(Filler.to(layout, v));
 			});
 			return r;

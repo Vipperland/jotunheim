@@ -17,7 +17,7 @@ class Events {
 		if (data.events != null){
 			if (!data.events.patched){
 				data.events.patched = true;
-				Dice.All(data.events, function(p:Dynamic, v:Dynamic){
+				Dice.All(data.events, function(p:Dynamic, v:Dynamic):Void {
 					(cast data.events)[p] = new Events(p, v);
 				});
 			}
@@ -38,7 +38,7 @@ class Events {
 		_data = [];
 		var i:UInt = 0;
 		var r:Dynamic = {};
-		Dice.All(data, function(p:String, v:Dynamic){
+		Dice.All(data, function(p:String, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
 				v = EventController.loadAction(v);
 			}

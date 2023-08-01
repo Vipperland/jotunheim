@@ -579,7 +579,7 @@ class Display extends Query implements IDisplay {
 					_style_set(p, v);
 				}
 			}else {
-				Dice.All(p, function(p:Dynamic, v:Dynamic) {
+				Dice.All(p, function(p:Dynamic, v:Dynamic):Void {
 					_style_set(p, v);
 				});
 				return null;

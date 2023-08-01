@@ -26,7 +26,7 @@ class UL extends Display{
 	public function add(li:Dynamic):LI {
 		if (Std.isOfType(li, Array)){
 			var r:Array<LI> = [];
-			Dice.All(li, function(p:Int, v:Dynamic){
+			Dice.All(li, function(p:Int, v:Dynamic):Void {
 				r[p] = cast mount(Filler.to(LAYOUT, v));
 			});
 			return cast r;

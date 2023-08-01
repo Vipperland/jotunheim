@@ -20,7 +20,7 @@ class RequirementQueryGroup extends QueryGroup {
 			Dice.Values(query, function(single:String){
 				if(single != '@result'){
 					context.requirement = single;
-					Dice.All(units, function(p:String, o:RequirementQuery){
+					Dice.All(units, function(p:String, o:RequirementQuery):Void {
 						o.ioContext = context;
 						context.log.push(Utils.prefix('', context.ident+1, '\t') + single + '[' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
 						++idx;
