@@ -127,7 +127,7 @@ class ExtCommand implements IExtCommand {
 	
 	public function log():String {
 		var r:Array<String>  = _query.split('?');
-		Dice.All(r, function(p:Dynamic, v:String) {
+		Dice.All(r, function(p:Dynamic, v:String):Void {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
 				if (Std.isOfType(e, String)) {

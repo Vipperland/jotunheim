@@ -82,18 +82,18 @@ class Display extends Query implements IDisplay {
 		Dice.Values(_DATA, function(v:IDisplay):Void {
 			if(v.element != null){
 				if (!v.element.isConnected){
-					if(v.data().idleTime == null){
-						v.data().idleTime = time;
+					if(v.data.idleTime == null){
+						v.data.idleTime = time;
 						++idle;
 					}else{
-						if((time - v.data().idleTime) > 900000){
+						if((time - v.data.idleTime) > 900000){
 							v.dispose();
 							++count;
 						}else{
 							++idle;
 						}
 					}
-				}else if(v.data().idleTime != null){
+				}else if(v.data.idleTime != null){
 					Reflect.deleteField(v.data(), 'idleTime');
 					++awake;
 				}
@@ -115,6 +115,8 @@ class Display extends Query implements IDisplay {
 	private var _getattr:Bool;
 	
 	private var _setattr:Bool;
+	
+	public var data:Dynamic;
 	
 	public var element:Element;
 	
@@ -146,13 +148,9 @@ class Display extends Query implements IDisplay {
 			_DATA[_uid] = this;
 		}
 		(cast element)._uid = _uid;
-		(cast element).data = {};
+		data = (cast element).data = {};
 		events = new Dispatcher(this);
 		super();
-	}
-	
-	public function data():Dynamic{
-		return (cast element).data;
 	}
 	
 	public function perspective(value:String='1000px', origin:String='50% 50% 0'):Void {
@@ -323,20 +321,20 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function rotateX(x:Float):IDisplay {
-		data().__changed = true;
-		data().__rotationX = Matrix3D.rotateX(x);
+		data.__changed = true;
+		data.__rotationX = Matrix3D.rotateX(x);
 		return this;
 	}
 	
 	public function rotateY(x:Float):IDisplay {
-		data().__changed = true;
-		data().__rotationY = Matrix3D.rotateY(x);
+		data.__changed = true;
+		data.__rotationY = Matrix3D.rotateY(x);
 		return this;
 	}
 	
 	public function rotateZ(x:Float):IDisplay {
-		data().__changed = true;
-		data().__rotationZ = Matrix3D.rotateZ(x);
+		data.__changed = true;
+		data.__rotationZ = Matrix3D.rotateZ(x);
 		return this;
 	}
 	
@@ -354,33 +352,33 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function translate(x:Float, y:Float, z:Float):IDisplay {
-		data().__changed = true;
-		data().__translation = Matrix3D.translate(x, y, z);
+		data.__changed = true;
+		data.__translation = Matrix3D.translate(x, y, z);
 		return this;
 	}
 	
 	public function scale(x:Float, y:Float, z:Float):IDisplay {
-		data().__changed = true;
-		data().__scale = Matrix3D.scale(x, y, z);
+		data.__changed = true;
+		data.__scale = Matrix3D.scale(x, y, z);
 		return this;
 	}
 	
 	public function transform():IDisplay {
-		if (data().__changed){
-			var t:Array<Array<Float>> = data().__transform;
+		if (data.__changed){
+			var t:Array<Array<Float>> = data.__transform;
 			if (t == null) {
 				t = [];
-				data().__transform = t;
+				data.__transform = t;
 				style('transformStyle', 'preserve-3d');
 				style('transformOrigin', '50% 50% 0');
 				css('element3d');
 			}
-			data().__changed = false;
-			t[0] = data().__rotationX;
-			t[1] = data().__rotationY;
-			t[2] = data().__rotationZ;
-			t[3] = data().__scale;
-			t[4] = data().__translation;
+			data.__changed = false;
+			t[0] = data.__rotationX;
+			t[1] = data.__rotationY;
+			t[2] = data.__rotationZ;
+			t[3] = data.__scale;
+			t[4] = data.__translation;
 			style('transform', 'matrix3d(' + Matrix3D.transform(t).join(',') + ')');
 		}
 		return this;

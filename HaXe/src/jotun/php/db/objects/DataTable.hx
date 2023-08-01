@@ -81,10 +81,10 @@ class DataTable implements IDataTable {
 		return this;
 	}
 	
-	public function addAll (?parameters:Dynamic = null) : Array<IQuery> {
+	public function addAll(?parameters:Dynamic = null) : Array<IQuery> {
 		var r:Array<IQuery> = [];
-		Dice.All(parameters, function(v:Dynamic){
-			r[r.length] = add(parameters);
+		Dice.All(parameters, function(p:String, v:Dynamic):Void {
+			r[r.length] = add(v);
 		});
 		return r;
 	}
@@ -172,7 +172,11 @@ class DataTable implements IDataTable {
 	
 	public function optimize(paramaters:Dynamic):Dynamic {
 		var desc:Dynamic = getInfo();
-		Dice.All(paramaters, function(p:String, v:Dynamic) { if (!Reflect.hasField(desc, p)) Reflect.deleteField(paramaters, p); });
+		Dice.All(paramaters, function(p:String, v:Dynamic):Void {
+			if (!Reflect.hasField(desc, p)){
+				Reflect.deleteField(paramaters, p);
+			}
+		});
 		return paramaters;
 	}
 	

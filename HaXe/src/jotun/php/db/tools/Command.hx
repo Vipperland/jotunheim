@@ -62,7 +62,7 @@ class Command implements ICommand {
 	public function bind(parameters:Array<Dynamic>):ICommand {
 		_parameters = parameters;
 		if(statement != null){
-			Dice.All(parameters, function(p:Dynamic, v:Dynamic) {
+			Dice.All(parameters, function(p:Dynamic, v:Dynamic):Void  {
 				statement.bindValue(1+p, v, _getType(v));
 				Reflect.setField(_parameters, p, v);
 			});
@@ -100,7 +100,7 @@ class Command implements ICommand {
 	
 	public function log():String {
 		var r:Array<String>  = _query.split('?');
-		Dice.All(r, function(p:Dynamic, v:String) {
+		Dice.All(r, function(p:Dynamic, v:String):Void {
 			if (p < _parameters.length){
 				var e:Dynamic = _parameters[p];
 				if (Std.isOfType(e, String)){

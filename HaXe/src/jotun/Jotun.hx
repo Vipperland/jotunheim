@@ -9,9 +9,6 @@ import jotun.net.ILoader;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.net.Loader;
-import jotun.signals.Observer;
-import jotun.timer.Timer;
-import jotun.tools.DisplayCache;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -26,8 +23,11 @@ import jotun.utils.Dice;
 	import jotun.dom.Script;
 	import jotun.dom.Style;
 	import jotun.net.Broadcast;
-	import jotun.tools.IAgent;
+	import jotun.signals.Observer;
+	import jotun.timer.Timer;
 	import jotun.tools.Agent;
+	import jotun.tools.IAgent;
+	import jotun.tools.DisplayCache;
 #elseif php
 	import php.Lib;
 	import jotun.php.db.Gate;

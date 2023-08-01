@@ -32,7 +32,7 @@ class QueryBuilder implements IQueryBuilder {
 		var r:Array<String> = [];
 		var q:Array<String> = [];
 		var i:UInt = 0;
-		Dice.All(parameters, function(p:String, v:Dynamic) { 
+		Dice.All(parameters, function(p:String, v:Dynamic):Void { 
 			r[i] = p; 
 			q[i] = "?"; 
 			++i;
@@ -44,7 +44,7 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private function _updateSet(parameters:Dynamic, dataset:Array<Dynamic>):String {
 		var q:Array<String> = [];
-		Dice.All(parameters, function(p:String, v:Dynamic) { 
+		Dice.All(parameters, function(p:String, v:Dynamic):Void { 
 			q[q.length] = p + "=?"; 
 			dataset[dataset.length] = v;
 		});
@@ -54,7 +54,9 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private function _order(obj:Dynamic):String {
 		var r:Array<String> = [];
-		Dice.All(obj, function(p:String, v:Dynamic) { r[r.length] = p + (v != null ? " " + v : ""); } );
+		Dice.All(obj, function(p:String, v:Dynamic):Void {
+			r[r.length] = p + (v != null ? " " + v : "");
+		} );
 		return r.join(",");
 	}
 	
@@ -76,7 +78,7 @@ class QueryBuilder implements IQueryBuilder {
 		}
 		// IF IS AN ARRAY, PARSE INNER OBJECTS
 		else if(Std.isOfType(obj, Array)){
-			Dice.All(obj, function(p:String, v:Dynamic) {
+			Dice.All(obj, function(p:String, v:Dynamic):Void {
 				v = _conditions(v, props, Std.isOfType(v, Clause) ? v.joiner() : joiner, skip);
 				if (v != null){
 					r[r.length] = v;
@@ -90,7 +92,7 @@ class QueryBuilder implements IQueryBuilder {
 		else if(obj != null) {
 			if (Std.isOfType(obj.value, Array)){
 				r[r.length] = Filler.to(obj.condition, { p:obj.param } ) ;
-				Dice.All(obj.value, function(p:String, v:Dynamic){
+				Dice.All(obj.value, function(p:String, v:Dynamic):Void {
 					props[props.length] = v;
 				});
 			}else {

@@ -24,17 +24,17 @@ interface IDisplay extends IQuery {
 	/**
 	 * Default target element
 	 */
-	public var element : Element;
+	public var element: Element;
 	
 	/**
 	 * Custom Event Dispatcher
 	 */
-	public var events : IDispatcher;
+	public var events: IDispatcher;
 	
 	/**
 	 * Custom data
 	 */
-	public function data():Dynamic;
+	public var data: Dynamic;
 	/**
 	 * Check if a selector exists
 	 * @return

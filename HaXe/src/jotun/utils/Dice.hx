@@ -27,8 +27,7 @@ class Dice {
 	 * @param	complete	On propagation stop handler, call it with fail param and value
 	 * @return	Last value
 	 */
-	@:overload(function(q:Dynamic, each:Dynamic->Dynamic->Void):IDiceRoll {})
-	public static function All(q:Dynamic, each:Dynamic->Dynamic->Bool):IDiceRoll {
+	public static function All(q:Dynamic, each:Dynamic):IDiceRoll {
 		var v:Dynamic = null;
 		var p:Dynamic = null;
 		var i:Bool = true;
@@ -48,7 +47,7 @@ class Dice {
 						continue;
 					}
 				#end
-				if ((cast each(p, v)) == true) {
+				if (each(p, v) == true) {
 					i = false;
 					break;
 				}else {
@@ -75,8 +74,7 @@ class Dice {
 	 * @param	each		Parameter handler, return true to stop propagation
 	 * @param	complete	On propagation stop handler, call it with fail parameter
 	 */
-	@:overload(function(q:Dynamic, each:Dynamic->Bool,):IDiceRoll {})
-	public static function Params(q:Dynamic, each:Dynamic->Void):IDiceRoll {
+	public static function Params(q:Dynamic, each:Dynamic):IDiceRoll {
 		return All(q, function(p:Dynamic, v:Dynamic) { return each(p); } );
 	}
 	
@@ -85,8 +83,7 @@ class Dice {
 	 * @param	q		Target object
 	 * @param	each		Value handler, return true to stop propagation
 	 */
-	@:overload(function(q:Dynamic, each:Dynamic->Bool):IDiceRoll {})
-	public static function Values(q:Dynamic, each:Dynamic->Void):IDiceRoll {
+	public static function Values(q:Dynamic, each:Dynamic):IDiceRoll {
 		return All(q, function(p:Dynamic, v:Dynamic) { return each(v); } );
 	}
 	

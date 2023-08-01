@@ -95,7 +95,7 @@ class Uploader {
 						}
 						// Generate new filename
 						var ext:String = name.split(".").pop();
-						var nName:String = _autoRename ? Jotun.tick + '_' + Key.GEN(8) + '.' + ext : name;
+						var nName:String = _autoRename ? Jotun.time + '_' + Key.GEN(8) + '.' + ext : name;
 						// save file to disk
 						fileStream = File.write(_path + nName, true);
 						var file:FileInfo = new FileInfo(ext, name, nName);
@@ -129,7 +129,7 @@ class Uploader {
 					// size.type = EXTENSION
 					// v.type = EXTENSION
 					// image.type = INT
-					Dice.All(_sizes, function(p:String, trfm:Dynamic){
+					Dice.All(_sizes, function(p:String, trfm:Dynamic):Void {
 						
 						var o:String = _path + v.output;
 						

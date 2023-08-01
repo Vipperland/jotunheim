@@ -27,7 +27,7 @@ class Dispatcher implements IDispatcher {
 	
 	/** @private */
 	private function _e():Dynamic {
-		return target.data()._events;
+		return target.data._events;
 	}
 	
 	/**
@@ -36,7 +36,7 @@ class Dispatcher implements IDispatcher {
 	 * @param	q
 	 */
 	public function new(q:IDisplay){
-		q.data()._events = { };
+		q.data._events = { };
 		target = q;
 	}
 	
