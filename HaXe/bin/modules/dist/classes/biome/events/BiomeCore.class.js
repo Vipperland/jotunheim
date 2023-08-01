@@ -7,7 +7,7 @@ export class BiomeCore {
 	#_paused;
 	#_time;
 	#_time_id;
-	#_runables;
+	#_processes;
 	#_lenght;
 	#_frametime;
 	#_frametarget;
@@ -25,7 +25,7 @@ export class BiomeCore {
 			let time = Date.now();
 			this.#_frametime = time - this.#_time;
 			for (let i = 0; i < this.#_lenght; i++) {
-				this.#_runables[i]();
+				this.#_processes[i]();
 			}
 			for (let i = 0; i < this.#_frametarget; i++) {
 				this.#_fpsChannels[i].tick(this.#_frametime);
@@ -40,7 +40,7 @@ export class BiomeCore {
 	*/
 	get frameChannel(){
 		if(this.#_fpsChannel >= this.#_frametarget){
-			this.#_fpsChannel -= this.#_frametarget;
+			this.#_fpsChannel = 0;
 		}
 		return this.#_fpsChannels[this.#_fpsChannel++].info;
 	}
@@ -55,7 +55,7 @@ export class BiomeCore {
 		this.#_time = Date.now();
 		this.#_biome = biome;
 		this.#_paused = true;
-		this.#_runables = [];
+		this.#_processes = [];
 		this.#_lenght = 0;
 		this.#_frametime = 0;
 		this.#_frametarget = fps || 60;
@@ -75,8 +75,8 @@ export class BiomeCore {
 			biome.core.add(method);
 	*/
 	add(handler){
-		if(!this.#_runables.includes(handler)){
-			this.#_runables[this.#_lenght] = handler;
+		if(!this.#_processes.includes(handler)){
+			this.#_processes[this.#_lenght] = handler;
 			++this.#_lenght;
 		}
 	}
@@ -85,9 +85,9 @@ export class BiomeCore {
 			biome.core.remove(method);
 	*/
 	remove(handler){
-		var iof = this.#_runables.indexOf(handler);
+		var iof = this.#_processes.indexOf(handler);
 		if(iof != -1){
-			this.#_runables.splice(iof, 1);
+			this.#_processes.splice(iof, 1);
 			--this.#_lenght;
 		}
 	}

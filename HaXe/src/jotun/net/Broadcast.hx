@@ -3,7 +3,6 @@ import haxe.Json;
 import jotun.data.Logger;
 import jotun.events.Event;
 import jotun.tools.Key;
-import jotun.tools.Ticker;
 import jotun.utils.Dice;
 import js.Browser;
 import js.Lib;

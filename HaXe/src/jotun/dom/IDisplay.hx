@@ -318,22 +318,6 @@ interface IDisplay extends IQuery {
 	public function react(data:Dynamic):Void;
 	
 	/**
-	 * Enable autonomous render proccess
-	 */
-	public function connect():Void;
-	
-	/**
-	 * Disable autonomous render proccess
-	 */
-	public function disconnect():Void;
-	
-	/**
-	 * Set autonomous render method callback
-	 * @param	method
-	 */
-	public function setRenderRequest(method:IDisplay->Float->Void):Void;
-	
-	/**
 	 * Remove all elements or set innerHTML to empty
 	 * @param	fast		Use innerHtml='' instead of remove each element
 	 * @return

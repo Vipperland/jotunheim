@@ -9,6 +9,9 @@ import jotun.net.ILoader;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.net.Loader;
+import jotun.signals.Observer;
+import jotun.timer.Timer;
+import jotun.tools.DisplayCache;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -71,6 +74,15 @@ class Jotun {
 		
 		/// Main document (if available)
 		static public var document:Document;
+		
+		/// Main timer
+		static public var timer:Timer = new Timer();
+		
+		/// Main timer
+		static public var cache:DisplayCache = new DisplayCache();
+		
+		/// Main timer
+		static public var observer:Observer = new Observer();
 		
 		/// Browser information
 		static public var agent:IAgent = new Agent();
@@ -231,7 +243,7 @@ class Jotun {
 		
 		static public var loader:ILoader = new Loader();
 		
-		static public var tick:UInt = php.Syntax.codeDeref('time()');
+		static public var time:UInt = php.Syntax.codeDeref('time()');
 		
 		static public function require(file:String):Void {
 			php.Syntax.codeDeref('require_once({0})', file);

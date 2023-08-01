@@ -10,7 +10,6 @@ import jotun.events.IDispatcher;
 import jotun.math.Matrix3D;
 import jotun.math.Point;
 import jotun.objects.Query;
-import jotun.tools.Ticker;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -117,19 +116,9 @@ class Display extends Query implements IDisplay {
 	
 	private var _setattr:Bool;
 	
-	private var _connected:Bool;
-	
-	private var _updateRequest:IDisplay->Float->Void;
-	
 	public var element:Element;
 	
 	public var events:IDispatcher;
-	
-	private function _onTick(time:Float):Void {
-		if(_updateRequest != null){
-			_updateRequest(this, time);
-		}
-	}
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
 		if (Std.isOfType(p, String) && v != null) {
@@ -797,22 +786,6 @@ class Display extends Query implements IDisplay {
 		Reactor.apply(this, data);
 	}
 	
-	public function connect():Void {
-		_connected = true;
-		Ticker.addHigh(_onTick);
-	}
-	
-	public function disconnect():Void {
-		if(_connected){
-			_connected = false;
-			Ticker.remove(_onTick);
-		}
-	}
-	
-	public function setRenderRequest(method:IDisplay->Float->Void):Void {
-		_updateRequest = method;
-	}
-	
 	public function rectangle():Dynamic {
 		var r:DOMRect = getBounds();
 		return {
@@ -852,10 +825,6 @@ class Display extends Query implements IDisplay {
 			}
 			if (events != null){
 				events.dispose();
-			}
-			if(_connected){
-				dispose();
-				_updateRequest = null;
 			}
 			all('[jtn-id]').dispose();
 			remove();
