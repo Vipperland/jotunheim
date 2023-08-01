@@ -15,7 +15,6 @@ import jotun.utils.Dice;
 #if js
 	import js.Browser;
 	import js.html.Event;
-	//import jotun.ai.Thinker;
 	import jotun.utils.ITable;
 	import jotun.utils.Table;
 	import jotun.dom.Document;
@@ -38,7 +37,6 @@ import jotun.utils.Dice;
 
 
 /**
- * 191104010157
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */

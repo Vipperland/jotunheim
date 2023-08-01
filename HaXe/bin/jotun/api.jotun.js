@@ -8892,7 +8892,6 @@ jotun_timer__$Timer_FrameChannelProxy.prototype = {
 				this.processes[i]();
 			}
 			this.time -= this.target;
-			this.channel.active = false;
 		}
 	}
 	,__class__: jotun_timer__$Timer_FrameChannelProxy
