@@ -2,7 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-export class BiomeCore {
+export default class Brain {
 	#_biome;
 	#_paused;
 	#_time;

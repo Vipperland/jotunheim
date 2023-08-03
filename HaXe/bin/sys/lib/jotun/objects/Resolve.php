@@ -17,7 +17,7 @@ class Resolve implements IResolve {
 	 * 
 	 * @return void
 	 */
-	public function deleteProp ($name) {
+	public function delProp ($name) {
 		#src/jotun/objects/Resolve.hx:18: characters 3-34
 		\Reflect::deleteField($this, $name);
 	}

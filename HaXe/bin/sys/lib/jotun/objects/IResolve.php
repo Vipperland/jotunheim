@@ -16,7 +16,7 @@ interface IResolve {
 	 * 
 	 * @return void
 	 */
-	public function deleteProp ($name) ;
+	public function delProp ($name) ;
 
 	/**
 	 * @param string $name

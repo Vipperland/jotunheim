@@ -2,9 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeScan} from '../data/BiomeScan.class.js';
-import {BiomeUtils} from '../data/BiomeUtils.class.js';
-export class BiomeTile {
+export default class Tile {
 	#_id;
 	#_x;
 	#_y;
@@ -211,7 +209,7 @@ export class BiomeTile {
 		Iterate all objects occupying this tile
 	*/
 	objects(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0;i<this.#_objects.length;++i){
 			filter.add(this.#_objects[i]);
 			if(!filter.active){
@@ -249,13 +247,14 @@ export class BiomeTile {
 		if(!this.#_junctions.includes(room)){
 			this.#_junctions.push(room);
 			this.#_locked = false;
+			this.#_biome.heart.call(biome.data.Constants.EVT_TILE_UPDATE, this);
 		}
 	}
 	/*
 		Iterate all doors/junctions in this tile
 	*/
 	junctions(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0;i<this.#_junctions.length;++i){
 			filter.add(this.#_junctions[i]);
 			if(!filter.active){
@@ -279,7 +278,7 @@ export class BiomeTile {
 		Get all four neightbors
 	*/
 	neighbors(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		filter.add(this.tileTop);
 		filter.add(this.tileRight);
 		filter.add(this.tileBottom);
@@ -290,7 +289,7 @@ export class BiomeTile {
 		Get all eight neightbors
 	*/
 	surroundings(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		filter.add(this.tileTop);
 		filter.add(this.tileTopRight);
 		filter.add(this.tileRight);
@@ -305,13 +304,21 @@ export class BiomeTile {
 		Lock this tile in pathfind
 	*/
 	lock(){
-		this.#_locked = this.#_junctions.length == 0 && value == true;
+		if(!this.#_locked){
+			if(this.#_junctions.length == 0){
+				this.#_locked = true;
+				this.#_biome.heart.call(biome.data.Constants.EVT_TILE_UPDATE, this);
+			}
+		}
 	}
 	/*
 		Unlock this tile in pathfind
 	*/
 	unlock(){
-		return this.#_locked;
+		if(this.#_locked){
+			this.#_locked = false;
+			this.#_biome.heart.call(biome.data.Constants.EVT_TILE_UPDATE, this);
+		}
 	}
 	toString(){
 		return "[BiomeTile{id:" + this.id + "}]";

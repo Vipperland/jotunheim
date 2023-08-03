@@ -2,6 +2,7 @@ package jotun.net;
 import jotun.gaming.dataform.Pulsar;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
+import jotun.utils.Dice;
 import php.Lib;
 import php.Web;
 
@@ -28,7 +29,22 @@ class Header {
 		
 	}
 	
-	public function access(origin:String = '*', ?methods:String = 'GET,POST,OPTIONS', ?headers:String = 'Origin,Content-Type,Accept,Authorization,X-Request-With', ?credentials:Bool = true):Void {
+	public function isRequestMethod(method:String):Bool {
+		return Jotun.domain.data.REQUEST_METHOD.toUpperCase() == method.toUpperCase();
+	}
+	
+	public function isOrigin(origin:Dynamic):Bool {
+		var c:String = Jotun.domain.data.HTTP_ORIGIN.toLowerCase();
+		if(Std.isOfType(origin, Array)){
+			return !Dice.Values(origin, function(v:String){
+				return c.indexOf(v) != -1;
+			}).completed;
+		}else{
+			return c.indexOf(origin) != -1;
+		}
+	}
+	
+	public function access(origin:String = '*', ?methods:String = 'POST, GET, DELETE, PUT, PATCH, OPTIONS', ?headers:String = 'Origin,Content-Type,Accept,Authorization,X-Request-With', ?credentials:Bool = true):Void {
 		Web.setHeader('Access-Control-Allow-Origin', origin);
 		Web.setHeader('Access-Control-Allow-Methods', methods);
 		Web.setHeader('Access-Control-Allow-Headers', headers);

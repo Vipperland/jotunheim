@@ -2,7 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-export class BiomeLocation {
+export default class Location {
 	x;
 	y;
 	w;
@@ -11,9 +11,10 @@ export class BiomeLocation {
 	yT;
 	wT;
 	hT;
-	constructor(x, y, width, height){
+	c;
+	constructor(x, y, w, h){
 		this.move(x, y);
-		this.scale(width, height);
+		this.scale(w, h);
 		this.sync();
 	}
 	/*
@@ -24,6 +25,7 @@ export class BiomeLocation {
 		this.y = this.yT;
 		this.w = this.wT;
 		this.h = this.hT;
+		this.c = false;
 	}
 	/*
 		Top location
@@ -86,18 +88,40 @@ export class BiomeLocation {
 		return this.yT - (this.hT >> 1);
 	}
 	/*
+		Set [x,y] to this location
+	*/
+	place(x,y){
+		this.xT = x;
+		this.yT = y;
+		this.c = true;
+	}
+	/*
 		Move [x,y] by a ammount
 	*/
 	move(x,y){
 		this.xT = x;
 		this.yT = y;
+		this.c = true;
 	}
 	/*
 		Scale [width,height] by a ammount
 	*/
-	scale(width, height){
-		this.wT = width;
-		this.hT = height;
+	scale(w, h){
+		this.wT = w;
+		this.hT = h;
+		this.c = true;
 	}
-	
+	/*
+		Cancel the changes
+	*/
+	revert(){
+		this.xT = this.x;
+		this.yT = this.y;
+		this.wT = this.w;
+		this.hT = this.h;
+		this.c = false;
+	}
+	get changed(){
+		return this.c;
+	}
 }

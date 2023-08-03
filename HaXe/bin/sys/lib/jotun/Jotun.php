@@ -18,7 +18,6 @@ use \jotun\data\Logger;
 use \jotun\net\Domain;
 
 /**
- * 191104010157
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
@@ -55,7 +54,7 @@ class Jotun {
 	/**
 	 * @var int
 	 */
-	static public $tick;
+	static public $time;
 
 	/**
 	 * Level controlled log
@@ -69,7 +68,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function log ($q, $type = -1) {
-		#src/jotun/Jotun.hx:274: characters 3-23
+		#src/jotun/Jotun.hx:286: characters 3-23
 		if ($type === null) {
 			$type = -1;
 		}
@@ -95,12 +94,12 @@ class Jotun {
 	 * @return void
 	 */
 	public static function module ($file, $content = null, $handler = null) {
-		#src/jotun/Jotun.hx:245: lines 245-249
+		#src/jotun/Jotun.hx:257: lines 257-261
 		if (HxString::indexOf($file, "http") === -1) {
-			#src/jotun/Jotun.hx:246: characters 5-28
+			#src/jotun/Jotun.hx:258: characters 5-28
 			Jotun::$resources->prepare($file);
 		} else {
-			#src/jotun/Jotun.hx:248: characters 5-42
+			#src/jotun/Jotun.hx:260: characters 5-42
 			Jotun::$loader->module($file, $content, $handler);
 		}
 	}
@@ -121,7 +120,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function request ($url, $data = null, $method = "post", $handler = null, $headers = null) {
-		#src/jotun/Jotun.hx:261: characters 4-55
+		#src/jotun/Jotun.hx:273: characters 4-55
 		if ($method === null) {
 			$method = "post";
 		}
@@ -134,7 +133,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function require ($file) {
-		#src/jotun/Jotun.hx:235: characters 4-51
+		#src/jotun/Jotun.hx:247: characters 4-51
 		require_once($file);
 	}
 
@@ -155,7 +154,7 @@ class Jotun {
 		self::$header = new Header();
 		self::$gate = new Gate();
 		self::$loader = new Loader();
-		self::$tick = time();
+		self::$time = time();
 	}
 }
 

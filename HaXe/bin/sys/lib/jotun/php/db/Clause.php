@@ -311,9 +311,9 @@ class Clause {
 		if (($values instanceof \Array_hx)) {
 			#src/jotun/php/db/Clause.hx:131: characters 4-29
 			$q = new \Array_hx();
-			#src/jotun/php/db/Clause.hx:132: characters 4-73
+			#src/jotun/php/db/Clause.hx:132: characters 4-79
 			Dice::All($values, function ($p, $v) use (&$q) {
-				#src/jotun/php/db/Clause.hx:132: characters 52-69
+				#src/jotun/php/db/Clause.hx:132: characters 58-75
 				$q->offsetSet($q->length, "?");
 			});
 			#src/jotun/php/db/Clause.hx:133: characters 4-84
@@ -455,9 +455,9 @@ class Clause {
 		if (($values instanceof \Array_hx)) {
 			#src/jotun/php/db/Clause.hx:147: characters 4-29
 			$q = new \Array_hx();
-			#src/jotun/php/db/Clause.hx:148: characters 4-73
+			#src/jotun/php/db/Clause.hx:148: characters 4-79
 			Dice::All($values, function ($p, $v) use (&$q) {
-				#src/jotun/php/db/Clause.hx:148: characters 52-69
+				#src/jotun/php/db/Clause.hx:148: characters 58-75
 				$q->offsetSet($q->length, "?");
 			});
 			#src/jotun/php/db/Clause.hx:149: characters 4-88

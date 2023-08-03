@@ -2,11 +2,9 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeConstants} from '../data/BiomeConstants.class.js';
-import {BiomeUtils} from '../data/BiomeUtils.class.js';
-import {BiomeLocation} from '../math/BiomeLocation.class.js';
 var OBJECT_UID = 0;
-export class BiomeObject {
+const NO_ROOM = {x:0, y:0, w:0, h:0, top:0, left:0, bottom:0, right: 0};
+export default class StaticObject {
 	#_id;
 	#_name;
 	#_data;
@@ -15,7 +13,7 @@ export class BiomeObject {
 	#_pending;
 	#_updated;
 	#_options;
-	#_position;
+	#_area;
 	#_blocked;
 	#_test(flag){
 		return (this.#_options & flag) == flag;
@@ -27,23 +25,23 @@ export class BiomeObject {
 		this.#_id = '' + OBJECT_UID++;
 		this.#_name = name;
 		this.#_data = data || {};
-		this.#_options = options || BiomeConstants.TILE_WALKABLE;
-		this.#_position = new BiomeLocation(x, y, width, height);
+		this.#_options = options || biome.data.Constants.TILE_WALKABLE;
+		this.#_area = new biome.data.Location(x, y, width, height);
 	}
 	get room(){
 		return this.#_room;
 	}
 	set room(value){
-		this.#_room = value;
+		this.#_room = value || NO_ROOM;
 	}
 	get biome(){
 		return this.room.biome;
 	}
 	get isWalkable(){
-		return !this.#_blocked && this.#_test(BiomeConstants.TILE_WALKABLE);
+		return !this.#_blocked && this.#_test(biome.data.Constants.TILE_WALKABLE);
 	}
 	get isSolid(){
-		return this.#_test(BiomeConstants.TILE_SOLID);
+		return this.#_test(biome.data.Constants.TILE_SOLID);
 	}
 	get data(){
 		return this.#_data;
@@ -55,34 +53,34 @@ export class BiomeObject {
 		return this.#_name;
 	}
 	get top(){
-		return this.room.top + this.#_position.yT;
+		return this.room.top + this.#_area.yT;
 	}
 	get left(){
-		return this.room.left + this.#_position.xT;
+		return this.room.left + this.#_area.xT;
 	}
 	get bottom(){
-		return this.room.top +this.#_position.yT + this.#_position.hT - 1;
+		return this.room.top +this.#_area.yT + this.#_area.hT - 1;
 	}
 	get right(){
-		return this.room.left + this.#_position.xT + this.#_position.wT - 1;
+		return this.room.left + this.#_area.xT + this.#_area.wT - 1;
 	}
 	get localX(){
-		return this.#_position.xT;
+		return this.#_area.xT;
 	}
 	get localY(){
-		return this.#_position.yT;
+		return this.#_area.yT;
 	}
-	get biomeX(){
-		return (this.room ? this.room.left + this.#_position.xT: 0);
+	get globalX(){
+		return (this.room ? this.room.left + this.#_area.xT: 0);
 	}
-	get biomeY(){
-		return (this.room ? this.room.top + this.#_position.yT: 0);
+	get globalY(){
+		return (this.room ? this.room.top + this.#_area.yT: 0);
 	}
 	get biomePivotX(){
-		return this.left + (this.#_position.wT >> 1);
+		return this.left + (this.#_area.wT >> 1);
 	}
 	get biomePivotY(){
-		return this.top + (this.#_position.hT >> 1);
+		return this.top + (this.#_area.hT >> 1);
 	}
 	get visible(){
 		return this.room && this.#_visible;
@@ -146,7 +144,7 @@ export class BiomeObject {
 			this.#_updated = false;
 			if(this.room && this.room.biome){
 				this.#_unload();
-				this.#_position.sync();
+				this.#_area.sync();
 				this.#_load();
 			}
 			return true;
@@ -154,14 +152,20 @@ export class BiomeObject {
 			return false;
 		}
 	}
+	place(x,y){
+		this.#_area.place(x,y);
+	}
 	move(x,y){
-		this.#_position.move(x,y);
+		this.#_area.move(x,y);
 	}
 	scale(w,h){
-		this.#_position.scale(w,h);
+		this.#_area.scale(w,h);
 	}
-	get position(){
-		return this.#_position;
+	get changed(){
+		return this.#_area.changed;
+	}
+	get revert(){
+		return this.#_area.revert;
 	}
 	get tx(){
 		return this.#_room.biome.area.tx(this.biomeX);
@@ -173,7 +177,7 @@ export class BiomeObject {
 		
 	**/
 	outerTiles(){
-		var tiles = BiomeUtils.scanner();
+		var tiles = biome.data.Utils.scanner();
 		this.room.biome.map(this.left-1, this.top-1, this.right+1, this.top-1, tiles);
 		this.room.biome.map(this.right+1, this.top, this.right+1, this.bottom, tiles);
 		this.room.biome.map(this.left-1, this.top, this.left-1, this.bottom, tiles);
@@ -192,36 +196,36 @@ export class BiomeObject {
 		return this.room.biome.signal(this.biomePivotX, this.biomePivotY, distance, filter);
 	}
 	raycast(direction, distance, filter){
-		var tiles = BiomeUtils.scanner();
+		var tiles = biome.data.Utils.scanner();
 		switch(direction){
-			case BiomeConstants.TOP : {
+			case Constants.TOP : {
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				tiles.data = [{x:0,y:-1}];
 				break;
 			}
-			case BiomeConstants.TOP_RIGHT : {
+			case Constants.TOP_RIGHT : {
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				tiles.data = [{x:1,y:-1}];
 				break;
 			}
-			case BiomeConstants.RIGHT : {
+			case Constants.RIGHT : {
 				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
 				tiles.data = [{x:1,y:0}];
 				break;
 			}
-			case BiomeConstants.BOTTOM_RIGHT : {
+			case Constants.BOTTOM_RIGHT : {
 				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
 				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
 				tiles.data = [{x:1,y:1}];
 				break;
 			}
-			case BiomeConstants.BOTTOM : {
+			case Constants.BOTTOM : {
 				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
 				tiles.data = [{x:0,y:1}];
 				break;
 			}
-			case BiomeConstants.LEFT : {
+			case Constants.LEFT : {
 				this.room.biome.map(this.left, this.top, this.left, this.bottom, tiles);
 				tiles.data = [{x:-1,y:0}];
 				break;

@@ -2,14 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeTile} from './BiomeTile.class.js';
-import {BiomeObject} from './BiomeObject.class.js';
-import {BiomeLiveObject} from './BiomeLiveObject.class.js';
-import {BiomeConstants} from '../data/BiomeConstants.class.js';
-import {BiomeUtils} from '../data/BiomeUtils.class.js';
-import {BiomeLocation} from '../math/BiomeLocation.class.js';
-
-export class BiomeRoom {
+export default class Room {
 	#_name;
 	#_objects;
 	#_updated;
@@ -20,17 +13,17 @@ export class BiomeRoom {
 	#_test(flag,opt){
 		return (flag & opt) == opt;
 	}
-	
 	/*
 		Create a new BiomeRoom
 	*/
 	constructor(name, x, y, width, height, data){
 		this.biome = null;
+		this.data = data || {};
 		this.#_name = name;
 		this.#_objects = [];
 		this.#_updated = [];
 		this.#_doors = [];
-		this.#_position = new BiomeLocation(x, y, width, height);
+		this.#_position = new biome.data.Location(x, y, width, height);
 	}
 	/*
 		The name of this room
@@ -117,7 +110,7 @@ export class BiomeRoom {
 	*/
 	add(object, x, y, width, height, data){
 		if(typeof object == 'string'){
-			object = new BiomeObject(object, x, y, width, height, data);
+			object = new biome.objects.StaticObject(object, x, y, width, height, data);
 		}
 		this.#_objects.push(object);
 		if(this.visible){
@@ -149,7 +142,7 @@ export class BiomeRoom {
 			});
 	*/
 	doors(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0; i<this.#_doors.length; ++i){
 			filter.add(this.#_doors[i]);
 			if(!filter.active){
@@ -230,16 +223,16 @@ export class BiomeRoom {
 			});
 	*/ 
 	outer(options, filter){
-		if(this.#_test(options, BiomeConstants.WALL_TOP)){
+		if(this.#_test(options, biome.data.Constants.WALL_TOP)){
 			this.biome.map(this.left, this.top, this.right, this.top, filter);
 		}
-		if(this.#_test(options, BiomeConstants.WALL_RIGHT)){
+		if(this.#_test(options, biome.data.Constants.WALL_RIGHT)){
 			this.biome.map(this.right, this.top, this.right, this.bottom, filter);
 		}
-		if(this.#_test(options, BiomeConstants.WALL_BOTTOM)){
+		if(this.#_test(options, biome.data.Constants.WALL_BOTTOM)){
 			this.biome.map(this.left, this.bottom, this.right, this.bottom, filter);
 		}
-		if(this.#_test(options, BiomeConstants.WALL_LEFT)){
+		if(this.#_test(options, biome.data.Constants.WALL_LEFT)){
 			this.biome.map(this.left, this.top, this.left, this.bottom, filter);
 		}
 	}
@@ -263,7 +256,7 @@ export class BiomeRoom {
 			});
 	*/
 	objects(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0; i<this.#_objects.length; ++i){
 			filter.add(this.#_objects[i]);
 			if(!filter.active){
@@ -284,7 +277,6 @@ export class BiomeRoom {
 				}
 			}
 			this.#_updated = [];
-			this.biome.heart.call();
 			return true;
 		}else{
 			return false;
@@ -303,7 +295,7 @@ export class BiomeRoom {
 		Return all rooms linked to this by doors
 	*/
 	neighbors(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		let origin = this;
 		function j(r){
 			if(r != origin && !filter.result.includes(r)){

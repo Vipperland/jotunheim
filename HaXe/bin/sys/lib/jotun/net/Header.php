@@ -11,6 +11,8 @@ use \php\_Boot\HxAnon;
 use \jotun\serial\JsonTool;
 use \php\Boot;
 use \php\Lib;
+use \jotun\Jotun;
+use \jotun\utils\Dice;
 use \php\_Boot\HxString;
 
 /**
@@ -56,25 +58,25 @@ class Header {
 	 * @return string
 	 */
 	public function _createPieces ($data, $chunk) {
-		#src/jotun/net/Header.hx:79: characters 3-17
+		#src/jotun/net/Header.hx:95: characters 3-17
 		$f = 0;
-		#src/jotun/net/Header.hx:80: characters 3-27
+		#src/jotun/net/Header.hx:96: characters 3-27
 		$t = mb_strlen($data);
-		#src/jotun/net/Header.hx:81: characters 3-24
+		#src/jotun/net/Header.hx:97: characters 3-24
 		$copy = "";
-		#src/jotun/net/Header.hx:82: lines 82-88
+		#src/jotun/net/Header.hx:98: lines 98-104
 		while ($f < $t) {
-			#src/jotun/net/Header.hx:83: characters 4-33
+			#src/jotun/net/Header.hx:99: characters 4-33
 			$copy = ($copy??'null') . (\mb_substr($data, $f, $chunk)??'null');
-			#src/jotun/net/Header.hx:84: characters 4-14
+			#src/jotun/net/Header.hx:100: characters 4-14
 			$f += $chunk;
-			#src/jotun/net/Header.hx:85: lines 85-87
+			#src/jotun/net/Header.hx:101: lines 101-103
 			if ($f < $t) {
-				#src/jotun/net/Header.hx:86: characters 5-17
+				#src/jotun/net/Header.hx:102: characters 5-17
 				$copy = ($copy??'null') . "\x0A";
 			}
 		}
-		#src/jotun/net/Header.hx:89: characters 3-14
+		#src/jotun/net/Header.hx:105: characters 3-14
 		return $copy;
 	}
 
@@ -86,13 +88,13 @@ class Header {
 	 * 
 	 * @return void
 	 */
-	public function access ($origin = "*", $methods = "GET,POST,OPTIONS", $headers = "Origin,Content-Type,Accept,Authorization,X-Request-With", $credentials = true) {
-		#src/jotun/net/Header.hx:31: lines 31-36
+	public function access ($origin = "*", $methods = "POST, GET, DELETE, PUT, PATCH, OPTIONS", $headers = "Origin,Content-Type,Accept,Authorization,X-Request-With", $credentials = true) {
+		#src/jotun/net/Header.hx:47: lines 47-52
 		if ($origin === null) {
 			$origin = "*";
 		}
 		if ($methods === null) {
-			$methods = "GET,POST,OPTIONS";
+			$methods = "POST, GET, DELETE, PUT, PATCH, OPTIONS";
 		}
 		if ($headers === null) {
 			$headers = "Origin,Content-Type,Accept,Authorization,X-Request-With";
@@ -100,13 +102,13 @@ class Header {
 		if ($credentials === null) {
 			$credentials = true;
 		}
-		#src/jotun/net/Header.hx:32: characters 3-55
+		#src/jotun/net/Header.hx:48: characters 3-55
 		\header("Access-Control-Allow-Origin" . ": " . ($origin??'null'));
-		#src/jotun/net/Header.hx:33: characters 3-57
+		#src/jotun/net/Header.hx:49: characters 3-57
 		\header("Access-Control-Allow-Methods" . ": " . ($methods??'null'));
-		#src/jotun/net/Header.hx:34: characters 3-57
+		#src/jotun/net/Header.hx:50: characters 3-57
 		\header("Access-Control-Allow-Headers" . ": " . ($headers??'null'));
-		#src/jotun/net/Header.hx:35: characters 3-77
+		#src/jotun/net/Header.hx:51: characters 3-77
 		\header("Access-Control-Allow-Credentials" . ": " . \Std::string($credentials));
 	}
 
@@ -116,11 +118,11 @@ class Header {
 	 * @return void
 	 */
 	public function content ($type) {
-		#src/jotun/net/Header.hx:39: lines 39-42
+		#src/jotun/net/Header.hx:55: lines 55-58
 		if (!Header::$hasType) {
-			#src/jotun/net/Header.hx:40: characters 4-18
+			#src/jotun/net/Header.hx:56: characters 4-18
 			Header::$hasType = true;
-			#src/jotun/net/Header.hx:41: characters 4-39
+			#src/jotun/net/Header.hx:57: characters 4-39
 			\header("content-type" . ": " . ($type??'null'));
 		}
 	}
@@ -131,7 +133,7 @@ class Header {
 	 * @return string
 	 */
 	public function getClientHeader ($name) {
-		#src/jotun/net/Header.hx:133: characters 3-63
+		#src/jotun/net/Header.hx:149: characters 3-63
 		return \Reflect::field($this->getClientHeaders(), \mb_strtoupper($name));
 	}
 
@@ -139,33 +141,33 @@ class Header {
 	 * @return mixed
 	 */
 	public function getClientHeaders () {
-		#src/jotun/net/Header.hx:137: lines 137-149
+		#src/jotun/net/Header.hx:153: lines 153-165
 		if (Header::$_client_headers === null) {
-			#src/jotun/net/Header.hx:138: characters 4-19
+			#src/jotun/net/Header.hx:154: characters 4-19
 			Header::$_client_headers = new HxAnon();
-			#src/jotun/net/Header.hx:139: characters 4-73
+			#src/jotun/net/Header.hx:155: characters 4-73
 			$h = Lib::hashOfAssociativeArray($_SERVER);
-			#src/jotun/net/Header.hx:140: characters 14-22
+			#src/jotun/net/Header.hx:156: characters 14-22
 			$data = \array_values(\array_map("strval", \array_keys($h->data)));
 			$_g_current = 0;
 			$_g_length = \count($data);
 			$_g_data = $data;
-			#src/jotun/net/Header.hx:140: lines 140-148
+			#src/jotun/net/Header.hx:156: lines 156-164
 			while ($_g_current < $_g_length) {
 				$k = $_g_data[$_g_current++];
-				#src/jotun/net/Header.hx:141: characters 5-37
+				#src/jotun/net/Header.hx:157: characters 5-37
 				$sk = \mb_strtoupper($k);
-				#src/jotun/net/Header.hx:142: lines 142-147
+				#src/jotun/net/Header.hx:158: lines 158-163
 				if (\mb_substr($sk, 0, 5) === "HTTP_") {
-					#src/jotun/net/Header.hx:143: characters 6-63
+					#src/jotun/net/Header.hx:159: characters 6-63
 					\Reflect::setField(Header::$_client_headers, \mb_substr($sk, 5, null), ($h->data[$k] ?? null));
 				} else if ((\mb_substr($sk, 0, 8) === "CONTENT_") || (\mb_substr($sk, 0, 4) === "AUTH")) {
-					#src/jotun/net/Header.hx:146: characters 6-53
+					#src/jotun/net/Header.hx:162: characters 6-53
 					\Reflect::setField(Header::$_client_headers, $sk, ($h->data[$k] ?? null));
 				}
 			}
 		}
-		#src/jotun/net/Header.hx:150: characters 3-25
+		#src/jotun/net/Header.hx:166: characters 3-25
 		return Header::$_client_headers;
 	}
 
@@ -173,8 +175,39 @@ class Header {
 	 * @return string
 	 */
 	public function getOAuth () {
-		#src/jotun/net/Header.hx:129: characters 3-42
+		#src/jotun/net/Header.hx:145: characters 3-42
 		return $this->getClientHeader("Authorization");
+	}
+
+	/**
+	 * @param mixed $origin
+	 * 
+	 * @return bool
+	 */
+	public function isOrigin ($origin) {
+		#src/jotun/net/Header.hx:37: characters 3-62
+		$c = \mb_strtolower(Jotun::$domain->data->HTTP_ORIGIN);
+		#src/jotun/net/Header.hx:38: lines 38-44
+		if (($origin instanceof \Array_hx)) {
+			#src/jotun/net/Header.hx:39: lines 39-41
+			return !Dice::Values($origin, function ($v) use (&$c) {
+				#src/jotun/net/Header.hx:40: characters 5-30
+				return HxString::indexOf($c, $v) !== -1;
+			})->completed;
+		} else {
+			#src/jotun/net/Header.hx:43: characters 4-34
+			return HxString::indexOf($c, $origin) !== -1;
+		}
+	}
+
+	/**
+	 * @param string $method
+	 * 
+	 * @return bool
+	 */
+	public function isRequestMethod ($method) {
+		#src/jotun/net/Header.hx:33: characters 3-80
+		return \mb_strtoupper(Jotun::$domain->data->REQUEST_METHOD) === \mb_strtoupper($method);
 	}
 
 	/**
@@ -183,13 +216,13 @@ class Header {
 	 * @return void
 	 */
 	public function setHTML ($data = null) {
-		#src/jotun/net/Header.hx:46: characters 3-16
+		#src/jotun/net/Header.hx:62: characters 3-16
 		$this->content(Header::$HTML);
-		#src/jotun/net/Header.hx:47: lines 47-50
+		#src/jotun/net/Header.hx:63: lines 63-66
 		if ($data !== null) {
-			#src/jotun/net/Header.hx:48: characters 4-60
+			#src/jotun/net/Header.hx:64: characters 4-60
 			\header("Content-Length" . ": " . \Std::string(Boot::dynamicField($data, 'length')));
-			#src/jotun/net/Header.hx:49: characters 4-19
+			#src/jotun/net/Header.hx:65: characters 4-19
 			echo(\Std::string($data));
 		}
 	}
@@ -202,13 +235,13 @@ class Header {
 	 * @return void
 	 */
 	public function setJSON ($data = null, $encode = null, $chunk = null) {
-		#src/jotun/net/Header.hx:54: characters 3-16
+		#src/jotun/net/Header.hx:70: characters 3-16
 		$this->content(Header::$JSON);
-		#src/jotun/net/Header.hx:55: lines 55-58
+		#src/jotun/net/Header.hx:71: lines 71-74
 		if ($data !== null) {
-			#src/jotun/net/Header.hx:56: characters 4-47
+			#src/jotun/net/Header.hx:72: characters 4-47
 			$data = JsonTool::stringify($data, null, "\x09");
-			#src/jotun/net/Header.hx:57: characters 4-34
+			#src/jotun/net/Header.hx:73: characters 4-34
 			$this->writeData($data, $encode, $chunk);
 		}
 	}
@@ -219,7 +252,7 @@ class Header {
 	 * @return void
 	 */
 	public function setOAuth ($token) {
-		#src/jotun/net/Header.hx:125: characters 3-40
+		#src/jotun/net/Header.hx:141: characters 3-40
 		\header("Authorization" . ": " . ($token??'null'));
 	}
 
@@ -231,11 +264,11 @@ class Header {
 	 * @return void
 	 */
 	public function setPulsar ($data = null, $encode = null, $chunk = null) {
-		#src/jotun/net/Header.hx:72: characters 3-16
+		#src/jotun/net/Header.hx:88: characters 3-16
 		$this->content(Header::$TEXT);
-		#src/jotun/net/Header.hx:73: lines 73-75
+		#src/jotun/net/Header.hx:89: lines 89-91
 		if ($data !== null) {
-			#src/jotun/net/Header.hx:74: characters 4-51
+			#src/jotun/net/Header.hx:90: characters 4-51
 			$this->writeData($data->toString($encode), $encode, $chunk);
 		}
 	}
@@ -248,16 +281,16 @@ class Header {
 	 * @return void
 	 */
 	public function setTEXT ($data = null, $encode = null, $chunk = null) {
-		#src/jotun/net/Header.hx:62: characters 3-16
+		#src/jotun/net/Header.hx:78: characters 3-16
 		$this->content(Header::$TEXT);
-		#src/jotun/net/Header.hx:63: lines 63-68
+		#src/jotun/net/Header.hx:79: lines 79-84
 		if ($data !== null) {
-			#src/jotun/net/Header.hx:64: lines 64-66
+			#src/jotun/net/Header.hx:80: lines 80-82
 			if (($data instanceof \Array_hx)) {
-				#src/jotun/net/Header.hx:65: characters 5-27
+				#src/jotun/net/Header.hx:81: characters 5-27
 				$data = $data->join("\x0A");
 			}
-			#src/jotun/net/Header.hx:67: characters 4-34
+			#src/jotun/net/Header.hx:83: characters 4-34
 			$this->writeData($data, $encode, $chunk);
 		}
 	}
@@ -268,7 +301,7 @@ class Header {
 	 * @return void
 	 */
 	public function setURI ($value) {
-		#src/jotun/net/Header.hx:121: characters 3-35
+		#src/jotun/net/Header.hx:137: characters 3-35
 		\header("location" . ": " . ($value??'null'));
 	}
 
@@ -280,46 +313,46 @@ class Header {
 	 * @return void
 	 */
 	public function writeData ($data, $encode = null, $chunk = null) {
-		#src/jotun/net/Header.hx:93: lines 93-117
+		#src/jotun/net/Header.hx:109: lines 109-133
 		if ($data !== null) {
-			#src/jotun/net/Header.hx:94: lines 94-100
+			#src/jotun/net/Header.hx:110: lines 110-116
 			if ($encode === true) {
-				#src/jotun/net/Header.hx:95: characters 5-39
+				#src/jotun/net/Header.hx:111: characters 5-39
 				$data = Packager::encodeBase64($data);
-				#src/jotun/net/Header.hx:96: lines 96-99
+				#src/jotun/net/Header.hx:112: lines 112-115
 				if (($chunk !== null) && ($chunk >= 40)) {
-					#src/jotun/net/Header.hx:97: characters 6-48
+					#src/jotun/net/Header.hx:113: characters 6-48
 					\header("Content-Chunk" . ": " . ("" . ($chunk??'null')));
-					#src/jotun/net/Header.hx:98: characters 6-39
+					#src/jotun/net/Header.hx:114: characters 6-39
 					$data = $this->_createPieces($data, $chunk);
 				}
 			}
-			#src/jotun/net/Header.hx:101: characters 4-61
+			#src/jotun/net/Header.hx:117: characters 4-61
 			$compress = Boot::dynamicField($this->getClientHeaders(), 'ACCEPT_ENCODING');
-			#src/jotun/net/Header.hx:102: lines 102-108
+			#src/jotun/net/Header.hx:118: lines 118-124
 			if (HxString::indexOf($compress, "x-gzip") !== -1) {
-				#src/jotun/net/Header.hx:103: characters 5-24
+				#src/jotun/net/Header.hx:119: characters 5-24
 				$compress = "x-gzip";
 			} else if (HxString::indexOf($compress, "gzip") !== -1) {
-				#src/jotun/net/Header.hx:105: characters 5-22
+				#src/jotun/net/Header.hx:121: characters 5-22
 				$compress = "gzip";
 			} else {
-				#src/jotun/net/Header.hx:107: characters 5-20
+				#src/jotun/net/Header.hx:123: characters 5-20
 				$compress = null;
 			}
-			#src/jotun/net/Header.hx:109: lines 109-112
+			#src/jotun/net/Header.hx:125: lines 125-128
 			if ($compress !== null) {
-				#src/jotun/net/Header.hx:110: characters 5-64
+				#src/jotun/net/Header.hx:126: characters 5-64
 				$data = gzcompress($data,1);
-				#src/jotun/net/Header.hx:111: characters 5-48
+				#src/jotun/net/Header.hx:127: characters 5-48
 				\header("Content-Encoding" . ": " . ($compress??'null'));
 			}
-			#src/jotun/net/Header.hx:113: lines 113-115
+			#src/jotun/net/Header.hx:129: lines 129-131
 			if ($compress !== null) {
-				#src/jotun/net/Header.hx:114: characters 5-94
+				#src/jotun/net/Header.hx:130: characters 5-94
 				$data = "\x1F" . \Std::string(chr(139)) . "\x08\x00\x00\x00\x00\x00" . ($data??'null');
 			}
-			#src/jotun/net/Header.hx:116: characters 4-19
+			#src/jotun/net/Header.hx:132: characters 4-19
 			echo(\Std::string($data));
 		}
 	}

@@ -2,13 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeConstants} from './data/BiomeConstants.class.js';
-import {BiomeGrid} from './data/BiomeGrid.class.js';
-import {BiomeUtils} from './data/BiomeUtils.class.js';
-import {BiomeCore} from './events/BiomeCore.class.js';
-import {BiomeHeart} from './events/BiomeHeart.class.js';
-import {BiomeRoom} from './objects/BiomeRoom.class.js';
-export class Biome {
+export default class Biome {
 	#_grid;
 	#_rooms;
 	#_loaded;
@@ -24,7 +18,7 @@ export class Biome {
 	}
 	/*
 		The heart of the Biome create and dispatch signals
-			biome.heart.listen(BiomeConstants.EVT_TILE_CREATED, onEvtHandler);
+			biome.heart.listen(biome.data.Constants.EVT_TILE_CREATED, onEvtHandler);
 	*/
 	get heart(){
 		return this.#_heart;
@@ -43,9 +37,9 @@ export class Biome {
 	constructor(tw,th,fps){
 		this.#_rooms = new Array();
 		this.#_loaded = new Array();
-		this.#_heart = new BiomeHeart(this);
-		this.#_core = new BiomeCore(this, fps);
-		this.#_grid = new BiomeGrid(this, tw, th);
+		this.#_heart = new biome.cores.Heart(this);
+		this.#_core = new biome.cores.Brain(this, fps);
+		this.#_grid = new biome.data.Grid(this, tw, th);
 	}
 	/*
 		If tile coordinate exists
@@ -65,15 +59,15 @@ export class Biome {
 	*/
 	add(room, x, y, width, height, data){
 		if(typeof room == 'string'){
-			room = new BiomeRoom(room, x, y, width, height, data);
-		}else if(!(room instanceof BiomeRoom)){
-			room = new BiomeRoom(room.name, room.x, room.y, room.width, room.height, room.data);
+			room = new biome.objects.Room(room, x, y, width, height, data);
+		}else if(!(room instanceof biome.objects.Room)){
+			room = new biome.objects.Room(room.name, room.x, room.y, room.width, room.height, room.data);
 		}
 		if(!this.#_rooms.includes(room)){
 			this.#_grid.create(room.left, room.top, room.right, room.bottom);
 			this.#_rooms.push(room);
 			room.biome = this;
-			this.#_heart.call(BiomeConstants.EVT_ROOM_ADDED, room);
+			this.#_heart.call(biome.data.Constants.EVT_ROOM_ADDED, room);
 		}
 		return room;
 	}
@@ -85,7 +79,7 @@ export class Biome {
 			biome.load("roomname");
 	*/
 	load(room){
-		if(!(room instanceof BiomeRoom)){
+		if(!(room instanceof biome.objects.Room)){
 			this.rooms(function(r){
 				if(r.name == room){
 					r.load();
@@ -97,10 +91,10 @@ export class Biome {
 				room.objects(function(o){
 					o.room = room;
 					if(o.load()){
-						this.#_heart.call(BiomeConstants.EVT_OBJECT_LOADED, o);
+						this.#_heart.call(biome.data.Constants.EVT_OBJECT_LOADED, o);
 					}
 				}.bind(this));
-				this.#_heart.call(BiomeConstants.EVT_ROOM_LOADED, room);
+				this.#_heart.call(biome.data.Constants.EVT_ROOM_LOADED, room);
 			}
 		}
 	}
@@ -112,7 +106,7 @@ export class Biome {
 			biome.unload("roomname");
 	*/
 	unload(room){
-		if(!(room instanceof BiomeRoom)){
+		if(!(room instanceof biome.objects.Room)){
 			this.rooms(function(r){
 				if(r.name == room){
 					r.unload();
@@ -124,10 +118,10 @@ export class Biome {
 				this.#_loaded.splice(iof, 1);
 				room.objects(function(o){
 					if(o.unload()){
-						this.#_heart.call(BiomeConstants.EVT_OBJECT_UNLOADED, o);
+						this.#_heart.call(biome.data.Constants.EVT_OBJECT_UNLOADED, o);
 					}
 				}.bind(this));
-				this.#_heart.call(BiomeConstants.EVT_ROOM_UNLOADED, room);
+				this.#_heart.call(biome.data.Constants.EVT_ROOM_UNLOADED, room);
 			}
 		}
 	}
@@ -172,20 +166,22 @@ export class Biome {
 		}
 		return filter;
 	}
+	#_normalize(o){
+		if(o.normalize()){
+			this.#_heart.call(biome.data.Constants.EVT_OBJECT_UPDATED, o);
+		}
+	}
 	/*
 		Proccess all pending updates in objects and rooms
 			biome.update();
 	*/
 	update(){
 		let room;
+		let proxy = this.#_normalize.bind(this);
 		for(let i=0; i<this.#_loaded.length; ++i){
 			room = this.#_loaded[i];
-			if(room.updated(function(o){
-				if(o.normalize()){
-					this.#_heart.call(BiomeConstants.EVT_OBJECT_UPDATED, room);
-				}
-			})){
-				this.#_heart.call(BiomeConstants.EVT_ROOM_UPDATED, room);
+			if(room.updated(proxy)){
+				this.#_heart.call(biome.data.Constants.EVT_ROOM_UPDATED, room);
 			}
 		}
 	}

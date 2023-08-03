@@ -2,8 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeUtils} from './BiomeUtils.class.js';
-export class BiomeScan {
+export default class Scanner {
 	data;
 	result;
 	#_filter;
@@ -24,12 +23,14 @@ export class BiomeScan {
 		return this.#_active;
 	}
 	/*
-		Calls a fx(value), if filter function does not exists or return result is true, the object will added to scanner result
+		Calls a fx(value) for each value
 			scan.add(value);
 	*/
 	add(value){
-		if(value != null && this.test(value)){
-			this.result.push(value);
+		if(this.#_filter == null){
+			this.put(value);
+		}else{
+			this.#_filter(value, this);
 		}
 	}
 	/*
@@ -73,7 +74,7 @@ export class BiomeScan {
 			scan.each(function(o){ ... });
 	*/
 	each(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for (let i = 0; i < this.result.length; i++) {
 			filter.add(this.result[i]);
 			if(!filter.active){

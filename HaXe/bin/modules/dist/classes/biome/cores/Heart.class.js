@@ -2,8 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-
-export class BiomeHeart {
+export default class Heart {
 	#_biome;
 	#_get(event){
 		event = event.toLowerCase();
@@ -24,8 +23,8 @@ export class BiomeHeart {
 	/*
 		Dispatches a hearthbeat with data for all listeners
 	*/
-	call(event, data){
-		this.#_execute(this.#_get(event), data);
+	call(event, target, data){
+		this.#_execute(this.#_get(event), new Heartbeat(event, target, data));
 	}
 	/*
 		Listen for hearthbeats
@@ -46,5 +45,24 @@ export class BiomeHeart {
 				break;
 			}
 		}
+	}
+}
+class Heartbeat {
+	#_data;
+	#_event;
+	#_target;
+	get data(){
+		return this.#_data;
+	}
+	get event(){
+		return this.#_event;
+	}
+	get target(){
+		return this.#_target;
+	}
+	constructor(event, target, data){
+		this.#_event = event;
+		this.#_target = target;
+		this.#_data = data;
 	}
 }

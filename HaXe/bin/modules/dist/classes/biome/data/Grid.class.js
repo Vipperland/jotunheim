@@ -2,12 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeArea} from './BiomeArea.class.js';
-import {BiomeConstants} from './BiomeConstants.class.js';
-import {BiomeScan} from './BiomeScan.class.js';
-import {BiomeUtils} from './BiomeUtils.class.js';
-import {BiomeTile} from '../objects/BiomeTile.class.js';
-export class BiomeGrid {
+export default class Grid {
 	#_tiles;
 	#_area; 
 	#_biome; 
@@ -23,10 +18,10 @@ export class BiomeGrid {
 	get area(){
 		return this.#_area;
 	}
-	constructor(biome, tw, th){
+	constructor(parent, tw, th){
 		this.#_tiles = [];
-		this.#_biome = biome;
-		this.#_area = new BiomeArea(tw, th);
+		this.#_biome = parent;
+		this.#_area = new biome.data.Area(tw, th);
 	}
 	/*
 		Creates tiles in grid
@@ -43,9 +38,9 @@ export class BiomeGrid {
 			ty = this.#_tiles[y1];
 			while(x1<x2){
 				if(ty[x1] == null){
-					t = new BiomeTile(x1,y1,this.#_biome);
+					t = new biome.data.Tile(x1,y1,this.#_biome);
 					ty[x1] = t;
-					this.#_biome.heart.call(BiomeConstants.EVT_TILE_CREATED, t);
+					this.#_biome.heart.call(biome.data.Constants.EVT_TILE_CREATED, t);
 				}
 				++x1;
 			}
@@ -59,7 +54,7 @@ export class BiomeGrid {
 	map(x1,y1,x2,y2,filter){
 		++x2;
 		++y2;
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		if(x1 < this.#_area.left){
 			x1 = this.#_area.left;
 		}
@@ -95,7 +90,7 @@ export class BiomeGrid {
 	point(x1,y1,x2,y2,filter){
 		++x2;
 		++y2;
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		if(x1 < this.#_area.left){
 			x1 = this.#_area.left;
 		}
@@ -142,7 +137,7 @@ export class BiomeGrid {
 		if(r == null){
 			t = new BiomeTile(x, y, this.#_biome);
 			this.#_tiles[y][x] = t;
-			this.#_biome.heart.call(BiomeConstants.EVT_TILE_CREATED, t);
+			this.#_biome.heart.call(biome.data.Constants.EVT_TILE_CREATED, t);
 			return t;
 		} else {
 			return r[x];
@@ -152,7 +147,12 @@ export class BiomeGrid {
 		Get a single tile in a location
 	*/
 	tile(x,y){
-		return this.#_tiles[y][x];
+		y = this.#_tiles[y];
+		if(y != null){
+			return y[x];
+		}else{
+			return null;
+		}
 	}
 	/*
 		Get all tiles in a location
@@ -164,7 +164,7 @@ export class BiomeGrid {
 		Cast a line to any direction from source tiles and apply a movement path on each interaction, then calls fx(tile)
 	*/
 	raycast(source, movement, distance, scanner){
-		scanner = BiomeUtils.scanner(scanner);
+		scanner = biome.data.Utils.scanner(scanner);
 		let moved = 0;
 		let found = 0;
 		let current;
@@ -208,7 +208,7 @@ export class BiomeGrid {
 		Use A* algorithm to find a path between two locations, can be limited by a room area
 	*/
 	find(x1,y1,x2,y2,room,scanner){
-		scanner = BiomeUtils.scanner(scanner);
+		scanner = biome.data.Utils.scanner(scanner);
 		let pathfinder = new AStar(this.tile(x1,y1),this.tile(x2,y2),room,scanner);
 		scanner.data.pathfinder = pathfinder;
 		scanner.data.success = pathfinder.exec();

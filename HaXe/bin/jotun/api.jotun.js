@@ -87,16 +87,6 @@ HxOverrides.now = function() {
 };
 var Lambda = function() { };
 Lambda.__name__ = "Lambda";
-Lambda.exists = function(it,f) {
-	var x = $getIterator(it);
-	while(x.hasNext()) {
-		var x1 = x.next();
-		if(f(x1)) {
-			return true;
-		}
-	}
-	return false;
-};
 Lambda.indexOf = function(it,v) {
 	var i = 0;
 	var v2 = $getIterator(it);
@@ -945,9 +935,6 @@ haxe_ds_List.prototype = {
 		}
 		this.length++;
 	}
-	,iterator: function() {
-		return new haxe_ds__$List_ListIterator(this.h);
-	}
 	,__class__: haxe_ds_List
 };
 var haxe_ds__$List_ListNode = function(item,next) {
@@ -959,22 +946,6 @@ haxe_ds__$List_ListNode.prototype = {
 	item: null
 	,next: null
 	,__class__: haxe_ds__$List_ListNode
-};
-var haxe_ds__$List_ListIterator = function(head) {
-	this.head = head;
-};
-haxe_ds__$List_ListIterator.__name__ = "haxe.ds._List.ListIterator";
-haxe_ds__$List_ListIterator.prototype = {
-	head: null
-	,hasNext: function() {
-		return this.head != null;
-	}
-	,next: function() {
-		var val = this.head.item;
-		this.head = this.head.next;
-		return val;
-	}
-	,__class__: haxe_ds__$List_ListIterator
 };
 var haxe_ds_StringMap = function() {
 	this.h = Object.create(null);
@@ -8218,18 +8189,12 @@ jotun_net_HttpRequest.prototype = {
 			return;
 		}
 		var is_json = false;
-		if(Lambda.exists(this.headers,function(h) {
-			return h.header == "Content-Type";
-		})) {
-			is_json = true;
-		}
-		var _g_head = this.headers.h;
-		while(_g_head != null) {
-			var val = _g_head.item;
-			_g_head = _g_head.next;
-			var h = val;
-			r.setRequestHeader(h.header,h.value);
-		}
+		jotun_utils_Dice.Values(this.headers,function(v) {
+			if(!is_json) {
+				is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == "application/json";
+			}
+			r.setRequestHeader(v.header,v.value);
+		});
 		if(is_json) {
 			if(typeof(data) != "string") {
 				data = JSON.stringify(data);
@@ -8299,6 +8264,7 @@ jotun_net_IDomainData.prototype = {
 	,GATEWAY_INTERFACE: null
 	,SERVER_PROTOCOL: null
 	,REQUEST_METHOD: null
+	,HTTP_ORIGIN: null
 	,QUERY_STRING: null
 	,REQUEST_URI: null
 	,SCRIPT_NAME: null

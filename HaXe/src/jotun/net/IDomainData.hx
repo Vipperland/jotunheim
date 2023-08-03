@@ -6,6 +6,7 @@ import jotun.objects.IResolve;
  */
 
 interface IDomainData extends IResolve {
+	
 	public var HTTP_HOST:String;
 	public var HTTP_CONNECTION:String;
 	public var HTTP_ACCEPT:String;
@@ -39,6 +40,7 @@ interface IDomainData extends IResolve {
 	public var GATEWAY_INTERFACE:String;
 	public var SERVER_PROTOCOL:String;
 	public var REQUEST_METHOD:String;
+	public var HTTP_ORIGIN:String;
 	public var QUERY_STRING:String;
 	public var REQUEST_URI:String;
 	public var SCRIPT_NAME:String;

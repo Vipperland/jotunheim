@@ -267,8 +267,9 @@ class HttpRequest {
 					me.onError("Http Error #"+r.status);
 				}
 			};
-			if( async )
+			if ( async ){
 				r.onreadystatechange = onreadystatechange;
+			}
 			var uri:Dynamic = null;
 			try {
 				if (progress != null){
@@ -289,11 +290,12 @@ class HttpRequest {
 				return;
 			}
 			var is_json:Bool = false;
-			if (Lambda.exists(headers, function(h) return h.header == "Content-Type")){
-				is_json = true;
-			}
-			for( h in headers )
-				r.setRequestHeader(h.header, h.value);
+			Dice.Values(headers, function(v):Void {
+				if (!is_json){
+					is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == 'application/json';
+				}
+				r.setRequestHeader(v.header, v.value);
+			});
 			if (is_json){
 				if (!Std.isOfType(data, String)){
 					data = Json.stringify(data);

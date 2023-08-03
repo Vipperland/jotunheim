@@ -2,7 +2,7 @@
  * ...
  * @author Rafael Moreira
  */
-export class BiomeArea {
+export default class Area {
 	#_x1;
 	#_x2;
 	#_y1;

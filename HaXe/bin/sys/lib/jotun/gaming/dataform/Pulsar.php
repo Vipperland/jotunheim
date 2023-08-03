@@ -49,48 +49,40 @@ class Pulsar {
 	 * @return Spark
 	 */
 	public static function construct ($name, $r) {
-		#src/jotun/gaming/dataform/Pulsar.hx:46: characters 3-24
+		#src/jotun/gaming/dataform/Pulsar.hx:49: characters 3-24
 		$O = null;
-		#src/jotun/gaming/dataform/Pulsar.hx:47: characters 3-22
+		#src/jotun/gaming/dataform/Pulsar.hx:50: characters 3-22
 		$o = null;
-		#src/jotun/gaming/dataform/Pulsar.hx:48: characters 3-22
+		#src/jotun/gaming/dataform/Pulsar.hx:51: characters 3-22
 		$indexable = null;
-		#src/jotun/gaming/dataform/Pulsar.hx:49: lines 49-56
+		#src/jotun/gaming/dataform/Pulsar.hx:52: lines 52-55
 		if (\Reflect::hasField(Pulsar::$_dictio, $name)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:50: characters 4-36
+			#src/jotun/gaming/dataform/Pulsar.hx:53: characters 4-36
 			$O = \Reflect::field(Pulsar::$_dictio, $name);
-			#src/jotun/gaming/dataform/Pulsar.hx:51: lines 51-55
-			if (Boot::dynamicField($O, 'Tag')) {
-				#src/jotun/gaming/dataform/Pulsar.hx:52: characters 26-37
-				$tmp = Boot::dynamicField($O, 'Construct');
-				#src/jotun/gaming/dataform/Pulsar.hx:52: characters 5-44
-				$o = new $tmp->phpClassName($name);
-			} else {
-				#src/jotun/gaming/dataform/Pulsar.hx:54: characters 26-37
-				$tmp = Boot::dynamicField($O, 'Construct');
-				#src/jotun/gaming/dataform/Pulsar.hx:54: characters 5-38
-				$o = new $tmp->phpClassName();
-			}
+			#src/jotun/gaming/dataform/Pulsar.hx:54: characters 25-36
+			$tmp = Boot::dynamicField($O, 'Construct');
+			#src/jotun/gaming/dataform/Pulsar.hx:54: characters 4-43
+			$o = new $tmp->phpClassName($name);
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:57: lines 57-67
+		#src/jotun/gaming/dataform/Pulsar.hx:56: lines 56-66
 		if ($o !== null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:58: lines 58-66
+			#src/jotun/gaming/dataform/Pulsar.hx:57: lines 57-65
 			if ($r->length === 3) {
-				#src/jotun/gaming/dataform/Pulsar.hx:59: characters 5-16
+				#src/jotun/gaming/dataform/Pulsar.hx:58: characters 5-16
 				$o->id = ($r->arr[1] ?? null);
-				#src/jotun/gaming/dataform/Pulsar.hx:60: characters 5-18
+				#src/jotun/gaming/dataform/Pulsar.hx:59: characters 5-18
 				$o->merge(($r->arr[2] ?? null));
 			} else if ($r->length === 2) {
-				#src/jotun/gaming/dataform/Pulsar.hx:62: lines 62-64
+				#src/jotun/gaming/dataform/Pulsar.hx:61: lines 61-63
 				if (Boot::dynamicField($O, 'Indexable')) {
-					#src/jotun/gaming/dataform/Pulsar.hx:63: characters 6-29
+					#src/jotun/gaming/dataform/Pulsar.hx:62: characters 6-29
 					$o->id = Key::GEN(Pulsar::$ID_SIZE);
 				}
-				#src/jotun/gaming/dataform/Pulsar.hx:65: characters 5-18
+				#src/jotun/gaming/dataform/Pulsar.hx:64: characters 5-18
 				$o->merge(($r->arr[1] ?? null));
 			}
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:68: characters 3-11
+		#src/jotun/gaming/dataform/Pulsar.hx:67: characters 3-11
 		return $o;
 	}
 
@@ -100,7 +92,7 @@ class Pulsar {
 	 * @return Pulsar
 	 */
 	public static function create ($data) {
-		#src/jotun/gaming/dataform/Pulsar.hx:92: characters 3-26
+		#src/jotun/gaming/dataform/Pulsar.hx:91: characters 3-26
 		return new Pulsar($data);
 	}
 
@@ -110,14 +102,14 @@ class Pulsar {
 	 * @return string[]|\Array_hx
 	 */
 	public static function extract ($data) {
-		#src/jotun/gaming/dataform/Pulsar.hx:84: characters 3-28
+		#src/jotun/gaming/dataform/Pulsar.hx:83: characters 3-28
 		$a = new \Array_hx();
-		#src/jotun/gaming/dataform/Pulsar.hx:85: lines 85-87
+		#src/jotun/gaming/dataform/Pulsar.hx:84: lines 84-86
 		Dice::Params($data, function ($p) use (&$a) {
-			#src/jotun/gaming/dataform/Pulsar.hx:86: characters 4-19
+			#src/jotun/gaming/dataform/Pulsar.hx:85: characters 4-19
 			$a->offsetSet($a->length, $p);
 		});
-		#src/jotun/gaming/dataform/Pulsar.hx:88: characters 3-11
+		#src/jotun/gaming/dataform/Pulsar.hx:87: characters 3-11
 		return $a;
 	}
 
@@ -127,12 +119,12 @@ class Pulsar {
 	 * @return bool
 	 */
 	public static function isIndexable ($name) {
-		#src/jotun/gaming/dataform/Pulsar.hx:72: characters 10-90
+		#src/jotun/gaming/dataform/Pulsar.hx:71: characters 10-90
 		if (\Reflect::hasField(Pulsar::$_dictio, $name)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:72: characters 44-82
+			#src/jotun/gaming/dataform/Pulsar.hx:71: characters 44-82
 			return Boot::dynamicField(\Reflect::field(Pulsar::$_dictio, $name), 'Indexable');
 		} else {
-			#src/jotun/gaming/dataform/Pulsar.hx:72: characters 85-90
+			#src/jotun/gaming/dataform/Pulsar.hx:71: characters 85-90
 			return false;
 		}
 	}
@@ -143,44 +135,39 @@ class Pulsar {
 	 * @return bool
 	 */
 	public static function isList ($name) {
-		#src/jotun/gaming/dataform/Pulsar.hx:76: characters 10-87
+		#src/jotun/gaming/dataform/Pulsar.hx:75: characters 10-87
 		if (\Reflect::hasField(Pulsar::$_dictio, $name)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:76: characters 44-79
+			#src/jotun/gaming/dataform/Pulsar.hx:75: characters 44-79
 			return Boot::dynamicField(\Reflect::field(Pulsar::$_dictio, $name), 'IsList');
 		} else {
-			#src/jotun/gaming/dataform/Pulsar.hx:76: characters 82-87
+			#src/jotun/gaming/dataform/Pulsar.hx:75: characters 82-87
 			return false;
 		}
 	}
 
 	/**
+	 *
+	 * @param	name			Pulsar object name
+	 * @param	props		Object props to be mapped
+	 * @param	objClass		Object Class to initialize
+	 * @param	indexable		If true, generate an alphanumeric 32 length unique ID for each instance
+	 * 
 	 * @param string $name
 	 * @param mixed $props
-	 * @param mixed $object
+	 * @param mixed $objClass
 	 * @param bool $indexable
-	 * @param bool $tageable
 	 * 
 	 * @return void
 	 */
-	public static function map ($name, $props, $object = null, $indexable = false, $tageable = true) {
-		#src/jotun/gaming/dataform/Pulsar.hx:33: lines 33-43
+	public static function map ($name, $props, $objClass = null, $indexable = false) {
+		#src/jotun/gaming/dataform/Pulsar.hx:41: lines 41-45
 		if ($indexable === null) {
 			$indexable = false;
 		}
-		if ($tageable === null) {
-			$tageable = true;
-		}
-		#src/jotun/gaming/dataform/Pulsar.hx:34: lines 34-36
-		if ($object === null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:35: characters 4-18
-			$object = Boot::getClass(Spark::class);
-		}
-		#src/jotun/gaming/dataform/Pulsar.hx:37: lines 37-42
 		\Reflect::setField(Pulsar::$_dictio, $name, new HxAnon([
-			"Construct" => ($object === null ? Boot::getClass(Spark::class) : $object),
+			"Construct" => ($objClass === null ? Boot::getClass(Spark::class) : $objClass),
 			"Properties" => ($props === null ? null : $props),
 			"Indexable" => $indexable === true,
-			"Tag" => $tageable === true,
 		]));
 	}
 
@@ -190,12 +177,12 @@ class Pulsar {
 	 * @return string[]|\Array_hx
 	 */
 	public static function propertiesOf ($name) {
-		#src/jotun/gaming/dataform/Pulsar.hx:80: characters 10-90
+		#src/jotun/gaming/dataform/Pulsar.hx:79: characters 10-90
 		if (\Reflect::hasField(Pulsar::$_dictio, $name)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:80: characters 44-83
+			#src/jotun/gaming/dataform/Pulsar.hx:79: characters 44-83
 			return Boot::dynamicField(\Reflect::field(Pulsar::$_dictio, $name), 'Properties');
 		} else {
-			#src/jotun/gaming/dataform/Pulsar.hx:80: characters 86-90
+			#src/jotun/gaming/dataform/Pulsar.hx:79: characters 86-90
 			return null;
 		}
 	}
@@ -206,13 +193,13 @@ class Pulsar {
 	 * @return void
 	 */
 	public function __construct ($data = null) {
-		#src/jotun/gaming/dataform/Pulsar.hx:168: characters 3-19
+		#src/jotun/gaming/dataform/Pulsar.hx:167: characters 3-19
 		$this->_open_links = new HxAnon();
-		#src/jotun/gaming/dataform/Pulsar.hx:169: characters 3-30
+		#src/jotun/gaming/dataform/Pulsar.hx:168: characters 3-30
 		$this->signals = new Signals($this);
-		#src/jotun/gaming/dataform/Pulsar.hx:170: lines 170-172
+		#src/jotun/gaming/dataform/Pulsar.hx:169: lines 169-171
 		if (($data !== null) && (mb_strlen($data) > 0)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:171: characters 4-15
+			#src/jotun/gaming/dataform/Pulsar.hx:170: characters 4-15
 			$this->parse($data);
 		}
 	}
@@ -223,13 +210,13 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _delete ($r) {
-		#src/jotun/gaming/dataform/Pulsar.hx:127: lines 127-132
+		#src/jotun/gaming/dataform/Pulsar.hx:126: lines 126-131
 		if ($r->length === 2) {
-			#src/jotun/gaming/dataform/Pulsar.hx:128: characters 4-34
+			#src/jotun/gaming/dataform/Pulsar.hx:127: characters 4-34
 			$x = $this->link(($r->arr[0] ?? null));
-			#src/jotun/gaming/dataform/Pulsar.hx:129: lines 129-131
+			#src/jotun/gaming/dataform/Pulsar.hx:128: lines 128-130
 			if ($x !== null) {
-				#src/jotun/gaming/dataform/Pulsar.hx:130: characters 5-40
+				#src/jotun/gaming/dataform/Pulsar.hx:129: characters 5-40
 				$this->_onLinkDelete($x->delete(($r->arr[1] ?? null), true));
 			}
 		}
@@ -278,17 +265,17 @@ class Pulsar {
 	 * @return bool
 	 */
 	public function _exists ($o, $r) {
-		#src/jotun/gaming/dataform/Pulsar.hx:107: lines 107-112
+		#src/jotun/gaming/dataform/Pulsar.hx:106: lines 106-111
 		if ($r->length >= 2) {
-			#src/jotun/gaming/dataform/Pulsar.hx:108: characters 4-34
+			#src/jotun/gaming/dataform/Pulsar.hx:107: characters 4-34
 			$x = $this->link(($r->arr[0] ?? null));
-			#src/jotun/gaming/dataform/Pulsar.hx:109: lines 109-111
+			#src/jotun/gaming/dataform/Pulsar.hx:108: lines 108-110
 			if ($x !== null) {
-				#src/jotun/gaming/dataform/Pulsar.hx:110: characters 5-26
+				#src/jotun/gaming/dataform/Pulsar.hx:109: characters 5-26
 				return $x->exists(($r->arr[1] ?? null));
 			}
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:113: characters 3-15
+		#src/jotun/gaming/dataform/Pulsar.hx:112: characters 3-15
 		return false;
 	}
 
@@ -298,16 +285,16 @@ class Pulsar {
 	 * @return PulsarLink
 	 */
 	public function _getOrCreate ($name) {
-		#src/jotun/gaming/dataform/Pulsar.hx:98: characters 3-55
+		#src/jotun/gaming/dataform/Pulsar.hx:97: characters 3-55
 		$x = \Reflect::field($this->_open_links, $name);
-		#src/jotun/gaming/dataform/Pulsar.hx:99: lines 99-102
+		#src/jotun/gaming/dataform/Pulsar.hx:98: lines 98-101
 		if ($x === null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:100: characters 4-28
+			#src/jotun/gaming/dataform/Pulsar.hx:99: characters 4-28
 			$x = new PulsarLink($name);
-			#src/jotun/gaming/dataform/Pulsar.hx:101: characters 4-42
+			#src/jotun/gaming/dataform/Pulsar.hx:100: characters 4-42
 			\Reflect::setField($this->_open_links, $name, $x);
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:103: characters 3-11
+		#src/jotun/gaming/dataform/Pulsar.hx:102: characters 3-11
 		return $x;
 	}
 
@@ -317,17 +304,17 @@ class Pulsar {
 	 * @return Spark
 	 */
 	public function _grab ($r) {
-		#src/jotun/gaming/dataform/Pulsar.hx:117: lines 117-122
+		#src/jotun/gaming/dataform/Pulsar.hx:116: lines 116-121
 		if ($r->length >= 2) {
-			#src/jotun/gaming/dataform/Pulsar.hx:118: characters 4-34
+			#src/jotun/gaming/dataform/Pulsar.hx:117: characters 4-34
 			$x = $this->link(($r->arr[0] ?? null));
-			#src/jotun/gaming/dataform/Pulsar.hx:119: lines 119-121
+			#src/jotun/gaming/dataform/Pulsar.hx:118: lines 118-120
 			if ($x !== null) {
-				#src/jotun/gaming/dataform/Pulsar.hx:120: characters 5-23
+				#src/jotun/gaming/dataform/Pulsar.hx:119: characters 5-23
 				return $x->get(($r->arr[1] ?? null));
 			}
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:123: characters 3-14
+		#src/jotun/gaming/dataform/Pulsar.hx:122: characters 3-14
 		return null;
 	}
 
@@ -337,7 +324,7 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onLinkAdd ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:136: characters 3-46
+		#src/jotun/gaming/dataform/Pulsar.hx:135: characters 3-46
 		$this->signals->call(PulsarSignals::$LINK_CREATED, $o);
 	}
 
@@ -347,7 +334,7 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onLinkDelete ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:146: characters 3-46
+		#src/jotun/gaming/dataform/Pulsar.hx:145: characters 3-46
 		$this->signals->call(PulsarSignals::$LINK_DELETED, $o);
 	}
 
@@ -357,7 +344,7 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onLinkUpdate ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:156: characters 3-46
+		#src/jotun/gaming/dataform/Pulsar.hx:155: characters 3-46
 		$this->signals->call(PulsarSignals::$LINK_UPDATED, $o);
 	}
 
@@ -367,9 +354,9 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onObjectAdd ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:140: lines 140-142
+		#src/jotun/gaming/dataform/Pulsar.hx:139: lines 139-141
 		if ($o !== null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:141: characters 4-48
+			#src/jotun/gaming/dataform/Pulsar.hx:140: characters 4-48
 			$this->signals->call(PulsarSignals::$SPARK_CREATED, $o);
 		}
 	}
@@ -380,9 +367,9 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onObjectDelete ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:150: lines 150-152
+		#src/jotun/gaming/dataform/Pulsar.hx:149: lines 149-151
 		if ($o !== null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:151: characters 4-48
+			#src/jotun/gaming/dataform/Pulsar.hx:150: characters 4-48
 			$this->signals->call(PulsarSignals::$SPARK_DELETED, $o);
 		}
 	}
@@ -393,9 +380,9 @@ class Pulsar {
 	 * @return void
 	 */
 	public function _onObjectUpdate ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:160: lines 160-162
+		#src/jotun/gaming/dataform/Pulsar.hx:159: lines 159-161
 		if ($o !== null) {
-			#src/jotun/gaming/dataform/Pulsar.hx:161: characters 4-48
+			#src/jotun/gaming/dataform/Pulsar.hx:160: characters 4-48
 			$this->signals->call(PulsarSignals::$SPARK_UPDATED, $o);
 		}
 	}
@@ -512,27 +499,27 @@ class Pulsar {
 	 * @return bool
 	 */
 	public function insert ($o) {
-		#src/jotun/gaming/dataform/Pulsar.hx:181: characters 3-33
+		#src/jotun/gaming/dataform/Pulsar.hx:180: characters 3-33
 		$name = $o->getName();
-		#src/jotun/gaming/dataform/Pulsar.hx:182: lines 182-193
+		#src/jotun/gaming/dataform/Pulsar.hx:181: lines 181-192
 		if (($name !== null) && (mb_strlen($name) > 0)) {
-			#src/jotun/gaming/dataform/Pulsar.hx:183: characters 4-42
+			#src/jotun/gaming/dataform/Pulsar.hx:182: characters 4-42
 			$x = $this->_getOrCreate($name);
-			#src/jotun/gaming/dataform/Pulsar.hx:185: lines 185-189
+			#src/jotun/gaming/dataform/Pulsar.hx:184: lines 184-188
 			if (Pulsar::isIndexable($name)) {
-				#src/jotun/gaming/dataform/Pulsar.hx:186: lines 186-188
+				#src/jotun/gaming/dataform/Pulsar.hx:185: lines 185-187
 				while (($o->id === null) && !$x->exists($o->id)) {
-					#src/jotun/gaming/dataform/Pulsar.hx:187: characters 6-29
+					#src/jotun/gaming/dataform/Pulsar.hx:186: characters 6-29
 					$o->id = Key::GEN(Pulsar::$ID_SIZE);
 				}
 			}
-			#src/jotun/gaming/dataform/Pulsar.hx:190: characters 4-15
+			#src/jotun/gaming/dataform/Pulsar.hx:189: characters 4-15
 			$x->insert($o);
 		} else {
-			#src/jotun/gaming/dataform/Pulsar.hx:192: characters 4-12
+			#src/jotun/gaming/dataform/Pulsar.hx:191: characters 4-12
 			$o = null;
 		}
-		#src/jotun/gaming/dataform/Pulsar.hx:194: characters 3-19
+		#src/jotun/gaming/dataform/Pulsar.hx:193: characters 3-19
 		return $o !== null;
 	}
 
@@ -563,6 +550,7 @@ class Pulsar {
 
 	/**
 	 * @param	data
+	 * @return length
 	 * 
 	 * @param string $data
 	 * 
@@ -656,7 +644,7 @@ class Pulsar {
 							$o = Pulsar::construct($v, $r);
 							#src/jotun/gaming/dataform/Pulsar.hx:239: lines 239-242
 							if ($l->insert($o)) {
-								#src/jotun/gaming/dataform/Pulsar.hx:240: characters 10-18
+								#src/jotun/gaming/dataform/Pulsar.hx:240: characters 10-15
 								$len += 1;
 								#src/jotun/gaming/dataform/Pulsar.hx:241: characters 10-25
 								$_gthis->_onObjectAdd($o);
@@ -689,7 +677,7 @@ class Pulsar {
 							}
 							#src/jotun/gaming/dataform/Pulsar.hx:272: characters 9-14
 							$l = $o;
-							#src/jotun/gaming/dataform/Pulsar.hx:273: characters 9-17
+							#src/jotun/gaming/dataform/Pulsar.hx:273: characters 9-14
 							$len += 1;
 							#src/jotun/gaming/dataform/Pulsar.hx:274: characters 9-22
 							$_gthis->_onLinkAdd($o);

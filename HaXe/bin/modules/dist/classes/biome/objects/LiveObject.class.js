@@ -2,15 +2,15 @@
  * ...
  * @author Rafael Moreira
  */
-import {BiomeObject} from './BiomeObject.class.js';
-export class BiomeLiveObject extends BiomeObject {
+let StaticObject = biome.objects.StaticObject;
+export default class LiveObject extends StaticObject {
 	#_proxy;
 	#_frame;
 	#_enabled;
 	#_behavious;
-	#_render(time){
+	#_render(){
 		if(this.#_enabled && this.#_frame.active){
-			for (let i = 0; i < this.#_behavious; i++) {
+			for (let i = 0; i < this.#_behavious.length; i++) {
 				this.#_behavious[i].update(this);
 			}
 		}
@@ -40,14 +40,16 @@ export class BiomeLiveObject extends BiomeObject {
 		}
 	}
 	add(behaviour){
-		if(!this.#_behavious.includes(fx)){
-			this.#_behavious.push(fx);
+		if(behaviour instanceof biome.behaviours.CoreBehaviour && !this.#_behavious.includes(behaviour)){
+			this.#_behavious.push(behaviour);
+			behaviour.load(this);
 		}
 	}
 	remove(behaviour){
-		let iof = this.#_behavious.includes(fx);
+		let iof = this.#_behavious.includes(behaviour);
 		if(iof != -1){
 			this.#_behavious.splice(iof, 1);
+			behaviour.unload(this);
 		}
 	}
 }
