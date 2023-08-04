@@ -1,5 +1,6 @@
 package jotun.net;
 import haxe.DynamicAccess;
+import haxe.Json;
 import jotun.Jotun;
 import jotun.data.BlobCache;
 import jotun.dom.Link;
@@ -11,7 +12,9 @@ import jotun.net.HttpRequest;
 import jotun.net.Request;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import js.html.AbortController;
 import js.html.Blob;
+import js.html.RequestInit;
 
 #if js
 	import js.Syntax;
@@ -20,7 +23,15 @@ import js.html.Blob;
 	import js.html.FormData;
 	import js.html.Response;
 	import js.lib.Promise;
+	
+	typedef IBlobContent = {
+		var blob:Bool;
+		var content:Blob;
+		var name:String;
+	}
+	
 #end
+
 
 /**
  * ...
@@ -37,65 +48,122 @@ class Loader implements ILoader {
 	
 	#if js 
 	
-	private function _complete(request:js.html.Request, response:Response, promise:Promise<Dynamic>, handler:jotun.net.Response->Void, ?before:Null<Dynamic->Dynamic>):Void {
-		promise.then(function(data:Dynamic):Void {
-			handler(new jotun.net.Response(request, response, before != null ? before(data) : data, null));
-		}).catchError(function(error:DOMError):Void{
-			handler(new jotun.net.Response(request, response, null, error));
-		});
+	private function _endFetch(request:js.html.Request, response:Response, data:Dynamic, error:DOMError, callback:Null<jotun.net.Response->Void>):Void {
+		if(callback != null){
+			callback(new jotun.net.Response(request, response, data, error));
+		}
 	}
 	
-	public function fetch(url:String, ?data:Null<Dynamic>, ?method:String = 'GET', ?handler:Null<jotun.net.Response->Void>, ?headers:Null<Dynamic>):js.html.Request {
-		if(method == null){
-			method = 'GET';
+	private function _runFetch(request:js.html.Request, response:Response, handler:IRequestHandler):Void {
+		if(handler.promise != null){
+			handler.promise.then(function(data:Dynamic):Void {
+				try{
+					if(handler.before != null){
+						data = handler.before(data);
+					}
+					_endFetch(request, response, data, null, handler.complete);
+				}catch(e:Error){
+					Promise.reject(e);
+				}
+			}).catchError(function(error:DOMError):Void{
+				_endFetch(request, response, null, error, handler.complete);
+			});
+		}else{
+			_endFetch(request, response, null, null, handler.complete);
 		}
-		if(method.toUpperCase() == 'GET'){
-			if (data != null){
-				url = Utils.createQueryParams(url, data);
-				data = null;
+	}
+	
+	/**
+	 * 
+	 * @param	url
+	 * @param	data
+	 * @param	handler
+	 * @return
+	 */
+	public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):js.html.Request {
+		var forceType:String = null;
+		if(data == null){
+			data = cast { }
+		}
+		if (data.body != null){
+			if(data.method != null){
+				data.method = data.method.toUpperCase();
+			}
+			if(data.method == null || data.method == 'GET'){
+				url = Utils.createQueryParams(url, data.body);
+				Reflect.deleteField(data, 'body');
+			}else if(data.method == 'POST'){
+				if(!Std.isOfType(data.body, String)){
+					data.body = Json.stringify(data.body);
+				}
 			}
 		}
-		var request:js.html.Request = new js.html.Request(url, {
-			body: data,
-			headers: headers,
-			method: method,
-		});
+		if(handler == null){
+			handler = { };
+		}else{
+			if(handler.type != null){
+				handler.type == handler.type.toUpperCase();
+			}
+			if(handler.abort != null){
+				data.signal = handler.abort.signal;
+			}
+		}
+		var request:js.html.Request = new js.html.Request(url, data);
 		Syntax.code("fetch({0})", request).then(function(response:Response):Void {
-			if (handler != null){
-				var content:String = response.headers.get('Content-Type');
-				if (content.indexOf('application/json') != -1){
-					// Parse JSON object
-					_complete(request, response, response.json(), handler);
-				}else if (content.indexOf('multipart/form-data') != -1){
-					// Parse FORMDATA
-					_complete(request, response, response.formData(), handler, function(data:FormData):Dynamic {
-						var res:DynamicAccess<Dynamic> = { };
-						data.forEach(function(p:String, v:Dynamic):Void{
-							res.set(p, v);
-						});
-						return res;
-					});
-				}else if (content.indexOf('image/') != -1 || content.indexOf('audio/') != -1 || content.indexOf('video/') != -1){
-					_complete(request, response, response.blob(), handler, function(blob:Blob):{ name:String, blob:Blob } {
-						var name:String = request.url.split('/').pop().split('?')[0];
-						BlobCache.create(name, blob, false);
-						return { name:name, blob:blob };
-					});
-				}else if (content.indexOf('text/css') != -1){
-					_complete(request, response, response.blob(), handler, Link.fromBlob);
-				}else if(content.indexOf('text/') != -1){
-					var isPulsar:Bool = content.indexOf('text/pulsar') != -1;
-					_complete(request, response, response.text(), handler, function(data:String):Dynamic {
-						if (isPulsar){
-							// Parse PULSAR instructions
-							return Pulsar.create(data);
-						}else {
-							// Return plain text
-							return data;
+			if(!request.bodyUsed){
+				if (handler != null){
+					var content:String = response.headers.get('Content-Type');
+					if (handler.type == 'JSON' || content.indexOf('application/json') != -1){
+						// Parse JSON object
+						handler.promise = response.json();
+						_runFetch(request, response, handler);
+					}else if (handler.type == 'FORM-DATA' || content.indexOf('multipart/form-data') != -1){
+						// Parse FORMDATA
+						handler.promise = response.formData();
+						if (handler.before == null){
+							handler.before = function(data:FormData):Dynamic {
+								var res:DynamicAccess<Dynamic> = { };
+								data.forEach(function(p:String, v:Dynamic):Void{
+									res.set(p, v);
+								});
+								return res;
+							}
 						}
-					});
-				}else{
-					handler(new jotun.net.Response(request, response, null, null));
+						_runFetch(request, response, handler);
+					}else if (handler.type == 'MEDIA' || content.indexOf('image/') != -1 || content.indexOf('audio/') != -1 || content.indexOf('video/') != -1){
+						handler.promise = response.blob();
+						if (handler.before == null){
+							handler.before = function(blob:Blob):IBlobContent {
+								var name:String = request.url.split('/').pop().split('?')[0];
+								BlobCache.create(name, blob, false);
+								return { blob:true, content:blob, name:name };
+							}
+						} 
+						_runFetch(request, response, handler, );
+					}else if (handler.type == 'CSS' || content.indexOf('text/css') != -1){
+						handler.promise = response.blob();
+						if(handler.before == null){
+							handler.before = Link.fromBlob;
+						}
+						_runFetch(request, response, handler);
+					}else if(handler.type == 'TEXT' || content.indexOf('text/') != -1){
+						var isPulsar:Bool = content.indexOf('text/pulsar') != -1;
+						handler.promise = response.text();
+						if (handler.before == null){
+							handler.before = function(data:String):Dynamic {
+								if (isPulsar){
+									// Parse PULSAR instructions
+									return Pulsar.create(data);
+								}else {
+									// Return plain text
+									return data;
+								}
+							}
+						}
+						_runFetch(request, response, handler);
+					}else {
+						_runFetch(request, response, handler);
+					}
 				}
 			}
 		});

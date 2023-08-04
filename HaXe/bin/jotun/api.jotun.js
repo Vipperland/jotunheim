@@ -1427,6 +1427,7 @@ jotun_net_ILoader.__name__ = "jotun.net.ILoader";
 jotun_net_ILoader.__isInterface__ = true;
 jotun_net_ILoader.prototype = {
 	module: null
+	,fetch: null
 	,request: null
 	,__class__: jotun_net_ILoader
 };
@@ -1438,60 +1439,115 @@ jotun_net_Loader.prototype = {
 	_getReq: function(u) {
 		return new jotun_net_HttpRequest(u);
 	}
-	,_complete: function(request,response,promise,handler,before) {
-		promise.then(function(data) {
-			handler(new jotun_net_Response(request,response,before != null ? before(data) : data,null));
-		}).catch(function(error) {
-			handler(new jotun_net_Response(request,response,null,error));
-		});
+	,_endFetch: function(request,response,data,error,callback) {
+		if(callback != null) {
+			callback(new jotun_net_Response(request,response,data,error));
+		}
 	}
-	,fetch: function(url,data,method,handler,headers) {
-		if(method == null) {
-			method = "GET";
-		}
+	,_runFetch: function(request,response,handler) {
 		var _gthis = this;
-		if(method == null) {
-			method = "GET";
+		if(handler.promise != null) {
+			handler.promise.then(function(data) {
+				try {
+					if(handler.before != null) {
+						data = handler.before(data);
+					}
+					_gthis._endFetch(request,response,data,null,handler.complete);
+				} catch( _g ) {
+					var _g1 = haxe_Exception.caught(_g).unwrap();
+					if(((_g1) instanceof jotun_errors_Error)) {
+						var e = _g1;
+						Promise.reject(e);
+					} else {
+						throw _g;
+					}
+				}
+			}).catch(function(error) {
+				_gthis._endFetch(request,response,null,error,handler.complete);
+			});
+		} else {
+			this._endFetch(request,response,null,null,handler.complete);
 		}
-		if(method.toUpperCase() == "GET") {
-			if(data != null) {
-				url = jotun_tools_Utils.createQueryParams(url,data);
-				data = null;
+	}
+	,fetch: function(url,data,handler) {
+		var _gthis = this;
+		var forceType = null;
+		if(data == null) {
+			data = { };
+		}
+		if(data.body != null) {
+			if(data.method != null) {
+				data.method = data.method.toUpperCase();
+			}
+			if(data.method == null || data.method == "GET") {
+				url = jotun_tools_Utils.createQueryParams(url,data.body);
+				Reflect.deleteField(data,"body");
+			} else if(data.method == "POST") {
+				if(typeof(data.body) != "string") {
+					data.body = JSON.stringify(data.body);
+				}
 			}
 		}
-		var request = new Request(url,{ body : data, headers : headers, method : method});
+		if(handler == null) {
+			handler = { };
+		} else {
+			var tmp = handler.type != null;
+			if(handler.abort != null) {
+				data.signal = handler.abort.signal;
+			}
+		}
+		var request = new Request(url,data);
 		fetch(request).then(function(response) {
-			if(handler != null) {
-				var content = response.headers.get("Content-Type");
-				if(content.indexOf("application/json") != -1) {
-					_gthis._complete(request,response,response.json(),handler);
-				} else if(content.indexOf("multipart/form-data") != -1) {
-					_gthis._complete(request,response,response.formData(),handler,function(data) {
-						var res = { };
-						data.forEach(function(p,v) {
-							res[p] = v;
-						});
-						return res;
-					});
-				} else if(content.indexOf("image/") != -1 || content.indexOf("audio/") != -1 || content.indexOf("video/") != -1) {
-					_gthis._complete(request,response,response.blob(),handler,function(blob) {
-						var name = request.url.split("/").pop().split("?")[0];
-						jotun_data_BlobCache.create(name,blob,false);
-						return { name : name, blob : blob};
-					});
-				} else if(content.indexOf("text/css") != -1) {
-					_gthis._complete(request,response,response.blob(),handler,jotun_dom_Link.fromBlob);
-				} else if(content.indexOf("text/") != -1) {
-					var isPulsar = content.indexOf("text/pulsar") != -1;
-					_gthis._complete(request,response,response.text(),handler,function(data) {
-						if(isPulsar) {
-							return jotun_gaming_dataform_Pulsar.create(data);
-						} else {
-							return data;
+			if(!request.bodyUsed) {
+				if(handler != null) {
+					var content = response.headers.get("Content-Type");
+					if(handler.type == "JSON" || content.indexOf("application/json") != -1) {
+						handler.promise = response.json();
+						_gthis._runFetch(request,response,handler);
+					} else if(handler.type == "FORM-DATA" || content.indexOf("multipart/form-data") != -1) {
+						handler.promise = response.formData();
+						if(handler.before == null) {
+							handler.before = function(data) {
+								var res = { };
+								data.forEach(function(p,v) {
+									res[p] = v;
+								});
+								return res;
+							};
 						}
-					});
-				} else {
-					handler(new jotun_net_Response(request,response,null,null));
+						_gthis._runFetch(request,response,handler);
+					} else if(handler.type == "MEDIA" || content.indexOf("image/") != -1 || content.indexOf("audio/") != -1 || content.indexOf("video/") != -1) {
+						handler.promise = response.blob();
+						if(handler.before == null) {
+							handler.before = function(blob) {
+								var name = request.url.split("/").pop().split("?")[0];
+								jotun_data_BlobCache.create(name,blob,false);
+								return { blob : true, content : blob, name : name};
+							};
+						}
+						_gthis._runFetch(request,response,handler);
+					} else if(handler.type == "CSS" || content.indexOf("text/css") != -1) {
+						handler.promise = response.blob();
+						if(handler.before == null) {
+							handler.before = jotun_dom_Link.fromBlob;
+						}
+						_gthis._runFetch(request,response,handler);
+					} else if(handler.type == "TEXT" || content.indexOf("text/") != -1) {
+						var isPulsar = content.indexOf("text/pulsar") != -1;
+						handler.promise = response.text();
+						if(handler.before == null) {
+							handler.before = function(data) {
+								if(isPulsar) {
+									return jotun_gaming_dataform_Pulsar.create(data);
+								} else {
+									return data;
+								}
+							};
+						}
+						_gthis._runFetch(request,response,handler);
+					} else {
+						_gthis._runFetch(request,response,handler);
+					}
 				}
 			}
 		});

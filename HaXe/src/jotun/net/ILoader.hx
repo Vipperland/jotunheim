@@ -1,4 +1,5 @@
 package jotun.net;
+import js.html.RequestInit;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -15,6 +16,15 @@ interface ILoader {
 		 * @param	progress
 		 */
 		public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void;
+		
+		/**
+		 * Use Request/response style for js
+		 * @param	url
+		 * @param	data
+		 * @param	handler
+		 * @return
+		 */
+		public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):js.html.Request;
 	
 	#elseif php
 		/**
