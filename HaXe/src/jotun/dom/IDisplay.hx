@@ -34,7 +34,7 @@ interface IDisplay extends IQuery {
 	/**
 	 * Custom data
 	 */
-	public var data: Dynamic;
+	public var data: Dynamic<Dynamic>;
 	/**
 	 * Check if a selector exists
 	 * @return

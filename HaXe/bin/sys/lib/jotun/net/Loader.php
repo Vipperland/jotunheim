@@ -7,10 +7,7 @@ namespace jotun\net;
 
 use \php\Boot;
 use \jotun\Jotun;
-use \jotun\tools\Utils;
-use \jotun\utils\Dice;
 use \jotun\errors\Error;
-use \php\_Boot\HxString;
 
 /**
  * ...
@@ -29,7 +26,7 @@ class Loader implements ILoader {
 	 * @return HttpRequest
 	 */
 	public function _getReq ($u) {
-		#src/jotun/net/Loader.hx:20: characters 3-28
+		#src/jotun/net/Loader.hx:26: characters 3-28
 		return new HttpRequest($u);
 	}
 
@@ -41,27 +38,27 @@ class Loader implements ILoader {
 	 * @return void
 	 */
 	public function module ($file, $data = null, $handler = null) {
-		#src/jotun/net/Loader.hx:31: characters 3-37
+		#src/jotun/net/Loader.hx:87: characters 3-37
 		$r = $this->_getReq($file);
-		#src/jotun/net/Loader.hx:35: lines 35-40
+		#src/jotun/net/Loader.hx:91: lines 91-96
 		$r->onData = function ($d) use (&$file, &$handler) {
-			#src/jotun/net/Loader.hx:36: characters 4-37
+			#src/jotun/net/Loader.hx:92: characters 4-37
 			Jotun::$resources->register($file, $d);
-			#src/jotun/net/Loader.hx:37: lines 37-39
+			#src/jotun/net/Loader.hx:93: lines 93-95
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:38: characters 5-46
+				#src/jotun/net/Loader.hx:94: characters 5-46
 				$handler(new Request(true, $d, null, $file));
 			}
 		};
-		#src/jotun/net/Loader.hx:41: lines 41-45
+		#src/jotun/net/Loader.hx:97: lines 97-101
 		$r->onError = function ($d) use (&$file, &$handler) {
-			#src/jotun/net/Loader.hx:42: lines 42-44
+			#src/jotun/net/Loader.hx:98: lines 98-100
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:43: characters 5-62
+				#src/jotun/net/Loader.hx:99: characters 5-62
 				$handler(new Request(false, null, new Error(-1, $d), $file));
 			}
 		};
-		#src/jotun/net/Loader.hx:59: characters 4-20
+		#src/jotun/net/Loader.hx:115: characters 4-20
 		$r->request(false);
 	}
 
@@ -75,61 +72,11 @@ class Loader implements ILoader {
 	 * @return void
 	 */
 	public function request ($url, $data = null, $method = "POST", $handler = null, $headers = null) {
-		#src/jotun/net/Loader.hx:66: lines 66-134
+		#src/jotun/net/Loader.hx:125: characters 3-9
 		if ($method === null) {
 			$method = "POST";
 		}
-		#src/jotun/net/Loader.hx:68: lines 68-70
-		if ($method !== null) {
-			#src/jotun/net/Loader.hx:69: characters 4-33
-			$method = \mb_strtoupper($method);
-		}
-		#src/jotun/net/Loader.hx:71: characters 3-39
-		$is_post = $method === "POST";
-		#src/jotun/net/Loader.hx:72: characters 3-37
-		$is_get = $method === "GET";
-		#src/jotun/net/Loader.hx:73: characters 3-49
-		$is_data = is_string($data);
-		#src/jotun/net/Loader.hx:75: lines 75-77
-		if ($is_get && ($data !== null)) {
-			#src/jotun/net/Loader.hx:76: characters 4-72
-			$url = ($url??'null') . ((((HxString::indexOf($url, "?") === -1 ? "?" : "&"))??'null') . (Utils::paramsOf($data)??'null'));
-		}
-		#src/jotun/net/Loader.hx:79: characters 3-36
-		$r = $this->_getReq($url);
-		#src/jotun/net/Loader.hx:84: lines 84-90
-		if (!$is_data && ($data !== null)) {
-			#src/jotun/net/Loader.hx:88: characters 5-35
-			Dice::All($data, Boot::getInstanceClosure($r, 'setParameter'));
-		}
-		#src/jotun/net/Loader.hx:91: lines 91-95
-		if ($headers !== null) {
-			#src/jotun/net/Loader.hx:92: lines 92-94
-			Dice::All($headers, function ($p, $v) use (&$r) {
-				#src/jotun/net/Loader.hx:93: characters 5-22
-				$r->setHeader($p, $v);
-			});
-		}
-		#src/jotun/net/Loader.hx:96: lines 96-116
-		$r->onData = function ($d) use (&$url, &$r, &$handler) {
-			#src/jotun/net/Loader.hx:97: lines 97-115
-			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:98: characters 5-42
-				$hdrs = $r->responseHeaders;
-				#src/jotun/net/Loader.hx:113: characters 6-52
-				$handler(new Request(true, $d, null, $url, $hdrs));
-			}
-		};
-		#src/jotun/net/Loader.hx:117: lines 117-121
-		$r->onError = function ($d) use (&$handler) {
-			#src/jotun/net/Loader.hx:118: lines 118-120
-			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:119: characters 5-56
-				$handler(new Request(false, null, new Error(-1, $d)));
-			}
-		};
-		#src/jotun/net/Loader.hx:131: characters 4-22
-		$r->request($is_post);
+		return;
 	}
 }
 

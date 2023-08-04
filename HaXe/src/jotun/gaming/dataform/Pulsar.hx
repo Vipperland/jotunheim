@@ -1,4 +1,5 @@
 package jotun.gaming.dataform;
+import haxe.DynamicAccess;
 import jotun.errors.Error;
 import jotun.serial.Packager;
 import jotun.signals.Signals;
@@ -21,8 +22,8 @@ class Pulsar {
 	
 	public static var ID_SIZE:Int = 32;
 	
-	private static var _dictio:Dynamic = {
-		"*": {
+	private static var _dictio:DynamicAccess<IPulsarDef> = {
+		"*": cast {
 			'Construct': Spark, 
 			Properties: null, 
 			Indexable: false, 
@@ -38,8 +39,8 @@ class Pulsar {
 	 * @param	indexable		If true, generate an alphanumeric 32 length unique ID for each instance
 	 */
 	public static function map(name:String, props:Dynamic, objClass:Dynamic = null, indexable:Bool = false):Void {
-		Reflect.setField(_dictio, name, {
-			'Construct':objClass == null ? Spark : objClass, 
+		_dictio.set(name, cast {
+			Construct: objClass == null ? Spark : objClass, 
 			Properties: props == null ? null : props, 
 			Indexable: indexable == true, 
 		});
@@ -49,8 +50,8 @@ class Pulsar {
 		var O:Dynamic = null;
 		var o:Spark = null;
 		var indexable:Bool;
-		if (Reflect.hasField(_dictio, name)){
-			O = Reflect.field(_dictio, name);
+		if (_dictio.exists(name)){
+			O = _dictio.get(name);
 			o = Syntax.construct(O.Construct, name);
 		}
 		if (o != null){
@@ -68,15 +69,11 @@ class Pulsar {
 	}
 	
 	public static function isIndexable(name:String):Bool {
-		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Indexable : false;
-	}
-	
-	static public function isList(name:String) {
-		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).IsList : false;
+		return _dictio.exists(name) ? _dictio.get(name).Indexable : false;
 	}
 	
 	public static function propertiesOf(name:String):Array<String> {
-		return Reflect.hasField(_dictio, name) ? Reflect.field(_dictio, name).Properties : null;
+		return _dictio.exists(name) ? _dictio.get(name).Properties : null;
 	}
 	
 	public static function extract(data:Dynamic):Array<String> {
@@ -91,13 +88,13 @@ class Pulsar {
 		return new Pulsar(data);
 	}
 	
-	private var _open_links:Dynamic;
+	private var _open_links:DynamicAccess<PulsarLink>;
 	
 	private function _getOrCreate(name:String):PulsarLink {
-		var x:PulsarLink = Reflect.field(_open_links, name);
+		var x:PulsarLink = _open_links.get(name);
 		if (x == null){
 			x = new PulsarLink(name);
-			Reflect.setField(_open_links, name, x);
+			_open_links.set(name, x);
 		}
 		return x;
 	}
@@ -343,7 +340,7 @@ class Pulsar {
 	}
 	
 	public function exists(name:String):Bool {
-		return Reflect.hasField(_open_links, name);
+		return _open_links.exists(name);
 	}
 	
 	public function link(name:String):PulsarLink {
@@ -382,16 +379,22 @@ class Pulsar {
 		return o;
 	}
 	
-	public function getObject():Dynamic {
-		var r:Dynamic = {};
+	public function getObject():DynamicAccess<PulsarLink> {
+		var r:DynamicAccess<PulsarLink> = {};
 		Dice.All(_open_links, function(p:String, v:PulsarLink):Void {
-			if (!Reflect.hasField(r, p)){
-				Reflect.setField(r, p, v.getObject(v.isSingle() ? null : []));
+			if (!r.exists(p)){
+				r.set(p, v.getObject(v.isSingle() ? null : []));
 			}else {
-				v.getObject(Reflect.field(r, p));
+				v.getObject(cast r.get(p));
 			}
 		});
 		return r;
 	}
 	
+}
+private interface IPulsarDef {
+	var Construct: Spark; 
+	var Properties: Array<String>; 
+	var Indexable: Bool;
+	var Tag: Bool;
 }

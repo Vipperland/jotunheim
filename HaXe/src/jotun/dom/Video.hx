@@ -1,6 +1,7 @@
 package jotun.dom;
 import jotun.Jotun;
 import js.Browser;
+import js.html.Blob;
 import js.html.VideoElement;
 
 /**
@@ -14,24 +15,21 @@ class Video extends Display {
 		return cast Jotun.one(q);
 	}
 	
-	public var object:VideoElement;
-	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createVideoElement();
 		super(q, null);
-		object = cast element;
 	}
 	
 	public function play():Void {
-		object.play();
+		cast(element, VideoElement).play();
 	}
 	
 	public function pause():Void {
-		object.pause();
+		cast(element, VideoElement).pause();
 	}
 	
 	public function togglePause():Void {
-		if (object.paused){
+		if (cast(element, VideoElement).paused){
 			play();
 		} else {
 			pause();

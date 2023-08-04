@@ -344,7 +344,7 @@ class XCode {
 	static public function motion(name:String, time:Float, values:Array<String>):Void {
 		if (_motions == null){
 			_motions = new Style();
-			_motions.publish();
+			_motions.addToBody();
 		}
 		var css:String = '@keyframes ' + name + '{';
 		var len:Int = values.length;

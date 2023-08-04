@@ -19,6 +19,8 @@ class Header {
 	
 	static public var JSON:String = 'application/json;charset=utf-8';
 	
+	static public var PULSAR:String = 'text/pulsar;charset=utf-8';
+	
 	static public var JSONP:String = 'application/javascript;charset=utf-8';
 	
 	static public var hasType:Bool = false;
@@ -85,7 +87,7 @@ class Header {
 	}
 	
 	public function setPulsar(?data:Pulsar, ?encode:Bool, ?chunk:Int):Void {
-		content(TEXT);
+		content(PULSAR);
 		if (data != null){
 			writeData(data.toString(encode), encode, chunk);
 		}

@@ -6,6 +6,8 @@ package jotun.objects;
  */
 class Resolve implements IResolve {
 
+	public function new(){ };
+	
 	public function getProp(name:String):Dynamic{
 		return Reflect.field(this, name);
 	}

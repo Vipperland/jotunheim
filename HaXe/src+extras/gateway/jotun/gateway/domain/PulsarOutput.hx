@@ -24,9 +24,9 @@ class PulsarOutput extends OutputCore {
 	override public function setOptions(value:Int):Void {
 		if (Flag.FTest(value, GatewayOptions.DEBUG)){
 			// _logp > input params
-			Pulsar.map("_logp", ['name', 'value'], Spark, false, false);
+			Pulsar.map("_logp", ['name', 'value'], Spark, false);
 			// _logo > input object (json input:/)
-			Pulsar.map("_logo", ['value'], Spark, false, false);
+			Pulsar.map("_logo", ['value'], Spark, false);
 			Dice.All(input.params, function(p:String, v:String){
 				this.list('_input').insert(new Spark('_logp').set('name', p).set('value', v));
 			});
@@ -36,7 +36,7 @@ class PulsarOutput extends OutputCore {
 		}
 		super.setOptions(value);
 		if (_log){
-			Pulsar.map("_logq", ['*'], Spark, false, false);
+			Pulsar.map("_logq", ['*'], Spark, false);
 		}
 	}
 	
@@ -62,9 +62,9 @@ class PulsarOutput extends OutputCore {
 	}
 	
 	override public function flush():Void {
-		Pulsar.map("error", ['code'], Spark, false, false);
-		Pulsar.map("time", ['*'], Spark, false, false);
-		Pulsar.map("status", ['*'], Spark, false, false);
+		Pulsar.map("error", ['code'], Spark, false);
+		Pulsar.map("time", ['*'], Spark, false);
+		Pulsar.map("status", ['*'], Spark, false);
 		_data.insert(new Spark('status').set('*', _status));
 		_data.insert(new Spark('time').set('*', Omnitools.timeNow()));
 		Jotun.header.setPulsar(_data, _encode_out, _chunk_size);

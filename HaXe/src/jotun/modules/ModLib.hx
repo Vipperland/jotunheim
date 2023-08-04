@@ -279,7 +279,7 @@ class ModLib {
 						var dom:Style = new Style();
 						dom.attribute('data-url', file);
 						dom.writeHtml(content);
-						dom.publish();
+						dom.addToBody();
 					}
 					case 'js' : {
 						var dom:Script = new Script();

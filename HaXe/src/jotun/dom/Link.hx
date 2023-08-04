@@ -1,6 +1,8 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.tools.Utils;
 import js.Browser;
+import js.html.Blob;
 import js.html.LinkElement;
 import jotun.events.IEvent;
 
@@ -15,17 +17,28 @@ class Link extends Display{
 		return cast Jotun.one(q);
 	}
 	
-	public var object:LinkElement;
+	static public function fromBlob(blob:Blob):Link {
+		var s:Link = new Link();
+		s.href(Utils.fileToURL(blob));
+		return s;
+	}
 	
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createLinkElement();
 		super(q, null);
-		object = cast element;
 	}
 	
-	public function href(url:String, ?handler:IEvent->Void):Void {
-		object.href = url;
-		if (handler != null) events.load(handler, 1);
+	public function href(url:String, ?handler:IEvent->Void):String {
+		if(url != null){
+			cast(element, LinkElement).href = url;
+			if (handler != null) {
+				events.load(handler, 1);
+			}
+			return url;
+		}else{
+			return cast(element, LinkElement).href;
+		}
+		
 	}
 	
 }

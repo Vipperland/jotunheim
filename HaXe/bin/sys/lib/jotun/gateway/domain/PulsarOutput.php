@@ -45,12 +45,12 @@ class PulsarOutput extends OutputCore {
 	 * @return void
 	 */
 	public function flush () {
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:65: characters 3-53
-		Pulsar::map("error", \Array_hx::wrap(["code"]), Boot::getClass(Spark::class), false, false);
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:66: characters 3-49
-		Pulsar::map("time", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
-		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:67: characters 3-51
-		Pulsar::map("status", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:65: characters 3-46
+		Pulsar::map("error", \Array_hx::wrap(["code"]), Boot::getClass(Spark::class), false);
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:66: characters 3-42
+		Pulsar::map("time", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false);
+		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:67: characters 3-44
+		Pulsar::map("status", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false);
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:68: characters 3-54
 		$this->_data->insert((new Spark("status"))->set("*", $this->_status));
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:69: characters 3-64
@@ -111,13 +111,13 @@ class PulsarOutput extends OutputCore {
 		$_gthis = $this;
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:25: lines 25-36
 		if (Flag::FTest($value, 2)) {
-			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:27: characters 4-63
+			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:27: characters 4-56
 			Pulsar::map("_logp", \Array_hx::wrap([
 				"name",
 				"value",
-			]), Boot::getClass(Spark::class), false, false);
-			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:29: characters 4-55
-			Pulsar::map("_logo", \Array_hx::wrap(["value"]), Boot::getClass(Spark::class), false, false);
+			]), Boot::getClass(Spark::class), false);
+			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:29: characters 4-48
+			Pulsar::map("_logo", \Array_hx::wrap(["value"]), Boot::getClass(Spark::class), false);
 			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:30: lines 30-32
 			Dice::All($this->get_input()->params, function ($p, $v) use (&$_gthis) {
 				#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:31: characters 5-82
@@ -133,8 +133,8 @@ class PulsarOutput extends OutputCore {
 		parent::setOptions($value);
 		#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:38: lines 38-40
 		if ($this->_log) {
-			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:39: characters 4-51
-			Pulsar::map("_logq", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false, false);
+			#src+extras/gateway/jotun/gateway/domain/PulsarOutput.hx:39: characters 4-44
+			Pulsar::map("_logq", \Array_hx::wrap(["*"]), Boot::getClass(Spark::class), false);
 		}
 	}
 }

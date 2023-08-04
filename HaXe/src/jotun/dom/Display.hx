@@ -94,7 +94,7 @@ class Display extends Query implements IDisplay {
 						}
 					}
 				}else if(v.data.idleTime != null){
-					Reflect.deleteField(v.data(), 'idleTime');
+					Reflect.deleteField(v.data, 'idleTime');
 					++awake;
 				}
 			}
@@ -116,7 +116,7 @@ class Display extends Query implements IDisplay {
 	
 	private var _setattr:Bool;
 	
-	public var data:Dynamic;
+	public var data:Dynamic<Dynamic>;
 	
 	public var element:Element;
 	

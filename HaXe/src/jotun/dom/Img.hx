@@ -1,6 +1,8 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.data.BlobCache;
 import js.Browser;
+import js.lib.Error;
 import js.html.Blob;
 import js.html.ImageElement;
 import js.html.XMLHttpRequest;
@@ -13,6 +15,8 @@ import jotun.tools.Utils;
 @:expose("J_dom_Img")
 class Img extends Display {
 	
+	private var _blob:String;
+	
 	static public function get(q:String):Img {
 		return cast Jotun.one(q);
 	}
@@ -23,11 +27,6 @@ class Img extends Display {
 		return img;
 	}
 	
-	static public function blobToSrc(content:String):String {
-		var blob:Blob = new Blob([content], {type: 'image/svg-xml'});
-		return Utils.fileToURL(blob);
-	}
-	
 	private var _loader:XMLHttpRequest;
 	
 	public function new(?q:Dynamic) {
@@ -35,19 +34,28 @@ class Img extends Display {
 		super(q, null);
 	}
 	
+	public function blob(name:String):Void {
+		src(BlobCache.load(name));
+	}
+	
 	public function src(?value:Dynamic):String {
+		if (_blob != null){
+			BlobCache.revoke(_blob);
+			_blob = null;
+		}
 		var a:ImageElement;
 		if (value != null) {
 			var src:String = null;
 			var evt:Dynamic = {};
-			if (Std.is(value, Blob)){
-				src = Utils.fileToURL(value);
-				evt.blob = value;
+			if (Std.isOfType(value, Blob)){
+				_blob = BlobCache.create('blob:' + id(), value, true);
 			}else if (value.indexOf('<svg') != -1 && value.indexOf('</svg>') != -1){
-				src = blobToSrc(value);
-				evt.svg = value;
+				_blob = BlobCache.create('blob:' + id(), new Blob([value], {type: 'image/svg-xml'}), true);
 			}else{
 				src = value;
+			}
+			if(_blob != null){
+				src = BlobCache.load(_blob);
 			}
 			value = (cast element).src;
 			if (src != value){
@@ -95,6 +103,15 @@ class Img extends Display {
 			_loader.onerror = null;
 			_loader = null;
 		}
+	}
+	
+	override public function dispose():Void {
+		if(cast (element, ImageElement).src.indexOf('blob:') == 0){
+			if(_blob != null){
+				BlobCache.revoke(_blob);
+			}
+		}
+		super.dispose();
 	}
 	
 }

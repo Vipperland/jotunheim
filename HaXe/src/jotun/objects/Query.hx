@@ -14,6 +14,7 @@ class Query extends Resolve implements IQuery {
 	
 	public function new(){
 		_log = [];
+		super();
 	}
 	
 	public function log():Array<String> {

@@ -1,11 +1,10 @@
 package jotun.dom;
 import jotun.Jotun;
+import jotun.dom.IDisplay;
+import jotun.events.IEvent;
 import jotun.net.IRequest;
 import jotun.utils.Filler;
 import js.Browser;
-import js.html.StyleElement;
-import jotun.dom.IDisplay;
-import jotun.events.IEvent;
 
 /**
  * ...
@@ -22,7 +21,7 @@ class Style extends Display {
 		Jotun.request(q, null, 'GET', function(r:IRequest){
 			var css:Style = null;
 			if(r.success){
-				css = fromString(r.data).publish();
+				css = cast fromString(r.data).addToBody();
 			}
 			if (handler != null){
 				handler(css);
@@ -69,13 +68,8 @@ class Style extends Display {
 		(cast element).type = "text/css";
 	}
 	
-	public function publish():Style {
-		Browser.document.head.appendChild(cast element);
-		return this;
-	}
-	
 	override public function addToBody():IDisplay {
-		publish();
+		Browser.document.head.appendChild(cast element);
 		return this;
 	}
 	
