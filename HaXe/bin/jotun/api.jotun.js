@@ -10306,7 +10306,7 @@ jotun_utils_Singularity._register = function(data) {
 	return ndata;
 };
 jotun_utils_Singularity._unregister = function(data) {
-	data = Reflect.field(jotun_utils_Singularity._engines,data.id);
+	data = jotun_utils_Singularity._engines[data.id];
 	Reflect.deleteField(jotun_utils_Singularity._engines,data.id);
 	return data;
 };
@@ -10327,8 +10327,8 @@ jotun_utils_Singularity._onEngine = function(data) {
 		jotun_utils_Singularity.signals.call("onDisconnect",drop);
 		break;
 	case "main":
-		var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
-		if(engine) {
+		var engine = jotun_utils_Singularity._engines[data.id];
+		if(engine != null) {
 			engine.main = true;
 			if(jotun_utils_Singularity._is_main) {
 				jotun_utils_Singularity._is_main = false;
@@ -10343,7 +10343,7 @@ jotun_utils_Singularity._onEngine = function(data) {
 			data.filter = [data.filter];
 		}
 		if(data.filter == null || ((data.filter) instanceof Array) && data.filter.indexOf(jotun_utils_Singularity.id()) != -1) {
-			var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
+			var engine = jotun_utils_Singularity._engines[data.id];
 			if(engine != null) {
 				jotun_utils_Singularity.signals.call("onSync",{ engine : engine, syncedData : data.data});
 			}
@@ -10362,8 +10362,8 @@ jotun_utils_Singularity._onEngine = function(data) {
 		jotun_utils_Singularity.signals.call("onInstance",data);
 		break;
 	case "visibility":
-		var engine = Reflect.field(jotun_utils_Singularity._engines,data.id);
-		if(engine) {
+		var engine = jotun_utils_Singularity._engines[data.id];
+		if(engine != null) {
 			engine.visible = data.visible && data.visible;
 		}
 		jotun_utils_Singularity.signals.call("onVisibility",engine);

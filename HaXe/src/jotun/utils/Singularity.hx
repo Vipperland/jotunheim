@@ -1,8 +1,19 @@
 package jotun.utils;
+import haxe.DynamicAccess;
 import haxe.Timer;
 import jotun.events.Event;
 import jotun.signals.Signals;
 import js.Browser;
+
+typedef TabInstance = {
+	var ?current:Bool;
+	var id:String;
+	var main:Bool;
+	var name:String;
+	var time:Float;
+	var url:String;
+	var visible:Bool;
+}
 
 /**
  * ...
@@ -15,9 +26,9 @@ class Singularity {
 	
 	private static var _name:String;
 	
-	private static var _engines:Dynamic;
+	private static var _engines:DynamicAccess<TabInstance>;
 	
-	private static var _data:Dynamic;
+	private static var _data:TabInstance;
 	
 	private static var _is_main:Bool;
 	
@@ -40,7 +51,7 @@ class Singularity {
 	
 	static private function _checkIfUnique():Bool {
 		if (!_is_main){
-			_is_main = Dice.Values(_engines, function(v:Dynamic){
+			_is_main = Dice.Values(_engines, function(v:TabInstance){
 				return v.main;
 			}).completed;
 			_syncMain();
@@ -59,7 +70,7 @@ class Singularity {
 	
 	private static function _getHeir():String {
 		var r:String = null;
-		 Dice.Values(_engines, function(v:Dynamic){
+		 Dice.Values(_engines, function(v:TabInstance){
 			if (v.id != _data.id){
 				r = v.id;
 				return true;
@@ -75,8 +86,8 @@ class Singularity {
 	}
 	
 	
-	static private function _register(data:Dynamic):Dynamic {
-		var ndata:Dynamic ={
+	static private function _register(data:Dynamic):TabInstance {
+		var ndata:TabInstance = {
 			id: data.id,
 			name: data.name,
 			url: data.url,
@@ -84,13 +95,13 @@ class Singularity {
 			time: data.time,
 			visible: data.visible,
 		};
-		Reflect.setField(_engines, data.id, ndata);
+		_engines.set(data.id, ndata);
 		return ndata;
 	}
 	
-	static private function _unregister(data:Dynamic):Dynamic {
-		data = Reflect.field(_engines, data.id);
-		Reflect.deleteField(_engines, data.id);
+	static private function _unregister(data:Dynamic):TabInstance {
+		data = _engines.get(data.id);
+		_engines.remove(data.id);
 		return data;
 	}
 	
@@ -122,8 +133,8 @@ class Singularity {
 				signals.call('onInstance', data);
 			}
 			case 'visibility' : {
-				var engine:Dynamic = Reflect.field(_engines, data.id);
-				if (engine){
+				var engine:TabInstance = _engines.get(data.id);
+				if (engine != null){
 					engine.visible = data.visible ? data.visible : false;
 				}
 				signals.call('onVisibility', engine);
@@ -133,7 +144,7 @@ class Singularity {
 					data.filter = [data.filter];
 				}
 				if (data.filter == null || (Std.isOfType(data.filter, Array) && data.filter.indexOf(id()) != -1)){
-					var engine:Dynamic = Reflect.field(_engines, data.id);
+					var engine:TabInstance = _engines.get(data.id);
 					if(engine != null){
 						signals.call('onSync', {
 							engine: engine,
@@ -143,8 +154,8 @@ class Singularity {
 				}
 			}
 			case 'main' : {
-				var engine:Dynamic = Reflect.field(_engines, data.id);
-				if (engine){
+				var engine:TabInstance = _engines.get(data.id);
+				if (engine != null){
 					engine.main = true;
 					if (_is_main){
 						_is_main = false;
@@ -167,7 +178,7 @@ class Singularity {
 	
 	static public function instances():Array<Dynamic> {
 		var r:Array<Dynamic> = [];
-		Dice.Values(_engines, function(v:Dynamic){
+		Dice.Values(_engines, function(v:TabInstance){
 			r.push(v);
 		});
 		Dice.Table(r, 'time', true);
@@ -176,7 +187,7 @@ class Singularity {
 	
 	public static function count():Int {
 		var i:Int = 0;
-		Dice.Values(_engines, function(v:Dynamic){
+		Dice.Values(_engines, function(v:TabInstance){
 			++i;
 		});
 		return i;
@@ -229,7 +240,7 @@ class Singularity {
 				current: true,
 				time: Date.now().getTime(),
 			};
-			Reflect.setField(_engines, _data.id, _data);
+			_engines.set(_data.id, _data);
 			Jotun.broadcast.listen(_channel, _onEngine);
 			Jotun.broadcast.send(_channel, {
 				action:'connect', 
