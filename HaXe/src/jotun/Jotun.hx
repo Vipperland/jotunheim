@@ -231,6 +231,10 @@ class Jotun {
 		}
 		
 		
+		static public function create(html:String, ?data:Dynamic, ?at:Int):IDisplay {
+			return document.body.mount(html, data, at);
+		}
+		
 	#elseif php
 		
 		static public function main() {  }

@@ -11,7 +11,7 @@ import js.Browser;
 @:expose("Singularity")
 class Singularity {
 
-	private static var _channel:String = 'singularity.engine';
+	private static var _channel:String = 'jotumhein';
 	
 	private static var _name:String;
 	
