@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.IEventContext;
@@ -12,7 +13,7 @@ import jotun.utils.Dice;
  * @author Rim Project
  */
 @:expose("J_EventController")
-class EventController implements IEventDispatcher  {
+class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	static private var _rAction:String->Action;
 	static private var _wAction:Action->Void;
@@ -45,7 +46,7 @@ class EventController implements IEventDispatcher  {
 	
 	private var _debug:Bool;
 	
-	public var events:Dynamic;
+	public var events:DynamicAccess<Events>;
 	
 	private function _onCallBefore(context:IEventContext):Void { }
 	
@@ -67,11 +68,8 @@ class EventController implements IEventDispatcher  {
 	
 	public function new(data:Dynamic, ?debug:Bool) {
 		_debug = debug == true;
-		if(data != null){
-			events = data;
-			Dice.All(events, function(p:String, v:Dynamic):Void {
-				Events.patch(this); 
-			});
+		if (data != null){
+			events = Events.patch(data);
 		}
 	}
 	

@@ -2,25 +2,27 @@ package jotun.net;
 import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
-import jotun.data.BlobCache;
-import jotun.dom.Link;
-import jotun.dom.Style;
-import jotun.dom.Video;
 import jotun.errors.Error;
 import jotun.gaming.dataform.Pulsar;
 import jotun.net.HttpRequest;
 import jotun.net.Request;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
-import js.html.AbortController;
-import js.html.Blob;
-import js.html.RequestInit;
 
 #if js
+	
+	import jotun.data.BlobCache;
+	import jotun.dom.Link;
+	import jotun.dom.Style;
+	import jotun.dom.Video;
+
 	import js.Syntax;
+	import js.html.AbortController;
+	import js.html.Blob;
 	import js.html.DOMError;
 	import js.html.FileReader;
 	import js.html.FormData;
+	import js.html.RequestInit;
 	import js.html.Response;
 	import js.lib.Promise;
 	
@@ -48,9 +50,9 @@ class Loader implements ILoader {
 	
 	#if js 
 	
-	private function _endFetch(request:js.html.Request, response:Response, data:Dynamic, error:DOMError, callback:Null<jotun.net.Response->Void>):Void {
-		if(callback != null){
-			callback(new jotun.net.Response(request, response, data, error));
+	private function _endFetch(request:js.html.Request, response:Response, handler:IRequestHandler):Void {
+		if(handler.complete != null){
+			handler.complete(new jotun.net.Response(request, response, handler.data, handler.error));
 		}
 	}
 	
@@ -59,18 +61,25 @@ class Loader implements ILoader {
 			handler.promise.then(function(data:Dynamic):Void {
 				try{
 					if(handler.before != null){
-						data = handler.before(data);
+						handler.data = handler.before(data);
 					}
-					_endFetch(request, response, data, null, handler.complete);
+					_endFetch(request, response, handler);
 				}catch(e:Error){
 					Promise.reject(e);
 				}
 			}).catchError(function(error:DOMError):Void{
-				_endFetch(request, response, null, error, handler.complete);
+				handler.error = error;
+				_endFetch(request, response, handler);
 			});
 		}else{
-			_endFetch(request, response, null, null, handler.complete);
+			_endFetch(request, response, handler);
 		}
+	}
+	
+	private function _matchType(type:String, content:String, ...rest:String):Bool {
+		return content.indexOf(type) != -1 || (type == null && !Dice.Values(rest, function(v:String):Bool {
+			return content.indexOf(v) != -1;
+		} ).completed);
 	}
 	
 	/**
@@ -80,7 +89,7 @@ class Loader implements ILoader {
 	 * @param	handler
 	 * @return
 	 */
-	public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):js.html.Request {
+	public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):IRequestHandler {
 		var forceType:String = null;
 		if(data == null){
 			data = cast { }
@@ -102,72 +111,73 @@ class Loader implements ILoader {
 			handler = { };
 		}else{
 			if(handler.type != null){
-				handler.type == handler.type.toUpperCase();
+				handler.type == handler.type.toLowerCase();
 			}
 			if(handler.abort != null){
 				data.signal = handler.abort.signal;
 			}
 		}
-		var request:js.html.Request = new js.html.Request(url, data);
-		Syntax.code("fetch({0})", request).then(function(response:Response):Void {
-			if(!request.bodyUsed){
-				if (handler != null){
-					var content:String = response.headers.get('Content-Type');
-					if (handler.type == 'JSON' || content.indexOf('application/json') != -1){
-						// Parse JSON object
-						handler.promise = response.json();
-						_runFetch(request, response, handler);
-					}else if (handler.type == 'FORM-DATA' || content.indexOf('multipart/form-data') != -1){
-						// Parse FORMDATA
-						handler.promise = response.formData();
-						if (handler.before == null){
-							handler.before = function(data:FormData):Dynamic {
-								var res:DynamicAccess<Dynamic> = { };
-								data.forEach(function(p:String, v:Dynamic):Void{
-									res.set(p, v);
-								});
-								return res;
-							}
+		handler.request = new js.html.Request(url, data);
+		Syntax.code("fetch({0})", handler.request).then(function(response:Response):Void {
+			if(!response.bodyUsed){
+				var request:js.html.Request = handler.request;
+				var content:String = response.headers.get('Content-Type');
+				if (_matchType(handler.type, content, 'application/json')){
+					// Parse JSON object
+					handler.promise = response.json();
+					_runFetch(request, response, handler);
+				}else if (_matchType(handler.type, content, 'multipart/form-data')){
+					// Parse FORMDATA
+					handler.promise = response.formData();
+					if (handler.before == null){
+						handler.before = function(data:FormData):Dynamic {
+							var res:DynamicAccess<Dynamic> = { };
+							data.forEach(function(p:String, v:Dynamic):Void{
+								res.set(p, v);
+							});
+							return res;
 						}
-						_runFetch(request, response, handler);
-					}else if (handler.type == 'MEDIA' || content.indexOf('image/') != -1 || content.indexOf('audio/') != -1 || content.indexOf('video/') != -1){
-						handler.promise = response.blob();
-						if (handler.before == null){
-							handler.before = function(blob:Blob):IBlobContent {
-								var name:String = request.url.split('/').pop().split('?')[0];
-								BlobCache.create(name, blob, false);
-								return { blob:true, content:blob, name:name };
-							}
-						} 
-						_runFetch(request, response, handler, );
-					}else if (handler.type == 'CSS' || content.indexOf('text/css') != -1){
-						handler.promise = response.blob();
-						if(handler.before == null){
-							handler.before = Link.fromBlob;
-						}
-						_runFetch(request, response, handler);
-					}else if(handler.type == 'TEXT' || content.indexOf('text/') != -1){
-						var isPulsar:Bool = content.indexOf('text/pulsar') != -1;
-						handler.promise = response.text();
-						if (handler.before == null){
-							handler.before = function(data:String):Dynamic {
-								if (isPulsar){
-									// Parse PULSAR instructions
-									return Pulsar.create(data);
-								}else {
-									// Return plain text
-									return data;
-								}
-							}
-						}
-						_runFetch(request, response, handler);
-					}else {
-						_runFetch(request, response, handler);
 					}
+					_runFetch(request, response, handler);
+				}else if (_matchType(handler.type, content, 'image/', 'audio/', 'video/')){
+					handler.promise = response.blob();
+					if (handler.before == null){
+						handler.before = function(blob:Blob):IBlobContent {
+							var name:String = request.url.split('/').pop().split('?')[0];
+							BlobCache.create(name, blob, false);
+							return { blob:true, content:blob, name:name };
+						}
+					} 
+					_runFetch(request, response, handler, );
+				}else if (_matchType(handler.type, content, 'text/css')){
+					handler.promise = response.blob();
+					if(handler.before == null){
+						handler.before = Link.fromBlob;
+					}
+					_runFetch(request, response, handler);
+				}else if (_matchType(handler.type, content, 'text/')){
+					handler.promise = response.text();
+					if (handler.before == null){
+						handler.before = function(data:String):Dynamic {
+							if(handler.module){
+								Jotun.resources.register(url, data);
+								return data;
+							}else if (handler.pulsar){
+								// Parse PULSAR instructions
+								return Pulsar.create(data);
+							}else {
+								// Return plain text
+								return data;
+							}
+						}
+					}
+					_runFetch(request, response, handler);
+				}else {
+					_runFetch(request, response, handler);
 				}
 			}
 		});
-		return request;
+		return handler;
 	}
 	
 	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void):Void {

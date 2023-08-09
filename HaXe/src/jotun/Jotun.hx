@@ -107,6 +107,7 @@ class Jotun {
 			}
 		}
 		
+		/** @private */
 		static private function _preInit():Bool {
 			if (!_initialized) {
 				(cast Browser.window).trace = js.Syntax.code("console.log");

@@ -58,9 +58,9 @@ class ActionQuery extends Query {
 			// return a minus v
 			case "-","minus" : a - v;
 			// return a plus 1
-			case "++" : a + 1;
+			case "++", "increment" : a + 1;
 			// return a minus 1
-			case "--" : a - 1;
+			case "--", "decrement" : a - 1;
 			// return a times 1
 			case "*","multiply" : a * v;
 			// return a divided v
@@ -68,9 +68,9 @@ class ActionQuery extends Query {
 			// return a module v
 			case "%","module" : a % v;
 			// return a shift left
-			case "<<" : a << v;
+			case "<<", "left" : a << v;
 			// return a shift right
-			case ">>" : a >> v;
+			case ">>", "right": a >> v;
 			// return a whithout v
 			case "~","not" : a & ~(v >> 0);
 			// return a OR v

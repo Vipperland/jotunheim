@@ -34,8 +34,9 @@ class Img extends Display {
 		super(q, null);
 	}
 	
-	public function blob(name:String):Void {
+	public function blob(name:String):Img {
 		src(BlobCache.load(name));
+		return this;
 	}
 	
 	public function src(?value:Dynamic):String {

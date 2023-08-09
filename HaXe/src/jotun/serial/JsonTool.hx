@@ -2,6 +2,7 @@
 #if !php 
 	import jotun.dom.IDisplay;
 #end
+import haxe.Json;
 import jotun.logical.Flag;
 import jotun.tools.Utils;
 
@@ -29,6 +30,11 @@ class JsonTool {
 		}
 		return (b == null) ? null : b; 
 	};
+	
+	static public function clone(obj:Dynamic):Dynamic {
+		return Json.parse(stringify(obj));
+		
+	}
 	
 	static public function stringify(o:Dynamic, ?replacer:Dynamic -> Dynamic -> Dynamic, ?space:String) : String {
 		var printer = new JsonTool(replacer != null ? replacer : customReplacer, space);
@@ -174,22 +180,20 @@ class JsonTool {
 			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") {
 				continue;
 			}
-			//if (value != null){
-				if (first) {
-					nind++;
-					first = false;
-				} else {
-					addChar(','.code);
-				}
-				newl();
-				ipad();
-				quote(f);
-				addChar(':'.code);
-				if (pretty){
-					addChar(' '.code);
-				}
-				write(f, value);
-			//}
+			if (first) {
+				nind++;
+				first = false;
+			} else {
+				addChar(','.code);
+			}
+			newl();
+			ipad();
+			quote(f);
+			addChar(':'.code);
+			if (pretty){
+				addChar(' '.code);
+			}
+			write(f, value);
 			if (i == last) {
 				nind--;
 				newl();

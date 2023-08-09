@@ -1,5 +1,4 @@
 package jotun.net;
-import js.html.RequestInit;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -24,7 +23,7 @@ interface ILoader {
 		 * @param	handler
 		 * @return
 		 */
-		public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):js.html.Request;
+		public function fetch(url:String, ?data:Null<js.html.RequestInit>, ?handler:Null<IRequestHandler>):IRequestHandler;
 	
 	#elseif php
 		/**

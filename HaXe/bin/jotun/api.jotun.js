@@ -1439,9 +1439,9 @@ jotun_net_Loader.prototype = {
 	_getReq: function(u) {
 		return new jotun_net_HttpRequest(u);
 	}
-	,_endFetch: function(request,response,data,error,callback) {
-		if(callback != null) {
-			callback(new jotun_net_Response(request,response,data,error));
+	,_endFetch: function(request,response,handler) {
+		if(handler.complete != null) {
+			handler.complete(new jotun_net_Response(request,response,handler.data,handler.error));
 		}
 	}
 	,_runFetch: function(request,response,handler) {
@@ -1450,9 +1450,9 @@ jotun_net_Loader.prototype = {
 			handler.promise.then(function(data) {
 				try {
 					if(handler.before != null) {
-						data = handler.before(data);
+						handler.data = handler.before(data);
 					}
-					_gthis._endFetch(request,response,data,null,handler.complete);
+					_gthis._endFetch(request,response,handler);
 				} catch( _g ) {
 					var _g1 = haxe_Exception.caught(_g).unwrap();
 					if(((_g1) instanceof jotun_errors_Error)) {
@@ -1463,10 +1463,27 @@ jotun_net_Loader.prototype = {
 					}
 				}
 			}).catch(function(error) {
-				_gthis._endFetch(request,response,null,error,handler.complete);
+				handler.error = error;
+				_gthis._endFetch(request,response,handler);
 			});
 		} else {
-			this._endFetch(request,response,null,null,handler.complete);
+			this._endFetch(request,response,handler);
+		}
+	}
+	,_matchType: function(type,content) {
+		var $l=arguments.length;
+		var rest = new Array($l>2?$l-2:0);
+		for(var $i=2;$i<$l;++$i){rest[$i-2]=arguments[$i];}
+		if(content.indexOf(type) == -1) {
+			if(type == null) {
+				return !jotun_utils_Dice.Values(rest,function(v) {
+					return content.indexOf(v) != -1;
+				}).completed;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
 		}
 	}
 	,fetch: function(url,data,handler) {
@@ -1496,62 +1513,63 @@ jotun_net_Loader.prototype = {
 				data.signal = handler.abort.signal;
 			}
 		}
-		var request = new Request(url,data);
-		fetch(request).then(function(response) {
-			if(!request.bodyUsed) {
-				if(handler != null) {
-					var content = response.headers.get("Content-Type");
-					if(handler.type == "JSON" || content.indexOf("application/json") != -1) {
-						handler.promise = response.json();
-						_gthis._runFetch(request,response,handler);
-					} else if(handler.type == "FORM-DATA" || content.indexOf("multipart/form-data") != -1) {
-						handler.promise = response.formData();
-						if(handler.before == null) {
-							handler.before = function(data) {
-								var res = { };
-								data.forEach(function(p,v) {
-									res[p] = v;
-								});
-								return res;
-							};
-						}
-						_gthis._runFetch(request,response,handler);
-					} else if(handler.type == "MEDIA" || content.indexOf("image/") != -1 || content.indexOf("audio/") != -1 || content.indexOf("video/") != -1) {
-						handler.promise = response.blob();
-						if(handler.before == null) {
-							handler.before = function(blob) {
-								var name = request.url.split("/").pop().split("?")[0];
-								jotun_data_BlobCache.create(name,blob,false);
-								return { blob : true, content : blob, name : name};
-							};
-						}
-						_gthis._runFetch(request,response,handler);
-					} else if(handler.type == "CSS" || content.indexOf("text/css") != -1) {
-						handler.promise = response.blob();
-						if(handler.before == null) {
-							handler.before = jotun_dom_Link.fromBlob;
-						}
-						_gthis._runFetch(request,response,handler);
-					} else if(handler.type == "TEXT" || content.indexOf("text/") != -1) {
-						var isPulsar = content.indexOf("text/pulsar") != -1;
-						handler.promise = response.text();
-						if(handler.before == null) {
-							handler.before = function(data) {
-								if(isPulsar) {
-									return jotun_gaming_dataform_Pulsar.create(data);
-								} else {
-									return data;
-								}
-							};
-						}
-						_gthis._runFetch(request,response,handler);
-					} else {
-						_gthis._runFetch(request,response,handler);
+		handler.request = new Request(url,data);
+		fetch(handler.request).then(function(response) {
+			if(!response.bodyUsed) {
+				var request = handler.request;
+				var content = response.headers.get("Content-Type");
+				if(_gthis._matchType(handler.type,content,"application/json")) {
+					handler.promise = response.json();
+					_gthis._runFetch(request,response,handler);
+				} else if(_gthis._matchType(handler.type,content,"multipart/form-data")) {
+					handler.promise = response.formData();
+					if(handler.before == null) {
+						handler.before = function(data) {
+							var res = { };
+							data.forEach(function(p,v) {
+								res[p] = v;
+							});
+							return res;
+						};
 					}
+					_gthis._runFetch(request,response,handler);
+				} else if(_gthis._matchType(handler.type,content,"image/","audio/","video/")) {
+					handler.promise = response.blob();
+					if(handler.before == null) {
+						handler.before = function(blob) {
+							var name = request.url.split("/").pop().split("?")[0];
+							jotun_data_BlobCache.create(name,blob,false);
+							return { blob : true, content : blob, name : name};
+						};
+					}
+					_gthis._runFetch(request,response,handler);
+				} else if(_gthis._matchType(handler.type,content,"text/css")) {
+					handler.promise = response.blob();
+					if(handler.before == null) {
+						handler.before = jotun_dom_Link.fromBlob;
+					}
+					_gthis._runFetch(request,response,handler);
+				} else if(_gthis._matchType(handler.type,content,"text/")) {
+					handler.promise = response.text();
+					if(handler.before == null) {
+						handler.before = function(data) {
+							if(handler.module) {
+								jotun_Jotun.resources.register(url,data);
+								return data;
+							} else if(handler.pulsar) {
+								return jotun_gaming_dataform_Pulsar.create(data);
+							} else {
+								return data;
+							}
+						};
+					}
+					_gthis._runFetch(request,response,handler);
+				} else {
+					_gthis._runFetch(request,response,handler);
 				}
 			}
 		});
-		return request;
+		return handler;
 	}
 	,module: function(file,data,handler,progress) {
 		var r = this._getReq(file);
@@ -4039,6 +4057,7 @@ jotun_css_XCode.motion = function(name,time,values) {
 	jotun_css_XCode._motions.appendHtml(css);
 };
 var jotun_data_BlobCache = function() { };
+$hx_exports["BlobCache"] = jotun_data_BlobCache;
 jotun_data_BlobCache.__name__ = "jotun.data.BlobCache";
 jotun_data_BlobCache.create = function(name,data,weakRef) {
 	if(weakRef == null) {
@@ -4082,6 +4101,9 @@ jotun_data_BlobCache.flush = function() {
 	jotun_utils_Dice.All(jotun_data_BlobCache._BlobRefs,function(p,v) {
 		jotun_data_BlobCache.revoke(p);
 	});
+};
+jotun_data_BlobCache.image = function(name) {
+	return new jotun_dom_Img().blob(name);
 };
 var jotun_data__$BlobCache_IBlobInfo = function() { };
 jotun_data__$BlobCache_IBlobInfo.__name__ = "jotun.data._BlobCache.IBlobInfo";
@@ -4866,6 +4888,7 @@ jotun_dom_Img.prototype = $extend(jotun_dom_Display.prototype,{
 	,_loader: null
 	,blob: function(name) {
 		this.src(jotun_data_BlobCache.load(name));
+		return this;
 	}
 	,src: function(value) {
 		if(this._blob != null) {

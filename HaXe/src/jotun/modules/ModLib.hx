@@ -1,4 +1,5 @@
 package jotun.modules;
+import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.data.Logger;
@@ -20,6 +21,13 @@ import jotun.utils.Filler;
 	import sys.io.File;
 #end
 
+private typedef DataCache = {
+	var buffer:Array<String>;
+	var objects:DynamicAccess<Dynamic>;
+	var images:DynamicAccess<Dynamic>;
+	var paths:DynamicAccess<Dynamic>;
+}
+
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -28,11 +36,13 @@ class ModLib {
 	
 	private static var _init:Bool;
 	
-	private static var CACHE:Dynamic = { };
+	private static var CACHE:DynamicAccess<Dynamic> = { };
 	
-	private static var DATA:Dynamic = {
+	private static var DATA:DataCache = {
 		buffer:[],
 		images:{},
+		objects:{},
+		paths:{},
 	};
 	
 	#if js
@@ -87,13 +97,12 @@ class ModLib {
 	 * @return
 	 */
 	public function exists(module:String):Bool {
-		module = module.toLowerCase();
-		return Reflect.hasField(CACHE, module);
+		return CACHE.get(module.toLowerCase());
 	}
 	
 	public function remove(module:String):Void {
 		if (exists(module)){
-			Reflect.deleteField(CACHE, module);
+			CACHE.remove(module);
 		}
 	}
 	
@@ -216,12 +225,12 @@ class ModLib {
 									if (mod.name == '[]'){
 										DATA.buffer.push(content);
 									}else{
-										Reflect.setField(DATA, mod.name, content);
+										DATA.objects.set(mod.name, content);
 									}
 									return false;
 								}catch (e:Dynamic){
 									++errors;
-									Jotun.log("			ERROR! Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
+									Jotun.log("			ERROR! Can't parse DATA.objects[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
 								}
 							}
 							#if js
@@ -232,7 +241,7 @@ class ModLib {
 								}
 							#end
 							else if (mod.type == 'image') {
-								Reflect.setField(DATA.images, mod.name, content);
+								DATA.images.set(mod.name, content);
 							}
 						}
 						#if js
@@ -243,8 +252,8 @@ class ModLib {
 							// ***
 						#end
 						var n:String = mod.name.toLowerCase();
-						Reflect.setField(CACHE, n, content);
-						Reflect.setField(CACHE, '@' + n, path);
+						CACHE.set(n, content);
+						DATA.paths.set('@' + n, path);
 					}else {
 						Jotun.log("	ModLib => CONFIG ERROR " + file + "("  + v.substr(0, 15) + "...)", Logger.ERROR);
 					}
@@ -289,11 +298,11 @@ class ModLib {
 						dom.addToBody();
 					}
 					default : {
-						Reflect.setField(CACHE, file.toLowerCase(), content);
+						CACHE.set(file.toLowerCase(), content);
 					}
 				}
 			#else
-				Reflect.setField(CACHE, file.toLowerCase(), content);
+				CACHE.set(file.toLowerCase(), content);
 			#end
 		}
 	}
@@ -310,7 +319,7 @@ class ModLib {
 		if (!exists(name)) {
 			return alt != null ? alt : "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 		}
-		var content:String = Reflect.field(CACHE, name);
+		var content:String = CACHE.get(name);
 		data = _sanitize(name, data);
 		return (data != null) ? Filler.to(content, data) : content;
 	}
@@ -322,8 +331,8 @@ class ModLib {
 	 * @return
 	 */
 	public function object(name:String, ?data:Dynamic):Dynamic {
-		if (Reflect.hasField(DATA, name)){
-			data = Reflect.field(DATA, name);
+		if (DATA.objects.exists(name)){
+			data = DATA.objects.get(name);
 		}else{
 			var val:String = get(name, data, '');
 			if (val != null){
@@ -339,12 +348,12 @@ class ModLib {
 	}
 	
 	public function image(name:String):String {
-		return Reflect.field(DATA.images, name);
+		return DATA.images.get(name);
 	}
 	
 	public function buffer(?name:String):Dynamic {
 		if(name != null && name != ''){
-			return Reflect.field(DATA, name);
+			return DATA.objects.get(name);
 		}else{
 			return DATA.buffer;
 		}
@@ -424,9 +433,9 @@ class ModLib {
 			if (Jotun.agent.mobile && exists(module + '::mobile')){
 				module += '::mobile';
 			}
-			var signature:String = Reflect.field(CACHE, '@' + module.toLowerCase());
+			var path:String = DATA.paths.get('@' + module.toLowerCase());
 			var result:IDisplay = new Display().writeHtml(get(module, data));
-			result.children().attribute('jtn-mod', signature);
+			result.children().attribute('jtn-mod', path);
 			if (data != null){
 				result.react(data);
 			}

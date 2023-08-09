@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 /**
  * @author Rim Project
  */
@@ -6,7 +7,7 @@ interface IEventDispatcher {
 	/**
 	 * Available event collection
 	 */
-	public var events:Dynamic;
+	public var events:DynamicAccess<Events>;
 	
 	public function setDebug(mode:Bool):Void;
 	

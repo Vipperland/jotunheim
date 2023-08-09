@@ -29,7 +29,7 @@ import js.html.Node;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Display")
+@:expose("J_Display")
 class Display extends Query implements IDisplay {
 	
 	private static var _CNT:UInt = 0;

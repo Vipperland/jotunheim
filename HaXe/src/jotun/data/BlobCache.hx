@@ -1,4 +1,5 @@
 package jotun.data;
+import jotun.dom.Img;
 import jotun.utils.Dice;
 import js.html.Blob;
 import js.html.URL;
@@ -7,6 +8,7 @@ import js.html.URL;
  * ...
  * @author Rafael Moreira
  */
+@:expose('BlobCache')
 class BlobCache {
 
 	private static var _BlobRefs:List<IBlobInfo> = new List<IBlobInfo>();
@@ -62,6 +64,10 @@ class BlobCache {
 		Dice.All(_BlobRefs, function(p:String, v:IBlobInfo):Void {
 			revoke(p);
 		});
+	}
+	
+	public static function image(name:String):Img {
+		return new Img().blob(name);
 	}
 	
 }

@@ -290,12 +290,14 @@ class HttpRequest {
 				return;
 			}
 			var is_json:Bool = false;
-			Dice.Values(headers, function(v):Void {
-				if (!is_json){
-					is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == 'application/json';
-				}
-				r.setRequestHeader(v.header, v.value);
-			});
+			if(headers.length > 0){
+				Dice.Values(headers, function(v):Void {
+					if (!is_json){
+						is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == 'application/json';
+					}
+					r.setRequestHeader(v.header, v.value);
+				});
+			}
 			if (is_json){
 				if (!Std.isOfType(data, String)){
 					data = Json.stringify(data);

@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.IEventContext;
@@ -13,15 +14,28 @@ import jotun.utils.Dice;
 @:expose("J_Events")
 class Events {
 	
-	public static function patch(data:Dynamic){
-		if (data.events != null){
-			if (!data.events.patched){
-				data.events.patched = true;
-				Dice.All(data.events, function(p:Dynamic, v:Dynamic):Void {
-					(cast data.events)[p] = new Events(p, v);
-				});
-			}
+	public static var mapper:DynamicAccess<String>;
+	
+	public static function patch(data:DynamicAccess<Events>):DynamicAccess<Events> {
+		var patched:DynamicAccess<Events> = { };
+		if (data != null){
+			Dice.All(data, function(p:String, v:Dynamic):Void {
+				if (mapper != null){
+					var l:String = p.toLowerCase();
+					if (mapper.exists(l)){
+						p = mapper.get(l);
+						if (!Std.isOfType(v, Events)){
+							patched.set(p, new Events(p, v));
+						}else{
+							mapper.set(p, v);
+						}
+					}else{
+						
+					}
+				}
+			});
 		}
+		return patched;
 	}
 	
 	private var _data:Array<Action>;
