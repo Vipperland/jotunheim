@@ -33,7 +33,11 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	}
 	
 	static public function saveAction(a:Action):Void {
-		_wAction != null ? _wAction(a) : Action.save(a);
+		if (_wAction != null){
+			_wAction(a);
+		}else{
+			Action.save(a);
+		}
 	}
 	
 	static public function loadRequirement(id:String):Requirement {
@@ -41,7 +45,11 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	}
 	
 	static public function saveRequirement(r:Requirement):Void {
-		_wRequirement != null ? _wRequirement(r) : Requirement.save(r);
+		if (_wRequirement != null){
+			_wRequirement(r);
+		}else{
+			Requirement.save(r);
+		}
 	}
 	
 	private var _debug:Bool;
@@ -59,6 +67,7 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 			name:name,
 			debug:_debug,
 			log:[],
+			tracer:[],
 			ident:0,
 			ticks:0,
 			origin:data,
@@ -66,11 +75,9 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 		};
 	}
 	
-	public function new(data:Dynamic, ?debug:Bool) {
+	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String) {
 		_debug = debug == true;
-		if (data != null){
-			events = Events.patch(data);
-		}
+		events = Events.patch(data, validate);
 	}
 	
 	public function setDebug(mode:Bool):Void {

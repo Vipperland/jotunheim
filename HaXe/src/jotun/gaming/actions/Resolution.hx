@@ -5,7 +5,6 @@ import jotun.tools.Utils;
  * ...
  * @author Rim Project
  */
-@:expose("J_Resolution")
 class Resolution {
 	
 	private var _type:String;
@@ -14,32 +13,31 @@ class Resolution {
 	
 	public var query:Array<String>;
 	
-	public var onSuccess:Events;
+	public var then:Events;
 	
-	public var onFail:Events;
+	public var fail:Events;
 	
-	public var cancelOnSuccess:Bool;
-	
-	public var cancelOnFail:Bool;
+	public var breakon:String;
 	
 	public var reverse:Bool;
 	
 	public function new(type:String, data:Dynamic) {
 		_type = type;
-		cancelOnSuccess = Utils.boolean(data.cancelOnSuccess);
-		cancelOnFail = Utils.boolean(data.cancelOnFail);
 		reverse = Utils.boolean(data.reverse);
+		if(breakon != null){
+			breakon = breakon.toLowerCase();
+		}
 		if (Std.isOfType(data.query, Array)){
 			query = data.query;
 			query.unshift('@result');
 		}else if (Utils.isValid(data.query)){
 			query = ['@result', data.query];
 		}
-		if (data.onSuccess != null) {
-			onSuccess = new Events(_type + ".onSuccess", data.onSuccess);
+		if (data.then != null) {
+			then = new Events(_type + ":success", data.then);
 		}
-		if (data.onFail != null) {
-			onFail = new Events(_type + ".onFail", data.onFail);
+		if (data.fail != null) {
+			fail = new Events(_type + ":fail", data.fail);
 		}
 		id = data.id;
 	}
@@ -47,12 +45,12 @@ class Resolution {
 	public function resolve(result:Bool, context:IEventContext):Bool {
 		++context.ident;
 		if (result){
-			if (onSuccess != null){
-				onSuccess.run(context);
+			if (then != null){
+				then.run(context);
 			}
 		}else{
-			if (onFail != null){
-				onFail.run(context);
+			if (fail != null){
+				fail.run(context);
 			}
 		}
 		--context.ident;

@@ -1,7 +1,9 @@
 package jotun.gaming.actions;
+import haxe.Rest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import jotun.utils.Filler;
 
 /**
  * ...
@@ -78,9 +80,9 @@ class ActionQuery extends Query {
 			// return a AND v
 			case "&","and" : a & v;
 			// return a XOR v
-			case "^","xor" : a ^ v;
+			case "!","xor" : a ^ v;
 			// return a power of v
-			case "!","pow" : Math.pow(a, v);
+			case "^","pow" : Math.pow(a, v);
 			// return random a plus v
 			case "#", "random" : (rng() * v) + a;
 			// return a equal v
@@ -95,6 +97,11 @@ class ActionQuery extends Query {
 	 */
 	public function new() {
 		super();
+	}
+	
+	public function tracer(...rest:Rest<String>):ActionQuery {
+		trace("[ActionQuery:tracer] " + Filler.to(rest.toArray().join(" "), ioContext));
+		return this;
 	}
 	
 }

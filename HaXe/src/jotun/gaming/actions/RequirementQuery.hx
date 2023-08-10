@@ -51,7 +51,7 @@ class RequirementQuery extends Query {
 			// if a contain b
 			case "*=","contain" : a.indexOf(v) != -1;
 			// if b contain a
-			case "~=","in" : v.indexOf(a) != -1;
+			case "~=","inside" : v.indexOf(a) != -1;
 			// if random * a is equal b
 			case "#=","random" : Std.int(rng() * a) == (v >> 0);
 			// if random * a is different b

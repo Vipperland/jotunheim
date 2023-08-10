@@ -59,7 +59,7 @@ class Requirement extends Resolution {
 	
 	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
 		if (context.log != null){
-			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (success ? "└ SUCCESS" : "ꭙ FAIL") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (success ? "└ SUCCESS" : "ꭙ FAILED") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 		}
 	}
 	

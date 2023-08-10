@@ -14,25 +14,21 @@ import jotun.utils.Dice;
 @:expose("J_Events")
 class Events {
 	
-	public static var mapper:DynamicAccess<String>;
+	//public static var mapper:DynamicAccess<String>;
 	
-	public static function patch(data:DynamicAccess<Events>):DynamicAccess<Events> {
+	public static function patch(data:DynamicAccess<Events>, ?validate:String->DynamicAccess<Dynamic>->String):DynamicAccess<Events> {
 		var patched:DynamicAccess<Events> = { };
 		if (data != null){
 			Dice.All(data, function(p:String, v:Dynamic):Void {
-				if (mapper != null){
-					var l:String = p.toLowerCase();
-					if (mapper.exists(l)){
-						p = mapper.get(l);
-						if (!Std.isOfType(v, Events)){
-							patched.set(p, new Events(p, v));
-						}else{
-							mapper.set(p, v);
-						}
+				p = (validate == null ? p : validate(p, v));
+				if(p != null && p != ""){
+					if (!Std.isOfType(v, Events)){
+						patched.set(p, new Events(p, v));
 					}else{
-						
+						patched.set(p, v);
 					}
 				}
+				
 			});
 		}
 		return patched;
@@ -70,13 +66,21 @@ class Events {
 		});
 	}
 	
+	public function getType():String {
+		return _type;
+	}
+	
+	public function matchType(q:String):Bool {
+		return _type == q;
+	}
+	
 	public function run(context:IEventContext) {
 		++context.ident;
 		Dice.All(_data, function(p:Int, a:Action):Bool{
 			if (a.run(context, p)){
-				return a.cancelOnSuccess;
+				return a.breakon == '*' || a.breakon == 'success';
 			}else{
-				return a.cancelOnFail;
+				return a.breakon == '*' || a.breakon == 'fail';
 			}
 		});
 		--context.ident;

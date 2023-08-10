@@ -7,6 +7,7 @@ interface IEventContext {
 	public var debug:Bool;
 	public var name:String;
 	public var log:Array<String>;
+	public var tracer:Array<String>;
 	public var ident:Int;
 	public var chain:Int;
 	public var ticks:Int;
