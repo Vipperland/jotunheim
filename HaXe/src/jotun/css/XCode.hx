@@ -97,9 +97,9 @@ class XCode {
 			omnibuild('.x-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
 			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', '-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;');
 			// Fill empty spaces around the cells
-			omnibuild('.o-outer-fill', '-ms-flex-pack:distribute;justify-content: space-around;');
+			omnibuild('.o-distribute', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
-			omnibuild('.o-inner-fill', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
+			omnibuild('.o-justify', '-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;');
 			// Order by right to left instead of left to right
 			omnibuild('.shelf.o-reverse,.hack.o-stack', '-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;');
 			omnibuild('.drawer.o-reverse', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');

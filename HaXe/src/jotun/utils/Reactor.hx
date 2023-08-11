@@ -186,7 +186,7 @@ class Reactor {
 			if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
 				Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
 					v = v.split(":");
-					o.attribute(v.shift(), v.join(":"));
+					o.style(v.shift(), v.join(":"));
 				});
 				Reflect.deleteField(o.data, '__qs');
 				_react_commit_down(o);
