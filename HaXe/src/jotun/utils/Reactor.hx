@@ -61,16 +61,18 @@ class Reactor {
 				}
 				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
-				o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
-				if (Std.isOfType(o, Input)){
-					o.value(o.data.__qd);
-				}else{
-					o.writeHtml(o.data.__qd);
+			if(o.data.__qd != null){
+				if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
+					o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
+					if (Std.isOfType(o, Input)){
+						o.value(o.data.__qd);
+					}else{
+						o.writeHtml(o.data.__qd);
+					}
+					Reflect.deleteField(o.data, '__qd');
+					_react_commit_down(o);
+					_react_clear(o, 'jtn-single', 'jtn-data');
 				}
-				Reflect.deleteField(o.data, '__qd');
-				_react_commit_down(o);
-				_react_clear(o, 'jtn-single', 'jtn-data');
 			}
 		}
 	}
@@ -94,25 +96,27 @@ class Reactor {
 				o.data.__qv = o.data.__qv.split('{{' + path + '}}').join(data);
 				o.data.__qvs += 1;
 			}
-			if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
-				if (o.data.__qvs >= o.data.__qvt){
-					if (attr == 'jtn-show-if'){
-						o.show();
+			if(o.data.__qv != null){
+				if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
+					if (o.data.__qvs >= o.data.__qvt){
+						if (attr == 'jtn-show-if'){
+							o.show();
+						}else{
+							o.hide();
+						}
 					}else{
-						o.hide();
+						if (attr == 'jtn-show-if'){
+							o.hide();
+						}else{
+							o.show();
+						}
 					}
-				}else{
-					if (attr == 'jtn-show-if'){
-						o.hide();
-					}else{
-						o.show();
-					}
+					Reflect.deleteField(o.data, '__qv');
+					Reflect.deleteField(o.data, '__qvt');
+					Reflect.deleteField(o.data, '__qvs');
+					_react_commit_down(o);
+					_react_clear(o, 'jtn-single', attr);
 				}
-				Reflect.deleteField(o.data, '__qv');
-				Reflect.deleteField(o.data, '__qvt');
-				Reflect.deleteField(o.data, '__qvs');
-				_react_commit_down(o);
-				_react_clear(o, 'jtn-single', attr);
 			}
 		}
 	}
@@ -132,11 +136,13 @@ class Reactor {
 				}
 				o.data.__qc = o.data.__qc.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
-				o.css(o.data.__qc);
-				Reflect.deleteField(o.data, '__qc');
-				_react_commit_down(o);
-				_react_clear(o, 'jtn-single', 'jtn-class');
+			if(o.data.__qc){
+				if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
+					o.css(o.data.__qc);
+					Reflect.deleteField(o.data, '__qc');
+					_react_commit_down(o);
+					_react_clear(o, 'jtn-single', 'jtn-class');
+				}
 			}
 		}
 	}
@@ -156,14 +162,16 @@ class Reactor {
 				}
 				o.data.__qa = o.data.__qa.split('{{' + path + '}}').join(data);
 			}
-			if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
-				Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
-					v = v.split(":");
-					o.attribute(v.shift(), v.join(":"));
-				});
-				Reflect.deleteField(o.data, '__qa');
-				_react_commit_down(o);
-				_react_clear(o, 'jtn-single', 'jtn-attr');
+			if(o.data.__qa){
+				if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
+					Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
+						v = v.split(":");
+						o.attribute(v.shift(), v.join(":"));
+					});
+					Reflect.deleteField(o.data, '__qa');
+					_react_commit_down(o);
+					_react_clear(o, 'jtn-single', 'jtn-attr');
+				}
 			}
 		}
 	}
@@ -183,14 +191,16 @@ class Reactor {
 				}
 				o.data.__qs = o.data.__qs.split('{{' + path + '}}').join(data);
 			}
-			if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
-				Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
-					v = v.split(":");
-					o.style(v.shift(), v.join(":"));
-				});
-				Reflect.deleteField(o.data, '__qs');
-				_react_commit_down(o);
-				_react_clear(o, 'jtn-single', 'jtn-style');
+			if(o.data.__qs != null){
+				if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
+					Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
+						v = v.split(":");
+						o.style(v.shift(), v.join(":"));
+					});
+					Reflect.deleteField(o.data, '__qs');
+					_react_commit_down(o);
+					_react_clear(o, 'jtn-single', 'jtn-style');
+				}
 			}
 		}
 	}

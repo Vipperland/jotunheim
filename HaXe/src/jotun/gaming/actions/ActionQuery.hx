@@ -54,11 +54,11 @@ class ActionQuery extends Query {
 		}
 		return switch(r){
 			// return a
-			case "=","equal" : a;
+			case "=","eq" : a;
 			// return a plus v
-			case "+","plus" : a + v;
+			case "+","add" : a + v;
 			// return a minus v
-			case "-","minus" : a - v;
+			case "-","sub" : a - v;
 			// return a plus 1
 			case "++", "increment" : a + 1;
 			// return a minus 1
@@ -68,11 +68,11 @@ class ActionQuery extends Query {
 			// return a divided v
 			case "/","divided" : a / v;
 			// return a module v
-			case "%","module" : a % v;
+			case "%","mod" : a % v;
 			// return a shift left
-			case "<<", "left" : a << v;
+			case "<<", "lshift" : a << v;
 			// return a shift right
-			case ">>", "right": a >> v;
+			case ">>", "rshift": a >> v;
 			// return a whithout v
 			case "~","not" : a & ~(v >> 0);
 			// return a OR v
@@ -84,7 +84,7 @@ class ActionQuery extends Query {
 			// return a power of v
 			case "^","pow" : Math.pow(a, v);
 			// return random a plus v
-			case "#", "random" : (rng() * v) + a;
+			case "#", "rand" : (rng() * v) + a;
 			// return a equal v
 			default : a;
 		}
@@ -99,8 +99,8 @@ class ActionQuery extends Query {
 		super();
 	}
 	
-	public function tracer(...rest:Rest<String>):ActionQuery {
-		trace("[ActionQuery:tracer] " + Filler.to(rest.toArray().join(" "), ioContext));
+	public function tracer(...messages:Rest<String>):ActionQuery {
+		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), ioContext));
 		return this;
 	}
 	

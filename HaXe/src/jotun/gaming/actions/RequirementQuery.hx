@@ -39,11 +39,11 @@ class RequirementQuery extends Query {
 			// if a lesser than v
 			case "<","less" : a < v;
 			// if a lesser than or equal v
-			case "<=","lessor" : a <= v;
+			case "<=","less-or" : a <= v;
 			// if a greater than v
 			case ">","great": a > v;
 			// if a greater than or equal v
-			case ">=","greator" : a >= v;
+			case ">=","great-or" : a >= v;
 			// if a contain bit v
 			case "&","test" : (a & v) == v;
 			// if a don't contain bit v
@@ -53,13 +53,13 @@ class RequirementQuery extends Query {
 			// if b contain a
 			case "~=","inside" : v.indexOf(a) != -1;
 			// if random * a is equal b
-			case "#=","random" : Std.int(rng() * a) == (v >> 0);
+			case "#=","rand" : Std.int(rng() * a) == (v >> 0);
 			// if random * a is different b
-			case "#!","rngnot" : Std.int(rng() * a) != (v >> 0);
+			case "#!","rand-diff" : Std.int(rng() * a) != (v >> 0);
 			// if random * a greater then or equal  b
-			case "#>","rnggreat" : (rng() * a) >= v;
+			case "#>","rand-great-or" : (rng() * a) >= v;
 			// if random * a lesser then or equal  b
-			case "#<","rngless" : (rng() * a) <= v;
+			case "#<","rand-less-or" : (rng() * a) <= v;
 			// if a is equal b
 			default : a == v;
 		}

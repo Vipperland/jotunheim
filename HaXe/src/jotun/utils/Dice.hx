@@ -179,7 +179,7 @@ class Dice {
 	 * @param	each
 	 * @param	complete
 	 */
-	public static function Count(from:Dynamic, to:Dynamic, each:Int->Int->Bool->Null<Bool>, ?complete:IDiceRoll->Void = null, ?increment:UInt = 1):IDiceRoll {
+	public static function Count(from:Dynamic, to:Dynamic, each:Dynamic, ?complete:IDiceRoll->Void = null, ?increment:UInt = 1):IDiceRoll {
 		var a:Float = Math.min(from, to);
 		var b:Float = Math.max(from, to);
 		if (increment == null || increment < 1) increment = 1;

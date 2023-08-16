@@ -47,12 +47,12 @@ class Query extends Resolve implements IQuery {
 		switch(q.substr(0,1)){
 			// Command definition
 			case '@' : {
-				switch(q.substr(1, 1)){
-					case '!' : {
+				switch(q.substr(1, 3)){
+					case 'END' : {
 						_now = null;
 					}
-					default : {
-						var prop:String = q.substr(1, q.length - 1);
+					case 'OUT' : {
+						var prop:String = q.substring(4, q.length);
 						if (!Reflect.hasField(_buffer, prop)){
 							_now = [];
 							Reflect.setField(_buffer, prop, _now);
