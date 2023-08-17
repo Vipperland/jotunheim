@@ -1,4 +1,5 @@
 package jotun.net;
+import haxe.Rest;
 import jotun.errors.Error;
 import jotun.errors.IError;
 import jotun.signals.ISignals;
@@ -11,7 +12,8 @@ import jotun.signals.Signals;
 @:expose("BulkLoader")
 class BulkLoader {
 
-	private var _toload:Array<String> = [];
+	private var _toload:Array<String>;
+	
 	private var _isBusy:Bool;
 	#if js
 	private var _fileProgress:Float;
@@ -24,17 +26,15 @@ class BulkLoader {
 	
 	public var signals:ISignals;
 	
+	private var _req:HttpRequest;
+	
 	private function _getReq(u:String):HttpRequest {
 		return new HttpRequest(u);
 	}
 	
 	public function new(){
 		signals = new Signals(this);
-		totalLoaded = 0;
-		totalFiles = 0;
-		#if js
-		_fileProgress = 0;
-		#end
+		reset();
 	}
 	
 	public function progress():Float {
@@ -45,11 +45,8 @@ class BulkLoader {
 		#end
 	}
 	
-	public function add(files:Dynamic):Void {
-		if (!Std.isOfType(files, Array)){
-			files = [files];
-		}
-		if (files != null && files.length > 0) {
+	public function add(files:Rest<String>):Void {
+		if (files.length > 0) {
 			_toload = _toload.concat(files);
 			totalFiles += files.length;
 		}
@@ -75,11 +72,13 @@ class BulkLoader {
 				r.async = true;
 			#end
 			r.onError = function(e) {
+				_req = null;
 				++totalLoaded;
 				_changed(f, 'error', e, r);
 				_loadNext();
 			}
 			r.onData = function(d) {
+				_req = null;
 				++totalLoaded;
 				Jotun.resources.register(f, d);
 				_changed(f, 'loaded', d, r);
@@ -90,6 +89,7 @@ class BulkLoader {
 			#else
 				r.request(null);
 			#end
+			_req = r;
 		}else {
 			_isBusy = false;
 			_complete();
@@ -110,6 +110,22 @@ class BulkLoader {
 	
 	private function _complete():Void {
 		signals.call('completed');
+	}
+	
+	public function reset():Void {
+		_toload = [];
+		totalLoaded = 0;
+		totalFiles = 0;
+		#if js
+		_fileProgress = 0;
+		#end
+		if(_isBusy && _req != null){
+			_req.cancel();
+			_req = null;
+		}
+		_isBusy = false;
+		lastError = null;
+		signals.call('reset');
 	}
 	
 }

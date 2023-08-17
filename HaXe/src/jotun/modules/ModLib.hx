@@ -136,10 +136,11 @@ class ModLib {
 							mod.name = file;
 						}else if (mod.name == "[]"){
 							path += '[]';
-							Jotun.log("		@ PUSH " + mod.name, Logger.SYSTEM);
-						}else{
+						}else {
 							path += '#' + mod.name;
-							Jotun.log("		@ NAME " + mod.name + " (" + count + "/" + total + ")", Logger.SYSTEM);
+							if (mod.type != 'data'){
+								Jotun.log("	@ BLOCK: " + mod.name + " (" + count + "/" + total + ")", Logger.SYSTEM);
+							}
 						}
 						if (exists(mod.name)){
 							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.WARNING);
@@ -158,7 +159,7 @@ class ModLib {
 						if (mod.require != null) {
 							var incT:Int = mod.require.length;
 							var incC:Int = 1;
-							Jotun.log("			> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")", Logger.SYSTEM);
+							Jotun.log("		> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")", Logger.SYSTEM);
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
 									// inclusion with custom data
@@ -169,15 +170,15 @@ class ModLib {
 												var data:Dynamic = Json.parse(pieces);
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(get(v, data));
 											}catch (e:Error){
-												Jotun.log("				ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
+												Jotun.log("			ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
 											}
 										}
 									});
 									// inclusion with no custom data
 									content = content.split("{{@include:" + v + "}}").join(get(v));
-									Jotun.log("				+ INCLUDED '" + v + "' #" + incC, Logger.SYSTEM);
+									Jotun.log("			+ INCLUDED '" + v + "' #" + incC, Logger.SYSTEM);
 								} else{
-									Jotun.log("				- MISSING '" + v + "' #" + incC, Logger.ERROR);
+									Jotun.log("			- MISSING '" + v + "' #" + incC, Logger.ERROR);
 								}
 								++incC;
 							});
@@ -185,7 +186,7 @@ class ModLib {
 						if (mod.inject != null) {
 							var injT:Int = mod.require.length;
 							var injC:Int = 1;
-							Jotun.log("			INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
+							Jotun.log("		INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
 							Dice.Values(mod.inject, function(v:String) {
 								if (exists(v)){
 									// injection with custom data
@@ -196,15 +197,15 @@ class ModLib {
 												var data:Dynamic = Json.parse(pieces);
 												content = get(v, data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
 											}catch (e:Error){
-												Jotun.log("				ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
+												Jotun.log("			ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
 											}
 										}
 									});
 									// injection with no custom data
 									content = get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									Jotun.log("				+ INJECTED '" + v + "' #" + injC, 1);
+									Jotun.log("			+ INJECTED '" + v + "' #" + injC, 1);
 								}else{
-									Jotun.log("				- MISSING '" + v + "' #" + injC, Logger.ERROR);
+									Jotun.log("			- MISSING '" + v + "' #" + injC, Logger.ERROR);
 								}
 							});
 						}
@@ -223,14 +224,16 @@ class ModLib {
 									++fdata;
 									content = Json.parse(content);
 									if (mod.name == '[]'){
+										Jotun.log("	@ PUSH: {...} (" + count + "/" + total + ")", Logger.SYSTEM);
 										DATA.buffer.push(content);
 									}else{
+										Jotun.log("	@ DATA:  {" + mod.name + "} (" + count + "/" + total + ")", Logger.SYSTEM);
 										DATA.objects.set(mod.name, content);
 									}
 									return false;
 								}catch (e:Dynamic){
 									++errors;
-									Jotun.log("			ERROR! Can't parse DATA.objects[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
+									Jotun.log("		ERROR! Can't parse DATA.objects[" + mod.name + "] \n\n " + content + "\n\n" + e, Logger.ERROR);
 								}
 							}
 							#if js
@@ -278,7 +281,7 @@ class ModLib {
 					});
 				}
 			#end
-			Jotun.log("		! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors, Logger.SYSTEM);
+			Jotun.log("	! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors, Logger.SYSTEM);
 		}else {
 			#if js
 				// ============================= JS ONLY =============================
