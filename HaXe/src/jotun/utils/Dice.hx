@@ -357,6 +357,24 @@ class Dice {
 		return copy;
 	}
 	
+	public static function Map(data:Array<Dynamic>, props:Array<String>):Array<Dynamic> {
+		var mapped:Array<Dynamic> = [];
+		Dice.Values(data, function(v:Dynamic):Void {
+			var o:Dynamic = { };
+			var f:Bool = false;
+			Dice.Values(props, function(v2:String):Void {
+				if(Reflect.hasField(v, v2)){
+					Reflect.setField(o, v2, Reflect.field(v, v2));
+					if (f == false){
+						f = true;
+						mapped.push(o);
+					}
+				}
+			});
+		});
+		return mapped;
+	}
+	
 	public static function Blend(objects:Dynamic, into:Dynamic, blendType:Int = 0):Void {
 		if (!Std.isOfType(objects, Array)){
 			objects = [objects];

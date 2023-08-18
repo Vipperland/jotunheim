@@ -1601,7 +1601,55 @@ jotun_net_Loader.prototype = {
 		if(method == null) {
 			method = "POST";
 		}
-		return;
+		if(method != null) {
+			method = method.toUpperCase();
+		}
+		var is_post = method == "POST";
+		var is_get = method == "GET";
+		var is_data = typeof(data) == "string";
+		if(is_get && data != null) {
+			url += (url.indexOf("?") == -1 ? "?" : "&") + jotun_tools_Utils.paramsOf(data);
+		}
+		var r = this._getReq(url);
+		r.async = true;
+		if(!is_data && data != null) {
+			jotun_utils_Dice.All(data,$bind(r,r.addParameter));
+		}
+		if(headers != null) {
+			jotun_utils_Dice.All(headers,function(p,v) {
+				r.setHeader(p,v);
+			});
+		}
+		r.onData = function(d) {
+			if(handler != null) {
+				var hdrs = r.responseHeaders;
+				if(options != null) {
+					if(options.responseType == "blob") {
+						var f = new FileReader();
+						f.onloadend = function(e) {
+							handler(new jotun_net_Request(true,e.target.result,null,url,hdrs));
+						};
+						f.readAsDataURL(d);
+						return;
+					}
+				} else {
+					handler(new jotun_net_Request(true,d,null,url,hdrs));
+				}
+			}
+		};
+		r.onError = function(d) {
+			if(handler != null) {
+				handler(new jotun_net_Request(false,null,new jotun_errors_Error(-1,d)));
+			}
+		};
+		var pro = { loaded : 0, total : 0, file : url};
+		var tmp = progress != null ? function(u,a,b) {
+			pro.loaded = a;
+			pro.total = b;
+			pro.file = u;
+			progress(pro);
+		} : null;
+		r.request(method,data,tmp,options);
 	}
 	,__class__: jotun_net_Loader
 };
@@ -1798,8 +1846,7 @@ jotun_modules_ModLib.prototype = {
 		}
 	}
 	,exists: function(module) {
-		module = module.toLowerCase();
-		return Object.prototype.hasOwnProperty.call(jotun_modules_ModLib.CACHE,module);
+		return jotun_modules_ModLib.CACHE[module.toLowerCase()];
 	}
 	,remove: function(module) {
 		if(this.exists(module)) {
@@ -1829,10 +1876,11 @@ jotun_modules_ModLib.prototype = {
 							mod.name = file;
 						} else if(mod.name == "[]") {
 							path += "[]";
-							jotun_Jotun.log("\t\t@ PUSH " + mod.name,1);
 						} else {
 							path += "#" + mod.name;
-							jotun_Jotun.log("\t\t@ NAME " + mod.name + " (" + count + "/" + total + ")",1);
+							if(mod.type != "data") {
+								jotun_Jotun.log("\t@ BLOCK: " + mod.name + " (" + count + "/" + total + ")",1);
+							}
 						}
 						if(_gthis.exists(mod.name)) {
 							jotun_Jotun.log("\tModLib => !!! OVERRIDING " + path,2);
@@ -1847,7 +1895,7 @@ jotun_modules_ModLib.prototype = {
 						if(mod.require != null) {
 							var incT = mod.require.length;
 							var incC = 1;
-							jotun_Jotun.log("\t\t\t> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")",1);
+							jotun_Jotun.log("\t\t> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
@@ -1858,7 +1906,7 @@ jotun_modules_ModLib.prototype = {
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(_gthis.get(v,data));
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\t\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
+													jotun_Jotun.log("\t\t\tERROR: Can't parse module include data for " + v + ".",3);
 												} else {
 													throw _g;
 												}
@@ -1866,17 +1914,17 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = content.split("{{@include:" + v + "}}").join(_gthis.get(v));
-									jotun_Jotun.log("\t\t\t\t+ INCLUDED '" + v + "' #" + incC,1);
+									jotun_Jotun.log("\t\t\t+ INCLUDED '" + v + "' #" + incC,1);
 								} else {
-									jotun_Jotun.log("\t\t\t\t- MISSING '" + v + "' #" + incC,3);
+									jotun_Jotun.log("\t\t\t- MISSING '" + v + "' #" + incC,3);
 								}
 								incC += 1;
 							});
 						}
 						if(mod.inject != null) {
-							var injT = mod.require.length;
+							var injT = mod.inject.length;
 							var injC = 1;
-							jotun_Jotun.log("\t\t\tINJECTING MODULES IN '" + mod.name + "' (" + injT + ")",1);
+							jotun_Jotun.log("\t\t< INJECTING MODULES IN '" + mod.name + "' (" + injT + ")",1);
 							jotun_utils_Dice.Values(mod.inject,function(v) {
 								if(_gthis.exists(v)) {
 									jotun_utils_Dice.All(content.split("{{@inject:" + v + ",data:"),function(p,v2) {
@@ -1887,7 +1935,7 @@ jotun_modules_ModLib.prototype = {
 												content = _gthis.get(v,data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\t\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
+													jotun_Jotun.log("\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
 												} else {
 													throw _g;
 												}
@@ -1895,9 +1943,9 @@ jotun_modules_ModLib.prototype = {
 										}
 									});
 									content = _gthis.get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									jotun_Jotun.log("\t\t\t\t+ INJECTED '" + v + "' #" + injC,1);
+									jotun_Jotun.log("\t\t\t+ INJECTED '" + v + "' #" + injC,1);
 								} else {
-									jotun_Jotun.log("\t\t\t\t- MISSING '" + v + "' #" + injC,3);
+									jotun_Jotun.log("\t\t\t- MISSING '" + v + "' #" + injC,3);
 								}
 							});
 						}
@@ -1916,15 +1964,17 @@ jotun_modules_ModLib.prototype = {
 									fdata += 1;
 									content = JSON.parse(content);
 									if(mod.name == "[]") {
+										jotun_Jotun.log("\t@ PUSH: {...} (" + count + "/" + total + ")",1);
 										jotun_modules_ModLib.DATA.buffer.push(content);
 									} else {
-										jotun_modules_ModLib.DATA[mod.name] = content;
+										jotun_Jotun.log("\t@ DATA:  {" + mod.name + "} (" + count + "/" + total + ")",1);
+										jotun_modules_ModLib.DATA.objects[mod.name] = content;
 									}
 									return false;
 								} catch( _g ) {
 									var e = haxe_Exception.caught(_g).unwrap();
 									errors += 1;
-									jotun_Jotun.log("\t\t\tERROR! Can't parse DATA[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
+									jotun_Jotun.log("\t\tERROR! Can't parse DATA.objects[" + mod.name + "] \n\n " + content + "\n\n" + Std.string(e),3);
 								}
 							} else if(mod.type == "style" || mod.type == "css" || mod.type == "script" || mod.type == "javascript") {
 								jotun_Jotun.document.head.bind(content,mod.type,mod.name);
@@ -1938,7 +1988,7 @@ jotun_modules_ModLib.prototype = {
 						}
 						var n = mod.name.toLowerCase();
 						jotun_modules_ModLib.CACHE[n] = content;
-						jotun_modules_ModLib.CACHE["@" + n] = path;
+						jotun_modules_ModLib.DATA.paths["@" + n] = path;
 					} else {
 						jotun_Jotun.log("\tModLib => CONFIG ERROR " + file + "(" + HxOverrides.substr(v,0,15) + "...)",3);
 					}
@@ -1947,20 +1997,14 @@ jotun_modules_ModLib.prototype = {
 			});
 			if(mountAfter.length > 0) {
 				jotun_utils_Dice.Values(mountAfter,function(v) {
-					var o = null;
-					var idx = -1;
-					if(((v.target) instanceof Array)) {
-						o = jotun_Jotun.all(v.target[0]);
-						idx = v.target[1];
-					} else {
-						o = jotun_Jotun.all(v.target);
-					}
-					o.each(function(target) {
-						target.mount(v.name,v.data,idx);
+					jotun_utils_Dice.Values(v.target,function(o) {
+						jotun_Jotun.all(o.query).each(function(target) {
+							target.mount(v.name,null,o.index);
+						});
 					});
 				});
 			}
-			jotun_Jotun.log("\t\t! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors,1);
+			jotun_Jotun.log("\t! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors,1);
 		} else {
 			var ext = file.split(".").pop();
 			switch(ext) {
@@ -1991,7 +2035,7 @@ jotun_modules_ModLib.prototype = {
 				return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" + name + "]</span><br/>";
 			}
 		}
-		var content = Reflect.field(jotun_modules_ModLib.CACHE,name);
+		var content = jotun_modules_ModLib.CACHE[name];
 		data = this._sanitize(name,data);
 		if(data != null) {
 			return jotun_utils_Filler.to(content,data);
@@ -2000,8 +2044,8 @@ jotun_modules_ModLib.prototype = {
 		}
 	}
 	,object: function(name,data) {
-		if(Object.prototype.hasOwnProperty.call(jotun_modules_ModLib.DATA,name)) {
-			data = Reflect.field(jotun_modules_ModLib.DATA,name);
+		if(Object.prototype.hasOwnProperty.call(jotun_modules_ModLib.DATA.objects,name)) {
+			data = jotun_modules_ModLib.DATA.objects[name];
 		} else {
 			var val = this.get(name,data,"");
 			if(val != null) {
@@ -2016,11 +2060,11 @@ jotun_modules_ModLib.prototype = {
 		return data;
 	}
 	,image: function(name) {
-		return Reflect.field(jotun_modules_ModLib.DATA.images,name);
+		return jotun_modules_ModLib.DATA.images[name];
 	}
 	,buffer: function(name) {
 		if(name != null && name != "") {
-			return Reflect.field(jotun_modules_ModLib.DATA,name);
+			return jotun_modules_ModLib.DATA.objects[name];
 		} else {
 			return jotun_modules_ModLib.DATA.buffer;
 		}
@@ -2034,9 +2078,9 @@ jotun_modules_ModLib.prototype = {
 		if(jotun_Jotun.agent.mobile && this.exists(module + "::mobile")) {
 			module += "::mobile";
 		}
-		var signature = Reflect.field(jotun_modules_ModLib.CACHE,"@" + module.toLowerCase());
+		var path = jotun_modules_ModLib.DATA.paths["@" + module.toLowerCase()];
 		var result = new jotun_dom_Display().writeHtml(this.get(module,data));
-		result.children().attribute("jtn-mod",signature);
+		result.children().attribute("jtn-mod",path);
 		if(data != null) {
 			result.react(data);
 		}
@@ -2633,7 +2677,7 @@ var jotun_dom_Display = function(q,t) {
 	this.events = new jotun_events_Dispatcher(this);
 	jotun_objects_Query.call(this);
 };
-$hx_exports["J_dom_Display"] = jotun_dom_Display;
+$hx_exports["J_Display"] = jotun_dom_Display;
 jotun_dom_Display.__name__ = "jotun.dom.Display";
 jotun_dom_Display.__interfaces__ = [jotun_dom_IDisplay];
 jotun_dom_Display.ofKind = function(q) {
@@ -3364,7 +3408,7 @@ var jotun_dom_Style = function(q) {
 	jotun_dom_Display.call(this,q,null);
 	this.element.type = "text/css";
 };
-$hx_exports["J_dom_Style"] = jotun_dom_Style;
+$hx_exports["J_Style"] = jotun_dom_Style;
 jotun_dom_Style.__name__ = "jotun.dom.Style";
 jotun_dom_Style.get = function(q) {
 	return jotun_Jotun.one(q);
@@ -3851,8 +3895,8 @@ jotun_css_XCode._createGrid = function() {
 		jotun_css_XCode.omnibuild(".o-top,.o-top-left,.o-top-right","-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;");
 		jotun_css_XCode.omnibuild(".x-middle,.o-middle","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
 		jotun_css_XCode.omnibuild(".o-bottom,.o-bottom-left,.o-bottom-right","-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;");
-		jotun_css_XCode.omnibuild(".o-outer-fill","-ms-flex-pack:distribute;justify-content: space-around;");
-		jotun_css_XCode.omnibuild(".o-inner-fill","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
+		jotun_css_XCode.omnibuild(".o-distribute","-ms-flex-pack:distribute;justify-content: space-around;");
+		jotun_css_XCode.omnibuild(".o-justify","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
 		jotun_css_XCode.omnibuild(".shelf.o-reverse,.hack.o-stack","-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;");
 		jotun_css_XCode.omnibuild(".drawer.o-reverse","-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;");
 		jotun_css_XCode.omnibuild(".hack.o-reverse","-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;");
@@ -5527,7 +5571,7 @@ var jotun_dom_Script = function(q) {
 	jotun_dom_Display.call(this,q,null);
 	this.object = this.element;
 };
-$hx_exports["J_dom_Script"] = jotun_dom_Script;
+$hx_exports["J_Script"] = jotun_dom_Script;
 jotun_dom_Script.__name__ = "jotun.dom.Script";
 jotun_dom_Script.get = function(q) {
 	return jotun_Jotun.one(q);
@@ -6138,42 +6182,41 @@ jotun_events_EventGroup.prototype = {
 };
 var jotun_gaming_actions_Resolution = function(type,data) {
 	this._type = type;
-	this.cancelOnSuccess = jotun_tools_Utils.boolean(data.cancelOnSuccess);
-	this.cancelOnFail = jotun_tools_Utils.boolean(data.cancelOnFail);
 	this.reverse = jotun_tools_Utils.boolean(data.reverse);
+	if(this.breakon != null) {
+		this.breakon = this.breakon.toLowerCase();
+	}
 	if(((data.query) instanceof Array)) {
 		this.query = data.query;
 		this.query.unshift("@result");
 	} else if(jotun_tools_Utils.isValid(data.query)) {
 		this.query = ["@result",data.query];
 	}
-	if(data.onSuccess != null) {
-		this.onSuccess = new jotun_gaming_actions_Events(this._type + ".onSuccess",data.onSuccess);
+	if(data.then != null) {
+		this.then = new jotun_gaming_actions_Events(this._type + ":success",data.then);
 	}
-	if(data.onFail != null) {
-		this.onFail = new jotun_gaming_actions_Events(this._type + ".onFail",data.onFail);
+	if(data.fail != null) {
+		this.fail = new jotun_gaming_actions_Events(this._type + ":fail",data.fail);
 	}
 	this.id = data.id;
 };
-$hx_exports["J_Resolution"] = jotun_gaming_actions_Resolution;
 jotun_gaming_actions_Resolution.__name__ = "jotun.gaming.actions.Resolution";
 jotun_gaming_actions_Resolution.prototype = {
 	_type: null
 	,id: null
 	,query: null
-	,onSuccess: null
-	,onFail: null
-	,cancelOnSuccess: null
-	,cancelOnFail: null
+	,then: null
+	,fail: null
+	,breakon: null
 	,reverse: null
 	,resolve: function(result,context) {
 		++context.ident;
 		if(result) {
-			if(this.onSuccess != null) {
-				this.onSuccess.run(context);
+			if(this.then != null) {
+				this.then.run(context);
 			}
-		} else if(this.onFail != null) {
-			this.onFail.run(context);
+		} else if(this.fail != null) {
+			this.fail.run(context);
 		}
 		--context.ident;
 		if(this.reverse) {
@@ -6286,12 +6329,20 @@ jotun_gaming_actions_Action.save = function(action) {
 jotun_gaming_actions_Action.load = function(id) {
 	return Reflect.field(jotun_gaming_actions_Action.cache,id);
 };
+jotun_gaming_actions_Action._logTracer = function(context) {
+	if(context.tracer.length > 0) {
+		jotun_utils_Dice.Values(context.tracer,function(v) {
+			context.log.push(jotun_tools_Utils.prefix("",context.ident + context.chain,"\t") + "@TRACER \"" + v + "\"");
+		});
+		context.tracer = [];
+	}
+};
 jotun_gaming_actions_Action._log = function(evt,context,success,score,position) {
 	if(context.log != null) {
 		var context1 = context.log;
 		var tmp = jotun_tools_Utils.prefix("",context.ident + context.chain,"\t") + "↑ ";
 		var tmp1 = jotun_tools_Utils.isValid(evt.id) ? "#{" + evt.id + "} " : "";
-		context1.push(tmp + (success ? "SUCCESS" : "FAIL") + " ACTION " + tmp1 + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
+		context1.push(tmp + (success ? "SUCCESS" : "FAILED") + " ACTION " + tmp1 + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 };
 jotun_gaming_actions_Action.__super__ = jotun_gaming_actions_Resolution;
@@ -6305,10 +6356,18 @@ jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.
 			var result = r.verify(context,p);
 			if(result) {
 				resolution += 1;
-				return r.cancelOnSuccess;
+				if(r.breakon != "*") {
+					return r.breakon == "success";
+				} else {
+					return true;
+				}
 			} else {
 				resolution -= 1;
-				return r.cancelOnFail;
+				if(r.breakon != "*") {
+					return r.breakon == "fail";
+				} else {
+					return true;
+				}
 			}
 		});
 		--context.ident;
@@ -6320,6 +6379,9 @@ jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.
 			context.history.push(this);
 			if(jotun_tools_Utils.isValid(this.query)) {
 				jotun_gaming_actions_Action.commands.eventRun(this.query,context);
+				if(context.debug) {
+					jotun_gaming_actions_Action._logTracer(context);
+				}
 			}
 		}
 		return this.resolve(success,context);
@@ -6380,23 +6442,21 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 			r = "=";
 		}
 		switch(r) {
-		case "++":
-			return a + 1;
-		case "--":
-			return a - 1;
-		case "<<":
-			return a << v;
-		case ">>":
-			return a >> v;
+		case "+":case "add":
+			return a + v;
 		case "&":case "and":
 			return a & v;
+		case "--":case "decrement":
+			return a - 1;
 		case "/":case "divided":
 			return a / v;
-		case "=":case "equal":
+		case "=":case "eq":
 			return a;
-		case "-":case "minus":
-			return a - v;
-		case "%":case "module":
+		case "++":case "increment":
+			return a + 1;
+		case "<<":case "lshift":
+			return a << v;
+		case "%":case "mod":
 			return a % v;
 		case "*":case "multiply":
 			return a * v;
@@ -6404,21 +6464,37 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 			return a & ~v;
 		case "or":case "|":
 			return a | v;
-		case "+":case "plus":
-			return a + v;
-		case "!":case "pow":
+		case "^":case "pow":
 			return Math.pow(a,v);
-		case "#":case "random":
+		case "#":case "rand":
 			return this.rng() * v + a;
-		case "^":case "xor":
+		case ">>":case "rshift":
+			return a >> v;
+		case "-":case "sub":
+			return a - v;
+		case "!":case "xor":
 			return a ^ v;
 		default:
 			return a;
 		}
 	}
 	,ioContext: null
+	,tracer: function() {
+		var $l=arguments.length;
+		var messages = new Array($l>0?$l-0:0);
+		for(var $i=0;$i<$l;++$i){messages[$i-0]=arguments[$i];}
+		console.log("src/jotun/gaming/actions/ActionQuery.hx:103:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.ioContext));
+		return this;
+	}
 	,__class__: jotun_gaming_actions_ActionQuery
 });
+var jotun_gaming_actions_IEventCollection = function() { };
+jotun_gaming_actions_IEventCollection.__name__ = "jotun.gaming.actions.IEventCollection";
+jotun_gaming_actions_IEventCollection.__isInterface__ = true;
+jotun_gaming_actions_IEventCollection.prototype = {
+	events: null
+	,__class__: jotun_gaming_actions_IEventCollection
+};
 var jotun_gaming_actions_IEventDispatcher = function() { };
 jotun_gaming_actions_IEventDispatcher.__name__ = "jotun.gaming.actions.IEventDispatcher";
 jotun_gaming_actions_IEventDispatcher.__isInterface__ = true;
@@ -6428,21 +6504,15 @@ jotun_gaming_actions_IEventDispatcher.prototype = {
 	,call: null
 	,__class__: jotun_gaming_actions_IEventDispatcher
 };
-var jotun_gaming_actions_EventController = function(data,debug) {
+var jotun_gaming_actions_EventController = function(data,debug,validate) {
 	this._chain = [];
 	this._index = 0;
-	var _gthis = this;
 	this._debug = debug == true;
-	if(data != null) {
-		this.events = data;
-		jotun_utils_Dice.All(this.events,function(p,v) {
-			jotun_gaming_actions_Events.patch(_gthis);
-		});
-	}
+	this.events = jotun_gaming_actions_Events.patch(data,validate);
 };
 $hx_exports["J_EventController"] = jotun_gaming_actions_EventController;
 jotun_gaming_actions_EventController.__name__ = "jotun.gaming.actions.EventController";
-jotun_gaming_actions_EventController.__interfaces__ = [jotun_gaming_actions_IEventDispatcher];
+jotun_gaming_actions_EventController.__interfaces__ = [jotun_gaming_actions_IEventCollection,jotun_gaming_actions_IEventDispatcher];
 jotun_gaming_actions_EventController.cacheController = function(saveAction,loadAction,saveRequirement,loadRequirement) {
 	jotun_gaming_actions_EventController._wAction = saveAction;
 	jotun_gaming_actions_EventController._rAction = loadAction;
@@ -6487,7 +6557,7 @@ jotun_gaming_actions_EventController.prototype = {
 	,_onChainEnd: function(chain) {
 	}
 	,_createContext: function(data,name) {
-		return { name : name, debug : this._debug, log : [], ident : 0, ticks : 0, origin : data, history : []};
+		return { name : name, debug : this._debug, log : [], tracer : [], ident : 0, ticks : 0, origin : data, history : []};
 	}
 	,setDebug: function(mode) {
 		this._debug = mode;
@@ -6533,15 +6603,24 @@ var jotun_gaming_actions_Events = function(type,data) {
 };
 $hx_exports["J_Events"] = jotun_gaming_actions_Events;
 jotun_gaming_actions_Events.__name__ = "jotun.gaming.actions.Events";
-jotun_gaming_actions_Events.patch = function(data) {
-	if(data.events != null) {
-		if(!data.events.patched) {
-			data.events.patched = true;
-			jotun_utils_Dice.All(data.events,function(p,v) {
-				data.events[p] = new jotun_gaming_actions_Events(p,v);
-			});
-		}
+jotun_gaming_actions_Events.patch = function(data,validate) {
+	var patched = { };
+	if(data != null) {
+		jotun_utils_Dice.All(data,function(p,v) {
+			if(validate != null) {
+				p = validate(p,v);
+			}
+			if(p != null && p != "") {
+				if(!((v) instanceof jotun_gaming_actions_Events)) {
+					var value = new jotun_gaming_actions_Events(p,v);
+					patched[p] = value;
+				} else {
+					patched[p] = v;
+				}
+			}
+		});
 	}
+	return patched;
 };
 jotun_gaming_actions_Events._log = function(evt,context) {
 	var a = evt._data.length;
@@ -6577,13 +6656,25 @@ jotun_gaming_actions_Events.prototype = {
 			}
 		});
 	}
+	,getType: function() {
+		return this._type;
+	}
+	,matchType: function(q) {
+		return this._type == q;
+	}
 	,run: function(context) {
 		++context.ident;
 		jotun_utils_Dice.All(this._data,function(p,a) {
 			if(a.run(context,p)) {
-				return a.cancelOnSuccess;
+				if(a.breakon != "*") {
+					return a.breakon == "success";
+				} else {
+					return true;
+				}
+			} else if(a.breakon != "*") {
+				return a.breakon == "fail";
 			} else {
-				return a.cancelOnFail;
+				return true;
 			}
 		});
 		--context.ident;
@@ -6603,6 +6694,7 @@ jotun_gaming_actions_IEventContext.prototype = {
 	debug: null
 	,name: null
 	,log: null
+	,tracer: null
 	,ident: null
 	,chain: null
 	,ticks: null
@@ -6671,7 +6763,7 @@ jotun_gaming_actions_Requirement._log = function(evt,context,success,score,rever
 		var context1 = context.log;
 		var tmp = jotun_tools_Utils.prefix("",context.ident + context.chain,"\t");
 		var tmp1 = jotun_tools_Utils.isValid(evt.id) ? "#{" + evt.id + "} " : "";
-		context1.push(tmp + (success ? "└ SUCCESS" : "ꭙ FAIL") + " REQUIREMENT " + tmp1 + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
+		context1.push(tmp + (success ? "└ SUCCESS" : "ꭙ FAILED") + " REQUIREMENT " + tmp1 + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 };
 jotun_gaming_actions_Requirement.__super__ = jotun_gaming_actions_Resolution;
@@ -6745,24 +6837,24 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 			return a == v;
 		case ">":case "great":
 			return a > v;
-		case ">=":case "greator":
+		case ">=":case "great-or":
 			return a >= v;
-		case "in":case "~=":
+		case "inside":case "~=":
 			return v.indexOf(a) != -1;
 		case "<":case "less":
 			return a < v;
-		case "<=":case "lessor":
+		case "<=":case "less-or":
 			return a <= v;
 		case "!&":case "not":
 			return (~a & v) == v;
-		case "#=":case "random":
+		case "#=":case "rand":
 			return (this.rng() * a | 0) == v;
-		case "#>":case "rnggreat":
-			return this.rng() * a >= v;
-		case "#<":case "rngless":
-			return this.rng() * a <= v;
-		case "#!":case "rngnot":
+		case "#!":case "rand-diff":
 			return (this.rng() * a | 0) != v;
+		case "#>":case "rand-great-or":
+			return this.rng() * a >= v;
+		case "#<":case "rand-less-or":
+			return this.rng() * a <= v;
 		case "&":case "test":
 			return (a & v) == v;
 		default:
@@ -8203,6 +8295,14 @@ jotun_modules_IMod.prototype = {
 	,target: null
 	,__class__: jotun_modules_IMod
 };
+var jotun_modules_IModTarget = function() { };
+jotun_modules_IModTarget.__name__ = "jotun.modules.IModTarget";
+jotun_modules_IModTarget.__isInterface__ = true;
+jotun_modules_IModTarget.prototype = {
+	query: null
+	,index: null
+	,__class__: jotun_modules_IModTarget
+};
 var jotun_net_HttpRequest = function(url) {
 	this.url = url;
 	this.headers = new haxe_ds_List();
@@ -8359,12 +8459,14 @@ jotun_net_HttpRequest.prototype = {
 			return;
 		}
 		var is_json = false;
-		jotun_utils_Dice.Values(this.headers,function(v) {
-			if(!is_json) {
-				is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == "application/json";
-			}
-			r.setRequestHeader(v.header,v.value);
-		});
+		if(this.headers.length > 0) {
+			jotun_utils_Dice.Values(this.headers,function(v) {
+				if(!is_json) {
+					is_json = v.header.toLowerCase() == "content-type" && v.value.toLowerCase() == "application/json";
+				}
+				r.setRequestHeader(v.header,v.value);
+			});
+		}
 		if(is_json) {
 			if(typeof(data) != "string") {
 				data = JSON.stringify(data);
@@ -8538,6 +8640,9 @@ jotun_serial_JsonTool.customReplacer = function(a,b) {
 	} else {
 		return b;
 	}
+};
+jotun_serial_JsonTool.clone = function(obj) {
+	return JSON.parse(jotun_serial_JsonTool.stringify(obj));
 };
 jotun_serial_JsonTool.stringify = function(o,replacer,space) {
 	var printer = new jotun_serial_JsonTool(replacer != null ? replacer : jotun_serial_JsonTool.customReplacer,space);
@@ -9753,6 +9858,23 @@ jotun_utils_Dice.List = function(data,a,b) {
 	}
 	return copy;
 };
+jotun_utils_Dice.Map = function(data,props) {
+	var mapped = [];
+	jotun_utils_Dice.Values(data,function(v) {
+		var o = { };
+		var f = false;
+		jotun_utils_Dice.Values(props,function(v2) {
+			if(Object.prototype.hasOwnProperty.call(v,v2)) {
+				o[v2] = Reflect.field(v,v2);
+				if(f == false) {
+					f = true;
+					mapped.push(o);
+				}
+			}
+		});
+	});
+	return mapped;
+};
 jotun_utils_Dice.Blend = function(objects,into,blendType) {
 	if(blendType == null) {
 		blendType = 0;
@@ -9982,6 +10104,14 @@ jotun_utils_ITable.prototype = {
 };
 var jotun_utils_Reactor = function() { };
 jotun_utils_Reactor.__name__ = "jotun.utils.Reactor";
+jotun_utils_Reactor._dispatch = function(o) {
+	var _g = 0;
+	var _g1 = jotun_utils_Reactor._listeners.length;
+	while(_g < _g1) {
+		var i = _g++;
+		jotun_utils_Reactor._listeners[i](o);
+	}
+};
 jotun_utils_Reactor._react_clear = function(o,attr,prop) {
 	if(o.hasAttribute(attr)) {
 		o.clearAttribute(prop);
@@ -10022,17 +10152,19 @@ jotun_utils_Reactor._react_fill_data = function(data,path,o) {
 			}
 			o.data.__qd = o.data.__qd.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__cf || o.data.__qd.indexOf("{{") == -1) {
-			var tmp = typeof(o.data.__qd) == "string" ? jotun_tools_Utils.rnToBr(o.data.__qd) : o.data.__qd;
-			o.data.__qd = tmp;
-			if(((o) instanceof jotun_dom_Input)) {
-				o.value(o.data.__qd);
-			} else {
-				o.writeHtml(o.data.__qd);
+		if(o.data.__qd != null) {
+			if(o.data.__cf || o.data.__qd.indexOf("{{") == -1) {
+				var tmp = typeof(o.data.__qd) == "string" ? jotun_tools_Utils.rnToBr(o.data.__qd) : o.data.__qd;
+				o.data.__qd = tmp;
+				if(((o) instanceof jotun_dom_Input)) {
+					o.value(o.data.__qd);
+				} else {
+					o.writeHtml(o.data.__qd);
+				}
+				Reflect.deleteField(o.data,"__qd");
+				jotun_utils_Reactor._react_commit_down(o);
+				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-data");
 			}
-			Reflect.deleteField(o.data,"__qd");
-			jotun_utils_Reactor._react_commit_down(o);
-			jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-data");
 		}
 	}
 };
@@ -10049,23 +10181,25 @@ jotun_utils_Reactor._react_fill_visibility = function(data,path,o,attr) {
 			o.data.__qv = o.data.__qv.split("{{" + path + "}}").join(data);
 			o.data.__qvs += 1;
 		}
-		if(o.data.__cf || o.data.__qv.indexOf("{{") == -1) {
-			if(o.data.__qvs >= o.data.__qvt) {
-				if(attr == "jtn-show-if") {
-					o.show();
-				} else {
+		if(o.data.__qv != null) {
+			if(o.data.__cf || o.data.__qv.indexOf("{{") == -1) {
+				if(o.data.__qvs >= o.data.__qvt) {
+					if(attr == "jtn-show-if") {
+						o.show();
+					} else {
+						o.hide();
+					}
+				} else if(attr == "jtn-show-if") {
 					o.hide();
+				} else {
+					o.show();
 				}
-			} else if(attr == "jtn-show-if") {
-				o.hide();
-			} else {
-				o.show();
+				Reflect.deleteField(o.data,"__qv");
+				Reflect.deleteField(o.data,"__qvt");
+				Reflect.deleteField(o.data,"__qvs");
+				jotun_utils_Reactor._react_commit_down(o);
+				jotun_utils_Reactor._react_clear(o,"jtn-single",attr);
 			}
-			Reflect.deleteField(o.data,"__qv");
-			Reflect.deleteField(o.data,"__qvt");
-			Reflect.deleteField(o.data,"__qvs");
-			jotun_utils_Reactor._react_commit_down(o);
-			jotun_utils_Reactor._react_clear(o,"jtn-single",attr);
 		}
 	}
 };
@@ -10078,11 +10212,13 @@ jotun_utils_Reactor._react_fill_class = function(data,path,o) {
 			}
 			o.data.__qc = o.data.__qc.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__cf || o.data.__qc.indexOf("{{") == -1) {
-			o.css(o.data.__qc);
-			Reflect.deleteField(o.data,"__qc");
-			jotun_utils_Reactor._react_commit_down(o);
-			jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-class");
+		if(o.data.__qc) {
+			if(o.data.__cf || o.data.__qc.indexOf("{{") == -1) {
+				o.css(o.data.__qc);
+				Reflect.deleteField(o.data,"__qc");
+				jotun_utils_Reactor._react_commit_down(o);
+				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-class");
+			}
 		}
 	}
 };
@@ -10095,14 +10231,16 @@ jotun_utils_Reactor._react_fill_attr = function(data,path,o) {
 			}
 			o.data.__qa = o.data.__qa.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__cf || o.data.__qa.indexOf("{{") == -1) {
-			jotun_utils_Dice.Values(o.data.__qa.split(","),function(v) {
-				v = v.split(":");
-				o.attribute(v.shift(),v.join(":"));
-			});
-			Reflect.deleteField(o.data,"__qa");
-			jotun_utils_Reactor._react_commit_down(o);
-			jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-attr");
+		if(o.data.__qa) {
+			if(o.data.__cf || o.data.__qa.indexOf("{{") == -1) {
+				jotun_utils_Dice.Values(o.data.__qa.split(","),function(v) {
+					v = v.split(":");
+					o.attribute(v.shift(),v.join(":"));
+				});
+				Reflect.deleteField(o.data,"__qa");
+				jotun_utils_Reactor._react_commit_down(o);
+				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-attr");
+			}
 		}
 	}
 };
@@ -10115,14 +10253,16 @@ jotun_utils_Reactor._react_fill_style = function(data,path,o) {
 			}
 			o.data.__qs = o.data.__qs.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__cf || o.data.__qs.indexOf("{{") == -1) {
-			jotun_utils_Dice.Values(o.data.__qs.split(","),function(v) {
-				v = v.split(":");
-				o.attribute(v.shift(),v.join(":"));
-			});
-			Reflect.deleteField(o.data,"__qs");
-			jotun_utils_Reactor._react_commit_down(o);
-			jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-style");
+		if(o.data.__qs != null) {
+			if(o.data.__cf || o.data.__qs.indexOf("{{") == -1) {
+				jotun_utils_Dice.Values(o.data.__qs.split(","),function(v) {
+					v = v.split(":");
+					o.style(v.shift(),v.join(":"));
+				});
+				Reflect.deleteField(o.data,"__qs");
+				jotun_utils_Reactor._react_commit_down(o);
+				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-style");
+			}
 		}
 	}
 };
@@ -10163,6 +10303,15 @@ jotun_utils_Reactor._react_fill = function(to,data,path) {
 jotun_utils_Reactor.apply = function(to,data) {
 	jotun_utils_Reactor._react_fill(to,data,"");
 	jotun_utils_Reactor._react_fill_after(to);
+	jotun_utils_Reactor._dispatch(to);
+};
+jotun_utils_Reactor.listen = function(handler) {
+	if(jotun_utils_Reactor._listeners.indexOf(handler) == -1) {
+		jotun_utils_Reactor._listeners.push(handler);
+	}
+};
+jotun_utils_Reactor.unlisten = function(handler) {
+	HxOverrides.remove(jotun_utils_Reactor._listeners,handler);
 };
 var jotun_utils_Recycler = function(Object1) {
 	this._cache = [];
@@ -10992,7 +11141,7 @@ jotun_data_Logger.QUERY = 5;
 jotun_data_Logger.BROADCAST = 6;
 jotun_data_Logger.OBSOLETE = 7;
 jotun_modules_ModLib.CACHE = { };
-jotun_modules_ModLib.DATA = { buffer : [], images : { }};
+jotun_modules_ModLib.DATA = { buffer : [], images : { }, objects : { }, paths : { }};
 jotun_Jotun._loaded = false;
 jotun_Jotun.resources = new jotun_modules_ModLib();
 jotun_Jotun.domain = new jotun_net_Domain();
@@ -11043,6 +11192,7 @@ jotun_gaming_dataform_SparkWriter.TYPE = "q";
 jotun_gaming_dataform_SparkWriter.SPACE = " ";
 jotun_logical_Flag._bits = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AREA : jotun_dom_Area, AUDIO : jotun_dom_Audio, B : jotun_dom_B, BASE : jotun_dom_Base, BODY : jotun_dom_Body, BR : jotun_dom_BR, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, COL : jotun_dom_Col, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, EMBED : jotun_dom_Embed, FIELDSET : jotun_dom_FieldSet, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HR : jotun_dom_HR, HTML : jotun_dom_Html, I : jotun_dom_I, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LEGEND : jotun_dom_Legend, LI : jotun_dom_LI, LINK : jotun_dom_Link, MAP : jotun_dom_Map, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, METER : jotun_dom_Meter, MOD : jotun_dom_Mod, OBJECT : jotun_dom_Object, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, OUTPUT : jotun_dom_Output, P : jotun_dom_P, PARAM : jotun_dom_Param, PICTURE : jotun_dom_Picture, PRE : jotun_dom_Pre, PROGRESS : jotun_dom_Progress, QUOTE : jotun_dom_Quote, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
+jotun_utils_Reactor._listeners = [];
 jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["ñ","n"]];
 jotun_utils_Singularity._channel = "jotumhein";
 jotun_utils_Singularity.signals = new jotun_signals_Signals(jotun_utils_Singularity);

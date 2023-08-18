@@ -12,14 +12,14 @@ interface IMod {
 	 */
 	public var name:String;
 	/**
-	 * Import modulee to [this]
+	 * Import module to [this]
 	 * [this] mod need to have the {{@include:MODNAME}} to import a module
 	 * Alternative way to require a mod and fill with custom data is {{@include:MODNAME,data:{<JSON DATA>}}}
 	 * 
 	 */
 	public var require:Array<String>;
 	/**
-	 * Inject [this] in
+	 * Inject [this] in another module
 	 * Receiving mods need to have {{@inject:MODNAME}} to receive [this]
 	 * Alternative way to inject a mod and fill with custom data is {{@inject:MODNAME,data:{<JSON DATA>}}}
 	 */
@@ -43,7 +43,12 @@ interface IMod {
 	public var data:Dynamic;
 	/**
 	 * Automatically build [this] in the target (css selector) when all mod data is ready
-	 * Pass an array to define child index in second param ['target-selector', index]
+	 * Pass an object to define child index {"query":"target-selector", "index":0}
 	 */
-	public var target:Dynamic;
+	public var target:Array<IModTarget>;
+}
+
+interface IModTarget {
+	var query:String;
+	var index:Int;
 }

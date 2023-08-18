@@ -222,8 +222,6 @@ class Loader implements ILoader {
 	public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 	#end
 	
-		return;
-	
 		if (method != null){
 			method = method.toUpperCase();
 		}

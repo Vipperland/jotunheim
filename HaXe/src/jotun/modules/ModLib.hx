@@ -3,6 +3,7 @@ import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.data.Logger;
+import jotun.modules.IMod.IModTarget;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
 
@@ -108,6 +109,26 @@ class ModLib {
 	
 	/**
 	 * Register a module
+	 * 	
+	 * 	[Module:{
+	 * 		"name":"unique mod name",
+	 * 		"?type":"mod type",
+	 * 		"?require":[],
+	 * 		"?inject":[],
+	 * 		"?data":{...},
+	 * 		"?target":"selector"
+	 *	}]
+	 * 
+	 * 	Include x Injection
+	 * 		
+	 * 	=== Include, [Module:{"name":"BannerFile","require":[]}]
+	 * 		Will include THIS mod in another, and will fill with custom data if defined
+	 * 		{{@include:AnotherModname,data:{...}}} or {{@include:AnotherModname}}
+	 * 
+	 * 	=== Injection, [Module:{"name":"BannerFile","inject":[]}]
+	 * 		Will inject defined mods in THIS, and will fill with custom data if defined
+	 * 		{{@inject:AnotherModname,data:{...}}} or {{@inject:AnotherModname}}
+	 * 
 	 * @param	file
 	 * @param	content
 	 * @param	data
@@ -170,7 +191,7 @@ class ModLib {
 												var data:Dynamic = Json.parse(pieces);
 												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(get(v, data));
 											}catch (e:Error){
-												Jotun.log("			ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
+												Jotun.log("			ERROR: Can't parse module include data for " + v + ".", Logger.ERROR);
 											}
 										}
 									});
@@ -184,9 +205,9 @@ class ModLib {
 							});
 						}
 						if (mod.inject != null) {
-							var injT:Int = mod.require.length;
+							var injT:Int = mod.inject.length;
 							var injC:Int = 1;
-							Jotun.log("		INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
+							Jotun.log("		< INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
 							Dice.Values(mod.inject, function(v:String) {
 								if (exists(v)){
 									// injection with custom data
@@ -267,16 +288,10 @@ class ModLib {
 				// ============================= JS ONLY =============================
 				if (mountAfter.length > 0){
 					Dice.Values(mountAfter, function(v:IMod){
-						var o:ITable = null;
-						var idx:Int = -1;
-						if(Std.isOfType(v.target, Array)){
-							o = Jotun.all(v.target[0]);
-							idx = v.target[1];
-						}else{
-							o = Jotun.all(v.target);
-						}
-						o.each(function(target:IDisplay):Void{
-							target.mount(v.name, v.data, idx);
+						Dice.Values(v.target, function(o:IModTarget):Void{
+							Jotun.all(o.query).each(function(target:IDisplay):Void{
+								target.mount(v.name, null, o.index);
+							});
 						});
 					});
 				}
@@ -428,6 +443,7 @@ class ModLib {
 		// ============================= JS ONLY =============================
 		/**
 		 * Write module in a DOM element
+		 * 
 		 * @param	module
 		 * @param	data
 		 * @return	The display created from Module

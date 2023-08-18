@@ -11,6 +11,14 @@ import js.html.Element;
  */
 class Reactor {
 	
+	static private var _listeners:Array<IDisplay->Void> = [];
+	
+	static private function _dispatch(o:IDisplay):Void {
+		for(i in 0..._listeners.length){
+			_listeners[i](o);
+		}
+	}
+	
 	static private function _react_clear(o:IDisplay, attr:String, prop:String){
 		if (o.hasAttribute(attr)){
 			o.clearAttribute(prop);
@@ -257,6 +265,17 @@ class Reactor {
 	static public function apply(to:IDisplay, data:Dynamic):Void{
 		_react_fill(to, data, '');
 		_react_fill_after(to);
+		_dispatch(to);
+	}
+	
+	static public function listen(handler:IDisplay->Void):Void {
+		if(!_listeners.contains(handler)){
+			_listeners.push(handler);
+		}
+	}
+	
+	static public function unlisten(handler:IDisplay->Void):Void {
+		_listeners.remove(handler);
 	}
 	
 }
