@@ -19,12 +19,6 @@ interface IMod {
 	 */
 	public var require:Array<String>;
 	/**
-	 * Inject [this] in another module
-	 * Receiving mods need to have {{@inject:MODNAME}} to receive [this]
-	 * Alternative way to inject a mod and fill with custom data is {{@inject:MODNAME,data:{<JSON DATA>}}}
-	 */
-	public var inject:Array<String>;
-	/**
 	 * The type content of [this] Mod.
 	 * Possible values are: 
 	 * 	"data", 

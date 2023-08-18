@@ -3,7 +3,6 @@ import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.data.Logger;
-import jotun.modules.IMod.IModTarget;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
 
@@ -14,6 +13,7 @@ import jotun.utils.Filler;
 	import jotun.dom.IDisplay;
 	import jotun.dom.Display;
 	import jotun.dom.Script;
+	import jotun.modules.IMod.IModTarget;
 	import jotun.utils.ITable;
 #elseif php
 	import php.Error;
@@ -113,21 +113,31 @@ class ModLib {
 	 * 	[Module:{
 	 * 		"name":"unique mod name",
 	 * 		"?type":"mod type",
-	 * 		"?require":[],
-	 * 		"?inject":[],
+	 * 		"?require":["modname",...],
+	 * 		"?inject":["modname",...],
 	 * 		"?data":{...},
-	 * 		"?target":"selector"
+	 * 		"?target":[{"query":"", "index":N },...]
 	 *	}]
 	 * 
-	 * 	Include x Injection
+	 * 	Include x Inject
 	 * 		
-	 * 	=== Include, [Module:{"name":"BannerFile","require":[]}]
-	 * 		Will include THIS mod in another, and will fill with custom data if defined
-	 * 		{{@include:AnotherModname,data:{...}}} or {{@include:AnotherModname}}
+	 * 	=== Inclusion, [Module:{"name":"IncludeModSample","require":["RequiredModName"]}]
+	 * 		Will inject content of defined mods in THIS content
+	 * 		THIS mod require the include tag for injection points:
+	 * 		{{@include:RequiredModName,data:{...}}} or {{@include:RequiredModName}}
 	 * 
-	 * 	=== Injection, [Module:{"name":"BannerFile","inject":[]}]
-	 * 		Will inject defined mods in THIS, and will fill with custom data if defined
-	 * 		{{@inject:AnotherModname,data:{...}}} or {{@inject:AnotherModname}}
+	 * 		This = "Message: {{@include:RequiredModName}}"
+	 * 		Include = "This is the content from RequiredModName"
+	 * 		Result = "Message: This is the content from RequiredModName"
+	 * 
+	 * 	=== Injection, [Module:{"name":"InjectModSample","inject":["TargetModToInject"]}]
+	 * 		Will include THIS mod in another, and will fill with custom data if defined
+	 * 		Receiving mod require the include tag for injection points:
+	 * 		{{@inject:InjectModSample,data:{...}}} or {{@inject:InjectModSample}}
+	 * 
+	 * 		This = "Message: {{@inject:TargetModToInject}}"
+	 * 		Inject = "This is the content from TargetModToInject"
+	 * 		Result = "Message: This is the content from RequiredModName"
 	 * 
 	 * @param	file
 	 * @param	content
@@ -184,12 +194,15 @@ class ModLib {
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
 									// inclusion with custom data
-									Dice.All(content.split("{{@include:" + v + ",data:"), function(p:Int, v2:String):Void {
+									Dice.All(content.split("{{@include:" + v + ",data:{"), function(p:Int, v2:String):Void {
 										if (p > 0){
-											var pieces:String = v2.split("}}")[0] + "}";
+											var pieces:String = v2.split("}}}")[0];
 											try {
-												var data:Dynamic = Json.parse(pieces);
-												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(get(v, data));
+												var data:DynamicAccess<Dynamic> = Json.parse('{' + pieces + '}');
+												if(!Std.isOfType(data, Array)){
+													data.set('@name', mod.name);
+												}
+												content = content.split("{{@include:" + v + ",data:{" + pieces + "}}}").join(get(v, data));
 											}catch (e:Error){
 												Jotun.log("			ERROR: Can't parse module include data for " + v + ".", Logger.ERROR);
 											}
@@ -202,32 +215,6 @@ class ModLib {
 									Jotun.log("			- MISSING '" + v + "' #" + incC, Logger.ERROR);
 								}
 								++incC;
-							});
-						}
-						if (mod.inject != null) {
-							var injT:Int = mod.inject.length;
-							var injC:Int = 1;
-							Jotun.log("		< INJECTING MODULES IN '" + mod.name + "' (" + injT + ")", Logger.SYSTEM);
-							Dice.Values(mod.inject, function(v:String) {
-								if (exists(v)){
-									// injection with custom data
-									Dice.All(content.split("{{@inject:" + v + ",data:"), function(p:Int, v2:String):Void {
-										if (p > 0){
-											var pieces:String = v2.split("}}")[0] + "}";
-											try {
-												var data:Dynamic = Json.parse(pieces);
-												content = get(v, data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
-											}catch (e:Error){
-												Jotun.log("			ERROR: Can't parse module injection data for " + v + ".", Logger.ERROR);
-											}
-										}
-									});
-									// injection with no custom data
-									content = get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									Jotun.log("			+ INJECTED '" + v + "' #" + injC, 1);
-								}else{
-									Jotun.log("			- MISSING '" + v + "' #" + injC, Logger.ERROR);
-								}
 							});
 						}
 						if (mod.data != null){
@@ -471,7 +458,6 @@ class ModLib {
 		"name": "",
 		"type": "",
 		"require": [],
-		"inject": [],
 		"replace": [],
 		"data": {},
 		"target": null,

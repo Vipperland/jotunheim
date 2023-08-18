@@ -1898,12 +1898,15 @@ jotun_modules_ModLib.prototype = {
 							jotun_Jotun.log("\t\t> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")",1);
 							jotun_utils_Dice.Values(mod.require,function(v) {
 								if(_gthis.exists(v)) {
-									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:"),function(p,v2) {
+									jotun_utils_Dice.All(content.split("{{@include:" + v + ",data:{"),function(p,v2) {
 										if(p > 0) {
-											var pieces = v2.split("}}")[0] + "}";
+											var pieces = v2.split("}}}")[0];
 											try {
-												var data = JSON.parse(pieces);
-												content = content.split("{{@include:" + v + ",data:" + pieces + "}}").join(_gthis.get(v,data));
+												var data = JSON.parse("{" + pieces + "}");
+												if(!((data) instanceof Array)) {
+													data["@name"] = mod.name;
+												}
+												content = content.split("{{@include:" + v + ",data:{" + pieces + "}}}").join(_gthis.get(v,data));
 											} catch( _g ) {
 												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
 													jotun_Jotun.log("\t\t\tERROR: Can't parse module include data for " + v + ".",3);
@@ -1919,34 +1922,6 @@ jotun_modules_ModLib.prototype = {
 									jotun_Jotun.log("\t\t\t- MISSING '" + v + "' #" + incC,3);
 								}
 								incC += 1;
-							});
-						}
-						if(mod.inject != null) {
-							var injT = mod.inject.length;
-							var injC = 1;
-							jotun_Jotun.log("\t\t< INJECTING MODULES IN '" + mod.name + "' (" + injT + ")",1);
-							jotun_utils_Dice.Values(mod.inject,function(v) {
-								if(_gthis.exists(v)) {
-									jotun_utils_Dice.All(content.split("{{@inject:" + v + ",data:"),function(p,v2) {
-										if(p > 0) {
-											var pieces = v2.split("}}")[0] + "}";
-											try {
-												var data = JSON.parse(pieces);
-												content = _gthis.get(v,data).split("{{@inject:" + v + ",data:" + pieces + "}}").join(content);
-											} catch( _g ) {
-												if(((haxe_Exception.caught(_g).unwrap()) instanceof Error)) {
-													jotun_Jotun.log("\t\t\tERROR: Can't parse module injection data for " + v + ".",3);
-												} else {
-													throw _g;
-												}
-											}
-										}
-									});
-									content = _gthis.get(v).split("{{@inject:" + mod.name + "}}").join(content);
-									jotun_Jotun.log("\t\t\t+ INJECTED '" + v + "' #" + injC,1);
-								} else {
-									jotun_Jotun.log("\t\t\t- MISSING '" + v + "' #" + injC,3);
-								}
 							});
 						}
 						if(mod.data != null) {
@@ -8288,7 +8263,6 @@ jotun_modules_IMod.__isInterface__ = true;
 jotun_modules_IMod.prototype = {
 	name: null
 	,require: null
-	,inject: null
 	,type: null
 	,replace: null
 	,data: null
