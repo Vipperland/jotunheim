@@ -115,8 +115,9 @@ class XCode {
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
 				var t:String = (cast m).toFixed(5) + '%';
-				var s:String = "flex-basis:" + t + ";max-width:" + t;
+				var s:String = "flex-basis:" + t + ";max-width:" + t + ";width:0";
 				omnibuild('.cel-' + a, s);
+				//omnibuild('.cel-fit' + a, s);
 				if (a < b) {
 					omnibuild('.rcell-' + a, 'margin-left:' + t);
 				}
