@@ -57,7 +57,8 @@ class Action extends Resolution {
 		}
 	}
 	
-	public function run(context:IEventContext, position:Int):Bool {
+	public function run(context:EventContext, position:Int):Bool {
+		connect();
 		// Check requirements
 		var resolution:Int = 0;
 		++context.ident;
@@ -65,11 +66,10 @@ class Action extends Resolution {
 			var result:Bool = r.verify(context, p);
 			if (result){
 				++resolution;
-				return r.breakon == '*' || r.breakon == 'success';
 			}else{
 				--resolution;
-				return r.breakon == '*' || r.breakon == 'fail';
 			}
+			return r.willBreakOn(result);
 		});
 		--context.ident;
 		// resolution
@@ -78,30 +78,16 @@ class Action extends Resolution {
 			_log(this, context, success, resolution, position);
 		}
 		if (success){
-			context.history.push(this);
-			if(Utils.isValid(query)){
+			context.registerAction(this);
+			if (Utils.isValid(query)){
 				commands.eventRun(query, context);
-				if (context.debug){
-					_logTracer(context);
-				}
 			}
 		}
 		return resolve(success, context);
 	}
 	
-	private static function _logTracer(context:IEventContext):Void  {
-		if(context.tracer.length > 0){
-			Dice.Values(context.tracer, function(v:String):Void {
-				context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + "@TRACER \"" + v + "\"");
-			});
-			context.tracer = [];
-		}
-	}
-
-	private static function _log(evt:Action, context:IEventContext, success:Bool, score:Int, position:Int):Void {
-		if (context.log != null){
-			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
-		}
+	private static function _log(evt:Action, context:EventContext, success:Bool, score:Int, position:Int):Void {
+		context.addLog(0, "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 }

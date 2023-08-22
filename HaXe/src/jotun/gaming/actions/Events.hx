@@ -2,7 +2,7 @@ package jotun.gaming.actions;
 import haxe.DynamicAccess;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.EventController;
-import jotun.gaming.actions.IEventContext;
+import jotun.gaming.actions.EventContext;
 import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -74,14 +74,10 @@ class Events {
 		return _type == q;
 	}
 	
-	public function run(context:IEventContext) {
+	public function run(context:EventContext) {
 		++context.ident;
 		Dice.All(_data, function(p:Int, a:Action):Bool{
-			if (a.run(context, p)){
-				return a.breakon == '*' || a.breakon == 'success';
-			}else{
-				return a.breakon == '*' || a.breakon == 'fail';
-			}
+			return a.willBreakOn(a.run(context, p));
 		});
 		--context.ident;
 		if (context.ident == 0){
@@ -92,11 +88,11 @@ class Events {
 		}
 	}
 	
-	private static function _log(evt:Events, context:IEventContext):Void {
+	private static function _log(evt:Events, context:EventContext):Void {
 		var a:Int = evt._data.length;
-		context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
+		context.addLog(0, (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
 		if (context.chain > 0 && context.parent.action != null){
-			context.log.push(Utils.prefix("", context.ident + context.chain + 1, '\t') + "├ ACTION [" + context.parent.action + "]");
+			context.addLog(1, "├ ACTION \"" + context.parent.action.query + "\"");
 		}
 	}
 	

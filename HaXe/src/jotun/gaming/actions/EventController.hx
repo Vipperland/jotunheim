@@ -2,7 +2,7 @@ package jotun.gaming.actions;
 import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.gaming.actions.Action;
-import jotun.gaming.actions.IEventContext;
+import jotun.gaming.actions.EventContext;
 import jotun.gaming.actions.Requirement;
 import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
@@ -20,6 +20,12 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	static private var _rRequirement:String->Requirement;
 	static private var _wRequirement:Requirement->Void;
+	
+	static private var _debug:Bool;
+	
+	static public function createContext(name:String, data:Dynamic):EventContext {
+		return new EventContext(name, data, _debug);
+	}
 	
 	static public function cacheController(saveAction:Action->Void, loadAction:String->Action, saveRequirement:Requirement->Void, loadRequirement:String->Requirement):Void {
 		_wAction = saveAction;
@@ -52,28 +58,13 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 		}
 	}
 	
-	private var _debug:Bool;
-	
 	public var events:DynamicAccess<Events>;
 	
-	private function _onCallBefore(context:IEventContext):Void { }
+	private function _onCallBefore(context:EventContext):Void { }
 	
-	private function _onCallAfter(context:IEventContext):Void { }
+	private function _onCallAfter(context:EventContext):Void { }
 	
-	private function _onChainEnd(chain:Array<IEventContext>):Void { }
-	
-	private function _createContext(data:Dynamic, name:String):IEventContext {
-		return cast {
-			name:name,
-			debug:_debug,
-			log:[],
-			tracer:[],
-			ident:0,
-			ticks:0,
-			origin:data,
-			history:[],
-		};
-	}
+	private function _onChainEnd(chain:Array<EventContext>):Void { }
 	
 	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String) {
 		_debug = debug == true;
@@ -86,11 +77,11 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	private var _index:Int = 0;
 	
-	private var _chain:Array<IEventContext> = [];
+	private var _chain:Array<EventContext> = [];
 	
 	public function call(name:String, ?data:Dynamic):Bool {
+		var context:EventContext = createContext(name, data);
 		if (Reflect.hasField(events, name)){
-			var context:IEventContext = _createContext(data, name);
 			context.chain = _index;
 			_chain[_chain.length] = context;
 			if (_index > 0){
@@ -108,9 +99,8 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 			return true;
 		}else{
 			if (_debug){
-				var context:IEventContext = _createContext(data, name);
 				_onCallBefore(context);
-				context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + "≈ EVENT " + name + " [!] Not Found on " + Type.getClassName(Type.getClass(this))) + ". ";
+				context.addLog(0, "≈ EVENT " + name + " [!] Not Found on " + Type.getClassName(Type.getClass(this)) + ". ");
 				_onCallAfter(context);
 			}
 			return false;

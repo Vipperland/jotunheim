@@ -13,22 +13,23 @@ class RequirementQueryGroup extends QueryGroup {
 		super();
 	}
 	
-	public function eventRun(query:Dynamic, context:IEventContext):Dynamic {
+	public function eventRun(query:Dynamic, context:EventContext):Dynamic {
 		var result:Dynamic = {};
 		if (context.debug){
 			var idx:Int = 0;
 			Dice.Values(query, function(single:String){
 				if(single != '@result'){
-					context.requirement = single;
+					context.registerRequirementQuery(single);
 					Dice.All(units, function(p:String, o:RequirementQuery):Void {
 						o.ioContext = context;
-						context.log.push(Utils.prefix('', context.ident+1, '\t') + single + '[' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
+						if (context.debug){
+							context.addLog(1, single + '[' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
+						}
 						++idx;
 						o.flush();
 					});
 				}
 			});
-			context.requirement = null;
 		}else{
 			Dice.Values(units, function(o:RequirementQuery){
 				o.ioContext = context;

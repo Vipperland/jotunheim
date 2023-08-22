@@ -90,7 +90,7 @@ class ActionQuery extends Query {
 		}
 	}
 	
-	public var ioContext:IEventContext;
+	public var ioContext:EventContext;
 	
 	/**
 	 * 

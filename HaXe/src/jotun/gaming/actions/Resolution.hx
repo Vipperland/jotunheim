@@ -19,6 +19,8 @@ class Resolution {
 	
 	public var breakon:String;
 	
+	public var _stopped:Bool;
+	
 	public var reverse:Bool;
 	
 	public function new(type:String, data:Dynamic) {
@@ -42,7 +44,7 @@ class Resolution {
 		id = data.id;
 	}
 	
-	public function resolve(result:Bool, context:IEventContext):Bool {
+	public function resolve(result:Bool, context:EventContext):Bool {
 		++context.ident;
 		if (result){
 			if (then != null){
@@ -55,6 +57,25 @@ class Resolution {
 		}
 		--context.ident;
 		return reverse ? !result : result;
+	}
+	
+	public function willBreakOn(result:Bool):Bool {
+		return _stopped || breakon == '*' || (result ? breakon == 'success' : breakon == 'fail');
+	}
+	
+	public function release(result:Bool, ?data:Dynamic, ?name:String):Void {
+		if(_stopped){
+			_stopped = false;
+			resolve(result, EventController.createContext(name, data));
+		}
+	}
+	
+	public function connect():Void {
+		_stopped = false;
+	}
+	
+	public function disconnect():Void {
+		_stopped = true;
 	}
 	
 	public function length():Int {

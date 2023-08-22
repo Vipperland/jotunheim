@@ -36,10 +36,12 @@ class Requirement extends Resolution {
 		}
 	}
 	
-	public function verify(context:IEventContext, position:Int):Bool {
+	public function verify(context:EventContext, position:Int):Bool {
+		connect();
 		var res:Bool = true;
 		var score:UInt = 0;
 		if (Utils.isValid(query)){
+			context.registerRequirement(this);
 			var sec:Dynamic = commands.eventRun(query, context).result;
 			if(sec != null){
 				Dice.Values(sec, function(v:Dynamic){
@@ -57,10 +59,8 @@ class Requirement extends Resolution {
 		return res;
 	}
 	
-	private static function _log(evt:Requirement, context:IEventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
-		if (context.log != null){
-			context.log.push(Utils.prefix("", context.ident + context.chain, '\t') + (success ? "└ SUCCESS" : "ꭙ FAILED") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
-		}
+	private static function _log(evt:Requirement, context:EventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
+		context.addLog(0, (success ? "└ SUCCESS" : "ꭙ FAILED") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	
 	

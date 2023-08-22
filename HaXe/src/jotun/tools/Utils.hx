@@ -1,6 +1,7 @@
 package jotun.tools;
 import haxe.Json;
 import haxe.Log;
+import haxe.Rest;
 import jotun.math.Point;
 import jotun.math.RNG;
 import jotun.utils.Delegate;
@@ -543,6 +544,18 @@ class Utils{
 	
 	public static function colorToCss(color:IColor, ?multiply:Float):String {
 		return 'rgb(' + Std.int(color.r * multiply) + ' ' + Std.int(color.g * multiply) + ' ' + Std.int(color.b * multiply) + '/' + Utils.toFixed((color.a * multiply) / 255, 2) + ')';
+	}
+	
+	public static function range(value:Int, ...values:Int):Int {
+		var r:Int = 0;
+		for (i in 0...values.length){
+			if (value > values[i]){
+				++r;
+			}else {
+				break;
+			}
+		}
+		return r;
 	}
 	
 	#if php 
