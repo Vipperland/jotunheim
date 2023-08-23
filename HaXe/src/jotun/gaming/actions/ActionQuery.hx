@@ -99,7 +99,7 @@ class ActionQuery extends Query {
 		super();
 	}
 	
-	public function tracer(...messages:Rest<String>):ActionQuery {
+	public function tracer(messages:Rest<String>):ActionQuery {
 		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), ioContext));
 		return this;
 	}
