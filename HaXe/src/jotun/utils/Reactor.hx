@@ -172,7 +172,7 @@ class Reactor {
 			}
 			if(o.data.__qa){
 				if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
-					Dice.Values(o.data.__qa.split(','), function(v:Dynamic){
+					Dice.Values(o.data.__qa.split(';'), function(v:Dynamic){
 						v = v.split(":");
 						o.attribute(v.shift(), v.join(":"));
 					});
@@ -201,7 +201,7 @@ class Reactor {
 			}
 			if(o.data.__qs != null){
 				if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
-					Dice.Values(o.data.__qs.split(','), function(v:Dynamic){
+					Dice.Values(o.data.__qs.split(';'), function(v:Dynamic){
 						v = v.split(":");
 						o.style(v.shift(), v.join(":"));
 					});

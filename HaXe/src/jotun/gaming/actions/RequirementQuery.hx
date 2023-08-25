@@ -9,17 +9,17 @@ import jotun.tools.Utils;
 @:expose("J_RequirementQuery")
 class RequirementQuery extends Query {
 	
-	private function _isempty(value:String):Bool {
+	private function _isempty(value:Dynamic):Bool {
 		return value == null || value == "";
 	}
 	
 	private function _INT(value:Dynamic, alt:Int):Int {
-		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.int(value);
+		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
 		return o != null ? o : alt;
 	}
 	
 	private function _FLOAT(value:Dynamic, alt:Float):Float {
-		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.int(value);
+		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.isOfType(value, Float) ? value : null;
 		return o != null ? o : alt;
 	}
 	

@@ -12,7 +12,7 @@ import jotun.utils.Filler;
 @:expose("J_ActionQuery")
 class ActionQuery extends Query {
 
-	private function _isempty(value:String):Bool {
+	private function _isempty(value:Dynamic):Bool {
 		return value == null || value == "";
 	}
 	
@@ -35,12 +35,12 @@ class ActionQuery extends Query {
 	}
 	
 	private function _INT(value:Dynamic, ?alt:Int):Int {
-		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.int(value);
+		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
 		return o != null ? o : alt;
 	}
 	
 	private function _FLOAT(value:Dynamic, ?alt:Float):Float {
-		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.int(value);
+		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.isOfType(value, Float) ? value : null;
 		return o != null ? o : alt;
 	}
 	
@@ -54,7 +54,7 @@ class ActionQuery extends Query {
 		}
 		return switch(r){
 			// return a
-			case "=","eq" : a;
+			case "=","eq","equal" : a;
 			// return a plus v
 			case "+","add" : a + v;
 			// return a minus v
@@ -84,7 +84,7 @@ class ActionQuery extends Query {
 			// return a power of v
 			case "^","pow" : Math.pow(a, v);
 			// return random a plus v
-			case "#", "rand" : (rng() * v) + a;
+			case "#", "random" : (rng() * v) + a;
 			// return a equal v
 			default : a;
 		}
