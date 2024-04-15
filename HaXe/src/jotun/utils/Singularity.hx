@@ -273,6 +273,14 @@ class Singularity {
 		return _is_active == true;
 	}
 	
+	static public function fetch(o:Dynamic):Void {
+		Dice.Values(['onMain','onConnect','onDisconnect','onSync','onInstance','onVisibility'], function(v:String):Void {
+			if(Reflect.hasField(o, v)){
+				signals.add(v, Reflect.field(o, v));
+			}
+		});
+	}
+	
 	static public function toString():String {
 		var ids:Array<String> = [];
 		Dice.Values(_engines, function(v:Dynamic){

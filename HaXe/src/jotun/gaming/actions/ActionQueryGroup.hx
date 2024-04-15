@@ -21,8 +21,10 @@ class ActionQueryGroup extends QueryGroup {
 				Dice.Values(units, function(o:ActionQuery){
 					o.ioContext = context;
 					o.proc(single, result);
-					o.flush();
 				});
+			});
+			Dice.Values(units, function(o:ActionQuery){
+				o.flush();
 			});
 		}else{
 			Dice.Values(units, function(o:ActionQuery){

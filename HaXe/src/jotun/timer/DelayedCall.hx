@@ -30,7 +30,7 @@ class DelayedCall {
 		}
 	}
 	
-	public function new(timer:Timer, method:Dynamic, delay:Float, repeat:Int, ...args:Dynamic) {
+	public function new(timer:Timer, method:Dynamic, delay:Float, repeat:Int, args:Array<Dynamic>) {
 		_repeat = repeat;
 		_count = 0;
 		_delay = delay * 1000;

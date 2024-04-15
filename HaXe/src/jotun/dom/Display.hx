@@ -732,8 +732,8 @@ class Display extends Query implements IDisplay {
 	
 	public function addToBody():IDisplay {
 		if (Jotun.document != null){
-			
-		}			Jotun.document.body.addChild(this);
+			Jotun.document.body.addChild(this);
+		}
 		return this;
 	}
 	

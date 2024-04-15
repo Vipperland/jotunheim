@@ -95,7 +95,7 @@ class Flag {
 		while(size>0){
 			--size;
 			r += FTest(hash, 1 << size) ? '1' : '0';
-			if (++g == glen){
+			if (++g == glen && size > 0){
 				g = 0;
 				r += glue;
 			}
@@ -130,6 +130,15 @@ class Flag {
 	
 	public function drop(bit:UInt):Flag {
 		value = FDrop(value, 1<<bit);
+		return this;
+	}
+	
+	public function set(bit:UInt, value:Bool):Flag {
+		if(value){
+			put(bit);
+		}else{
+			drop(bit);
+		}
 		return this;
 	}
 	
@@ -193,7 +202,7 @@ class Flag {
 	}
 	
 	public function toCard(?size:UInt = 32, ?glen:UInt = 8):String {
-		return FValue(value, size, glen, '\n');
+		return FValue(value, size, glen, '\r\n');
 	}
 	
 	public function getInfo():Dynamic {

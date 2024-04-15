@@ -85,8 +85,8 @@ class HttpRequest {
 	public var responseHeaders : Dynamic;
 #end
 	var postData : String;
-	var headers : List<{ header:String, value:String }>;
-	var params : List<{ param:String, value:String }>;
+	var headers : Array<Dynamic>;
+	var params : Array<Dynamic>;
 
 	#if sys
 	public static var PROXY : { host : String, port : Int, auth : { user : String, pass : String } } = null;
@@ -105,8 +105,8 @@ class HttpRequest {
 	**/
 	public function new( url : String ) {
 		this.url = url;
-		headers = new List<{ header:String, value:String }>();
-		params = new List<{ param:String, value:String }>();
+		headers = [];
+		params = [];
 
 		#if js
 		async = true;

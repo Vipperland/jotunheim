@@ -14,10 +14,6 @@ class Validator {
 		return ~/^\d{1,}$/.match(value);
 	}
 	
-	static public function name(value:String):Bool {
-		return value.length >= 2;
-	}
-	
 	static public function username(value:String):Bool {
 		return ~/^[A-Za-z0-9._-]{6,24}$/.match(value);
 	}
@@ -26,13 +22,7 @@ class Validator {
 		return ~/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}|(?=.*?[#?!@$%^&*-_])$/giu.match(value);
 	}
 	
-	static public function date(value:Dynamic):Bool {
-		if (value == null){
-			return false;
-		}
-		if (Std.isOfType(value, Float)){
-			return value > 0;
-		}
+	static public function date(value:String):Bool {
 		return ~/\d{1,2}\/\d{1,2}\/\d{4}/.match(value) || ~/\d{4}\/\d{1,2}\/\d{1,2}/.match(value);
 	}
 	

@@ -25,7 +25,7 @@ class Timer {
 			_current_time = Date.now().getTime();
 			_p_time = _current_time - _previous_time;
 			for (i in 0..._processes.length){
-				_processes[i]();
+				_processes[i](_p_time);
 			}
 			for (i in 0..._channels.length){
 				_channels[i].tick(_p_time);
@@ -163,7 +163,7 @@ class Timer {
 		return c.channel;
 	}
 	
-	public function delayed(callback:Dynamic, delay:Float, repeat:Int = 0, ...rest:Dynamic):DelayedCall {
+	public function delayed(callback:Dynamic, delay:Float, repeat:Int = 0, rest:Array<Dynamic> = null):DelayedCall {
 		return new DelayedCall(this, callback, delay, repeat, rest);
 	}
 	

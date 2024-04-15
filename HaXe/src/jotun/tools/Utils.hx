@@ -102,7 +102,7 @@ import jotun.gaming.dataform.SparkWriter;
 import jotun.gaming.dataform.Spark;
 import jotun.serial.Packager;
 import jotun.logical.Flag;
-import jotun.tools.LoFlag;
+import jotun.logical.BigFlag;
 import jotun.utils.Dice;
 
 /**
@@ -156,7 +156,6 @@ class Utils{
 		
 		/**
 		 * Convert an element to Jotun DOM object
-		 * Note that converted objects need to be disposed if unused.
 		 * @param	t
 		 * @return
 		 */
@@ -559,7 +558,7 @@ class Utils{
 	}
 	
 	#if php 
-	
+		
 		static public function toFixed(n:Float, i:Int, s:String = '.', t:String = ''):String {
 			return php.Syntax.codeDeref('number_format({0},{1},{2},{3})', n, i, s, t);
 		}
@@ -569,7 +568,7 @@ class Utils{
 		}
 		
 	#elseif js
-	
+		
 		static public function toFixed(n:Float, i:Int, s:String = '.'):String {
 			var a:String = (cast n).toFixed(i);
 			if (s != '.'){

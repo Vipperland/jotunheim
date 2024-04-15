@@ -39,4 +39,8 @@ class JMath {
 		}
 	}
 	
+	public function reversePctOf(value:Float, pct:Float):Float {
+		return value / (1 - (pct / 100));
+	}
+	
 }
