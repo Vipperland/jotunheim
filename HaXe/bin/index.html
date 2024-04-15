@@ -90,55 +90,29 @@
 			</div>
 		</div>
 		<script type="module">
-			//import {Realms} from './modules/dist/classes/core/Realms.class.js';
-			//Realms.expose();
-			//Realms.events.listen('*', function(e){
-			//	if(e.event == 'oauthstatus'){
-			//		return;
-			//	}
-			//	if(e.event == 'request' && e.data && e.data.authentication){
-			//		e.authentication = e.data.authentication.toString();
-			//	}
-			//	if(e.event == 'singularity'){
-			//		e.singularity = Singularity.toString();
-			//	}
-			//	trace(e);
-			//});
-			//Realms.open({
-			//	name: 'test.realms',
-			//	pulsar: true,
-			//	db: {
-			//		name:'JotunTest',
-			//		version: 1,
-			//		structure: {},
-			//	}
-			//});
-		</script>
-		<script type="module">
-		
-			await import('./modules/dist/classes/biome/Main.class.js');
-			
-			trace(biome);
-			
-			var myBiome = new biome.Biome(50,50);
-			
-			var room = myBiome.add('docks', 0, 0, 10, 10);
-			
-			var boat = room.add('boat', room.centerX - 1, room.bottom, 3, 1);
-			var plant = room.add(new biome.objects.LiveObject('plant', 1, 1, 1, 1));
-			
-			plant.add(new biome.behaviours.SampleBehaviour());
-			
-			room.load();
-			
-			//trace(biome.under(4, 10));
-			//trace(biome.tile(4,10).occupation.get(0));
-			
-			//boat = biome.tile(4,room.bottom).occupation.get(0);
-			//boat.raycast(BiomeConstants.TOP_RIGHT, 5, function(tile){ 
-			//	trace(tile);
-			//});
-			
+			import {Realms} from './modules/dist/classes/core/Realms.class.js';
+			Realms.expose();
+			Realms.events.listen('*', function(e){
+				if(e.event == 'oauthstatus'){
+					return;
+				}
+				if(e.event == 'request' && e.data && e.data.authentication){
+					e.authentication = e.data.authentication.toString();
+				}
+				if(e.event == 'singularity'){
+					e.singularity = Singularity.toString();
+				}
+				trace(e);
+			});
+			Realms.open({
+				name: 'test.realms',
+				pulsar: true,
+				db: {
+					name:'JotunTest',
+					version: 1,
+					structure: {},
+				}
+			});
 		</script>
 	</body>                                                                               
 </html>

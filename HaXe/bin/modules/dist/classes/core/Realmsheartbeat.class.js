@@ -4,13 +4,13 @@ export class RealmsHeartbeat {
 	start(){
 		if(!this.#_initialized){
 			this.#_initialized = true;
-			J_Ticker.start();
+			Jotun.timer.resume();
 		}
 	}
 	stop(){
 		if(this.#_initialized){
 			this.#_initialized = false;
-			J_Ticker.stop();
+			Jotun.timer.pause();
 		}
 	}
 }

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8"/>
+		<title>Sirius::Automator</title>
+		<meta name="description" content=""/>
+		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
+		<script type="text/javascript" src="jotun/api.jotun.js"></script>
+		<style>  
+			body,html {
+				width:100%;
+				height:100%;
+				font-family: Tahoma;
+				background-color:#000000;
+				font-family: 'Amatic SC', cursive;
+			}
+			.test3d {
+				width: 100vw;
+				height: 100vh;
+				text-align: center;
+			}
+			
+			.test3d .content {
+				width: 300px;
+				text-align: center;
+				position: absolute;
+			}
+			
+			.test3d .text{
+				text-align: center;
+				color: #ffffff;
+				font-size: 48px;
+				width:100%;
+				margin-top: 20px;
+				display: block;
+			}
+			
+			.test3d .text .info{
+				min-height: 60px;
+				max-height: 40vh;
+				overflow-y: auto;
+			}
+			
+			.test3d .text .title{
+				font-weight: 700;
+			}
+			
+			.images {
+				position: relative;
+			}
+			
+			.fixed {
+				float: left;
+			}
+		
+		</style>
+	</head>
+	<body xcode xcache>
+		<div class="test3d hack o-middle">
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+			<div class="content">
+				<div class="images">
+					<img class="filter-target" src="./assets/img/sirius.png"/>
+				</div>
+				<br/>
+				<div class="text">
+					<span class="title">Jotumhein</span><br/>
+					<div class="info" contenteditable></div>
+				</div>
+			</div>
+		</div>
+		<script type="module">
+			//import {Realms} from './modules/dist/classes/core/Realms.class.js';
+			//Realms.expose();
+			//Realms.events.listen('*', function(e){
+			//	if(e.event == 'oauthstatus'){
+			//		return;
+			//	}
+			//	if(e.event == 'request' && e.data && e.data.authentication){
+			//		e.authentication = e.data.authentication.toString();
+			//	}
+			//	if(e.event == 'singularity'){
+			//		e.singularity = Singularity.toString();
+			//	}
+			//	trace(e);
+			//});
+			//Realms.open({
+			//	name: 'test.realms',
+			//	pulsar: true,
+			//	db: {
+			//		name:'JotunTest',
+			//		version: 1,
+			//		structure: {},
+			//	}
+			//});
+		</script>
+		<script type="module">
+		
+		/* 
+			await import('./modules/dist/classes/biome/Main.class.js');
+			
+			trace(biome);
+			
+			var myBiome = new biome.Biome(50,50);
+			
+			var room = myBiome.add('docks', 0, 0, 10, 10);
+			
+			var boat = room.add('boat', room.centerX - 1, room.bottom, 3, 1);
+			var plant = room.add(new biome.objects.LiveObject('plant', 1, 1, 1, 1));
+			
+			plant.add(new biome.behaviours.SampleBehaviour());
+			
+			room.load();
+			
+		*/
+		
+			//trace(biome.under(4, 10));
+			//trace(biome.tile(4,10).occupation.get(0));
+			
+			//boat = biome.tile(4,room.bottom).occupation.get(0);
+			//boat.raycast(BiomeConstants.TOP_RIGHT, 5, function(tile){ 
+			//	trace(tile);
+			//});
+			
+		</script>
+	</body>                                                                               
+</html>

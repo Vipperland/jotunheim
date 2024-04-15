@@ -96,10 +96,11 @@ export class Realms {
 		this.#_database = new RealmsDatabase(config.db.name || 'realms.db', config.db.version || 1, config.db.structure || {});
 		this.#_authentication = new RealmsAuthentication(config.auth);
 		Singularity.signals.add('onMain', Delegator.create(this, this.#_singularMain));
-		//Singularity.signals.add('onVisibility', Delegator.create(this, this.#_singularProxy));
-		Singularity.signals.add('onConnect', Delegator.create(this, this.#_singularShare));
+		Singularity.signals.add('onVisibility', Delegator.create(this, this.#_singularProxy));
+		Singularity.signals.add('onConnect', Delegator.create(this, this.#_singularProxy));
 		Singularity.signals.add('onDisconnect', Delegator.create(this, this.#_singularProxy));
 		Singularity.signals.add('onSync', Delegator.create(this, this.#_singularProxy));
+		Singularity.signals.add('onUpdate', Delegator.create(this, this.#_singularProxy));
 		Singularity.connect(config.name);
 		if(config.pulsar){
 			this.pulsar();
@@ -164,10 +165,6 @@ export class Realms {
 	
 	static #_singularMain(event){
 		this.#_initMainRoutines();
-		this.#_singularProxy(event);
-	}
-	
-	static #_singularShare(event){
 		this.#_singularProxy(event);
 	}
 	
