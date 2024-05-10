@@ -1,5 +1,7 @@
 package jotun.gaming.actions;
+import jotun.gaming.actions.Action;
 import jotun.gaming.actions.BasicDataProvider;
+import jotun.gaming.actions.EventContext;
 import jotun.gaming.actions.IDataProvider;
 import jotun.objects.Query;
 import jotun.tools.Utils;
@@ -165,9 +167,44 @@ class RequirementQuery extends Query {
 	 * @return
 	 */
 	public function iseventtype(...types:String):Bool {
-		return Dice.Values(types, function(v:String){
+		return !Dice.Values(types, function(v:String){
 			return v == ioContext.origin.type;
 		}).completed;
+	}
+	
+	/**
+	 * Check if 
+	 * @param	...ids
+	 * @return
+	 */
+	public function isactionid(...ids:String):Bool {
+		if(ioContext.action != null && ioContext.action.target != null && ioContext.action.target.id != null){
+			return false;
+		}
+		return !Dice.Values(ids, function(v:String){
+			return v == ioContext.action.target.id;
+		}).completed;
+	}
+	
+	/**
+	 * 
+	 * @param	...ids
+	 * @return
+	 */
+	public function isafteraction(...ids:String):Bool {
+		return !Dice.Values(ids, function(v:String){
+			return !Dice.Values(ioContext.history, function(a:Action):Bool {
+				return a.id == v;
+			}).completed;
+		}).completed;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public function isdebug():Bool {
+		return ioContext.debug;
 	}
 	
 }

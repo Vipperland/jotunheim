@@ -235,4 +235,14 @@ class ActionQuery extends Query {
 		return this;
 	}
 	
+	public function wait(?time:Float):ActionQuery {
+		ioContext.event.current.wait(time);
+		return this;
+	}
+	
+	public function preparerequest(url:String):ActionQuery {
+		return this;
+	}
+	
+	
 }

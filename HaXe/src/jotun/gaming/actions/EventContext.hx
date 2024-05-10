@@ -1,5 +1,6 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
+import jotun.gaming.actions.Events;
 import jotun.tools.Utils;
 
 /**
@@ -24,6 +25,8 @@ class EventContext {
 	
 	public var parent:EventContext;
 	
+	public var event:IEventContext;
+	
 	public var action:IEventContextAction;
 	
 	public var requirement:IEventContextRequirement;
@@ -38,9 +41,14 @@ class EventContext {
 		this.ident = 0;
 		this.chain = 0;
 		this.ticks = 0;
+		this.event = cast { current: null };
 		this.action = cast { target: null, count: 0, queries: 0 };
 		this.requirement = cast { target: null, count: 0, queries: 0 };
 		this.history = [];
+	}
+	
+	public function registerEvent(e:Events):Void {
+		event.current = e;
 	}
 	
 	public function registerAction(a:Action):Void {
@@ -70,14 +78,17 @@ class EventContext {
 	
 }
 
+interface IEventContext {
+	public var current:Events;
+}
+
 interface IEventCounter {
 	public var query:String;
 	public var count:Int;
 	public var queries:Int;
-	
 }
 
-interface IEventContextAction extends IEventCounter{
+interface IEventContextAction extends IEventCounter {
 	public var target:Action;
 }
 

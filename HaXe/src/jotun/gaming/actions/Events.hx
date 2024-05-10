@@ -38,6 +38,9 @@ class Events {
 	private var _type:String;
 	private var _save:Int->Resolution->Void;
 	private var _load:Int->String->Resolution;
+	private var _is_waiting:Bool;
+	private var _cursor_pos:Int;
+	private var _context:EventContext;
 	
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;
@@ -74,18 +77,54 @@ class Events {
 		return _type == q;
 	}
 	
-	public function run(context:EventContext) {
-		++context.ident;
-		Dice.All(_data, function(p:Int, a:Action):Bool{
-			return a.willBreakOn(a.run(context, p));
-		});
-		--context.ident;
-		if (context.ident == 0){
-			if (context.debug){
-				_log(this, context);
-				context.log.reverse();
-			}
+	public function wait(?time:Float):Void {
+		_is_waiting = true;
+		if(time != null && time > 0){
+			Jotun.timer.delayed(release, time, 0);
 		}
+	}
+	
+	public function release():Void {
+		if(_is_waiting){
+			_is_waiting = false;
+			_innerRun();
+		}
+	}
+	
+	private function _innerRun():Void {
+		var a:Action = null;
+		Dice.Count(_cursor_pos, _data.length, function(current:Int, max:Int, completed:Bool):Bool {
+			_context.registerEvent(this);
+			a = _data[current];
+			_cursor_pos = current+1;
+			if (a.willBreakOn(a.run(_context, current))){
+				_is_waiting = false;
+				return true;
+			}else{
+				return _is_waiting;
+			}
+		});
+		if(_is_waiting == false){
+			--_context.ident;
+			if (_context.ident == 0){
+				if (_context.debug){
+					_log(this, _context);
+					_context.log.reverse();
+				}
+			}
+			_context = null;
+		}
+		//Dice.All(_data, function(p:Int, a:Action):Bool{
+			//return a.willBreakOn(a.run(context, p));
+		//});
+	}
+	
+	public function run(context:EventContext):Void {
+		_is_waiting = false;
+		_cursor_pos = 0;
+		_context = context;
+		++context.ident;
+		_innerRun();
 	}
 	
 	private static function _log(evt:Events, context:EventContext):Void {
