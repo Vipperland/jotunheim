@@ -1,6 +1,9 @@
 package jotun.gaming.actions;
+import jotun.gaming.actions.BasicDataProvider;
+import jotun.gaming.actions.IDataProvider;
 import jotun.objects.Query;
 import jotun.tools.Utils;
+import jotun.utils.Dice;
 
 /**
  * ...
@@ -8,6 +11,10 @@ import jotun.tools.Utils;
  */
 @:expose("J_RequirementQuery")
 class RequirementQuery extends Query {
+	
+	public function getDataProvider():IDataProvider {
+		return BasicDataProvider.get('anonymous');
+	}
 	
 	private function _isempty(value:Dynamic):Bool {
 		return value == null || value == "";
@@ -69,6 +76,98 @@ class RequirementQuery extends Query {
 	
 	public function new() {
 		super();
+	}
+	
+	// =========================================== VARIABLE VERIFICATIONS ====================================================================================
+
+	/**
+	   Do a getvar() but use a value of random number generator
+	   @param	name
+	   @param	rule
+	   @param	min
+	   @param	max
+	**/
+	public function isrng(name:String, rule:String, min:Float, ?max:Float, ?float:Bool):Bool {
+		if (max == null){
+			max = min;
+			min = 0;
+		}
+		var f:Bool = Utils.boolean(float);
+		var a_min:Float = _FLOAT(min, 0);
+		var a_max:Float = _FLOAT(max, 0) + (f ? 0 : 1) - a_min;
+		var value:Float = (rng() * a_max + a_min);
+		return isvar(name, rule, value);
+	}
+	
+	/**
+	 * Match a Variable Value
+	 * Rules:
+	 * 			varname <  value
+	 * 			varname <= value
+	 * 			varname >  value
+	 * 			varname >= value
+	 * 			varname != value
+	 * 			varname &  value
+	 * 			varname !& value
+	 * 			varname =  value
+	 * @param	name		variable name
+	 * @param	rule		verification rule
+	 * @param	value	target value
+	 * @return
+	 */
+	public function isvar(name:String, rule:String, value:Float):Bool {
+		var a:Float = getDataProvider().getVar(name);
+		if (_isempty(value) && !_isempty(rule)){
+			value = _FLOAT(rule, 0);
+			rule = null;
+		}
+		return _resolve(a, rule, _FLOAT(value, 0));
+	}
+	
+	/**
+	 * Match a String Value
+	 * Rules:
+	 * 			varname != value
+	 * 			varname *= value
+	 * 			varname ~= value
+	 * 			varname =  value
+	 * @param	name		variable name
+	 * @param	rule		verification rule
+	 * @param	value	target value
+	 * @return
+	 */
+	public function isstr(name:String, rule:String, value:String):Bool {
+		var a:String = getDataProvider().getStr(name);
+		if (_isempty(value)){
+			value = rule;
+			rule = null;
+		}
+		return _resolve(a, rule, value);
+	}
+	
+	/**
+	 * Check if switch is TRUE or FALSE
+	 * @param	name
+	 * @param	value
+	 * @return
+	 */
+	public function isswitch(name:String, value:Bool):Bool {
+		var a:Bool = getDataProvider().getSwitch(name);
+		return (_isempty(value) || Utils.boolean(value)) == a;
+	}
+	
+	
+	// =========================================== CONTEXT VERIFICATIONS ====================================================================================
+
+	/**
+	 * Check if event origin is of type
+	 * @param	...rest
+	 * @return
+	 */
+	public function iseventtype(...types:String):Bool {
+		return Dice.Values(types, function(v:String){
+			return v == ioContext.origin.type;
+		}).completed;
 	}
 	
 }

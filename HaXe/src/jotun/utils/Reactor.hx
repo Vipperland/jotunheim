@@ -139,6 +139,15 @@ class Reactor {
 		if (o.hasAttribute('jtn-class')){
 			if(path != null){
 				if (o.data.__qc == null){
+					if(!o.data.__qcs){
+						o.data.__qcs = true;
+						if(o.hasAttribute('class')){
+							var cf:String = o.attribute('class');
+							if (cf.length > 0){
+								o.attribute('jtn-class', o.attribute('class') + ' ' + o.attribute('jtn-class'));
+							}
+						}
+					}
 					o.data.__qc = o.attribute('jtn-class');
 					_react_commit_up(o);
 				}
@@ -146,7 +155,7 @@ class Reactor {
 			}
 			if(o.data.__qc){
 				if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
-					o.css(o.data.__qc);
+					o.attribute('class', o.data.__qc);
 					Reflect.deleteField(o.data, '__qc');
 					_react_commit_down(o);
 					_react_clear(o, 'jtn-single', 'jtn-class');

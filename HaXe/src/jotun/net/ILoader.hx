@@ -37,18 +37,20 @@ interface ILoader {
 	
 	#if js 
 		/**
-		 * Call a url
+		 * Call an url
 		 * @param	url
 		 * @param	data
-		 * @param	handler
 		 * @param	method
+		 * @param	handler
+		 * @param	headers
 		 * @param	progress
+		 * @param	options
 		 */
 		public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic = null):Void;
 		
 	#elseif php
 		/**
-		 * Call a url
+		 * Call an url
 		 * @param	url
 		 * @param	data
 		 * @param	handler

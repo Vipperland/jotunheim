@@ -149,9 +149,6 @@ class Domain implements IDomain {
 		 */
 		private function _getParams():Dynamic {
 			var a : NativeArray = Syntax.codeDeref("array_merge($_GET, $_POST)");
-			if (Syntax.codeDeref("get_magic_quotes_gpc()")){
-				Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
-			}
 			#if force_std_separator
 				var h = Lib.objectOfAssociativeArray(a);
 				var params = Web.getParamsString();
