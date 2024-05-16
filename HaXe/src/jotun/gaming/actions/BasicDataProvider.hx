@@ -1,6 +1,7 @@
 package jotun.gaming.actions;
 import haxe.DynamicAccess;
 import jotun.gaming.actions.IDataProvider;
+import jotun.utils.Dice;
 
 /**
  * @author Rafael Moreira
@@ -19,6 +20,10 @@ class BasicDataProvider implements IDataProvider {
 	static public function set(name:String, data:IDataProvider):IDataProvider {
 		_instances.set(name, data);
 		return data;
+	}
+	
+	static public function drop(name:String):Void {
+		_instances.remove(name);
 	}
 	
 	private var _data:DynamicAccess<Dynamic>;
@@ -67,6 +72,12 @@ class BasicDataProvider implements IDataProvider {
 		}else {
 			_data.set(name, value ? 1 : 0);
 		}
+	}
+	
+	public function merge(data:DynamicAccess<Dynamic>):Void {
+		Dice.All(data, function(p:Dynamic, v:Dynamic):Void {
+			_data.set(p, v);
+		});
 	}
 	
 }

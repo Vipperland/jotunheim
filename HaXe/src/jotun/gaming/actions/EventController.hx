@@ -3,6 +3,7 @@ import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.EventContext;
+import jotun.gaming.actions.IDataProvider;
 import jotun.gaming.actions.Requirement;
 import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
@@ -23,8 +24,8 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	static private var _debug:Bool;
 	
-	static public function createContext(name:String, data:Dynamic):EventContext {
-		return new EventContext(name, data, _debug);
+	static public function createContext(name:String, data:Dynamic, provider:IDataProvider):EventContext {
+		return new EventContext(name, data, provider, _debug);
 	}
 	
 	static public function cacheController(saveAction:Action->Void, loadAction:String->Action, saveRequirement:Requirement->Void, loadRequirement:String->Requirement):Void {
@@ -79,8 +80,8 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	private var _chain:Array<EventContext> = [];
 	
-	public function call(name:String, ?data:Dynamic):Bool {
-		var context:EventContext = createContext(name, data);
+	public function call(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool {
+		var context:EventContext = createContext(name, data, provider);
 		if (Reflect.hasField(events, name)){
 			context.chain = _index;
 			_chain[_chain.length] = context;

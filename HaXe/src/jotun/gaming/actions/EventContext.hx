@@ -1,6 +1,7 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.Events;
+import jotun.gaming.actions.IDataProvider;
 import jotun.tools.Utils;
 
 /**
@@ -33,7 +34,13 @@ class EventContext {
 	
 	public var history:Array<Action>;
 	
-	public function new(name:String, data:Dynamic, debug:Bool) {
+	public var currentProvider:IDataProvider;
+	
+	public var dataProvider:IDataProvider;
+	
+	public var requestProvider:IDataProvider;
+	
+	public function new(name:String, data:Dynamic, provider:IDataProvider, debug:Bool) {
 		this.origin = data;
 		this.name = name;
 		this.debug = debug;
@@ -45,6 +52,8 @@ class EventContext {
 		this.action = cast { target: null, count: 0, queries: 0 };
 		this.requirement = cast { target: null, count: 0, queries: 0 };
 		this.history = [];
+		this.dataProvider = provider;
+		this.currentProvider = provider;
 	}
 	
 	public function registerEvent(e:Events):Void {

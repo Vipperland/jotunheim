@@ -6,6 +6,7 @@ import jotun.errors.Error;
  */
 
 interface IRequest {
+	public var url:String;
 	public var data:String;
 	public var success:Bool;
 	public var error:Error;

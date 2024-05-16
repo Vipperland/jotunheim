@@ -15,7 +15,7 @@ import jotun.utils.Dice;
 class RequirementQuery extends Query {
 	
 	public function getDataProvider():IDataProvider {
-		return BasicDataProvider.get('anonymous');
+		return ioContext.currentProvider;
 	}
 	
 	private function _isempty(value:Dynamic):Bool {
@@ -156,6 +156,11 @@ class RequirementQuery extends Query {
 	public function isswitch(name:String, value:Bool):Bool {
 		var a:Bool = getDataProvider().getSwitch(name);
 		return (_isempty(value) || Utils.boolean(value)) == a;
+	}
+	
+	
+	public function isrequestsuccess():Bool {
+		return ioContext.requestProvider != null && ioContext.requestProvider.getSwitch("_lastRequest_") == true;
 	}
 	
 	

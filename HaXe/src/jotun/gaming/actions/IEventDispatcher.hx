@@ -1,5 +1,6 @@
 package jotun.gaming.actions;
 import haxe.DynamicAccess;
+import jotun.gaming.actions.IDataProvider;
 /**
  * @author Rim Project
  */
@@ -11,6 +12,6 @@ interface IEventDispatcher {
 	
 	public function setDebug(mode:Bool):Void;
 	
-	public function call(name:String, ?data:Dynamic):Bool;
+	public function call(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool;
 	
 }

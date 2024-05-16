@@ -66,7 +66,7 @@ class Resolution {
 	public function release(result:Bool, ?data:Dynamic, ?name:String):Void {
 		if(_stopped){
 			_stopped = false;
-			resolve(result, EventController.createContext(name, data));
+			resolve(result, EventController.createContext(name, data, null));
 		}
 	}
 	

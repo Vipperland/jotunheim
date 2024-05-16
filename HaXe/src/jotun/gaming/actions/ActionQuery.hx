@@ -1,6 +1,8 @@
 package jotun.gaming.actions;
+import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.BasicDataProvider;
+import jotun.net.IRequest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -14,7 +16,7 @@ import jotun.utils.Filler;
 class ActionQuery extends Query {
 
 	public function getDataProvider():IDataProvider {
-		return BasicDataProvider.get('anonymous');
+		return ioContext.currentProvider;
 	}
 	
 	private function _isempty(value:Dynamic):Bool {
@@ -129,7 +131,7 @@ class ActionQuery extends Query {
 		var f:Bool = Utils.boolean(float);
 		var a_min:Float = _FLOAT(min);
 		var a_max:Float = _FLOAT(max) + (f ? 0 : 1) - a_min;
-		var value:Float = (RimProject.data.rng.get() * a_max + a_min);
+		var value:Float = rng() * a_max + a_min;
 		(f ? setfloat : setint)(name, rule, f ? cast value : Std.int(value));
 		return this;
 	}
@@ -235,14 +237,60 @@ class ActionQuery extends Query {
 		return this;
 	}
 	
+	#if js
+	
+	/**
+	 * Wait specified time
+	 * @param	time
+	 * @return
+	 */
 	public function wait(?time:Float):ActionQuery {
 		ioContext.event.current.wait(time);
 		return this;
 	}
 	
-	public function preparerequest(url:String):ActionQuery {
+	/**
+	 * Release if is on waiting state
+	 * @return
+	 */
+	public function release():ActionQuery {
+		ioContext.event.current.release();
 		return this;
 	}
 	
+	/**
+	 * Call a url, and wait a maximum of 10 seconds
+	 * @param	url
+	 * @param	method
+	 * @param	data
+	 * @return
+	 */
+	public function preparerequest(url:String, ?method:String, ?data:String):ActionQuery {
+		Jotun.request(url, Utils.isValid(data) ? Json.parse(data) : null, method, _actRequest);
+		return setrequestprovider().wait(10);
+	}
+	
+	public function setdataprovider():ActionQuery {
+		ioContext.currentProvider = ioContext.dataProvider;
+		return this;
+	}
+	
+	public function setrequestprovider():ActionQuery {
+		ioContext.currentProvider = ioContext.requestProvider;
+		return this;
+	}
+	
+	private function _actRequest(request:IRequest):Void {
+		if(ioContext.requestProvider == null){
+			ioContext.requestProvider = new BasicDataProvider({ });
+		}
+		if(request.getHeader('Content-Type') == 'application/json'){
+			cast(ioContext.requestProvider, BasicDataProvider).merge(request.object());
+		}
+		ioContext.requestProvider.setVar("_lastRequest_", request.success);
+		release();
+	}
+	
+	#end
 	
 }
