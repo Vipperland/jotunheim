@@ -266,28 +266,52 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function preparerequest(url:String, ?method:String, ?data:String):ActionQuery {
+		resetcontext();
 		Jotun.request(url, Utils.isValid(data) ? Json.parse(data) : null, method, _actRequest);
-		return setrequestprovider().wait(10);
+		return wait(30);
 	}
 	
-	public function setdataprovider():ActionQuery {
+	/**
+	 * 
+	 * @return
+	 */
+	public function resetcontext():ActionQuery {
+		ioContext.requestProvider = null;
 		ioContext.currentProvider = ioContext.dataProvider;
 		return this;
 	}
 	
-	public function setrequestprovider():ActionQuery {
+	/**
+	 * 
+	 * @return
+	 */
+	public function setrequestcontext():ActionQuery {
 		ioContext.currentProvider = ioContext.requestProvider;
 		return this;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public function setmaincontext():ActionQuery {
+		ioContext.currentProvider = ioContext.dataProvider;
+		return this;
+	}
+	
+	/**
+	 * 
+	 * @param	request
+	 */
 	private function _actRequest(request:IRequest):Void {
-		if(ioContext.requestProvider == null){
-			ioContext.requestProvider = new BasicDataProvider({ });
+		if(request.success){
+			if (request.getHeader('Content-Type') == 'application/json'){
+				ioContext.requestProvider = new BasicDataProvider(request.object());
+			}else{
+				ioContext.requestProvider = new BasicDataProvider({ message:request.data });
+			}
+			setrequestcontext();
 		}
-		if(request.getHeader('Content-Type') == 'application/json'){
-			cast(ioContext.requestProvider, BasicDataProvider).merge(request.object());
-		}
-		ioContext.requestProvider.setVar("_lastRequest_", request.success);
 		release();
 	}
 	

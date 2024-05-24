@@ -13,21 +13,19 @@ import jotun.tools.Utils;
 @:expose('J_Json')
 class JsonTool {
 	
-	#if !php
-		static public var displayStringfy:IDisplay->String = function(o:IDisplay):String {
-			return o.typeOf();
-		}
-	#end
-	
 	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
 		if (Std.isOfType(a, String)) {
 			if (a.substr(0, 1) == "_") {
 				return null;
 			}
-		}
-		if (Std.isOfType(b, Flag)) {
+		}else if (Std.isOfType(b, Flag)) {
 			return b.value;
 		}
+		#if !php
+		else if(Std.isOfType(b, IDisplay)){
+			return b.typeOf();
+		}
+		#end
 		return (b == null) ? null : b; 
 	};
 	
@@ -172,11 +170,6 @@ class JsonTool {
 			if (Reflect.isFunction(value)){
 				continue;
 			}
-			#if !php
-				if ( Std.isOfType(value, IDisplay) ) {
-					value = displayStringfy(cast value);
-				}
-			#end
 			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") {
 				continue;
 			}

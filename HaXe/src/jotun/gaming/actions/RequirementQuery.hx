@@ -159,8 +159,16 @@ class RequirementQuery extends Query {
 	}
 	
 	
-	public function isrequestsuccess():Bool {
-		return ioContext.requestProvider != null && ioContext.requestProvider.getSwitch("_lastRequest_") == true;
+	public function hasrequestcontext():Bool {
+		return ioContext.requestProvider != null;
+	}
+	
+	public function isrequestcontext():Bool {
+		return hasrequestcontext() && ioContext.requestProvider == ioContext.currentProvider;
+	}
+	
+	public function ismaincontext():Bool {
+		return ioContext.dataProvider == ioContext.currentProvider;
 	}
 	
 	
@@ -193,15 +201,36 @@ class RequirementQuery extends Query {
 	
 	/**
 	 * 
+	 * @param	hits
 	 * @param	...ids
 	 * @return
 	 */
-	public function isafteraction(...ids:String):Bool {
-		return !Dice.Values(ids, function(v:String){
+	public function isactionchain(hits:Int, ...ids:String):Bool {
+		var matches:Int = 0;
+		if(hits <= 0 || hits > ids.length){
+			hits = ids.length;
+		}
+		return !Dice.Values(ioContext.history, function(a:Action):Bool {
+			if(a.id == ids[matches]){
+				++matches;
+			}
+			return matches >= hits;
+		}).completed;
+	}
+	
+	/**
+	 * 
+	 * @param	...ids
+	 * @return
+	 */
+	public function isafteranyaction(...ids:String):Bool {
+		var matches:Int = 0;
+		return !Dice.Values(ids, function(id:String):Bool {
 			return !Dice.Values(ioContext.history, function(a:Action):Bool {
-				return a.id == v;
+				return id != null && id.length > 0 && a.id == id;
 			}).completed;
 		}).completed;
+		
 	}
 	
 	/**
