@@ -41,7 +41,7 @@ class RNG {
 	}
 	
 	public function max(a:Float):Float {
-		return Std.int(get() * (a));
+		return Std.int(get() * a);
 	}
 	
 	public function seed():Float {

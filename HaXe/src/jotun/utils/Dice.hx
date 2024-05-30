@@ -235,18 +235,34 @@ class Dice {
 	/**
 	 * 
 	 * @param	table
-	 * @param	values
+	 * @param	values object(s) to remove or filter f(x)
+	 * @param limit optional for filter function, max objects to remove
+	 * @return List of removed targets
 	 */
-	public static function Remove(table:Array<Dynamic>, values:Dynamic):Array<Dynamic> {
+	public static function Remove(table:Array<Dynamic>, values:Dynamic, ?limit:Int = -1):Array<Dynamic> {
 		var r:Array<Dynamic> = [];
-		if (!Std.isOfType(values, Array)) {
-			values = [values];
-		}
-		Dice.Values(values, function(v:Dynamic) {
-			if(table.remove(v)){
-				r[r.length] = v;
+		if(Reflect.isFunction(values)){
+			Dice.Values(values, function(v:Dynamic) {
+				if (values(v) == true){
+					if (table.remove(v)){
+						r[r.length] = v;
+						if (limit > 0){
+							--limit;
+						}
+					}
+				}
+				return limit == 0;
+			});
+		}else{
+			if (!Std.isOfType(values, Array)) {
+				values = [values];
 			}
-		});
+			Dice.Values(values, function(v:Dynamic) {
+				if(table.remove(v)){
+					r[r.length] = v;
+				}
+			});
+		}
 		return r;
 	}
 	
