@@ -19,19 +19,19 @@ class CustomGateway extends GatewayCore {
 	 * @return void
 	 */
 	public static function main () {
-		#samples/server/CustomGateway.hx:18: characters 3-59
-		$hasPulsar = Jotun::$domain->paramAsBool("pulsar");
-		#samples/server/CustomGateway.hx:25: characters 4-89
-		$tmp = (Jotun::$domain->paramAsBool("encoded") ? 47 : 15);
-		#samples/server/CustomGateway.hx:19: lines 19-26
-		GatewayCore::init(Boot::getClass(CustomGateway::class), ($hasPulsar ? Boot::getClass(PulsarOutput::class) : Boot::getClass(JsonOutput::class)), Boot::getClass(\CustomDataAccess::class), Boot::getClass(BasicSessionInput::class), Boot::getClass(\CustomDomain::class), $tmp);
+		#samples/server/CustomGateway.hx:18: characters 3-62
+		$enablePulsar = Jotun::$domain->paramAsBool("pulsar");
+		#samples/server/CustomGateway.hx:19: characters 3-64
+		$encodedOutput = Jotun::$domain->paramAsBool("encoded");
+		#samples/server/CustomGateway.hx:20: lines 20-27
+		GatewayCore::init(Boot::getClass(CustomGateway::class), ($enablePulsar ? Boot::getClass(PulsarOutput::class) : Boot::getClass(JsonOutput::class)), Boot::getClass(\CustomDataAccess::class), Boot::getClass(BasicSessionInput::class), Boot::getClass(\CustomDomain::class), ($encodedOutput ? 111 : 15));
 	}
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#samples/server/CustomGateway.hx:15: lines 15-29
+		#samples/server/CustomGateway.hx:15: lines 15-30
 		parent::__construct();
 	}
 }

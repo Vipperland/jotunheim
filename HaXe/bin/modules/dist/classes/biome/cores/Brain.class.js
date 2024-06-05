@@ -19,6 +19,7 @@ export default class Brain {
 		for (let i = 0; i < this.#_frametarget; i++) {
 			this.#_fpsChannels[i] = new FrameChannel(target, diff * i);
 		}
+		this.resume();
 	}
 	#_render(){
 		if(!this.#_paused){

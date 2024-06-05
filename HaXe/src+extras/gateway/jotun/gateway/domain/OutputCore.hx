@@ -54,7 +54,7 @@ class OutputCore extends InputCoreCarrier {
 	}
 	
 	public function setOptions(value:Int):Void {
-		if (Flag.FTest(value, GatewayOptions.INFO)){
+		if (Flag.FTest(value, GatewayOptions.INFO_LOG)){
 			_log = true;
 		}
 	}

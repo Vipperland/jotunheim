@@ -169,35 +169,30 @@ export default class Grid {
 		let found = 0;
 		let current;
 		let scanned = {};
-		let cMov = 0;
-		let mMov = movement.length;
 		let direction;
 		main: while(distance == null || moved < distance){
-			for(var tile in source){
-				found = 0;
-				current = source[tile];
-				if(current != null){
-					direction = movement[cMov];
-					current = source[tile].next(direction.x, direction.y);
-					if(current && !scanned[current.id]){
-						scanned[current.id] = true;
-						scanner.add(current);
-						if(!scanner.active){
-							break main;
+			var length = source.length;
+			//trace('TOTAL', length);
+			sub: for(var tile=moved; tile<length;++tile){
+				//trace('start from ' + moved);
+				for(var poset in movement){
+					found = 0;
+					current = source[tile];
+					if(current != null){
+						direction = movement[poset];
+						current = current.next(direction.x, direction.y);
+						if(current && !scanned[current.id]){
+							scanned[current.id] = true;
+							scanner.add(current);
+							source.push(current);
+							if(!scanner.active){
+								break main;
+							}
+							++found;
+						}else{
+							break;
 						}
-						++found;
-					}else{
-						break;
 					}
-					source[tile] = current;
-				}
-				if(found == 0){
-					break main;
-				}
-			}
-			if(mMov > 1){
-				if(++cMov >= mMov){
-					cMov = 0;
 				}
 			}
 			++moved;

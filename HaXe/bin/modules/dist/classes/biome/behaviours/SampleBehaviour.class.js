@@ -13,15 +13,15 @@ export default class SampleBehaviour extends CoreBehaviour {
 		data.axys = Math.random() > .5 ? 'x' : 'y';
 		switch(data.axys){
 			case 'x' : {
-				object.move(data.direction, 0);
+				object.move(object.localX + data.direction, 0);
 				break;
 			}
 			case 'y' : {
-				object.move(0, data.direction);
+				object.move(0, object.localX + data.direction);
 				break;
 			}
 		}
-		trace(object.localX, object.localY);
 		object.update();
+		trace(object.localX, object.localY);
 	}
 }

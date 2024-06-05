@@ -64,7 +64,7 @@ export default class Biome {
 			room = new biome.objects.Room(room.name, room.x, room.y, room.width, room.height, room.data);
 		}
 		if(!this.#_rooms.includes(room)){
-			this.#_grid.create(room.left, room.top, room.right, room.bottom);
+			this.#_grid.create(room.left, room.top, room.right+1, room.bottom+1);
 			this.#_rooms.push(room);
 			room.biome = this;
 			this.#_heart.call(biome.data.Constants.EVT_ROOM_ADDED, room);
@@ -140,7 +140,7 @@ export default class Biome {
 			})
 	*/
 	rooms(filter){
-		filter = BiomeUtils.scanner(filter);
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0; i<this.#_rooms.length; ++i){
 			filter.add(this.#_rooms[i]);
 			if(!filter.active){
@@ -154,8 +154,8 @@ export default class Biome {
 			biome.under(x, y, function(r){
 			})
 	*/
-	under(x,y,filter){
-		filter = BiomeUtils.scanner(filter);
+	roomAt(x,y,filter){
+		filter = biome.data.Utils.scanner(filter);
 		for(let i=0; i<this.#_rooms.length; ++i){
 			if(this.#_rooms[i].inside(x, y)){
 				filter.add(this.#_rooms[i]);
@@ -167,7 +167,7 @@ export default class Biome {
 		return filter;
 	}
 	#_normalize(o){
-		if(o.normalize()){
+		if(o.sync()){
 			this.#_heart.call(biome.data.Constants.EVT_OBJECT_UPDATED, o);
 		}
 	}
@@ -175,15 +175,22 @@ export default class Biome {
 		Proccess all pending updates in objects and rooms
 			biome.update();
 	*/
-	update(){
-		let room;
+	update(room){
 		let proxy = this.#_normalize.bind(this);
-		for(let i=0; i<this.#_loaded.length; ++i){
-			room = this.#_loaded[i];
+		if(room != null){
+			
 			if(room.updated(proxy)){
 				this.#_heart.call(biome.data.Constants.EVT_ROOM_UPDATED, room);
 			}
+		}else{
+			for(let i=0; i<this.#_loaded.length; ++i){
+				room = this.#_loaded[i];
+				if(room.updated(proxy)){
+					this.#_heart.call(biome.data.Constants.EVT_ROOM_UPDATED, room);
+				}
+			}
 		}
+		
 	}
 	/*
 		Get tile in a position
@@ -195,8 +202,8 @@ export default class Biome {
 	/*
 		Get all objects in a point, calls fx(object) for each
 	*/
-	under(x,y,filter){
-		return this.#_grid.tile(x, y).objects(filter);
+	objects(x,y,filter){
+		return this.tile(x, y).objects(filter);
 	}
 	/*
 		Iterate valid tiles in an area using two locations, calls fx(tile)
@@ -237,24 +244,6 @@ export default class Biome {
 	*/
 	raycast(source, movement, distance, filter){
 		return this.#_grid.raycast(source, movement, distance, filter);
-	}
-	/* 
-		Calls fx(object) for each loaded object in Biome processor
-			biome.objects(function(o){ });
-	*/
-	objects(filter){
-		filter = BiomeUtils.scanner(filter);
-		let stop;
-		for(let i=0; i<this.#_loaded.length; ++i){
-			this.#_loaded[i].objects(function(o){
-				stop = true;
-				return filter.add(o);
-			});
-			if(stop){
-				break;
-			}
-		}
-		return filter;
 	}
 	/* 
 		Set tiles in an area as locked to pathfind

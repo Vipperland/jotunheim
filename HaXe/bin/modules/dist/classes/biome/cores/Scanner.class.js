@@ -46,7 +46,7 @@ export default class Scanner {
 	*/
 	put(value){
 		if(value != null){
-			this.add(value);
+			this.result.push(value);
 		}
 	}
 	/*

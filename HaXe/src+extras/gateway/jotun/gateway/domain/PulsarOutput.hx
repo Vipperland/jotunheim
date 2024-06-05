@@ -22,7 +22,7 @@ class PulsarOutput extends OutputCore {
 	}
 	
 	override public function setOptions(value:Int):Void {
-		if (Flag.FTest(value, GatewayOptions.DEBUG)){
+		if (Flag.FTest(value, GatewayOptions.DEBUG_MODE)){
 			// _logp > input params
 			Pulsar.map("_logp", ['name', 'value'], Spark, false);
 			// _logo > input object (json input:/)

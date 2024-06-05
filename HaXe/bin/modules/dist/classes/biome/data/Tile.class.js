@@ -216,6 +216,7 @@ export default class Tile {
 				break;
 			}
 		}
+		return filter;
 	}
 	/*
 		Getts a copy of the list of objects occupying this tile
@@ -261,6 +262,7 @@ export default class Tile {
 				break;
 			}
 		}
+		return filter;
 	}
 	/*
 		Check if tile matches a position

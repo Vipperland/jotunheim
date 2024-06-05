@@ -51,7 +51,7 @@ class DataAccess extends OutputCoreCarrier {
 	}
 	
 	public function setOptions(value:Int):Void {
-		if (Flag.FTest(value, GatewayOptions.DATABASE)){
+		if (Flag.FTest(value, GatewayOptions.DATABASE_LOG)){
 			Jotun.gate.listen(_dbLog);
 		}
 	}

@@ -1323,7 +1323,7 @@ jotun_net_IDomain.prototype = {
 	,params: null
 	,reload: null
 	,location: null
-	,getFQDN: null
+	,getDomain: null
 	,paramAsBool: null
 	,paramAsInt: null
 	,paramAsFloat: null
@@ -1354,7 +1354,7 @@ jotun_net_Domain.prototype = {
 		this.params = jotun_tools_Utils.getQueryParams(l.href);
 		this.url = l.pathname.substring(1,l.pathname.length).split("/");
 	}
-	,getFQDN: function(len) {
+	,getDomain: function(len) {
 		if(len == null) {
 			len = 2;
 		}

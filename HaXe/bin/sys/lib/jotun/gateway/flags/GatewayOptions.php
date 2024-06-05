@@ -19,27 +19,31 @@ class GatewayOptions {
 	/**
 	 * @var int
 	 */
-	const ALL_ENCODED = 47;
+	const ALL_ENCODED = 111;
 	/**
 	 * @var int
 	 */
-	const DATABASE = 8;
+	const DATABASE_LOG = 8;
 	/**
 	 * @var int
 	 */
-	const DEBUG = 2;
+	const DEBUG_MODE = 2;
 	/**
 	 * @var int
 	 */
-	const ENCODED = 32;
+	const ENCODED_INPUT = 64;
 	/**
 	 * @var int
 	 */
-	const ERROR = 4;
+	const ENCODED_OUTPUT = 32;
 	/**
 	 * @var int
 	 */
-	const INFO = 1;
+	const ERROR_LOG = 4;
+	/**
+	 * @var int
+	 */
+	const INFO_LOG = 1;
 	/**
 	 * @var int
 	 */

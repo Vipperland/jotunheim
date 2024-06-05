@@ -15,14 +15,15 @@ import jotun.gateway.flags.GatewayOptions;
 class CustomGateway extends GatewayCore {
 
 	static function main() {
-		var hasPulsar:Bool = Jotun.domain.paramAsBool('pulsar');
+		var enablePulsar:Bool = Jotun.domain.paramAsBool('pulsar');
+		var encodedOutput:Bool = Jotun.domain.paramAsBool('encoded');
 		GatewayCore.init(
 			CustomGateway, 
-			hasPulsar ? PulsarOutput : JsonOutput,
+			enablePulsar ? PulsarOutput : JsonOutput,
 			CustomDataAccess, 
 			BasicSessionInput,
 			CustomDomain, 
-			Jotun.domain.paramAsBool('encoded') ? GatewayOptions.ALL_ENCODED : GatewayOptions.ALL
+			encodedOutput ? GatewayOptions.ALL_ENCODED : GatewayOptions.ALL
 		);
 	}
 	

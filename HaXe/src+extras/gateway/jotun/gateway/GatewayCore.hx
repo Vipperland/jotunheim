@@ -44,13 +44,9 @@ class GatewayCore {
 			
 			// Init INPUT interface
 			gateway._input = Syntax.construct(TInput);
-			
 			gateway._output.setOptions(options);
-			
 			gateway._database = Syntax.construct(TDataAccess);
-			
 			gateway._database.setOptions(options);
-			
 			gateway._domain = Syntax.construct(TDomain);
 			
 		}else{
@@ -58,7 +54,8 @@ class GatewayCore {
 			gateway._output.error(ErrorCodes.MAINTENANCE_MODE);
 			
 		}
-		if(Flag.FTest(options, GatewayOptions.ENCODED)){
+		
+		if(Flag.FTest(options, GatewayOptions.ENCODED_OUTPUT)){
 			gateway._output.mode(true, 64);
 		}
 		

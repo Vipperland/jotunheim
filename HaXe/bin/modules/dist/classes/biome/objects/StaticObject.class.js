@@ -2,8 +2,19 @@
  * ...
  * @author Rafael Moreira
  */
-var OBJECT_UID = 0;
+const Constants = biome.data.Constants;
 const NO_ROOM = {x:0, y:0, w:0, h:0, top:0, left:0, bottom:0, right: 0};
+const MOVEMENT_DIRECTION = {
+	t:[{x:0,y:-1}],
+	tr:[{x:1,y:-1}],
+	r:[{x:1,y:0}],
+	br:[{x:1,y:1}],
+	b:[{x:0,y:1}],
+	bl:[{x:-1,y:1}],
+	l:[{x:-1,y:0}],
+	tl:[{x:-1,y:-1}],
+}
+var OBJECT_UID = 0;
 export default class StaticObject {
 	#_id;
 	#_name;
@@ -124,6 +135,11 @@ export default class StaticObject {
 			return false;
 		}
 	}
+	/*
+	   The update cycle consists of changing the values ​​of an object and then executing the update() method, 
+			during the update cycle, the biome will check the rooms and objects marked with commit() and finally, 
+			it will execute the sync() method.
+	 */
 	update(){
 		if(!this.#_updated && this.visible){
 			this.#_updated = true;
@@ -131,6 +147,9 @@ export default class StaticObject {
 			this.room.queue(this);
 		}
 	}
+	/*
+		Check if the object as any changes pending for update
+	*/
 	commit(){
 		if(this.#_pending == true){
 			this.#_pending = false;
@@ -139,7 +158,10 @@ export default class StaticObject {
 			return false;
 		}
 	}
-	normalize(){
+	/*
+		Synchronizes the object and applies positioning and scale changes
+	*/
+	sync(){
 		if(this.#_updated == true){
 			this.#_updated = false;
 			if(this.room && this.room.biome){
@@ -147,9 +169,19 @@ export default class StaticObject {
 				this.#_area.sync();
 				this.#_load();
 			}
+			trace(this.localX, this.localY);
 			return true;
 		}else{
 			return false;
+		}
+	}
+	/*
+		Skip the update cicle and force the object update
+	*/
+	forceSync(){
+		this.update();
+		if(this.room){
+			this.room.biome.update(this.room);
 		}
 	}
 	place(x,y){
@@ -157,6 +189,9 @@ export default class StaticObject {
 	}
 	move(x,y){
 		this.#_area.move(x,y);
+	}
+	slide(x,y){
+		this.#_area.move(this.localX + x, this.localY + y);
 	}
 	scale(w,h){
 		this.#_area.scale(w,h);
@@ -200,34 +235,46 @@ export default class StaticObject {
 		switch(direction){
 			case Constants.TOP : {
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
-				tiles.data = [{x:0,y:-1}];
+				tiles.data = MOVEMENT_DIRECTION.t;
 				break;
 			}
 			case Constants.TOP_RIGHT : {
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
 				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
-				tiles.data = [{x:1,y:-1}];
+				tiles.data = MOVEMENT_DIRECTION.tr;
 				break;
 			}
 			case Constants.RIGHT : {
 				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
-				tiles.data = [{x:1,y:0}];
+				tiles.data = MOVEMENT_DIRECTION.r;
 				break;
 			}
 			case Constants.BOTTOM_RIGHT : {
 				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
 				this.room.biome.map(this.right, this.top, this.right, this.bottom, tiles);
-				tiles.data = [{x:1,y:1}];
+				tiles.data = MOVEMENT_DIRECTION.br;
 				break;
 			}
 			case Constants.BOTTOM : {
 				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
-				tiles.data = [{x:0,y:1}];
+				tiles.data = MOVEMENT_DIRECTION.b;
+				break;
+			}
+			case Constants.BOTTOM_LEFT : {
+				this.room.biome.map(this.left, this.bottom, this.right, this.bottom, tiles);
+				this.room.biome.map(this.left, this.top, this.left, this.bottom, tiles);
+				tiles.data = MOVEMENT_DIRECTION.bl;
 				break;
 			}
 			case Constants.LEFT : {
 				this.room.biome.map(this.left, this.top, this.left, this.bottom, tiles);
-				tiles.data = [{x:-1,y:0}];
+				tiles.data = MOVEMENT_DIRECTION.l;
+				break;
+			}
+			case Constants.TOP_LEFT : {
+				this.room.biome.map(this.left, this.top, this.right, this.top, tiles);
+				this.room.biome.map(this.left, this.top, this.left, this.bottom, tiles);
+				tiles.data = MOVEMENT_DIRECTION.tl;
 				break;
 			}
 		}

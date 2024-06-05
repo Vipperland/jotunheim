@@ -37,6 +37,7 @@ export default class LiveObject extends StaticObject {
 		if(super.unload()){
 			this.biome.core.remove(this.#_proxy);
 			this.#_proxy = null;
+			this.#_frame = null;
 		}
 	}
 	add(behaviour){

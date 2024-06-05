@@ -107,6 +107,8 @@ export default class Room {
 			room.add(object) 
 		or
 			room.add(name, x, y, width, height, data);
+			
+		When an object is added, it will be marked for update in the next cycle if the room is visible
 	*/
 	add(object, x, y, width, height, data){
 		if(typeof object == 'string'){
@@ -265,7 +267,7 @@ export default class Room {
 		}
 	}
 	/*
-		Get all updated objects. This method don't use filter scanner for optimizations.
+		Get all updated objects in the queue
 			room.updated(function(o){
 			});
 	*/

@@ -19,7 +19,7 @@ class JsonOutput extends OutputCore {
 	}
 	
 	override public function setOptions(value:Int):Void {
-		if (Flag.FTest(value, GatewayOptions.DEBUG)){
+		if (Flag.FTest(value, GatewayOptions.DEBUG_MODE)){
 			_data.input = {
 				params: InputCore.getInstance().hasAnyParam() ? InputCore.getInstance().params : null,
 				json: InputCore.getInstance().object,
