@@ -11,7 +11,7 @@ class TestZoneAny extends DomainZoneCore {
 	
 	override function _buildZoneMap():Void {
 		_setZoneMap({
-			// Any value will be carried to TestZoneEnd
+			// Any value will be carried to NotFoundZone
 			"end" : TestZoneEnd,
 			"*" : NotFoundZone,
 		});

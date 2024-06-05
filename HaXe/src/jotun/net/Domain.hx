@@ -100,7 +100,7 @@ class Domain implements IDomain {
 		
 	}
 	
-	public function getFQDN(?len:Int = 2):String {
+	public function getDomain(?len:Int = 2):String {
 		var h:Array<String> = host.split('.');
 		return h.splice(h.length - len, len).join('.');
 	}
@@ -207,9 +207,6 @@ class Domain implements IDomain {
 		private function _getMultipartKey():String {
 			if(isRequestMethod('POST')){
 				var a : NativeArray = Syntax.codeDeref("$_POST");
-				if (Syntax.codeDeref("get_magic_quotes_gpc()")){
-					Syntax.codeDeref("reset($a); while(list($k, $v) = each($a)) $a[$k] = stripslashes((string)$v)");
-				}
 				var post = Lib.hashOfAssociativeArray(a);
 				for (key in post.keys()) {
 					if (key.indexOf("Content-Disposition:_form-data;_name") != -1)

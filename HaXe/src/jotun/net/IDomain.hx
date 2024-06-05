@@ -58,7 +58,7 @@ interface IDomain {
 		
 	#end
 	
-	public function getFQDN(?len:Int = 2):String;
+	public function getDomain(?len:Int = 2):String;
 	
 	public function paramAsBool(q:String):Bool;
 	

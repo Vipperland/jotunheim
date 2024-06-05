@@ -45,8 +45,7 @@ class DomainAccessCore extends DomainZoneCore {
 	}
 	
 	private function getServices():Array<String>{
-		var service:String = Utils.getValidOne(Jotun.domain.params.service, "");
-		return cast Dice.nullSkip(service.split('/'));
+		return cast Dice.nullSkip(Jotun.domain.paramAsArray('service'));
 	}
 	
 }

@@ -1,14 +1,11 @@
 package jotun.gateway;
-import jotun.gateway.database.SessionDataAccess;
-import jotun.gateway.domain.DomainAccessCore;
+import jotun.gateway.database.DataAccess;
 import jotun.gateway.domain.InputCore;
 import jotun.gateway.domain.OutputCore;
 import jotun.gateway.domain.zones.DomainZoneCore;
 import jotun.gateway.errors.ErrorCodes;
 import jotun.gateway.flags.GatewayOptions;
 import jotun.logical.Flag;
-import jotun.tools.Utils;
-import jotun.utils.SingletonLock;
 import php.ErrorException;
 import php.Syntax;
 
@@ -61,13 +58,16 @@ class GatewayCore {
 			gateway._output.error(ErrorCodes.MAINTENANCE_MODE);
 			
 		}
+		if(Flag.FTest(options, GatewayOptions.ENCODED)){
+			gateway._output.mode(true, 64);
+		}
 		
 		// Output all parsed data frm zone services
 		gateway.flush();
 		
 	}
 	
-	private var _database:SessionDataAccess;
+	private var _database:DataAccess;
 	private var _domain:DomainZoneCore;
 	private var _input:InputCore;
 	private var _output:OutputCore;
@@ -79,8 +79,6 @@ class GatewayCore {
 			throw new  ErrorException("Gateway is a Singleton");
 		}
 	}
-	
-	
 	
 	public function flush():Void {
 		_output.flush();

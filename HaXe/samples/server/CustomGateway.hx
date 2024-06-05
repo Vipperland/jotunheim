@@ -22,13 +22,8 @@ class CustomGateway extends GatewayCore {
 			CustomDataAccess, 
 			BasicSessionInput,
 			CustomDomain, 
-			GatewayOptions.ALL
+			Jotun.domain.paramAsBool('encoded') ? GatewayOptions.ALL_ENCODED : GatewayOptions.ALL
 		);
-	}
-	
-	override public function flush():Void {
-		_output.mode(_input.paramAsBool('encoded'), 40);
-		super.flush();
 	}
 	
 }

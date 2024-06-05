@@ -17,6 +17,11 @@ class GatewayOptions {
 	
 	static public inline var MAINTENANCE:Int = 1 << 4;
 	
+	static public inline var ENCODED:Int = 1 << 5;
+	
 	static public inline var ALL:Int = INFO | DEBUG | ERROR | DATABASE;
+	
+	static public inline var ALL_ENCODED:Int = ALL | ENCODED;
+	
 	
 }
