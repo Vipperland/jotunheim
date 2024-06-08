@@ -3,6 +3,7 @@ import jotun.math.JMath;
 import jotun.serial.Packager;
 import jotun.tools.Key;
 import jotun.gateway.domain.OutputCore;
+import php.Syntax;
 
 /**
  * ...
@@ -41,6 +42,14 @@ class Omnitools {
 	 */
 	static public function genRandomIDx32():String {
 		return Packager.md5Encode(Key.GEN(16) + "." + timeNow());
+	}
+	
+	static public function generatePwdHash(pwd:String):String {
+		return Syntax.codeDeref('password_hash({0}, PASSWORD_BCRYPT)', pwd);
+	}
+	
+	static public function verifyPwdHash(pwd:String, hash:String):Bool {
+		return Syntax.codeDeref('password_verify({0}, {1})', pwd, hash) == pwd;
 	}
 	
 	/**

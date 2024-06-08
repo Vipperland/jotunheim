@@ -22,7 +22,13 @@ class Validator {
 		return ~/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}|(?=.*?[#?!@$%^&*-_])$/giu.match(value);
 	}
 	
-	static public function date(value:String):Bool {
+	static public function date(value:Dynamic):Bool {
+		if (value == null){
+			return false;
+		}
+		if (Std.isOfType(value, Float)){
+			return value > 0;
+		}
 		return ~/\d{1,2}\/\d{1,2}\/\d{4}/.match(value) || ~/\d{4}\/\d{1,2}\/\d{1,2}/.match(value);
 	}
 	

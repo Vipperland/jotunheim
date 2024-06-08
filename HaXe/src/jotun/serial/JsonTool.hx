@@ -26,7 +26,7 @@ class JsonTool {
 			return b.typeOf();
 		}
 		#end
-		return (b == null) ? null : b; 
+		return b; 
 	};
 	
 	static public function clone(obj:Dynamic):Dynamic {
@@ -167,7 +167,7 @@ class JsonTool {
 		for (i in 0...len) {
 			var f = fields[i];
 			var value = Reflect.field(v, f);
-			if (Reflect.isFunction(value)){
+			if (Reflect.isFunction(value) || value == null){
 				continue;
 			}
 			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") {
