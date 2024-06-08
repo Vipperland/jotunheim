@@ -1,20 +1,18 @@
 package jotun.gateway.database.objects;
 import jotun.Jotun;
 import jotun.errors.SessionErrorCodes;
-import jotun.gateway.database.DataAccess;
 import jotun.gateway.database.SessionDataAccess;
+import jotun.gateway.database.objects.ZoneCoreObject;
+import jotun.gateway.domain.OutputCore;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.logical.Flag;
 import jotun.php.db.Clause;
 import jotun.serial.Packager;
 import jotun.tools.Utils;
-import jotun.gateway.database.objects.ZoneCoreObject;
-import jotun.gateway.domain.OutputCore;
-import jotun.gateway.errors.ErrorCodes;
 import jotun.utils.Omnitools;
 
 /**
- * ...
+ * CREATE TABLE `DATABASE_NAME`.`user_session` (`_uid` VARCHAR(65) NOT NULL , `_token` VARCHAR(65) NOT NULL , `_ip` VARCHAR(128) NOT NULL , `_device` VARCHAR(128) NOT NULL , `_read` INT NOT NULL , `_write` INT NOT NULL , `_ctd` INT NOT NULL 
  * @author 
  */
 class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
@@ -23,20 +21,49 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	
 	static public inline var OAUTH_HEAD_OUT:String = "(y)<=";
 	
+	/* 
+		Fields defined in the database table
+		The column names pefixed with _ will not be exposed to reponses
+	*/
+	
+	/**
+	 * User id
+	 */
 	public var _uid:String;
 	
+	/**
+	 * Session token
+	 */
 	public var _token:String;
 	
+	/**
+	 * IP address
+	 */
 	public var _ip:String;
 	
+	/**
+	 * Device name
+	 */
 	public var _device:String;
 	
+	/**
+	 * Read permission
+	 */
 	public var _read:Int;
 	
+	/**
+	 * Write permission
+	 */
 	public var _write:Int;
 	
+	/**
+	 * Session created time
+	 */
 	public var _ctd:Float;
 	
+	/**
+	 * Session updated time
+	 */
 	public var _upd:Float;
 	
 	public var carrier(get, null):IPassCarrier;

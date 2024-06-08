@@ -26,21 +26,21 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function dmYToUnixtime ($date) {
-		#src/jotun/utils/Omnitools.hx:61: lines 61-70
+		#src/jotun/utils/Omnitools.hx:70: lines 70-79
 		if (($date !== null) && (mb_strlen($date) === 10)) {
-			#src/jotun/utils/Omnitools.hx:62: characters 4-66
+			#src/jotun/utils/Omnitools.hx:71: characters 4-66
 			$darr = HxString::split(HxString::split($date, "/")->join("-"), "-");
-			#src/jotun/utils/Omnitools.hx:63: lines 63-65
+			#src/jotun/utils/Omnitools.hx:72: lines 72-74
 			if (mb_strlen(($darr->arr[0] ?? null)) !== 4) {
-				#src/jotun/utils/Omnitools.hx:64: characters 5-19
+				#src/jotun/utils/Omnitools.hx:73: characters 5-19
 				$darr->arr = \array_reverse($darr->arr);
 			}
-			#src/jotun/utils/Omnitools.hx:66: characters 4-25
+			#src/jotun/utils/Omnitools.hx:75: characters 4-25
 			$date = $darr->join("-");
-			#src/jotun/utils/Omnitools.hx:67: characters 4-42
+			#src/jotun/utils/Omnitools.hx:76: characters 4-42
 			return \Date::fromString($date)->getTime();
 		} else {
-			#src/jotun/utils/Omnitools.hx:69: characters 4-12
+			#src/jotun/utils/Omnitools.hx:78: characters 4-12
 			return 0;
 		}
 	}
@@ -52,7 +52,7 @@ class Omnitools {
 	 * @return string
 	 */
 	public static function genRandomIDx32 () {
-		#src/jotun/utils/Omnitools.hx:43: characters 3-59
+		#src/jotun/utils/Omnitools.hx:44: characters 3-59
 		return Packager::md5Encode((Key::GEN(16)??'null') . "." . (Omnitools::timeNow()??'null'));
 	}
 
@@ -63,8 +63,18 @@ class Omnitools {
 	 * @return string
 	 */
 	public static function genRandomIDx65 () {
-		#src/jotun/utils/Omnitools.hx:35: characters 3-79
+		#src/jotun/utils/Omnitools.hx:36: characters 3-79
 		return (Packager::md5Encode(Key::GEN(32))??'null') . "." . (Packager::md5Encode(Omnitools::timeNow())??'null');
+	}
+
+	/**
+	 * @param string $pwd
+	 * 
+	 * @return string
+	 */
+	public static function generatePwdHash ($pwd) {
+		#src/jotun/utils/Omnitools.hx:48: characters 3-70
+		return password_hash($pwd, PASSWORD_BCRYPT);
 	}
 
 	/**
@@ -77,7 +87,7 @@ class Omnitools {
 	 * @return bool
 	 */
 	public static function testBirthdate ($time) {
-		#src/jotun/utils/Omnitools.hx:52: characters 3-35
+		#src/jotun/utils/Omnitools.hx:61: characters 3-35
 		return JMath::calcAge($time) >= 18;
 	}
 
@@ -91,7 +101,7 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function timeFromNow ($hours) {
-		#src/jotun/utils/Omnitools.hx:27: characters 3-38
+		#src/jotun/utils/Omnitools.hx:28: characters 3-38
 		return Omnitools::timeNow() + $hours * 360000;
 	}
 
@@ -102,8 +112,19 @@ class Omnitools {
 	 * @return float
 	 */
 	public static function timeNow () {
-		#src/jotun/utils/Omnitools.hx:18: characters 3-30
+		#src/jotun/utils/Omnitools.hx:19: characters 3-30
 		return \Date::now()->getTime();
+	}
+
+	/**
+	 * @param string $pwd
+	 * @param string $hash
+	 * 
+	 * @return bool
+	 */
+	public static function verifyPwdHash ($pwd, $hash) {
+		#src/jotun/utils/Omnitools.hx:52: characters 3-73
+		return password_verify($pwd, $hash) === $pwd;
 	}
 }
 

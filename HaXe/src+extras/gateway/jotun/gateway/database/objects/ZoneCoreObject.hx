@@ -17,7 +17,7 @@ class ZoneCoreObject {
 	}
 	
 	private function RunSQL(handler:Dynamic):Dynamic {
-		return _database.execute(handler);
+		return _database != null ? _database.execute(handler) : null;
 	}
 	
 	private var _output(get, null):OutputCore;

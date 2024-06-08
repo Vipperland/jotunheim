@@ -33,7 +33,7 @@ class ZonePass {
 	}
 	
 	public function toString():String {
-		return "[r=" + _read + ",w=" + _write + "]";
+		return "[R:" + _read + ",W:" + _write + "]";
 	}
 	
 }

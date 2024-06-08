@@ -1,6 +1,5 @@
 package zones.debug;
 import jotun.gateway.domain.zones.DomainZoneCore;
-import jotun.gateway.domain.zones.ForbiddenZone;
 import jotun.gateway.domain.zones.NotFoundZone;
 
 /**
@@ -18,8 +17,8 @@ class TestZoneAny extends DomainZoneCore {
 	}
 	
 	// Create value from current service value
-	override function _buildup(zoneName:String):Void {
-		_value = zoneName;
+	override function _buildup(data:Array<String>):Void {
+		_value = data;
 	}
 	
 	public function new() {

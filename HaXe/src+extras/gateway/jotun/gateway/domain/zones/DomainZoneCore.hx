@@ -1,6 +1,9 @@
 package jotun.gateway.domain.zones;
+import haxe.DynamicAccess;
+import haxe.Rest;
 import jotun.gateway.domain.DomainServicesCore;
 import jotun.gateway.domain.zones.DomainZoneCore;
+import jotun.gateway.domain.zones.ForbiddenZone;
 import jotun.gateway.domain.zones.NotFoundZone;
 import jotun.gateway.domain.zones.pass.ZonePass;
 import jotun.gateway.errors.ErrorCodes;
@@ -20,31 +23,31 @@ class DomainZoneCore extends DomainServicesCore {
 	private var _readFlag:Int;
 	private var _writeFlag:Int;
 	
-	private var _name:String;
 	private var _requiredPass:ZonePass;
 	
 	private var _dbRequired:Bool;
 	
+	private var _name:String;
 	public var name(get, null):String;
-	private function get_name():String {
+	final private function get_name():String {
 		return _name;
 	}
 	
 	private var _zone:DomainZoneCore;
 	public var zone(get, null):DomainZoneCore;
-	private function get_zone():DomainZoneCore {
+	final private function get_zone():DomainZoneCore {
 		return _zone;
 	}
 	
 	private var _parent:DomainZoneCore;
 	public var parent(get, null):DomainZoneCore;
-	private function get_parent():DomainZoneCore {
+	final private function get_parent():DomainZoneCore {
 		return _parent;
 	}
 	
 	private var _value:Dynamic;
 	public var value(get, null):Dynamic;
-	private function get_value():Dynamic {
+	final private function get_value():Dynamic {
 		return _value;
 	}
 	
@@ -85,25 +88,30 @@ class DomainZoneCore extends DomainServicesCore {
 		});
 	}
 	
-	final private function _setParent(parent:DomainZoneCore):Void {
-		_parent = parent;
-	}
-	
-	private function _buildup(zoneName:String):Void {
-	}
-	
-	private function getZoneMap():Dynamic {
+	/**
+	 * Current zone internal mapping
+	 * @return
+	 */
+	final private function _getZoneMap():Dynamic {
 		return _defaultMap;
 	}
 
+	/**
+	 * Defines the current domain zone map
+	 * Use override to define the mao of this and next zones {"zoneA":DomainZoneCore, "zoneB":DomainZoneCore, ...}
+	 */
 	private function _buildZoneMap():Void {
-		
 	}
 	
-	private function _prefab(data:Array<String>):Dynamic {
+	/**
+	 * Get next level zone
+	 * @param	data
+	 * @return
+	 */
+	final private function _prefab(data:Array<String>):Dynamic {
 		if (data.length > 0){
 			var name:String = data[0];
-			var map:Dynamic = getZoneMap();
+			var map:Dynamic = _getZoneMap();
 			if (Reflect.hasField(map, name)){
 				return Reflect.field(map, name);
 			}else if (Reflect.hasField(map, "*")){
@@ -113,47 +121,104 @@ class DomainZoneCore extends DomainServicesCore {
 		return null;
 	}
 	
+	/**
+	 * Can only be executed IF: 
+	 * 	is the end zone (setEndZone())
+	 * 	match datase requirement: db is not required OR is connected to db
+	 * @param	data
+	 */
 	private function _execute(data:Array<String>):Void {
-		if (_defaultMap != null){
-			output.setStatus(ErrorCodes.SERVICE_FORBIDDEN);
-		}
 	}
 	
+	/**
+	 * Prepare the zone to carry to the next level defined in zone map (_setZoneMap({...})).
+	 * First prepare([...]) then carry([...])
+	 * @return
+	 */
+	private function _prepare(data:Array<String>):Bool {
+		return _defaultMap != null;
+	}
+	
+	/**
+	 * Set 403 HTTP Status
+	 */
+	final private function _setStatusForbidden():Void {
+		output.setStatus(ErrorCodes.SERVICE_FORBIDDEN);
+	}
+	
+	/**
+	 * Set 401 HTTp Status
+	 */
+	final private function _setStatusUnauthorized():Void {
+		output.setStatus(ErrorCodes.SERVICE_UNAUTHORIZED);
+	}
+	
+	/**
+	 * Require user login
+	 */
+	final private function _setLoginRequired():Void {
+		output.setStatus(ErrorCodes.SERVICE_LOGIN_REQUIRED);
+	}
+	
+	/**
+	 * Test if is connected to database and and is required by the zone
+	 * @return
+	 */
+	final private function _matchDabaseRequirement():Bool {
+		return !isDatabaseRequired() || database.isConnected();
+	}
+	
+	/**
+	 * Carry input data to the next zone
+	 * @param	parent
+	 * @param	data
+	 * @return
+	 */
 	final private function carry(parent:DomainZoneCore, data:Array<String>):DomainZoneCore {
-		_setParent(parent);
 		var Def:Dynamic = _prefab(data);
 		if (hasValidPass()){
 			if (Def != null){
 				var ZoneName:String = data.shift();
 				_zone = Syntax.construct(Def);
-				_zone._buildup(ZoneName);
-				_logService(toString() + "->carry('" + ZoneName + "')");
-				_zone.carry(this, data);
-				return _zone;
-			}else{
-				var dbPassed:Bool = !isDatabaseRequired() || database.isConnected();
-				
-				if (data.length > 0){
-					_logService(toString() + "->execute(" + data + ") " + (dbPassed ? "SUCCESS" : "DB_REQUIRED"));
+				if (_prepare(data) || Def == NotFoundZone || Def == ForbiddenZone){
+					if (output.isLogEnabled()){
+						_logService(toString() + "->carry('" + ZoneName + "') Status.SUCESS");
+					}
+					_zone._parent = parent;
+					_zone.carry(this, data);
+					return _zone;
 				}else{
-					_logService(toString() + "->execute() " + (dbPassed ? "SUCCESS" : "DB_REQUIRED"));
+					if (output.isLogEnabled()){
+						_logService(toString() + "->carry('" + ZoneName + "') Error.FAILED");
+					}
 				}
-				if (dbPassed && output.getStatus() == 200){
-					_execute(data);
-				}else {
+			}else{
+				if (_matchDabaseRequirement()){
+					if (output.getStatus() == 200){
+						if (output.isLogEnabled()){
+							_logService(toString() + "->execute(" + (data.length > 0 ? data.join("/") : "") + ") Status.SUCESS");
+						}
+						_execute(data);
+						return this;
+					}
+				}else{
+					if (output.isLogEnabled()){
+						_logService(toString() + "->execute(" + data + ") Error.DB_REQUIRED");
+					}
 					output.error(ErrorCodes.DATABASE_UNAVAILABLE);
 				}
-				return this;
 			}
 		}else{
-			_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(UNAUTORIZED " + _requiredPass.toString() + ")");
+			if (output.isLogEnabled()){
+				_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(Error.Pass" + _requiredPass.toString() + ")");
+			}
 			if (input.hasPass()){
 				output.setStatus(ErrorCodes.SERVICE_UNAUTHORIZED);
 			}else{
 				output.setStatus(ErrorCodes.SERVICE_LOGIN_REQUIRED);
 			}
-			return null;
 		}
+		return null;
 	}
 	
 	final public function toString():String {
@@ -169,13 +234,17 @@ class DomainZoneCore extends DomainServicesCore {
 				val = _value;
 			}
 		}
-		if (_defaultMap == null){
-			val += val.length > 0 ? ',' : '';
-			val += 'EndZone';
-		}
 		if (isDatabaseRequired()){
 			val += val.length > 0 ? ',' : '';
-			val += 'DatabaseRequired';
+			val += 'DB';
+		}
+		if (isPassRequired()){
+			val += val.length > 0 ? ',' : '';
+			val += 'Pass';
+		}
+		if (_defaultMap == null){
+			val += val.length > 0 ? ',' : '';
+			val += 'Tail';
 		}
 		return _name + "[" + val + "]";
 	}

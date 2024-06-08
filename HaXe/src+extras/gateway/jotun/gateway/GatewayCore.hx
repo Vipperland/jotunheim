@@ -26,13 +26,13 @@ class GatewayCore {
 	 * @param	TOutput
 	 * @param	TDataAccess
 	 * @param	TInput
-	 * @param	TDomain
+	 * @param	TDomain			The param services will carry along domain zones (?services=hello/world)
 	 * @param	maintenance
 	 * @param	onInit
 	 */
-	static public function init(TGateway:Dynamic, TOutput:Dynamic, TDataAccess:Dynamic, TInput:Dynamic, TDomain:Dynamic, options:Int):Void {
+	static public function init(TGateway:Class<GatewayCore>, TOutput:Class<OutputCore>, TDataAccess:Class<DataAccess>, TInput:Class<InputCore>, TDomain:Class<DomainZoneCore>, options:UInt):Void {
 		
-		var gateway:GatewayCore = Syntax.construct(TGateway);
+		var gateway:GatewayCore = cast Syntax.construct(TGateway);
 		
 		Jotun.header.access();
 		

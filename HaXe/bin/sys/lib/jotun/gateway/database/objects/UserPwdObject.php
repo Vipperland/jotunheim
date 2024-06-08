@@ -8,7 +8,7 @@ namespace jotun\gateway\database\objects;
 use \php\Boot;
 
 /**
- * ...
+ * CREATE TABLE `DATABASE_NAME`.`TABLE_NAME` (`_uid` VARCHAR(65) NOT NULL , `_key` VARCHAR(60) NOT NULL , `_pwd` VARCHAR(60) NOT NULL , `_upd` INT NOT NULL ) ENGINE = MyISAM;
  * @author Rafael Moreira
  */
 class UserPwdObject extends ZoneCoreObject {
@@ -29,7 +29,7 @@ class UserPwdObject extends ZoneCoreObject {
 	 * @return void
 	 */
 	public function __construct () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserPwdObject.hx:16: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserPwdObject.hx:21: characters 3-10
 		parent::__construct();
 	}
 }

@@ -18,7 +18,7 @@ use \jotun\gateway\database\SessionDataAccess;
 use \jotun\gateway\domain\zones\pass\IPassCarrier;
 
 /**
- * ...
+ * CREATE TABLE `DATABASE_NAME`.`user_session` (`_uid` VARCHAR(65) NOT NULL , `_token` VARCHAR(65) NOT NULL , `_ip` VARCHAR(128) NOT NULL , `_device` VARCHAR(128) NOT NULL , `_read` INT NOT NULL , `_write` INT NOT NULL , `_ctd` INT NOT NULL
  * @author
  */
 class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
@@ -33,34 +33,42 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 
 	/**
 	 * @var float
+	 * Session created time
 	 */
 	public $_ctd;
 	/**
 	 * @var string
+	 * Device name
 	 */
 	public $_device;
 	/**
 	 * @var string
+	 * IP address
 	 */
 	public $_ip;
 	/**
 	 * @var int
+	 * Read permission
 	 */
 	public $_read;
 	/**
 	 * @var string
+	 * Session token
 	 */
 	public $_token;
 	/**
 	 * @var string
+	 * User id
 	 */
 	public $_uid;
 	/**
 	 * @var float
+	 * Session updated time
 	 */
 	public $_upd;
 	/**
 	 * @var int
+	 * Write permission
 	 */
 	public $_write;
 	/**
@@ -72,7 +80,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function __construct () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:53: characters 3-10
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:80: characters 3-10
 		parent::__construct();
 	}
 
@@ -80,7 +88,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return IPassCarrier
 	 */
 	public function _loadCarrier () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:49: characters 3-14
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:76: characters 3-14
 		return null;
 	}
 
@@ -90,7 +98,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return bool
 	 */
 	public function canRead ($read) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:170: characters 3-33
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:197: characters 3-33
 		return Flag::FTest($this->_read, $read);
 	}
 
@@ -100,7 +108,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return bool
 	 */
 	public function canWrite ($write) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:174: characters 3-35
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:201: characters 3-35
 		return Flag::FTest($this->_write, $write);
 	}
 
@@ -108,11 +116,11 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function drop () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:117: lines 117-121
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:144: lines 144-148
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:118: lines 118-120
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:145: lines 145-147
 		$this->RunSQL(function () use (&$_gthis) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:119: characters 4-89
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:146: characters 4-89
 			(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_session()->deleteOne(Clause::EQUAL("_token", $_gthis->_token));
 		});
 	}
@@ -121,13 +129,13 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function dropAll () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:123: lines 123-129
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:150: lines 150-156
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:124: lines 124-128
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:151: lines 151-155
 		if ($this->isValid()) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:125: lines 125-127
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:152: lines 152-154
 			$this->RunSQL(function () use (&$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:126: characters 5-83
+				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:153: characters 5-83
 				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_session()->delete(Clause::EQUAL("_uid", $_gthis->_uid));
 			});
 		}
@@ -142,14 +150,14 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function exposeCarrier ($force = null) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:151: lines 151-153
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:178: lines 178-180
 		if (($this->get_carrier() === null) && $force) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:152: characters 4-18
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:179: characters 4-18
 			$this->_loadCarrier();
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:154: lines 154-156
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:181: lines 181-183
 		if ($this->get_carrier() !== null) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:155: characters 4-71
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:182: characters 4-71
 			OutputCore::getInstance()->object("carrier")->info = $this->get_carrier()->getInfo();
 		}
 	}
@@ -158,19 +166,19 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function exposeToken () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:136: characters 3-55
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:163: characters 3-55
 		$token = "(y)<=";
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:137: lines 137-142
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:164: lines 164-169
 		if ($this->isValid()) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:138: characters 4-19
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:165: characters 4-19
 			$token = ($token??'null') . ($this->_token??'null');
 		} else {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:140: characters 4-22
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:167: characters 4-22
 			$token = ($token??'null') . "EXPIRED";
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:141: characters 4-10
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:168: characters 4-10
 			$this->drop();
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:143: characters 3-71
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:170: characters 3-71
 		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64($token));
 	}
 
@@ -178,7 +186,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return mixed
 	 */
 	public function getInfo () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:178: characters 3-14
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:205: characters 3-14
 		return null;
 	}
 
@@ -186,7 +194,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return string
 	 */
 	public function getToken () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:132: characters 3-33
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:159: characters 3-33
 		return "(y)<=" . ($this->_token??'null');
 	}
 
@@ -194,7 +202,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return IPassCarrier
 	 */
 	public function get_carrier () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:44: characters 3-24
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:71: characters 3-24
 		return $this->_loadCarrier();
 	}
 
@@ -202,7 +210,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return bool
 	 */
 	public function isValid () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:105: characters 3-52
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:132: characters 3-52
 		return (Omnitools::timeFromNow(168) - $this->_upd) > 0;
 	}
 
@@ -212,33 +220,33 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return bool
 	 */
 	public function load ($oauth) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:87: lines 87-102
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:114: lines 114-129
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:88: lines 88-90
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:115: lines 115-117
 		$current = $this->RunSQL(function () use (&$_gthis, &$oauth) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:89: characters 4-98
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:116: characters 4-98
 			return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_session()->findOne("*", Clause::EQUAL("_token", $oauth));
 		});
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:91: lines 91-100
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:118: lines 118-127
 		if ($current !== null) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:92: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:119: characters 4-23
 			$this->_uid = $current->_uid;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:93: characters 4-27
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:120: characters 4-27
 			$this->_token = $current->_token;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:94: characters 4-21
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:121: characters 4-21
 			$this->_ip = $current->_ip;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:95: characters 4-29
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:122: characters 4-29
 			$this->_device = $current->_device;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:96: characters 4-25
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:123: characters 4-25
 			$this->_read = $current->_read;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:97: characters 4-27
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:124: characters 4-27
 			$this->_write = $current->_write;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:98: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:125: characters 4-23
 			$this->_ctd = $current->_ctd;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:99: characters 4-23
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:126: characters 4-23
 			$this->_upd = $current->_upd;
 		}
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:101: characters 3-25
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:128: characters 3-25
 		return $current !== null;
 	}
 
@@ -246,15 +254,15 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function refresh () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:108: lines 108-115
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:135: lines 135-142
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:109: lines 109-114
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:136: lines 136-141
 		if (($this->_uid !== null) && ($this->_token !== null)) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:110: characters 4-30
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:137: characters 4-30
 			$this->_upd = Omnitools::timeNow();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:111: lines 111-113
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:138: lines 138-140
 			$this->RunSQL(function () use (&$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:112: characters 5-103
+				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:139: characters 5-103
 				(Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_session()->updateOne(new HxAnon(["_upd" => $_gthis->_upd]), Clause::EQUAL("_token", $_gthis->_token));
 			});
 		}
@@ -266,7 +274,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return void
 	 */
 	public function revoke () {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:163: characters 3-109
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:190: characters 3-109
 		OutputCore::getInstance()->registerOAuth(Packager::encodeBase64("(y)<=" . "REVOKE"));
 	}
 
@@ -279,29 +287,29 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @return bool
 	 */
 	public function save ($id, $device, $read, $write) {
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:56: lines 56-85
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:83: lines 83-112
 		$_gthis = $this;
-		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:57: lines 57-84
+		#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:84: lines 84-111
 		if (($this->_token === null) && ($this->_uid === null)) {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:58: characters 4-13
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:85: characters 4-13
 			$this->_uid = $id;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:59: characters 4-39
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:86: characters 4-39
 			$this->_token = Omnitools::genRandomIDx65();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:60: characters 4-29
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:87: characters 4-29
 			$this->_ip = Jotun::$domain->client;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:61: characters 4-43
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:88: characters 4-43
 			$this->_device = Utils::getValidOne($device, "");
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:62: characters 4-16
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:89: characters 4-16
 			$this->_read = $read;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:63: characters 4-18
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:90: characters 4-18
 			$this->_write = $write;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:64: characters 4-30
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:91: characters 4-30
 			$this->_ctd = Omnitools::timeNow();
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:65: characters 4-15
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:92: characters 4-15
 			$this->_upd = $this->_ctd;
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:66: lines 66-81
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:93: lines 93-108
 			if (Boot::dynamicField($this->RunSQL(function () use (&$id, &$_gthis) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:67: lines 67-76
+				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:94: lines 94-103
 				return (Boot::typedCast(Boot::getClass(SessionDataAccess::class), $_gthis->get__database()))->get_session()->add(new HxAnon([
 					"_uid" => $id,
 					"_token" => $_gthis->_token,
@@ -313,14 +321,14 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 					"_upd" => $_gthis->_upd,
 				]));
 			}), 'success')) {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:78: characters 5-16
+				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:105: characters 5-16
 				return true;
 			} else {
-				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:80: characters 5-52
+				#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:107: characters 5-52
 				return $this->_error(1030);
 			}
 		} else {
-			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:83: characters 4-55
+			#src+extras/basic+gateway/jotun/gateway/database/objects/UserSessionObject.hx:110: characters 4-55
 			return $this->_error(1040);
 		}
 	}
