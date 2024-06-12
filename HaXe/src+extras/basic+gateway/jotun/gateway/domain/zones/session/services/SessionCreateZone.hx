@@ -17,6 +17,7 @@ class SessionCreateZone extends DomainZoneCore {
 		super();
 		setEndZone();
 		setDatabaseRequired();
+		restrictToPut();
 	}
 	
 	override function _execute(data:Array<String>):Void {

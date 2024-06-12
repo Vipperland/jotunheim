@@ -90,7 +90,7 @@ class ZonePass {
 	}
 	
 	final public function toString():String {
-		return "[R:" + _read + ",W:" + _write + "]";
+		return "ZonePass[R:" + _read + ",W:" + _write + "]";
 	}
 	
 }

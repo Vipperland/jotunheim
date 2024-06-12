@@ -26,6 +26,7 @@ class DomainZoneCore extends DomainServicesCore {
 	private var _requiredPass:ZonePass;
 	
 	private var _dbRequired:Bool;
+	private var _requiredMethod:String;
 	
 	private var _name:String;
 	public var name(get, null):String;
@@ -72,6 +73,38 @@ class DomainZoneCore extends DomainServicesCore {
 	
 	final private function isDatabaseRequired():Bool {
 		return _dbRequired == true;
+	}
+	
+	/**
+	 * 
+	 * @param	name
+	 */
+	final private function restrictToGet():Void {
+		_requiredMethod = 'GET';
+	}
+	
+	final private function restrictToPost():Void {
+		_requiredMethod = 'POST';
+	}
+	
+	final private function restrictToDel():Void {
+		_requiredMethod = 'POST';
+	}
+	
+	final private function restrictToPut():Void {
+		_requiredMethod = 'PUT';
+	}
+	
+	final private function restrictToPatch():Void {
+		_requiredMethod = 'PATCH';
+	}
+	
+	final private function restrictToOptions():Void {
+		_requiredMethod = 'OPTIONS';
+	}
+	
+	final private function isMethodMatch():Bool {
+		return _requiredMethod == null || Jotun.domain.data.REQUEST_METHOD.toUpperCase() == _requiredMethod.toUpperCase();
 	}
 	
 	final private function isPassRequired():Bool {
@@ -184,13 +217,21 @@ class DomainZoneCore extends DomainServicesCore {
 		
 		if(!hasValidPass()){
 			if (output.isLogEnabled()){
-				_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(Error.Pass" + _requiredPass.toString() + ")");
+				_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(Error.Auth." + _requiredPass.toString() + ")");
 			}
 			if (input.hasPass()){
 				output.setStatus(ErrorCodes.SERVICE_UNAUTHORIZED);
 			}else{
 				output.setStatus(ErrorCodes.SERVICE_LOGIN_REQUIRED);
 			}
+			return null;
+		}
+		
+		if(!isMethodMatch()){
+			if (output.isLogEnabled()){
+				_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(Method.Restrict." + _requiredMethod + ")");
+			}
+			output.setStatus(ErrorCodes.SERVICE_NOT_ACCEPTABLE);
 			return null;
 		}
 		
