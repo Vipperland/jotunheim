@@ -1,4 +1,5 @@
 package jotun.gateway.domain;
+import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.gaming.dataform.Pulsar;
 import jotun.gaming.dataform.PulsarLink;
@@ -26,12 +27,11 @@ class PulsarOutput extends OutputCore {
 			// _logp > input params
 			Pulsar.map("_logp", ['name', 'value'], Spark, false);
 			Pulsar.map("_logo", ['value'], Spark, false);
-			Dice.All(input.params, function(p:String, v:String){
+			var pdata:DynamicAccess<Dynamic> = input.allData();
+			pdata.remove('service');
+			Dice.All(pdata, function(p:String, v:String){
 				this.list('_input').insert(new Spark('_logp').set('name', p).set('value', v));
 			});
-			if (input.object != null){
-				this.list('_input').insert(new Spark('_logo').set('value', input.object));
-			}
 		}
 		super.setOptions(value);
 		if (_log){

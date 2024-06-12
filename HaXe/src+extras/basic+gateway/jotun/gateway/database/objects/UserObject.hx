@@ -1,8 +1,27 @@
 package jotun.gateway.database.objects;
+import jotun.Jotun;
+import jotun.gateway.database.SessionDataAccess;
+import jotun.gateway.database.objects.defs.UserDeviceParams;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
+import jotun.gateway.domain.zones.pass.ZonePass;
+import jotun.logical.Flag;
+import jotun.php.db.objects.IQuery;
+import jotun.utils.Omnitools;
 
 /**
- * CREATE TABLE `<DATABASE_NAME>`.`user` (`id` VARCHAR(65) NOT NULL , `_email` VARCHAR(255) NOT NULL , `_flags` INT NOT NULL , `_ctd` INT NOT NULL , `_upd` INT NOT NULL ) ENGINE = MyISAM;
+ * SQL
+ * 
+	CREATE TABLE `rp_user` (
+		 `id` varchar(65) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+		 `username` varchar(32) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_flags` int NOT NULL,
+		 `_ctd` int NOT NULL,
+		 `_upd` int NOT NULL,
+		 PRIMARY KEY (`id`),
+		 UNIQUE KEY `id` (`id`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
  * @author Rafael Moreira
  */
 class UserObject extends ZoneCarrierObject {
@@ -35,6 +54,35 @@ class UserObject extends ZoneCarrierObject {
 	public function new() {
 		super();
 	}
+	
+	
+	public function createNewSession():Bool {
+		var token:String = Omnitools.genRandomIDx65();
+		var pass:ZonePass = getZonePass();
+		var query:IQuery = RunSQL(cast (_database, SessionDataAccess).session.add({
+			_uid: id,
+			_token: token,
+			_ip: Jotun.domain.data.REMOTE_ADDR,
+			_device: cast (_input.construct(UserDeviceParams), UserDeviceParams).device,
+			_read: pass.getRead(),
+			_write: pass.getWrite(),
+			_ctd: Omnitools.timeNow(),
+			_upd: Omnitools.timeNow(),
+		}));
+		if(query.success){
+			_output.registerOAuth(token);
+		}
+		return query.success;
+	}
+	
+	public function getZonePass():ZonePass {
+		return isAdmin() ? ZonePass.MASTER_PASS : ZonePass.BASIC_PASS;
+	}
+	
+	public function isAdmin():Bool {
+		return Flag.FTest(_flags, 1 >> 31);
+	}
+	
 	
 	
 }

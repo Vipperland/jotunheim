@@ -3,6 +3,7 @@ import jotun.gaming.dataform.Pulsar;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
 import jotun.utils.Dice;
+import jotun.utils.Omnitools;
 import php.Lib;
 import php.Web;
 
@@ -68,11 +69,11 @@ class Header {
 		}
 	}
 	
-	public function setJSON(?data:Dynamic, ?encode:Bool, ?chunk:Int):Void {
+	public function setJSON(?data:Dynamic, ?encode:Bool, ?chunk:Int, ?pretty:Bool):Void {
 		content(JSON);
 		if (data != null) {
-			data = JsonTool.stringify(data, null, '\t');
-			writeData(data, encode, chunk);
+			data = JsonTool.stringify(data, null, pretty ? '\t' : null);
+			_writeData(data, encode, chunk);
 		}
 	}
 	
@@ -82,18 +83,18 @@ class Header {
 			if (Std.isOfType(data, Array)){
 				data = data.join('\n');
 			}
-			writeData(data, encode, chunk);
+			_writeData(data, encode, chunk);
 		}
 	}
 	
 	public function setPulsar(?data:Pulsar, ?encode:Bool, ?chunk:Int):Void {
 		content(PULSAR);
 		if (data != null){
-			writeData(data.toString(encode), encode, chunk);
+			_writeData(data.toString(encode), encode, chunk);
 		}
 	}
 	
-	function _createPieces(data:String, chunk:Int){
+	private function _createPieces(data:String, chunk:Int){
 		var f:Int = 0;
 		var t:Int = data.length;
 		var copy:String = "";
@@ -107,7 +108,7 @@ class Header {
 		return copy;
 	}
 	
-	function writeData(data:String, ?encode:Bool, ?chunk:Int) {
+	private function _writeData(data:String, ?encode:Bool, ?chunk:Int) {
 		if(data != null){
 			if (encode == true) {
 				data = Packager.encodeBase64(data);
@@ -143,8 +144,16 @@ class Header {
 		Web.setHeader('Authorization', token);
 	}
 	
-	public function getOAuth():String {
-		return getClientHeader('Authorization');
+	public function getOAuth(?cookie:String):String {
+		if(cookie != null){
+			return readCookie(cookie);
+		}else{
+			return getClientHeader('Authorization');
+		}
+	}
+	
+	public function setOAuthCookie(name:String, value:String, ?expire:UInt = 0, ?domain:String = null, ?secure:Bool = false, ?http:Bool = false):Void {
+		writeCookie(name, value, expire, domain, secure, http);
 	}
 	
 	public function getClientHeader(name:String):String {
@@ -166,6 +175,15 @@ class Header {
 			}
 		}
 		return _client_headers;
+	}
+	
+	public function readCookie(name:String):String {
+		return Web.getCookies()[name];
+	}
+	
+	public function writeCookie(name:String, value:String, ?expire:UInt = 0, ?domain:String = null, ?secure:Bool = false, ?http:Bool = false):Void {
+		var time:Float = Omnitools.timeFromNow((expire+1) * 24);
+		Web.setCookie(name, value, Date.fromTime(time), domain, "/", secure, http);
 	}
 	
 }

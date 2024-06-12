@@ -22,4 +22,8 @@ class DomainServicesCore extends OutputCoreCarrier {
 		super();
 	}
 	
+	private function RunSQL(handler:Dynamic):Dynamic {
+		return database != null ? database.execute(handler) : null;
+	}
+	
 }

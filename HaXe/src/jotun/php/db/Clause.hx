@@ -265,7 +265,7 @@ class Clause {
 	 */
 	static public function FLAGS(param:String, flags:Array<UInt>, any:Bool = false):Clause {
 		var a:Array<Dynamic> = [];
-		Dice.Values(flags, function(v:UInt):Void { a[a.length] = Clause.BIT(param, v); });
+		Dice.Values(flags, function(v:UInt):Void { a[a.length] = Clause.FLAG(param, v); });
 		return any ? Clause.OR(a) : Clause.AND(a);
 	}
 	
@@ -275,7 +275,7 @@ class Clause {
 	 * @param	value
 	 * @return
 	 */
-	static public function BIT(param:String, value:UInt):Dynamic {
+	static public function FLAG(param:String, value:UInt):Dynamic {
 		return { param:param, condition:"{{p}} & ?", value:value };
 	}
 	
@@ -285,7 +285,7 @@ class Clause {
 	 * @param	value
 	 * @return
 	 */
-	static public function BIT_NOT(param:String, value:UInt):Dynamic {
+	static public function FLAG_NOT(param:String, value:UInt):Dynamic {
 		return { param:param, condition:"~{{p}} & ?", value:value };
 	}
 	

@@ -1,7 +1,17 @@
 package jotun.gateway.database.objects;
+import jotun.utils.Omnitools;
 
 /**
- * CREATE TABLE `DATABASE_NAME`.`TABLE_NAME` (`_uid` VARCHAR(65) NOT NULL , `_key` VARCHAR(60) NOT NULL , `_pwd` VARCHAR(60) NOT NULL , `_upd` INT NOT NULL ) ENGINE = MyISAM;
+ * SQL
+
+	 CREATE TABLE `rp_user_pwd` (
+		 `_uid` varchar(65) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_hash` varchar(65) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_upd` int NOT NULL,
+	 PRIMARY KEY (`_uid`),
+	 UNIQUE KEY `_uid` (`_uid`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ 
  * @author Rafael Moreira
  */
 class UserPwdObject extends ZoneCoreObject {
@@ -13,12 +23,16 @@ class UserPwdObject extends ZoneCoreObject {
 	
 	public var _uid:String;
 	
-	public var _key:String;
+	public var _hash:String;
 	
 	public var _upd:Float;
 	
 	public function new() {
 		super();
+	}
+	
+	public function match(pwd:String):Bool {
+		return Omnitools.verifyPwdHash(pwd, _hash);
 	}
 	
 }

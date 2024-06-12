@@ -167,26 +167,22 @@ class JsonTool {
 		for (i in 0...len) {
 			var f = fields[i];
 			var value = Reflect.field(v, f);
-			if (Reflect.isFunction(value) || value == null){
-				continue;
+			if (value != null && !Reflect.isFunction(value) && !(Std.isOfType(f, String) && f.substr(0, 1) == "_")){
+				if (first) {
+					nind++;
+					first = false;
+				} else {
+					addChar(','.code);
+				}
+				newl();
+				ipad();
+				quote(f);
+				addChar(':'.code);
+				if (pretty){
+					addChar(' '.code);
+				}
+				write(f, value);
 			}
-			if ( Std.isOfType(f, String) && f.substr(0, 1) == "_") {
-				continue;
-			}
-			if (first) {
-				nind++;
-				first = false;
-			} else {
-				addChar(','.code);
-			}
-			newl();
-			ipad();
-			quote(f);
-			addChar(':'.code);
-			if (pretty){
-				addChar(' '.code);
-			}
-			write(f, value);
 			if (i == last) {
 				nind--;
 				newl();

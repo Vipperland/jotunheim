@@ -1,4 +1,5 @@
 package jotun.gateway.domain.zones.session;
+import jotun.gateway.domain.zones.session.services.SessionCreateZone;
 import jotun.gateway.domain.zones.session.services.SessionExposeZone;
 import jotun.gateway.domain.zones.session.services.SessionVerifyZone;
 
@@ -11,7 +12,7 @@ class SessionZone extends DomainZoneCore {
 	override function _buildZoneMap():Void {
 		_setZoneMap({
 			"verify" : SessionVerifyZone,
-			"create" : null,
+			"create" : SessionCreateZone,
 		});
 		super._buildZoneMap();
 	}

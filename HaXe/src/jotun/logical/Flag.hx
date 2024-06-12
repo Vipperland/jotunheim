@@ -73,6 +73,10 @@ class Flag {
 		return new Flag(value);
 	}
 	
+	public static function GetValue(bit:UInt):UInt {
+		return 1 << bit;
+	}
+	
 	public static function FPut(hash:UInt, bit:UInt):UInt {
 		return hash | bit;
 	}

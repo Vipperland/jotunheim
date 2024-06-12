@@ -88,6 +88,10 @@ class DomainZoneCore extends DomainServicesCore {
 		});
 	}
 	
+	final private function _setZonePass(pass:ZonePass):Void {
+		_requiredPass = pass;
+	}
+	
 	/**
 	 * Current zone internal mapping
 	 * @return
@@ -175,40 +179,10 @@ class DomainZoneCore extends DomainServicesCore {
 	 * @return
 	 */
 	final private function carry(parent:DomainZoneCore, data:Array<String>):DomainZoneCore {
+		
 		var Def:Dynamic = _prefab(data);
-		if (hasValidPass()){
-			if (Def != null){
-				var ZoneName:String = data.shift();
-				_zone = Syntax.construct(Def);
-				if (_prepare(data) || Def == NotFoundZone || Def == ForbiddenZone){
-					if (output.isLogEnabled()){
-						_logService(toString() + "->carry('" + ZoneName + "') Status.SUCESS");
-					}
-					_zone._parent = parent;
-					_zone.carry(this, data);
-					return _zone;
-				}else{
-					if (output.isLogEnabled()){
-						_logService(toString() + "->carry('" + ZoneName + "') Error.FAILED");
-					}
-				}
-			}else{
-				if (_matchDabaseRequirement()){
-					if (output.getStatus() == 200){
-						if (output.isLogEnabled()){
-							_logService(toString() + "->execute(" + (data.length > 0 ? data.join("/") : "") + ") Status.SUCESS");
-						}
-						_execute(data);
-						return this;
-					}
-				}else{
-					if (output.isLogEnabled()){
-						_logService(toString() + "->execute(" + data + ") Error.DB_REQUIRED");
-					}
-					output.error(ErrorCodes.DATABASE_UNAVAILABLE);
-				}
-			}
-		}else{
+		
+		if(!hasValidPass()){
 			if (output.isLogEnabled()){
 				_logService(toString() + "->" + (Def != null ? "carry" : "execute") + "(Error.Pass" + _requiredPass.toString() + ")");
 			}
@@ -217,7 +191,41 @@ class DomainZoneCore extends DomainServicesCore {
 			}else{
 				output.setStatus(ErrorCodes.SERVICE_LOGIN_REQUIRED);
 			}
+			return null;
 		}
+		
+		if (Def != null){
+			var ZoneName:String = data.shift();
+			_zone = Syntax.construct(Def);
+			if (_prepare(data) || Def == NotFoundZone || Def == ForbiddenZone){
+				if (output.isLogEnabled()){
+					_logService(toString() + "->carry('" + ZoneName + "') Status.SUCESS");
+				}
+				_zone._parent = parent;
+				_zone.carry(this, data);
+				return _zone;
+			}else{
+				if (output.isLogEnabled()){
+					_logService(toString() + "->carry('" + ZoneName + "') Error.FAILED");
+				}
+			}
+		}else{
+			if (_matchDabaseRequirement()){
+				if (output.getStatus() == 200){
+					if (output.isLogEnabled()){
+						_logService(toString() + "->execute(" + (data.length > 0 ? data.join("/") : "") + ") Status.SUCESS");
+					}
+					_execute(data);
+					return this;
+				}
+			}else{
+				if (output.isLogEnabled()){
+					_logService(toString() + "->execute(" + data + ") Error.DB_REQUIRED");
+				}
+				output.error(ErrorCodes.DATABASE_UNAVAILABLE);
+			}
+		}
+		
 		return null;
 	}
 	

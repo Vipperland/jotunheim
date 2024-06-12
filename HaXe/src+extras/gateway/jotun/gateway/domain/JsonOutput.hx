@@ -20,10 +20,8 @@ class JsonOutput extends OutputCore {
 	
 	override public function setOptions(value:Int):Void {
 		if (Flag.FTest(value, GatewayOptions.DEBUG_MODE)){
-			_data.input = {
-				params: InputCore.getInstance().hasAnyParam() ? InputCore.getInstance().params : null,
-				json: InputCore.getInstance().object,
-			};
+			_data.input = InputCore.getInstance().allData();
+			Reflect.deleteField(_data.input, 'service');
 		}
 		super.setOptions(value);
 	}

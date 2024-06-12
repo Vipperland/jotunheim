@@ -2,6 +2,7 @@ package jotun.gateway.domain;
 import jotun.errors.SessionErrorCodes;
 import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.domain.InputCore;
+import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.serial.Packager;
 import jotun.tools.Utils;
 
@@ -26,14 +27,14 @@ class BasicSessionInput extends InputCore {
 	
 	private var _testToken:String;
 	
-	public function setTestToken(token:String):Void {
+	final public function setTestToken(token:String):Void {
 		_testToken = token;
 		if (_testToken != null){
 			_loadAuthToken();
 		}
 	}
 	
-	private function _disposeSession(status:Int):Void {
+	final private function _disposeSession(status:Int):Void {
 		_tokenStatus = status;
 		if (session != null){
 			session.revoke();
@@ -41,7 +42,7 @@ class BasicSessionInput extends InputCore {
 		}
 	}
 	
-	private function _loadAuthToken():Void {
+	final private function _loadAuthToken():Void {
 		var authorization:String = Jotun.header.getOAuth();
 		if (_testToken != null && !Utils.isValid(authorization)){
 			authorization = _testToken;
@@ -66,6 +67,13 @@ class BasicSessionInput extends InputCore {
 		}else{
 			_disposeSession(SessionErrorCodes.TOKEN_REQUIRED);
 		}
+	}
+	
+	override public function get_carrier():IPassCarrier {
+		if(this.carrier == null){
+			this.carrier = this.session != null ? this.session.carrier : null;
+		}
+		return this.carrier;
 	}
 	
 }

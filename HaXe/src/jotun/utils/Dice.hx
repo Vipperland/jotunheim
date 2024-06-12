@@ -391,7 +391,7 @@ class Dice {
 		return mapped;
 	}
 	
-	public static function Blend(objects:Dynamic, into:Dynamic, blendType:Int = 0):Void {
+	public static function Blend(objects:Dynamic, into:Dynamic, blendType:Int = 0):Dynamic {
 		if (!Std.isOfType(objects, Array)){
 			objects = [objects];
 		}
@@ -420,6 +420,7 @@ class Dice {
 				}
 			});
 		});
+		return into;
 	}
 	
 	#if !php

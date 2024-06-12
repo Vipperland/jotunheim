@@ -12,7 +12,21 @@ import jotun.tools.Utils;
 import jotun.utils.Omnitools;
 
 /**
- * CREATE TABLE `DATABASE_NAME`.`user_session` (`_uid` VARCHAR(65) NOT NULL , `_token` VARCHAR(65) NOT NULL , `_ip` VARCHAR(128) NOT NULL , `_device` VARCHAR(128) NOT NULL , `_read` INT NOT NULL , `_write` INT NOT NULL , `_ctd` INT NOT NULL 
+ * SQL
+
+	 CREATE TABLE `rp_user_session` (
+		 `_uid` varchar(65) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_token` varchar(65) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_ip` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_device` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+		 `_read` int NOT NULL,
+		 `_write` int NOT NULL,
+		 `_ctd` int NOT NULL,
+		 `_upd` int NOT NULL,
+		 PRIMARY KEY (`_token`),
+		 UNIQUE KEY `_token` (`_token`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+ 
  * @author 
  */
 class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
@@ -66,14 +80,14 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 */
 	public var _upd:Float;
 	
-	public var carrier(get, null):IPassCarrier;
-	private  function get_carrier():IPassCarrier {
-		return _loadCarrier();
-	}
+	private var _carrier:IPassCarrier;
 	
-	private function _loadCarrier():IPassCarrier {
-		// todo: load user
-		return null;
+	public var carrier(get, null):IPassCarrier;
+	private function get_carrier():IPassCarrier {
+		if(_carrier == null){
+			_carrier = cast (_database, SessionDataAccess).user.findOne(Clause.ID(_uid));
+		}
+		return _carrier;
 	}
 	
 	public function new() {
@@ -175,10 +189,7 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @param	force
 	 */
 	public function exposeCarrier(?force:Bool):Void {
-		if (carrier == null && force){
-			_loadCarrier();
-		}
-		if (carrier != null){
+		if (_carrier != null || carrier != null){
 			OutputCore.getInstance().object('carrier').info = carrier.getInfo();
 		}
 	}

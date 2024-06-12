@@ -1,5 +1,6 @@
 package jotun.php.db.tools;
 import haxe.Json;
+import jotun.logical.Flag;
 import jotun.php.db.objects.IDataTable;
 import php.Lib;
 import jotun.php.db.tools.ICommand;
@@ -32,11 +33,21 @@ class QueryBuilder implements IQueryBuilder {
 		var r:Array<String> = [];
 		var q:Array<String> = [];
 		var i:UInt = 0;
-		Dice.All(parameters, function(p:String, v:Dynamic):Void { 
-			r[i] = p; 
-			q[i] = "?"; 
-			++i;
-			dataset[dataset.length] = v;
+		Dice.All(parameters, function(p:String, v:Dynamic):Void {
+			if (Reflect.isFunction(v)){
+				return;
+			}
+			if(Std.isOfType(v, Flag)){
+				v = cast (v, Flag).value;
+			}else if(Std.isOfType(v, Array)){
+				v = v.join(",");
+			}
+			if(v == null || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
+				r[i] = p; 
+				q[i] = "?"; 
+				++i;
+				dataset[dataset.length] = v;
+			}
 		});
 		return "(" + r.join(",") + ") VALUES (" + q.join(",") + ")";
 	}
@@ -44,9 +55,19 @@ class QueryBuilder implements IQueryBuilder {
 	
 	private function _updateSet(parameters:Dynamic, dataset:Array<Dynamic>):String {
 		var q:Array<String> = [];
-		Dice.All(parameters, function(p:String, v:Dynamic):Void { 
-			q[q.length] = p + "=?"; 
-			dataset[dataset.length] = v;
+		Dice.All(parameters, function(p:String, v:Dynamic):Void {
+			if (Reflect.isFunction(v)){
+				return;
+			}
+			if(Std.isOfType(v, Flag)){
+				v = cast (v, Flag).value;
+			}else if(Std.isOfType(v, Array)){
+				v = v.join(",");
+			}
+			if(v == null || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
+				q[q.length] = p + "=?"; 
+				dataset[dataset.length] = v;
+			}
 		});
 		return q.join(",");
 	}
