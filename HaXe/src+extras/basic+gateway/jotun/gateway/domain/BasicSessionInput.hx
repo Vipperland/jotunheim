@@ -43,35 +43,43 @@ class BasicSessionInput extends InputCore {
 	}
 	
 	final private function _loadAuthToken():Void {
+		
 		var authorization:String = Jotun.header.getOAuth();
+		// Check for test token
 		if (_testToken != null && !Utils.isValid(authorization)){
 			authorization = _testToken;
 		}
-		if (Utils.isValid(authorization)){
-			authorization = Packager.decodeBase64(authorization);
-			if (authorization.substr(0, UserSessionObject.OAUTH_HEAD_IN.length) == UserSessionObject.OAUTH_HEAD_IN){
-				authorization = authorization.substring(UserSessionObject.OAUTH_HEAD_IN.length, authorization.length);
-				session = new UserSessionObject();
-				if (session.load(authorization)){
-					if (session.isValid()){
-						session.exposeToken();
-					}else{
-						_disposeSession(SessionErrorCodes.TOKEN_EXPIRED);
-					}
-				}else{
-					_disposeSession(SessionErrorCodes.NO_SESSION);
-				}
-			}else{
-				_disposeSession(SessionErrorCodes.INVALID_TOKEN);
-			}
-		}else{
-			_disposeSession(SessionErrorCodes.TOKEN_REQUIRED);
+		
+		// Check if token is valid
+		if (!Utils.isValid(authorization)){
+			return _disposeSession(SessionErrorCodes.TOKEN_REQUIRED);
 		}
+		
+		// Check if can decode token
+		authorization = Packager.decodeBase64(authorization);
+		if (authorization.substr(0, UserSessionObject.OAUTH_HEAD_IN.length) != UserSessionObject.OAUTH_HEAD_IN){
+			return _disposeSession(SessionErrorCodes.INVALID_TOKEN);
+		}
+		
+		// Try to load session from token
+		authorization = authorization.substring(UserSessionObject.OAUTH_HEAD_IN.length, authorization.length);
+		session = new UserSessionObject();
+		if (!session.load(authorization)){
+			return _disposeSession(SessionErrorCodes.NO_SESSION);
+		}
+		
+		// Check if expired
+		if (session.isExpired()){
+			return _disposeSession(SessionErrorCodes.TOKEN_EXPIRED);
+		}
+		
+		session.exposeToken();
+		
 	}
 	
 	override public function get_carrier():IPassCarrier {
 		if(this.carrier == null){
-			this.carrier = this.session != null ? this.session.carrier : null;
+			this.carrier = this.session != null ? this.session.getCarrier() : null;
 		}
 		return this.carrier;
 	}

@@ -43,7 +43,7 @@ class DataAccess extends OutputCoreCarrier {
 		return _instance != null && Jotun.gate.isOpen();
 	}
 	
-	public function execute(handler:Dynamic):Dynamic {
+	public function execute(handler:Void->Dynamic):Dynamic {
 		if (isConnected()){
 			return handler();
 		}

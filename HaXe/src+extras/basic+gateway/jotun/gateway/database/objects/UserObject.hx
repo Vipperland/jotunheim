@@ -1,6 +1,7 @@
 package jotun.gateway.database.objects;
 import jotun.Jotun;
 import jotun.gateway.database.SessionDataAccess;
+import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.database.objects.defs.UserDeviceParams;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.gateway.domain.zones.pass.ZonePass;
@@ -59,20 +60,14 @@ class UserObject extends ZoneCarrierObject {
 	public function createNewSession():Bool {
 		var token:String = Omnitools.genRandomIDx65();
 		var pass:ZonePass = getZonePass();
-		var query:IQuery = RunSQL(cast (_database, SessionDataAccess).session.add({
-			_uid: id,
-			_token: token,
-			_ip: Jotun.domain.data.REMOTE_ADDR,
-			_device: cast (_input.construct(UserDeviceParams), UserDeviceParams).device,
-			_read: pass.getRead(),
-			_write: pass.getWrite(),
-			_ctd: Omnitools.timeNow(),
-			_upd: Omnitools.timeNow(),
-		}));
-		if(query.success){
-			_output.registerOAuth(token);
+		var session:UserSessionObject = new UserSessionObject();
+		var device:String = cast (_input.construct(UserDeviceParams), UserDeviceParams).device;
+		if (session.save(id, device, pass.getRead(), pass.getWrite())){
+			session.exposeToken();
+			session.exposeCarrier();
+			return true;
 		}
-		return query.success;
+		return false;
 	}
 	
 	public function getZonePass():ZonePass {
@@ -82,7 +77,6 @@ class UserObject extends ZoneCarrierObject {
 	public function isAdmin():Bool {
 		return Flag.FTest(_flags, 1 >> 31);
 	}
-	
 	
 	
 }

@@ -22,4 +22,6 @@ class SessionErrorCodes {
 	
 	static public inline var TOKEN_EXPIRED:Int = 1060;
 	
+	static public inline var TOKEN_ALREADY_EXISTS:Int = 1070;
+	
 }

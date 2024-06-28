@@ -2,10 +2,10 @@ package jotun.gateway.domain;
 import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
-import jotun.gateway.domain.InputDataSource;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.logical.Flag;
 import jotun.logical.FlagValue;
+import jotun.net.DataSource;
 import jotun.serial.Packager;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -19,7 +19,7 @@ import php.Syntax;
  * ...
  * @author 
  */
-class InputCore extends InputDataSource {
+class InputCore extends DataSource {
 	
 	static private var _instance:InputCore;
 	static public function getInstance():InputCore {
@@ -31,17 +31,17 @@ class InputCore extends InputDataSource {
 	/**
 	 * GET amd POST params
 	 */
-	public var params(get, null):InputDataSource;
-	final private function get_params():InputDataSource {
-		return params;
+	public var params(get, null):DataSource;
+	final private function get_params():DataSource {
+		return Jotun.params;
 	}
 	
 	/**
 	 * Object from All Input Data
 	 */
-	public var object(get, null):InputDataSource;
-	final private function get_object():InputDataSource {
-		return object;
+	public var object(get, null):DataSource;
+	final private function get_object():DataSource {
+		return this.object;
 	}
 	
 	public function get_carrier():IPassCarrier {
@@ -63,9 +63,11 @@ class InputCore extends InputDataSource {
 			throw new ErrorException("gateway.Input is a Singleton");
 		}
 		_instance = this;
-		params = new InputDataSource(Jotun.domain.params);
-		object = new InputDataSource(Jotun.domain.input);
 		super(null);
+		this.object = Jotun.domain.input;
+		if(this.object == null){
+			this.object = new DataSource({ });
+		}
 	}
 	
 	final public function hasPass():Bool {

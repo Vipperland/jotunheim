@@ -11,7 +11,7 @@ package gate.sirius.timer {
 		
 		static private const junk:Vector.<DelayedCallToken> = new Vector.<DelayedCallToken>();
 		
-		static public function recycle(handler:Function, delay:int, count:int, parameters:Array):DelayedCallToken {
+		static public function create(handler:Function, delay:int, count:int, parameters:Array):DelayedCallToken {
 			return (junk.length > 0 ? junk.pop() : new DelayedCallToken).setValues(handler, delay, count, parameters);
 		}
 		

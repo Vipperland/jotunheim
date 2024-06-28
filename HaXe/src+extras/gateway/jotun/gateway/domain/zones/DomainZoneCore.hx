@@ -104,7 +104,7 @@ class DomainZoneCore extends DomainServicesCore {
 	}
 	
 	final private function isMethodMatch():Bool {
-		return _requiredMethod == null || Jotun.domain.data.REQUEST_METHOD.toUpperCase() == _requiredMethod.toUpperCase();
+		return _requiredMethod == null || Jotun.domain.server.REQUEST_METHOD.toUpperCase() == _requiredMethod.toUpperCase();
 	}
 	
 	final private function isPassRequired():Bool {

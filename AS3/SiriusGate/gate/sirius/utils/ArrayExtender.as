@@ -14,6 +14,9 @@ package gate.sirius.utils {
 			Array.prototype.register = function(... values:Array):void {
 				register.apply(this, values);
 			}
+			Array.prototype.random = function(ammount:int, remove:Boolean, fill:Array = null):void {
+				random.call(this, ammount, remove, fill);
+			}
 		}
 		
 		public static function remove(from:Array, ... values:Array):void {
@@ -34,6 +37,19 @@ package gate.sirius.utils {
 					from[from.length] = v;
 				}
 			}
+		}
+		
+		public static function random(from:Array, ammount:int, fill:Array):Array {
+			if(fill == null){
+				fill = [];
+			}
+			if(ammount > from.length){
+				ammount = from.length;
+			}
+			while(ammount-- > 0){
+				fill.push(from.splice((Math.random() * from.length) >> 0)[0]);
+			}
+			return fill;
 		}
 	
 	}

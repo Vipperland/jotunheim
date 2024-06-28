@@ -43,4 +43,13 @@ class ZoneCoreObject {
 		
 	}
 	
+	public function merge(data:Dynamic):Dynamic {
+		Dice.All(data, function(p:String, v:Dynamic):Void {
+			if (!Reflect.isFunction(v)){
+				Reflect.setField(this, p, v);
+			}
+		});
+		return this;
+	}
+	
 }

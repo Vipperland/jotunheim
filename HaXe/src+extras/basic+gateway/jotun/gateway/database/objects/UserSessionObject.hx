@@ -2,6 +2,7 @@ package jotun.gateway.database.objects;
 import jotun.Jotun;
 import jotun.errors.SessionErrorCodes;
 import jotun.gateway.database.SessionDataAccess;
+import jotun.gateway.database.objects.UserObject;
 import jotun.gateway.database.objects.ZoneCoreObject;
 import jotun.gateway.domain.OutputCore;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
@@ -34,11 +35,6 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	static public inline var OAUTH_HEAD_IN:String = "(y)=>";
 	
 	static public inline var OAUTH_HEAD_OUT:String = "(y)<=";
-	
-	/* 
-		Fields defined in the database table
-		The column names pefixed with _ will not be exposed to reponses
-	*/
 	
 	/**
 	 * User id
@@ -80,74 +76,75 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 */
 	public var _upd:Float;
 	
-	private var _carrier:IPassCarrier;
 	
-	public var carrier(get, null):IPassCarrier;
-	private function get_carrier():IPassCarrier {
-		if(_carrier == null){
+	private var _carrier:IPassCarrier;
+	public function getCarrier():IPassCarrier {
+		if(isValid()){
 			_carrier = cast (_database, SessionDataAccess).user.findOne(Clause.ID(_uid));
 		}
 		return _carrier;
+	}
+	
+	private function _testSession():Bool {
+		if (isValid()){
+			return _error(SessionErrorCodes.NO_SESSION);
+		}
+		return true;
 	}
 	
 	public function new() {
 		super();
 	}
 	
+	public function isExpired():Bool {
+		return (Omnitools.timeFromNow(24 * 7) - _upd) < 0;
+	}
+	
+	public function isValid():Bool {
+		return _uid != null && _token != null;
+	}
+	
 	public function save(id:String, device:String, read:Int, write:Int):Bool {
-		if (_token == null && _uid == null){
-			_uid = id;
-			_token = Omnitools.genRandomIDx65();
-			_ip = Jotun.domain.client;
-			_device = Utils.getValidOne(device, "");
-			_read = read;
-			_write = write;
-			_ctd = Omnitools.timeNow();
-			_upd = _ctd;
-			if (RunSQL(function(){
-				return cast (_database, SessionDataAccess).session.add({
-					_uid: id,
-					_token: _token,
-					_ip: _ip,
-					_device: _device,
-					_read: _read,
-					_write: _write,
-					_ctd: _ctd,
-					_upd: _upd,
-				});
-			}).success){
-				return true;
-			}else{
-				return _error(SessionErrorCodes.CREATION_ERROR);
-			}
-		}else{
+		if (!isValid()){
+			return _error(SessionErrorCodes.TOKEN_ALREADY_EXISTS);
+		}
+		if(id == null){
 			return _error(SessionErrorCodes.INVALID_PARAMETERS);
 		}
+		_uid = id;
+		_token = Omnitools.genRandomIDx65();
+		_ip = Jotun.domain.client;
+		_device = Utils.getValidOne(device, "");
+		_read = read;
+		_write = write;
+		_ctd = Omnitools.timeNow();
+		_upd = _ctd;
+		if (!RunSQL(function(){
+			return cast (_database, SessionDataAccess).session.add(this);
+		}).success){
+			_uid = null;
+			_token = null;
+			return _error(SessionErrorCodes.CREATION_ERROR);
+		}
+		// session created
+		return true;
 	}
 	
 	public function load(oauth:String):Bool {
+		if(!isValid()){
+			return _error(SessionErrorCodes.TOKEN_ALREADY_EXISTS);
+		}
 		var current:UserSessionObject = RunSQL(function(){
 			return cast (_database, SessionDataAccess).session.findOne("*", Clause.EQUAL('_token', oauth));
 		});
 		if (current != null){
-			_uid = current._uid;
-			_token = current._token;
-			_ip = current._ip;
-			_device = current._device;
-			_read = current._read;
-			_write = current._write;
-			_ctd = current._ctd;
-			_upd = current._upd;
+			merge(current);
 		}
 		return current != null;
 	}
 	
-	public function isValid():Bool {
-		return (Omnitools.timeFromNow(24 * 7) - _upd) > 0;
-	}
-	
 	public function refresh():Void {
-		if (_uid != null && _token != null){
+		if (_testSession()){
 			_upd = Omnitools.timeNow();
 			RunSQL(function(){
 				cast (_database, SessionDataAccess).session.updateOne({_upd:_upd}, Clause.EQUAL("_token", _token));
@@ -156,15 +153,19 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	}
 	
 	public function drop():Void {
-		RunSQL(function(){
-			cast (_database, SessionDataAccess).session.deleteOne(Clause.EQUAL("_token", _token));
-		});
+		if (_testSession()){
+			RunSQL(function(){
+				cast (_database, SessionDataAccess).session.deleteOne(Clause.EQUAL("_token", _token));
+				revoke();
+			});
+		}
 	}
 	
 	public function dropAll():Void {
-		if (isValid()){
+		if (_testSession()){
 			RunSQL(function(){
 				cast (_database, SessionDataAccess).session.delete(Clause.EQUAL("_uid", _uid));
+				revoke();
 			});
 		}
 	}
@@ -174,14 +175,16 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	}
 	
 	public function exposeToken():Void {
-		var token:String = UserSessionObject.OAUTH_HEAD_OUT;
-		if(isValid()){
-			token += _token;
-		}else{
-			token += "EXPIRED";
-			drop();
+		if (_testSession()){
+			var token:String = UserSessionObject.OAUTH_HEAD_OUT;
+			if(isExpired()){
+				token += "EXPIRED";
+				drop();
+			}else{
+				token += _token;
+			}
+			_output.registerOAuth(Packager.encodeBase64(token));
 		}
-		OutputCore.getInstance().registerOAuth(Packager.encodeBase64(token));
 	}
 	
 	/**
@@ -189,8 +192,10 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * @param	force
 	 */
 	public function exposeCarrier(?force:Bool):Void {
-		if (_carrier != null || carrier != null){
-			OutputCore.getInstance().object('carrier').info = carrier.getInfo();
+		if (_testSession()){
+			if (getCarrier() != null){
+				_output.object('carrier').info = _carrier.getInfo();
+			}
 		}
 	}
 	
@@ -198,9 +203,10 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	 * Remove auhtorization from header
 	 */
 	public function revoke():Void {
-		OutputCore.getInstance().registerOAuth(Packager.encodeBase64(UserSessionObject.OAUTH_HEAD_OUT + 'REVOKE'));
+		if (_testSession()){
+			_output.registerOAuth(Packager.encodeBase64(UserSessionObject.OAUTH_HEAD_OUT + 'REVOKE'));
+		}
 	}
-	
 	
 	/* INTERFACE jotun.gateway.domain.zones.pass.IPassCarrier */
 	
@@ -213,7 +219,14 @@ class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 	}
 	
 	public function getInfo():Dynamic {
-		return null; // user object;
+		// Print data
+		return {
+			_uid: _uid, 
+			pass: {
+				r:_read, 
+				w: _write
+			}
+		};
 	}
 	
 }

@@ -1320,15 +1320,9 @@ jotun_net_IDomain.prototype = {
 	,url: null
 	,hash: null
 	,file: null
-	,params: null
 	,reload: null
 	,location: null
 	,getDomain: null
-	,paramAsBool: null
-	,paramAsInt: null
-	,paramAsFloat: null
-	,paramAsArray: null
-	,paramAsObject: null
 	,__class__: jotun_net_IDomain
 };
 var jotun_net_Domain = function() {
@@ -1345,14 +1339,13 @@ jotun_net_Domain.prototype = {
 	,url: null
 	,hash: null
 	,file: null
-	,params: null
 	,_parseURI: function() {
 		var l = window.location;
 		this.host = l.hostname;
 		this.port = l.port;
 		this.hash = l.hash.split("/");
-		this.params = jotun_tools_Utils.getQueryParams(l.href);
 		this.url = l.pathname.substring(1,l.pathname.length).split("/");
+		jotun_Jotun.params = new jotun_net_DataSource(jotun_tools_Utils.getQueryParams(l.href));
 	}
 	,getDomain: function(len) {
 		if(len == null) {
@@ -1369,34 +1362,6 @@ jotun_net_Domain.prototype = {
 	}
 	,location: function() {
 		return this.host + "/" + this.url.join("/");
-	}
-	,paramAsBool: function(q) {
-		return jotun_tools_Utils.boolean(Reflect.field(this.params,q));
-	}
-	,paramAsInt: function(q) {
-		return Std.parseInt(Reflect.field(this.params,q));
-	}
-	,paramAsFloat: function(q) {
-		return parseFloat(Reflect.field(this.params,q));
-	}
-	,paramAsArray: function(q,split) {
-		if(split == null) {
-			split = ",";
-		}
-		q = Reflect.field(this.params,q);
-		if(q != null) {
-			return q.split(split);
-		} else {
-			return [];
-		}
-	}
-	,paramAsObject: function(q) {
-		q = Reflect.field(this.params,q);
-		if(q != null) {
-			return JSON.parse(q);
-		} else {
-			return { };
-		}
 	}
 	,__class__: jotun_net_Domain
 };
@@ -2520,6 +2485,7 @@ jotun_dom_IDisplay.prototype = {
 	,children: null
 	,enable: null
 	,disable: null
+	,cursor: null
 	,css: null
 	,hasCss: null
 	,toggle: null
@@ -2896,11 +2862,11 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 			}
 			this.data.__changed = false;
 			t[0] = this.data.__rotationX;
-			t[1] = this.data.__rotationY;
-			t[2] = this.data.__rotationZ;
-			t[3] = this.data.__scale;
+			t[1] = this.data.__rotationZ;
+			t[2] = this.data.__scale;
+			t[3] = this.data.__rotationY;
 			t[4] = this.data.__translation;
-			this.style("transform","matrix3d(" + jotun_math_Matrix3D.transform(t).join(",") + ")");
+			this.style("transform","matrix3d(" + jotun_math_Matrix3D.multiply(t).join(",") + ")");
 		}
 		return this;
 	}
@@ -2909,6 +2875,9 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	}
 	,disable: function() {
 		this.style("pointerEvents","none");
+	}
+	,cursor: function(q) {
+		this.style("cursor",q == true ? "pointer" : q == null ? "none" : q);
 	}
 	,css: function(styles) {
 		if(styles != null) {
@@ -8259,6 +8228,9 @@ jotun_logical_Flag.from = function(value) {
 	}
 	return new jotun_logical_Flag(value);
 };
+jotun_logical_Flag.GetValue = function(bit) {
+	return 1 << bit;
+};
 jotun_logical_Flag.FPut = function(hash,bit) {
 	return hash | bit;
 };
@@ -8464,20 +8436,20 @@ jotun_math_Matrix3D.translate = function(x,y,z) {
 jotun_math_Matrix3D._multiply = function(a,b) {
 	var result = [];
 	var a00 = a[0];
-	var a10 = a[1];
-	var a20 = a[2];
-	var a30 = a[3];
 	var a01 = a[4];
-	var a11 = a[5];
-	var a21 = a[6];
-	var a31 = a[7];
 	var a02 = a[8];
-	var a12 = a[9];
-	var a22 = a[10];
-	var a32 = a[11];
 	var a03 = a[12];
+	var a10 = a[1];
+	var a11 = a[5];
+	var a12 = a[9];
 	var a13 = a[13];
+	var a20 = a[2];
+	var a21 = a[6];
+	var a22 = a[10];
 	var a23 = a[14];
+	var a30 = a[3];
+	var a31 = a[7];
+	var a32 = a[11];
 	var a33 = a[15];
 	var b0 = b[0];
 	var b1 = b[1];
@@ -8513,7 +8485,7 @@ jotun_math_Matrix3D._multiply = function(a,b) {
 	result[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 	return result;
 };
-jotun_math_Matrix3D.transform = function(data) {
+jotun_math_Matrix3D.multiply = function(data) {
 	var res = null;
 	var idx = 0;
 	var len = data.length;
@@ -8531,7 +8503,7 @@ jotun_math_Matrix3D.transform = function(data) {
 	}
 	return res;
 };
-jotun_math_Matrix3D.toCss = function(matrix) {
+jotun_math_Matrix3D.css = function(matrix) {
 	return "matrix3d(" + matrix.join(",") + ")";
 };
 var jotun_math_Point = $hx_exports["J_Point"] = function(x,y) {
@@ -8664,6 +8636,59 @@ jotun_modules_IModTarget.prototype = {
 	query: null
 	,index: null
 	,__class__: jotun_modules_IModTarget
+};
+var jotun_net_DataSource = function(data) {
+	this.data = data;
+};
+jotun_net_DataSource.__name__ = "jotun.net.DataSource";
+jotun_net_DataSource.prototype = {
+	data: null
+	,get: function(q,alt) {
+		if(this.exists(q)) {
+			return this.data[q];
+		}
+		return alt;
+	}
+	,bool: function(q,alt) {
+		return jotun_tools_Utils.boolean(this.get(q,alt));
+	}
+	,int: function(q,alt) {
+		return Std.parseInt(this.get(q,alt));
+	}
+	,float: function(q,alt) {
+		return parseFloat(this.get(q,alt));
+	}
+	,string: function(q,alt) {
+		return this.get(q,alt);
+	}
+	,array: function(q,split) {
+		if(split == null) {
+			split = ",";
+		}
+		return this.string(q,"").split(split);
+	}
+	,parse: function(q) {
+		return JSON.parse(this.string(q,"{}"));
+	}
+	,merge: function(data) {
+		jotun_utils_Dice.Blend(data,this.data);
+	}
+	,exists: function(q) {
+		if(this.data != null) {
+			return Object.prototype.hasOwnProperty.call(this.data,q);
+		} else {
+			return false;
+		}
+	}
+	,isEmpty: function() {
+		return jotun_utils_Dice.Params(this.data,function(p) {
+			return true;
+		}).completed;
+	}
+	,remove: function(q) {
+		Reflect.deleteField(this.data,q);
+	}
+	,__class__: jotun_net_DataSource
 };
 var jotun_net_HttpRequest = function(url) {
 	this.url = url;
@@ -8995,11 +9020,7 @@ jotun_serial_JsonTool.customReplacer = function(a,b) {
 	} else if(js_Boot.__implements(b,jotun_dom_IDisplay)) {
 		return b.typeOf();
 	}
-	if(b == null) {
-		return null;
-	} else {
-		return b;
-	}
+	return b;
 };
 jotun_serial_JsonTool.clone = function(obj) {
 	return JSON.parse(jotun_serial_JsonTool.stringify(obj));
@@ -9137,31 +9158,27 @@ jotun_serial_JsonTool.prototype = {
 			var i = _g++;
 			var f = fields[i];
 			var value = Reflect.field(v,f);
-			if(Reflect.isFunction(value)) {
-				continue;
+			if(value != null && !Reflect.isFunction(value) && !(typeof(f) == "string" && HxOverrides.substr(f,0,1) == "_")) {
+				if(first) {
+					this.nind++;
+					first = false;
+				} else {
+					this.buf.b += String.fromCodePoint(44);
+				}
+				if(this.pretty) {
+					this.buf.b += String.fromCodePoint(10);
+				}
+				if(this.pretty) {
+					var v1 = StringTools.lpad("",this.indent,this.nind * this.indent.length);
+					this.buf.b += Std.string(v1);
+				}
+				this.quote(f);
+				this.buf.b += String.fromCodePoint(58);
+				if(this.pretty) {
+					this.buf.b += String.fromCodePoint(32);
+				}
+				this.write(f,value);
 			}
-			if(typeof(f) == "string" && HxOverrides.substr(f,0,1) == "_") {
-				continue;
-			}
-			if(first) {
-				this.nind++;
-				first = false;
-			} else {
-				this.buf.b += String.fromCodePoint(44);
-			}
-			if(this.pretty) {
-				this.buf.b += String.fromCodePoint(10);
-			}
-			if(this.pretty) {
-				var v1 = StringTools.lpad("",this.indent,this.nind * this.indent.length);
-				this.buf.b += Std.string(v1);
-			}
-			this.quote(f);
-			this.buf.b += String.fromCodePoint(58);
-			if(this.pretty) {
-				this.buf.b += String.fromCodePoint(32);
-			}
-			this.write(f,value);
 			if(i == last) {
 				this.nind--;
 				if(this.pretty) {
@@ -10227,6 +10244,7 @@ jotun_utils_Dice.Blend = function(objects,into,blendType) {
 			}
 		});
 	});
+	return into;
 };
 jotun_utils_Dice.Children = function(of,each,complete) {
 	var r = { children : []};
@@ -10943,7 +10961,7 @@ jotun_utils_Singularity.toString = function() {
 			ids.push(v.id);
 		}
 	});
-	return "[Singularity(id=" + jotun_utils_Singularity.id() + ",main=" + Std.string(jotun_utils_Singularity.isMain()) + ",instances=[" + ids.join(",") + "],connections=" + jotun_utils_Singularity.count() + ",channel=" + jotun_utils_Singularity._channel + ")]";
+	return "[Singularity{id=" + jotun_utils_Singularity.id() + ",main=" + Std.string(jotun_utils_Singularity.isMain()) + ",connections=" + jotun_utils_Singularity.count() + ",channel=" + jotun_utils_Singularity._channel + ",instances=[" + ids.join(",") + "]}]";
 };
 var jotun_utils_Table = $hx_exports["J_Table"] = function() {
 };

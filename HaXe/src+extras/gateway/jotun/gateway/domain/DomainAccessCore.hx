@@ -41,11 +41,11 @@ class DomainAccessCore extends DomainZoneCore {
 		_me = this;
 		super();
 		carry(this, getServices());
-		Reflect.deleteField(Jotun.domain.params, "service");
+		Jotun.params.remove("service");
 	}
 	
 	private function getServices():Array<String>{
-		return cast Dice.nullSkip(Jotun.domain.paramAsArray('service', '/'));
+		return cast Dice.nullSkip(Jotun.params.array('service', '/'));
 	}
 	
 }
