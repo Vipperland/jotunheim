@@ -94,20 +94,20 @@ class Matrix3D {
 		var result = [];
 		
 		var a00:Float = a[0];
-		var a10:Float = a[1];
-		var a20:Float = a[2];
-		var a30:Float = a[3];
 		var a01:Float = a[4];
-		var a11:Float = a[5];
-		var a21:Float = a[6];
-		var a31:Float = a[7];
 		var a02:Float = a[8];
-		var a12:Float = a[9];
-		var a22:Float = a[10];
-		var a32:Float = a[11];
 		var a03:Float = a[12];
+		var a10:Float = a[1];
+		var a11:Float = a[5];
+		var a12:Float = a[9];
 		var a13:Float = a[13];
+		var a20:Float = a[2];
+		var a21:Float = a[6];
+		var a22:Float = a[10];
 		var a23:Float = a[14];
+		var a30:Float = a[3];
+		var a31:Float = a[7];
+		var a32:Float = a[11];
 		var a33:Float = a[15];
 		
 		var b0:Float = b[0];
@@ -158,7 +158,7 @@ class Matrix3D {
 	 * @param	data
 	 * @return
 	 */
-	public static function transform(data:Array<Array<Float>>):Array<Float> {
+	public static function multiply(data:Array<Array<Float>>):Array<Float> {
 		var res:Array<Float> = null;
 		var idx:Int = 0;
 		var len:Int = data.length;
@@ -182,7 +182,7 @@ class Matrix3D {
 	 * @param	matrix
 	 * @return
 	 */
-	public static function toCss(matrix:Array<Float>):String {
+	public static function css(matrix:Array<Float>):String {
 		return "matrix3d(" + matrix.join(',') + ")";
 	}
 	

@@ -16,6 +16,7 @@ package jotun.net;
 import haxe.Json;
 import haxe.io.Bytes;
 import jotun.gaming.dataform.Pulsar;
+import jotun.net.DataSource;
 import jotun.utils.Dice;
 import jotun.tools.Utils;
 
@@ -37,19 +38,19 @@ class Domain implements IDomain {
 		
 	#elseif php
 		
-		public var data:IDomainData;
+		public var server:IDomainData;
 		
-		public var input:Dynamic;
+		public var input:DataSource;
 		
-		public var server:String;
+		public var pulsar:Pulsar;
+		
+		public var domain:String;
 		
 		public var client:String;
 		
 	#end
 	
 	public var file:String;
-	
-	public var params:Dynamic;
 	
 	public function new() {
 		_parseURI();
@@ -63,38 +64,36 @@ class Domain implements IDomain {
 			host = l.hostname;
 			port = l.port;
 			hash = l.hash.split("/");
-			params = Utils.getQueryParams(l.href);
 			url = l.pathname.substring(1, l.pathname.length).split('/');
+			Jotun.params = new DataSource(Utils.getQueryParams(l.href));
 		
 		#elseif php
 		
-			data = cast Lib.objectOfAssociativeArray(Syntax.codeDeref("$_SERVER"));
-			port = data.SERVER_PORT;
-			server = Web.getCwd();
+			server = cast Lib.objectOfAssociativeArray(Syntax.codeDeref("$_SERVER"));
+			port = server.SERVER_PORT;
+			domain = Web.getCwd();
 			host = Web.getHostName();
 			client = Web.getClientIP();
 			
 			var boundary:String = _getMultipartKey();
 			
-			switch (data.CONTENT_TYPE){
+			switch (server.CONTENT_TYPE){
 				case 'application/json' : {
-					input = _getJsonInput();
+					input = new DataSource(_getJsonInput());
 				}
 				case 'plain/pulsar' : {
-					input = Pulsar.create(getInput());
-				}
-				case 'plain/text' : {
-					input = getInput();
+					pulsar = Pulsar.create(getInput());
 				}
 			}
-			params = _getParams();
+			
+			Jotun.params = new DataSource(_getParams());
 			
 			if (boundary != null) {
-				Reflect.deleteField(params, boundary);
+				Reflect.deleteField(Jotun.params.data, boundary);
 				boundary = boundary.split("\r\n")[0];
-				_getRawData(boundary, params);
+				_getRawData(boundary, Jotun.params.data);
 			}
-			url = data.SCRIPT_NAME.split('/');
+			url = server.SCRIPT_NAME.split('/');
 			
 		#end
 		
@@ -122,20 +121,11 @@ class Domain implements IDomain {
 	#elseif php
 		
 		public function getRequestMethod():String {
-			return data.REQUEST_METHOD.toUpperCase();
+			return server.REQUEST_METHOD.toUpperCase();
 		}
 		
 		public function isRequestMethod(q:String):Bool {
 			return getRequestMethod() == q.toUpperCase();
-		}
-		
-		public function require(params:Array<String>):Bool {
-			var r:Bool = true;
-			Dice.Values(params, function(v:String) {
-				r = Reflect.hasField(this.params, v);
-				return !r;
-			});
-			return r;
 		}
 		
 		private function _getJsonInput():Dynamic {
@@ -151,7 +141,7 @@ class Domain implements IDomain {
 			var a : NativeArray = Syntax.codeDeref("array_merge($_GET, $_POST)");
 			#if force_std_separator
 				var h = Lib.objectOfAssociativeArray(a);
-				var params = Web.getParamsString();
+				var params:String = Web.getParamsString();
 				if( params == "" )
 					return h;
 				for( p in ~/[;&]/g.split(params) ) {
@@ -260,27 +250,5 @@ class Domain implements IDomain {
 		}
 		
 	#end
-	
-	public function paramAsBool(q:String):Bool {
-		return Utils.boolean(Reflect.field(params, q));
-	}
-	
-	public function paramAsInt(q:String):Int {
-		return Std.parseInt(Reflect.field(params, q));
-	}
-	
-	public function paramAsFloat(q:String):Float {
-		return Std.parseFloat(Reflect.field(params, q));
-	}
-	
-	public function paramAsArray(q:String, ?split:String = ','):Array<Dynamic> {
-		q = Reflect.field(params, q);
-		return q != null ? q.split(split) : [];
-	}
-	
-	public function paramAsObject(q:String):Dynamic {
-		q = Reflect.field(params, q);
-		return (q != null) ? Json.parse(q) : {};
-	}
 	
 }

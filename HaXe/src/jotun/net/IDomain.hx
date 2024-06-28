@@ -4,6 +4,8 @@ package jotun.net;
 	import php.Lib;
 	import php.NativeArray;
 #end
+import jotun.gaming.dataform.Pulsar;
+import jotun.net.DataSource;
 import jotun.net.IDomainData;
 
 /**
@@ -24,11 +26,13 @@ interface IDomain {
 		
 	#elseif php
 		
-		public var data:IDomainData;
+		public var server:IDomainData;
 		
-		public var input:Dynamic;
+		public var input:DataSource;
 		
-		public var server:String;
+		public var pulsar:Pulsar;
+		
+		public var domain:String;
 		
 		public var client:String;
 		
@@ -38,8 +42,6 @@ interface IDomain {
 	
 	public var file:String;
 	
-	public var params:Dynamic;
-
 	#if js
 		
 		public function reload (?force:Bool = false):Void;
@@ -47,8 +49,6 @@ interface IDomain {
 		public function location():String;
 		
 	#elseif php
-		
-		public function require(params:Array<String>):Bool;
 		
 		public function getRequestMethod():String;
 		
@@ -60,13 +60,4 @@ interface IDomain {
 	
 	public function getDomain(?len:Int = 2):String;
 	
-	public function paramAsBool(q:String):Bool;
-	
-	public function paramAsInt(q:String):Int;
-	
-	public function paramAsFloat(q:String):Float;
-	
-	public function paramAsArray(q:String, ?split:String = ','):Array<Dynamic>;
-	
-	public function paramAsObject(q:String):Dynamic;
 }

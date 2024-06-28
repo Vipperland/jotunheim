@@ -1,6 +1,7 @@
 package jotun.dom;
 
 import haxe.ds.Either;
+import haxe.extern.EitherType;
 import jotun.dom.IDisplay;
 import jotun.events.IDispatcher;
 import jotun.math.Point;
@@ -72,6 +73,12 @@ interface IDisplay extends IQuery {
 	public function disable():Void;
 	
 	/**
+	 * 
+	 * @param	q
+	 */
+	public function cursor(q:EitherType<String,Bool>):Void;
+	
+	/**
 	 * Add custom classes from string
 	 * @param	styles
 	 * @return
@@ -106,7 +113,7 @@ interface IDisplay extends IQuery {
 	public function setIndex(i:UInt):IDisplay;
 	
 	/**
-	 * Jotun ID
+	 * Jotun Unique ID
 	 * @return
 	 */
 	public function id():UInt;
@@ -525,6 +532,12 @@ interface IDisplay extends IQuery {
 	public function isVisible():Bool;
 	
 	/**
+	 * 
+	 * @return
+	 */
+	public function isEnabled():Bool;
+	
+	/**
 	 * Reload all external loaded <script> tags
 	 */
 	public function reloadScripts():IDisplay;
@@ -556,7 +569,7 @@ interface IDisplay extends IQuery {
 	 * Get original object if is a clone. Original can be null if is disposed.
 	 * @return
 	 */
-	public  function getOriginal():IDisplay;
+	public function getOriginal():IDisplay;
 	
 	
 }

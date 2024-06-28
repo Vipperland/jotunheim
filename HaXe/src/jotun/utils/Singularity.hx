@@ -6,13 +6,13 @@ import jotun.signals.Signals;
 import js.Browser;
 
 typedef TabInstance = {
-	var ?current:Bool;
 	var id:String;
 	var main:Bool;
 	var name:String;
 	var time:Float;
 	var url:String;
 	var visible:Bool;
+	var ?current:Bool;
 }
 
 /**
@@ -288,7 +288,7 @@ class Singularity {
 				ids.push(v.id);
 			}
 		});
-		return "[Singularity(id=" + id() + ",main=" + isMain() + ",instances=[" + ids.join(',') + "],connections=" + count() + ",channel=" + _channel + ")]";
+		return "[Singularity{id=" + id() + ",main=" + isMain() + ",connections=" + count() + ",channel=" + _channel + ",instances=[" + ids.join(',') + "]}]";
 	}
 	
 }

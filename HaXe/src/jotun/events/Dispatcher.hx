@@ -77,6 +77,12 @@ class Dispatcher implements IDispatcher {
 		});
 	}
 	
+	public function each(method:IEventGroup->Bool):Void {
+		Dice.Values(_e(), function(v:IEventGroup):Bool {
+			return method(v);
+		});
+	}
+	
 	/**
 	 * Versatile Init and assign or remove events
 	 * @param	type		Type of the event

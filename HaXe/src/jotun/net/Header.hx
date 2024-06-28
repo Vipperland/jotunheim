@@ -14,15 +14,15 @@ import php.Web;
  */
 class Header {
 	
-	static public var HTML:String = 'text/html;charset=utf-8';
+	static public var HTML:String = 'text/html; charset=utf-8';
 	
-	static public var TEXT:String = 'text/plain;charset=utf-8';
+	static public var TEXT:String = 'text/plain; charset=utf-8';
 	
-	static public var JSON:String = 'application/json;charset=utf-8';
+	static public var JSON:String = 'application/json; charset=utf-8';
 	
-	static public var PULSAR:String = 'text/pulsar;charset=utf-8';
+	static public var PULSAR:String = 'text/pulsar; charset=utf-8';
 	
-	static public var JSONP:String = 'application/javascript;charset=utf-8';
+	static public var JSONP:String = 'application/javascript; charset=utf-8';
 	
 	static public var hasType:Bool = false;
 	
@@ -33,11 +33,11 @@ class Header {
 	}
 	
 	public function isRequestMethod(method:String):Bool {
-		return Jotun.domain.data.REQUEST_METHOD.toUpperCase() == method.toUpperCase();
+		return Jotun.domain.server.REQUEST_METHOD.toUpperCase() == method.toUpperCase();
 	}
 	
 	public function isOrigin(origin:Dynamic):Bool {
-		var c:String = Jotun.domain.data.HTTP_ORIGIN.toLowerCase();
+		var c:String = Jotun.domain.server.HTTP_ORIGIN.toLowerCase();
 		if(Std.isOfType(origin, Array)){
 			return !Dice.Values(origin, function(v:String){
 				return c.indexOf(v) != -1;

@@ -33,6 +33,8 @@ interface IDispatcher {
 	 */
 	public function apply () : Void;
 	
+	public function each(method:IEventGroup->Bool):Void;
+	
 	/**
 	 * Versatile Init and assign or remove events
 	 * @param	type		Type of the event

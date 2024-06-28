@@ -1,12 +1,14 @@
 package jotun.dom;
 
 import haxe.Json;
+import haxe.extern.EitherType;
 import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.data.Logger;
 import jotun.dom.IDisplay;
 import jotun.events.Dispatcher;
 import jotun.events.IDispatcher;
+import jotun.events.IEventGroup;
 import jotun.math.Matrix3D;
 import jotun.math.Point;
 import jotun.objects.Query;
@@ -375,21 +377,39 @@ class Display extends Query implements IDisplay {
 			}
 			data.__changed = false;
 			t[0] = data.__rotationX;
-			t[1] = data.__rotationY;
-			t[2] = data.__rotationZ;
-			t[3] = data.__scale;
+			t[1] = data.__rotationZ;
+			t[2] = data.__scale;
+			t[3] = data.__rotationY;
 			t[4] = data.__translation;
-			style('transform', 'matrix3d(' + Matrix3D.transform(t).join(',') + ')');
+			style('transform', 'matrix3d(' + Matrix3D.multiply(t).join(',') + ')');
 		}
 		return this;
 	}
 	
 	public function enable():Void {
 		style('pointerEvents', 'all');
+		Reflect.deleteField(data, '__disabled');
+		events.each(function(v:IEventGroup):Bool {
+			v.enabled = true;
+			return false;
+		});
 	}
 	
 	public function disable():Void {
 		style('pointerEvents', 'none');
+		Reflect.setField(data, '__disabled', true);
+		events.each(function(v:IEventGroup):Bool {
+			v.enabled = false;
+			return false;
+		});
+	}
+	
+	public function isEnabled():Bool {
+		return data.__disabled == true;
+	}
+	
+	public function cursor(q:EitherType<String,Bool>):Void {
+		style('cursor', q == true ? 'pointer' : q == null ? 'none' : q);
 	}
 	
 	public function css(?styles:String):String {

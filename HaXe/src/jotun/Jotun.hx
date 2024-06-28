@@ -3,6 +3,7 @@ package jotun;
 import haxe.macro.Expr;
 import jotun.data.Logger;
 import jotun.modules.ModLib;
+import jotun.net.DataSource;
 import jotun.net.Domain;
 import jotun.net.IDomain;
 import jotun.net.ILoader;
@@ -51,6 +52,9 @@ class Jotun {
 	
 	/// Domain information
 	static public var domain:IDomain = new Domain();
+	
+	
+	static public var params:DataSource = null;
 	
 	/// Debug tools
 	static public var logger:Logger = new Logger();
