@@ -63,10 +63,10 @@ class Resolution {
 		return _stopped || breakon == '*' || (result ? breakon == 'success' : breakon == 'fail');
 	}
 	
-	public function release(result:Bool, ?data:Dynamic, ?name:String):Void {
+	public function release(result:Bool, context:EventContext):Void {
 		if(_stopped){
 			_stopped = false;
-			resolve(result, EventController.createContext(name, data, null));
+			resolve(result, context);
 		}
 	}
 	

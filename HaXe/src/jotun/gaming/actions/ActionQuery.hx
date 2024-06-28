@@ -259,7 +259,7 @@ class ActionQuery extends Query {
 	}
 	
 	/**
-	 * Call a url, and wait a maximum of 10 seconds
+	 * Call a url, and wait a maximum of 30 seconds
 	 * @param	url
 	 * @param	method
 	 * @param	data

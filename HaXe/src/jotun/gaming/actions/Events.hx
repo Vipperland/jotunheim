@@ -5,6 +5,7 @@ import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.EventContext;
 import jotun.gaming.actions.Resolution;
+import jotun.timer.DelayedCall;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -40,6 +41,7 @@ class Events {
 	private var _is_waiting:Bool;
 	private var _cursor_pos:Int;
 	private var _context:EventContext;
+	private var _delayed:DelayedCall;
 	
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;
@@ -78,16 +80,25 @@ class Events {
 	
 	#if js
 	
+	private function _unblock():Void {
+		if (_delayed != null){
+			_delayed.cancel();
+			_delayed = null;
+		}
+	}
+	
 	public function wait(?time:Float):Void {
+		_unblock();
 		_is_waiting = true;
 		if(time == null && time <= 0){
-			time = 1;
+			time = 3600;
 		}
-		Jotun.timer.delayed(release, time, 0);
+		_delayed = Jotun.timer.delayed(release, time, 0);
 	}
 	
 	public function release():Void {
-		if(_is_waiting){
+		_unblock();
+		if (_is_waiting){
 			_is_waiting = false;
 			_innerRun();
 		}
