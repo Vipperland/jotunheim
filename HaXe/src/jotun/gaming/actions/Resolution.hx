@@ -63,6 +63,11 @@ class Resolution {
 		return _stopped || breakon == '*' || (result ? breakon == 'success' : breakon == 'fail');
 	}
 	
+	/**
+	 * Manual trigger to release the element to a new context
+	 * @param	result
+	 * @param	context
+	 */
 	public function release(result:Bool, context:EventContext):Void {
 		if(_stopped){
 			_stopped = false;
@@ -70,10 +75,17 @@ class Resolution {
 		}
 	}
 	
+	/**
+	 * Reset the state to connected
+	 */
 	public function connect():Void {
 		_stopped = false;
 	}
 	
+	/**
+	 * A disconnected element will stop any propagation in the same context
+	 * The user can create a proxy to stop and work with the current context flow and then connect() in any other context
+	 */
 	public function disconnect():Void {
 		_stopped = true;
 	}
