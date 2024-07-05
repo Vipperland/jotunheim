@@ -151,8 +151,9 @@ class ModLib {
 		var count:Int = 0;
 		var errors:Int = 0;
 		var fdata:Int = 0;
+		var pdata:Int = 0;
 		if (sur.length > 1) {
-			Jotun.log("ModLib => PARSING " + file + " MODULES (~" + total + ")", Logger.SYSTEM);
+			Jotun.log("ModLib => PARSING " + file + " MODULES (~" + total + ")", Logger.MODULE);
 			#if js 
 				var mountAfter:Array<IMod> = [];
 			#end
@@ -170,11 +171,11 @@ class ModLib {
 						}else {
 							path += '#' + mod.name;
 							if (mod.type != 'data'){
-								Jotun.log("	@ BLOCK: " + mod.name + " (" + count + "/" + total + ")", Logger.SYSTEM);
+								Jotun.log("	@ BLOCK: " + mod.name + " (" + count + "/" + total + ")", Logger.MODULE);
 							}
 						}
 						if (exists(mod.name)){
-							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.WARNING);
+							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.MODULE);
 						}
 						var end:Int = v.indexOf("/EOF;");
 						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
@@ -190,7 +191,7 @@ class ModLib {
 						if (mod.require != null) {
 							var incT:Int = mod.require.length;
 							var incC:Int = 1;
-							Jotun.log("		> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")", Logger.SYSTEM);
+							Jotun.log("		> INCLUDING MODULES IN '" + mod.name + "' (" + incT + ")", Logger.MODULE);
 							Dice.Values(mod.require, function(v:String) {
 								if (exists(v)){
 									// inclusion with custom data
@@ -210,7 +211,7 @@ class ModLib {
 									});
 									// inclusion with no custom data
 									content = content.split("{{@include:" + v + "}}").join(get(v));
-									Jotun.log("			+ INCLUDED '" + v + "' #" + incC, Logger.SYSTEM);
+									Jotun.log("			+ INCLUDED '" + v + "' #" + incC, Logger.MODULE);
 								} else{
 									Jotun.log("			- MISSING '" + v + "' #" + incC, Logger.ERROR);
 								}
@@ -229,13 +230,14 @@ class ModLib {
 						if (mod.type != null) {
 							if (mod.type == 'data'){
 								try {
-									++fdata;
 									content = Json.parse(content);
 									if (mod.name == '[]'){
-										Jotun.log("	@ PUSH: {...} (" + count + "/" + total + ")", Logger.SYSTEM);
+										++pdata;
+										Jotun.log("	@ PUSH: {...} (" + count + "/" + total + ")", Logger.MODULE);
 										DATA.buffer.push(content);
 									}else{
-										Jotun.log("	@ DATA:  {" + mod.name + "} (" + count + "/" + total + ")", Logger.SYSTEM);
+										++fdata;
+										Jotun.log("	@ DATA:  {" + mod.name + "} (" + count + "/" + total + ")", Logger.MODULE);
 										DATA.objects.set(mod.name, content);
 									}
 									return false;
@@ -283,7 +285,7 @@ class ModLib {
 					});
 				}
 			#end
-			Jotun.log("	! PARSED: " + (count - errors) + "/" + total + ", Data: " + fdata + ", Errors: " + errors, Logger.SYSTEM);
+			Jotun.log("	! PARSED: " + (count - errors) + "/" + total + ", Data: " + (fdata + pdata) + " ([]:" + pdata + ",@:" + pdata + "), Errors: " + errors, Logger.MODULE);
 		}else {
 			#if js
 				// ============================= JS ONLY =============================

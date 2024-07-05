@@ -20,14 +20,15 @@ class Logger {
 	public static inline var SYSTEM:Int = 1;
 	public static inline var WARNING:Int = 2;
 	public static inline var ERROR:Int = 3;
-	public static inline var TODO:Int = 4;
+	public static inline var MODULE:Int = 4;
 	public static inline var QUERY:Int = 5;
 	public static inline var BROADCAST:Int = 6;
 	public static inline var OBSOLETE:Int = 7;
+	public static inline var TODO:Int = 8;
 	
 	private var _events:Array<Dynamic->Int->Void>;
 	
-	private var _level:Flag = new Flag(MESSAGE | SYSTEM | WARNING | ERROR);
+	private var _level:Flag = new Flag((1<<MESSAGE) | (1<<SYSTEM) | (1<<WARNING) | (1<<ERROR) | (1<<MODULE));
 	
 	public function enable(i:Int):Void {
 		_level.put(i);
@@ -63,6 +64,9 @@ class Logger {
 	}
 	
 	public function push(q:Dynamic, type:Int) {
+		if (!_level.test(type)){
+			return;
+		}
 		Dice.Values(_events, function(v:Dynamic->Int->Void) {
 			v(q, type); 
 		});
@@ -91,6 +95,7 @@ class Logger {
 				case 5 : "[$QUERY*] ";
 				case 6 : "[BRDCAST] ";
 				case 7 : "[OBSOLET] ";
+				case 8 : "[MODULES] ";
 				default : "";
 			}
 		}
@@ -100,29 +105,5 @@ class Logger {
 		#end
 		dump(q);
 	}
-	
-	#if js
-		public function showConsole(?url:String = 'modules/dev/console.html'):Void {
-			Jotun.module(url, 'jotun-console', null, function(r:IRequest){
-				var ui:IDisplay = Jotun.one('jotun-console');
-				if (ui == null){
-					ui = Jotun.resources.build('jotun-console');
-					if (ui != null){
-						ui.addToBody();
-					}
-				}
-				if (ui != null){
-					ui.show();
-				}
-			});
-		}
-		
-		public function hideConsole():Void {
-			var ui:IDisplay = Jotun.one('jotun-console');
-			if (ui != null){
-				ui.hide();
-			}
-		}
-	#end
 	
 }
