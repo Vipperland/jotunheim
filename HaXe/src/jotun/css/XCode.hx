@@ -79,7 +79,7 @@ class XCode {
 				
 				Alignment:
 				|	o-top-left		o-top			o-top-right		
-				|	o-left			[h|v|o]-middle		o-right			
+				|	o-left			[a|o]-middle		o-right			
 				|	o-bottom-left		o-bottom			o-bottom-right	
 			*/
 			omnibuild('.shelf,.hack,.drawer', 'display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;');
@@ -95,7 +95,7 @@ class XCode {
 			// Lift will align top, middle and bottom
 			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
 			omnibuild('.x-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
-			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', '-webkit-box-align:end;-ms-flex-align:end;align-items:flex-end;');
+			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', 'justify-content:end;');
 			// Fill empty spaces around the cells
 			omnibuild('.o-distribute', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells

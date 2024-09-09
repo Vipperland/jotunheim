@@ -308,6 +308,19 @@ class Display extends Query implements IDisplay {
 		return q;
 	}
 	
+	public function removeChildAt(index:Int):IDisplay {
+		var child:IDisplay = getChild(index);
+		return child != null ? child.remove() : null;
+	}
+	
+	public function removeFirstChild():IDisplay {
+		return removeChildAt(0);
+	}
+	
+	public function removeLastChild():IDisplay {
+		return removeChildAt(length());
+	}
+	
 	public function removeChildren(min:UInt = 0):IDisplay {
 		var t:UInt = children().length();
 		while (t > min){

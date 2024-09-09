@@ -65,6 +65,13 @@ interface ITable {
 	public function obj(i:Int) : IDisplay;
 	
 	/**
+	 * Exclude list of
+	 * @param	q
+	 * @return
+	 */
+	public function not(target:Dynamic):ITable;
+	
+	/**
 	 * Add a selector to each element
 	 * @param	styles
 	 * @return

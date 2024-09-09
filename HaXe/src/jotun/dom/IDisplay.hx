@@ -157,6 +157,12 @@ interface IDisplay extends IQuery {
 	 */
 	public function removeChild(q:IDisplay):IDisplay;
 	
+	public function removeChildAt(index:Int):IDisplay;
+	
+	public function removeFirstChild():IDisplay;
+	
+	public function removeLastChild():IDisplay;
+	
 	/**
 	 * Remove from parent container
 	 * @return

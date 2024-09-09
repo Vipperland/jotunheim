@@ -118,6 +118,21 @@ class Table implements ITable {
 		return content[i];
 	}
 	
+	public function not(target:Dynamic):ITable {
+		if(Std.isOfType(target, Array)){
+			Dice.Values(target, function(v:IDisplay):Void {
+				content.remove(v);
+			});
+		}else if(Std.isOfType(target, ITable)){
+			Dice.Values(target.content, function(v:IDisplay):Void {
+				content.remove(v);
+			});
+		}else{
+			content.remove(target);
+		}
+		return this;
+	}
+	
 	public function css(styles:String):ITable {
 		each(function(v:IDisplay) { v.css(styles); } );
 		return this;

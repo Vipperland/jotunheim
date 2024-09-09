@@ -2,9 +2,21 @@ package jotun.net;
 import haxe.Rest;
 import jotun.errors.Error;
 import jotun.errors.IError;
+import jotun.signals.IPipe;
 import jotun.signals.ISignals;
 import jotun.signals.Signals;
 
+
+typedef BulkLoaderSignal = {
+	var file:String;
+	var data:String;
+	var request:HttpRequest;
+}
+
+typedef BulkLoaderFlow = {
+	public var data:BulkLoaderSignal;
+	public var pipe:IPipe;
+}
 /**
  * ...
  * @author Rafael Moreira

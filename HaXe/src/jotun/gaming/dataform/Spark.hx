@@ -41,7 +41,7 @@ class Spark extends SparkCore {
 					if (r == null){
 						r = _name + ' ' + id;
 					}
-					r += '\n>' + c;
+					r += '\n\t' + c;
 				}
 			}
 		});

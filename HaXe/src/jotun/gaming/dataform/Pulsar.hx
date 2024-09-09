@@ -224,7 +224,7 @@ class Pulsar {
 				var cmd:String = v.substring(0, 1);
 				var o:Spark = null;
 				switch(cmd){
-					case '>' : {
+					case '\t' : {
 						if (l != null){
 							v = v.substring(1, v.length);
 							if (r.length == 3 && l.exists(r[1])){
