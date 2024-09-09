@@ -14,6 +14,21 @@ import jotun.utils.Dice;
 @:expose("J_RequirementQuery")
 class RequirementQuery extends Query {
 	
+	public static var RULE_EQUAL:String = "=";
+	public static var RULE_DIFFERENT:String = "!=";
+	public static var RULE_LESS:String = "<";
+	public static var RULE_LESS_OR:String = "<=";
+	public static var RULE_GREAT:String = ">";
+	public static var RULE_GREAT_OR:String = ">=";
+	public static var RULE_BIT:String = "&";
+	public static var RULE_BIT_NOT:String = "!&";
+	public static var RULE_CONTAIN:String = "*=";
+	public static var RULE_INSIDE:String = "~=";
+	public static var RULE_RANDOM_EQUAL:String = "#=";
+	public static var RULE_RANDOM_DIFFENT:String = "#!";
+	public static var RULE_RANDOM_GREAT_OR:String = "#>";
+	public static var RULE_RANDOM_LESS_OR:String = "#<";
+	
 	public function getDataProvider():IDataProvider {
 		return ioContext.currentProvider;
 	}

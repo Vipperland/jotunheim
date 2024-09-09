@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.extern.EitherType;
 import jotun.tools.Utils;
 
 /**
@@ -17,7 +18,7 @@ class Resolution {
 	
 	public var fail:Events;
 	
-	public var breakon:String;
+	public var breakon:EitherType<String,Bool>;
 	
 	public var _stopped:Bool;
 	
@@ -26,9 +27,7 @@ class Resolution {
 	public function new(type:String, data:Dynamic) {
 		_type = type;
 		reverse = Utils.boolean(data.reverse);
-		if(breakon != null){
-			breakon = breakon.toLowerCase();
-		}
+		breakon = data.breakon;
 		if (Std.isOfType(data.query, Array)){
 			query = data.query;
 			query.unshift('@result');
@@ -60,7 +59,13 @@ class Resolution {
 	}
 	
 	public function willBreakOn(result:Bool):Bool {
-		return _stopped || breakon == '*' || (result ? breakon == 'success' : breakon == 'fail');
+		if(_stopped || breakon == 'always'){
+			return true;
+		}
+		if(breakon == 'never'){
+			return false;
+		}
+		return breakon == result || (result && breakon == null);
 	}
 	
 	/**

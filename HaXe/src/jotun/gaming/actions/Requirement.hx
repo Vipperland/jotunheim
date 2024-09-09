@@ -12,6 +12,8 @@ class Requirement extends Resolution {
 	
 	public static var cache:Dynamic = {};
 	
+	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
+	
 	public static function save(requirement:Requirement):Void {
 		Reflect.setField(cache, requirement.id, requirement);
 	}
@@ -20,16 +22,19 @@ class Requirement extends Resolution {
 		return cast Reflect.field(cache, id);
 	}
 	
-	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
-	
 	public var target:Int;
 	
 	public function new(type:String, data:Dynamic) {
 		super(type, data);
+		// Required condition resolution
 		if (data.target == null){
 			target = length();
 		}else{
 			target = Std.int(data.target);
+		}
+		// Requirement aways break on success if not defined
+		if(breakon == null){
+			breakon = 'never';
 		}
 		if (Utils.isValid(data.id)){
 			EventController.saveRequirement(this);

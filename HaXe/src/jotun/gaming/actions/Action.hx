@@ -15,6 +15,8 @@ class Action extends Resolution {
 	
 	public static var cache:Dynamic = {};
 	
+	public static var commands:ActionQueryGroup = new ActionQueryGroup();
+	
 	public static function save(action:Action):Void {
 		Reflect.setField(cache, action.id, action);
 	}
@@ -22,8 +24,6 @@ class Action extends Resolution {
 	public static function load(id:String):Action {
 		return cast Reflect.field(cache, id);
 	}
-	
-	public static var commands:ActionQueryGroup = new ActionQueryGroup();
 	
 	public var requirements:Array<Requirement>;
 	
@@ -48,9 +48,14 @@ class Action extends Resolution {
 			}
 		});
 		// Required condition resolution
-		target = Std.int(data.target);
 		if (target == null){
 			target = requirements.length;
+		}else{
+			target = Std.int(data.target);
+		}
+		// Action aways break on success if not defined
+		if(breakon == null){
+			breakon = true;
 		}
 		if (Utils.isValid(data.id)){
 			EventController.saveAction(this);
@@ -87,7 +92,7 @@ class Action extends Resolution {
 	}
 	
 	private static function _log(evt:Action, context:EventContext, success:Bool, score:Int, position:Int):Void {
-		context.addLog(0, "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] " + (evt.target != 0 ? "score:" + score + "/" + evt.target + " ": "") + "queries:" + evt.length());
+		context.addLog(0, "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (evt.willBreakOn(success) ? "[break]" : "[next]") + " " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] " + (evt.target != 0 ? "score:" + score + "/" + evt.target + " ": "") + "queries:" + evt.length());
 	}
 	
 }

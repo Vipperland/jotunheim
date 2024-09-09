@@ -88,6 +88,19 @@ class Dice {
 	}
 	
 	/**
+	 * Sum values from all values
+	 * @param	q
+	 * @return
+	 */
+	public static function Sum(q:Dynamic):Float {
+		var ammount:Float = 0;
+		Dice.Values(q, function(v:Float):Void {
+			ammount += v;
+		});
+		return ammount;
+	}
+	
+	/**
 	 * For each object Value call each(value, previous)
 	 * @param	q		Target object
 	 * @param	each		Value handler, return true to stop propagation
