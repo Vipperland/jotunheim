@@ -39,9 +39,11 @@ class Query extends Resolve implements IQuery {
 		_batchExec(data);
 		return _buffer;
 	}
+	
 	private function _batchExec(data:Dynamic):Void {
 		Dice.Values(Std.isOfType(data, Array) ? data : data.split('\n'), _exec);
 	}
+	
 	private function _exec(q:String):Void {
 		var o:Dynamic = null;
 		switch(q.substr(0,1)){
@@ -68,6 +70,7 @@ class Query extends Resolve implements IQuery {
 				while (q.indexOf('\t\t') != -1){
 					q = q.split('\t\t').join(' ');
 				}
+				// Clear double spaces
 				while (q.indexOf('  ') != -1){
 					q = q.split('  ').join(' ');
 				}

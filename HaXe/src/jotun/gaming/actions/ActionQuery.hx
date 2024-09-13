@@ -1,7 +1,9 @@
 package jotun.gaming.actions;
 import haxe.Json;
 import haxe.Rest;
+import jotun.gaming.actions.Action;
 import jotun.gaming.actions.BasicDataProvider;
+import jotun.gaming.actions.EventController;
 import jotun.net.IRequest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
@@ -15,6 +17,23 @@ import jotun.utils.Filler;
 @:expose("J_ActionQuery")
 class ActionQuery extends Query {
 
+	public static var RULE_EQUAL:String = "=";
+	public static var RULE_ADD:String = "+";
+	public static var RULE_SUBTRACT:String = "-";
+	public static var RULE_INCREMENT:String = "++";
+	public static var RULE_DECREMENT:String = "--";
+	public static var RULE_MULTIPLY:String = "*";
+	public static var RULE_DIVIDE:String = "/";
+	public static var RULE_MOD:String = "%";
+	public static var RULE_SHIFT_LEFT:String = "<<";
+	public static var RULE_SHIFT_RIGHT:String = ">>";
+	public static var RULE_BIT_NOT:String = "~";
+	public static var RULE_BIT_OR:String = "|";
+	public static var RULE_BIT_AND:String = "&";
+	public static var RULE_BIT_XOR:String = "!";
+	public static var RULE_POW:String = "^";
+	public static var RULE_RANDOM:String = "#";
+	
 	public function getDataProvider():IDataProvider {
 		return ioContext.currentProvider;
 	}
@@ -108,6 +127,21 @@ class ActionQuery extends Query {
 	
 	public function tracer(messages:Rest<String>):ActionQuery {
 		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), ioContext));
+		return this;
+	}
+	
+	// =========================================== Call dialog chain ====================================================================================
+
+	/**
+	 * Call a registered Event chain
+	 * @param	events
+	 * @return
+	 */
+	public function call(id:String):ActionQuery {
+		var action:Action = EventController.loadAction(id);
+		if(action != null){
+			action.run(ioContext, 0);
+		}
 		return this;
 	}
 	

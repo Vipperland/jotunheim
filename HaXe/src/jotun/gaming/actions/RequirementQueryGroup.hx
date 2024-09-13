@@ -23,7 +23,7 @@ class RequirementQueryGroup extends QueryGroup {
 					Dice.All(units, function(p:String, o:RequirementQuery):Void {
 						o.ioContext = context;
 						if (context.debug){
-							context.addLog(1, single + '[' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
+							context.addLog(1, single + ' [' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
 						}
 						++idx;
 						o.flush();

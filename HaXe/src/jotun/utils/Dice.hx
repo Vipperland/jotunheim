@@ -282,6 +282,17 @@ class Dice {
 	/**
 	 * 
 	 * @param	table
+	 * @param	each
+	 */
+	public static function Reset(table:Array<Dynamic>, each:Dynamic):Void {
+		while(table.length > 0){
+			each(table.shift());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param	table
 	 * @param	values
 	 */
 	public static function Put(table:Array<Dynamic>, values:Dynamic):Void {

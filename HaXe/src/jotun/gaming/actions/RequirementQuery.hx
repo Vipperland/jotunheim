@@ -51,6 +51,10 @@ class RequirementQuery extends Query {
 		return Math.random();
 	}
 	
+	private function _rule(rule:String, alt:String):String {
+		return rule != null ? rule : alt;
+	}
+	
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Bool {
 		if (r == null) {
 			r = ">=";

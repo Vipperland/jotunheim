@@ -2,11 +2,17 @@ package jotun.gaming.actions;
 import haxe.extern.EitherType;
 import jotun.tools.Utils;
 
+
+
 /**
  * ...
  * @author Rim Project
  */
 class Resolution {
+	
+	public static inline var BREAK_ALWAYS:String = "always";
+	
+	public static inline var BREAK_NEVER:String = "never";
 	
 	private var _type:String;
 	
@@ -28,11 +34,15 @@ class Resolution {
 		_type = type;
 		reverse = Utils.boolean(data.reverse);
 		breakon = data.breakon;
-		if (Std.isOfType(data.query, Array)){
-			query = data.query;
-			query.unshift('@result');
-		}else if (Utils.isValid(data.query)){
-			query = ['@result', data.query];
+		if(Reflect.hasField(data, "*")){
+			var qset:Dynamic = Reflect.field(data, "*");
+			Reflect.deleteField(data, "*");
+			if (Std.isOfType(qset, Array)){
+				query = qset;
+				query.unshift('@result');
+			}else if (Utils.isValid(qset)){
+				query = ['@result', qset];
+			}
 		}
 		if (data.then != null) {
 			then = new Events(_type + ":success", data.then);
@@ -59,10 +69,10 @@ class Resolution {
 	}
 	
 	public function willBreakOn(result:Bool):Bool {
-		if(_stopped || breakon == 'always'){
+		if(_stopped || breakon == BREAK_ALWAYS){
 			return true;
 		}
-		if(breakon == 'never'){
+		if(breakon == BREAK_NEVER){
 			return false;
 		}
 		return breakon == result || (result && breakon == null);
