@@ -85,6 +85,14 @@ class EventContext {
 		log[log.length] = Utils.prefix("", ident + chain + i, '\t') + message;
 	}
 	
+	public function previous():Action {
+		if (action.count > 1){
+			return this.history[action.count - 2];
+		}else{
+			return null;
+		}
+	}
+	
 }
 
 interface IEventContext {

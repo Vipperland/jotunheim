@@ -1,4 +1,5 @@
 package jotun.objects;
+import haxe.DynamicAccess;
 import jotun.utils.Dice;
 
 /**
@@ -10,10 +11,13 @@ class Query extends Resolve implements IQuery {
 	
 	private var _buffer:QueryBuffer;
 	
+	private var _flush:DynamicAccess<Query>;
+	
 	public var editable:Bool;
 	
 	public function new(?editable:Bool){
 		this.editable = editable == true;
+		_flush = { };
 		super();
 	}
 	
@@ -23,6 +27,10 @@ class Query extends Resolve implements IQuery {
 	
 	public function flush():Void {
 		_buffer.flush();
+		Dice.All(_flush, function(p:String, v:Query):Void {
+			v.flush();
+			Reflect.deleteField(_flush, p);
+		});
 	}
 	
 	/**
@@ -88,13 +96,17 @@ class Query extends Resolve implements IQuery {
 				var iofd:Int = q.indexOf(".");
 				// Check if is object access
 				if (iofd != -1){
-					if(iofd < q.indexOf(" ")){
+					var iofs:Int = q.indexOf(" ");
+					if(iofs == -1 || iofd < q.indexOf(" ")){
 						var subq:Array<String> = q.split(".");
 						var q:String = subq.shift();
 						if(Reflect.hasField(this, q)){
 							var obj:Query = Reflect.field(this, q);
 							if (Std.isOfType(obj, Query)){
 								obj._innerProc(subq.join("."), _buffer);
+								if(!_flush.exists(q)){
+									_flush.set(q, obj);
+								}
 								return;
 							}
 						}
