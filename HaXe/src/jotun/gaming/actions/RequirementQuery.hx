@@ -120,6 +120,14 @@ class RequirementQuery extends Query {
 		return isvar(name, rule, value);
 	}
 	
+	public function isodd():Bool {
+		return Std.int(Math.random() * 2) == 0;
+	}
+	
+	public function iseven():Bool {
+		return Std.int(Math.random() * 2) == 1;
+	}
+	
 	/**
 	 * Match a Variable Value
 	 * Rules:

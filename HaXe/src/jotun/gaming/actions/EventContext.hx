@@ -94,9 +94,12 @@ class EventContext {
 	}
 	
 	public function release(resolution:Resolution, result:Bool):Void {
-		var temp:Dynamic = Events.patch({ _onActionReleased: (result ? resolution.then : resolution.fail) }).get('_onActionReleased');
-		controller.events.set('_onActionReleased', temp);
-		controller.call('_onActionReleased', origin, dataProvider );
+		var chain:Dynamic = (result ? resolution.then : resolution.fail);
+		if(chain != null){
+			var temp:Dynamic = Events.patch({ _onActionReleased: chain }).get('_onActionReleased');
+			controller.events.set('_onActionReleased', temp);
+			controller.call('_onActionReleased', origin, dataProvider );
+		}
 	}
 	
 	public function previous():Action {
