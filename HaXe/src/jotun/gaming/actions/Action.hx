@@ -79,7 +79,7 @@ class Action extends Resolution {
 		}
 		// Action aways break on success if not defined
 		if(breakon == null){
-			breakon = true;
+			breakon = data.require > 0;
 		}
 		if (Utils.isValid(data.id)){
 			EventController.saveAction(this);

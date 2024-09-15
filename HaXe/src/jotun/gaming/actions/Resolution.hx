@@ -45,7 +45,7 @@ class Resolution {
 			}
 		}
 		if (data.then != null) {
-			then = new Events(_type + ":success", data.then);
+			then = new Events(_type + ":then", data.then);
 		}
 		if (data.fail != null) {
 			fail = new Events(_type + ":fail", data.fail);
@@ -54,17 +54,19 @@ class Resolution {
 	}
 	
 	public function resolve(result:Bool, context:EventContext):Bool {
-		++context.ident;
-		if (result){
-			if (then != null){
-				then.run(context);
+		if(!_stopped){
+			++context.ident;
+			if (result){
+				if (then != null){
+					then.run(context);
+				}
+			}else{
+				if (fail != null){
+					fail.run(context);
+				}
 			}
-		}else{
-			if (fail != null){
-				fail.run(context);
-			}
+			--context.ident;
 		}
-		--context.ident;
 		return reverse ? !result : result;
 	}
 	
@@ -86,7 +88,7 @@ class Resolution {
 	public function release(result:Bool, context:EventContext):Void {
 		if(_stopped){
 			_stopped = false;
-			resolve(result, context);
+			context.release(this, result);
 		}
 	}
 	

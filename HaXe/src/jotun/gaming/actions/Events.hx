@@ -88,12 +88,14 @@ class Events {
 	}
 	
 	public function wait(?time:Float):Void {
-		_unblock();
-		_is_waiting = true;
-		if(time == null && time <= 0){
-			time = 3600;
+		if(canWait()){
+			_unblock();
+			_is_waiting = true;
+			if(time == null && time <= 0){
+				time = 3600;
+			}
+			_delayed = Jotun.timer.delayed(release, time, 0);
 		}
-		_delayed = Jotun.timer.delayed(release, time, 0);
 	}
 	
 	public function release():Void {
@@ -115,11 +117,11 @@ class Events {
 			if (a.willBreakOn(a.run(_context, current))){
 				_is_waiting = false;
 				return true;
-			}else{
+			}else {
 				return _is_waiting;
 			}
 		});
-		if(_is_waiting == false || _cursor_pos >= _data.length){
+		if(_is_waiting == false){
 			--_context.ident;
 			if (_context.ident == 0){
 				if (_context.debug){
@@ -129,6 +131,10 @@ class Events {
 			}
 			_context = null;
 		}
+	}
+	
+	public function canWait():Bool {
+		return _cursor_pos < _data.length;
 	}
 	
 	public function run(context:EventContext):Void {

@@ -1,7 +1,9 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
+import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.Events;
 import jotun.gaming.actions.IDataProvider;
+import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
 
 /**
@@ -11,6 +13,8 @@ import jotun.tools.Utils;
 class EventContext {
 	
 	public var debug:Bool;
+	
+	public var ended:Bool;
 	
 	public var name:String;
 	
@@ -40,10 +44,13 @@ class EventContext {
 	
 	public var requestProvider:IDataProvider;
 	
-	public function new(name:String, data:Dynamic, provider:IDataProvider, debug:Bool) {
+	public var controller:EventController;
+	
+	public function new(name:String, data:Dynamic, provider:IDataProvider, controller:EventController, debug:Bool) {
 		this.origin = data;
 		this.name = name;
 		this.debug = debug;
+		this.ended = false;
 		this.log = [];
 		this.ident = 0;
 		this.chain = 0;
@@ -54,6 +61,7 @@ class EventContext {
 		this.history = [];
 		this.dataProvider = provider;
 		this.currentProvider = provider;
+		this.controller = controller;
 	}
 	
 	public function registerEvent(e:Events):Void {
@@ -83,6 +91,12 @@ class EventContext {
 	
 	public function addLog(i:Int, message:String):Void {
 		log[log.length] = Utils.prefix("", ident + chain + i, '\t') + message;
+	}
+	
+	public function release(resolution:Resolution, result:Bool):Void {
+		var temp:Dynamic = Events.patch({ _onActionReleased: (result ? resolution.then : resolution.fail) }).get('_onActionReleased');
+		controller.events.set('_onActionReleased', temp);
+		controller.call('_onActionReleased', origin, dataProvider );
 	}
 	
 	public function previous():Action {

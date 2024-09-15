@@ -274,7 +274,7 @@ class ActionQuery extends Query {
 	#if js
 	
 	/**
-	 * Wait specified time
+	 * Wait specified time, only wait at event level
 	 * @param	time
 	 * @return
 	 */
