@@ -54,7 +54,7 @@ class Action extends Resolution {
 	 * @param	data
 	 */
 	public function new(type:String, data:Dynamic) {
-		super(type, data);
+		super(type, data, "@");
 		// Construct Requirement Objects
 		require = [];
 		var i:Int = 0;

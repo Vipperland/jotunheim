@@ -25,7 +25,7 @@ class Requirement extends Resolution {
 	public var target:Int;
 	
 	public function new(type:String, data:Dynamic) {
-		super(type, data);
+		super(type, data, "*");
 		// Required condition resolution
 		if (data.target == null){
 			target = length();

@@ -30,13 +30,13 @@ class Resolution {
 	
 	public var reverse:Bool;
 	
-	public function new(type:String, data:Dynamic) {
+	public function new(type:String, data:Dynamic, param:String) {
 		_type = type;
 		reverse = Utils.boolean(data.reverse);
 		breakon = data.breakon;
-		if(Reflect.hasField(data, "*")){
-			var qset:Dynamic = Reflect.field(data, "*");
-			Reflect.deleteField(data, "*");
+		if(Reflect.hasField(data, param)){
+			var qset:Dynamic = Reflect.field(data, param);
+			Reflect.deleteField(data, param);
 			if (Std.isOfType(qset, Array)){
 				query = qset;
 				query.unshift('@result');
