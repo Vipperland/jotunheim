@@ -67,9 +67,9 @@ class EventController implements IEventDispatcher implements IEventCollection  {
 	
 	private function _onChainEnd(chain:Array<EventContext>):Void { }
 	
-	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String) {
+	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>) {
 		_debug = debug == true;
-		events = Events.patch(data, validate);
+		events = Events.patch(data, validate, priority);
 	}
 	
 	public function setDebug(mode:Bool):Void {

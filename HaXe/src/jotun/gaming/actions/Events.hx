@@ -16,9 +16,29 @@ import jotun.utils.Dice;
 @:expose("J_Events")
 class Events {
 	
-	public static function patch(data:DynamicAccess<Events>, ?validate:String->DynamicAccess<Dynamic>->String):DynamicAccess<Events> {
+	/**
+	 * Create a patch with events data
+	 * @param	data			Object of names array of event chain
+	 * @param	validate		Validate event name, control if events are valid or not
+	 * @param	priority		Events to be patched first
+	 * @return Array of fully patched events, actions and requirements
+	 */
+	public static function patch(data:DynamicAccess<Events>, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>):DynamicAccess<Events> {
 		var patched:DynamicAccess<Events> = { };
 		if (data != null){
+			if(priority != null){
+				Dice.Values(priority, function(v:String):Void {
+					if(data.exists(v)){
+						var e:Dynamic = data.get(v);
+						if (!Std.isOfType(e, Events)){
+							patched.set(v, new Events(v, e));
+						}else{
+							patched.set(v, e);
+						}
+					}
+					Reflect.deleteField(data, v);
+				});
+			}
 			Dice.All(data, function(p:String, v:Dynamic):Void {
 				p = (validate == null ? p : validate(p, v));
 				if(p != null && p != ""){
@@ -28,7 +48,6 @@ class Events {
 						patched.set(p, v);
 					}
 				}
-				
 			});
 		}
 		return patched;

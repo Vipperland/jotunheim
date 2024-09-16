@@ -19,16 +19,16 @@ class Action extends Resolution {
 	
 	public static var commands:ActionQueryGroup = new ActionQueryGroup();
 	
+	static public function createFromQueries(id:String, queries:Array<Dynamic>, breakon:Dynamic = null):Dynamic {
+		return { id:id, "@": queries, breakon: breakon };
+	}
+	
 	public static function save(action:Action):Void {
 		cache.set(action.id, action);
 	}
 	
 	public static function load(id:String):Action {
 		return cache.get(id);
-	}
-	
-	static public function create(v:Array<Dynamic>):Void {
-		
 	}
 	
 	public var require:Array<Requirement>;

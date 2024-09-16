@@ -309,7 +309,7 @@ class Display extends Query implements IDisplay {
 	}
 	
 	public function removeChildAt(index:Int):IDisplay {
-		var child:IDisplay = getChild(index);
+		var child:IDisplay = getChild(index, true);
 		return child != null ? child.remove() : null;
 	}
 	

@@ -14,6 +14,10 @@ class Requirement extends Resolution {
 	
 	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
 	
+	static public function createFromQueries(id:String, queries:Array<Dynamic>, breakon:Dynamic = null):Dynamic {
+		return { id:id, "*": queries, breakon: breakon };
+	}
+	
 	public static function save(requirement:Requirement):Void {
 		Reflect.setField(cache, requirement.id, requirement);
 	}
