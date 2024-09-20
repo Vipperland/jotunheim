@@ -278,6 +278,9 @@ package gate.sirius.serializer {
 			if (_currentObject && param in _currentObject) {
 				_currentObject = _currentObject[param];
 				return true;
+			} else if(_targetPath.length == 0 && param in CLASS_COLLECTION) {
+				_currentObject = CLASS_COLLECTION[param];
+				return true;
 			} else {
 				_signals.ERROR.send(SruErrorSignal, true, ("Can´t open path " + param + " in " + getQualifiedClassName(_currentObject) + " object (target " + _targetPath.join(".") + ")."), _data.currentLine, _data.lineValue, 2003, "", _data.fileName);
 				return false;
@@ -491,7 +494,6 @@ package gate.sirius.serializer {
 				}
 				
 				if (_data.isQuery()) {
-					//try {
 					ticket = ParseTicket.GATE.search(_data.getQueryName());
 					if (!ticket.run(_currentObject, _data.getQueryArguments())){
 						_signals.ERROR.send(SruErrorSignal, true, ticket.error, _data.currentLine, _data.lineValue, 2003, ticket.stack, _data.fileName);
@@ -503,9 +505,11 @@ package gate.sirius.serializer {
 				
 				if (_data.isObjectKey()) {
 					// Check if param:Class or #Class
-					if (_data.isObjectPush()) {	// Check if [#] (push)
+					if (_data.isObjectPush()) {
+						// Check if [#] (push)
 						_pushObject(_currentObject, _data.getObjectType(), _data.pathOpen, _data.argumentBuffer);
-					} else {			// Create parameter for [param]:Class or [param] {
+					} else {
+						// Create parameter for [param]:Class or [param] {
 						_createObject(_currentObject, _data.getObjectType(), _data.getParamName(), _data.pathOpen, _data.argumentBuffer);
 					}
 					continue;
@@ -516,7 +520,8 @@ package gate.sirius.serializer {
 					continue;
 				}
 				
-				if (_data.isValueSet()) { 		// default value
+				if (_data.isValueSet()) {
+					// default value
 					try {
 						_data.writeProperty(_currentObject);
 					} catch (e:Error) {
@@ -609,7 +614,7 @@ package gate.sirius.serializer {
 		 * @return
 		 */
 		public function parse(value:String, mergeTo:*, onComplete:Function = null, onError:Function = null, fileId:String = ""):SruDecoder {
-			value = "$File<" + fileId + "\r" + value;
+			value = "$File<" + (fileId || "Anonymous") + "\r" + value;
 			if (_busy) {
 				_data.push(value);
 				return this;
@@ -719,7 +724,7 @@ class ParseTicket {
 				return false;
 			}
 		} else {
-			error = "Error on call method " + lastQueryName + "(), " + (obj ? "Method not found in " + getQualifiedClassName(to) : "Target object is Null");
+			error = "Error on call method " + lastQueryName + "(..." + lastArgsLength + "), " + (obj ? "Method not found in " + getQualifiedClassName(to) : "Target object is Null");
 			return false;
 		}
 		return true;
