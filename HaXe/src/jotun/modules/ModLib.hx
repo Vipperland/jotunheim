@@ -66,6 +66,8 @@ class ModLib {
 		
 	#end
 	
+	public var onBufferRequest:String->String->String;
+	
 	private var _predata:Array<String->Dynamic->Dynamic>;
 	
 	private function _sanitize(name:String, data:Dynamic):Dynamic {
@@ -230,6 +232,12 @@ class ModLib {
 						if (mod.type != null) {
 							if (mod.type == 'data'){
 								try {
+									if(onBufferRequest != null){
+										content = onBufferRequest(file, content);
+										if(content == null){
+											return false;
+										}
+									}
 									content = Json.parse(content);
 									if (mod.name == '[]'){
 										++pdata;
