@@ -6,9 +6,9 @@
 (function($exports) {
 	$exports.J_Carousel3D = function(angle, zoom, keyboard, addto){
 		function CreateContainer(){
-			var c = new J_dom_Display();
-			c.enablePerspective();
-			c.content = new J_dom_Display();
+			var c = new J_Display();
+			c.perspective();
+			c.content = new J_Display();
 			c.css('Carousel3D no-backface');
 			c.content.transform();
 			c.addChild(c.content);
@@ -17,7 +17,6 @@
 			c.transform();
 			return c;
 		}
-		
         var body = Jotun.document.body;
 		var o = {
 			panels : [],
@@ -35,7 +34,7 @@
 			minSnapping : 2,
 			maxSnapping : 16,
 			snapEasing : .99,
-			zoomEasing : .1,
+			zoomEasing : .05,
 			scroll : 0,
 			axys : 'y',
 			index : 0,
@@ -56,7 +55,7 @@
 				this.spacing = q;
 			},
 			addPanel : function(p){
-				var panel = new J_dom_Display().addTo(o.carousel.content);
+				var panel = new J_Display().addTo(o.carousel.content);
 				p.style({
 					width:'100%',
 					height:'100%',
@@ -64,7 +63,7 @@
 				panel.addChild(p);
 				panel.css('Panel3D');
 				panel.material = p;
-				panel.enablePerspective();
+				panel.perspective();
 				o.panels[o.panels.length] = panel;
 			},
 			setBackface: function(q){
@@ -107,7 +106,6 @@
 						width:'100%'
 					});
 					cp.data.rotation = o.points.length * -o.angle;
-					//cp.enablePerspective();
 					cp.transform();
 					cp.data.control = ctr;
 					o.points[o.points.length] = ctr;
@@ -204,7 +202,7 @@
 						if(sy > k.a && sy < k.b){
 							sy = k.c;
 							if(k.pin == false) {
-								o.pinDelay = 4;
+								o.pinDelay = 30;
 								k.pin = true;
 								k.panel.css('focused pinned /inactive');
 								k.panel.events.on('carouselPinIn').call();
@@ -217,6 +215,7 @@
 							}
 						}else{
 							if(k.pin == true) {
+								o.pinDelay = 30;
 								k.pin = false;
 								k.panel.css('focused /pinned /inactive');
 								k.panel.events.on('carouselPinOut').call();
@@ -232,7 +231,7 @@
 					o.focused = false;
 					o.carousel.events.on('carouselZoomOut').call();
 				}
-				o.offsetZFlex += (o.offsetZ - o.offsetZFlex) * .1;
+				o.offsetZFlex += (o.offsetZ - o.offsetZFlex) * o.zoomEasing;
 				if (sy > o.maxAngle) {
 					sy = o.maxAngle;
 					o.carousel.style({y:0, top:-(y-Math.floor(h * 2)) + 'px'});
@@ -289,7 +288,7 @@
 				
 			},
 			scrollEvent : function(e){
-				if(Jotun.document.focus().is(['input','select','textarea'])) return;
+				if(Jotun.document.hasFocusedInput()) return;
 				if(e.event.type == 'wheel')	{
 					var delta = 0;
 					if(Jotun.agent.firefox){
@@ -297,6 +296,7 @@
 					} else {
 						delta = e.event.wheelDelta;
 					}
+					o.pinDelay = 30;
 					Jotun.document.addScroll(0, -delta);
 				}else if(o.keyboard) {
 					switch(e.event.keyCode){
@@ -331,7 +331,7 @@
 			height:'100%',
 		});
 		o.carousel.addToBody();
-		o.carousel.enablePerspective();
+		o.carousel.perspective();
 		o.carousel.transform();
 		o.carousel.content.height("100%");
 		o.carousel.content.transform();
@@ -350,8 +350,8 @@
 		XCode.css.add('.Carousel3D.no-backface .Panel3D{backface-visibility: hidden;}');
 		XCode.css.build();
 		
-		J_Ticker.add(o.render);
-		J_Ticker.start();
+		Jotun.timer.add(o.render);
+		Jotun.timer.play();
 		return o;
 		
 	}
