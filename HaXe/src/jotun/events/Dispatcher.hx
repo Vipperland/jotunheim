@@ -1,8 +1,7 @@
 package jotun.events;
 import haxe.Log;
-import jotun.dom.IDisplay;
-import jotun.events.IDispatcher;
-import jotun.events.IEventGroup;
+import jotun.dom.Displayable;
+import jotun.events.EventGroup;
 import jotun.utils.Dice;
 
 /**
@@ -10,20 +9,20 @@ import jotun.utils.Dice;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("J_Dispatcher")
-class Dispatcher implements IDispatcher {
+class Dispatcher {
 	
 	/**
 	 * Prevent default event behaviour
 	 * @param	e
 	 */
-	static public function PREVENT_DEFAULT(e:IEvent):Void {
+	static public function PREVENT_DEFAULT(e:Activation):Void {
 		e.event.preventDefault();
 	}
 	
 	/**
 	 * Current event target
 	 */
-	public var target : IDisplay;
+	public var target : Displayable;
 	
 	/** @private */
 	private function _e():Dynamic {
@@ -35,7 +34,7 @@ class Dispatcher implements IDispatcher {
 	 * The DISP control all event dispatched by an object, all handlers return an EVT instance [handler(EVT)]
 	 * @param	q
 	 */
-	public function new(q:IDisplay){
+	public function new(q:Displayable){
 		q.data._events = { };
 		target = q;
 	}
@@ -46,8 +45,8 @@ class Dispatcher implements IDispatcher {
 	 * @param	capture
 	 * @return
 	 */
-	public function event(name:String):IEventGroup {
-		var dis:IEventGroup = null;
+	public function event(name:String):EventGroup {
+		var dis:EventGroup = null;
 		if (!hasEvent(name)) {
 			dis = new EventGroup(this, name);
 			dis.prepare(target);
@@ -72,13 +71,13 @@ class Dispatcher implements IDispatcher {
 	 * Start Element events
 	 */
 	public function apply():Void {
-		Dice.Values(_e(), function(v:IEventGroup){
+		Dice.Values(_e(), function(v:EventGroup){
 			v.prepare(target);
 		});
 	}
 	
-	public function each(method:IEventGroup->Bool):Void {
-		Dice.Values(_e(), function(v:IEventGroup):Bool {
+	public function each(method:EventGroup->Bool):Void {
+		Dice.Values(_e(), function(v:EventGroup):Bool {
 			return method(v);
 		});
 	}
@@ -90,8 +89,8 @@ class Dispatcher implements IDispatcher {
 	 * @param	mode		1 | true | "capture" to Add (capture=true), 0 | false to Add (capture=false), -1 | 'remove' to remove event if exists
 	 * @return
 	 */
-	public function on(type:String, ?handler:Dynamic, ?mode:Int, ?noDefault:Bool, ?capture:Bool):IEventGroup {
-		var ie:IEventGroup = event(type);
+	public function on(type:String, ?handler:Dynamic, ?mode:Int, ?noDefault:Bool, ?capture:Bool):EventGroup {
+		var ie:EventGroup = event(type);
 		if (noDefault){
 			ie.noDefault();
 		}
@@ -110,486 +109,486 @@ class Dispatcher implements IDispatcher {
 	}
 	
 	/** Event */
-	public function added(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function added(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("DOMNodeInserted", handler, mode, noDefault, capture);
 	}
 
 	/** Event */
-	public function removed(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function removed(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("DOMNodeRemoved", handler, mode, noDefault, capture);
 	}
 
 	/** Event */
-	public function wheel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function wheel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("wheel", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function copy(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function copy(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("copy", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function cut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function cut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("cut", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function paste(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function paste(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("paste", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function abort(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function abort(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("abort", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function blur(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function blur(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("blur", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function focusIn(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function focusIn(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("focusin", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function focusOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function focusOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("focusout", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function canPlay(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function canPlay(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("canplay", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function canPlayThrough(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function canPlayThrough(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("canplaythrough", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function change(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function change(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("change", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function click(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function click(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("click", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function contextMenu(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function contextMenu(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("contextmenu", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dblClick(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dblClick(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dblclick", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function drag(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function drag(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("drag", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dragEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dragEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dragend", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dragEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dragEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dragenter", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dragLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dragLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dragleave", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dragOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dragOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dragover", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function dragStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function dragStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("dragstart", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function drop(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function drop(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("drop", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function durationChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function durationChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("durationchange", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function emptied(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function emptied(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("emptied", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function ended(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function ended(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("ended", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function input(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function input(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("input", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function invalid(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function invalid(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("invalid", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function keyDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function keyDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("keydown", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function keyPress(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function keyPress(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("keypress", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function keyUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function keyUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("keyup", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function load(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function load(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("load", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function loadedData(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function loadedData(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("loadeddata", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function loadedMetadata(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function loadedMetadata(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("loadedmetadata", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function loadStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function loadStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("loadstart", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mousedown", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mouseenter", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mouseleave", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mousemove", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mouseout", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mouseover", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function mouseUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function mouseUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("mouseup", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pause(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pause(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pause", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function play(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function play(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("play", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function playing(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function playing(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("playing", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function progress(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function progress(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("progress", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function rateChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function rateChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("ratechange", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function reset(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function reset(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("reset", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function scroll(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function scroll(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("scroll", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function seeked(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function seeked(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("seeked", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function seeking(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function seeking(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("seeking", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function select(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function select(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("select", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function show(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function show(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("show", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function stalled(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function stalled(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("stalled", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function submit(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function submit(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("submit", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function suspEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function suspEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("suspend", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function timeUpdate(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function timeUpdate(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("timeupdate", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function volumeChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function volumeChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("volumechange", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function waiting(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function waiting(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("waiting", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerCancel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerCancel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointercancel", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerDown(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerdown", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerUp(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerup", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointermove", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerOut(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerout", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerOver(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerover", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerEnter(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerenter", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerLeave(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerleave", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function gotPointerCapture(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function gotPointerCapture(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("gotpointercapture", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function lostPointerCapture(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function lostPointerCapture(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("lostpointercapture", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerLockChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerLockChange(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerlockchange", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function pointerLockError(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function pointerLockError(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("pointerlockerror", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function error(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function error(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("error", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function touchStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function touchStart(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("touchstart", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function touchEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function touchEnd(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("touchend", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function touchMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function touchMove(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("touchmove", handler, mode, noDefault, capture);
 	}
 
 
 	/** Event */
-	public function touchCancel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function touchCancel(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("touchcancel", handler, mode, noDefault, capture);
 	}
 	
 	
 	/** Event */
-	public function readyState(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function readyState(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("readystatechange", handler, mode, noDefault, capture);
 	}
 	
 	
 	/** Event */
-	public function visibility(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function visibility(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("visibility", handler, mode, noDefault, capture);
 	}
 	
 	
 	/** Event */
-	public function resize(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):IEventGroup {
+	public function resize(?handler:Dynamic, ?mode:Dynamic, ?noDefault:Bool, ?capture:Bool):EventGroup {
 		return on("resize", handler, mode, noDefault, capture);
 	}
 	
 	/** Remove all events */
 	public function dispose():Void {
-		Dice.Values(_e(), function(v:IEventGroup) {
+		Dice.Values(_e(), function(v:EventGroup) {
 			v.dispose(target);
 		});
 	}
 	
 	/** Clone all event methods */
-	public function cloneFrom(origin:IDispatcher):IDispatcher {
-		Dice.All((cast origin)._e(), function(p:String, v:IEventGroup):Void {
+	public function cloneFrom(origin:Dispatcher):Dispatcher {
+		Dice.All((cast origin)._e(), function(p:String, v:EventGroup):Void {
 			on(p).cloneFrom(v);
 		});
 		return this;

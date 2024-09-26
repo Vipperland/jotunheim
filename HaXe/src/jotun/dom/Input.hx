@@ -11,7 +11,7 @@ import js.html.FileReader;
 import js.html.InputElement;
 import js.RegExp;
 import jotun.dom.Img;
-import jotun.events.IEvent;
+import jotun.events.Activation;
 import jotun.utils.Dice;
 
 /**

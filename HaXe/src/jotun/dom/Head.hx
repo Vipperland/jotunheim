@@ -22,7 +22,7 @@ class Head extends Display{
 		super(q,null);
 	}
 	
-	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):Displayable {
 		if (Jotun.resources.exists(q)){
 			Jotun.resources.build(q, data).children().each(cast addChild);
 			
@@ -32,9 +32,9 @@ class Head extends Display{
 		return this;
 	}
 	
-	public function bind(content:String, type:String, ?id:String):IDisplay {
+	public function bind(content:String, type:String, ?id:String):Displayable {
 		if(content != null){
-			var s:IDisplay;
+			var s:Displayable;
 			if (content.length > 1) {
 				switch(type) {
 					case 'css', 'style': { 

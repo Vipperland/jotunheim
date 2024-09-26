@@ -1,6 +1,6 @@
 package jotun.php.db;
 import jotun.errors.Error;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 import jotun.php.db.IGate;
 import jotun.php.db.Token;
 import jotun.php.db.objects.DataTable;
@@ -30,7 +30,7 @@ class Gate implements IGate {
 	
 	private var _tables:Dynamic;
 	
-	private var _errors:Array<IError>;
+	private var _errors:Array<ErrorDescriptior>;
 	
 	private var _onLog:Array<String->Void>;
 	
@@ -38,8 +38,8 @@ class Gate implements IGate {
 	
 	public var command:ICommand;
 	
-	public var errors(get, null):Array<IError>;
-	public function get_errors():Array<IError> { return _errors; }
+	public var errors(get, null):Array<ErrorDescriptior>;
+	public function get_errors():Array<ErrorDescriptior> { return _errors; }
 	
 	public function getName():String {
 		return _token.db;

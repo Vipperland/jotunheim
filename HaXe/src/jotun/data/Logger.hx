@@ -1,7 +1,7 @@
 package jotun.data;
 import haxe.Log;
 #if js
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 	import js.Syntax;
 #elseif php
 	import php.Lib;

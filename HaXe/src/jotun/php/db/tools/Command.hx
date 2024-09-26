@@ -4,7 +4,7 @@ import php.Lib;
 import php.NativeArray;
 import jotun.php.db.pdo.Statement;
 import jotun.errors.Error;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 import jotun.utils.Dice;
 
 /**
@@ -17,7 +17,7 @@ class Command implements ICommand {
 	
 	private var _parameters:Array<Dynamic>;
 	
-	private var _errors:Array<IError>;
+	private var _errors:Array<ErrorDescriptior>;
 	
 	private var _log:String->Void;
 	
@@ -30,10 +30,10 @@ class Command implements ICommand {
 	
 	public var result:Array<Dynamic>;
 	
-	public var errors(get, null):Array<IError>;
-	private function get_errors():Array<IError> { return _errors; }
+	public var errors(get, null):Array<ErrorDescriptior>;
+	private function get_errors():Array<ErrorDescriptior> { return _errors; }
 
-	public function new(statement:Statement, query:String, parameters:Array<Dynamic>, errors:Array<IError>, log:String->Void) {
+	public function new(statement:Statement, query:String, parameters:Array<Dynamic>, errors:Array<ErrorDescriptior>, log:String->Void) {
 		_log = log;
 		_errors = errors;
 		_query = query;

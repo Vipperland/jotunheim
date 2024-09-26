@@ -1,15 +1,19 @@
 package jotun.dom;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.events.Dispatcher;
+import jotun.events.Activation;
 import jotun.math.Point;
 import jotun.tools.Key;
 import jotun.tools.Utils;
+import jotun.utils.Dice;
 import jotun.utils.ITable;
 import js.Browser;
 import js.html.BeforeUnloadEvent;
 import js.html.Element;
 import js.html.Event;
+import js.html.KeyboardEvent;
 import js.html.MouseEvent;
 import js.lib.Error;
 
@@ -34,6 +38,8 @@ class Document extends Display {
 	
 	private var __cursor__:Dynamic = { x:0, y:0 };
 	
+	private var __keys:DynamicAccess<Dynamic> = { };
+	
 	/**
 	 * Document body
 	 */
@@ -50,6 +56,18 @@ class Document extends Display {
 	
 	private function __init__() {
 		Browser.window.addEventListener('scroll', _hookScroll);
+	}
+	
+	private function _hookKeyUp(e:Activation):Void {
+		var event:KeyboardEvent = cast e.event;
+		__keys.remove(event.key);
+		__keys.remove(event.code);
+	}
+	
+	private function _hookKeyDown(e:Activation):Void {
+		var event:KeyboardEvent = cast e.event;
+		__keys.set(event.key, true);
+		__keys.set(event.code, true);
 	}
 	
 	private function _hookScroll(e:Event):Void {
@@ -80,6 +98,10 @@ class Document extends Display {
 		}
 	}
 	
+	public function isKeyPressed(key:Dynamic):Bool {
+		return __keys.get(key) == true;
+	}
+	
 	/**
 	 * Show window/tab exit confirmation dialog
 	 * @param	mode
@@ -103,7 +125,7 @@ class Document extends Display {
 		if (body.hasAttribute('xcache')){
 			Jotun.cache.enable(Std.parseInt(body.attribute('xcache')));
 		}
-		Jotun.all("[jtn-module]").each(function(o:IDisplay){
+		Jotun.all("[jtn-module]").each(function(o:Displayable){
 			var n:String = o.attribute('module-name');
 			if (n == null){
 				n = 'Root';
@@ -183,11 +205,19 @@ class Document extends Display {
 		if (Std.isOfType(target, String)){
 			target = Jotun.one(target).element;
 		}
-		if (Std.isOfType(target, IDisplay)){
+		if (Std.isOfType(target, Displayable)){
 			target = target.element;
 		}
 		var pos:Point = Utils.getPosition(target);
 		scroll(cast pos.x - offX, cast pos.y - offY, ease);
+	}
+	
+	public function trackKeyboard():Void {
+		if(__keys.get('_enabled') == false){
+			events.keyDown(_hookKeyDown);
+			events.keyUp(_hookKeyUp);
+			__keys.set('_enabled', true);
+		}
 	}
 	
 	/**
@@ -225,7 +255,7 @@ class Document extends Display {
 	 * @return
 	 */
 	public function hasFocusedInput():Bool {
-		var disp:IDisplay = getFocused();
+		var disp:Displayable = getFocused();
 		return Std.isOfType(disp, Input) || Std.isOfType(disp, TextArea) || disp.isEditable();
 	}
 	
@@ -233,7 +263,7 @@ class Document extends Display {
 	 * Current selected element
 	 * @return
 	 */
-	public function getFocused():IDisplay {
+	public function getFocused():Displayable {
 		var el:Element = Browser.document.activeElement;
 		return el != null ? Utils.displayFrom(el) : null;
 	}
@@ -250,14 +280,14 @@ class Document extends Display {
 		if (i.length() > 0) {
 			i.hide();
 			var content:String = "";
-			i.each(function(d:IDisplay) {
+			i.each(function(d:Displayable) {
 				if (!d.is(cast ['script','style'])) {
 					content += d.element.outerHTML;
 					d.hide();
 				}
 			});
 			if (content.length > 0) {
-				var r:IDisplay = new Div();
+				var r:Displayable = new Div();
 				r.mount(content);
 				if (Utils.isValid(exclude)){
 					r.all(exclude).remove();

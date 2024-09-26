@@ -1,6 +1,6 @@
 ﻿package jotun.serial;
 #if !php 
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 #end
 import haxe.Json;
 import jotun.logical.Flag;
@@ -22,7 +22,7 @@ class JsonTool {
 			return b.value;
 		}
 		#if !php
-		else if(Std.isOfType(b, IDisplay)){
+		else if(Std.isOfType(b, Displayable)){
 			return b.typeOf();
 		}
 		#end

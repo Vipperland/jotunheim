@@ -1,5 +1,5 @@
 package jotun.utils;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.dom.Input;
 import jotun.tools.Utils;
 import js.Syntax;
@@ -11,21 +11,21 @@ import js.html.Element;
  */
 class Reactor {
 	
-	static private var _listeners:Array<IDisplay->Void> = [];
+	static private var _listeners:Array<Displayable->Void> = [];
 	
-	static private function _dispatch(o:IDisplay):Void {
+	static private function _dispatch(o:Displayable):Void {
 		for(i in 0..._listeners.length){
 			_listeners[i](o);
 		}
 	}
 	
-	static private function _react_clear(o:IDisplay, attr:String, prop:String){
+	static private function _react_clear(o:Displayable, attr:String, prop:String){
 		if (o.hasAttribute(attr)){
 			o.clearAttribute(prop);
 		}
 	}
 	
-	static private function _react_commit_up(o:IDisplay){
+	static private function _react_commit_up(o:Displayable){
 		if (o.data.__co == null){
 			o.data.__co = 0;
 			o.attribute('jtn-commit', 'true');
@@ -33,7 +33,7 @@ class Reactor {
 		++o.data.__co;
 	}
 	
-	static private function _react_commit_down(o:IDisplay){
+	static private function _react_commit_down(o:Displayable){
 		--o.data.__co;
 		if (o.data.__co == 0){
 			Reflect.deleteField(o.data, '__co');
@@ -41,8 +41,8 @@ class Reactor {
 		}
 	}
 	
-	static private function _react_fill_after(to:IDisplay):Void {
-		to.all('[jtn-commit]').add(to).each(function(o:IDisplay){
+	static private function _react_fill_after(to:Displayable):Void {
+		to.all('[jtn-commit]').add(to).each(function(o:Displayable){
 			o.data.__cf = true;
 			_react_fill_data(to.data, null, o);
 			_react_fill_attr(to.data, null, o);
@@ -60,7 +60,7 @@ class Reactor {
 	 * @param	path
 	 * @param	o
 	 */
-	static private function _react_fill_data(data:Dynamic, path:String, o:IDisplay){
+	static private function _react_fill_data(data:Dynamic, path:String, o:Displayable){
 		if (o.hasAttribute('jtn-data')){
 			if(path != null){
 				if (o.data.__qd == null){
@@ -92,7 +92,7 @@ class Reactor {
 	 * @param	o
 	 * @param	attr
 	 */
-	static private function _react_fill_visibility(data:Dynamic, path:String, o:IDisplay, attr:String){
+	static private function _react_fill_visibility(data:Dynamic, path:String, o:Displayable, attr:String){
 		if (o.hasAttribute(attr)){
 			if(path != null){
 				if (o.data.__qv == null){
@@ -135,7 +135,7 @@ class Reactor {
 	 * @param	path
 	 * @param	o
 	 */
-	static private function _react_fill_class(data:Dynamic, path:String, o:IDisplay){
+	static private function _react_fill_class(data:Dynamic, path:String, o:Displayable){
 		if (o.hasAttribute('jtn-class')){
 			if(path != null){
 				if (o.data.__qc == null){
@@ -170,7 +170,7 @@ class Reactor {
 	 * @param	path
 	 * @param	o
 	 */
-	static private function _react_fill_attr(data:Dynamic, path:String, o:IDisplay){
+	static private function _react_fill_attr(data:Dynamic, path:String, o:Displayable){
 		if (o.hasAttribute('jtn-attr')){
 			if(path != null){
 				if (o.data.__qa == null){
@@ -199,7 +199,7 @@ class Reactor {
 	 * @param	path
 	 * @param	o
 	 */
-	static private function _react_fill_style(data:Dynamic, path:String, o:IDisplay){
+	static private function _react_fill_style(data:Dynamic, path:String, o:Displayable){
 		if (o.hasAttribute('jtn-style')){
 			if(path != null){
 				if (o.data.__qs == null){
@@ -222,28 +222,28 @@ class Reactor {
 		}
 	}
 	
-	static private function _react_fill(to:IDisplay, data:Dynamic, path:String){
+	static private function _react_fill(to:Displayable, data:Dynamic, path:String){
 		if (Std.isOfType(data, String) || Std.isOfType(data, Float) || Std.isOfType(data, Bool)){
 			// Simple write content
-			to.all('[jtn-data*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-data*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_data(data, path, o);
 			});
 			// Write object attributes
-			to.all('[jtn-attr*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-attr*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_attr(data, path, o);
 			});
 			// Write object styles
-			to.all('[jtn-style*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-style*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_style(data, path, o);
 			});
 			// Write object classes
-			to.all('[jtn-class*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-class*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_class(data, path, o);
 			});
-			to.all('[jtn-show-if*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-show-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_visibility(data, path, o, 'jtn-show-if');
 			});
-			to.all('[jtn-hide-if*="{{' + path + '}}"]').add(to).each(function(o:IDisplay){
+			to.all('[jtn-hide-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_visibility(data, path, o, 'jtn-hide-if');
 			});
 		}else {
@@ -271,19 +271,19 @@ class Reactor {
 	 * @param	to
 	 * @param	data
 	 */
-	static public function apply(to:IDisplay, data:Dynamic):Void{
+	static public function apply(to:Displayable, data:Dynamic):Void{
 		_react_fill(to, data, '');
 		_react_fill_after(to);
 		_dispatch(to);
 	}
 	
-	static public function listen(handler:IDisplay->Void):Void {
+	static public function listen(handler:Displayable->Void):Void {
 		if(!_listeners.contains(handler)){
 			_listeners.push(handler);
 		}
 	}
 	
-	static public function unlisten(handler:IDisplay->Void):Void {
+	static public function unlisten(handler:Displayable->Void):Void {
 		_listeners.remove(handler);
 	}
 	

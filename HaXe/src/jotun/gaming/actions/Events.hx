@@ -5,7 +5,9 @@ import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.EventController;
 import jotun.gaming.actions.EventContext;
 import jotun.gaming.actions.Resolution;
+#if js
 import jotun.timer.DelayedCall;
+#end
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -60,7 +62,9 @@ class Events {
 	private var _is_waiting:Bool;
 	private var _cursor_pos:Int;
 	private var _context:EventContext;
+	#if js
 	private var _delayed:DelayedCall;
+	#end
 	
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;

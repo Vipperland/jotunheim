@@ -304,7 +304,6 @@
 				<div class="shelf" action-trigger="download">
 					<div class="cel"><a href="jotum_carousel3d.zip" target="_blank">Carousel3D Source code and Jotum Framework</a></div>
 				</div>
-				
 				<hr/>
 				<div class="shelf" action-trigger="axys" on-key-trigger="q">
 					<div class="cel-9">Toggle Horizontal/Vertical Axys (Press Q)</div>
@@ -344,11 +343,10 @@
 				// Apply color background to each panel
 				var i = 0;
 				Jotun.all('.panel').each(function(o){
-					var c = new J_ARGB(o.attribute('t-style'));
-					var b = c.multiply(.2);
-					o.attribute('o-style',b.css());
+					var c = J_Utils.color(o.attribute('t-style'));
+					o.attribute('o-style',J_Utils.colorToCss(c, .2));
 					o.style({
-						backgroundColor:c.css(),
+						backgroundColor:J_Utils.colorToCss(c, 1),
 					});
 					i += 1;
 				});
@@ -428,9 +426,9 @@
 				
 				// ================== Fold/Unfold effect between panels 0 and 1 ==================
 				
-				J_Ticker.add(function(){
+				Jotun.timer.add(function(){
 					if(targetAngle != endAngle){
-						targetAngle += (endAngle - targetAngle) * .1;
+						targetAngle += (endAngle - targetAngle) * .03;
 						carousel3d.setAngle(targetAngle);
 					}
 				});

@@ -5,10 +5,9 @@ import haxe.extern.EitherType;
 import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.data.Logger;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.events.Dispatcher;
-import jotun.events.IDispatcher;
-import jotun.events.IEventGroup;
+import jotun.events.EventGroup;
 import jotun.math.Matrix3D;
 import jotun.math.Point;
 import jotun.objects.Query;
@@ -32,7 +31,7 @@ import js.html.Node;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("J_Display")
-class Display extends Query implements IDisplay {
+class Display extends Query implements Displayable {
 	
 	private static var _CNT:UInt = 0;
 	
@@ -43,7 +42,7 @@ class Display extends Query implements IDisplay {
 	 * @param	q
 	 * @return
 	 */
-	public static function ofKind(q:String):IDisplay {
+	public static function ofKind(q:String):Displayable {
 		return Utils.displayFrom(Browser.document.createElement(q));
 	}
 	
@@ -52,7 +51,7 @@ class Display extends Query implements IDisplay {
 	 * @param	id
 	 * @return
 	 */
-	public static function fromGC(id:UInt):IDisplay {
+	public static function fromGC(id:UInt):Displayable {
 		return Reflect.field(_DATA, ''+id);
 	}
 	
@@ -62,7 +61,7 @@ class Display extends Query implements IDisplay {
 	 */
 	static public function clearCache():Void {
 		var count:Int = 0;
-		Dice.Values(_DATA, function(v:IDisplay) {
+		Dice.Values(_DATA, function(v:Displayable) {
 			if (v.element == null || !v.element.isConnected) {
 				v.dispose();
 				++count;
@@ -81,7 +80,7 @@ class Display extends Query implements IDisplay {
 		var count:Int = 0;
 		var idle:Int = 0;
 		var awake:Int = 0;
-		Dice.Values(_DATA, function(v:IDisplay):Void {
+		Dice.Values(_DATA, function(v:Displayable):Void {
 			if(v.element != null){
 				if (!v.element.isConnected){
 					if(v.data.idleTime == null){
@@ -108,7 +107,7 @@ class Display extends Query implements IDisplay {
 	
 	private var _uid:UInt;
 	
-	private var _parent:IDisplay;
+	private var _parent:Displayable;
 	
 	private var _children:ITable;
 	
@@ -122,7 +121,7 @@ class Display extends Query implements IDisplay {
 	
 	public var element:Element;
 	
-	public var events:IDispatcher;
+	public var events:Dispatcher;
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
 		if (Std.isOfType(p, String) && v != null) {
@@ -166,7 +165,7 @@ class Display extends Query implements IDisplay {
 		return element.querySelector(q) != null;
 	}
 	
-	public function click():IDisplay {
+	public function click():Displayable {
 		element.click();
 		return this;
 	}
@@ -175,7 +174,7 @@ class Display extends Query implements IDisplay {
 		return Jotun.all(q, element);
 	}
 	
-	public function one(q:String):IDisplay {
+	public function one(q:String):Displayable {
 		return Jotun.one(q, element);
 	}
 	
@@ -226,12 +225,12 @@ class Display extends Query implements IDisplay {
 		});
 	}
 	
-	public function focus():IDisplay {
+	public function focus():Displayable {
 		element.focus();
 		return this;
 	}
 	
-	public function getChild(i:Int, ?update:Bool):IDisplay {
+	public function getChild(i:Int, ?update:Bool):Displayable {
 		if (_children == null || update == true){
 			_children = children();
 		}
@@ -250,14 +249,14 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	public function setIndex(i:UInt):IDisplay {
+	public function setIndex(i:UInt):Displayable {
 		if (parent() != null){
 			_parent.addChild(this, i);
 		}
 		return this;
 	}
 	
-	public function indexOf(q:IDisplay):Int {
+	public function indexOf(q:Displayable):Int {
 		var chd = element.childNodes;
 		var len = chd.length;
 		var cnt = 0;
@@ -270,7 +269,7 @@ class Display extends Query implements IDisplay {
 		return cnt == len ? -1 : cnt;
 	}
 	
-	public function addChild(q:IDisplay, ?at:Int = -1):IDisplay {
+	public function addChild(q:Displayable, ?at:Int = -1):Displayable {
 		Reflect.setField(q, '_parent', this);
 		_children = null;
 		if (at != -1) {
@@ -282,25 +281,25 @@ class Display extends Query implements IDisplay {
 		return q;
 	}
 	
-	public function addChildren(q:ITable, ?at:Int = -1):IDisplay {
-		var l:IDisplay = null;
+	public function addChildren(q:ITable, ?at:Int = -1):Displayable {
+		var l:Displayable = null;
 		if (at == -1){
 			q.each(cast addChild);
 		} else {
-			q.each(function(o:IDisplay) {
+			q.each(function(o:Displayable) {
 				addChild(o, at++);
 			});
 		}
 		return q.obj(q.length()-1);
 	}
 	
-	public function addTextElement(q:String):IDisplay {
-		var t:IDisplay = new Text(q);
+	public function addTextElement(q:String):Displayable {
+		var t:Displayable = new Text(q);
 		addChild(t);
 		return t;
 	}
 	
-	public function removeChild(q:IDisplay):IDisplay {
+	public function removeChild(q:Displayable):Displayable {
 		if(q.element.parentElement == element){
 			_children = null;
 			q.remove();
@@ -308,20 +307,20 @@ class Display extends Query implements IDisplay {
 		return q;
 	}
 	
-	public function removeChildAt(index:Int):IDisplay {
-		var child:IDisplay = getChild(index, true);
+	public function removeChildAt(index:Int):Displayable {
+		var child:Displayable = getChild(index, true);
 		return child != null ? child.remove() : null;
 	}
 	
-	public function removeFirstChild():IDisplay {
+	public function removeFirstChild():Displayable {
 		return removeChildAt(0);
 	}
 	
-	public function removeLastChild():IDisplay {
+	public function removeLastChild():Displayable {
 		return removeChildAt(length());
 	}
 	
-	public function removeChildren(min:UInt = 0):IDisplay {
+	public function removeChildren(min:UInt = 0):Displayable {
 		var t:UInt = children().length();
 		while (t > min){
 			removeChild(getChild(--t));
@@ -329,31 +328,31 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function remove():IDisplay {
+	public function remove():Displayable {
 		this._parent = null;
 		if (element.parentElement != null) element.parentElement.removeChild(element);
 		return this;
 	}
 	
-	public function rotateX(x:Float):IDisplay {
+	public function rotateX(x:Float):Displayable {
 		data.__changed = true;
 		data.__rotationX = Matrix3D.rotateX(x);
 		return this;
 	}
 	
-	public function rotateY(x:Float):IDisplay {
+	public function rotateY(x:Float):Displayable {
 		data.__changed = true;
 		data.__rotationY = Matrix3D.rotateY(x);
 		return this;
 	}
 	
-	public function rotateZ(x:Float):IDisplay {
+	public function rotateZ(x:Float):Displayable {
 		data.__changed = true;
 		data.__rotationZ = Matrix3D.rotateZ(x);
 		return this;
 	}
 	
-	public function rotate(x:Float, y:Float, z:Float):IDisplay {
+	public function rotate(x:Float, y:Float, z:Float):Displayable {
 		if (x != null) {
 			rotateX(x);
 		}
@@ -366,19 +365,19 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function translate(x:Float, y:Float, z:Float):IDisplay {
+	public function translate(x:Float, y:Float, z:Float):Displayable {
 		data.__changed = true;
 		data.__translation = Matrix3D.translate(x, y, z);
 		return this;
 	}
 	
-	public function scale(x:Float, y:Float, z:Float):IDisplay {
+	public function scale(x:Float, y:Float, z:Float):Displayable {
 		data.__changed = true;
 		data.__scale = Matrix3D.scale(x, y, z);
 		return this;
 	}
 	
-	public function transform():IDisplay {
+	public function transform():Displayable {
 		if (data.__changed){
 			var t:Array<Array<Float>> = data.__transform;
 			if (t == null) {
@@ -402,7 +401,7 @@ class Display extends Query implements IDisplay {
 	public function enable():Void {
 		style('pointerEvents', 'all');
 		Reflect.deleteField(data, '__disabled');
-		events.each(function(v:IEventGroup):Bool {
+		events.each(function(v:EventGroup):Bool {
 			v.enabled = true;
 			return false;
 		});
@@ -411,7 +410,7 @@ class Display extends Query implements IDisplay {
 	public function disable():Void {
 		style('pointerEvents', 'none');
 		Reflect.setField(data, '__disabled', true);
-		events.each(function(v:IEventGroup):Bool {
+		events.each(function(v:EventGroup):Bool {
 			v.enabled = false;
 			return false;
 		});
@@ -460,7 +459,7 @@ class Display extends Query implements IDisplay {
 		return element.classList.contains(name);
 	}
 	
-	public function toggle(styles:String):IDisplay {
+	public function toggle(styles:String):Displayable {
 		Dice.Values(styles.split(' '), function(v:String){
 			css((hasCss(v) ? '/' : '') + v); 
 		});
@@ -543,43 +542,43 @@ class Display extends Query implements IDisplay {
 		return attribute('value');
 	}
 	
-	public function writeText(q:Dynamic):IDisplay {
+	public function writeText(q:Dynamic):Displayable {
 		empty(false);
 		element.innerText = q;
 		return this;
 	}
 	
-	public function appendText(q:Dynamic):IDisplay {
+	public function appendText(q:Dynamic):Displayable {
 		element.innerText += q;
 		return this;
 	}
 	
-	public function writeHtml(q:Dynamic):IDisplay {
+	public function writeHtml(q:Dynamic):Displayable {
 		empty(false);
 		element.innerHTML = q;
 		return this;
 	}
 	
-	public function appendHtml(q:Dynamic):IDisplay {
+	public function appendHtml(q:Dynamic):Displayable {
 		element.innerHTML = element.innerHTML + q;
 		return this;
 	}
 	
-	public function colorTransform(r:Float, g:Float, b:Float, ?a:Float = 1):IDisplay {
+	public function colorTransform(r:Float, g:Float, b:Float, ?a:Float = 1):Displayable {
 		var name:String = 'svgColor_' + _uid;
 		XCode.filter(name, a, r, g, b, true);
 		filters(name);
 		return this;
 	}
 	
-	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):IDisplay {
+	public function displacement(freq:Float, octaves:Int, scale:Int, ?seed:Int = 0):Displayable {
 		var name:String = 'svgDisp_' + _uid;
 		XCode.displacement(name, freq, octaves, scale, seed, true);
 		filters(name);
 		return this;
 	}
 	
-	public function imageFilter(id:String, data:String, width:String, height:String, x:String, y:String):IDisplay {
+	public function imageFilter(id:String, data:String, width:String, height:String, x:String, y:String):Displayable {
 		var name:String = 'imgFtr_' + _uid;
 		XCode.imageFilter(name, data, width, height, x, y, true);
 		filters(name);
@@ -616,7 +615,7 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+	public function mount(q:String, ?data:Dynamic, ?at:Int = -1):Displayable {
 		if (Std.isOfType(data, Int) && at == -1){
 			at = data >> 0;
 		}
@@ -630,7 +629,7 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	public function empty(?fast:Bool):IDisplay {
+	public function empty(?fast:Bool):Displayable {
 		if (fast) {
 			element.innerHTML = "";
 		}else{
@@ -642,12 +641,12 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function on(type:String, handler:Dynamic, ?mode:Dynamic):IDisplay {
+	public function on(type:String, handler:Dynamic, ?mode:Dynamic):Displayable {
 		events.on(type, handler, mode);
 		return this;
 	}
 	
-	public function parent(levels:UInt=0):IDisplay {
+	public function parent(levels:UInt=0):Displayable {
 		if (_parent == null && element.parentElement != null){
 			_parent = Utils.displayFrom(element.parentElement);
 		}
@@ -658,7 +657,7 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	public function parentQuery(q:String):IDisplay {
+	public function parentQuery(q:String):Displayable {
 		if (!is('html')){
 			if (parent().matches(q)){
 				return parent();
@@ -750,7 +749,7 @@ class Display extends Query implements IDisplay {
 		return !r.completed;
 	}
 	
-	public function addTo(?target:IDisplay):IDisplay {
+	public function addTo(?target:Displayable):Displayable {
 		if (target != null){
 			target.addChild(this);
 		} else if (Jotun.document != null){
@@ -763,7 +762,7 @@ class Display extends Query implements IDisplay {
 		return this;
 	}
 	
-	public function addToBody():IDisplay {
+	public function addToBody():Displayable {
 		if (Jotun.document != null){
 			Jotun.document.body.addChild(this);
 		}
@@ -774,7 +773,7 @@ class Display extends Query implements IDisplay {
 		return Utils.getPosition(element);
 	}
 	
-	public function fit(width:Dynamic, height:Dynamic):IDisplay {
+	public function fit(width:Dynamic, height:Dynamic):Displayable {
 		this.width(width == null ? this.width() : width);
 		this.height(height == null ? this.height() : height);
 		return this;
@@ -791,12 +790,12 @@ class Display extends Query implements IDisplay {
 		return element.id;
 	}
 	
-	public function lookAt(?y:Int, ?x:Int):IDisplay {
+	public function lookAt(?y:Int, ?x:Int):Displayable {
 		Jotun.document.scrollTo(this, y, x);
 		return this;
 	}
 	
-	public function reloadScripts():IDisplay {
+	public function reloadScripts():Displayable {
 		all('script').each(cast function(o:Script){
 			o.remove();
 			var u:String = o.attribute('src');
@@ -840,11 +839,11 @@ class Display extends Query implements IDisplay {
 		};
 	}
 	
-	public function previous():IDisplay {
+	public function previous():Displayable {
 		return Utils.displayFrom(element.previousElementSibling);
 	}
 	
-	public function next():IDisplay {
+	public function next():Displayable {
 		return Utils.displayFrom(element.nextElementSibling);
 	}
 	
@@ -864,9 +863,9 @@ class Display extends Query implements IDisplay {
 		}
 	}
 	
-	public function clone(?deep:Bool):IDisplay {
+	public function clone(?deep:Bool):Displayable {
 		clearAttribute('jtn-id');
-		var copy:IDisplay = new Display().writeHtml(element.outerHTML).getChild(0);
+		var copy:Displayable = new Display().writeHtml(element.outerHTML).getChild(0);
 		copy.attribute('jtn-copy-of', _uid);
 		attribute('jtn-id', _uid);
 		if (deep){
@@ -879,7 +878,7 @@ class Display extends Query implements IDisplay {
 		return hasAttribute('jtn-copy-of');
 	}
 	
-	public function getOriginal():IDisplay {
+	public function getOriginal():Displayable {
 		return fromGC(Std.int(attribute('jtn-copy-of')));
 	}
 	

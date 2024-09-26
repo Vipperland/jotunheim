@@ -1,11 +1,11 @@
 package jotun.errors;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class Error implements IError {
+class Error implements ErrorDescriptior {
 	
 	public var object:Dynamic;
 	

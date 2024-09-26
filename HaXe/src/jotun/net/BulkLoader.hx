@@ -1,7 +1,7 @@
 package jotun.net;
 import haxe.Rest;
 import jotun.errors.Error;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 import jotun.signals.IPipe;
 import jotun.signals.ISignals;
 import jotun.signals.Signals;
@@ -34,7 +34,7 @@ class BulkLoader {
 	
 	public var totalLoaded:Int;
 	
-	public var lastError:IError;
+	public var lastError:ErrorDescriptior;
 	
 	public var signals:ISignals;
 	

@@ -4,7 +4,7 @@ import jotun.tools.Utils;
 import js.Browser;
 import js.html.Blob;
 import js.html.LinkElement;
-import jotun.events.IEvent;
+import jotun.events.Activation;
 
 /**
  * ...
@@ -28,7 +28,7 @@ class Link extends Display{
 		super(q, null);
 	}
 	
-	public function href(url:String, ?handler:IEvent->Void):String {
+	public function href(url:String, ?handler:Activation->Void):String {
 		if(url != null){
 			cast(element, LinkElement).href = url;
 			if (handler != null) {

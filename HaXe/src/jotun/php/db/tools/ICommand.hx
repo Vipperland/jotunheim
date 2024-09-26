@@ -1,6 +1,6 @@
 package jotun.php.db.tools;
 import jotun.php.db.pdo.Statement;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 
 /**
  * @author Rafael Moreira
@@ -21,7 +21,7 @@ interface ICommand {
 	/**
 	 * Running error on query
 	 */
-	public var errors(get, null):Array<IError>;
+	public var errors(get, null):Array<ErrorDescriptior>;
 	
 	/**
 	 * Flush arguments to query

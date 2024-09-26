@@ -2,7 +2,6 @@ package jotun.utils;
 import jotun.math.JMath;
 import jotun.serial.Packager;
 import jotun.tools.Key;
-import jotun.gateway.domain.OutputCore;
 import php.Syntax;
 
 /**

@@ -4,7 +4,7 @@ import jotun.php.db.objects.IDataTable;
 import jotun.php.db.tools.ICommand;
 import jotun.php.db.tools.IExtCommand;
 import jotun.php.db.tools.IQueryBuilder;
-import jotun.errors.IError;
+import jotun.errors.ErrorDescriptior;
 
 /**
  * @author Rafael Moreira
@@ -25,7 +25,7 @@ interface IGate {
 	/**
 	 * Connection and Execution Errors
 	 */
-	public var errors(get, null):Array<IError>;
+	public var errors(get, null):Array<ErrorDescriptior>;
 	
 	/**
 	 * If the connection is available

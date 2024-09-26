@@ -3,7 +3,7 @@ import jotun.utils.IColor;
 import js.html.Element;
 import jotun.Jotun;
 import jotun.css.CSSGroup;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.dom.Style;
 import jotun.dom.Svg;
 import jotun.tools.Utils;
@@ -34,7 +34,7 @@ class XCode {
 			_filters = new Svg();
 			Jotun.document.head.addChild(_filters);
 		}
-		var filter:IDisplay = _filters.one('#' + id);
+		var filter:Displayable = _filters.one('#' + id);
 		if (filter != null){
 			if (replace){
 				_filters.removeChild(filter);

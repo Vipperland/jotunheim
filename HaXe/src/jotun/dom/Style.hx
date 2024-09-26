@@ -1,7 +1,7 @@
 package jotun.dom;
 import jotun.Jotun;
-import jotun.dom.IDisplay;
-import jotun.events.IEvent;
+import jotun.dom.Displayable;
+import jotun.events.Activation;
 import jotun.net.IRequest;
 import jotun.utils.Filler;
 import js.Browser;
@@ -43,7 +43,7 @@ class Style extends Display {
 			var file:String = url.shift();
 			if (file != null) {
 				var s:Link = new Link();
-				s.href(file, function(e:IEvent) {
+				s.href(file, function(e:Activation) {
 					Style.require(url, handler);
 				});
 				Jotun.document.head.addChild(s);
@@ -53,7 +53,7 @@ class Style extends Display {
 		}
 	}
 	
-	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):IDisplay {
+	override public function mount(q:String, ?data:Dynamic, ?at:Int = -1):Displayable {
 		if (Jotun.resources.exists(q)){
 			writeHtml(Jotun.resources.get(q, data));
 		}else {
@@ -68,7 +68,7 @@ class Style extends Display {
 		(cast element).type = "text/css";
 	}
 	
-	override public function addToBody():IDisplay {
+	override public function addToBody():Displayable {
 		Browser.document.head.appendChild(cast element);
 		return this;
 	}

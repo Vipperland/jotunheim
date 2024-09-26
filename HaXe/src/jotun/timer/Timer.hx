@@ -94,7 +94,7 @@ class Timer {
 	 * @return
 	 */
 	public function isActive():Bool {
-		return !_paused;
+		return _paused;
 	}
 	
 	/**
@@ -137,7 +137,7 @@ class Timer {
 	/**
 	 * Resume processes
 	 */
-	public function resume():Void {
+	public function play():Void {
 		if (_paused == true && _interval == -1){
 			_interval = Syntax.code('setInterval({0},1)', Syntax.code("{0}.bind({1})", _tick, this));
 			_paused = false;

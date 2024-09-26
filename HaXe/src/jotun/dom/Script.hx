@@ -1,7 +1,7 @@
 package jotun.dom;
 import jotun.Jotun;
-import jotun.dom.IDisplay;
-import jotun.events.IEvent;
+import jotun.dom.Displayable;
+import jotun.events.Activation;
 import jotun.net.IRequest;
 import jotun.utils.Filler;
 import js.Browser;
@@ -51,7 +51,7 @@ class Script extends Display {
 			if (file != null) {
 				var s:Script = new Script();
 				s.publish();
-				s.src(file, function(e:IEvent) {
+				s.src(file, function(e:Activation) {
 					Script.require(url, handler);
 				});
 			}
@@ -68,12 +68,12 @@ class Script extends Display {
 		object = cast element;
 	}
 	
-	public function type(q:String):IDisplay {
+	public function type(q:String):Displayable {
 		object.type = q;
 		return this;
 	}
 	
-	public function src(url:String, ?handler:IEvent->Void):Void {
+	public function src(url:String, ?handler:Activation->Void):Void {
 		object.src = url;
 		if (handler != null) {
 			events.load(handler, 1);
@@ -84,22 +84,22 @@ class Script extends Display {
 		object.async = true;
 	}
 	
-	override public function writeText(q:Dynamic):IDisplay {
+	override public function writeText(q:Dynamic):Displayable {
 		this.object.text = q;
 		return this;
 	}
 	
-	override public function appendText(q:Dynamic):IDisplay {
+	override public function appendText(q:Dynamic):Displayable {
 		this.object.text = this.object.text + q;
 		return this;
 	}
 	
-	override public function writeHtml(q:Dynamic):IDisplay {
+	override public function writeHtml(q:Dynamic):Displayable {
 		this.object.text = q;
 		return this;
 	}
 	
-	override public function appendHtml(q:Dynamic):IDisplay {
+	override public function appendHtml(q:Dynamic):Displayable {
 		this.object.text = this.object.text + q;
 		return this;
 	}

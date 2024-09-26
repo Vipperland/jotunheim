@@ -1,13 +1,9 @@
 package jotun.tools;
 import haxe.Json;
-import haxe.Log;
-import haxe.Rest;
+import jotun.Jotun;
 import jotun.math.Point;
-import jotun.math.RNG;
-import jotun.utils.Delegate;
 import jotun.utils.IColor;
 import jotun.utils.IDiceRoll;
-import jotun.utils.Recycler;
 
 #if js
 
@@ -23,22 +19,16 @@ import jotun.utils.Recycler;
 	import jotun.css.XCode;
 	import jotun.css.CSSGroup;
 	import jotun.dom.A;
-	import jotun.dom.Area;
 	import jotun.dom.Audio;
-	import jotun.dom.B;
-	import jotun.dom.Base;
 	import jotun.dom.Body;
-	import jotun.dom.BR;
 	import jotun.dom.Button;
 	import jotun.dom.Canvas;
 	import jotun.dom.Caption;
-	import jotun.dom.Col;
 	import jotun.dom.DataList;
 	import jotun.dom.Dialog;
 	import jotun.dom.Display;
 	import jotun.dom.Div;
 	import jotun.dom.Document;
-	import jotun.dom.Embed;
 	import jotun.dom.FieldSet;
 	import jotun.dom.Form;
 	import jotun.dom.H1;
@@ -48,33 +38,20 @@ import jotun.utils.Recycler;
 	import jotun.dom.H5;
 	import jotun.dom.H6;
 	import jotun.dom.Head;
-	import jotun.dom.HR;
 	import jotun.dom.Html;
-	import jotun.dom.I;
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 	import jotun.dom.IFrame;
 	import jotun.dom.Img;
 	import jotun.dom.Input;
 	import jotun.dom.Label;
-	import jotun.dom.Legend;
 	import jotun.dom.LI;
 	import jotun.dom.Link;
-	import jotun.dom.Map;
 	import jotun.dom.Media;
 	import jotun.dom.Meta;
-	import jotun.dom.Meter;
-	import jotun.dom.Mod;
-	import jotun.dom.Object;
 	import jotun.dom.OL;
 	import jotun.dom.OptGroup;
 	import jotun.dom.Option;
-	import jotun.dom.Output;
-	import jotun.dom.P;
-	import jotun.dom.Param;
 	import jotun.dom.Picture;
-	import jotun.dom.Pre;
-	import jotun.dom.Progress;
-	import jotun.dom.Quote;
 	import jotun.dom.Script;
 	import jotun.dom.Select;
 	import jotun.dom.Source;
@@ -135,19 +112,17 @@ class Utils{
 		
 		/** @private */
 		static private var _typeOf:Dynamic = { 
-			A:A, AREA:Area, AUDIO:Audio,
-			B:B, BASE:Base, BODY:Body, BR:BR, BUTTON:Button,
-			CANVAS:Canvas, CAPTION:Caption, COL:Col,
+			A:A, AUDIO:Audio,
+			BODY:Body, BUTTON:Button,
+			CANVAS:Canvas, CAPTION:Caption,
 			DATALIST:DataList, DIV:Div, DISPLAY:Display, DOCUMENT:Document,
-			EMBED:Embed,
 			FIELDSET:FieldSet, FORM:Form,
-			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HR:HR, HTML:Html,
-			I:I, IFRAME:IFrame, IMG:Img, INPUT:Input,
-			LABEL:Label, LEGEND:Legend, LI:LI, LINK:Link,
-			MAP:Map, MEDIA:Media, META:Meta, METER:Meter, MOD:Mod,
-			OBJECT:Object, OL:OL, OPTGROUP:OptGroup, OPTION:Option, OUTPUT:Output,
-			P:P, PARAM:Param, PICTURE:Picture, PRE:Pre, PROGRESS:Progress,
-			QUOTE:Quote,
+			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HTML:Html,
+			IFRAME:IFrame, IMG:Img, INPUT:Input,
+			LABEL:Label, LI:LI, LINK:Link,
+			MEDIA:Media, META:Meta,
+			OL:OL, OPTGROUP:OptGroup, OPTION:Option,
+			PICTURE:Picture,
 			SCRIPT:Script, SELECT:Select, SOURCE:Source, SPAN:Span, STYLE:Style, SVG:Svg,
 			TEXT:Text, TEXTAREA:TextArea, TITLE:Title, TRACK:Track,
 			UL:UL,
@@ -159,7 +134,7 @@ class Utils{
 		 * @param	t
 		 * @return
 		 */
-		static public function displayFrom(t:Element):IDisplay {
+		static public function displayFrom(t:Element):Displayable {
 			var id:UInt = null;
 			var type:String = null;
 			if (t.hasAttribute != null) {
@@ -192,7 +167,7 @@ class Utils{
 		 * @param	t
 		 * @return
 		 */
-		static public function getDisplay(t:Element):IDisplay {
+		static public function getDisplay(t:Element):Displayable {
 			var id:UInt = t.hasAttribute != null && t.hasAttribute('jtn-id') ? Std.parseInt(t.getAttribute('jtn-id')) : null;
 			if (id != null){
 				return Display.fromGC(id);
@@ -542,7 +517,7 @@ class Utils{
 	}
 	
 	public static function colorToCss(color:IColor, ?multiply:Float):String {
-		return 'rgb(' + Std.int(color.r * multiply) + ' ' + Std.int(color.g * multiply) + ' ' + Std.int(color.b * multiply) + '/' + Utils.toFixed((color.a * multiply) / 255, 2) + ')';
+		return 'rgb(' + Std.int(color.r * multiply) + ' ' + Std.int(color.g * multiply) + ' ' + Std.int(color.b * multiply) + '/' + Utils.toFixed(color.a  * multiply, 2) + ')';
 	}
 	
 	public static function range(value:Int, ...values:Int):Int {
@@ -606,6 +581,30 @@ class Utils{
 		static public function fnExtendClass(fn:Dynamic, obj:Dynamic):Dynamic {
 			fn.prototype = Syntax.code("Object.create({0})", obj.prototype);
 			return fn;
+		}
+		
+		static public function isCtrlKey():Bool {
+			return Jotun.document.isKeyPressed('_ctrl');
+		}
+		
+		static public function isAltKey():Bool {
+			return Jotun.document.isKeyPressed('_alt');
+		}
+		
+		static public function isShiftKey():Bool {
+			return Jotun.document.isKeyPressed('_shift');
+		}
+		
+		static public function isKeyDown(...keys:Dynamic):Bool {
+			return !Dice.Values(keys, function(v:Dynamic):Bool {
+				return Jotun.document.isKeyPressed(v);
+			}).completed;
+		}
+		
+		static public function isAllKeyDown(...keys:Dynamic):Bool {
+			return Dice.Values(keys, function(v:Dynamic):Bool {
+				return !Jotun.document.isKeyPressed(v);
+			}).completed;
 		}
 		
 	#end

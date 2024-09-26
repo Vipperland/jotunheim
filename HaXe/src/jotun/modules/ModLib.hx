@@ -10,7 +10,7 @@ import jotun.utils.Filler;
 	import js.lib.Error;
 	import js.html.Image;
 	import jotun.dom.Style;
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 	import jotun.dom.Display;
 	import jotun.dom.Script;
 	import jotun.modules.IMod.IModTarget;
@@ -48,17 +48,17 @@ class ModLib {
 	
 	#if js
 		
-		private var _onMount:Array<IDisplay->String->Void> = [];
+		private var _onMount:Array<Displayable->String->Void> = [];
 		
-		private function _afterMount(object:IDisplay, module:String):Void {
-			Dice.Values(_onMount, function(v:IDisplay->String->Void) { v(object, module); } );
+		private function _afterMount(object:Displayable, module:String):Void {
+			Dice.Values(_onMount, function(v:Displayable->String->Void) { v(object, module); } );
 		}
 		
 		/**
 		 * After successful create a dom object from ModLib
 		 * @param	handler
 		 */
-		public function onMount(handler:IDisplay->String->Void):Void {
+		public function onMount(handler:Displayable->String->Void):Void {
 			if (Lambda.indexOf(_onMount, handler) == -1){
 				_onMount[_onMount.length] = handler;
 			}
@@ -286,7 +286,7 @@ class ModLib {
 				if (mountAfter.length > 0){
 					Dice.Values(mountAfter, function(v:IMod){
 						Dice.Values(v.target, function(o:IModTarget):Void{
-							Jotun.all(o.query).each(function(target:IDisplay):Void{
+							Jotun.all(o.query).each(function(target:Displayable):Void{
 								target.mount(v.name, null, o.index);
 							});
 						});
@@ -445,12 +445,12 @@ class ModLib {
 		 * @param	data
 		 * @return	The display created from Module
 		 */
-		public function build(module:String, ?data:Dynamic):IDisplay {
+		public function build(module:String, ?data:Dynamic):Displayable {
 			if (Jotun.agent.mobile && exists(module + '::mobile')){
 				module += '::mobile';
 			}
 			var path:String = DATA.paths.get('@' + module.toLowerCase());
-			var result:IDisplay = new Display().writeHtml(get(module, data));
+			var result:Displayable = new Display().writeHtml(get(module, data));
 			result.children().attribute('jtn-mod', path);
 			if (data != null){
 				result.react(data);

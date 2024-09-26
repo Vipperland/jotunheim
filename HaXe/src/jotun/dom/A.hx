@@ -2,7 +2,7 @@ package jotun.dom;
 import jotun.Jotun;
 import jotun.utils.Dice;
 import js.Browser;
-import jotun.events.IEvent;
+import jotun.events.Activation;
 
 /**
  * ...

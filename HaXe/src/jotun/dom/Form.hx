@@ -1,6 +1,6 @@
 package jotun.dom;
 import jotun.Jotun;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.dom.Select;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -30,9 +30,9 @@ class Form extends Display {
 		object.submit();
 	}
 	
-	public function extract(?handler:String->Dynamic->IDisplay->Void):Dynamic {
+	public function extract(?handler:String->Dynamic->Displayable->Void):Dynamic {
 		var result:Dynamic = {};
-		all('[name]').each(function(o:IDisplay):Void {
+		all('[name]').each(function(o:Displayable):Void {
 			var name:String = o.attribute('name');
 			if (Utils.isValid(name)){
 				var data:Dynamic = {

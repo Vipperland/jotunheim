@@ -5,7 +5,7 @@ package jotun.signals;
  * @author ...
  */
 import jotun.dom.Display;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.timer.FrameChannel;
 import jotun.utils.Dice;
 
@@ -19,17 +19,17 @@ class Observer {
 	
 	private var _channel:FrameChannel;
 	
-	private var _radar:Array<IDisplay>;
+	private var _radar:Array<Displayable>;
 	
 	private function _checkTargets():Void {
 		Dice.Values(_radar, _singleCheck);
 	}
 	
-	private function _singleCheck(d:IDisplay):Void {
+	private function _singleCheck(d:Displayable):Void {
 		if (d == null || d.element == null){
 			remove(d);
 		}else if (d.getVisibility() > 0){
-			var h:IDisplay->Bool = d.getProp('__onsigh');
+			var h:Displayable->Bool = d.getProp('__onsigh');
 			if (h == null || h(d)){
 				remove(d);
 			}
@@ -44,13 +44,13 @@ class Observer {
 	 * @param	target
 	 * @param	handler
 	 */
-	public function add(target:IDisplay, handler:Display->Bool) {
+	public function add(target:Displayable, handler:Display->Bool) {
 		if (!_init){
 			_init = true;
 			_radar = [];
 			if(_channel == null){
 				_channel = Jotun.timer.channel(1000);
-				Jotun.timer.resume();
+				Jotun.timer.play();
 			}
 			_channel.add(_checkTargets);
 		}
@@ -64,7 +64,7 @@ class Observer {
 	 * Remove o objeto da verfificação
 	 * @param	target
 	 */
-	public function remove(target:IDisplay):Void {
+	public function remove(target:Displayable):Void {
 		if (_init){
 			if(target != null){
 				var i:Int = _radar.indexOf(target);
@@ -77,7 +77,7 @@ class Observer {
 	}
 	
 	public function removeBy(atrr:String, value:String):Void {
-		Dice.Values(_radar, function(v:IDisplay){
+		Dice.Values(_radar, function(v:Displayable){
 			if (v.attribute(atrr) == value){
 				remove(v);
 			}

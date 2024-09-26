@@ -1,13 +1,13 @@
 package jotun.events;
 import jotun.Jotun;
-import jotun.events.IEventGroup;
+import jotun.events.EventGroup;
 import js.Browser;
 import js.Syntax;
 import js.html.CustomEvent;
 import js.html.CustomEventInit;
 import jotun.dom.Display;
 import jotun.dom.Html;
-import jotun.dom.IDisplay;
+import jotun.dom.Displayable;
 import jotun.utils.Dice;
 
 /**
@@ -15,11 +15,11 @@ import jotun.utils.Dice;
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
 @:expose("J_EventGroup")
-class EventGroup implements IEventGroup {
+class EventGroup {
 	
 	private var _pd:Bool;
 	
-	public var dispatcher:IDispatcher;
+	public var dispatcher:Dispatcher;
 	
 	public var name:String;
 	
@@ -33,7 +33,7 @@ class EventGroup implements IEventGroup {
 	
 	public var data:Dynamic;
 
-	public function new(dispatcher:IDispatcher, name:String) {
+	public function new(dispatcher:Dispatcher, name:String) {
 		this.dispatcher = dispatcher;
 		this.name = name;
 		this.enabled = !dispatcher.target.isEnabled();
@@ -41,7 +41,7 @@ class EventGroup implements IEventGroup {
 		this.events = [];
 	}
 	
-	public function add(handler:IEvent->Void, ?capture:Bool):IEventGroup {
+	public function add(handler:Activation->Void, ?capture:Bool):EventGroup {
 		if (capture != null){
 			this.capture = capture;
 		}
@@ -51,18 +51,18 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
-	public function addOnce(handler:IEvent->Void, ?capture:Bool):IEventGroup {
+	public function addOnce(handler:Activation->Void, ?capture:Bool):EventGroup {
 		if (!exists(handler)) {
 			add(handler, capture);
 		}
 		return this;
 	}
 	
-	public function exists(handler:IEvent->Void):Bool {
+	public function exists(handler:Activation->Void):Bool {
 		return this.events.indexOf(handler) != -1;
 	}
 	
-	public function remove(handler:IEvent->Void):IEventGroup {
+	public function remove(handler:Activation->Void):EventGroup {
 		var iof:Int = Lambda.indexOf(this.events, handler);
 		if (iof != -1){
 			this.events.splice(iof, 1);
@@ -70,27 +70,27 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
-	public function prepare(t:IDisplay):IEventGroup	{
+	public function prepare(t:Displayable):EventGroup	{
 		t.element.removeEventListener(name, _runner, capture);
 		t.element.addEventListener(name, _runner, capture);
 		return this;
 	}
 	
-	public function dispose(t:IDisplay):Void {
+	public function dispose(t:Displayable):Void {
 		t.element.removeEventListener(name, _runner, capture);
 	}
 	
-	public function cancel():IEventGroup {
+	public function cancel():EventGroup {
 		propagation = false;
 		return this;
 	}
 	
-	public function noDefault():IEventGroup {
+	public function noDefault():EventGroup {
 		_pd = true;
 		return this;
 	}
 	
-	public function reset():IEventGroup {
+	public function reset():EventGroup {
 		this.events = [];
 		return this;
 	}
@@ -99,7 +99,7 @@ class EventGroup implements IEventGroup {
 		if (!enabled) {
 			return;
 		}
-		var evt:IEvent = new Event(dispatcher, this, e);
+		var evt:Activation = new Event(dispatcher, this, e);
 		Dice.Values(events, function(v:Dynamic) {
 			if (v != null){
 				v(evt);
@@ -113,7 +113,7 @@ class EventGroup implements IEventGroup {
 		propagation = true;
 	}
 	
-	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):IEventGroup {
+	public function call(?bubbles:Bool = false, ?cancelable:Bool = true, ?data:Dynamic = null):EventGroup {
 		this.data = data;
 		if (Browser.document.createEvent != null) {
 			var e:CustomEvent = new CustomEvent(name);
@@ -126,7 +126,7 @@ class EventGroup implements IEventGroup {
 		return this;
 	}
 	
-	public function cloneFrom(group:IEventGroup):IEventGroup {
+	public function cloneFrom(group:EventGroup):EventGroup {
 		_pd = (cast group)._pd;
 		enabled = group.enabled;
 		capture = group.capture;

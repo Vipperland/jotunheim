@@ -10,7 +10,7 @@ import jotun.utils.IDiceRoll;
 #elseif js
 	import js.html.Element;
 	import js.html.Node;
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 #end
 
 /**
@@ -284,7 +284,7 @@ class Dice {
 	 * @param	table
 	 * @param	each
 	 */
-	public static function Reset(table:Array<Dynamic>, each:Dynamic):Void {
+	public static function Retrieve(table:Array<Dynamic>, each:Dynamic):Void {
 		while(table.length > 0){
 			each(table.shift());
 		}
@@ -447,6 +447,18 @@ class Dice {
 		return into;
 	}
 	
+	public static function Length(of:Dynamic, max:Int):Int {
+		if(Std.isOfType(of, Array)){
+			return of.length;
+		}else{
+			var i:Int = 0;
+			Dice.Values(of, function(v:Dynamic){
+				return ++i == max || max == 0;
+			});
+			return i;
+		}
+	}
+	
 	#if !php
 		/**
 		 * For each Child element in an Object
@@ -459,7 +471,7 @@ class Dice {
 			var l:Int = 0;
 			var c:Element;
 			if (of != null) {
-				if (Std.isOfType(of, IDisplay)) {
+				if (Std.isOfType(of, Displayable)) {
 					of = of.element;
 				}
 				Count(0, of.childNodes.length, function(i:Int,j:Int,k:Bool) {

@@ -19,7 +19,7 @@ import jotun.utils.Dice;
 	import jotun.utils.ITable;
 	import jotun.utils.Table;
 	import jotun.dom.Document;
-	import jotun.dom.IDisplay;
+	import jotun.dom.Displayable;
 	import jotun.dom.Script;
 	import jotun.dom.Style;
 	import jotun.net.Broadcast;
@@ -137,7 +137,7 @@ class Jotun {
 		 * @param	h
 		 * @return
 		 */
-		static public function one(?q:String = "*", ?t:Dynamic = null):IDisplay {
+		static public function one(?q:String = "*", ?t:Dynamic = null):Displayable {
 			if (t == null){
 				t = Browser.document.querySelector(q);
 			} else{
@@ -236,7 +236,7 @@ class Jotun {
 		}
 		
 		
-		static public function create(html:String, ?data:Dynamic, ?at:Int):IDisplay {
+		static public function create(html:String, ?data:Dynamic, ?at:Int):Displayable {
 			return document.body.mount(html, data, at);
 		}
 		

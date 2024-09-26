@@ -19,12 +19,12 @@ class Dialog extends Display {
 		super(q, null);
 	}
 	
-	public function showModal():IDisplay {
+	public function showModal():Displayable {
 		Reflect.field(cast element, 'showModal')();
 		return this;
 	}
 	
-	public function showDialog():IDisplay {
+	public function showDialog():Displayable {
 		Reflect.field(cast element, 'show')();
 		return this;
 	}

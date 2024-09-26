@@ -38,7 +38,7 @@ class DisplayCache {
 			_cache_ctrl = true;
 			if (_channel == null){
 				_channel = Jotun.timer.channel(1000);
-				Jotun.timer.resume();
+				Jotun.timer.play();
 			}
 			_channel.add(_clearCache);
 		}

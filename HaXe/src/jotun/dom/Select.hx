@@ -6,7 +6,7 @@ import js.Browser;
 import js.html.BaseElement;
 import js.html.OptionElement;
 import js.html.SelectElement;
-import jotun.events.IEvent;
+import jotun.events.Activation;
 import jotun.utils.Dice;
 import jotun.utils.ITable;
 
@@ -30,7 +30,7 @@ class Select extends Display {
 		return cast element;
 	}
 	
-	private var _ioHandler:IEvent->Void;
+	private var _ioHandler:Activation->Void;
 	
 	private function _updateValue():Bool {
 		var c:String = this.value().toString();
@@ -44,7 +44,7 @@ class Select extends Display {
 		}
 	}
 	
-	private function _refreshIO(e:IEvent):Void {
+	private function _refreshIO(e:Activation):Void {
 		if (_updateValue() && _ioHandler != null){
 			_ioHandler(e);
 		}
@@ -101,7 +101,7 @@ class Select extends Display {
 		var t:ITable = getAllSelected();
 		var r:Array<String> = [];
 		if (t != null && t.length() > 0) {
-			t.each(function(v:IDisplay) {
+			t.each(function(v:Displayable) {
 				var o:Option = cast v;
 				r[r.length] = o.value();
 			});
@@ -154,7 +154,7 @@ class Select extends Display {
 		events.change().call();
 	}
 	
-	public function control(handler:IEvent->Void):Void {
+	public function control(handler:Activation->Void):Void {
 		_ioHandler = handler;
 	}
 	
