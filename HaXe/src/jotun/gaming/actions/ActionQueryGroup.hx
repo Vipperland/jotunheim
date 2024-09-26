@@ -13,7 +13,7 @@ class ActionQueryGroup extends QueryGroup {
 		super();
 	}
 	
-	public function eventRun(query:Dynamic, context:EventContext):Dynamic {
+	public function eventRun(query:Dynamic, context:SpellCasting):Dynamic {
 		var result:Dynamic = {};
 		if (context.debug){
 			Dice.Values(query, function(single:String){

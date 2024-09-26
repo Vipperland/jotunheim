@@ -6,7 +6,7 @@ import js.html.OptionElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Option")
+@:expose("Jtn.Option")
 class Option extends Display {
 	
 	public function new(?q:Dynamic) {

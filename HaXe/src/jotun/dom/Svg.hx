@@ -8,7 +8,7 @@ import js.html.svg.SVGElement;
  * ...
  * @author Rim Project
  */
-@:expose("J_dom_Svg")
+@:expose("Jtn.Svg")
 class Svg extends Display {
 	
 	static public function get(q:String):Svg {

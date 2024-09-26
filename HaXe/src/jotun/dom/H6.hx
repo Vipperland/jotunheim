@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_H6")
+@:expose("Jtn.H6")
 class H6 extends Display{
 	
 	static public function get(q:String):H6 {

@@ -4,7 +4,7 @@ package jotun.math;
  * ...
  * @author 
  */
-@:expose("J_Math")
+@:expose("Jtn.Math")
 class JMath {
 	
 	public static function Sigmoid(x:Float):Float {

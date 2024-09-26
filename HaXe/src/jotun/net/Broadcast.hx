@@ -14,7 +14,7 @@ import js.html.StorageEvent;
  * ...
  * @author Rafael Moreira
  */
-@:expose("J_Broadcast")
+@:expose("Jtn.Broadcast")
 class Broadcast {
 	
 	private static var __me__:Broadcast;

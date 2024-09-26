@@ -13,7 +13,7 @@ class RequirementQueryGroup extends QueryGroup {
 		super();
 	}
 	
-	public function eventRun(query:Dynamic, context:EventContext):Dynamic {
+	public function eventRun(query:Dynamic, context:SpellCasting):Dynamic {
 		var result:Dynamic = {};
 		if (context.debug){
 			var idx:Int = 0;

@@ -20,9 +20,9 @@ class Resolution {
 	
 	public var query:Array<String>;
 	
-	public var then:Events;
+	public var then:Spells;
 	
-	public var fail:Events;
+	public var fail:Spells;
 	
 	public var breakon:EitherType<String,Bool>;
 	
@@ -45,15 +45,15 @@ class Resolution {
 			}
 		}
 		if (data.then != null) {
-			then = new Events(_type + ":then", data.then);
+			then = new Spells(_type + ":then", data.then);
 		}
 		if (data.fail != null) {
-			fail = new Events(_type + ":fail", data.fail);
+			fail = new Spells(_type + ":fail", data.fail);
 		}
 		id = data.id;
 	}
 	
-	public function resolve(result:Bool, context:EventContext):Bool {
+	public function resolve(result:Bool, context:SpellCasting):Bool {
 		if(!_stopped){
 			++context.ident;
 			if (result){
@@ -85,7 +85,7 @@ class Resolution {
 	 * @param	result
 	 * @param	context
 	 */
-	public function release(result:Bool, context:EventContext):Void {
+	public function release(result:Bool, context:SpellCasting):Void {
 		if(_stopped){
 			_stopped = false;
 			context.release(this, result);

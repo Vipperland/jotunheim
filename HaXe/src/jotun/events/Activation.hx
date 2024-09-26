@@ -1,6 +1,6 @@
 package jotun.events;
 import jotun.dom.Displayable;
-import jotun.events.Dispatcher;
+import jotun.events.EventDispatcher;
 
 /**
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
@@ -9,7 +9,7 @@ import jotun.events.Dispatcher;
 interface Activation {
 	
 	/// Current Dispatcher (DISP)
-	public var from : Dispatcher;
+	public var from : EventDispatcher;
 
 	/// Current Ticket (IDISPg)
 	public var ticket : EventGroup;

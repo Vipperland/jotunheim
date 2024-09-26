@@ -8,7 +8,7 @@ import jotun.serial.Packager;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Key")
+@:expose("Jtn.Key")
 class Key {
 	
 	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";

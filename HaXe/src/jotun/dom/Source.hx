@@ -7,7 +7,7 @@ import js.html.SourceElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Source")
+@:expose("Jtn.Source")
 class Source extends Display{
 
 	static public function get(q:String):Source {

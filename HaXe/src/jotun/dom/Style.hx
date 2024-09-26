@@ -10,7 +10,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Style")
+@:expose("Jtn.Style")
 class Style extends Display {
 	
 	static public function get(q:String):Style {

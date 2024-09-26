@@ -1,17 +1,17 @@
 package jotun.events;
 import jotun.dom.Displayable;
-import jotun.events.Dispatcher;
+import jotun.events.EventDispatcher;
 import jotun.tools.Utils;
 
 /**
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Event")
+@:expose("Jtn.Event")
 class Event implements Activation {
 	
 	/** Current Dispatcher */
-	public var from:Dispatcher;
+	public var from:EventDispatcher;
 	
 	/** Current Ticket */
 	public var ticket:EventGroup;
@@ -30,7 +30,7 @@ class Event implements Activation {
 	 * @param	ticket
 	 * @param	event
 	 */
-	public function new(from:Dispatcher, ticket:EventGroup, event:js.html.Event) {
+	public function new(from:EventDispatcher, ticket:EventGroup, event:js.html.Event) {
 		this.event = event;
 		this.ticket = ticket;
 		this.from = from;

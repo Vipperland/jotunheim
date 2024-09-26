@@ -10,7 +10,6 @@ import js.html.idb.Request;
  * ...
  * @author ...
  */
-@:expose("J_WebDBTable")
 class WebDBTable {
 	
 	private var _db:Database;

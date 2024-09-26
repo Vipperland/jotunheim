@@ -11,7 +11,7 @@ import js.html.ScriptElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Script")
+@:expose("Jtn.Script")
 class Script extends Display {
 	
 	static public function get(q:String):Script {

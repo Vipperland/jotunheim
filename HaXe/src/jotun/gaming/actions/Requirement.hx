@@ -7,7 +7,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("J_Requirement")
+@:expose("Jtn.Requirement")
 class Requirement extends Resolution {
 	
 	public static var cache:Dynamic = {};
@@ -41,11 +41,11 @@ class Requirement extends Resolution {
 			breakon = 'never';
 		}
 		if (Utils.isValid(data.id)){
-			EventController.saveRequirement(this);
+			SpellController.saveRequirement(this);
 		}
 	}
 	
-	public function verify(context:EventContext, position:Int):Bool {
+	public function verify(context:SpellCasting, position:Int):Bool {
 		connect();
 		var res:Bool = true;
 		var score:UInt = 0;
@@ -68,7 +68,7 @@ class Requirement extends Resolution {
 		return res;
 	}
 	
-	private static function _log(evt:Requirement, context:EventContext, success:Bool, score:Int, reversed:Bool, position:Int):Void {
+	private static function _log(evt:Requirement, context:SpellCasting, success:Bool, score:Int, reversed:Bool, position:Int):Void {
 		context.addLog(0, (success ? "└ SUCCESS" : "ꭙ FAILED") + " REQUIREMENT " + (Utils.isValid(evt.id) ? '#{' + evt.id + '} ': '') + "[" + position + "]" + (reversed ? " REVERSED" : "") + " score:" + score + "/" + evt.target + " queries:" + evt.length());
 	}
 	

@@ -10,7 +10,7 @@ import jotun.events.Activation;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Link")
+@:expose("Jtn.Link")
 class Link extends Display{
 	
 	static public function get(q:String):Link {

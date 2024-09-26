@@ -12,7 +12,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Img")
+@:expose("Jtn.Img")
 class Img extends Display {
 	
 	private var _blob:String;

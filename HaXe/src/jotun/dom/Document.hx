@@ -2,7 +2,7 @@ package jotun.dom;
 import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.css.XCode;
-import jotun.events.Dispatcher;
+import jotun.events.EventDispatcher;
 import jotun.events.Activation;
 import jotun.math.Point;
 import jotun.tools.Key;
@@ -21,7 +21,6 @@ import js.lib.Error;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Document")
 class Document extends Display {
 	
 	static private var __doc__:Document;

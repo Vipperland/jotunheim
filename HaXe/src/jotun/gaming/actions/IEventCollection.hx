@@ -5,5 +5,5 @@ import haxe.DynamicAccess;
  * @author Rafael Moreira
  */
 interface IEventCollection {
-	public var events:DynamicAccess<Events>;
+	public var events:DynamicAccess<Spells>;
 }

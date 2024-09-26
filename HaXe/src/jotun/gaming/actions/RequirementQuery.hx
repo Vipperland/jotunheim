@@ -1,7 +1,7 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.BasicDataProvider;
-import jotun.gaming.actions.EventContext;
+import jotun.gaming.actions.SpellCasting;
 import jotun.gaming.actions.IDataProvider;
 import jotun.objects.Query;
 import jotun.tools.Utils;
@@ -11,7 +11,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("J_RequirementQuery")
+@:expose("Jtn.RequirementQuery")
 class RequirementQuery extends Query {
 	
 	public static var RULE_EQUAL:String = "=";
@@ -93,7 +93,7 @@ class RequirementQuery extends Query {
 		}
 	}
 	
-	public var ioContext:EventContext;
+	public var ioContext:SpellCasting;
 	
 	public function new() {
 		super();

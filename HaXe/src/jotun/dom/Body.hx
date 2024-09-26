@@ -17,7 +17,7 @@ package jotun.dom;
 
 #if js
  
-@:expose("J_dom_Body")
+@:expose("Jtn.Body")
 class Body extends Display {
 	
 	private var _body:BodyElement;

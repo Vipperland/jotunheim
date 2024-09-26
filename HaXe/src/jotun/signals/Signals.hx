@@ -4,7 +4,7 @@ package jotun.signals;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-@:expose("J_Signal")
+@:expose("Jtn.Signal")
 class Signals implements ISignals {
 	
 	private var _l:Array<Dynamic>;

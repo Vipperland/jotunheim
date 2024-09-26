@@ -5,7 +5,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:expose("Delegator")
+@:expose("Jtn.Delegator")
 class Delegate {
 
 	public static function create(handler:Dynamic, context:Dynamic, ...args:Dynamic):Dynamic {

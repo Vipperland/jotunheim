@@ -14,12 +14,12 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_EventGroup")
+@:expose("Jtn.EventGroup")
 class EventGroup {
 	
 	private var _pd:Bool;
 	
-	public var dispatcher:Dispatcher;
+	public var dispatcher:EventDispatcher;
 	
 	public var name:String;
 	
@@ -33,7 +33,7 @@ class EventGroup {
 	
 	public var data:Dynamic;
 
-	public function new(dispatcher:Dispatcher, name:String) {
+	public function new(dispatcher:EventDispatcher, name:String) {
 		this.dispatcher = dispatcher;
 		this.name = name;
 		this.enabled = !dispatcher.target.isEnabled();
@@ -78,6 +78,9 @@ class EventGroup {
 	
 	public function dispose(t:Displayable):Void {
 		t.element.removeEventListener(name, _runner, capture);
+		dispatcher = null;
+		events = null;
+		data = null;
 	}
 	
 	public function cancel():EventGroup {

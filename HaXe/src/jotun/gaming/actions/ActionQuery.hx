@@ -3,7 +3,7 @@ import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.BasicDataProvider;
-import jotun.gaming.actions.EventController;
+import jotun.gaming.actions.SpellController;
 import jotun.net.IRequest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
@@ -14,7 +14,7 @@ import jotun.utils.Filler;
  * ...
  * @author Rim Project
  */
-@:expose("J_ActionQuery")
+@:expose("Jtn.ActionQuery")
 class ActionQuery extends Query {
 
 	public static var RULE_EQUAL:String = "=";
@@ -116,7 +116,7 @@ class ActionQuery extends Query {
 		}
 	}
 	
-	public var ioContext:EventContext;
+	public var ioContext:SpellCasting;
 	
 	/**
 	 * 
@@ -138,7 +138,7 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function call(id:String):ActionQuery {
-		var action:Action = EventController.loadAction(id);
+		var action:Action = SpellController.loadAction(id);
 		if(action != null){
 			action.run(ioContext, 0);
 		}

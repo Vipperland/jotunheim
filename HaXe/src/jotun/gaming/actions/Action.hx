@@ -1,6 +1,6 @@
 package jotun.gaming.actions;
 import haxe.DynamicAccess;
-import jotun.gaming.actions.EventContext;
+import jotun.gaming.actions.SpellCasting;
 import jotun.objects.QueryGroup;
 import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.Requirement;
@@ -12,7 +12,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("J_Action")
+@:expose("Jtn.Action")
 class Action extends Resolution {
 	
 	public static var cache:DynamicAccess<Action> = {};
@@ -60,7 +60,7 @@ class Action extends Resolution {
 		var i:Int = 0;
 		Dice.All(data.require, function(p:Dynamic, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
-				v = EventController.loadRequirement(v);
+				v = SpellController.loadRequirement(v);
 			}
 			if(v != null){
 				if (Std.isOfType(v, Requirement)){
@@ -82,11 +82,11 @@ class Action extends Resolution {
 			breakon = data.require > 0;
 		}
 		if (Utils.isValid(data.id)){
-			EventController.saveAction(this);
+			SpellController.saveAction(this);
 		}
 	}
 	
-	public function run(context:EventContext, position:Int):Bool {
+	public function run(context:SpellCasting, position:Int):Bool {
 		connect();
 		// Check requirements
 		var resolution:Int = 0;
@@ -115,7 +115,7 @@ class Action extends Resolution {
 		return resolve(success, context);
 	}
 	
-	private static function _log(evt:Action, context:EventContext, success:Bool, score:Int, position:Int):Void {
+	private static function _log(evt:Action, context:SpellCasting, success:Bool, score:Int, position:Int):Void {
 		context.addLog(0, "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (evt.willBreakOn(success) ? "[x]" : "[>]") + " " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] " + (evt.target != 0 ? "score:" + score + "/" + evt.target + " ": "") + "queries:" + evt.length());
 	}
 	

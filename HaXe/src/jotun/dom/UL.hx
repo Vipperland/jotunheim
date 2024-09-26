@@ -8,7 +8,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_UL")
+@:expose("Jtn.UL")
 class UL extends Display{
 	
 	public static var LAYOUT:String = '<li class="{{class}}">{{label}}</li>';

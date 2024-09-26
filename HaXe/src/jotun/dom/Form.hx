@@ -11,7 +11,7 @@ import js.html.FormElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Form")
+@:expose("Jtn.Form")
 class Form extends Display {
 	
 	static public function get(q:String):Form {

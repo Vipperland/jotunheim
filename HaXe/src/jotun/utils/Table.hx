@@ -17,7 +17,7 @@ import js.html.Text;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Table")
+@:expose("Jtn.Table")
 class Table implements ITable {
 	
 	static private var _trash:Array<ITable> = [];

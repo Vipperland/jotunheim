@@ -6,7 +6,7 @@ import jotun.Jotun;
 import jotun.css.XCode;
 import jotun.data.Logger;
 import jotun.dom.Displayable;
-import jotun.events.Dispatcher;
+import jotun.events.EventDispatcher;
 import jotun.events.EventGroup;
 import jotun.math.Matrix3D;
 import jotun.math.Point;
@@ -30,7 +30,7 @@ import js.html.Node;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Display")
+@:expose("Jtn.Display")
 class Display extends Query implements Displayable {
 	
 	private static var _CNT:UInt = 0;
@@ -121,7 +121,7 @@ class Display extends Query implements Displayable {
 	
 	public var element:Element;
 	
-	public var events:Dispatcher;
+	public var events:EventDispatcher;
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
 		if (Std.isOfType(p, String) && v != null) {
@@ -150,7 +150,7 @@ class Display extends Query implements Displayable {
 		}
 		(cast element)._uid = _uid;
 		data = (cast element).data = {};
-		events = new Dispatcher(this);
+		events = new EventDispatcher(this);
 		super();
 	}
 	

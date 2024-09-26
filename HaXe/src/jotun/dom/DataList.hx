@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_DataList")
+@:expose("Jtn.DataList")
 class DataList extends Display{
 	
 	static public function get(q:String):DataList {

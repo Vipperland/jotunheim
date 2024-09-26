@@ -6,7 +6,7 @@ import jotun.tools.Utils;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Filler")
+@:expose("Jtn.Filler")
 class Filler{
 	
 	static private function _apply(path:String, content:String, data:Dynamic):String {

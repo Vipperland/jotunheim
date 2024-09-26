@@ -3,7 +3,7 @@ package jotun.dom;
 import haxe.ds.Either;
 import haxe.extern.EitherType;
 import jotun.dom.Displayable;
-import jotun.events.Dispatcher;
+import jotun.events.EventDispatcher;
 import jotun.math.Point;
 import jotun.net.IProgress;
 import jotun.net.IRequest;
@@ -30,7 +30,7 @@ interface Displayable extends IQuery {
 	/**
 	 * Custom Event Dispatcher
 	 */
-	public var events: Dispatcher;
+	public var events: EventDispatcher;
 	
 	/**
 	 * Custom data

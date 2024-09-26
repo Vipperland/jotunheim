@@ -21,7 +21,7 @@ typedef BulkLoaderFlow = {
  * ...
  * @author Rafael Moreira
  */
-@:expose("BulkLoader")
+@:expose("Jtn.BulkLoader")
 class BulkLoader {
 
 	private var _toload:Array<String>;

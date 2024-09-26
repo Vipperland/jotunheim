@@ -6,7 +6,7 @@ import js.Browser;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Label")
+@:expose("Jtn.Label")
 class Label extends Display {
 	
 	static public function get(q:String):Label {

@@ -11,7 +11,7 @@ import haxe.macro.Expr;
  * ...
  * @author Rafael Moreira
  */
-@:expose("J_Recycler")
+@:expose("Jtn.Recycler")
 class Recycler {
 	
 	private var _cache:Array<Dynamic> = [];

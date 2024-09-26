@@ -7,7 +7,7 @@ import js.html.TextAreaElement;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_TextArea")
+@:expose("Jtn.TextArea")
 class TextArea extends Input {
 	
 	static public function get(q:String):TextArea {

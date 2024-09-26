@@ -13,7 +13,7 @@ import js.html.idb.TransactionMode;
  * ...
  * @author ...
  */
-@:expose("J_WebDB")
+@:expose("Jtn.WebDB")
 class WebDB {
 	
 	public static function open(name:String, options:Dynamic, handler:WebDB->Void):Void {

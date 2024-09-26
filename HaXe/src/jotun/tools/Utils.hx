@@ -29,7 +29,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.dom.Display;
 	import jotun.dom.Div;
 	import jotun.dom.Document;
-	import jotun.dom.FieldSet;
 	import jotun.dom.Form;
 	import jotun.dom.H1;
 	import jotun.dom.H2;
@@ -73,7 +72,7 @@ import jotun.utils.IDiceRoll;
 	import jotun.signals.Observer;
 #end
 
-import jotun.gaming.actions.Events;
+import jotun.gaming.actions.Spells;
 import jotun.gaming.dataform.Pulsar;
 import jotun.gaming.dataform.SparkWriter;
 import jotun.gaming.dataform.Spark;
@@ -86,7 +85,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_Utils")
+@:expose("Jtn.Utils")
 class Utils{
 	
 	#if js
@@ -116,7 +115,7 @@ class Utils{
 			BODY:Body, BUTTON:Button,
 			CANVAS:Canvas, CAPTION:Caption,
 			DATALIST:DataList, DIV:Div, DISPLAY:Display, DOCUMENT:Document,
-			FIELDSET:FieldSet, FORM:Form,
+			FORM:Form,
 			H1:H1, H2:H2, H3:H3, H4:H4, H5:H5, H6:H6, HEAD:Head, HTML:Html,
 			IFRAME:IFrame, IMG:Img, INPUT:Input,
 			LABEL:Label, LI:LI, LINK:Link,

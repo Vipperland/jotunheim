@@ -6,7 +6,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-@:expose("BigFlag")
+@:expose("Jtn.BigFlag")
 class BigFlag {
 
 	static public function fromString(value:String):BigFlag {

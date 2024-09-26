@@ -18,7 +18,7 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Input")
+@:expose("Jtn.Input")
 class Input extends Display {
 	
 	static public function get(q:String):Input {

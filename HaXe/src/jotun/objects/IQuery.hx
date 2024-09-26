@@ -1,5 +1,5 @@
 package jotun.objects;
-import jotun.gaming.actions.EventContext;
+import jotun.gaming.actions.SpellCasting;
 
 /**
  * @author Rim Project

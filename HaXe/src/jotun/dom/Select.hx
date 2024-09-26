@@ -14,7 +14,7 @@ import jotun.utils.ITable;
  * ...
  * @author Rafael Moreira <vipperland@live.com,rafael@gateofsirius.com>
  */
-@:expose("J_dom_Select")
+@:expose("Jtn.Select")
 class Select extends Display {
 	
 	static public var layout:String = '<option value="{{value}}">{{label}}</option>';

@@ -8,7 +8,7 @@ interface IEventDispatcher {
 	/**
 	 * Available event collection
 	 */
-	public var events:DynamicAccess<Events>;
+	public var events:DynamicAccess<Spells>;
 	
 	public function setDebug(mode:Bool):Void;
 	
