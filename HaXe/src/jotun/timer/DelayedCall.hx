@@ -52,4 +52,8 @@ class DelayedCall {
 		}
 	}
 	
+	public function temper(delay:Float):Void {
+		_delay = delay * 1000;
+	}
+	
 }

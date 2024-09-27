@@ -327,6 +327,15 @@ class Dice {
 		return data[Std.int(Math.random() * data.length)];
 	}
 	
+	public static function And(data:Array<Dynamic>, separator:String=', ', and:String=' & '):String {
+		if (data.length > 1){
+			var q:Array<Dynamic> = data.splice(0, data.length - 1);
+			return q.join(separator) + and + data.join('');
+		}else{
+			return data.join('');
+		}
+	}
+	
 	/**
 	 * Sort all data in a vector, case insensitive, special characteres of a string will be changed for better result (á=a,é=e,ñ=n,...etc)
 	 * @param	data
@@ -334,7 +343,7 @@ class Dice {
 	 * @param	numeric
 	 * @return
 	 */
-	public static function Table(data:Array<Dynamic>, ?key:String, ?numeric:Bool = false, ?copy:Bool = false):Dynamic {
+	public static function Sort(data:Array<Dynamic>, ?key:String, ?numeric:Bool = false, ?copy:Bool = false):Dynamic {
 		var r:Array<Dynamic> = copy == true ? [].concat(data) : data;
 		if (numeric) {
 			// INT objA.key < INT objB.key

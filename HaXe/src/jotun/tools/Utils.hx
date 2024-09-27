@@ -473,15 +473,6 @@ class Utils{
 		return r.join('&');
 	}
 	
-	public static function And(data:Array<Dynamic>, separator:String=', ', and:String=' & '):String {
-		if (data.length > 1){
-			var q:Array<Dynamic> = data.splice(0, data.length - 1);
-			return q.join(separator) + and + data.join('');
-		}else{
-			return data.join('');
-		}
-	}
-	
 	public static function prefix(value:String, length:Int, q :String):String {
 		while (value.length < length){
 			value = q + value;

@@ -212,7 +212,7 @@ class Document extends Display {
 	}
 	
 	public function trackKeyboard():Void {
-		if(__keys.get('_enabled') == false){
+		if(__keys.get('_enabled') != true){
 			events.keyDown(_hookKeyDown);
 			events.keyUp(_hookKeyUp);
 			__keys.set('_enabled', true);

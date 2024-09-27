@@ -181,7 +181,7 @@ class Singularity {
 		Dice.Values(_engines, function(v:TabInstance){
 			r.push(v);
 		});
-		Dice.Table(r, 'time', true);
+		Dice.Sort(r, 'time', true);
 		return r;
 	}
 	
