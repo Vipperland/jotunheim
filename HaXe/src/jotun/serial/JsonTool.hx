@@ -13,6 +13,10 @@ import jotun.tools.Utils;
 @:expose('J_Json')
 class JsonTool {
 	
+	static public var noReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic {
+		return b;
+	}
+	
 	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
 		if (Std.isOfType(a, String)) {
 			if (a.substr(0, 1) == "_") {
@@ -29,8 +33,8 @@ class JsonTool {
 		return b; 
 	};
 	
-	static public function clone(obj:Dynamic):Dynamic {
-		return Json.parse(stringify(obj));
+	static public function clone(obj:Dynamic, ?replacer:Dynamic->Dynamic->Dynamic):Dynamic {
+		return Json.parse(stringify(obj, replacer));
 		
 	}
 	
