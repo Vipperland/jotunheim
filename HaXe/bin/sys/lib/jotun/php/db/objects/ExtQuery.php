@@ -12,14 +12,14 @@ use \jotun\utils\Dice;
  * ...
  * @author Rafael Moreira
  */
-class ExtQuery extends Query implements IExtQuery {
+class ExtQuery extends Query {
 	/**
 	 * @var mixed[]|\Array_hx
 	 */
 	public $data;
 
 	/**
-	 * @param IDataTable $table
+	 * @param DataTable $table
 	 * @param mixed[]|\Array_hx $data
 	 * 
 	 * @return void

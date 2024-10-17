@@ -1,35 +1,33 @@
 package jotun.tools;
 import js.Browser;
 import jotun.css.CSSGroup;
-import jotun.tools.IAgent;
 import jotun.tools.Utils;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class Agent implements IAgent {
+class Agent {
 	
+	// Is Edge?
 	public var edge:Bool;
-	
+	// Is Opera?
 	public var opera:Bool;
-	
+	// Is Firefox?
 	public var firefox:Bool;
-	
+	// Is Safari?
 	public var safari:Bool;
-	
+	// Is Chrome?
 	public var chrome:Bool;
-	
+	// Is a mobile version?
 	public var mobile:Bool;
 	
 	public var cookies:Bool;
-	
-	public var screen:Int;
-	
+	// Is JQuery available?
 	public var jQuery:Bool;
-	
+	// Display info
 	public var display:String;
-	
+	// User Operating System name
 	public var os:String;
 
 	public var lang:String;
@@ -38,7 +36,7 @@ class Agent implements IAgent {
 		
 	}
 	
-	public function update():IAgent {
+	public function update():Agent {
 		var ua:String = Browser.navigator.userAgent;
 		// Detect version of each browser for more accurate result
 		var edge:Bool = ~/Edge/i.match(ua);

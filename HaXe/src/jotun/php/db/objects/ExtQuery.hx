@@ -5,11 +5,11 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class ExtQuery extends Query implements IExtQuery {
+class ExtQuery extends Query {
 	
 	public var data:Array<Dynamic>;
 	
-	public function new(table:IDataTable, data:Array<Dynamic>) {
+	public function new(table:DataTable, data:Array<Dynamic>) {
 		super(table, true);
 		this.data = data != null ? data : [];
 	}

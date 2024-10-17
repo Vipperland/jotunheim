@@ -42,7 +42,7 @@ class Uploader {
 	static public $files;
 
 	/**
-	 * @param IImage $image
+	 * @param Image $image
 	 * 
 	 * @return void
 	 */
@@ -172,7 +172,7 @@ class Uploader {
 		}
 		#src/jotun/php/file/Uploader.hx:123: lines 123-179
 		if (Uploader::$_sizes !== null) {
-			#src/jotun/php/file/Uploader.hx:124: characters 4-35
+			#src/jotun/php/file/Uploader.hx:124: characters 4-34
 			$image = new Image();
 			#src/jotun/php/file/Uploader.hx:125: lines 125-178
 			Dice::Values(Uploader::$files->list, function ($v) use (&$image) {

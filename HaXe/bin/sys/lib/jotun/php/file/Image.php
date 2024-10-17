@@ -11,7 +11,7 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Image implements IImage {
+class Image {
 	/**
 	 * @var mixed
 	 * Image file
@@ -83,7 +83,7 @@ class Image implements IImage {
 	 * @param int $width
 	 * @param int $height
 	 * 
-	 * @return IImage
+	 * @return Image
 	 */
 	public function crop ($x, $y, $width, $height) {
 		#src/jotun/php/file/Image.hx:137: lines 137-161
@@ -156,7 +156,7 @@ class Image implements IImage {
 	 * @param int $width
 	 * @param int $height
 	 * 
-	 * @return IImage
+	 * @return Image
 	 */
 	public function fit ($width, $height) {
 		#src/jotun/php/file/Image.hx:172: lines 172-181
@@ -230,7 +230,7 @@ class Image implements IImage {
 	 * 
 	 * @param mixed $file
 	 * 
-	 * @return IImage
+	 * @return Image
 	 */
 	public function open ($file) {
 		#src/jotun/php/file/Image.hx:71: characters 3-12
@@ -294,7 +294,7 @@ class Image implements IImage {
 	 * @param int $height
 	 * @param bool $ratio
 	 * 
-	 * @return IImage
+	 * @return Image
 	 */
 	public function resample ($width, $height, $ratio = true) {
 		#src/jotun/php/file/Image.hx:105: lines 105-126

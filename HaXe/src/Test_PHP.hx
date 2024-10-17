@@ -25,6 +25,7 @@ class Test_PHP {
 		Pulsar.map('r', ['ammount'], Spark);
 		Pulsar.map('g', ['ammount'], Spark);
 		Pulsar.map('b', ['ammount'], Spark);
+		Pulsar.map('a', ['ammount'], Spark);
 		
 		
 		var p:Pulsar = new Pulsar();
@@ -35,6 +36,7 @@ class Test_PHP {
 		p.link('color').get(0).insert(new Spark('r').set('ammount', 10));
 		p.link('color').get(0).insert(new Spark('g').set('ammount', 20));
 		p.link('color').get(0).insert(new Spark('b').set('ammount', 30));
+		p.link('color').get(0).insert(new Spark('a').set('ammount', 0.3));
 		
 		
 		//Jotun.header.setTEXT(p.link('colors').stringify());
@@ -91,11 +93,12 @@ class Test_PHP {
 		
 		
 		//Jotun.gate.open(Token.localhost('decorador'), true);
-		//var q:Dynamic = Jotun.gate.table('users').findJoin(['users.id as UID','users.name as NAME','state.alt as STATE','city.name as CITY'], [
-			//Jotun.gate.builder.leftJoin('user_address', 'address', Clause.EQUAL('address.user_id', 1)),
-			//Jotun.gate.builder.leftJoin('location_state', 'state', Clause.CUSTOM('state.id=address.state_id')),
-			//Jotun.gate.builder.leftJoin('location_city', 'city', 'city.id=address.city_id'),
-		//], Clause.CUSTOM('users.id<30'));
+		var q:Dynamic = Jotun.gate.table('users').findJoin(['users.id as UID','users.name as NAME','location_state.alt as STATE','location_city.name as CITY'], [
+			Jotun.gate.builder.leftJoin('user_address', Clause.EQUAL('address.user_id', 1)),
+			Jotun.gate.builder.leftJoin('location_state', Clause.CUSTOM('state.id=address.state_id')),
+			Jotun.gate.builder.leftJoin('location_city', 'city.id=address.city_id'),
+		], Clause.CUSTOM('users.id<30'));
+		
 		//
 		//buff.push(Jotun.gate.log);
 		//buff.push(q);

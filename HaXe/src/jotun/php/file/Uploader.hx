@@ -121,7 +121,7 @@ class Uploader {
 		
 		// Iterate all "image" type files
 		if (_sizes != null){
-			var image:IImage = new Image();
+			var image:Image = new Image();
 			Dice.Values(files.list, function(v:FileInfo) {
 				if (v.image) {
 					v.sizes = [];
@@ -180,7 +180,7 @@ class Uploader {
 		
 	}
 	
-	private static function _delete(image:IImage):Void {
+	private static function _delete(image:Image):Void {
 		image.delete();
 		image.dispose();
 		_log('deleted', { file: image });

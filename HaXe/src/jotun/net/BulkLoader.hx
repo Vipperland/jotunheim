@@ -3,7 +3,6 @@ import haxe.Rest;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
 import jotun.signals.IPipe;
-import jotun.signals.ISignals;
 import jotun.signals.Signals;
 
 
@@ -36,7 +35,7 @@ class BulkLoader {
 	
 	public var lastError:ErrorDescriptior;
 	
-	public var signals:ISignals;
+	public var signals:Signals;
 	
 	private var _req:HttpRequest;
 	

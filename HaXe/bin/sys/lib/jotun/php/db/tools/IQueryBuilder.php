@@ -105,78 +105,81 @@ interface IQueryBuilder {
 	/**
 	 *
 	 * @param	table
-	 * @param	name
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function fullOuterJoin ($table, $name = null, $clause = null) ;
+	public function fullOuterJoin ($table, $clause = null) ;
 
 	/**
 	 *
 	 * @param	table
-	 * @param	name
+	 * @param	clause
+	 * @return
+	 * 
+	 * @param mixed $table
+	 * @param mixed $clause
+	 * 
+	 * @return string
+	 */
+	public function innerJoin ($table, $clause = null) ;
+
+	/**
+	 *
+	 * @param	table
 	 * @param	parameters
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function join ($table, $name = null, $clause = null) ;
+	public function join ($table, $clause = null) ;
 
 	/**
 	 *
 	 * @param	table
-	 * @param	name
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function leftJoin ($table, $name = null, $clause = null) ;
+	public function leftJoin ($table, $clause = null) ;
 
 	/**
 	 *
 	 * @param	table
-	 * @param	name
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function leftOuterJoin ($table, $name = null, $clause = null) ;
+	public function leftOuterJoin ($table, $clause = null) ;
 
 	/**
 	 *
 	 * @param	table
-	 * @param	name
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function outerJoin ($table, $name = null, $clause = null) ;
+	public function outerJoin ($table, $clause = null) ;
 
 	/**
 	 * Rename table
@@ -193,17 +196,15 @@ interface IQueryBuilder {
 	/**
 	 *
 	 * @param	table
-	 * @param	name
 	 * @param	clause
 	 * @return
 	 * 
 	 * @param mixed $table
-	 * @param string $name
 	 * @param mixed $clause
 	 * 
 	 * @return string
 	 */
-	public function rightOuterJoin ($table, $name = null, $clause = null) ;
+	public function rightOuterJoin ($table, $clause = null) ;
 
 	/**
 	 * Empty all table data

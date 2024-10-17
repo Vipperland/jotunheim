@@ -8,7 +8,7 @@ import sys.FileSystem;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Image implements IImage {
+class Image {
 	
 	/**
 	 * Image file
@@ -67,7 +67,7 @@ class Image implements IImage {
 	 * @param	file
 	 * @return
 	 */
-	public function open(file:Dynamic):IImage {
+	public function open(file:Dynamic):Image {
 		dispose();
 		if (file != null) {
 			// Check if is file
@@ -102,7 +102,7 @@ class Image implements IImage {
 	 * @param	ratio
 	 * @return
 	 */
-	public function resample(width:Int, height:Int, ?ratio:Bool = true):IImage {
+	public function resample(width:Int, height:Int, ?ratio:Bool = true):Image {
 		if (isValid()) {
 			if (ratio) {
 				if (height >= width){
@@ -133,7 +133,7 @@ class Image implements IImage {
 	 * @param	height
 	 * @return
 	 */
-	public function crop(x:Int, y:Int, width:Int, height:Int):IImage {
+	public function crop(x:Int, y:Int, width:Int, height:Int):Image {
 		if(isValid()){
 			// Check position
 			if (x < 0){
@@ -168,7 +168,7 @@ class Image implements IImage {
 	 * @param	height
 	 * @return
 	 */
-	public function fit(width:Int, height:Int):IImage {
+	public function fit(width:Int, height:Int):Image {
 		if (isValid()) {
 			var ow:Int = this.width;
 			var oh:Int = this.height;

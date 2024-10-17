@@ -5,6 +5,7 @@
 
 use \jotun\gaming\dataform\Pulsar;
 use \php\Boot;
+use \jotun\php\db\Clause;
 use \jotun\Jotun;
 use \jotun\gaming\dataform\Spark;
 
@@ -23,20 +24,41 @@ class Test_PHP {
 		Pulsar::map("g", \Array_hx::wrap(["ammount"]), Boot::getClass(Spark::class));
 		#src/Test_PHP.hx:27: characters 3-38
 		Pulsar::map("b", \Array_hx::wrap(["ammount"]), Boot::getClass(Spark::class));
-		#src/Test_PHP.hx:30: characters 3-31
+		#src/Test_PHP.hx:28: characters 3-38
+		Pulsar::map("a", \Array_hx::wrap(["ammount"]), Boot::getClass(Spark::class));
+		#src/Test_PHP.hx:31: characters 3-31
 		$p = new Pulsar();
-		#src/Test_PHP.hx:32: characters 3-36
+		#src/Test_PHP.hx:33: characters 3-36
 		$c = new Spark("color");
-		#src/Test_PHP.hx:33: characters 3-14
+		#src/Test_PHP.hx:34: characters 3-14
 		$p->insert($c);
-		#src/Test_PHP.hx:35: characters 3-67
-		$p->link("color")->get(0)->insert((new Spark("r"))->set("ammount", 10));
 		#src/Test_PHP.hx:36: characters 3-67
-		$p->link("color")->get(0)->insert((new Spark("g"))->set("ammount", 20));
+		$p->link("color")->get(0)->insert((new Spark("r"))->set("ammount", 10));
 		#src/Test_PHP.hx:37: characters 3-67
+		$p->link("color")->get(0)->insert((new Spark("g"))->set("ammount", 20));
+		#src/Test_PHP.hx:38: characters 3-67
 		$p->link("color")->get(0)->insert((new Spark("b"))->set("ammount", 30));
-		#src/Test_PHP.hx:41: characters 3-42
+		#src/Test_PHP.hx:39: characters 3-68
+		$p->link("color")->get(0)->insert((new Spark("a"))->set("ammount", 0.3));
+		#src/Test_PHP.hx:43: characters 3-42
 		Jotun::$header->setTEXT($p->toString(false));
+		#src/Test_PHP.hx:96: characters 19-44
+		$q = Jotun::$gate->table("users");
+		#src/Test_PHP.hx:97: characters 4-83
+		$q1 = Jotun::$gate->builder->leftJoin("user_address", Clause::EQUAL("address.user_id", 1));
+		#src/Test_PHP.hx:98: characters 4-93
+		$q2 = Jotun::$gate->builder->leftJoin("location_state", Clause::CUSTOM("state.id=address.state_id"));
+		#src/Test_PHP.hx:96: lines 96-100
+		$q3 = $q->findJoin(\Array_hx::wrap([
+			"users.id as UID",
+			"users.name as NAME",
+			"location_state.alt as STATE",
+			"location_city.name as CITY",
+		]), \Array_hx::wrap([
+			$q1,
+			$q2,
+			Jotun::$gate->builder->leftJoin("location_city", "city.id=address.city_id"),
+		]), Clause::CUSTOM("users.id<30"));
 	}
 }
 

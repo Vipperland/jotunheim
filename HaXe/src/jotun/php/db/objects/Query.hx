@@ -4,13 +4,13 @@ package jotun.php.db.objects;
  * ...
  * @author Rafael Moreira
  */
-class Query implements IQuery {
+class Query {
 	
 	public var success:Bool;
 	
-	public var table:IDataTable;
+	public var table:DataTable;
 	
-	public function new(table:IDataTable, success:Bool) {
+	public function new(table:DataTable, success:Bool) {
 		this.table = table;
 		this.success = success;
 	}

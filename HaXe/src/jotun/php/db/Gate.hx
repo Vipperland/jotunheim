@@ -1,10 +1,9 @@
 package jotun.php.db;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
-import jotun.php.db.IGate;
 import jotun.php.db.Token;
 import jotun.php.db.objects.DataTable;
-import jotun.php.db.objects.IDataTable;
+import jotun.php.db.objects.DataTable;
 import jotun.php.db.pdo.Connection;
 import jotun.php.db.pdo.Database;
 import jotun.php.db.pdo.Statement;
@@ -12,7 +11,6 @@ import jotun.php.db.tools.Command;
 import jotun.php.db.tools.ExtCommand;
 import jotun.php.db.tools.ICommand;
 import jotun.php.db.tools.IExtCommand;
-import jotun.php.db.tools.IQueryBuilder;
 import jotun.php.db.tools.QueryBuilder;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -22,7 +20,7 @@ import php.Lib;
  * ...
  * @author Rafael Moreira
  */
-class Gate implements IGate {
+class Gate {
 	
 	private var _db:Connection;
 	
@@ -34,17 +32,36 @@ class Gate implements IGate {
 	
 	private var _onLog:Array<String->Void>;
 	
-	public var builder:IQueryBuilder;
+	/**
+	 * Fast bulk command
+	 */
+	public var builder:QueryBuilder;
 	
+	/**
+	 * Last created command
+	 */
 	public var command:ICommand;
 	
+	/**
+	 * Connection and Execution Errors
+	 */
 	public var errors(get, null):Array<ErrorDescriptior>;
 	public function get_errors():Array<ErrorDescriptior> { return _errors; }
 	
+	/**
+	   Name of Selected database
+	   @return
+	**/
 	public function getName():String {
 		return _token.db;
 	}
 	
+	/**
+	   LAst inserted column value
+	   @param	field
+	   @param	mode
+	   @return
+	**/
 	public function getInsertedID(?field:String, ?mode:String):Dynamic {
 		var r:Dynamic = field != null ? _db.lastInsertId(field) : _db.lastInsertId();
 		switch(mode){
@@ -62,18 +79,32 @@ class Gate implements IGate {
 		builder = new QueryBuilder(this);
 	}
 	
+	/**
+	 * If the connection is available
+	 * @return
+	 */
 	public function isOpen():Bool {
 		return _db != null && errors.length == 0;
 	}
 	
-	public function listen(handler:String->Void):IGate {
+	/**
+	 * register query execution
+	 * @param	handler
+	 * @return
+	 */
+	public function listen(handler:String->Void):Gate {
 		if (_onLog.indexOf(handler) == -1){
 			_onLog[_onLog.length] = handler;
 		}
 		return this;
 	}
 	
-	public function open(token:Token):IGate {
+	/**
+	 * Open a connection
+	 * @param	token
+	 * @return
+	 */
+	public function open(token:Token):Gate {
 		if (!isOpen()) {
 			_token = token;
 			try {
@@ -87,6 +118,14 @@ class Gate implements IGate {
 		return this;
 	}
 	
+	/**
+	 * The query to execute
+	 * @param	query
+	 * @param	parameters
+	 * @param	object
+	 * @param	options
+	 * @return
+	 */
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
 		var pdo:Statement = null;
 		if (isOpen()) {
@@ -96,11 +135,22 @@ class Gate implements IGate {
 		return command;
 	}
 	
+	/**
+	 * 
+	 * @param	query
+	 * @param	parameters
+	 * @return
+	 */
 	public function query(query:String, ?parameters:Dynamic = null):IExtCommand {
 		command = new ExtCommand(_db, query, parameters, _errors, _log);
 		return cast command;
 	}
 	
+	/**
+	 * Show all fields of a table
+	 * @param	table
+	 * @return
+	 */
 	public function schema(?table:Dynamic):Array<Dynamic> {
 		if (!Std.isOfType(table, Array)) {
 			table = [table];
@@ -116,7 +166,12 @@ class Gate implements IGate {
 		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute().result;
 	}
 	
-	public function setPdoAttributes(value:Bool):IGate {
+	/**
+	 * Enable/Disable INT to String conversions
+	 * @param	value
+	 * @return
+	 */
+	public function setPdoAttributes(value:Bool):Gate {
 		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_STRINGIFY_FETCHES'), value);
 		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_EMULATE_PREPARES'), value);
 		_db.setAttribute(php.Syntax.code('\\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
@@ -124,13 +179,22 @@ class Gate implements IGate {
 		return this;
 	}
 	
-	public function table(table:String):IDataTable {
+	/**
+	 * Shotcut to table statements and methods
+	 * @param	table
+	 * @return
+	 */
+	public function table(table:String):DataTable {
 		if (!Reflect.hasField(_tables, table)) {
 			Reflect.setField(_tables, table, new DataTable(table, this));
 		}
 		return Reflect.field(_tables, table);
 	}
 	
+	/**
+	   Get name of all tables in the selected database
+	   @return
+	**/
 	public function getTableNames():Array<String> {
 		var r:Array<String> = [];
 		Dice.Values(query("show tables").execute().result, function(v:Dynamic){
@@ -139,6 +203,10 @@ class Gate implements IGate {
 		return r;
 	}
 	
+	/**
+	   Get all DataTable objects from the selected database
+	   @return
+	**/
 	public function getTables():Dynamic {
 		var r:Dynamic = {};
 		Dice.Values(getTableNames(), function(v:String){
@@ -147,6 +215,12 @@ class Gate implements IGate {
 		return r;
 	}
 	
+	/**
+	   LAst inserted column value
+	   @param	field
+	   @param	mode
+	   @return
+	**/
 	public function ifTableExists(table:String):Bool {
 		return getTableNames().indexOf(table) != -1;
 	}

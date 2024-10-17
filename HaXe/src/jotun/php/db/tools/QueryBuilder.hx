@@ -1,7 +1,7 @@
 package jotun.php.db.tools;
 import haxe.Json;
 import jotun.logical.Flag;
-import jotun.php.db.objects.IDataTable;
+import jotun.php.db.objects.DataTable;
 import php.Lib;
 import jotun.php.db.tools.ICommand;
 import jotun.utils.Dice;
@@ -11,9 +11,9 @@ import jotun.utils.Filler;
  * ...
  * @author Rafael Moreira
  */
-class QueryBuilder implements IQueryBuilder {
+class QueryBuilder {
 	
-	private var _gate:IGate;
+	private var _gate:Gate;
 	
 	/**
 	 * 
@@ -25,7 +25,7 @@ class QueryBuilder implements IQueryBuilder {
 		], Clause.CUSTOM('users.id<30'));
 	 * @param	gate
 	 */
-	public function new(gate:IGate) {
+	public function new(gate:Gate) {
 		_gate = gate;
 	}
 	
@@ -52,7 +52,12 @@ class QueryBuilder implements IQueryBuilder {
 		return "(" + r.join(",") + ") VALUES (" + q.join(",") + ")";
 	}
 	
-	
+	/**
+	 * 
+	 * @param	parameters
+	 * @param	dataset
+	 * @return
+	 */
 	private function _updateSet(parameters:Dynamic, dataset:Array<Dynamic>):String {
 		var q:Array<String> = [];
 		Dice.All(parameters, function(p:String, v:Dynamic):Void {
@@ -72,7 +77,11 @@ class QueryBuilder implements IQueryBuilder {
 		return q.join(",");
 	}
 	
-	
+	/**
+	 * 
+	 * @param	obj
+	 * @return
+	 */
 	private function _order(obj:Dynamic):String {
 		var r:Array<String> = [];
 		Dice.All(obj, function(p:String, v:Dynamic):Void {
@@ -81,6 +90,14 @@ class QueryBuilder implements IQueryBuilder {
 		return r.join(",");
 	}
 	
+	/**
+	 * 
+	 * @param	obj
+	 * @param	props
+	 * @param	joiner
+	 * @param	skip
+	 * @return
+	 */
 	private function _conditions(obj:Dynamic, props:Dynamic, joiner:String, skip:Bool):String {
 		
 		var r:Array<String> = [];
@@ -137,6 +154,14 @@ class QueryBuilder implements IQueryBuilder {
 		
 	}
 	
+	/**
+	 * 
+	 * @param	clause
+	 * @param	parameters
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
 	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
 		if (clause != null)
@@ -148,11 +173,26 @@ class QueryBuilder implements IQueryBuilder {
 		return q;
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @param	parameters
+	 * @return
+	 */
 	public function add(table:String, ?parameters:Dynamic):ICommand {
 		var dataset:Array<Dynamic> = [];
 		return _gate.prepare("INSERT INTO " + table + _insert(parameters, dataset) + _assembleBody(null, dataset) + ";", dataset);
 	}
 	
+	/**
+	 * 
+	 * @param	fields
+	 * @param	table
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
 	public function find(fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
 		if (Std.isOfType(fields, Array)) {
 			fields = fields.join(",");
@@ -166,16 +206,42 @@ class QueryBuilder implements IQueryBuilder {
 		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @param	parameters
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
 	public function update(table:String, ?clause:Dynamic, ?parameters:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var dataset:Array<Dynamic> = [];
 		return _gate.prepare("UPDATE " + table + " SET " + _updateSet(parameters, dataset) + _assembleBody(clause, dataset, order, limit) + ";", dataset);
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @param	order
+	 * @param	limit
+	 * @return
+	 */
 	public function delete(table:String, ?clause:Dynamic, ?order:Dynamic, ?limit:String):ICommand {
 		var parameters:Dynamic = [];
 		return _gate.prepare("DELETE FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
 	}
 	
+	/**
+	 * 
+	 * @param	from
+	 * @param	to
+	 * @param	clause
+	 * @param	filter
+	 * @param	limit
+	 * @return
+	 */
 	public function copy(from:String, to:String, ?clause:Dynamic, ?filter:Dynamic->Dynamic, ?limit:String):Array<Dynamic> {
 		var entries:Dynamic = find("*", from, clause, null, limit).result;
 		var result:Array<Dynamic> = [];
@@ -190,6 +256,17 @@ class QueryBuilder implements IQueryBuilder {
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @param	reference
+	 * @param	key
+	 * @param	target
+	 * @param	field
+	 * @param	delete
+	 * @param	update
+	 * @return
+	 */
 	public function fKey(table:String, reference:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand {
 		if (key == null){
 			return _gate.query("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
@@ -198,36 +275,93 @@ class QueryBuilder implements IQueryBuilder {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @return
+	 */
 	public function truncate(table:String):ICommand {
 		return _gate.prepare("TRUNCATE :table", {table:table});
 	}
 	
+	/**
+	 * 
+	 * @param	table
+	 * @param	to
+	 * @return
+	 */
 	public function rename(table:String, to:String):ICommand {
 		return _gate.prepare("RENAME TABLE :oldname TO :newname", {oldname:table, newname:to});
 	}
 	
-	public function join(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'JOIN ' + (Std.isOfType(table, IDataTable) ? table.name : table) + (name != null ? ' AS ' + name : '') + ' ON ' + _conditions(clause , [], " || ", true);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function join(table:Dynamic, ?clause:Dynamic):String {
+		return 'JOIN ' + (Std.isOfType(table, DataTable) ? table.name : table) + ' ON ' + _conditions(clause , [], " || ", true);
 	}
 	
-	public function leftJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'LEFT ' + join(table, name, clause);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function innerJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'INNER ' + join(table, clause);
 	}
 	
-	public function outerJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'OUTER ' + join(table, name, clause);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function outerJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'OUTER ' + join(table, clause);
 	}
 	
-	public function leftOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'LEFT ' + outerJoin(table, name, clause);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function leftJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'LEFT ' + join(table, clause);
 	}
 	
-	public function rightOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'RIGHT ' + outerJoin(table, name, clause);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function leftOuterJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'LEFT ' + outerJoin(table, clause);
 	}
 	
-	public function fullOuterJoin(table:Dynamic, ?name:String, ?clause:Dynamic):String {
-		return 'FULL ' + outerJoin(table, name, clause);
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function rightOuterJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'RIGHT ' + outerJoin(table, clause);
+	}
+	
+	/**
+	 * 
+	 * @param	table
+	 * @param	clause
+	 * @return
+	 */
+	public function fullOuterJoin(table:Dynamic, ?clause:Dynamic):String {
+		return 'FULL ' + outerJoin(table, clause);
 	}
 	
 }

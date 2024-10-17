@@ -6,11 +6,11 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Pipe implements IPipe {
+class Pipe {
 	
 	public var name:String;
 	
-	public var host:ISignals;
+	public var host:Signals;
 	
 	public var transfer:Bool = true;
 	
@@ -18,11 +18,11 @@ class Pipe implements IPipe {
 	
 	public var calls:UInt = 0;
 	
-	public var current:IFlow;
+	public var current:Flow;
 	
 	private var _l:Array<Dynamic>;
 	
-	private var _v:IFlow->Void;
+	private var _v:Flow->Void;
 	
 	public function new(name:String, host:Signals) {
 		this.host = host;
@@ -30,14 +30,14 @@ class Pipe implements IPipe {
 		reset();
 	}
 	
-	public function add(handler:IFlow->Void):IPipe {
+	public function add(handler:Flow->Void):Pipe {
 		if (Lambda.indexOf(_l, handler) == -1){
 			_l.push(handler);
 		}
 		return this;
 	}
 	
-	public function remove(handler:IFlow->Void):IPipe {
+	public function remove(handler:Flow->Void):Pipe {
 		var i:Int = Lambda.indexOf(_l, handler);
 		if (i != -1){
 			_l.splice(i, 1);
@@ -45,7 +45,7 @@ class Pipe implements IPipe {
 		return this;
 	}
 	
-	public function disconnect():IPipe {
+	public function disconnect():Pipe {
 		if (_v != null){
 			remove(_v);
 			_v = null;
@@ -53,12 +53,12 @@ class Pipe implements IPipe {
 		return this;
 	}
 	
-	public function call(?data:Dynamic):IPipe {
+	public function call(?data:Dynamic):Pipe {
 		if(enabled){
 			++calls;
 			current = new Flow(this, data);
 			transfer = true;
-			Dice.Values(_l, function(v:IFlow->Void){
+			Dice.Values(_l, function(v:Flow->Void){
 				_v = v;
 				v(current);
 				return !transfer;

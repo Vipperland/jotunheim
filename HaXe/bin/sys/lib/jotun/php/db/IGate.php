@@ -9,7 +9,7 @@ use \php\Boot;
 use \jotun\php\db\tools\ICommand;
 use \jotun\errors\ErrorDescriptior;
 use \jotun\php\db\tools\IExtCommand;
-use \jotun\php\db\objects\IDataTable;
+use \jotun\php\db\objects\DataTable;
 
 /**
  * @author Rafael Moreira
@@ -156,7 +156,7 @@ interface IGate {
 	 * 
 	 * @param string $table
 	 * 
-	 * @return IDataTable
+	 * @return DataTable
 	 */
 	public function table ($table) ;
 }

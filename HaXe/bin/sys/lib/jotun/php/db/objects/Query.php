@@ -11,18 +11,18 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira
  */
-class Query implements IQuery {
+class Query {
 	/**
 	 * @var bool
 	 */
 	public $success;
 	/**
-	 * @var IDataTable
+	 * @var DataTable
 	 */
 	public $table;
 
 	/**
-	 * @param IDataTable $table
+	 * @param DataTable $table
 	 * @param bool $success
 	 * 
 	 * @return void

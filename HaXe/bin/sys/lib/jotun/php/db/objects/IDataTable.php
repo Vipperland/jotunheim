@@ -266,6 +266,17 @@ interface IDataTable {
 	public function query ($data, $params = null) ;
 
 	/**
+	 *
+	 * @param	to
+	 * @return
+	 * 
+	 * @param string $to
+	 * 
+	 * @return IQuery
+	 */
+	public function rename ($to) ;
+
+	/**
 	 * Restrict the field selection of find command
 	 * @param	fields
 	 * @return

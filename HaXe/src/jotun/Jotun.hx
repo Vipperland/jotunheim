@@ -26,12 +26,10 @@ import jotun.utils.Dice;
 	import jotun.signals.Observer;
 	import jotun.timer.Timer;
 	import jotun.tools.Agent;
-	import jotun.tools.IAgent;
 	import jotun.tools.DisplayCache;
 #elseif php
 	import php.Lib;
 	import jotun.php.db.Gate;
-	import jotun.php.db.IGate;
 	import jotun.net.Header;
 #end
 
@@ -87,7 +85,7 @@ class Jotun {
 		static public var observer:Observer = new Observer();
 		
 		/// Browser information
-		static public var agent:IAgent = new Agent();
+		static public var agent:Agent = new Agent();
 		
 		/// 
 		static public var broadcast:Broadcast = Broadcast.ME();
@@ -205,7 +203,7 @@ class Jotun {
 		/**
 		 * Runtime status
 		 */
-		static private function status():IAgent {
+		static private function status():Agent {
 			log("Jotun API => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
 			return agent;
 		}
@@ -246,7 +244,7 @@ class Jotun {
 		
 		static public var header:Header = new Header();
 		
-		static public var gate:IGate = new Gate();
+		static public var gate:Gate = new Gate();
 		
 		static public var loader:ILoader = new Loader();
 		

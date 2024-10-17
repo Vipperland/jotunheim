@@ -5,13 +5,13 @@ package jotun.signals;
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
 @:expose("Jtn.Signal")
-class Signals implements ISignals {
+class Signals {
 	
 	private var _l:Array<Dynamic>;
 	
 	public var object:Dynamic;
 	
-	private function _c(n:String):IPipe {
+	private function _c(n:String):Pipe {
 		if (!has(n)) 
 			Reflect.setField(_l, n, new Pipe(n, this));
 		return Reflect.field(_l, n);
@@ -26,15 +26,15 @@ class Signals implements ISignals {
 		return Reflect.hasField(_l, name);
 	}
 	
-	public function get(name:String):IPipe {
+	public function get(name:String):Pipe {
 		return _c(name);
 	}
 	
-	public function remove(name:String, ?handler:IFlow->Void):IPipe {
+	public function remove(name:String, ?handler:Flow->Void):Pipe {
 		return _c(name).remove(handler);
 	}
 	
-	public function add(name:String, ?handler:IFlow->Void):IPipe {
+	public function add(name:String, ?handler:Flow->Void):Pipe {
 		return _c(name).add(handler);
 	}
 	
