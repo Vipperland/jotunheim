@@ -5,8 +5,6 @@ package jotun.tools;
  */
 
 interface IAgent {
-	// Version of Internet Explorer
-	public var ie:Bool;
 	// Is Edge?
 	public var edge:Bool;
 	// Is Opera?

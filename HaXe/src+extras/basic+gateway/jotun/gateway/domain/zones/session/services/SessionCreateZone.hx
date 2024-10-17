@@ -1,11 +1,9 @@
 package jotun.gateway.domain.zones.session.services;
 import jotun.gateway.database.SessionDataAccess;
 import jotun.gateway.database.objects.UserPwdObject;
+import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.database.objects.defs.SessionParams;
 import jotun.php.db.Clause;
-import jotun.php.db.objects.IQuery;
-import server.crimson.society.database.objects.CrimsonUserObject;
-import server.crimson.society.database.objects.CrinsomUserFlags;
 
 /**
  * ...
@@ -31,9 +29,9 @@ class SessionCreateZone extends DomainZoneCore {
 			return;
 		}
 		
-		var user:CrimsonUserObject = RunSQL(cast (database, SessionDataAccess).user.restrict(['id', 'username','_flags', '_ctd', '_upd']).findOne(Clause.AND([
+		var user:UserSessionObject = RunSQL(cast (database, SessionDataAccess).user.restrict(['id', 'username','_flags', '_ctd', '_upd']).findOne(Clause.AND([
 			Clause.EQUAL('email', params.email),
-			Clause.FLAG('flags', CrinsomUserFlags.ACTIVE),
+			Clause.FLAG('flags', 1<<0),
 		])));
 		
 		if(user == null){

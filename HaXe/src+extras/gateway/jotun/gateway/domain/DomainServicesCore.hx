@@ -10,7 +10,7 @@ class DomainServicesCore extends OutputCoreCarrier {
 
 	public var database(get, null):DataAccess;
 	private function get_database():DataAccess {
-		return DataAccess.getInstance();
+		return DataAccess.current;
 	}
 	
 	private function error(id:Int):Bool {

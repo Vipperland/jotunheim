@@ -97,7 +97,7 @@ class Gate implements IGate {
 	}
 	
 	public function query(query:String, ?parameters:Dynamic = null):IExtCommand {
-		command = new ExtCommand(isOpen() ? _db : null, query, parameters, _errors, _log);
+		command = new ExtCommand(_db, query, parameters, _errors, _log);
 		return cast command;
 	}
 	

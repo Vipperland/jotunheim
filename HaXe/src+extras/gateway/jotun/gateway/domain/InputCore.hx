@@ -1,17 +1,10 @@
 package jotun.gateway.domain;
 import haxe.DynamicAccess;
-import haxe.Json;
 import jotun.Jotun;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
-import jotun.logical.Flag;
-import jotun.logical.FlagValue;
-import jotun.net.DataSource;
-import jotun.serial.Packager;
-import jotun.tools.Utils;
-import jotun.utils.Dice;
-import jotun.gateway.database.objects.UserSessionObject;
-import jotun.gateway.domain.OutputCore;
 import jotun.gateway.domain.zones.pass.ZonePass;
+import jotun.net.DataSource;
+import jotun.utils.Dice;
 import php.ErrorException;
 import php.Syntax;
 

@@ -1,9 +1,11 @@
 package jotun.net;
+import haxe.Rest;
 import jotun.gaming.dataform.Pulsar;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
 import jotun.utils.Dice;
 import jotun.utils.Omnitools;
+import php.Global;
 import php.Lib;
 import php.Web;
 
@@ -28,6 +30,8 @@ class Header {
 	
 	static private var _client_headers:Dynamic;
 	
+	static private var _no_compression:Bool;
+	
 	public function new() {
 		
 	}
@@ -47,11 +51,32 @@ class Header {
 		}
 	}
 	
-	public function access(origin:String = '*', ?methods:String = 'POST, GET, DELETE, PUT, PATCH, OPTIONS', ?headers:String = 'Origin,Content-Type,Accept,Authorization,X-Request-With', ?credentials:Bool = true):Void {
-		Web.setHeader('Access-Control-Allow-Origin', origin);
-		Web.setHeader('Access-Control-Allow-Methods', methods);
-		Web.setHeader('Access-Control-Allow-Headers', headers);
+	public function allowOrigin(domain:String):Void {
+		Web.setHeader('Access-Control-Allow-Origin', domain);
+	}
+	
+	public function allowMethods(methods:Rest<String>):Void {
+		Web.setHeader('Access-Control-Allow-Methods', methods.toArray().join(', '));
+	}
+	
+	public function allowHeaders(headers:Rest<String>):Void {
+		Web.setHeader('Access-Control-Allow-Methods', headers.toArray().join(', '));
+	}
+	
+	public function allowCredentials(credentials:Bool):Void {
 		Web.setHeader('Access-Control-Allow-Credentials', Std.string(credentials));
+	}
+	
+	public function setContentEncoding(value:String):Void {
+		_no_compression = value == null || value == 'none' || value == 'no' || value == 'disable';
+		Web.setHeader('Content-Encoding', _no_compression ? 'none' : value);
+	}
+	
+	public function setFreeAccess():Void {
+		allowOrigin('*');
+		allowMethods('POST', 'GET', 'DELETE', 'PUT', 'PATCH', 'OPTIONS');
+		allowHeaders('Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Request-With');
+		allowCredentials(true);
 	}
 	
 	public function content(type:String):Void {
@@ -117,20 +142,22 @@ class Header {
 					data = _createPieces(data, chunk);
 				}
 			}
-			var compress:String = getClientHeaders().ACCEPT_ENCODING;
-			if (compress.indexOf('x-gzip') != -1){
-				compress = 'x-gzip';
-			}else if (compress.indexOf('gzip') != -1){
-				compress = 'gzip';
-			}else {
-				compress = null;
-			}
-			if (compress != null){
-				data = php.Syntax.codeDeref('gzcompress({0},{1})', data, 1);
-				Web.setHeader('Content-Encoding', compress);
-			}
-			if (compress != null){
-				data = '\x1f' + php.Syntax.codeDeref('chr({0})', 139) + '\x08\x00\x00\x00\x00\x00' + data;
+			if(!_no_compression){
+				var compress:String = getClientHeaders().ACCEPT_ENCODING;
+				if (compress.indexOf('x-gzip') != -1){
+					compress = 'x-gzip';
+				}else if (compress.indexOf('gzip') != -1){
+					compress = 'gzip';
+				}else {
+					compress = null;
+				}
+				if (compress != null){
+					data = php.Syntax.codeDeref('gzcompress({0},{1})', data, 1);
+					Web.setHeader('Content-Encoding', compress);
+				}
+				if (compress != null){
+					data = '\x1f' + php.Syntax.codeDeref('chr({0})', 139) + '\x08\x00\x00\x00\x00\x00' + data;
+				}
 			}
 			Lib.print(data);
 		}
@@ -178,12 +205,11 @@ class Header {
 	}
 	
 	public function readCookie(name:String):String {
-		return Web.getCookies()[name];
+		return Global.session_get_cookie_params()[name];
 	}
 	
 	public function writeCookie(name:String, value:String, ?expire:UInt = 0, ?domain:String = null, ?secure:Bool = false, ?http:Bool = false):Void {
-		var time:Float = Omnitools.timeFromNow((expire+1) * 24);
-		Web.setCookie(name, value, Date.fromTime(time), domain, "/", secure, http);
+		Global.setcookie(name, value, Std.int(Omnitools.timeFromNow((expire+1) * 24)), "/", domain, secure, http);
 	}
 	
 }

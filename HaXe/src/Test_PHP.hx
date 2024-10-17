@@ -10,6 +10,8 @@ import jotun.php.db.tools.QueryBuilder;
 import jotun.php.file.Uploader;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import php.Global;
+import php.Lib;
 
 /**
  * ...
@@ -99,8 +101,6 @@ class Test_PHP {
 		//buff.push(q);
 		//
 		//Jotun.header.setJSON(buff);
-		
-		
 		
 	}
 	

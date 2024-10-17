@@ -6,6 +6,7 @@ import jotun.gateway.objects.InputCoreCarrier;
 import jotun.logical.Flag;
 import jotun.utils.Omnitools;
 import php.ErrorException;
+import php.Global;
 
 /**
  * ...
@@ -25,6 +26,8 @@ class OutputCore extends InputCoreCarrier {
 	private var _stopped:Bool;
 	
 	private var _encode_out:Bool;
+	
+	private var _escaped:Bool;
 	
 	private var _chunk_size:Int;
 	
@@ -83,7 +86,11 @@ class OutputCore extends InputCoreCarrier {
 		return _status;
 	}
 	
-	public function flush():Void {
+	public function flush():Void { }
+	
+	final public function print(message:Dynamic):Void {
+		_escaped = true;
+		Global.print_r(message);
 	}
 	
 	public function registerOAuth(token:String):Void {
@@ -92,6 +99,10 @@ class OutputCore extends InputCoreCarrier {
 	
 	final public function isStopped():Bool {
 		return _stopped == true;
+	}
+	
+	final public function isEscaped():Bool {
+		return _escaped == true;
 	}
 	
 	final public function isLogEnabled():Bool {

@@ -41,12 +41,6 @@ class Dice {
 			#end
 			for (p in Reflect.fields(q)) {
 				v = Reflect.field(q, p);
-				#if php
-					// ==== Skip object methods in PHP object
-					if (Reflect.isFunction(v)) {
-						continue;
-					}
-				#end
 				if (each(p, v) == true) {
 					i = false;
 					break;

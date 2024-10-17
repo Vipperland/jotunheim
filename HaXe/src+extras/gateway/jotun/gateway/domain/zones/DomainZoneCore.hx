@@ -16,7 +16,7 @@ import php.Syntax;
  */
 class DomainZoneCore extends DomainServicesCore {
 	
-	private var _defaultMap:Dynamic = {
+	private var _defaultMap:DynamicAccess<Class<DomainZoneCore>> = {
 		"*": NotFoundZone,
 	}
 	
@@ -26,6 +26,7 @@ class DomainZoneCore extends DomainServicesCore {
 	private var _requiredPass:ZonePass;
 	
 	private var _dbRequired:Bool;
+	private var _dbRequiredCarry:Bool;
 	private var _requiredMethod:String;
 	
 	private var _name:String;
@@ -67,8 +68,10 @@ class DomainZoneCore extends DomainServicesCore {
 		_defaultMap = null;
 	}
 	
-	final public function setDatabaseRequired():Void {
+	final public function setDatabaseRequired(?carry:Bool = false):Void {
 		_dbRequired = true;
+		_dbRequiredCarry = carry;
+		database.connect();
 	}
 	
 	final private function isDatabaseRequired():Bool {
@@ -115,8 +118,8 @@ class DomainZoneCore extends DomainServicesCore {
 		return _requiredPass == null || (input.hasPass() && _requiredPass.isCarrier()) || input.hasAuthentication(_requiredPass);
 	}
 	
-	final private function _setZoneMap(data:Dynamic):Void {
-		Dice.All(data, function(p:String, v:Dynamic){
+	final private function _setZoneMap(data:DynamicAccess<Class<DomainZoneCore>>):Void {
+		Dice.All(data, function(p:String, v:Class<DomainZoneCore>){
 			Reflect.setField(_defaultMap, p, v);
 		});
 	}
@@ -235,7 +238,11 @@ class DomainZoneCore extends DomainServicesCore {
 			return null;
 		}
 		
-		if (Def != null){
+		if (_dbRequiredCarry && !_matchDabaseRequirement()){
+			if (output.isLogEnabled()){
+				_logService(toString() + "->carry(...) Error.DB_REQUIRED");
+			}
+		}else if (Def != null){
 			var ZoneName:String = data.shift();
 			_zone = Syntax.construct(Def);
 			if (_prepare(data) || Def == NotFoundZone || Def == ForbiddenZone){
@@ -245,10 +252,8 @@ class DomainZoneCore extends DomainServicesCore {
 				_zone._parent = parent;
 				_zone.carry(this, data);
 				return _zone;
-			}else{
-				if (output.isLogEnabled()){
-					_logService(toString() + "->carry('" + ZoneName + "') Error.FAILED");
-				}
+			}else if (output.isLogEnabled()){
+				_logService(toString() + "->carry('" + ZoneName + "') Error.FAILED");
 			}
 		}else{
 			if (_matchDabaseRequirement()){
@@ -286,6 +291,9 @@ class DomainZoneCore extends DomainServicesCore {
 		if (isDatabaseRequired()){
 			val += val.length > 0 ? ',' : '';
 			val += 'DB';
+			if(_dbRequiredCarry){
+				val += ':CARRY';
+			}
 		}
 		if (isPassRequired()){
 			val += val.length > 0 ? ',' : '';

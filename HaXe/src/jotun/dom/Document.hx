@@ -132,6 +132,7 @@ class Document extends Display {
 			Jotun.resources.register(n, o.element.innerHTML);
 			o.dispose();
 		});
+		body.css(Jotun.agent.mobile ? 'mobile' : 'desktop' + ' platform-' + Jotun.agent.os.toLowerCase());
 	}
 	
 	/**

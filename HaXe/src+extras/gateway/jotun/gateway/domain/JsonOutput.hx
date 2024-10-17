@@ -74,6 +74,10 @@ private class ObjectManipulator {
 		this.indexable = indexable;
 	}
 	
+	public function set(name:String, value:Dynamic):Void {
+		Reflect.setField(data, name, value);
+	}
+	
 	public function insert(o:Dynamic):Bool {
 		if (indexable){
 			data.push(o);

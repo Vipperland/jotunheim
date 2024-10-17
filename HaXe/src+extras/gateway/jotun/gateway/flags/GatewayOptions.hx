@@ -7,6 +7,8 @@ import jotun.logical.Flag;
  */
 class GatewayOptions {
 
+	static public inline var CLEAR:Int = 0;
+	
 	static public inline var INFO_LOG:Int = 1 << 0;
 	
 	static public inline var DEBUG_MODE:Int = 1 << 1;

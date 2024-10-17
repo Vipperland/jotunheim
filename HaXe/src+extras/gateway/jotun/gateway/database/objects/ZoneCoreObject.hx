@@ -13,7 +13,7 @@ class ZoneCoreObject {
 
 	private var _database(get, null):DataAccess;
 	private function get__database():DataAccess {
-		return DataAccess.getInstance();
+		return DataAccess.current;
 	}
 	
 	private function RunSQL(handler:Dynamic):Dynamic {

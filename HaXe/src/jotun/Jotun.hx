@@ -99,8 +99,8 @@ class Jotun {
 		static private function _loadController(e:Event):Void {
 			if (!_loaded){
 				_loaded = true;
-				document.checkBody();
 				agent.update();
+				document.checkBody();
 				log("Jotun API => READY", 1);
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;

@@ -1,12 +1,7 @@
 package jotun.gateway.domain;
 import jotun.Jotun;
-import jotun.tools.Utils;
-import jotun.utils.Dice;
-import jotun.gateway.domain.zones.ForbiddenZone;
-import jotun.gateway.domain.zones.NotFoundZone;
-import jotun.gateway.domain.zones.session.SessionZone;
 import jotun.gateway.domain.zones.DomainZoneCore;
-import jotun.gateway.errors.ErrorCodes;
+import jotun.utils.Dice;
 import php.ErrorException;
 
 /**
@@ -34,18 +29,24 @@ class DomainAccessCore extends DomainZoneCore {
 	 * 
 	 */
 	
+	private var _activated:Bool;
+	
+	private function _preInit():Void { }
+	
 	public function new() {
 		if (_me != null){
 			throw new ErrorException("Domain is a Singleton");
 		}
 		_me = this;
+		_preInit();
 		super();
-		carry(this, getServices());
-		Jotun.params.remove("service");
+		carry(this, _getServices());
 	}
 	
-	private function getServices():Array<String>{
-		return cast Dice.nullSkip(Jotun.params.array('service', '/'));
+	private function _getServices():Array<String> {
+		var services:Array<String> = cast Dice.nullSkip(Jotun.params.array('service', '/'));
+		Jotun.params.remove("service");
+		return services;
 	}
 	
 }

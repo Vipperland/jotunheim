@@ -42,7 +42,7 @@ class QueryBuilder implements IQueryBuilder {
 			}else if(Std.isOfType(v, Array)){
 				v = v.join(",");
 			}
-			if(v == null || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
+			if(v == null || Std.isOfType(v, String) || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
 				r[i] = p; 
 				q[i] = "?"; 
 				++i;
@@ -64,7 +64,7 @@ class QueryBuilder implements IQueryBuilder {
 			}else if(Std.isOfType(v, Array)){
 				v = v.join(",");
 			}
-			if(v == null || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
+			if(v == null || Std.isOfType(v, String) || Std.isOfType(v, Bool) || Std.isOfType(v, Float) || Std.isOfType(v, Int)){
 				q[q.length] = p + "=?"; 
 				dataset[dataset.length] = v;
 			}

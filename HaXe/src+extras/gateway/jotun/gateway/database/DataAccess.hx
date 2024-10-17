@@ -15,37 +15,44 @@ import php.ErrorException;
  */
 class DataAccess extends OutputCoreCarrier {
 	
-	static private var _instance:DataAccess;
-	static public function getInstance():DataAccess {
-		return _instance;
+	static public var current(get, null):DataAccess;
+	static private function get_current():DataAccess {
+		return current;
 	}
 	
 	private var _tables:Dynamic;
+	private var _token:Token;
 	
 	final public function _error(code:Int):Void {
 		output.error(code);
 	}
 	
 	public function new(token:Token) {
-		if (_instance != null){
+		if (current != null){
 			throw new ErrorException("DataAccess is a Singleton");
 		}
-		_instance = this;
-		if (!Jotun.gate.isOpen()){
-			if (!Jotun.gate.open(token).isOpen()){
-				output.setStatus(ErrorCodes.DATABASE_CONNECT_ERROR);
-			}
-		}
+		current = this;
+		_token = token;
 		super();
 	}
 	
-	final public function isConnected():Bool {
-		return _instance != null && Jotun.gate.isOpen();
+	final public function connect():Void {
+		if (_token != null && !Jotun.gate.isOpen()){
+			if (!Jotun.gate.open(_token).isOpen()){
+				output.setStatus(ErrorCodes.DATABASE_CONNECT_ERROR);
+				output.log(Jotun.gate.errors);
+			}
+			_token = null;
+		}
 	}
 	
-	public function execute(handler:Void->Dynamic):Dynamic {
+	final public function isConnected():Bool {
+		return current != null && Jotun.gate.isOpen();
+	}
+	
+	public function execute(handler:Dynamic->Dynamic):Dynamic {
 		if (isConnected()){
-			return handler();
+			return handler(this);
 		}
 		return null;
 	}
@@ -61,7 +68,7 @@ class DataAccess extends OutputCoreCarrier {
 	}
 	
 	final private function _tryAssemble(table:String, Def:Dynamic):IDataTable {
-		return execute(function(){
+		return execute(function(database:DataAccess):Dynamic {
 			var table:IDataTable = Jotun.gate.table(table);
 			if (table != null){
 				return table.setClassObj(Def);

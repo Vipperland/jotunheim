@@ -23,8 +23,8 @@ class Omnitools {
 	 * @param	hours
 	 * @return
 	 */
-	static public function timeFromNow(hours:Float):Float {
-		return timeNow() + (hours * 360000);
+	static public function timeFromNow(hours:Float, ?ms:Bool):Float {
+		return timeNow() + (hours * 3600000);
 	}
 	
 	/**

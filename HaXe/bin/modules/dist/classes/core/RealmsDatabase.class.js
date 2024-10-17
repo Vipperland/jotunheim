@@ -19,7 +19,7 @@ export class RealmsDatabase {
 			var $this = RealmsDatabase.#_me;
 			if($this.#_db == null){
 				$this.#_state = 1;
-				J_WebDB.open($this.#_info.name, $this.#_info.version, function(db){
+				Jtn.WebDB.open($this.#_info.name, $this.#_info.version, function(db){
 					$this.#_db = db;
 					if(db.isUpgradeNeeded()){
 						for(var p in  $this.#_info.structure){

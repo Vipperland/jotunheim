@@ -28,6 +28,8 @@ class ErrorCodes {
 	
 	static public inline var SERVICE_NOT_FOUND:Int = 404;
 	
+	static public inline var SERVICE_NOT_ALLOWED:Int = 405;
+	
 	static public inline var SERVICE_NOT_ACCEPTABLE:Int = 406;
 	
 	

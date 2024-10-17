@@ -17,6 +17,7 @@ class SessionDomainCore extends DomainAccessCore {
 	
 	public function new() {
 		super();
+		setDatabaseRequired(true);
 	}
 	
 }

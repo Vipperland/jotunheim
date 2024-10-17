@@ -15,9 +15,9 @@ import php.Syntax;
  */
 class GatewayCore {
 
-	static private var _instance:GatewayCore;
-	static public function getInstance():GatewayCore {
-		return _instance;
+	static private var current(get, null):GatewayCore;
+	static public function get_current():GatewayCore {
+		return current;
 	}
 	
 	/**
@@ -32,9 +32,11 @@ class GatewayCore {
 	 */
 	static public function init(TGateway:Class<GatewayCore>, TOutput:Class<OutputCore>, TDataAccess:Class<DataAccess>, TInput:Class<InputCore>, TDomain:Class<DomainZoneCore>, options:UInt):Void {
 		
-		var gateway:GatewayCore = cast Syntax.construct(TGateway);
+		Jotun.header.setFreeAccess();
+		Jotun.header.setContentEncoding('none');
+		Jotun.header.allowHeaders('Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Request-With', ' x-air-appid');
 		
-		Jotun.header.access();
+		var gateway:GatewayCore = cast Syntax.construct(TGateway);
 		
 		// Init OUTPUT interface
 		gateway._output = Syntax.construct(TOutput);
@@ -70,15 +72,17 @@ class GatewayCore {
 	private var _output:OutputCore;
 	
 	public function new() {
-		if (_instance == null){
-			_instance = this;
+		if (current == null){
+			current = this;
 		}else{
 			throw new  ErrorException("Gateway is a Singleton");
 		}
 	}
 	
 	public function flush():Void {
-		_output.flush();
+		if (!_output.isEscaped()){
+			_output.flush();
+		}
 	}
 	
 }

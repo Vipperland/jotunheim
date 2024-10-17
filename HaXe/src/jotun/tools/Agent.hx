@@ -10,8 +10,6 @@ import jotun.tools.Utils;
  */
 class Agent implements IAgent {
 	
-	public var ie:Bool;
-	
 	public var edge:Bool;
 	
 	public var opera:Bool;
@@ -34,27 +32,23 @@ class Agent implements IAgent {
 	
 	public var os:String;
 
+	public var lang:String;
+
 	public function new() {
 		
 	}
 	
 	public function update():IAgent {
 		var ua:String = Browser.navigator.userAgent;
-		// Dectect version of IE (8 to 12);
-		var ie:Int = ~/MSIE/i.match(ua) ? 8 : 0;
-			ie = ~/MSIE 9/i.match(ua) ? 9 : ie;
-			ie = ~/MSIE 10/i.match(ua) ? 10 : ie;
-			ie = ~/rv:11./i.match(ua) ? 11 : ie;
-			ie = ~/Edge/i.match(ua) ? 12 : ie;
 		// Detect version of each browser for more accurate result
+		var edge:Bool = ~/Edge/i.match(ua);
 		var opera:Bool = ~/OPR/i.match(ua);
 		var safari:Bool = ~/Safari/i.match(ua);
 		var firefox:Bool = ~/Firefox/i.match(ua);
 		var chrome:Bool = ~/Chrome/i.match(ua);
 		var chromium:Bool = ~/Chromium/i.match(ua);
 		// Check all other versions, including mobile browsers
-		this.ie = ie > 0; 
-		this.edge = ie > 11;
+		this.edge = edge;
 		this.opera = opera; 
 		this.firefox = firefox; 
 		this.safari = safari && !chrome && !chromium; 
@@ -82,6 +76,8 @@ class Agent implements IAgent {
 		} else{
 			os = 'CUSTOM';
 		}
+		
+		this.lang = Browser.navigator.language.toLowerCase();
 		
 		return this;
 	}

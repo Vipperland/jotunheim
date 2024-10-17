@@ -130,6 +130,9 @@ class Domain implements IDomain {
 		
 		private function _getJsonInput():Dynamic {
 			var data:String = getInput();
+			if(data != null && data.substr(0, 4) == '----'){
+				return null;
+			}
 			return data != null ? Json.parse(data) : null;
 		}
 		

@@ -10,4 +10,4 @@ spl_autoload_register(
 	}
 );
 \php\Boot::__hx__init();
-\CustomGateway::main();
+\Test_PHP::main();

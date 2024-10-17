@@ -12,12 +12,10 @@
     <movie minorVersion="0" />
     <movie platform="PHP" />
     <movie background="#FCFCFC" />
-    <movie preferredSDK="Haxe 4.1.0;4.1.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="samples\server" />
     <class path="src+extras\gateway" />
     <class path="src+extras\basic+gateway" />
   </classpaths>
@@ -26,7 +24,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="CustomGateway" />
+    <option mainClass="Test_PHP" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -41,6 +39,7 @@
     <compile path="src2\praia\admin\ServerMain.hx" />
     <compile path="server\jotun\admin\ServerMain.hx" />
     <compile path="samples\server\CustomGateway.hx" />
+    <compile path="src\Test_PHP.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
