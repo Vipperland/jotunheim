@@ -105,7 +105,9 @@ class XCode {
 			omnibuild('.drawer.o-reverse', '-webkit-box-direction:column;-ms-flex-direction:column-reverse;flex-direction:column-reverse;');
 			// Wrap modes
 			omnibuild('.hack.o-reverse', '-webkit-flex-wrap:wrap-reverse;flex-wrap:wrap-reverse;');
-			Dice.Count(0+1, 12+1, function(a:Int, b:Int, c:Bool) {
+			var a:Int = 1;
+			var b:Int = 12;
+			while(a <= b){
 				// Create order selectors, positive and negative (-12 to 12)
 				//if(a > 0){
 					//omnibuild('.tag-' + a + 'n', '-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';');
@@ -116,13 +118,12 @@ class XCode {
 				var t:String = (cast m).toFixed(5) + '%';
 				var s:String = "flex-basis:" + t + ";max-width:" + t + ";width:0";
 				omnibuild('.cel-' + a, s);
-				//omnibuild('.cel-fit' + a, s);
 				if (a < b) {
 					omnibuild('.r-cell-' + a, 'margin-left:' + t);
 					omnibuild('.l-cell-' + a, 'margin-right:' + t);
 				}
-				return null;
-			});
+				++a;
+			}
 			_inits.grid = true;
 		}
 	}

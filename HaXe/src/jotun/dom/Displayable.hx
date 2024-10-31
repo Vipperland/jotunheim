@@ -543,6 +543,8 @@ interface Displayable extends IQuery {
 	 */
 	public function isEnabled():Bool;
 	
+	public function run(method:Displayable-> Void):Displayable;
+	
 	/**
 	 * Reload all external loaded <script> tags
 	 */

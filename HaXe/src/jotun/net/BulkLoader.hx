@@ -2,7 +2,7 @@ package jotun.net;
 import haxe.Rest;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
-import jotun.signals.IPipe;
+import jotun.signals.Pipe;
 import jotun.signals.Signals;
 
 
@@ -14,7 +14,7 @@ typedef BulkLoaderSignal = {
 
 typedef BulkLoaderFlow = {
 	public var data:BulkLoaderSignal;
-	public var pipe:IPipe;
+	public var pipe:Pipe;
 }
 /**
  * ...

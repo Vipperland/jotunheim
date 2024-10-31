@@ -312,6 +312,14 @@ class Dice {
 		return r;
 	}
 	
+	public static function Search(data:Array<Dynamic>, obj:Dynamic, ...props:String):Dynamic {
+		return Dice.Values(data, function(v:Dynamic) {
+			return !Dice.Values(props, function(v1:String):Bool {
+				return Reflect.field(v, v1) == obj;
+			}).completed;
+		}).value;
+	}
+	
 	/**
 	 * Return a random value from the array
 	 * @param	data

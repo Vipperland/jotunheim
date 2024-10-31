@@ -847,6 +847,11 @@ class Display extends Query implements Displayable {
 		return Utils.displayFrom(element.nextElementSibling);
 	}
 	
+	public function run(method:Displayable->Void):Displayable {
+		method(this);
+		return this;
+	}
+	
 	public function dispose():Void {
 		if(_uid != -1 && element != null){
 			Reflect.deleteField(_DATA, ''+_uid);
