@@ -1,6 +1,7 @@
 package jotun.dom;
 
 import haxe.Json;
+import haxe.Rest;
 import haxe.extern.EitherType;
 import jotun.Jotun;
 import jotun.css.XCode;
@@ -11,6 +12,8 @@ import jotun.events.EventGroup;
 import jotun.math.Matrix3D;
 import jotun.math.Point;
 import jotun.objects.Query;
+import jotun.timer.DelayedCall;
+import jotun.timer.MotionStep;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 import jotun.utils.Filler;
@@ -117,11 +120,31 @@ class Display extends Query implements Displayable {
 	
 	private var _setattr:Bool;
 	
-	public var data:Dynamic<Dynamic>;
+	public var data:Dynamic;
 	
 	public var element:Element;
 	
 	public var events:EventDispatcher;
+	
+	private function _tickMotion(timeline:Rest<MotionStep>):Void {
+		var steps:Array<MotionStep> = timeline.toArray();
+		if (steps.length > 0){
+			var step:MotionStep = steps.shift();
+			if (step.css != null){
+				css(step.css);
+			}
+			if (step.delay != null && step.delay > 0){
+				data._timeline = Jotun.timer.delayed(_tickMotion, step.delay, 0, steps);
+			}else{
+				Reflect.callMethod(null, _tickMotion, steps);
+			}
+			if(step.callback != null){
+				step.callback(this);
+			}
+		}else{
+			Reflect.deleteField(data, '_timeline');
+		}
+	}
 	
 	private function _style_set(p:Dynamic, v:Dynamic):Void {
 		if (Std.isOfType(p, String) && v != null) {
@@ -852,8 +875,22 @@ class Display extends Query implements Displayable {
 		return this;
 	}
 	
+	public function stopMotion():Void {
+		var current:DelayedCall = data._timeline;
+		if(current != null){
+			current.cancel();
+			data._timeline = null;
+		}
+	}
+	
+	public function motion(timeline:Array<MotionStep>):Void {
+		stopMotion();
+		Reflect.callMethod(this, _tickMotion, timeline);
+	}
+	
 	public function dispose():Void {
-		if(_uid != -1 && element != null){
+		if (_uid != -1 && element != null){
+			stopMotion();
 			Reflect.deleteField(_DATA, ''+_uid);
 			if (_children != null){
 				_children.dispose();

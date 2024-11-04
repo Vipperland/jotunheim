@@ -9,6 +9,7 @@ import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.objects.IQuery;
 import jotun.objects.IResolve;
+import jotun.timer.MotionStep;
 import jotun.utils.ITable;
 import js.html.CSSStyleDeclaration;
 import js.html.DOMRect;
@@ -35,7 +36,7 @@ interface Displayable extends IQuery {
 	/**
 	 * Custom data
 	 */
-	public var data: Dynamic<Dynamic>;
+	public var data: Dynamic;
 	/**
 	 * Check if a selector exists
 	 * @return
@@ -544,6 +545,10 @@ interface Displayable extends IQuery {
 	public function isEnabled():Bool;
 	
 	public function run(method:Displayable-> Void):Displayable;
+	
+	public function stopMotion():Void;
+	
+	public function motion(timeline:Array<MotionStep>):Void;
 	
 	/**
 	 * Reload all external loaded <script> tags
