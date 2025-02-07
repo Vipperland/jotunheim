@@ -1,14 +1,19 @@
 package jotun.net;
+import haxe.DynamicAccess;
 import haxe.Rest;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
 import jotun.signals.Pipe;
 import jotun.signals.Signals;
+import jotun.tools.Utils;
 
+#if js 
+	import jotun.dom.Img;
+#end
 
 typedef BulkLoaderSignal = {
 	var file:String;
-	var data:String;
+	var data:Dynamic;
 	var request:HttpRequest;
 }
 
@@ -20,14 +25,26 @@ typedef BulkLoaderFlow = {
  * ...
  * @author Rafael Moreira
  */
-@:expose("Jtn.BulkLoader")
+@:expose("Crab.BulkLoader")
 class BulkLoader {
 
+	public static var EVENT_STARTED:String = "started";
+	
+	public static var EVENT_LOADED:String = "loaded";
+	
+	public static var EVENT_ERROR:String = "error";
+	
+	public static var EVENT_PROGRESS:String = "progress";
+	
+	public static var EVENT_COMPLETED:String = "completed";
+	
+	public static var EVENT_RESET:String = "reset";
+	
 	private var _toload:Array<String>;
 	
 	private var _isBusy:Bool;
 	#if js
-	private var _fileProgress:Float;
+		private var _fileProgress:Float;
 	#end
 	public var totalFiles:Int;
 	
@@ -37,22 +54,29 @@ class BulkLoader {
 	
 	public var signals:Signals;
 	
+	public var options:DynamicAccess<Dynamic>;
+	
 	private var _req:HttpRequest;
 	
 	private function _getReq(u:String):HttpRequest {
 		return new HttpRequest(u);
 	}
 	
-	public function new(){
+	/**
+	 * options.responseType = 'blob';
+	 * @param	options
+	 */
+	public function new(?options:DynamicAccess<Dynamic>){
 		signals = new Signals(this);
+		this.options = options;
 		reset();
 	}
 	
 	public function progress():Float {
 		#if js
-		return (totalLoaded + (_fileProgress < 1 ? _fileProgress : 0)) / totalFiles;
+			return (totalLoaded + (_fileProgress < 1 ? _fileProgress : 0)) / totalFiles;
 		#else
-		return totalLoaded / totalFiles;
+			return totalLoaded / totalFiles;
 		#end
 	}
 	
@@ -91,12 +115,12 @@ class BulkLoader {
 			r.onData = function(d) {
 				_req = null;
 				++totalLoaded;
-				Jotun.resources.register(f, d);
+				//jotun.resources.register(f, d);
 				_changed(f, 'loaded', d, r);
 				_loadNext();
 			}
 			#if js
-				r.request('GET', null, _onLoadProgress);
+				r.request('GET', null, _onLoadProgress, options);
 			#else
 				r.request(null);
 			#end
@@ -108,10 +132,16 @@ class BulkLoader {
 	}
 	
 	#if js
+	
 	private function _onLoadProgress(file:String, loaded:Int, total:Int):Void {
 		_fileProgress = loaded / total;
 		signals.call('progress', {file:file, loaded:loaded, total:total, progress:_fileProgress});
 	}
+	
+	public function toImage(file:HttpRequest):Img {
+		return Img.fromBlob(cast file.data);
+	}
+	
 	#end
 	
 	private function _error(e:Dynamic):Void {
@@ -120,7 +150,7 @@ class BulkLoader {
 	}
 	
 	private function _complete():Void {
-		signals.call('completed');
+		signals.call('completed', { });
 	}
 	
 	public function reset():Void {

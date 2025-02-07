@@ -1,4 +1,5 @@
 package jotun.php.file;
+import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import jotun.Jotun;
 import php.Global;
@@ -20,6 +21,8 @@ class Uploader {
 	
 	public static var files:FileCollection = new FileCollection();
 
+	private static var _callbacks:DynamicAccess<Dynamic>;
+	
 	private static var _sizes:Array<Dynamic>;
 	
 	private static var _path:String = '/';
@@ -51,7 +54,7 @@ class Uploader {
 		}
 	}
 	
-	public static function save(path:String, ?sizes:Array<Dynamic>, ?rename:Bool = true):FileCollection {
+	public static function save(path:String, ?rules:Array<Dynamic>, ?rename:Bool = true):FileCollection {
 		
 		_autoRename = rename;
 		
@@ -60,17 +63,27 @@ class Uploader {
 			_path = path;
 		}
 		
-		if (sizes != null){
-			_sizes = sizes;
-			Dice.Values(_sizes, function(q:Dynamic){
+		if (rules != null){
+			_callbacks = { };
+			_sizes = [];
+			Dice.Values(rules, function(q:Dynamic){
 				if (q.path != null){
 					createPath(q.path);
 				}
+				if(q.resize) {
+					_sizes.push(q);
+				}
+				if(q.filter != null && q.callback != null){
+					_callbacks.set(q.filter, q.callback);
+				}
 			});
-			_log('image:sizes', sizes);
+			_log('upload:rules', rules);
 		}
 		
 		_verify();
+		
+		_callbacks = null;
+		_sizes = null;
 		
 		return files;
 	}
@@ -95,7 +108,12 @@ class Uploader {
 						}
 						// Generate new filename
 						var ext:String = name.split(".").pop();
-						var nName:String = _autoRename ? Jotun.time + '_' + Key.GEN(8) + '.' + ext : name;
+						var nName:String = null;
+						if(_callbacks != null && _callbacks.exists(ext)){
+							nName = _callbacks.get(ext)(part, name);
+						}else{
+							nName = _autoRename ? Jotun.time + '_' + Key.GEN(8) + '.' + ext : name;
+						}
 						// save file to disk
 						fileStream = File.write(_path + nName, true);
 						var file:FileInfo = new FileInfo(ext, name, nName);
@@ -129,43 +147,41 @@ class Uploader {
 					// size.type = EXTENSION
 					// v.type = EXTENSION
 					// image.type = INT
-					Dice.All(_sizes, function(p:String, trfm:Dynamic):Void {
+					Dice.All(_sizes, function(p:String, resizeRule:Dynamic):Void {
 						
 						var o:String = _path + v.output;
 						
 						image.open(o);
 						
-						var create:Bool = trfm.create == true;
-						var resize:Bool = trfm.width != null && trfm.height != null && image.isOutBounds(trfm.width, trfm.height);
-						var convert:Bool = trfm.type != null && v.type != trfm.type;
-						var rename:Bool = trfm.renameFunc != null;
+						var create:Bool = resizeRule.create == true;
+						var resize:Bool = resizeRule.width != null && resizeRule.height != null && image.isOutBounds(resizeRule.width, resizeRule.height);
+						var convert:Bool = resizeRule.type != null && v.type != resizeRule.type;
+						var rename:Bool = resizeRule.callback != null;
 						
-						if (trfm.path != null){
-							o = trfm.path + v.output;
+						if (resizeRule.path != null){
+							o = resizeRule.path + v.output;
 						}
 						
-						if(rename){
-							o = _rename(o, trfm.sufix, trfm.type);
-						}
-						
-						if (trfm.renameFunc != null){
-							o = trfm.renameFunc(o);
+						if (rename){
+							o = resizeRule.callback(o);
+						}else {
+							o = _rename(o, resizeRule.sufix, resizeRule.type);
 						}
 						
 						if(resize){
-							image.fit(trfm.width, trfm.height);
+							image.fit(resizeRule.width, resizeRule.height);
 						}
 						
 						if (create || rename || resize || convert){
-							image.save(o, trfm.type, trfm.quality);
-							if(trfm.id == null){
-								trfm.id = image.width + 'x' + image.height;
+							image.save(o, resizeRule.type, resizeRule.quality);
+							if(resizeRule.id == null){
+								resizeRule.id = image.width + 'x' + image.height;
 							}
-							v.sizes.push(cast { width: image.width, image: trfm.height, url: o, id: trfm.id });
-							_log('changed', { file: v, size: trfm, created: create, rename: rename, resize: resize, convert: convert });
+							v.sizes.push(cast { width: image.width, image: resizeRule.height, url: o, id: resizeRule.id });
+							_log('changed', { file: v, size: resizeRule, created: create, rename: rename, resize: resize, convert: convert });
 						}
 						
-						if (!delete && trfm.delete){
+						if (!delete && resizeRule.delete){
 							delete = true;
 						}
 						

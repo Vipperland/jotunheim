@@ -27,6 +27,12 @@ class Img extends Display {
 		return img;
 	}
 	
+	static public function fromBlob(blob:Blob):Img {
+		var img:Img = new Img();
+		img.src(Utils.fileToURL(blob));
+		return img;
+	}
+	
 	private var _loader:XMLHttpRequest;
 	
 	public function new(?q:Dynamic) {

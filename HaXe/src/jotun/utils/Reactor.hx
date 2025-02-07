@@ -97,7 +97,7 @@ class Reactor {
 			if(path != null){
 				if (o.data.__qv == null){
 					o.data.__qv = o.attribute(attr);
-					o.data.__qvt = o.hasAttribute(attr + '-score') ? o.hasAttribute(attr + '-score') : o.data.__qv.split(',').length;
+					o.data.__qvt = o.hasAttribute(attr + '-score') ? o.attribute(attr + '-score') : o.data.__qv.split(',').length;
 					o.data.__qvs = 0;
 					_react_commit_up(o);
 				}

@@ -82,7 +82,7 @@ class Image {
 				switch(type) {
 					case 1 : img = php.Syntax.codeDeref('imagecreatefromgif({0})', file);
 					case 2 : img = php.Syntax.codeDeref('imagecreatefromjpeg({0})', file);
-					case 3 : img = php.Syntax.codeDeref('imagecreatefrompng({0})', file);
+					case 3 : img = php.Syntax.codeDeref('@imagecreatefrompng({0})', file);
 					case 6 : img = php.Syntax.codeDeref('imagecreatefromwbmp({0})', file);
 				}
 			}else {

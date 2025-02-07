@@ -65,4 +65,8 @@ class DataSource {
 		data.remove(q);
 	}
 	
+	public function toString():String {
+		return Json.stringify(data);
+	}
+	
 }

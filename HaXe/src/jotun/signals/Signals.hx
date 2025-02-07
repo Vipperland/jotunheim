@@ -53,4 +53,9 @@ class Signals {
 		}
 	}
 	
+	public function dispose():Void {
+		object = null;
+		_l = null;
+	}
+	
 }

@@ -166,6 +166,9 @@ class ModLib {
 					if (i != -1) {
 						var mod:IMod = Json.parse("{" + v.substr(0, i) + "}");
 						var path:String = file;
+						if(mod.type == "//"){
+							return false;
+						}
 						if (mod.name == null){
 							mod.name = file;
 						}else if (mod.name == "[]"){

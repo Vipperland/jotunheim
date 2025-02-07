@@ -108,15 +108,12 @@ class XCode {
 			var a:Int = 1;
 			var b:Int = 12;
 			while(a <= b){
-				// Create order selectors, positive and negative (-12 to 12)
-				//if(a > 0){
-					//omnibuild('.tag-' + a + 'n', '-webkit-box-ordinal-group:-' + a + ';-ms-flex-order:-' + a + ';order:-' + a + ';');
-				//}
-				//omnibuild('.tag-' + a, '-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';');
+				// Create order selectors, positives (0 to 12)
+				omnibuild('.tag-' + a, '-webkit-box-ordinal-group:' + a + ';-ms-flex-order:' + a + ';order:' + a + ';');
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
 				var t:String = (cast m).toFixed(5) + '%';
-				var s:String = "flex-basis:" + t + ";max-width:" + t + ";width:0";
+				var s:String = "flex-basis:" + t + ";max-width:" + t + "";
 				omnibuild('.cel-' + a, s);
 				if (a < b) {
 					omnibuild('.r-cell-' + a, 'margin-left:' + t);
