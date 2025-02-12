@@ -260,6 +260,14 @@ interface Displayable extends IQuery {
 	public function attributes(?values:Dynamic):Dynamic;
 	
 	/**
+	 * Increment the value of a numeric attribute
+	 * @param	name
+	 * @param	ammount
+	 * @return
+	 */
+	public function incremental(name:String, ammount:Float):Float;
+	
+	/**
 	 * Crop an attribute from element and return it
 	 * @param	name
 	 * @return

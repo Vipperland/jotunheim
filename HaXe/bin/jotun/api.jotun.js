@@ -2517,6 +2517,7 @@ jotun_dom_Displayable.prototype = {
 	,hasAttribute: null
 	,attribute: null
 	,attributes: null
+	,incremental: null
 	,clearAttribute: null
 	,value: null
 	,style: null
@@ -3002,6 +3003,10 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		}
 		return null;
 	}
+	,incremental: function(name,ammount) {
+		var current = this.hasAttribute(name) ? parseFloat(this.attribute(name)) : 0;
+		return this.attribute(name,current + ammount);
+	}
 	,clearAttribute: function(name) {
 		var value = null;
 		if(this.hasAttribute(name)) {
@@ -3015,8 +3020,11 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return value;
 	}
 	,attributes: function(values) {
+		var _gthis = this;
 		if(values != null) {
-			jotun_utils_Dice.All(values,$bind(this,this.attribute));
+			jotun_utils_Dice.All(values,function(p,v) {
+				_gthis.attribute(p,v);
+			});
 			return null;
 		} else {
 			return jotun_tools_Utils.getAttributes(this);
@@ -5833,12 +5841,14 @@ jotun_events_EventGroup.prototype = {
 	}
 	,__class__: jotun_events_EventGroup
 };
-var jotun_gaming_Spritesheet = $hx_exports["Spritesheet"] = function(name,image,data,onload) {
+var jotun_gaming_Spritesheet = $hx_exports["Spritesheet"] = function(image,data,onload,onlabel,onprogress) {
 	this._progress = 0;
 	this._onload = onload;
+	this._onlabel = onlabel;
+	this._onprogress = onprogress;
 	this._frames = [];
-	this._name = name;
 	this._progress = 0;
+	this._labels = { };
 	this._image = image;
 	this._slices = data;
 	this._cropNext();
@@ -5846,16 +5856,19 @@ var jotun_gaming_Spritesheet = $hx_exports["Spritesheet"] = function(name,image,
 jotun_gaming_Spritesheet.__name__ = "jotun.gaming.Spritesheet";
 jotun_gaming_Spritesheet.prototype = {
 	_frames: null
-	,_name: null
 	,_onload: null
+	,_onlabel: null
+	,_onprogress: null
 	,_image: null
 	,_slices: null
+	,_current: null
+	,_labels: null
 	,_progress: null
 	,_cropNext: function() {
 		if(this._progress < this._slices.length) {
-			var frame = this._slices[this._progress];
+			this._current = this._slices[this._progress];
 			++this._progress;
-			window.createImageBitmap(this._image,frame.x,frame.y,frame.w,frame.h).then($bind(this,this._createBlob));
+			window.createImageBitmap(this._image,this._current.frame.x,this._current.frame.y,this._current.frame.w,this._current.frame.h).then($bind(this,this._createBlob));
 		} else {
 			if(this._onload != null) {
 				this._onload(this);
@@ -5871,66 +5884,122 @@ jotun_gaming_Spritesheet.prototype = {
 		canvas.convertToBlob(jotun_gaming_Spritesheet._type).then($bind(this,this._registerFrame));
 	}
 	,_registerFrame: function(blob) {
+		if(this._current.filename != null) {
+			this._labels[this._current.filename] = this._frames.length;
+			if(this._onlabel != null) {
+				this._onlabel(this,this._current.filename);
+			}
+		}
 		this._frames.push(blob);
+		if(this._onprogress != null) {
+			this._onprogress(this,this._progress,this._slices.length);
+		}
 		this._cropNext();
+	}
+	,getAsImage: function(label) {
+		return jotun_dom_Img.fromBlob(this.getAsBlob(this._labels[label]));
+	}
+	,getAsBlob: function(label) {
+		if(typeof(label) == "string") {
+			return this._labels[label];
+		} else {
+			return this._frames[label];
+		}
+	}
+	,getAsSprite: function(filter,loop,optimal) {
+		if(loop == null) {
+			loop = false;
+		}
+		if(filter != null) {
+			var result = new jotun_dom_Sprite(null,loop,optimal);
+			jotun_utils_Dice.Values(this._labels,function(p,v) {
+				result.addFrame(v);
+			});
+			return result;
+		} else {
+			return new jotun_dom_Sprite(this._frames,loop,optimal);
+		}
 	}
 	,getFrames: function() {
 		return this._frames;
 	}
-	,getSprite: function(loop,optimal) {
-		if(optimal == null) {
-			optimal = true;
-		}
-		if(loop == null) {
-			loop = false;
-		}
-		return new jotun_dom_Sprite(this._frames,loop,optimal);
-	}
 	,dispose: function() {
-		if(this._name != null) {
-			this._frames = null;
-		}
+		this._frames = null;
 		this._onload = null;
 	}
 	,__class__: jotun_gaming_Spritesheet
 };
 var jotun_gaming_SpritesheetLibrary = $hx_exports["SpritesheetLibrary"] = function() {
 	this._cached = { };
+	this._labels = { };
+	this._pending = 0;
+	this._count = 0;
 	this.signals = new jotun_signals_Signals(this);
 };
 jotun_gaming_SpritesheetLibrary.__name__ = "jotun.gaming.SpritesheetLibrary";
 jotun_gaming_SpritesheetLibrary.prototype = {
 	_cached: null
+	,_labels: null
 	,signals: null
+	,_count: null
 	,_pending: null
 	,add: function(name,image,data) {
 		++this._pending;
-		this._cached[name] = new jotun_gaming_Spritesheet(name,image,data,$bind(this,this._onStatus));
+		++this._count;
+		this._cached[name] = new jotun_gaming_Spritesheet(image,data,$bind(this,this._onLoad),$bind(this,this._onLabel),$bind(this,this._onProgress));
 	}
-	,getDefinition: function(name) {
-		return this._cached[name];
-	}
-	,getSprite: function(name,loop,optimal) {
-		if(optimal == null) {
-			optimal = true;
-		}
-		if(loop == null) {
-			loop = false;
-		}
-		return this.getDefinition(name).getSprite(loop,optimal);
-	}
-	,_onStatus: function(sprite) {
+	,_onLoad: function(sprite) {
 		if(--this._pending == 0) {
 			this.signals.call(jotun_gaming_SpritesheetLibrary.EVENT_COMPLETED);
-		} else {
-			this.signals.call(jotun_gaming_SpritesheetLibrary.EVENT_PROGRESS,{ queued : this._pending});
 		}
+	}
+	,_onLabel: function(sprite,label) {
+		this._labels[label] = sprite;
+	}
+	,_onProgress: function(sprite,cropped,total) {
+		this.signals.call(jotun_gaming_SpritesheetLibrary.EVENT_PROGRESS,{ sprite : sprite, progress : cropped / total * .5 + (this._count - this._pending) / this._count});
+	}
+	,get: function(name) {
+		return this._cached[name];
+	}
+	,getBlob: function(name) {
+		return this._labels[name].getAsBlob(name);
+	}
+	,getImage: function(name) {
+		return this._labels[name].getAsImage(name);
+	}
+	,getSprite: function(name,filter,loop,optimal) {
+		return this.get(name).getAsSprite(filter,loop,optimal);
+	}
+	,isLoaded: function() {
+		return this._pending <= 0;
 	}
 	,dispose: function() {
 		jotun_utils_Dice.Values(this._cached,function(sprite) {
 			sprite.dispose();
 		});
 		this._cached = { };
+	}
+	,each: function(handler) {
+		var _gthis = this;
+		var cur_label = null;
+		var stop = false;
+		var cursor = { label : null, get : function() {
+			return _gthis.get(cur_label);
+		}, getSprite : function() {
+			return _gthis.getSprite(cur_label);
+		}, getImage : function() {
+			return _gthis.getImage(cur_label);
+		}, getBlob : function() {
+			return _gthis.getBlob(cur_label);
+		}, cancel : function() {
+			stop = true;
+		}};
+		jotun_utils_Dice.All(this._labels,function(label,value) {
+			cur_label = cursor.label = label;
+			handler(cursor);
+			return stop;
+		});
 	}
 	,__class__: jotun_gaming_SpritesheetLibrary
 };

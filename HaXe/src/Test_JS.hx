@@ -137,5 +137,7 @@ class Test_JS{
 	 * 		Jotun unique attributes:
 	 * 			jtn-id			Unique ID for shared data controller, all elements with same id share the same data object
 	 * 			jtn-dom			For type idenfication and fast display conversion.
+	 * 			xcode (body)		Enable auto reset CSS generation
+	 * 			jtn-module		Import element content as modules
 	 * 			
 	 */

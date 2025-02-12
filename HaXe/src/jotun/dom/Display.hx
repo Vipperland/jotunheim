@@ -527,6 +527,11 @@ class Display extends Query implements Displayable {
 		return null;
 	}
 	
+	public function incremental(name:String, ammount:Float):Float {
+		var current:Float = hasAttribute(name) ? Std.parseFloat(attribute(name)) : 0;
+		return attribute(name, current + ammount) * 1;
+	}
+	
 	public function clearAttribute(name:String):Dynamic {
 		var value:Dynamic = null;
 		if (hasAttribute(name)) {
@@ -542,7 +547,9 @@ class Display extends Query implements Displayable {
 	
 	public function attributes(?values:Dynamic):Dynamic {
 		if (values != null){
-			Dice.All(values, attribute);
+			Dice.All(values, function(p:String, v:Dynamic){
+				attribute(p, v);
+			});
 			return null;
 		}else{
 			return Utils.getAttributes(this);
