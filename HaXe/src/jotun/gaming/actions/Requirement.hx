@@ -12,7 +12,7 @@ class Requirement extends Resolution {
 	
 	public static var cache:Dynamic = {};
 	
-	public static var commands:RequirementQueryGroup = new RequirementQueryGroup();
+	public static var codex:RequirementQueryGroup = new RequirementQueryGroup();
 	
 	static public function createFromQueries(id:String, queries:Array<Dynamic>, breakon:Dynamic = null):Dynamic {
 		return { id:id, "*": queries, breakon: breakon };
@@ -41,7 +41,7 @@ class Requirement extends Resolution {
 			breakon = 'never';
 		}
 		if (Utils.isValid(data.id)){
-			SpellController.saveRequirement(this);
+			SpellCodex.saveRequirement(this);
 		}
 	}
 	
@@ -51,7 +51,7 @@ class Requirement extends Resolution {
 		var score:UInt = 0;
 		if (Utils.isValid(query)){
 			context.registerRequirement(this);
-			var sec:Dynamic = commands.eventRun(query, context).result;
+			var sec:Dynamic = codex.verification(query, context).result;
 			if(sec != null){
 				Dice.Values(sec, function(v:Dynamic){
 					if (Utils.boolean(v)){

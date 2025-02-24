@@ -13,13 +13,13 @@ class ActionQueryGroup extends QueryGroup {
 		super();
 	}
 	
-	public function eventRun(query:Dynamic, context:SpellCasting):Dynamic {
+	public function invocation(query:Dynamic, context:SpellCasting):Dynamic {
 		var result:Dynamic = {};
 		if (context.debug){
 			Dice.Values(query, function(single:String){
 				context.registerActionQuery(single);
 				Dice.Values(units, function(o:ActionQuery){
-					o.ioContext = context;
+					o.invocation = context;
 					o.proc(single, result);
 				});
 			});
@@ -28,7 +28,7 @@ class ActionQueryGroup extends QueryGroup {
 			});
 		}else{
 			Dice.Values(units, function(o:ActionQuery){
-				o.ioContext = context;
+				o.invocation = context;
 				o.proc(query, result);
 				o.flush();
 			});

@@ -30,7 +30,7 @@ class RequirementQuery extends Query {
 	public static var RULE_RANDOM_LESS_OR:String = "#<";
 	
 	public function getDataProvider():IDataProvider {
-		return ioContext.currentProvider;
+		return invocation.currentProvider;
 	}
 	
 	private function _isempty(value:Dynamic):Bool {
@@ -93,7 +93,7 @@ class RequirementQuery extends Query {
 		}
 	}
 	
-	public var ioContext:SpellCasting;
+	public var invocation:SpellCasting;
 	
 	public function new() {
 		super();
@@ -187,15 +187,15 @@ class RequirementQuery extends Query {
 	
 	
 	public function hasrequestcontext():Bool {
-		return ioContext.requestProvider != null;
+		return invocation.requestProvider != null;
 	}
 	
 	public function isrequestcontext():Bool {
-		return hasrequestcontext() && ioContext.requestProvider == ioContext.currentProvider;
+		return hasrequestcontext() && invocation.requestProvider == invocation.currentProvider;
 	}
 	
 	public function ismaincontext():Bool {
-		return ioContext.dataProvider == ioContext.currentProvider;
+		return invocation.dataProvider == invocation.currentProvider;
 	}
 	
 	
@@ -208,7 +208,7 @@ class RequirementQuery extends Query {
 	 */
 	public function iseventtype(...types:String):Bool {
 		return !Dice.Values(types, function(v:String){
-			return v == ioContext.origin.type;
+			return v == invocation.origin.type;
 		}).completed;
 	}
 	
@@ -218,11 +218,11 @@ class RequirementQuery extends Query {
 	 * @return
 	 */
 	public function isactionid(...ids:String):Bool {
-		if(ioContext.action != null && ioContext.action.target != null && ioContext.action.target.id != null){
+		if(invocation.action != null && invocation.action.target != null && invocation.action.target.id != null){
 			return false;
 		}
 		return !Dice.Values(ids, function(v:String){
-			return v == ioContext.action.target.id;
+			return v == invocation.action.target.id;
 		}).completed;
 	}
 	
@@ -237,7 +237,7 @@ class RequirementQuery extends Query {
 		if(hits <= 0 || hits > ids.length){
 			hits = ids.length;
 		}
-		return !Dice.Values(ioContext.history, function(a:Action):Bool {
+		return !Dice.Values(invocation.history, function(a:Action):Bool {
 			if(a.id == ids[matches]){
 				++matches;
 			}
@@ -253,7 +253,7 @@ class RequirementQuery extends Query {
 	public function isafteranyaction(...ids:String):Bool {
 		var matches:Int = 0;
 		return !Dice.Values(ids, function(id:String):Bool {
-			return !Dice.Values(ioContext.history, function(a:Action):Bool {
+			return !Dice.Values(invocation.history, function(a:Action):Bool {
 				return id != null && id.length > 0 && a.id == id;
 			}).completed;
 		}).completed;
@@ -265,7 +265,7 @@ class RequirementQuery extends Query {
 	 * @return
 	 */
 	public function isdebug():Bool {
-		return ioContext.debug;
+		return invocation.debug;
 	}
 	
 }

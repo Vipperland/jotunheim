@@ -17,7 +17,7 @@ class Action extends Resolution {
 	
 	public static var cache:DynamicAccess<Action> = {};
 	
-	public static var commands:ActionQueryGroup = new ActionQueryGroup();
+	public static var codex:ActionQueryGroup = new ActionQueryGroup();
 	
 	static public function createFromQueries(id:String, queries:Array<Dynamic>, breakon:Dynamic = null):Dynamic {
 		return { id:id, "@": queries, breakon: breakon };
@@ -60,7 +60,7 @@ class Action extends Resolution {
 		var i:Int = 0;
 		Dice.All(data.require, function(p:Dynamic, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
-				v = SpellController.loadRequirement(v);
+				v = SpellCodex.loadRequirement(v);
 			}
 			if(v != null){
 				if (Std.isOfType(v, Requirement)){
@@ -82,11 +82,11 @@ class Action extends Resolution {
 			breakon = data.require > 0;
 		}
 		if (Utils.isValid(data.id)){
-			SpellController.saveAction(this);
+			SpellCodex.saveAction(this);
 		}
 	}
 	
-	public function run(context:SpellCasting, position:Int):Bool {
+	public function invoke(context:SpellCasting, position:Int):Bool {
 		connect();
 		// Check requirements
 		var resolution:Int = 0;
@@ -109,7 +109,7 @@ class Action extends Resolution {
 		if (success){
 			context.registerAction(this);
 			if (Utils.isValid(query)){
-				commands.eventRun(query, context);
+				codex.invocation(query, context);
 			}
 		}
 		return resolve(success, context);

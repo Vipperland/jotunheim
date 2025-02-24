@@ -13,7 +13,7 @@ class RequirementQueryGroup extends QueryGroup {
 		super();
 	}
 	
-	public function eventRun(query:Dynamic, context:SpellCasting):Dynamic {
+	public function verification(query:Dynamic, context:SpellCasting):Dynamic {
 		var result:Dynamic = {};
 		if (context.debug){
 			var idx:Int = 0;
@@ -21,7 +21,7 @@ class RequirementQueryGroup extends QueryGroup {
 				if(single != '@result'){
 					context.registerRequirementQuery(single);
 					Dice.All(units, function(p:String, o:RequirementQuery):Void {
-						o.ioContext = context;
+						o.invocation = context;
 						if (context.debug){
 							context.addLog(1, single + ' [' + p + '] == ' + o.proc(['@result', single], result).result[idx]);
 						}
@@ -32,7 +32,7 @@ class RequirementQueryGroup extends QueryGroup {
 			});
 		}else{
 			Dice.Values(units, function(o:RequirementQuery){
-				o.ioContext = context;
+				o.invocation = context;
 				o.proc(query, result);
 				o.flush();
 			});

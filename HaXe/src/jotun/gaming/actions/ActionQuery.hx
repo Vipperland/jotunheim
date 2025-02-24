@@ -3,7 +3,7 @@ import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.BasicDataProvider;
-import jotun.gaming.actions.SpellController;
+import jotun.gaming.actions.SpellCodex;
 import jotun.net.IRequest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
@@ -35,7 +35,7 @@ class ActionQuery extends Query {
 	public static var RULE_RANDOM:String = "#";
 	
 	public function getDataProvider():IDataProvider {
-		return ioContext.currentProvider;
+		return invocation.currentProvider;
 	}
 	
 	private function _isempty(value:Dynamic):Bool {
@@ -116,7 +116,7 @@ class ActionQuery extends Query {
 		}
 	}
 	
-	public var ioContext:SpellCasting;
+	public var invocation:SpellCasting;
 	
 	/**
 	 * 
@@ -126,7 +126,7 @@ class ActionQuery extends Query {
 	}
 	
 	public function tracer(messages:Rest<String>):ActionQuery {
-		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), ioContext));
+		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), invocation));
 		return this;
 	}
 	
@@ -138,9 +138,9 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function call(id:String):ActionQuery {
-		var action:Action = SpellController.loadAction(id);
+		var action:Action = SpellCodex.loadAction(id);
 		if(action != null){
-			action.run(ioContext, 0);
+			action.invoke(invocation, 0);
 		}
 		return this;
 	}
@@ -279,7 +279,7 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function wait(?time:Float):ActionQuery {
-		ioContext.event.current.wait(time);
+		invocation.event.current.wait(time);
 		return this;
 	}
 	
@@ -288,7 +288,7 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function release():ActionQuery {
-		ioContext.event.current.release();
+		invocation.event.current.release();
 		return this;
 	}
 	
@@ -310,8 +310,8 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function resetcontext():ActionQuery {
-		ioContext.requestProvider = null;
-		ioContext.currentProvider = ioContext.dataProvider;
+		invocation.requestProvider = null;
+		invocation.currentProvider = invocation.dataProvider;
 		return this;
 	}
 	
@@ -320,7 +320,7 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function setrequestcontext():ActionQuery {
-		ioContext.currentProvider = ioContext.requestProvider;
+		invocation.currentProvider = invocation.requestProvider;
 		return this;
 	}
 	
@@ -329,7 +329,7 @@ class ActionQuery extends Query {
 	 * @return
 	 */
 	public function setmaincontext():ActionQuery {
-		ioContext.currentProvider = ioContext.dataProvider;
+		invocation.currentProvider = invocation.dataProvider;
 		return this;
 	}
 	
@@ -340,9 +340,9 @@ class ActionQuery extends Query {
 	private function _actRequest(request:IRequest):Void {
 		if(request.success){
 			if (request.getHeader('Content-Type') == 'application/json'){
-				ioContext.requestProvider = new BasicDataProvider(request.object());
+				invocation.requestProvider = new BasicDataProvider(request.object());
 			}else{
-				ioContext.requestProvider = new BasicDataProvider({ message:request.data });
+				invocation.requestProvider = new BasicDataProvider({ message:request.data });
 			}
 			setrequestcontext();
 		}

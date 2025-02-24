@@ -3,7 +3,7 @@ import haxe.DynamicAccess;
 import haxe.extern.EitherType;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.ActionQuery;
-import jotun.gaming.actions.SpellController;
+import jotun.gaming.actions.SpellCodex;
 import jotun.gaming.actions.SpellCasting;
 import jotun.gaming.actions.Resolution;
 #if js
@@ -86,7 +86,7 @@ class SpellGroup {
 		var r:Dynamic = {};
 		Dice.All(data, function(p:String, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
-				v = SpellController.loadAction(v);
+				v = SpellCodex.loadAction(v);
 			}
 			if (v != null && (v.id == null || !Reflect.hasField(r, v.id))){
 				if (Std.isOfType(v, Action)){
@@ -142,6 +142,10 @@ class SpellGroup {
 		}
 	}
 	
+	public function canWait():Bool {
+		return _cursor_pos < _data.length;
+	}
+	
 	#end
 	
 	private function _innerCasting():Void {
@@ -150,7 +154,7 @@ class SpellGroup {
 			++_cursor_pos;
 			_context.registerEvent(this);
 			a = _data[current];
-			if (a.willBreakOn(a.run(_context, current))){
+			if (a.willBreakOn(a.invoke(_context, current))){
 				_is_waiting = false;
 				return true;
 			}else {
@@ -167,10 +171,6 @@ class SpellGroup {
 			}
 			_context = null;
 		}
-	}
-	
-	public function canWait():Bool {
-		return _cursor_pos < _data.length;
 	}
 	
 	public function execute(context:SpellCasting):Void {
@@ -202,7 +202,7 @@ class SpellGroup {
 	
 	public function getIndexOf(action:EitherType<Action,String>):Int {
 		if(Std.isOfType(action, String)){
-			action = SpellController.loadAction(action);
+			action = SpellCodex.loadAction(action);
 		}
 		var roll:IDiceRoll = Dice.Values(_data, function(value:Action):Bool {
 			return action == value;

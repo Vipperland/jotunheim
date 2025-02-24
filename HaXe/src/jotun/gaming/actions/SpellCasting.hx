@@ -1,6 +1,6 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
-import jotun.gaming.actions.SpellController;
+import jotun.gaming.actions.SpellCodex;
 import jotun.gaming.actions.SpellGroup;
 import jotun.gaming.actions.IDataProvider;
 import jotun.gaming.actions.Resolution;
@@ -11,6 +11,8 @@ import jotun.tools.Utils;
  * @author Rafael Moreira
  */
 class SpellCasting {
+	
+	private static var _channeling:Int = 0;
 	
 	public var debug:Bool;
 	
@@ -44,9 +46,9 @@ class SpellCasting {
 	
 	public var requestProvider:IDataProvider;
 	
-	public var controller:SpellController;
+	public var codex:SpellCodex;
 	
-	public function new(name:String, data:Dynamic, provider:IDataProvider, controller:SpellController, debug:Bool) {
+	public function new(name:String, data:Dynamic, provider:IDataProvider, codex:SpellCodex, debug:Bool) {
 		this.origin = data;
 		this.name = name;
 		this.debug = debug;
@@ -61,7 +63,7 @@ class SpellCasting {
 		this.history = [];
 		this.dataProvider = provider;
 		this.currentProvider = provider;
-		this.controller = controller;
+		this.codex = codex;
 	}
 	
 	public function registerEvent(e:SpellGroup):Void {
@@ -95,10 +97,13 @@ class SpellCasting {
 	
 	public function release(resolution:Resolution, result:Bool):Void {
 		var chain:Dynamic = (result ? resolution.then : resolution.fail);
-		if(chain != null){
-			var temp:Dynamic = SpellGroup.patch({ _onActionReleased: chain }).get('_onActionReleased');
-			controller.events.set('_onActionReleased', temp);
-			controller.invoke('_onActionReleased', origin, dataProvider );
+		if (chain != null){
+			var cid:String = '_channeling:' + _channeling;
+			++_channeling;
+			var temp:Dynamic = SpellGroup.patch({ _onActionReleased: chain }).get(cid);
+			codex.index.set(cid, temp);
+			codex.invoke(cid, origin, dataProvider );
+			codex.index.remove(cid);
 		}
 	}
 	

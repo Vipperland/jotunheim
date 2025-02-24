@@ -13,8 +13,8 @@ import jotun.utils.Dice;
  * ...
  * @author Rim Project
  */
-@:expose("Jtn.SpellController")
-class SpellController implements ISpellInvocation implements ISpellCodex  {
+@:expose("Jtn.SpellCodex")
+class SpellCodex  {
 	
 	static private var _rAction:String->Action;
 	static private var _wAction:Action->Void;
@@ -24,7 +24,7 @@ class SpellController implements ISpellInvocation implements ISpellCodex  {
 	
 	static private var _debug:Bool;
 	
-	static public function createContext(name:String, data:Dynamic, provider:IDataProvider, controller:SpellController):SpellCasting {
+	static public function createContext(name:String, data:Dynamic, provider:IDataProvider, controller:SpellCodex):SpellCasting {
 		return new SpellCasting(name, data, provider, controller, _debug);
 	}
 	
@@ -59,7 +59,7 @@ class SpellController implements ISpellInvocation implements ISpellCodex  {
 		}
 	}
 	
-	public var events:DynamicAccess<SpellGroup>;
+	public var index:DynamicAccess<SpellGroup>;
 	
 	private function _onCallBefore(context:SpellCasting):Void { }
 	
@@ -69,31 +69,31 @@ class SpellController implements ISpellInvocation implements ISpellCodex  {
 	
 	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>) {
 		_debug = debug == true;
-		events = SpellGroup.patch(data, validate, priority);
+		index = SpellGroup.patch(data, validate, priority);
 	}
 	
 	public function setDebug(mode:Bool):Void {
 		_debug = mode;
 	}
 	
-	private var _index:Int = 0;
+	private var _position:Int = 0;
 	
 	private var _chain:Array<SpellCasting> = [];
 	
 	public function invoke(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool {
 		var context:SpellCasting = createContext(name, data, provider, this);
-		if (Reflect.hasField(events, name)){
-			context.chain = _index;
+		if (Reflect.hasField(index, name)){
+			context.chain = _position;
 			_chain[_chain.length] = context;
-			if (_index > 0){
-				context.parent = _chain[_index-1];
+			if (_position > 0){
+				context.parent = _chain[_position-1];
 			}
-			++_index;
+			++_position;
 			_onCallBefore(context);
-			Reflect.field(events, name).run(context);
-			--_index;
+			Reflect.field(index, name).execute(context);
+			--_position;
 			_onCallAfter(context);
-			if (_index == 0){
+			if (_position == 0){
 				context.ended = true;
 				_onChainEnd(_chain);
 				_chain = [];
