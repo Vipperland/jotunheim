@@ -8,7 +8,7 @@ import jotun.signals.Signals;
 import jotun.tools.Utils;
 
 #if js 
-	import pipa.dom.Img;
+	import jotun.dom.Img;
 #end
 
 typedef BulkLoaderSignal = {

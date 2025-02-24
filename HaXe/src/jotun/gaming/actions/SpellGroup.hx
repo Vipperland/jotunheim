@@ -1,5 +1,6 @@
 package jotun.gaming.actions;
 import haxe.DynamicAccess;
+import haxe.extern.EitherType;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.SpellController;
@@ -10,13 +11,14 @@ import jotun.timer.DelayedCall;
 #end
 import jotun.tools.Utils;
 import jotun.utils.Dice;
+import jotun.utils.IDiceRoll;
 
 /**
  * ...
  * @author Rim Project
  */
-@:expose("Jtn.Spells")
-class Spells {
+@:expose("Jtn.SpellGroup")
+class SpellGroup {
 	
 	/**
 	 * Create a patch with events data
@@ -25,15 +27,15 @@ class Spells {
 	 * @param	priority		Events to be patched first
 	 * @return Array of fully patched events, actions and requirements
 	 */
-	public static function patch(data:DynamicAccess<Spells>, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>):DynamicAccess<Spells> {
-		var patched:DynamicAccess<Spells> = { };
+	public static function patch(data:DynamicAccess<SpellGroup>, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>):DynamicAccess<SpellGroup> {
+		var patched:DynamicAccess<SpellGroup> = { };
 		if (data != null){
 			if(priority != null){
 				Dice.Values(priority, function(v:String):Void {
 					if(data.exists(v)){
 						var e:Dynamic = data.get(v);
-						if (!Std.isOfType(e, Spells)){
-							patched.set(v, new Spells(v, e));
+						if (!Std.isOfType(e, SpellGroup)){
+							patched.set(v, new SpellGroup(v, e));
 						}else{
 							patched.set(v, e);
 						}
@@ -44,8 +46,8 @@ class Spells {
 			Dice.All(data, function(p:String, v:Dynamic):Void {
 				p = (validate == null ? p : validate(p, v));
 				if(p != null && p != ""){
-					if (!Std.isOfType(v, Spells)){
-						patched.set(p, new Spells(p, v));
+					if (!Std.isOfType(v, SpellGroup)){
+						patched.set(p, new SpellGroup(p, v));
 					}else{
 						patched.set(p, v);
 					}
@@ -68,12 +70,19 @@ class Spells {
 	
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;
-		_init(data);
+		_data = [];
+		_init(data, 0);
 	}
 	
-	public function _init(data:Array<Dynamic>) {
-		_data = [];
-		var i:UInt = 0;
+	public function _init(data:Array<Dynamic>, ?index:UInt):Void {
+		if(data.length == 0){
+			return;
+		}
+		var toConcat:Array<Action> = null;
+		if(index < _data.length){
+			toConcat = _data.splice(0, index);
+		}
+		var i:UInt = index;
 		var r:Dynamic = {};
 		Dice.All(data, function(p:String, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
@@ -91,6 +100,10 @@ class Spells {
 				++i;
 			}
 		});
+		if(toConcat != null){
+			_data = _data.concat(toConcat);
+			toConcat = null;
+		}
 	}
 	
 	public function getType():String {
@@ -125,13 +138,13 @@ class Spells {
 		_unblock();
 		if (_is_waiting){
 			_is_waiting = false;
-			_innerRun();
+			_innerCasting();
 		}
 	}
 	
 	#end
 	
-	private function _innerRun():Void {
+	private function _innerCasting():Void {
 		var a:Action = null;
 		Dice.Count(_cursor_pos, _data.length, function(current:Int, max:Int, completed:Bool):Bool {
 			++_cursor_pos;
@@ -160,20 +173,49 @@ class Spells {
 		return _cursor_pos < _data.length;
 	}
 	
-	public function run(context:SpellCasting):Void {
+	public function execute(context:SpellCasting):Void {
 		_is_waiting = false;
 		_cursor_pos = 0;
 		_context = context;
 		++context.ident;
-		_innerRun();
+		_innerCasting();
 	}
 	
-	private static function _log(evt:Spells, context:SpellCasting):Void {
+	private static function _log(evt:SpellGroup, context:SpellCasting):Void {
 		var a:Int = evt._data.length;
 		context.addLog(0, (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
-		if (context.chain > 0 && context.parent.action != null){
+		if (context.chain > 0 && context.parent.action != null && context.parent.action.query != null){
 			context.addLog(1, "├ ACTION \"" + context.parent.action.query + "\"");
 		}
+	}
+	
+	public function length():Int {
+		return _data.length;
+	}
+	
+	public function learn(action:Action, ?index:Int):Void {
+		if(index == null || index < 0 || index > _data.length){
+			index = _data.length;
+		}
+		_init([action], index);
+	}
+	
+	public function getIndexOf(action:EitherType<Action,String>):Int {
+		if(Std.isOfType(action, String)){
+			action = SpellController.loadAction(action);
+		}
+		var roll:IDiceRoll = Dice.Values(_data, function(value:Action):Bool {
+			return action == value;
+		});
+		return roll.completed ? _data.length : roll.param;
+	}
+	
+	public function learnAfter(action:Action, search:EitherType<Action,String>):Void {
+		learn(action, getIndexOf(search) + 1);
+	}
+	
+	public function learnBefore(action:Action, search:EitherType<Action,String>):Void {
+		learn(action, getIndexOf(search) - 1);
 	}
 	
 }

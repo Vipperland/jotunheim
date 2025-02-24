@@ -75,7 +75,7 @@ import jotun.utils.IDiceRoll;
 	import jotun.signals.Observer;
 #end
 
-import jotun.gaming.actions.Spells;
+import jotun.gaming.actions.SpellGroup;
 import jotun.gaming.dataform.Pulsar;
 import jotun.gaming.dataform.SparkWriter;
 import jotun.gaming.dataform.Spark;

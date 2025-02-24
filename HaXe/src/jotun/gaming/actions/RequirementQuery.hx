@@ -57,7 +57,7 @@ class RequirementQuery extends Query {
 	
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Bool {
 		if (r == null) {
-			r = ">=";
+			r = "=";
 		}
 		return switch(r){
 			// if a is equal b
@@ -87,7 +87,7 @@ class RequirementQuery extends Query {
 			// if random * a greater then or equal  b
 			case "#>","rand-great-or" : (rng() * a) >= v;
 			// if random * a lesser then or equal  b
-			case "#<","rand-less-or" : (rng() * a) <= v;
+			case "#<", "rand-less-or" : (rng() * a) <= v;
 			// if a is equal b
 			default : a == v;
 		}

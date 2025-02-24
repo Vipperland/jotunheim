@@ -1,7 +1,7 @@
 package jotun.gaming.actions;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.SpellController;
-import jotun.gaming.actions.Spells;
+import jotun.gaming.actions.SpellGroup;
 import jotun.gaming.actions.IDataProvider;
 import jotun.gaming.actions.Resolution;
 import jotun.tools.Utils;
@@ -64,7 +64,7 @@ class SpellCasting {
 		this.controller = controller;
 	}
 	
-	public function registerEvent(e:Spells):Void {
+	public function registerEvent(e:SpellGroup):Void {
 		event.current = e;
 	}
 	
@@ -96,9 +96,9 @@ class SpellCasting {
 	public function release(resolution:Resolution, result:Bool):Void {
 		var chain:Dynamic = (result ? resolution.then : resolution.fail);
 		if(chain != null){
-			var temp:Dynamic = Spells.patch({ _onActionReleased: chain }).get('_onActionReleased');
+			var temp:Dynamic = SpellGroup.patch({ _onActionReleased: chain }).get('_onActionReleased');
 			controller.events.set('_onActionReleased', temp);
-			controller.call('_onActionReleased', origin, dataProvider );
+			controller.invoke('_onActionReleased', origin, dataProvider );
 		}
 	}
 	
@@ -113,7 +113,7 @@ class SpellCasting {
 }
 
 interface SpellCastContext {
-	public var current:Spells;
+	public var current:SpellGroup;
 }
 
 interface SpellCastCounter {

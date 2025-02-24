@@ -20,9 +20,9 @@ class Resolution {
 	
 	public var query:Array<String>;
 	
-	public var then:Spells;
+	public var then:SpellGroup;
 	
-	public var fail:Spells;
+	public var fail:SpellGroup;
 	
 	public var breakon:EitherType<String,Bool>;
 	
@@ -45,10 +45,10 @@ class Resolution {
 			}
 		}
 		if (data.then != null) {
-			then = new Spells(_type + ":then", data.then);
+			then = new SpellGroup(_type + ":then", data.then);
 		}
 		if (data.fail != null) {
-			fail = new Spells(_type + ":fail", data.fail);
+			fail = new SpellGroup(_type + ":fail", data.fail);
 		}
 		id = data.id;
 	}
@@ -58,11 +58,11 @@ class Resolution {
 			++context.ident;
 			if (result){
 				if (then != null){
-					then.run(context);
+					then.execute(context);
 				}
 			}else{
 				if (fail != null){
-					fail.run(context);
+					fail.execute(context);
 				}
 			}
 			--context.ident;

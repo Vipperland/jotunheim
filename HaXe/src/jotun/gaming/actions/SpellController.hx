@@ -14,7 +14,7 @@ import jotun.utils.Dice;
  * @author Rim Project
  */
 @:expose("Jtn.SpellController")
-class SpellController implements IEventDispatcher implements IEventCollection  {
+class SpellController implements ISpellInvocation implements ISpellCodex  {
 	
 	static private var _rAction:String->Action;
 	static private var _wAction:Action->Void;
@@ -59,7 +59,7 @@ class SpellController implements IEventDispatcher implements IEventCollection  {
 		}
 	}
 	
-	public var events:DynamicAccess<Spells>;
+	public var events:DynamicAccess<SpellGroup>;
 	
 	private function _onCallBefore(context:SpellCasting):Void { }
 	
@@ -69,7 +69,7 @@ class SpellController implements IEventDispatcher implements IEventCollection  {
 	
 	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>) {
 		_debug = debug == true;
-		events = Spells.patch(data, validate, priority);
+		events = SpellGroup.patch(data, validate, priority);
 	}
 	
 	public function setDebug(mode:Bool):Void {
@@ -80,7 +80,7 @@ class SpellController implements IEventDispatcher implements IEventCollection  {
 	
 	private var _chain:Array<SpellCasting> = [];
 	
-	public function call(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool {
+	public function invoke(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool {
 		var context:SpellCasting = createContext(name, data, provider, this);
 		if (Reflect.hasField(events, name)){
 			context.chain = _index;
