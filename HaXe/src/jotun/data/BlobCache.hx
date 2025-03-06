@@ -27,7 +27,10 @@ class BlobCache {
 	public static function setWeak(name:String):Void {
 		var blob:IBlobInfo = Reflect.field(_BlobRefs, name);
 		if (blob != null){
-			
+			blob.weak = true;
+			if(blob.usage == 0){
+				revoke(name);
+			}
 		}
 	}
 	

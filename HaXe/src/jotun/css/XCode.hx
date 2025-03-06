@@ -9,6 +9,11 @@ import jotun.dom.Svg;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
+typedef XCodeConfig = {
+	var reset:Bool;
+	var grid:Bool;
+}
+
 /**
  * ...
  * @author Rafael Moreira
@@ -24,7 +29,7 @@ class XCode {
 	
 	static private var _morph_rules:Array<Array<String>>;
 	
-	static private var _inits:Dynamic = {
+	static private var _inits:XCodeConfig = {
 		reset : false,
 		grid: false,
 	};
@@ -55,19 +60,18 @@ class XCode {
 			/*
 				SHELF = [0,1,2,3,4] 	== ROW, NO WRAP
 							+ o-stack  to reverse
-				|
 				
 				HACK = [0,1,2,3,4		== ROW + COLUMNS
 				|       5,6,7,8,9]
 							+ o-stack  to reverse
 				
 				DRAWER = 	[0,		== COLUMN
-		|			 1,
-		|			 2]
+				|		 1,
+				|		 2]
 							+ o-stack  to reverse
 				
 				Placement
-				|	cel		AUTO width
+				|	cel				AUTO width
 				|	cel-X (x = 1~12)
 				|	rcell-X (x = 1~12) 	Empty cell
 				|	tag-X (x = 1~12)	Cardinal count
@@ -128,16 +132,16 @@ class XCode {
 	static public function reset():Void {
 		if (!_inits.reset){
 			_inits.reset = true;
-			function cor(i:Int, q:String):String {
-				return '.container'+q+'{max-width:' + i + 'px;}';
+			function cor(i:Int):String {
+				return '.container{max-width:' + i + 'px;}';
 			}
 			css.add('html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0;}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto;}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px;}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}');
 			css.style += '.container-s,.container,.container-l{width:100%;}';
-			css.styleXS += cor(480,'');
-			css.styleSM += cor(540,'');
-			css.styleMD += cor(640,'');
-			css.styleLG += cor(1024,'');
-			css.styleXL += cor(1600, '');
+			css.styleXS += cor(480);
+			css.styleSM += cor(540);
+			css.styleMD += cor(640);
+			css.styleLG += cor(1024);
+			css.styleXL += cor(1600);
 			if(Jotun.agent.mobile){
 				omnibuild('.mobile-hidden', 'display:none !important;');
 			}else{
@@ -145,7 +149,7 @@ class XCode {
 			}
 			omnibuild('.hidden', 'display:none !important;');
 			_createGrid();
-			commit();
+			update();
 		}
 	}
 	
@@ -193,7 +197,7 @@ class XCode {
 		return q;
 	}
 	
-	static public function commit():Void {
+	static public function update():Void {
 		css.build();
 	}
 	
@@ -205,12 +209,14 @@ class XCode {
 	 */
 	static public function omnibuild(selector:String, query:String):Void {
 		build(selector, query);
-		css.styleXS += (selector.split(',').join('-xs,') + '-xs' + '{' + query + '}');
-		css.styleSM += (selector.split(',').join('-sm,') + '-sm' + '{' + query + '}');
-		css.styleMD += (selector.split(',').join('-md,') + '-md' + '{' + query + '}');
-		css.styleLG += (selector.split(',').join('-lg,') + '-lg' + '{' + query + '}');
-		css.styleXL += (selector.split(',').join('-xl,') + '-xl' + '{' + query + '}');
-		css.stylePR += (selector.split(',').join('-pr,') + '-pr' + '{' + query + '}');
+		query = '{' + query + '}';
+		var spl:Array<String> = selector.split(',');
+		css.styleXS += spl.join('-xs,') + '-xs' + query;
+		css.styleSM += spl.join('-sm,') + '-sm' + query;
+		css.styleMD += spl.join('-md,') + '-md' + query;
+		css.styleLG += spl.join('-lg,') + '-lg' + query;
+		css.styleXL += spl.join('-xl,') + '-xl' + query;
+		css.stylePR += spl.join('-pr,') + '-pr' + query;
 	}
 	
 	static public function build(selector:String, query:String):Void {
@@ -352,9 +358,8 @@ class XCode {
 		}
 		var css:String = '@keyframes ' + name + '{';
 		var len:Int = values.length;
-		Dice.All(values, function(p:String, v:Dynamic):Void {
-			var i:Int = Std.int(Std.parseInt(p) / len);
-			css += i + '%{' + v + '}'; 
+		Dice.All(values, function(p:Int, v:String):Void {
+			css += Std.int(p / len) + '%{' + v + '}'; 
 		});
 		css += '} animation: ' + name + ' ' + time + 's linear infinite; /*EOF ' + name + '*/';
 		_motions.appendHtml(css);

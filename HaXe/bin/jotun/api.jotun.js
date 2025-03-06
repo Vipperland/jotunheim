@@ -3817,16 +3817,16 @@ jotun_css_XCode._createGrid = function() {
 jotun_css_XCode.reset = function() {
 	if(!jotun_css_XCode._inits.reset) {
 		jotun_css_XCode._inits.reset = true;
-		var cor = function(i,q) {
-			return ".container" + q + "{max-width:" + i + "px;}";
+		var cor = function(i) {
+			return ".container{max-width:" + i + "px;}";
 		};
 		jotun_css_XCode.css.add("html{line-height:1.15;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}body{margin:0;}article,aside,footer,header,nav,section{display:block;}h1{font-size:2em;margin:0.67em 0;}figcaption,figure,main{display:block;}figure{margin:1em 40px;}hr{box-sizing:content-box;height:0;overflow:visible;}pre{font-family:monospace, monospace;font-size:1em;}a{background-color:transparent;-webkit-text-decoration-skip:objects;}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted;}b,strong{font-weight:inherit;}b,strong{font-weight:bolder;}code,kbd,samp{font-family:monospace, monospace;font-size:1em;}dfn{font-style:italic;}mark{background-color:#ff0;color:#000;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}audio,video{display:inline-block;}audio:not([controls]){display:none;height:0;}img{border-style:none;}svg:not(:root){overflow:hidden;}button,input,optgroup,select,textarea{font-family:sans-serif;font-size:100%;line-height:1.15;margin:0;border:0;}button,input{overflow:visible;}button,select{text-transform:none;}button,[type=\"button\"],[type=\"reset\"],[type=\"submit\"]{-webkit-appearance:button;}button::-moz-focus-inner,[type=\"button\"]::-moz-focus-inner,[type=\"reset\"]::-moz-focus-inner,[type=\"submit\"]::-moz-focus-inner{border-style:none;padding:0;}button:-moz-focusring,[type=\"button\"]:-moz-focusring,[type=\"reset\"]:-moz-focusring,[type=\"submit\"]:-moz-focusring{outline:1px dotted ButtonText;}fieldset{padding:0.35em 0.75em 0.625em;}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal;}progress{display:inline-block;vertical-align:baseline;}textarea{overflow:auto;}[type=\"checkbox\"],[type=\"radio\"]{box-sizing:border-box;padding:0;}[type=\"number\"]::-webkit-inner-spin-button,[type=\"number\"]::-webkit-outer-spin-button{height:auto;}[type=\"search\"]{-webkit-appearance:textfield;outline-offset:-2px;}[type=\"search\"]::-webkit-search-cancel-button,[type=\"search\"]::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}details,menu{display:block;}summary{display:list-item;}canvas{display:inline-block;}template{display:none;}[hidden]{display:none;}*{box-sizing:border-box;}");
 		jotun_css_XCode.css.style += ".container-s,.container,.container-l{width:100%;}";
-		jotun_css_XCode.css.styleXS += cor(480,"");
-		jotun_css_XCode.css.styleSM += cor(540,"");
-		jotun_css_XCode.css.styleMD += cor(640,"");
-		jotun_css_XCode.css.styleLG += cor(1024,"");
-		jotun_css_XCode.css.styleXL += cor(1600,"");
+		jotun_css_XCode.css.styleXS += cor(480);
+		jotun_css_XCode.css.styleSM += cor(540);
+		jotun_css_XCode.css.styleMD += cor(640);
+		jotun_css_XCode.css.styleLG += cor(1024);
+		jotun_css_XCode.css.styleXL += cor(1600);
 		if(jotun_Jotun.agent.mobile) {
 			jotun_css_XCode.omnibuild(".mobile-hidden","display:none !important;");
 		} else {
@@ -3834,7 +3834,7 @@ jotun_css_XCode.reset = function() {
 		}
 		jotun_css_XCode.omnibuild(".hidden","display:none !important;");
 		jotun_css_XCode._createGrid();
-		jotun_css_XCode.commit();
+		jotun_css_XCode.update();
 	}
 };
 jotun_css_XCode.style = function(selector,value,mode) {
@@ -3861,17 +3861,19 @@ jotun_css_XCode.morph = function(q) {
 	});
 	return q;
 };
-jotun_css_XCode.commit = function() {
+jotun_css_XCode.update = function() {
 	jotun_css_XCode.css.build();
 };
 jotun_css_XCode.omnibuild = function(selector,query) {
 	jotun_css_XCode.build(selector,query);
-	jotun_css_XCode.css.styleXS += selector.split(",").join("-xs,") + "-xs" + "{" + query + "}";
-	jotun_css_XCode.css.styleSM += selector.split(",").join("-sm,") + "-sm" + "{" + query + "}";
-	jotun_css_XCode.css.styleMD += selector.split(",").join("-md,") + "-md" + "{" + query + "}";
-	jotun_css_XCode.css.styleLG += selector.split(",").join("-lg,") + "-lg" + "{" + query + "}";
-	jotun_css_XCode.css.styleXL += selector.split(",").join("-xl,") + "-xl" + "{" + query + "}";
-	jotun_css_XCode.css.stylePR += selector.split(",").join("-pr,") + "-pr" + "{" + query + "}";
+	query = "{" + query + "}";
+	var spl = selector.split(",");
+	jotun_css_XCode.css.styleXS += spl.join("-xs,") + "-xs" + query;
+	jotun_css_XCode.css.styleSM += spl.join("-sm,") + "-sm" + query;
+	jotun_css_XCode.css.styleMD += spl.join("-md,") + "-md" + query;
+	jotun_css_XCode.css.styleLG += spl.join("-lg,") + "-lg" + query;
+	jotun_css_XCode.css.styleXL += spl.join("-xl,") + "-xl" + query;
+	jotun_css_XCode.css.stylePR += spl.join("-pr,") + "-pr" + query;
 };
 jotun_css_XCode.build = function(selector,query) {
 	jotun_css_XCode.css.style += selector + "{" + query + "}";
@@ -3995,8 +3997,7 @@ jotun_css_XCode.motion = function(name,time,values) {
 	var css = "@keyframes " + name + "{";
 	var len = values.length;
 	jotun_utils_Dice.All(values,function(p,v) {
-		var i = Std.parseInt(p) / len | 0;
-		css += i + "%{" + Std.string(v) + "}";
+		css += (p / len | 0) + "%{" + v + "}";
 	});
 	css += "} animation: " + name + " " + time + "s linear infinite; /*EOF " + name + "*/";
 	jotun_css_XCode._motions.appendHtml(css);
@@ -6018,10 +6019,10 @@ var jotun_gaming_actions_Resolution = function(type,data,param) {
 		}
 	}
 	if(data.then != null) {
-		this.then = new jotun_gaming_actions_Spells(this._type + ":then",data.then);
+		this.then = new jotun_gaming_actions_SpellGroup(this._type + ":then",data.then);
 	}
 	if(data.fail != null) {
-		this.fail = new jotun_gaming_actions_Spells(this._type + ":fail",data.fail);
+		this.fail = new jotun_gaming_actions_SpellGroup(this._type + ":fail",data.fail);
 	}
 	this.id = data.id;
 };
@@ -6040,10 +6041,10 @@ jotun_gaming_actions_Resolution.prototype = {
 			++context.ident;
 			if(result) {
 				if(this.then != null) {
-					this.then.run(context);
+					this.then.execute(context);
 				}
 			} else if(this.fail != null) {
-				this.fail.run(context);
+				this.fail.execute(context);
 			}
 			--context.ident;
 		}
@@ -6127,14 +6128,14 @@ var jotun_gaming_actions_ActionQueryGroup = function() {
 jotun_gaming_actions_ActionQueryGroup.__name__ = "jotun.gaming.actions.ActionQueryGroup";
 jotun_gaming_actions_ActionQueryGroup.__super__ = jotun_objects_QueryGroup;
 jotun_gaming_actions_ActionQueryGroup.prototype = $extend(jotun_objects_QueryGroup.prototype,{
-	eventRun: function(query,context) {
+	invocation: function(query,context) {
 		var _gthis = this;
 		var result = { };
 		if(context.debug) {
 			jotun_utils_Dice.Values(query,function(single) {
 				context.registerActionQuery(single);
 				jotun_utils_Dice.Values(_gthis.units,function(o) {
-					o.ioContext = context;
+					o.invocation = context;
 					o.proc(single,result);
 				});
 			});
@@ -6143,7 +6144,7 @@ jotun_gaming_actions_ActionQueryGroup.prototype = $extend(jotun_objects_QueryGro
 			});
 		} else {
 			jotun_utils_Dice.Values(this.units,function(o) {
-				o.ioContext = context;
+				o.invocation = context;
 				o.proc(query,result);
 				o.flush();
 			});
@@ -6159,7 +6160,7 @@ var jotun_gaming_actions_Action = $hx_exports["Jtn"]["Action"] = function(type,d
 	var i = 0;
 	jotun_utils_Dice.All(data.require,function(p,v) {
 		if(typeof(v) == "string") {
-			v = jotun_gaming_actions_SpellController.loadRequirement(v);
+			v = jotun_gaming_actions_SpellCodex.loadRequirement(v);
 		}
 		if(v != null) {
 			if(((v) instanceof jotun_gaming_actions_Requirement)) {
@@ -6179,7 +6180,7 @@ var jotun_gaming_actions_Action = $hx_exports["Jtn"]["Action"] = function(type,d
 		this.breakon = data.require > 0;
 	}
 	if(jotun_tools_Utils.isValid(data.id)) {
-		jotun_gaming_actions_SpellController.saveAction(this);
+		jotun_gaming_actions_SpellCodex.saveAction(this);
 	}
 };
 jotun_gaming_actions_Action.__name__ = "jotun.gaming.actions.Action";
@@ -6201,7 +6202,7 @@ jotun_gaming_actions_Action.__super__ = jotun_gaming_actions_Resolution;
 jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.prototype,{
 	require: null
 	,target: null
-	,run: function(context,position) {
+	,invoke: function(context,position) {
 		this.connect();
 		var resolution = 0;
 		++context.ident;
@@ -6222,7 +6223,7 @@ jotun_gaming_actions_Action.prototype = $extend(jotun_gaming_actions_Resolution.
 		if(success) {
 			context.registerAction(this);
 			if(jotun_tools_Utils.isValid(this.query)) {
-				jotun_gaming_actions_Action.commands.eventRun(this.query,context);
+				jotun_gaming_actions_Action.codex.invocation(this.query,context);
 			}
 		}
 		return this.resolve(success,context);
@@ -6236,7 +6237,7 @@ jotun_gaming_actions_ActionQuery.__name__ = "jotun.gaming.actions.ActionQuery";
 jotun_gaming_actions_ActionQuery.__super__ = jotun_objects_Query;
 jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototype,{
 	getDataProvider: function() {
-		return this.ioContext.currentProvider;
+		return this.invocation.currentProvider;
 	}
 	,_isempty: function(value) {
 		if(value != null) {
@@ -6321,18 +6322,18 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 			return a;
 		}
 	}
-	,ioContext: null
+	,invocation: null
 	,tracer: function() {
 		var $l=arguments.length;
 		var messages = new Array($l>0?$l-0:0);
 		for(var $i=0;$i<$l;++$i){messages[$i-0]=arguments[$i];}
-		console.log("src/jotun/gaming/actions/ActionQuery.hx:129:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.ioContext));
+		console.log("src/jotun/gaming/actions/ActionQuery.hx:129:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.invocation));
 		return this;
 	}
 	,call: function(id) {
-		var action = jotun_gaming_actions_SpellController.loadAction(id);
+		var action = jotun_gaming_actions_SpellCodex.loadAction(id);
 		if(action != null) {
-			action.run(this.ioContext,0);
+			action.invoke(this.invocation,0);
 		}
 		return this;
 	}
@@ -6409,11 +6410,11 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 		return this;
 	}
 	,wait: function(time) {
-		this.ioContext.event.current.wait(time);
+		this.invocation.event.current.wait(time);
 		return this;
 	}
 	,release: function() {
-		this.ioContext.event.current.release();
+		this.invocation.event.current.release();
 		return this;
 	}
 	,preparerequest: function(url,method,data) {
@@ -6422,25 +6423,25 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 		return this.wait(30);
 	}
 	,resetcontext: function() {
-		this.ioContext.requestProvider = null;
-		this.ioContext.currentProvider = this.ioContext.dataProvider;
+		this.invocation.requestProvider = null;
+		this.invocation.currentProvider = this.invocation.dataProvider;
 		return this;
 	}
 	,setrequestcontext: function() {
-		this.ioContext.currentProvider = this.ioContext.requestProvider;
+		this.invocation.currentProvider = this.invocation.requestProvider;
 		return this;
 	}
 	,setmaincontext: function() {
-		this.ioContext.currentProvider = this.ioContext.dataProvider;
+		this.invocation.currentProvider = this.invocation.dataProvider;
 		return this;
 	}
 	,_actRequest: function(request) {
 		if(request.success) {
 			if(request.getHeader("Content-Type") == "application/json") {
 				var tmp = request.object();
-				this.ioContext.requestProvider = new jotun_gaming_actions_BasicDataProvider(tmp);
+				this.invocation.requestProvider = new jotun_gaming_actions_BasicDataProvider(tmp);
 			} else {
-				this.ioContext.requestProvider = new jotun_gaming_actions_BasicDataProvider({ message : request.data});
+				this.invocation.requestProvider = new jotun_gaming_actions_BasicDataProvider({ message : request.data});
 			}
 			this.setrequestcontext();
 		}
@@ -6530,29 +6531,13 @@ jotun_gaming_actions_BasicDataProvider.prototype = {
 	}
 	,__class__: jotun_gaming_actions_BasicDataProvider
 };
-var jotun_gaming_actions_IEventCollection = function() { };
-jotun_gaming_actions_IEventCollection.__name__ = "jotun.gaming.actions.IEventCollection";
-jotun_gaming_actions_IEventCollection.__isInterface__ = true;
-jotun_gaming_actions_IEventCollection.prototype = {
-	events: null
-	,__class__: jotun_gaming_actions_IEventCollection
-};
-var jotun_gaming_actions_IEventDispatcher = function() { };
-jotun_gaming_actions_IEventDispatcher.__name__ = "jotun.gaming.actions.IEventDispatcher";
-jotun_gaming_actions_IEventDispatcher.__isInterface__ = true;
-jotun_gaming_actions_IEventDispatcher.prototype = {
-	events: null
-	,setDebug: null
-	,call: null
-	,__class__: jotun_gaming_actions_IEventDispatcher
-};
 var jotun_gaming_actions_RequirementQueryGroup = function() {
 	jotun_objects_QueryGroup.call(this);
 };
 jotun_gaming_actions_RequirementQueryGroup.__name__ = "jotun.gaming.actions.RequirementQueryGroup";
 jotun_gaming_actions_RequirementQueryGroup.__super__ = jotun_objects_QueryGroup;
 jotun_gaming_actions_RequirementQueryGroup.prototype = $extend(jotun_objects_QueryGroup.prototype,{
-	eventRun: function(query,context) {
+	verification: function(query,context) {
 		var _gthis = this;
 		var result = { };
 		if(context.debug) {
@@ -6561,7 +6546,7 @@ jotun_gaming_actions_RequirementQueryGroup.prototype = $extend(jotun_objects_Que
 				if(single != "@result") {
 					context.registerRequirementQuery(single);
 					jotun_utils_Dice.All(_gthis.units,function(p,o) {
-						o.ioContext = context;
+						o.invocation = context;
 						if(context.debug) {
 							context.addLog(1,single + " [" + p + "] == " + o.proc(["@result",single],result).result[idx]);
 						}
@@ -6572,7 +6557,7 @@ jotun_gaming_actions_RequirementQueryGroup.prototype = $extend(jotun_objects_Que
 			});
 		} else {
 			jotun_utils_Dice.Values(this.units,function(o) {
-				o.ioContext = context;
+				o.invocation = context;
 				o.proc(query,result);
 				o.flush();
 			});
@@ -6592,7 +6577,7 @@ var jotun_gaming_actions_Requirement = $hx_exports["Jtn"]["Requirement"] = funct
 		this.breakon = "never";
 	}
 	if(jotun_tools_Utils.isValid(data.id)) {
-		jotun_gaming_actions_SpellController.saveRequirement(this);
+		jotun_gaming_actions_SpellCodex.saveRequirement(this);
 	}
 };
 jotun_gaming_actions_Requirement.__name__ = "jotun.gaming.actions.Requirement";
@@ -6618,7 +6603,7 @@ jotun_gaming_actions_Requirement.prototype = $extend(jotun_gaming_actions_Resolu
 		var score = 0;
 		if(jotun_tools_Utils.isValid(this.query)) {
 			context.registerRequirement(this);
-			var sec = jotun_gaming_actions_Requirement.commands.eventRun(this.query,context).result;
+			var sec = jotun_gaming_actions_Requirement.codex.verification(this.query,context).result;
 			if(sec != null) {
 				jotun_utils_Dice.Values(sec,function(v) {
 					if(jotun_tools_Utils.boolean(v)) {
@@ -6643,7 +6628,7 @@ jotun_gaming_actions_RequirementQuery.__name__ = "jotun.gaming.actions.Requireme
 jotun_gaming_actions_RequirementQuery.__super__ = jotun_objects_Query;
 jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.prototype,{
 	getDataProvider: function() {
-		return this.ioContext.currentProvider;
+		return this.invocation.currentProvider;
 	}
 	,_isempty: function(value) {
 		if(value != null) {
@@ -6680,7 +6665,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	}
 	,_resolve: function(a,r,v) {
 		if(r == null) {
-			r = ">=";
+			r = "=";
 		}
 		switch(r) {
 		case "*=":case "contain":
@@ -6715,7 +6700,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 			return a == v;
 		}
 	}
-	,ioContext: null
+	,invocation: null
 	,isrng: function(name,rule,min,max,float) {
 		if(max == null) {
 			max = min;
@@ -6754,17 +6739,17 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		return (this._isempty(value) || jotun_tools_Utils.boolean(value)) == a;
 	}
 	,hasrequestcontext: function() {
-		return this.ioContext.requestProvider != null;
+		return this.invocation.requestProvider != null;
 	}
 	,isrequestcontext: function() {
 		if(this.hasrequestcontext()) {
-			return this.ioContext.requestProvider == this.ioContext.currentProvider;
+			return this.invocation.requestProvider == this.invocation.currentProvider;
 		} else {
 			return false;
 		}
 	}
 	,ismaincontext: function() {
-		return this.ioContext.dataProvider == this.ioContext.currentProvider;
+		return this.invocation.dataProvider == this.invocation.currentProvider;
 	}
 	,iseventtype: function() {
 		var $l=arguments.length;
@@ -6772,7 +6757,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		for(var $i=0;$i<$l;++$i){types[$i-0]=arguments[$i];}
 		var _gthis = this;
 		return !jotun_utils_Dice.Values(types,function(v) {
-			return v == _gthis.ioContext.origin.type;
+			return v == _gthis.invocation.origin.type;
 		}).completed;
 	}
 	,isactionid: function() {
@@ -6780,11 +6765,11 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		var ids = new Array($l>0?$l-0:0);
 		for(var $i=0;$i<$l;++$i){ids[$i-0]=arguments[$i];}
 		var _gthis = this;
-		if(this.ioContext.action != null && this.ioContext.action.target != null && this.ioContext.action.target.id != null) {
+		if(this.invocation.action != null && this.invocation.action.target != null && this.invocation.action.target.id != null) {
 			return false;
 		}
 		return !jotun_utils_Dice.Values(ids,function(v) {
-			return v == _gthis.ioContext.action.target.id;
+			return v == _gthis.invocation.action.target.id;
 		}).completed;
 	}
 	,isactionchain: function(hits) {
@@ -6795,7 +6780,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		if(hits <= 0 || hits > ids.length) {
 			hits = ids.length;
 		}
-		return !jotun_utils_Dice.Values(this.ioContext.history,function(a) {
+		return !jotun_utils_Dice.Values(this.invocation.history,function(a) {
 			if(a.id == ids[matches]) {
 				matches += 1;
 			}
@@ -6809,7 +6794,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		var _gthis = this;
 		var matches = 0;
 		return !jotun_utils_Dice.Values(ids,function(id) {
-			return !jotun_utils_Dice.Values(_gthis.ioContext.history,function(a) {
+			return !jotun_utils_Dice.Values(_gthis.invocation.history,function(a) {
 				if(id != null && id.length > 0) {
 					return a.id == id;
 				} else {
@@ -6819,11 +6804,11 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		}).completed;
 	}
 	,isdebug: function() {
-		return this.ioContext.debug;
+		return this.invocation.debug;
 	}
 	,__class__: jotun_gaming_actions_RequirementQuery
 });
-var jotun_gaming_actions_SpellCasting = function(name,data,provider,controller,debug) {
+var jotun_gaming_actions_SpellCasting = function(name,data,provider,codex,debug) {
 	this.origin = data;
 	this.name = name;
 	this.debug = debug;
@@ -6838,7 +6823,7 @@ var jotun_gaming_actions_SpellCasting = function(name,data,provider,controller,d
 	this.history = [];
 	this.dataProvider = provider;
 	this.currentProvider = provider;
-	this.controller = controller;
+	this.codex = codex;
 };
 jotun_gaming_actions_SpellCasting.__name__ = "jotun.gaming.actions.SpellCasting";
 jotun_gaming_actions_SpellCasting.prototype = {
@@ -6858,7 +6843,7 @@ jotun_gaming_actions_SpellCasting.prototype = {
 	,currentProvider: null
 	,dataProvider: null
 	,requestProvider: null
-	,controller: null
+	,codex: null
 	,registerEvent: function(e) {
 		this.event.current = e;
 	}
@@ -6885,9 +6870,12 @@ jotun_gaming_actions_SpellCasting.prototype = {
 	,release: function(resolution,result) {
 		var chain = result ? resolution.then : resolution.fail;
 		if(chain != null) {
-			var temp = jotun_gaming_actions_Spells.patch({ _onActionReleased : chain})["_onActionReleased"];
-			this.controller.events["_onActionReleased"] = temp;
-			this.controller.call("_onActionReleased",this.origin,this.dataProvider);
+			var cid = "_channeling:" + jotun_gaming_actions_SpellCasting._channeling;
+			++jotun_gaming_actions_SpellCasting._channeling;
+			var temp = jotun_gaming_actions_SpellGroup.patch({ _onActionReleased : chain})[cid];
+			this.codex.index[cid] = temp;
+			this.codex.invoke(cid,this.origin,this.dataProvider);
+			Reflect.deleteField(this.codex.index,cid);
 		}
 	}
 	,previous: function() {
@@ -6931,53 +6919,52 @@ jotun_gaming_actions_SpellCastRequirement.prototype = {
 	target: null
 	,__class__: jotun_gaming_actions_SpellCastRequirement
 };
-var jotun_gaming_actions_SpellController = $hx_exports["Jtn"]["SpellController"] = function(data,debug,validate,priority) {
+var jotun_gaming_actions_SpellCodex = $hx_exports["Jtn"]["SpellCodex"] = function(data,debug,validate,priority) {
 	this._chain = [];
-	this._index = 0;
-	jotun_gaming_actions_SpellController._debug = debug == true;
-	this.events = jotun_gaming_actions_Spells.patch(data,validate,priority);
+	this._position = 0;
+	jotun_gaming_actions_SpellCodex._debug = debug == true;
+	this.index = jotun_gaming_actions_SpellGroup.patch(data,validate,priority);
 };
-jotun_gaming_actions_SpellController.__name__ = "jotun.gaming.actions.SpellController";
-jotun_gaming_actions_SpellController.__interfaces__ = [jotun_gaming_actions_IEventCollection,jotun_gaming_actions_IEventDispatcher];
-jotun_gaming_actions_SpellController.createContext = function(name,data,provider,controller) {
-	return new jotun_gaming_actions_SpellCasting(name,data,provider,controller,jotun_gaming_actions_SpellController._debug);
+jotun_gaming_actions_SpellCodex.__name__ = "jotun.gaming.actions.SpellCodex";
+jotun_gaming_actions_SpellCodex.createContext = function(name,data,provider,controller) {
+	return new jotun_gaming_actions_SpellCasting(name,data,provider,controller,jotun_gaming_actions_SpellCodex._debug);
 };
-jotun_gaming_actions_SpellController.cacheController = function(saveAction,loadAction,saveRequirement,loadRequirement) {
-	jotun_gaming_actions_SpellController._wAction = saveAction;
-	jotun_gaming_actions_SpellController._rAction = loadAction;
-	jotun_gaming_actions_SpellController._wRequirement = saveRequirement;
-	jotun_gaming_actions_SpellController._rRequirement = loadRequirement;
+jotun_gaming_actions_SpellCodex.cacheController = function(saveAction,loadAction,saveRequirement,loadRequirement) {
+	jotun_gaming_actions_SpellCodex._wAction = saveAction;
+	jotun_gaming_actions_SpellCodex._rAction = loadAction;
+	jotun_gaming_actions_SpellCodex._wRequirement = saveRequirement;
+	jotun_gaming_actions_SpellCodex._rRequirement = loadRequirement;
 };
-jotun_gaming_actions_SpellController.loadAction = function(id) {
-	if(jotun_gaming_actions_SpellController._rAction != null) {
-		return jotun_gaming_actions_SpellController._rAction(id);
+jotun_gaming_actions_SpellCodex.loadAction = function(id) {
+	if(jotun_gaming_actions_SpellCodex._rAction != null) {
+		return jotun_gaming_actions_SpellCodex._rAction(id);
 	} else {
 		return jotun_gaming_actions_Action.load(id);
 	}
 };
-jotun_gaming_actions_SpellController.saveAction = function(a) {
-	if(jotun_gaming_actions_SpellController._wAction != null) {
-		jotun_gaming_actions_SpellController._wAction(a);
+jotun_gaming_actions_SpellCodex.saveAction = function(a) {
+	if(jotun_gaming_actions_SpellCodex._wAction != null) {
+		jotun_gaming_actions_SpellCodex._wAction(a);
 	} else {
 		jotun_gaming_actions_Action.save(a);
 	}
 };
-jotun_gaming_actions_SpellController.loadRequirement = function(id) {
-	if(jotun_gaming_actions_SpellController._rRequirement != null) {
-		return jotun_gaming_actions_SpellController._rRequirement(id);
+jotun_gaming_actions_SpellCodex.loadRequirement = function(id) {
+	if(jotun_gaming_actions_SpellCodex._rRequirement != null) {
+		return jotun_gaming_actions_SpellCodex._rRequirement(id);
 	} else {
 		return jotun_gaming_actions_Requirement.load(id);
 	}
 };
-jotun_gaming_actions_SpellController.saveRequirement = function(r) {
-	if(jotun_gaming_actions_SpellController._wRequirement != null) {
-		jotun_gaming_actions_SpellController._wRequirement(r);
+jotun_gaming_actions_SpellCodex.saveRequirement = function(r) {
+	if(jotun_gaming_actions_SpellCodex._wRequirement != null) {
+		jotun_gaming_actions_SpellCodex._wRequirement(r);
 	} else {
 		jotun_gaming_actions_Requirement.save(r);
 	}
 };
-jotun_gaming_actions_SpellController.prototype = {
-	events: null
+jotun_gaming_actions_SpellCodex.prototype = {
+	index: null
 	,_onCallBefore: function(context) {
 	}
 	,_onCallAfter: function(context) {
@@ -6985,31 +6972,31 @@ jotun_gaming_actions_SpellController.prototype = {
 	,_onChainEnd: function(chain) {
 	}
 	,setDebug: function(mode) {
-		jotun_gaming_actions_SpellController._debug = mode;
+		jotun_gaming_actions_SpellCodex._debug = mode;
 	}
-	,_index: null
+	,_position: null
 	,_chain: null
-	,call: function(name,data,provider) {
-		var context = jotun_gaming_actions_SpellController.createContext(name,data,provider,this);
-		if(Object.prototype.hasOwnProperty.call(this.events,name)) {
-			context.chain = this._index;
+	,invoke: function(name,data,provider) {
+		var context = jotun_gaming_actions_SpellCodex.createContext(name,data,provider,this);
+		if(Object.prototype.hasOwnProperty.call(this.index,name)) {
+			context.chain = this._position;
 			this._chain[this._chain.length] = context;
-			if(this._index > 0) {
-				context.parent = this._chain[this._index - 1];
+			if(this._position > 0) {
+				context.parent = this._chain[this._position - 1];
 			}
-			++this._index;
+			++this._position;
 			this._onCallBefore(context);
-			Reflect.field(this.events,name).run(context);
-			--this._index;
+			Reflect.field(this.index,name).execute(context);
+			--this._position;
 			this._onCallAfter(context);
-			if(this._index == 0) {
+			if(this._position == 0) {
 				context.ended = true;
 				this._onChainEnd(this._chain);
 				this._chain = [];
 			}
 			return true;
 		} else {
-			if(jotun_gaming_actions_SpellController._debug) {
+			if(jotun_gaming_actions_SpellCodex._debug) {
 				this._onCallBefore(context);
 				var c = js_Boot.getClass(this);
 				context.addLog(0,"≈ EVENT " + name + " [!] Not Found on " + c.__name__ + ". ");
@@ -7018,22 +7005,23 @@ jotun_gaming_actions_SpellController.prototype = {
 			return false;
 		}
 	}
-	,__class__: jotun_gaming_actions_SpellController
+	,__class__: jotun_gaming_actions_SpellCodex
 };
-var jotun_gaming_actions_Spells = $hx_exports["Jtn"]["Spells"] = function(type,data) {
+var jotun_gaming_actions_SpellGroup = $hx_exports["Jtn"]["SpellGroup"] = function(type,data) {
 	this._type = type;
-	this._init(data);
+	this._data = [];
+	this._init(data,0);
 };
-jotun_gaming_actions_Spells.__name__ = "jotun.gaming.actions.Spells";
-jotun_gaming_actions_Spells.patch = function(data,validate,priority) {
+jotun_gaming_actions_SpellGroup.__name__ = "jotun.gaming.actions.SpellGroup";
+jotun_gaming_actions_SpellGroup.patch = function(data,validate,priority) {
 	var patched = { };
 	if(data != null) {
 		if(priority != null) {
 			jotun_utils_Dice.Values(priority,function(v) {
 				if(Object.prototype.hasOwnProperty.call(data,v)) {
 					var e = data[v];
-					if(!((e) instanceof jotun_gaming_actions_Spells)) {
-						var value = new jotun_gaming_actions_Spells(v,e);
+					if(!((e) instanceof jotun_gaming_actions_SpellGroup)) {
+						var value = new jotun_gaming_actions_SpellGroup(v,e);
 						patched[v] = value;
 					} else {
 						patched[v] = e;
@@ -7047,8 +7035,8 @@ jotun_gaming_actions_Spells.patch = function(data,validate,priority) {
 				p = validate(p,v);
 			}
 			if(p != null && p != "") {
-				if(!((v) instanceof jotun_gaming_actions_Spells)) {
-					var value = new jotun_gaming_actions_Spells(p,v);
+				if(!((v) instanceof jotun_gaming_actions_SpellGroup)) {
+					var value = new jotun_gaming_actions_SpellGroup(p,v);
 					patched[p] = value;
 				} else {
 					patched[p] = v;
@@ -7058,14 +7046,14 @@ jotun_gaming_actions_Spells.patch = function(data,validate,priority) {
 	}
 	return patched;
 };
-jotun_gaming_actions_Spells._log = function(evt,context) {
+jotun_gaming_actions_SpellGroup._log = function(evt,context) {
 	var a = evt._data.length;
 	context.addLog(0,(context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
-	if(context.chain > 0 && context.parent.action != null) {
+	if(context.chain > 0 && context.parent.action != null && context.parent.action.query != null) {
 		context.addLog(1,"├ ACTION \"" + context.parent.action.query + "\"");
 	}
 };
-jotun_gaming_actions_Spells.prototype = {
+jotun_gaming_actions_SpellGroup.prototype = {
 	_data: null
 	,_type: null
 	,_save: null
@@ -7074,14 +7062,20 @@ jotun_gaming_actions_Spells.prototype = {
 	,_cursor_pos: null
 	,_context: null
 	,_delayed: null
-	,_init: function(data) {
+	,_init: function(data,index) {
 		var _gthis = this;
-		this._data = [];
-		var i = 0;
+		if(data.length == 0) {
+			return;
+		}
+		var toConcat = null;
+		if(UInt.gt(this._data.length,index)) {
+			toConcat = this._data.splice(0,index);
+		}
+		var i = index;
 		var r = { };
 		jotun_utils_Dice.All(data,function(p,v) {
 			if(typeof(v) == "string") {
-				v = jotun_gaming_actions_SpellController.loadAction(v);
+				v = jotun_gaming_actions_SpellCodex.loadAction(v);
 			}
 			if(v != null && (v.id == null || !Object.prototype.hasOwnProperty.call(r,v.id))) {
 				if(((v) instanceof jotun_gaming_actions_Action)) {
@@ -7095,6 +7089,10 @@ jotun_gaming_actions_Spells.prototype = {
 				i += 1;
 			}
 		});
+		if(toConcat != null) {
+			this._data = this._data.concat(toConcat);
+			toConcat = null;
+		}
 	}
 	,getType: function() {
 		return this._type;
@@ -7122,17 +7120,20 @@ jotun_gaming_actions_Spells.prototype = {
 		this._unblock();
 		if(this._is_waiting) {
 			this._is_waiting = false;
-			this._innerRun();
+			this._innerCasting();
 		}
 	}
-	,_innerRun: function() {
+	,canWait: function() {
+		return this._cursor_pos < this._data.length;
+	}
+	,_innerCasting: function() {
 		var _gthis = this;
 		var a = null;
 		jotun_utils_Dice.Count(this._cursor_pos,this._data.length,function(current,max,completed) {
 			++_gthis._cursor_pos;
 			_gthis._context.registerEvent(_gthis);
 			a = _gthis._data[current];
-			if(a.willBreakOn(a.run(_gthis._context,current))) {
+			if(a.willBreakOn(a.invoke(_gthis._context,current))) {
 				_gthis._is_waiting = false;
 				return true;
 			} else {
@@ -7143,24 +7144,49 @@ jotun_gaming_actions_Spells.prototype = {
 			--this._context.ident;
 			if(this._context.ident == 0) {
 				if(this._context.debug) {
-					jotun_gaming_actions_Spells._log(this,this._context);
+					jotun_gaming_actions_SpellGroup._log(this,this._context);
 					this._context.log.reverse();
 				}
 			}
 			this._context = null;
 		}
 	}
-	,canWait: function() {
-		return this._cursor_pos < this._data.length;
-	}
-	,run: function(context) {
+	,execute: function(context) {
 		this._is_waiting = false;
 		this._cursor_pos = 0;
 		this._context = context;
 		++context.ident;
-		this._innerRun();
+		this._innerCasting();
 	}
-	,__class__: jotun_gaming_actions_Spells
+	,length: function() {
+		return this._data.length;
+	}
+	,learn: function(action,index) {
+		if(index == null || index < 0 || index > this._data.length) {
+			index = this._data.length;
+		}
+		this._init([action],index);
+	}
+	,getIndexOf: function(action) {
+		if(typeof(action) == "string") {
+			action = jotun_gaming_actions_SpellCodex.loadAction(action);
+		}
+		var roll = jotun_utils_Dice.Values(this._data,function(value) {
+			return action == value;
+		});
+		if(roll.completed) {
+			return this._data.length;
+		} else {
+			return roll.param;
+		}
+	}
+	,learnAfter: function(action,search) {
+		this.learn(action,this.getIndexOf(search) + 1);
+	}
+	,learnBefore: function(action,search) {
+		this.learn(action,this.getIndexOf(search) - 1);
+	}
+	,__class__: jotun_gaming_actions_SpellGroup
 };
 var jotun_gaming_dataform_SparkCore = function(name) {
 	this._name = name;
@@ -11571,7 +11597,7 @@ jotun_gaming_SpritesheetLibrary.EVENT_PROGRESS = "progress";
 jotun_gaming_actions_Resolution.BREAK_ALWAYS = "always";
 jotun_gaming_actions_Resolution.BREAK_NEVER = "never";
 jotun_gaming_actions_Action.cache = { };
-jotun_gaming_actions_Action.commands = new jotun_gaming_actions_ActionQueryGroup();
+jotun_gaming_actions_Action.codex = new jotun_gaming_actions_ActionQueryGroup();
 jotun_gaming_actions_ActionQuery.RULE_EQUAL = "=";
 jotun_gaming_actions_ActionQuery.RULE_ADD = "+";
 jotun_gaming_actions_ActionQuery.RULE_SUBTRACT = "-";
@@ -11590,7 +11616,7 @@ jotun_gaming_actions_ActionQuery.RULE_POW = "^";
 jotun_gaming_actions_ActionQuery.RULE_RANDOM = "#";
 jotun_gaming_actions_BasicDataProvider._instances = { };
 jotun_gaming_actions_Requirement.cache = { };
-jotun_gaming_actions_Requirement.commands = new jotun_gaming_actions_RequirementQueryGroup();
+jotun_gaming_actions_Requirement.codex = new jotun_gaming_actions_RequirementQueryGroup();
 jotun_gaming_actions_RequirementQuery.RULE_EQUAL = "=";
 jotun_gaming_actions_RequirementQuery.RULE_DIFFERENT = "!=";
 jotun_gaming_actions_RequirementQuery.RULE_LESS = "<";
@@ -11605,6 +11631,7 @@ jotun_gaming_actions_RequirementQuery.RULE_RANDOM_EQUAL = "#=";
 jotun_gaming_actions_RequirementQuery.RULE_RANDOM_DIFFENT = "#!";
 jotun_gaming_actions_RequirementQuery.RULE_RANDOM_GREAT_OR = "#>";
 jotun_gaming_actions_RequirementQuery.RULE_RANDOM_LESS_OR = "#<";
+jotun_gaming_actions_SpellCasting._channeling = 0;
 jotun_gaming_dataform_Pulsar.BLOCK_SIZE = 64;
 jotun_gaming_dataform_Pulsar.ID_SIZE = 32;
 jotun_gaming_dataform_Pulsar._dictio = { "*" : { "Construct" : jotun_gaming_dataform_Spark, Properties : null, Indexable : false, Tag : false}};

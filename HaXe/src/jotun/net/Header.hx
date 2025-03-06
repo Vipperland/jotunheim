@@ -60,7 +60,7 @@ class Header {
 	}
 	
 	public function allowHeaders(headers:Rest<String>):Void {
-		Web.setHeader('Access-Control-Allow-Methods', headers.toArray().join(', '));
+		Web.setHeader('Access-Control-Allow-Headers', headers.toArray().join(', '));
 	}
 	
 	public function allowCredentials(credentials:Bool):Void {
