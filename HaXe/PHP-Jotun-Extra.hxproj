@@ -24,7 +24,7 @@
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="Test_PHP" />
+    <option mainClass="+extras.gateway.jotun.gateway.GatewayCore" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -39,7 +39,7 @@
     <compile path="src2\praia\admin\ServerMain.hx" />
     <compile path="server\jotun\admin\ServerMain.hx" />
     <compile path="samples\server\CustomGateway.hx" />
-    <compile path="src\Test_PHP.hx" />
+    <compile path="src+extras\gateway\jotun\gateway\GatewayCore.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

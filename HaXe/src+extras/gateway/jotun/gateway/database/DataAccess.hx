@@ -6,7 +6,7 @@ import jotun.gateway.flags.GatewayOptions;
 import jotun.gateway.objects.OutputCoreCarrier;
 import jotun.logical.Flag;
 import jotun.php.db.Token;
-import jotun.php.db.objects.IDataTable;
+import jotun.php.db.objects.DataTable;
 import php.ErrorException;
 
 /**
@@ -67,9 +67,9 @@ class DataAccess extends OutputCoreCarrier {
 		output.log(message, 'sql');
 	}
 	
-	final private function _tryAssemble(table:String, Def:Dynamic):IDataTable {
+	final private function _tryAssemble(table:String, Def:Dynamic):DataTable {
 		return execute(function(database:DataAccess):Dynamic {
-			var table:IDataTable = Jotun.gate.table(table);
+			var table:DataTable = Jotun.gate.table(table);
 			if (table != null){
 				return table.setClassObj(Def);
 			}else{

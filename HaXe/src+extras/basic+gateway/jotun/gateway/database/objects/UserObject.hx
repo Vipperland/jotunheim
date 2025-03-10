@@ -6,7 +6,6 @@ import jotun.gateway.database.objects.defs.UserDeviceParams;
 import jotun.gateway.domain.zones.pass.IPassCarrier;
 import jotun.gateway.domain.zones.pass.ZonePass;
 import jotun.logical.Flag;
-import jotun.php.db.objects.IQuery;
 import jotun.utils.Omnitools;
 
 /**

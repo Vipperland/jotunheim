@@ -4,7 +4,7 @@ import jotun.gateway.database.objects.UserSessionObject;
 import jotun.gateway.database.objects.UserObject;
 import jotun.gateway.database.objects.UserPwdObject;
 import jotun.php.db.Token;
-import jotun.php.db.objects.IDataTable;
+import jotun.php.db.objects.DataTable;
 
 /**
  * ...
@@ -16,18 +16,18 @@ class SessionDataAccess extends DataAccess {
 		super(token);
 	}
 	
-	public var session(get, null):IDataTable;
-	private function get_session():IDataTable {
+	public var session(get, null):DataTable;
+	private function get_session():DataTable {
 		return _tryAssemble('user_session', UserSessionObject);
 	}
 	
-	public var user(get, null):IDataTable;
-	private function get_user():IDataTable {
+	public var user(get, null):DataTable;
+	private function get_user():DataTable {
 		return _tryAssemble('user', UserObject);
 	}
 	
-	public var user_pwd(get, null):IDataTable;
-	private function get_user_pwd():IDataTable {
+	public var user_pwd(get, null):DataTable;
+	private function get_user_pwd():DataTable {
 		return _tryAssemble('user_pwd', UserPwdObject);
 	}
 	
