@@ -76,7 +76,7 @@ class RequirementQuery extends Query {
 	/**
 	 * @var SpellCasting
 	 */
-	public $ioContext;
+	public $invocation;
 
 	/**
 	 * @return void
@@ -150,8 +150,8 @@ class RequirementQuery extends Query {
 	public function _resolve ($a, $r, $v) {
 		#src/jotun/gaming/actions/RequirementQuery.hx:59: lines 59-61
 		if ($r === null) {
-			#src/jotun/gaming/actions/RequirementQuery.hx:60: characters 4-12
-			$r = ">=";
+			#src/jotun/gaming/actions/RequirementQuery.hx:60: characters 4-11
+			$r = "=";
 		}
 		#src/jotun/gaming/actions/RequirementQuery.hx:62: lines 62-93
 		if ($r === "*=" || $r === "contain") {
@@ -191,7 +191,7 @@ class RequirementQuery extends Query {
 			#src/jotun/gaming/actions/RequirementQuery.hx:88: characters 32-48
 			return ($this->rng() * $a) >= $v;
 		} else if ($r === "#<" || $r === "rand-less-or") {
-			#src/jotun/gaming/actions/RequirementQuery.hx:90: characters 31-47
+			#src/jotun/gaming/actions/RequirementQuery.hx:90: characters 32-48
 			return ($this->rng() * $a) <= $v;
 		} else if ($r === "&" || $r === "test") {
 			#src/jotun/gaming/actions/RequirementQuery.hx:76: characters 22-34
@@ -223,16 +223,16 @@ class RequirementQuery extends Query {
 	 * @return IDataProvider
 	 */
 	public function getDataProvider () {
-		#src/jotun/gaming/actions/RequirementQuery.hx:33: characters 3-35
-		return $this->ioContext->currentProvider;
+		#src/jotun/gaming/actions/RequirementQuery.hx:33: characters 3-36
+		return $this->invocation->currentProvider;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function hasrequestcontext () {
-		#src/jotun/gaming/actions/RequirementQuery.hx:190: characters 3-43
-		return $this->ioContext->requestProvider !== null;
+		#src/jotun/gaming/actions/RequirementQuery.hx:190: characters 3-44
+		return $this->invocation->requestProvider !== null;
 	}
 
 	/**
@@ -255,7 +255,7 @@ class RequirementQuery extends Query {
 			$hits = \count($ids);
 		}
 		#src/jotun/gaming/actions/RequirementQuery.hx:240: lines 240-245
-		return !Dice::Values($this->ioContext->history, function ($a) use (&$ids, &$hits, &$matches) {
+		return !Dice::Values($this->invocation->history, function ($a) use (&$ids, &$hits, &$matches) {
 			#src/jotun/gaming/actions/RequirementQuery.hx:241: lines 241-243
 			if ($a->id === $ids[$matches]) {
 				#src/jotun/gaming/actions/RequirementQuery.hx:242: characters 5-14
@@ -279,14 +279,14 @@ class RequirementQuery extends Query {
 		#src/jotun/gaming/actions/RequirementQuery.hx:220: lines 220-227
 		$_gthis = $this;
 		#src/jotun/gaming/actions/RequirementQuery.hx:221: lines 221-223
-		if (($this->ioContext->action !== null) && ($this->ioContext->action->target !== null) && ($this->ioContext->action->target->id !== null)) {
+		if (($this->invocation->action !== null) && ($this->invocation->action->target !== null) && ($this->invocation->action->target->id !== null)) {
 			#src/jotun/gaming/actions/RequirementQuery.hx:222: characters 4-16
 			return false;
 		}
 		#src/jotun/gaming/actions/RequirementQuery.hx:224: lines 224-226
 		return !Dice::Values($ids, function ($v) use (&$_gthis) {
-			#src/jotun/gaming/actions/RequirementQuery.hx:225: characters 4-42
-			return $v === $_gthis->ioContext->action->target->id;
+			#src/jotun/gaming/actions/RequirementQuery.hx:225: characters 4-43
+			return $v === $_gthis->invocation->action->target->id;
 		})->completed;
 	}
 
@@ -307,7 +307,7 @@ class RequirementQuery extends Query {
 		#src/jotun/gaming/actions/RequirementQuery.hx:255: lines 255-259
 		return !Dice::Values($ids, function ($id) use (&$_gthis) {
 			#src/jotun/gaming/actions/RequirementQuery.hx:256: lines 256-258
-			return !Dice::Values($_gthis->ioContext->history, function ($a) use (&$id) {
+			return !Dice::Values($_gthis->invocation->history, function ($a) use (&$id) {
 				#src/jotun/gaming/actions/RequirementQuery.hx:257: characters 12-53
 				if (($id !== null) && (mb_strlen($id) > 0)) {
 					#src/jotun/gaming/actions/RequirementQuery.hx:257: characters 43-53
@@ -327,8 +327,8 @@ class RequirementQuery extends Query {
 	 * @return bool
 	 */
 	public function isdebug () {
-		#src/jotun/gaming/actions/RequirementQuery.hx:268: characters 3-25
-		return $this->ioContext->debug;
+		#src/jotun/gaming/actions/RequirementQuery.hx:268: characters 3-26
+		return $this->invocation->debug;
 	}
 
 	/**
@@ -353,8 +353,8 @@ class RequirementQuery extends Query {
 		$_gthis = $this;
 		#src/jotun/gaming/actions/RequirementQuery.hx:210: lines 210-212
 		return !Dice::Values($types, function ($v) use (&$_gthis) {
-			#src/jotun/gaming/actions/RequirementQuery.hx:211: characters 4-37
-			return $v === Boot::dynamicField($_gthis->ioContext->origin, 'type');
+			#src/jotun/gaming/actions/RequirementQuery.hx:211: characters 4-38
+			return $v === Boot::dynamicField($_gthis->invocation->origin, 'type');
 		})->completed;
 	}
 
@@ -362,8 +362,8 @@ class RequirementQuery extends Query {
 	 * @return bool
 	 */
 	public function ismaincontext () {
-		#src/jotun/gaming/actions/RequirementQuery.hx:198: characters 3-61
-		return $this->ioContext->dataProvider === $this->ioContext->currentProvider;
+		#src/jotun/gaming/actions/RequirementQuery.hx:198: characters 3-63
+		return $this->invocation->dataProvider === $this->invocation->currentProvider;
 	}
 
 	/**
@@ -378,12 +378,12 @@ class RequirementQuery extends Query {
 	 * @return bool
 	 */
 	public function isrequestcontext () {
-		#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 10-87
+		#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 10-89
 		if ($this->hasrequestcontext()) {
-			#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 33-87
-			return $this->ioContext->requestProvider === $this->ioContext->currentProvider;
+			#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 33-89
+			return $this->invocation->requestProvider === $this->invocation->currentProvider;
 		} else {
-			#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 10-87
+			#src/jotun/gaming/actions/RequirementQuery.hx:194: characters 10-89
 			return false;
 		}
 	}

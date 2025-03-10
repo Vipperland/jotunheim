@@ -87,7 +87,7 @@ class ActionQuery extends Query {
 	/**
 	 * @var SpellCasting
 	 */
-	public $ioContext;
+	public $invocation;
 
 	/**
 	 *
@@ -268,12 +268,12 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function call ($id) {
-		#src/jotun/gaming/actions/ActionQuery.hx:141: characters 3-54
-		$action = SpellController::loadAction($id);
+		#src/jotun/gaming/actions/ActionQuery.hx:141: characters 3-49
+		$action = SpellCodex::loadAction($id);
 		#src/jotun/gaming/actions/ActionQuery.hx:142: lines 142-144
 		if ($action !== null) {
-			#src/jotun/gaming/actions/ActionQuery.hx:143: characters 4-28
-			$action->run($this->ioContext, 0);
+			#src/jotun/gaming/actions/ActionQuery.hx:143: characters 4-32
+			$action->invoke($this->invocation, 0);
 		}
 		#src/jotun/gaming/actions/ActionQuery.hx:145: characters 3-14
 		return $this;
@@ -283,8 +283,8 @@ class ActionQuery extends Query {
 	 * @return IDataProvider
 	 */
 	public function getDataProvider () {
-		#src/jotun/gaming/actions/ActionQuery.hx:38: characters 3-35
-		return $this->ioContext->currentProvider;
+		#src/jotun/gaming/actions/ActionQuery.hx:38: characters 3-36
+		return $this->invocation->currentProvider;
 	}
 
 	/**
@@ -513,7 +513,7 @@ class ActionQuery extends Query {
 	 */
 	public function tracer (...$messages) {
 		#src/jotun/gaming/actions/ActionQuery.hx:129: characters 3-8
-		(Log::$trace)("[ActionQuery:tracer] " . (Filler::to(\Array_hx::wrap($messages)->join(" "), $this->ioContext)??'null'), new HxAnon([
+		(Log::$trace)("[ActionQuery:tracer] " . (Filler::to(\Array_hx::wrap($messages)->join(" "), $this->invocation)??'null'), new HxAnon([
 			"fileName" => "src/jotun/gaming/actions/ActionQuery.hx",
 			"lineNumber" => 129,
 			"className" => "jotun.gaming.actions.ActionQuery",

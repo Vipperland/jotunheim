@@ -31,7 +31,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function _codex ($i, $n, $c, $p, $v, $t, $h, $r) {
-		#src/jotun/tools/Utils.hx:330: characters 3-259
+		#src/jotun/tools/Utils.hx:333: characters 3-259
 		return ((($h ? "<div class=\"prop\"><span>" : ""))??'null') . ($i??'null') . ($p??'null') . ((($t ? ((($h ? "<span class=\"" . ($c??'null') . "\">" : ""))??'null') . ":" . ($n??'null') . ((($h ? "</span>" : ""))??'null') : ""))??'null') . "=" . ((($h && $r ? "</span><span class=\"" . ($c??'null') . " value\">" : ""))??'null') . \Std::string($v) . ((($h && $r ? "</span>" : ""))??'null') . ((($h ? "</div>" : "\x0A"))??'null');
 	}
 
@@ -46,7 +46,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function _codexWrap ($i, $ls, $rs, $v, $t, $h) {
-		#src/jotun/tools/Utils.hx:334: characters 3-70
+		#src/jotun/tools/Utils.hx:337: characters 3-70
 		return ($ls??'null') . ((($h ? "<br/>" : "\x0A"))??'null') . (Utils::_jstring($v, $i, "", $t, $h)??'null') . ($i??'null') . ($rs??'null');
 	}
 
@@ -62,45 +62,45 @@ class Utils {
 	 * @return string
 	 */
 	public static function _jstring ($o, $i, $b, $t, $h) {
-		#src/jotun/tools/Utils.hx:339: lines 339-341
+		#src/jotun/tools/Utils.hx:342: lines 342-344
 		if ($h) {
-			#src/jotun/tools/Utils.hx:340: characters 4-30
+			#src/jotun/tools/Utils.hx:343: characters 4-30
 			$b = ($b??'null') . "<div class=\"block\">";
 		}
-		#src/jotun/tools/Utils.hx:342: characters 3-50
+		#src/jotun/tools/Utils.hx:345: characters 3-50
 		$i = ($i??'null') . (($h ? "&nbsp;&nbsp;&nbsp;&nbsp;" : "\x09")??'null');
-		#src/jotun/tools/Utils.hx:343: lines 343-364
+		#src/jotun/tools/Utils.hx:346: lines 346-367
 		Dice::All($o, function ($p, $v) use (&$t, &$i, &$b, &$h) {
-			#src/jotun/tools/Utils.hx:344: lines 344-363
+			#src/jotun/tools/Utils.hx:347: lines 347-366
 			if ($v === null) {
-				#src/jotun/tools/Utils.hx:345: characters 5-31
+				#src/jotun/tools/Utils.hx:348: characters 5-31
 				$b = ($b??'null') . ($i??'null') . ($p??'null') . ":* = null\x0A";
 			} else if (is_string($v)) {
-				#src/jotun/tools/Utils.hx:348: characters 5-57
+				#src/jotun/tools/Utils.hx:351: characters 5-57
 				$b = ($b??'null') . (Utils::_codex($i, "String", "string", $p, $v, $t, $h, true)??'null');
 			} else if (is_bool($v)) {
-				#src/jotun/tools/Utils.hx:351: characters 5-53
+				#src/jotun/tools/Utils.hx:354: characters 5-53
 				$b = ($b??'null') . (Utils::_codex($i, "Bool", "bool", $p, $v, $t, $h, true)??'null');
 			} else if (Boot::isOfType($v, Boot::getClass('Int'))) {
-				#src/jotun/tools/Utils.hx:354: characters 5-51
+				#src/jotun/tools/Utils.hx:357: characters 5-51
 				$b = ($b??'null') . (Utils::_codex($i, "Int", "int", $p, $v, $t, $h, true)??'null');
 			} else if ((is_float($v) || is_int($v))) {
-				#src/jotun/tools/Utils.hx:357: characters 5-55
+				#src/jotun/tools/Utils.hx:360: characters 5-55
 				$b = ($b??'null') . (Utils::_codex($i, "Float", "float", $p, $v, $t, $h, true)??'null');
 			} else if (($v instanceof \Array_hx)) {
-				#src/jotun/tools/Utils.hx:360: characters 5-107
+				#src/jotun/tools/Utils.hx:363: characters 5-107
 				$b = ($b??'null') . (Utils::_codex($i, "Array(" . \Std::string(Boot::dynamicField($v, 'length')) . ")", "array", $p, Utils::_codexWrap($i, "[", "]", $v, $t, $h), $t, $h, false)??'null');
 			} else {
-				#src/jotun/tools/Utils.hx:362: characters 5-91
+				#src/jotun/tools/Utils.hx:365: characters 5-91
 				$b = ($b??'null') . (Utils::_codex($i, "Object", "object", $p, Utils::_codexWrap($i, "{", "}", $v, $t, $h), $t, $h, false)??'null');
 			}
 		});
-		#src/jotun/tools/Utils.hx:365: lines 365-367
+		#src/jotun/tools/Utils.hx:368: lines 368-370
 		if ($h) {
-			#src/jotun/tools/Utils.hx:366: characters 4-17
+			#src/jotun/tools/Utils.hx:369: characters 4-17
 			$b = ($b??'null') . "</div>";
 		}
-		#src/jotun/tools/Utils.hx:368: characters 3-11
+		#src/jotun/tools/Utils.hx:371: characters 3-11
 		return $b;
 	}
 
@@ -110,21 +110,21 @@ class Utils {
 	 * @return bool
 	 */
 	public static function boolean ($q) {
-		#src/jotun/tools/Utils.hx:428: lines 428-432
+		#src/jotun/tools/Utils.hx:431: lines 431-435
 		if (is_string($q)) {
-			#src/jotun/tools/Utils.hx:429: characters 11-109
+			#src/jotun/tools/Utils.hx:432: characters 11-109
 			if (!(($q === "1") || ($q === "true") || ($q === "yes") || ($q === "accept") || ($q === "ok") || ($q === "selected"))) {
-				#src/jotun/tools/Utils.hx:429: characters 101-109
+				#src/jotun/tools/Utils.hx:432: characters 101-109
 				return $q === "y";
 			} else {
-				#src/jotun/tools/Utils.hx:429: characters 11-109
+				#src/jotun/tools/Utils.hx:432: characters 11-109
 				return true;
 			}
 		} else if ($q !== true) {
-			#src/jotun/tools/Utils.hx:431: characters 24-29
+			#src/jotun/tools/Utils.hx:434: characters 24-29
 			return $q > 0;
 		} else {
-			#src/jotun/tools/Utils.hx:431: characters 11-29
+			#src/jotun/tools/Utils.hx:434: characters 11-29
 			return true;
 		}
 	}
@@ -139,17 +139,17 @@ class Utils {
 	 * @return mixed[]|\Array_hx
 	 */
 	public static function clearArray ($path, $filter = null) {
-		#src/jotun/tools/Utils.hx:296: characters 3-31
+		#src/jotun/tools/Utils.hx:299: characters 3-31
 		$copy = new \Array_hx();
-		#src/jotun/tools/Utils.hx:297: lines 297-301
+		#src/jotun/tools/Utils.hx:300: lines 300-304
 		Dice::Values($path, function ($v) use (&$copy, &$filter) {
-			#src/jotun/tools/Utils.hx:298: lines 298-300
+			#src/jotun/tools/Utils.hx:301: lines 301-303
 			if (($v !== null) && ($v !== "") && (($filter === null) || $filter($v))) {
-				#src/jotun/tools/Utils.hx:299: characters 5-26
+				#src/jotun/tools/Utils.hx:302: characters 5-26
 				$copy->offsetSet($copy->length, $v);
 			}
 		});
-		#src/jotun/tools/Utils.hx:302: characters 3-14
+		#src/jotun/tools/Utils.hx:305: characters 3-14
 		return $copy;
 	}
 
@@ -163,15 +163,15 @@ class Utils {
 	 * @return IColor
 	 */
 	public static function color ($hex) {
-		#src/jotun/tools/Utils.hx:500: characters 3-65
+		#src/jotun/tools/Utils.hx:503: characters 3-65
 		$cI = (mb_strlen($hex) === 10 ? 3 : (mb_strlen($hex) === 9 ? 2 : 0));
-		#src/jotun/tools/Utils.hx:502: characters 7-68
+		#src/jotun/tools/Utils.hx:505: characters 7-68
 		$tmp = (mb_strlen($hex) === 9 ? \Std::parseInt("0x" . (\mb_substr($hex, 1, 2)??'null')) : 255);
-		#src/jotun/tools/Utils.hx:503: characters 7-49
+		#src/jotun/tools/Utils.hx:506: characters 7-49
 		$tmp1 = \Std::parseInt("0x" . (\mb_substr($hex, 1 + $cI, 2)??'null'));
-		#src/jotun/tools/Utils.hx:504: characters 7-49
+		#src/jotun/tools/Utils.hx:507: characters 7-49
 		$tmp2 = \Std::parseInt("0x" . (\mb_substr($hex, 3 + $cI, 2)??'null'));
-		#src/jotun/tools/Utils.hx:501: lines 501-506
+		#src/jotun/tools/Utils.hx:504: lines 504-509
 		return new HxAnon([
 			"a" => $tmp,
 			"r" => $tmp1,
@@ -187,7 +187,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function colorToCss ($color, $multiply = null) {
-		#src/jotun/tools/Utils.hx:510: characters 3-170
+		#src/jotun/tools/Utils.hx:513: characters 3-170
 		return "rgb(" . ((int)(($color->r * $multiply))??'null') . " " . ((int)(($color->g * $multiply))??'null') . " " . ((int)(($color->b * $multiply))??'null') . "/" . (Utils::toFixed($color->a * $multiply, 2)??'null') . ")";
 	}
 
@@ -199,29 +199,29 @@ class Utils {
 	 * @return string
 	 */
 	public static function createQueryParams ($url, $value, $encode = true) {
-		#src/jotun/tools/Utils.hx:268: lines 268-281
+		#src/jotun/tools/Utils.hx:271: lines 271-284
 		if ($encode === null) {
 			$encode = true;
 		}
-		#src/jotun/tools/Utils.hx:269: characters 3-28
+		#src/jotun/tools/Utils.hx:272: characters 3-28
 		$q = new \Array_hx();
-		#src/jotun/tools/Utils.hx:270: lines 270-276
+		#src/jotun/tools/Utils.hx:273: lines 273-279
 		Dice::All($value, function ($p, $v) use (&$encode, &$q) {
-			#src/jotun/tools/Utils.hx:271: lines 271-275
+			#src/jotun/tools/Utils.hx:274: lines 274-278
 			if (is_string($v) || (is_float($v) || is_int($v)) || is_bool($v)) {
-				#src/jotun/tools/Utils.hx:272: characters 5-67
+				#src/jotun/tools/Utils.hx:275: characters 5-67
 				$q->offsetSet($q->length, ($p??'null') . "=" . ((($encode ? \rawurlencode($v) : $v))??'null'));
 			} else if (($v instanceof \Array_hx)) {
-				#src/jotun/tools/Utils.hx:274: characters 5-88
+				#src/jotun/tools/Utils.hx:277: characters 5-88
 				$q->offsetSet($q->length, ($p??'null') . "=" . ((($encode ? \rawurlencode($v->join(";")) : $v->join(";")))??'null'));
 			}
 		});
-		#src/jotun/tools/Utils.hx:277: lines 277-279
+		#src/jotun/tools/Utils.hx:280: lines 280-282
 		if ($url === null) {
-			#src/jotun/tools/Utils.hx:278: characters 4-12
+			#src/jotun/tools/Utils.hx:281: characters 4-12
 			$url = "";
 		}
-		#src/jotun/tools/Utils.hx:280: characters 3-66
+		#src/jotun/tools/Utils.hx:283: characters 3-66
 		return ($url??'null') . (((HxString::indexOf($url, "?") === -1 ? "?" : "&"))??'null') . ($q->join("&")??'null');
 	}
 
@@ -232,20 +232,20 @@ class Utils {
 	 * @return float
 	 */
 	public static function getMax ($values, $filter = null) {
-		#src/jotun/tools/Utils.hx:244: characters 3-22
+		#src/jotun/tools/Utils.hx:247: characters 3-22
 		$r = null;
-		#src/jotun/tools/Utils.hx:245: lines 245-248
+		#src/jotun/tools/Utils.hx:248: lines 248-251
 		Dice::Values($values, function ($i) use (&$filter, &$r) {
-			#src/jotun/tools/Utils.hx:246: lines 246-247
+			#src/jotun/tools/Utils.hx:249: lines 249-250
 			if (($filter === null) || $filter($i)) {
-				#src/jotun/tools/Utils.hx:247: characters 5-34
+				#src/jotun/tools/Utils.hx:250: characters 5-34
 				if (($i > $r) || ($r === null)) {
-					#src/jotun/tools/Utils.hx:247: characters 29-34
+					#src/jotun/tools/Utils.hx:250: characters 29-34
 					$r = $i;
 				}
 			}
 		});
-		#src/jotun/tools/Utils.hx:249: characters 3-11
+		#src/jotun/tools/Utils.hx:252: characters 3-11
 		return $r;
 	}
 
@@ -256,20 +256,20 @@ class Utils {
 	 * @return float
 	 */
 	public static function getMin ($values, $filter = null) {
-		#src/jotun/tools/Utils.hx:235: characters 3-22
+		#src/jotun/tools/Utils.hx:238: characters 3-22
 		$r = null;
-		#src/jotun/tools/Utils.hx:236: lines 236-239
+		#src/jotun/tools/Utils.hx:239: lines 239-242
 		Dice::Values($values, function ($i) use (&$filter, &$r) {
-			#src/jotun/tools/Utils.hx:237: lines 237-238
+			#src/jotun/tools/Utils.hx:240: lines 240-241
 			if (($filter === null) || $filter($i)) {
-				#src/jotun/tools/Utils.hx:238: characters 5-34
+				#src/jotun/tools/Utils.hx:241: characters 5-34
 				if (($i < $r) || ($r === null)) {
-					#src/jotun/tools/Utils.hx:238: characters 29-34
+					#src/jotun/tools/Utils.hx:241: characters 29-34
 					$r = $i;
 				}
 			}
 		});
-		#src/jotun/tools/Utils.hx:240: characters 3-11
+		#src/jotun/tools/Utils.hx:243: characters 3-11
 		return $r;
 	}
 
@@ -279,31 +279,31 @@ class Utils {
 	 * @return mixed
 	 */
 	public static function getQueryParams ($value) {
-		#src/jotun/tools/Utils.hx:253: characters 3-27
+		#src/jotun/tools/Utils.hx:256: characters 3-27
 		$params = new HxAnon();
-		#src/jotun/tools/Utils.hx:254: lines 254-258
+		#src/jotun/tools/Utils.hx:257: lines 257-261
 		if ($value !== null) {
-			#src/jotun/tools/Utils.hx:255: characters 12-55
+			#src/jotun/tools/Utils.hx:258: characters 12-55
 			$_this = HxString::split(HxString::split($value, "+")->join(" "), "?");
 			if ($_this->length > 0) {
 				$_this->length--;
 			}
 			$value = \array_pop($_this->arr);
 		} else {
-			#src/jotun/tools/Utils.hx:257: characters 4-17
+			#src/jotun/tools/Utils.hx:260: characters 4-17
 			return $params;
 		}
-		#src/jotun/tools/Utils.hx:259: lines 259-264
+		#src/jotun/tools/Utils.hx:262: lines 262-267
 		Dice::Values(HxString::split($value, "&"), function ($v) use (&$params) {
-			#src/jotun/tools/Utils.hx:260: characters 4-43
+			#src/jotun/tools/Utils.hx:263: characters 4-43
 			$data = HxString::split($v, "=");
-			#src/jotun/tools/Utils.hx:261: lines 261-263
+			#src/jotun/tools/Utils.hx:264: lines 264-266
 			if ($data->length > 1) {
-				#src/jotun/tools/Utils.hx:262: characters 5-93
+				#src/jotun/tools/Utils.hx:265: characters 5-93
 				\Reflect::setField($params, \urldecode(($data->arr[0] ?? null)), \urldecode(($data->arr[1] ?? null)));
 			}
 		});
-		#src/jotun/tools/Utils.hx:265: characters 3-16
+		#src/jotun/tools/Utils.hx:268: characters 3-16
 		return $params;
 	}
 
@@ -319,12 +319,12 @@ class Utils {
 	 * @return mixed
 	 */
 	public static function getValidOne ($o, $alt) {
-		#src/jotun/tools/Utils.hx:405: characters 10-30
+		#src/jotun/tools/Utils.hx:408: characters 10-30
 		if (Utils::isValid($o)) {
-			#src/jotun/tools/Utils.hx:405: characters 23-24
+			#src/jotun/tools/Utils.hx:408: characters 23-24
 			return $o;
 		} else {
-			#src/jotun/tools/Utils.hx:405: characters 27-30
+			#src/jotun/tools/Utils.hx:408: characters 27-30
 			return $alt;
 		}
 	}
@@ -335,7 +335,7 @@ class Utils {
 	 * @return bool
 	 */
 	public static function isFunction ($o) {
-		#src/jotun/tools/Utils.hx:532: characters 4-54
+		#src/jotun/tools/Utils.hx:535: characters 4-54
 		return is_callable($o);
 	}
 
@@ -350,15 +350,15 @@ class Utils {
 	 * @return bool
 	 */
 	public static function isValid ($o, $len = 0) {
-		#src/jotun/tools/Utils.hx:376: lines 376-384
+		#src/jotun/tools/Utils.hx:379: lines 379-387
 		if ($len === null) {
 			$len = 0;
 		}
-		#src/jotun/tools/Utils.hx:377: lines 377-382
+		#src/jotun/tools/Utils.hx:380: lines 380-385
 		if (($o !== null) && ($o !== "")) {
-			#src/jotun/tools/Utils.hx:378: lines 378-381
+			#src/jotun/tools/Utils.hx:381: lines 381-384
 			if (($o !== "null") && \Reflect::hasField($o, "length")) {
-				#src/jotun/tools/Utils.hx:379: characters 12-26
+				#src/jotun/tools/Utils.hx:382: characters 12-26
 				$a = Boot::dynamicField($o, 'length');
 				$aNeg = $a < 0;
 				$bNeg = $len < 0;
@@ -368,14 +368,14 @@ class Utils {
 					return $a > $len;
 				}
 			} else if (!Boot::equal($o, 0)) {
-				#src/jotun/tools/Utils.hx:381: characters 22-32
+				#src/jotun/tools/Utils.hx:384: characters 22-32
 				return $o !== false;
 			} else {
-				#src/jotun/tools/Utils.hx:381: characters 12-32
+				#src/jotun/tools/Utils.hx:384: characters 12-32
 				return false;
 			}
 		}
-		#src/jotun/tools/Utils.hx:383: characters 3-15
+		#src/jotun/tools/Utils.hx:386: characters 3-15
 		return false;
 	}
 
@@ -389,12 +389,12 @@ class Utils {
 	 * @return bool
 	 */
 	public static function isValidAll ($o) {
-		#src/jotun/tools/Utils.hx:392: lines 392-394
+		#src/jotun/tools/Utils.hx:395: lines 395-397
 		$q = Dice::Values($o, function ($v) {
-			#src/jotun/tools/Utils.hx:393: characters 4-22
+			#src/jotun/tools/Utils.hx:396: characters 4-22
 			return !Utils::isValid($v);
 		});
-		#src/jotun/tools/Utils.hx:395: characters 3-21
+		#src/jotun/tools/Utils.hx:398: characters 3-21
 		return $q->completed;
 	}
 
@@ -407,7 +407,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function money ($val, $s = "\$", $a = ",", $b = ".") {
-		#src/jotun/tools/Utils.hx:435: lines 435-459
+		#src/jotun/tools/Utils.hx:438: lines 438-462
 		if ($s === null) {
 			$s = "\$";
 		}
@@ -417,44 +417,44 @@ class Utils {
 		if ($b === null) {
 			$b = ".";
 		}
-		#src/jotun/tools/Utils.hx:436: characters 3-14
+		#src/jotun/tools/Utils.hx:439: characters 3-14
 		$r = "";
-		#src/jotun/tools/Utils.hx:437: characters 3-13
+		#src/jotun/tools/Utils.hx:440: characters 3-13
 		$val *= 100;
-		#src/jotun/tools/Utils.hx:438: lines 438-457
+		#src/jotun/tools/Utils.hx:441: lines 441-460
 		if ($val > 99) {
-			#src/jotun/tools/Utils.hx:439: characters 4-27
+			#src/jotun/tools/Utils.hx:442: characters 4-27
 			$val = "" . ((int)($val)??'null');
-			#src/jotun/tools/Utils.hx:440: characters 4-27
+			#src/jotun/tools/Utils.hx:443: characters 4-27
 			$i = Boot::dynamicField($val, 'length');
-			#src/jotun/tools/Utils.hx:441: characters 4-18
+			#src/jotun/tools/Utils.hx:444: characters 4-18
 			$c = 0;
-			#src/jotun/tools/Utils.hx:442: lines 442-454
+			#src/jotun/tools/Utils.hx:445: lines 445-457
 			while ($i-- > 0) {
-				#src/jotun/tools/Utils.hx:443: characters 5-29
+				#src/jotun/tools/Utils.hx:446: characters 5-29
 				$r = \Std::string(HxDynamicStr::wrap($val)->substr($i, 1)) . ($r??'null');
-				#src/jotun/tools/Utils.hx:444: lines 444-452
+				#src/jotun/tools/Utils.hx:447: lines 447-455
 				if ($i > 0) {
-					#src/jotun/tools/Utils.hx:445: lines 445-449
+					#src/jotun/tools/Utils.hx:448: lines 448-452
 					if ($c === 1) {
-						#src/jotun/tools/Utils.hx:446: characters 7-16
+						#src/jotun/tools/Utils.hx:449: characters 7-16
 						$r = ($b??'null') . ($r??'null');
 					} else if (($c > 1) && ((($c + 2) % 3) === 0)) {
-						#src/jotun/tools/Utils.hx:448: characters 7-16
+						#src/jotun/tools/Utils.hx:451: characters 7-16
 						$r = ($a??'null') . ($r??'null');
 					}
 				} else if ($c < 3) {
-					#src/jotun/tools/Utils.hx:451: characters 6-39
+					#src/jotun/tools/Utils.hx:454: characters 6-39
 					$r = "0" . ((($c === 1 ? "." : ""))??'null') . ($r??'null');
 				}
-				#src/jotun/tools/Utils.hx:453: characters 5-8
+				#src/jotun/tools/Utils.hx:456: characters 5-8
 				++$c;
 			}
 		} else {
-			#src/jotun/tools/Utils.hx:456: characters 4-45
+			#src/jotun/tools/Utils.hx:459: characters 4-45
 			$r = "0" . ($b??'null') . ((($val < 10 ? "0" : ""))??'null') . \Std::string($val);
 		}
-		#src/jotun/tools/Utils.hx:458: characters 3-15
+		#src/jotun/tools/Utils.hx:461: characters 3-15
 		return ($s??'null') . ($r??'null');
 	}
 
@@ -464,25 +464,25 @@ class Utils {
 	 * @return string
 	 */
 	public static function paramsOf ($o) {
-		#src/jotun/tools/Utils.hx:462: characters 3-28
+		#src/jotun/tools/Utils.hx:465: characters 3-28
 		$r = new \Array_hx();
-		#src/jotun/tools/Utils.hx:463: lines 463-472
+		#src/jotun/tools/Utils.hx:466: lines 466-475
 		Dice::All($o, function ($p, $v) use (&$r) {
-			#src/jotun/tools/Utils.hx:464: lines 464-471
+			#src/jotun/tools/Utils.hx:467: lines 467-474
 			if (Utils::isValid($v) && !Utils::isFunction($v)) {
-				#src/jotun/tools/Utils.hx:465: lines 465-469
+				#src/jotun/tools/Utils.hx:468: lines 468-472
 				if ((is_float($v) || is_int($v))) {
-					#src/jotun/tools/Utils.hx:466: characters 6-23
+					#src/jotun/tools/Utils.hx:469: characters 6-23
 					$v = \Std::string($v);
 				} else if (!is_string($v)) {
-					#src/jotun/tools/Utils.hx:468: characters 10-27
+					#src/jotun/tools/Utils.hx:471: characters 10-27
 					$v = Json::phpJsonEncode($v, null, null);
 				}
-				#src/jotun/tools/Utils.hx:470: characters 5-53
+				#src/jotun/tools/Utils.hx:473: characters 5-53
 				$r->offsetSet($r->length, ($p??'null') . "=" . (\rawurlencode($v)??'null'));
 			}
 		});
-		#src/jotun/tools/Utils.hx:473: characters 3-21
+		#src/jotun/tools/Utils.hx:476: characters 3-21
 		return $r->join("&");
 	}
 
@@ -494,12 +494,12 @@ class Utils {
 	 * @return string
 	 */
 	public static function prefix ($value, $length, $q) {
-		#src/jotun/tools/Utils.hx:477: lines 477-479
+		#src/jotun/tools/Utils.hx:480: lines 480-482
 		while (mb_strlen($value) < $length) {
-			#src/jotun/tools/Utils.hx:478: characters 4-21
+			#src/jotun/tools/Utils.hx:481: characters 4-21
 			$value = ($q??'null') . ($value??'null');
 		}
-		#src/jotun/tools/Utils.hx:480: characters 3-15
+		#src/jotun/tools/Utils.hx:483: characters 3-15
 		return $value;
 	}
 
@@ -510,26 +510,26 @@ class Utils {
 	 * @return int
 	 */
 	public static function range ($value, ...$values) {
-		#src/jotun/tools/Utils.hx:514: characters 3-17
+		#src/jotun/tools/Utils.hx:517: characters 3-17
 		$r = 0;
-		#src/jotun/tools/Utils.hx:515: characters 13-17
+		#src/jotun/tools/Utils.hx:518: characters 13-17
 		$_g = 0;
-		#src/jotun/tools/Utils.hx:515: characters 17-30
+		#src/jotun/tools/Utils.hx:518: characters 17-30
 		$_g1 = \count($values);
-		#src/jotun/tools/Utils.hx:515: lines 515-521
+		#src/jotun/tools/Utils.hx:518: lines 518-524
 		while ($_g < $_g1) {
-			#src/jotun/tools/Utils.hx:515: characters 13-30
+			#src/jotun/tools/Utils.hx:518: characters 13-30
 			$i = $_g++;
-			#src/jotun/tools/Utils.hx:516: lines 516-520
+			#src/jotun/tools/Utils.hx:519: lines 519-523
 			if ($value > $values[$i]) {
-				#src/jotun/tools/Utils.hx:517: characters 5-8
+				#src/jotun/tools/Utils.hx:520: characters 5-8
 				++$r;
 			} else {
-				#src/jotun/tools/Utils.hx:519: characters 5-10
+				#src/jotun/tools/Utils.hx:522: characters 5-10
 				break;
 			}
 		}
-		#src/jotun/tools/Utils.hx:522: characters 3-11
+		#src/jotun/tools/Utils.hx:525: characters 3-11
 		return $r;
 	}
 
@@ -540,14 +540,14 @@ class Utils {
 	 * @return string
 	 */
 	public static function replaceQuery ($url, $params) {
-		#src/jotun/tools/Utils.hx:284: characters 3-45
+		#src/jotun/tools/Utils.hx:287: characters 3-45
 		$current = Utils::getQueryParams($url);
-		#src/jotun/tools/Utils.hx:285: lines 285-287
+		#src/jotun/tools/Utils.hx:288: lines 288-290
 		Dice::All($params, function ($p, $v) use (&$current) {
-			#src/jotun/tools/Utils.hx:286: characters 4-35
+			#src/jotun/tools/Utils.hx:289: characters 4-35
 			\Reflect::setField($current, $p, $v);
 		});
-		#src/jotun/tools/Utils.hx:288: characters 3-55
+		#src/jotun/tools/Utils.hx:291: characters 3-55
 		return Utils::createQueryParams((HxString::split($url, "?")->arr[0] ?? null), $current);
 	}
 
@@ -557,7 +557,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function rnToBr ($value) {
-		#src/jotun/tools/Utils.hx:491: characters 3-95
+		#src/jotun/tools/Utils.hx:494: characters 3-95
 		return HxString::split(HxString::split(HxString::split($value, "\x0D\x0A")->join("<br/>"), "\x0D")->join("<br/>"), "\x0A")->join("<br/>");
 	}
 
@@ -569,12 +569,12 @@ class Utils {
 	 * @return string
 	 */
 	public static function sufix ($value, $length, $q) {
-		#src/jotun/tools/Utils.hx:484: lines 484-486
+		#src/jotun/tools/Utils.hx:487: lines 487-489
 		while (mb_strlen($value) < $length) {
-			#src/jotun/tools/Utils.hx:485: characters 4-21
+			#src/jotun/tools/Utils.hx:488: characters 4-21
 			$value = ($value??'null') . ($q??'null');
 		}
-		#src/jotun/tools/Utils.hx:487: characters 3-15
+		#src/jotun/tools/Utils.hx:490: characters 3-15
 		return $value;
 	}
 
@@ -587,7 +587,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function toFixed ($n, $i, $s = ".", $t = "") {
-		#src/jotun/tools/Utils.hx:528: characters 4-77
+		#src/jotun/tools/Utils.hx:531: characters 4-77
 		if ($s === null) {
 			$s = ".";
 		}
@@ -609,7 +609,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function toJtnString ($o, $type = true, $html = null) {
-		#src/jotun/tools/Utils.hx:326: characters 3-41
+		#src/jotun/tools/Utils.hx:329: characters 3-41
 		if ($type === null) {
 			$type = true;
 		}
@@ -628,12 +628,12 @@ class Utils {
 	 * @return string
 	 */
 	public static function toString ($o, $json = null) {
-		#src/jotun/tools/Utils.hx:317: characters 10-58
+		#src/jotun/tools/Utils.hx:320: characters 10-58
 		if ($json === true) {
-			#src/jotun/tools/Utils.hx:317: characters 25-42
+			#src/jotun/tools/Utils.hx:320: characters 25-42
 			return Json::phpJsonEncode($o, null, null);
 		} else {
-			#src/jotun/tools/Utils.hx:317: characters 45-58
+			#src/jotun/tools/Utils.hx:320: characters 45-58
 			return \Std::string($o);
 		}
 	}
@@ -644,7 +644,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function trimm ($value) {
-		#src/jotun/tools/Utils.hx:306: characters 3-98
+		#src/jotun/tools/Utils.hx:309: characters 3-98
 		return HxString::split(HxString::split(HxString::split(HxString::split($value, "\x0D")->join(""), "\x0A")->join(""), "\x09")->join(""), " ")->join("");
 	}
 
@@ -658,24 +658,24 @@ class Utils {
 	 * @return string
 	 */
 	public static function typeof ($o) {
-		#src/jotun/tools/Utils.hx:414: characters 3-19
+		#src/jotun/tools/Utils.hx:417: characters 3-19
 		$name = null;
-		#src/jotun/tools/Utils.hx:415: lines 415-422
+		#src/jotun/tools/Utils.hx:418: lines 418-425
 		if ($o !== null) {
-			#src/jotun/tools/Utils.hx:416: lines 416-418
+			#src/jotun/tools/Utils.hx:419: lines 419-421
 			try {
-				#src/jotun/tools/Utils.hx:417: characters 5-52
+				#src/jotun/tools/Utils.hx:420: characters 5-52
 				return Boot::dynamicField(Boot::dynamicField(Boot::dynamicField($o, '__proto__'), '__class__'), '__name__')->join(".");
 			} catch(\Throwable $_g) {
 			}
-			#src/jotun/tools/Utils.hx:419: lines 419-421
+			#src/jotun/tools/Utils.hx:422: lines 422-424
 			try {
-				#src/jotun/tools/Utils.hx:420: characters 5-47
+				#src/jotun/tools/Utils.hx:423: characters 5-47
 				return \Type::getClassName(\Type::getClass($o));
 			} catch(\Throwable $_g) {
 			}
 		}
-		#src/jotun/tools/Utils.hx:423: characters 3-14
+		#src/jotun/tools/Utils.hx:426: characters 3-14
 		return null;
 	}
 }

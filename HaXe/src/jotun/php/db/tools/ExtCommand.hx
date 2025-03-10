@@ -1,5 +1,7 @@
 package jotun.php.db.tools;
 import haxe.Json;
+import jotun.php.db.tools.Command;
+import jotun.php.db.tools.IExtCommand;
 import php.Lib;
 import php.NativeArray;
 import jotun.php.db.pdo.Connection;
@@ -12,45 +14,10 @@ import jotun.utils.Dice;
  * ...
  * @author Rafael Moreira
  */
-class ExtCommand implements IExtCommand {
+class ExtCommand extends CommandCore implements IExtCommand {
 	
-	private var _query:String;
-	
-	private var _parameters:Array<Dynamic>;
-	
-	private var _errors:Array<ErrorDescriptior>;
-	
-	private var _log:String->Void;
-	
-	// PDO::FETCH_ASSOC = 2
-	// PDO::FETCH_OBJ = 5
-	
-	public var success:Bool;
-	
-	public var conn:Connection;
-	
-	public var statement:Statement;
-	
-	public var result:Array<Dynamic>;
-	
-	public var errors(get, null):Array<ErrorDescriptior>;
-	private function get_errors():Array<ErrorDescriptior> { return _errors; }
-
-	public function new(conn:Connection, query:String, parameters:Array<Dynamic>, errors:Array<ErrorDescriptior>, log:String->Void) {
-		_log = log;
-		_errors = errors;
-		_query = query;
-		this.conn = conn;
-		_parameters = parameters;
-	}
-	
-	public function bind(parameters:Array<Dynamic>):ICommand {
-		_parameters = parameters;
-		return this;
-	}
-	
-	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):IExtCommand {
-		if (conn != null){
+	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>, ?contructArgs:Array<Dynamic>):IExtCommand {
+		if (statement != null){
 			var p:NativeArray = null;
 			if (parameters != null)	{
 				p = Lib.toPhpArray(parameters);
@@ -65,7 +32,7 @@ class ExtCommand implements IExtCommand {
 				}else {
 					type = '\\stdClass';
 				}
-				var statement:Statement = conn.query(log(), php.Syntax.code('\\PDO::FETCH_CLASS'), type);
+				success = statement.execute(p);
 				if (statement != null) {
 					success = true;
 					var obj:Dynamic;
@@ -76,10 +43,10 @@ class ExtCommand implements IExtCommand {
 							handler(obj);
 						}
 					}
-					statement = null;
 				}else {
 					errors[errors.length] = new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo()));
 				}
+				this.statement = null;
 			}catch (e:Dynamic) {
 				if (Std.isOfType(e, String)) {
 					errors[errors.length] = new Error(0, e);
@@ -88,7 +55,7 @@ class ExtCommand implements IExtCommand {
 				}
 			}
 			if (_log != null) {
-				_log((success ? "[1]" : "[0]" + " ") + log());
+				_log((success ? "[1]" : "[0]") + " " + log());
 			}
 		}else {
 			errors[errors.length] = new Error(0, "A connection with database is required.");
@@ -96,7 +63,7 @@ class ExtCommand implements IExtCommand {
 		return this;
 	}
 	
-	public function fetch(handler:Dynamic->Bool):ICommand {
+	public function fetch(handler:Dynamic->Bool):IExtCommand {
 		Dice.Values(result, handler);
 		return this;
 	}
@@ -123,26 +90,6 @@ class ExtCommand implements IExtCommand {
 			}
 		}
 		return 0;
-	}
-	
-	public function log():String {
-		var r:Array<String>  = _query.split('?');
-		if(_parameters != null){
-			Dice.All(r, function(p:Dynamic, v:String):Void {
-				if (p < _parameters.length){
-					var e:Dynamic = _parameters[p];
-					if (Std.isOfType(e, String)) {
-						e = conn.quote(e);
-					}
-					r[p] = v + e;
-				}
-			});
-		}
-		return r.join('');
-	}
-	
-	public function query():String {
-		return _query;
 	}
 	
 }

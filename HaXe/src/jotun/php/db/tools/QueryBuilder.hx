@@ -165,7 +165,7 @@ class QueryBuilder {
 	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String):String {
 		var q:String = "";
 		if (clause != null)
-			q += " WHERE " + _conditions(clause , parameters, " || ", false);
+			q += " WHERE " + (clause == null ? "1" : _conditions(clause , parameters, " || ", false));
 		if (order != null)
 			q += " ORDER BY " + _order(order);
 		if (limit != null)
@@ -269,9 +269,9 @@ class QueryBuilder {
 	 */
 	public function fKey(table:String, reference:String, ?key:String, ?target:String, ?field:String, ?delete:String = 'RESTRICT', ?update:String = 'RESTRICT'):ICommand {
 		if (key == null){
-			return _gate.query("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
+			return _gate.prepare("ALTER TABLE " + table + " DROP FOREIGN KEY " + reference);
 		}else{
-			return _gate.query("ALTER TABLE " + table + " ADD CONSTRAINT " + reference + " FOREIGN KEY (" + key + ") REFERENCES " + target + "(" + field + ") ON DELETE " + delete.toUpperCase() + " ON UPDATE " + update.toUpperCase() + ";");
+			return _gate.prepare("ALTER TABLE " + table + " ADD CONSTRAINT " + reference + " FOREIGN KEY (" + key + ") REFERENCES " + target + "(" + field + ") ON DELETE " + delete.toUpperCase() + " ON UPDATE " + update.toUpperCase() + ";");
 		}
 	}
 	

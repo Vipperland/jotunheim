@@ -101,7 +101,7 @@ class Dice {
 	 * @return string
 	 */
 	public static function And ($data, $separator = ", ", $and = " & ") {
-		#src/jotun/utils/Dice.hx:325: lines 325-330
+		#src/jotun/utils/Dice.hx:333: lines 333-338
 		if ($separator === null) {
 			$separator = ", ";
 		}
@@ -109,12 +109,12 @@ class Dice {
 			$and = " & ";
 		}
 		if ($data->length > 1) {
-			#src/jotun/utils/Dice.hx:326: characters 4-59
+			#src/jotun/utils/Dice.hx:334: characters 4-59
 			$q = $data->splice(0, $data->length - 1);
-			#src/jotun/utils/Dice.hx:327: characters 4-50
+			#src/jotun/utils/Dice.hx:335: characters 4-50
 			return ($q->join($separator)??'null') . ($and??'null') . ($data->join("")??'null');
 		} else {
-			#src/jotun/utils/Dice.hx:329: characters 4-24
+			#src/jotun/utils/Dice.hx:337: characters 4-24
 			return $data->join("");
 		}
 	}
@@ -127,49 +127,49 @@ class Dice {
 	 * @return mixed
 	 */
 	public static function Blend ($objects, $into, $blendType = 0) {
-		#src/jotun/utils/Dice.hx:421: lines 421-451
+		#src/jotun/utils/Dice.hx:429: lines 429-459
 		if ($blendType === null) {
 			$blendType = 0;
 		}
-		#src/jotun/utils/Dice.hx:422: lines 422-424
+		#src/jotun/utils/Dice.hx:430: lines 430-432
 		if (!($objects instanceof \Array_hx)) {
-			#src/jotun/utils/Dice.hx:423: characters 4-23
+			#src/jotun/utils/Dice.hx:431: characters 4-23
 			$objects = \Array_hx::wrap([$objects]);
 		}
-		#src/jotun/utils/Dice.hx:425: lines 425-449
+		#src/jotun/utils/Dice.hx:433: lines 433-457
 		Dice::Values($objects, function ($o) use (&$blendType, &$into) {
-			#src/jotun/utils/Dice.hx:426: lines 426-448
+			#src/jotun/utils/Dice.hx:434: lines 434-456
 			Dice::All($o, function ($p, $v) use (&$blendType, &$into) {
-				#src/jotun/utils/Dice.hx:427: lines 427-447
+				#src/jotun/utils/Dice.hx:435: lines 435-455
 				if ($blendType === 0) {
-					#src/jotun/utils/Dice.hx:429: characters 7-35
+					#src/jotun/utils/Dice.hx:437: characters 7-35
 					\Reflect::setField($into, $p, $v);
 				} else if ($blendType === 1) {
-					#src/jotun/utils/Dice.hx:432: lines 432-434
+					#src/jotun/utils/Dice.hx:440: lines 440-442
 					if (!\Reflect::hasField($into, $p)) {
-						#src/jotun/utils/Dice.hx:433: characters 8-36
+						#src/jotun/utils/Dice.hx:441: characters 8-36
 						\Reflect::setField($into, $p, $v);
 					}
 				} else if ($blendType === 2) {
-					#src/jotun/utils/Dice.hx:437: lines 437-445
+					#src/jotun/utils/Dice.hx:445: lines 445-453
 					if (\Reflect::hasField($into, $p)) {
-						#src/jotun/utils/Dice.hx:438: characters 8-22
+						#src/jotun/utils/Dice.hx:446: characters 8-22
 						$i = 0;
-						#src/jotun/utils/Dice.hx:439: lines 439-441
+						#src/jotun/utils/Dice.hx:447: lines 447-449
 						while (\Reflect::hasField($into, \Std::string($p) . "_" . ($i??'null'))) {
-							#src/jotun/utils/Dice.hx:440: characters 9-12
+							#src/jotun/utils/Dice.hx:448: characters 9-12
 							++$i;
 						}
-						#src/jotun/utils/Dice.hx:442: characters 8-46
+						#src/jotun/utils/Dice.hx:450: characters 8-46
 						\Reflect::setField($into, $p, \Std::string($p) . "_" . ($i??'null'));
 					} else {
-						#src/jotun/utils/Dice.hx:444: characters 8-36
+						#src/jotun/utils/Dice.hx:452: characters 8-36
 						\Reflect::setField($into, $p, $v);
 					}
 				}
 			});
 		});
-		#src/jotun/utils/Dice.hx:450: characters 3-14
+		#src/jotun/utils/Dice.hx:458: characters 3-14
 		return $into;
 	}
 
@@ -332,25 +332,25 @@ class Dice {
 	 * @return int
 	 */
 	public static function Length ($of, $max) {
-		#src/jotun/utils/Dice.hx:454: lines 454-462
+		#src/jotun/utils/Dice.hx:462: lines 462-470
 		if (($of instanceof \Array_hx)) {
-			#src/jotun/utils/Dice.hx:455: characters 4-20
+			#src/jotun/utils/Dice.hx:463: characters 4-20
 			return Boot::dynamicField($of, 'length');
 		} else {
-			#src/jotun/utils/Dice.hx:457: characters 4-18
+			#src/jotun/utils/Dice.hx:465: characters 4-18
 			$i = 0;
-			#src/jotun/utils/Dice.hx:458: lines 458-460
+			#src/jotun/utils/Dice.hx:466: lines 466-468
 			Dice::Values($of, function ($v) use (&$i, &$max) {
-				#src/jotun/utils/Dice.hx:459: characters 12-34
+				#src/jotun/utils/Dice.hx:467: characters 12-34
 				if (($i += 1) !== $max) {
-					#src/jotun/utils/Dice.hx:459: characters 26-34
+					#src/jotun/utils/Dice.hx:467: characters 26-34
 					return $max === 0;
 				} else {
-					#src/jotun/utils/Dice.hx:459: characters 12-34
+					#src/jotun/utils/Dice.hx:467: characters 12-34
 					return true;
 				}
 			});
-			#src/jotun/utils/Dice.hx:461: characters 4-12
+			#src/jotun/utils/Dice.hx:469: characters 4-12
 			return $i;
 		}
 	}
@@ -363,75 +363,75 @@ class Dice {
 	 * @return mixed[]|\Array_hx
 	 */
 	public static function List ($data, $a = 0, $b = null) {
-		#src/jotun/utils/Dice.hx:380: lines 380-401
+		#src/jotun/utils/Dice.hx:388: lines 388-409
 		if ($a === null) {
 			$a = 0;
 		}
-		#src/jotun/utils/Dice.hx:381: characters 3-32
+		#src/jotun/utils/Dice.hx:389: characters 3-32
 		$copy = new \Array_hx();
-		#src/jotun/utils/Dice.hx:382: characters 3-30
+		#src/jotun/utils/Dice.hx:390: characters 3-30
 		$len = $data->length;
-		#src/jotun/utils/Dice.hx:383: characters 3-33
+		#src/jotun/utils/Dice.hx:391: characters 3-33
 		if ($b === null) {
-			#src/jotun/utils/Dice.hx:383: characters 18-33
+			#src/jotun/utils/Dice.hx:391: characters 18-33
 			$b = $data->length;
 		}
-		#src/jotun/utils/Dice.hx:384: characters 6-11
+		#src/jotun/utils/Dice.hx:392: characters 6-11
 		$aNeg = $b < 0;
 		$bNeg = $a < 0;
-		#src/jotun/utils/Dice.hx:384: lines 384-399
+		#src/jotun/utils/Dice.hx:392: lines 392-407
 		if (($aNeg !== $bNeg ? $aNeg : $b > $a)) {
-			#src/jotun/utils/Dice.hx:385: lines 385-391
+			#src/jotun/utils/Dice.hx:393: lines 393-399
 			while (true) {
-				#src/jotun/utils/Dice.hx:385: characters 11-16
+				#src/jotun/utils/Dice.hx:393: characters 11-16
 				$aNeg = $b < 0;
 				$bNeg = $a < 0;
-				#src/jotun/utils/Dice.hx:385: lines 385-391
+				#src/jotun/utils/Dice.hx:393: lines 393-399
 				if (!(($aNeg !== $bNeg ? $aNeg : $b > $a))) {
 					break;
 				}
-				#src/jotun/utils/Dice.hx:386: characters 9-17
+				#src/jotun/utils/Dice.hx:394: characters 9-17
 				$aNeg1 = $a < 0;
 				$bNeg1 = $len < 0;
-				#src/jotun/utils/Dice.hx:386: lines 386-388
+				#src/jotun/utils/Dice.hx:394: lines 394-396
 				if (($aNeg1 !== $bNeg1 ? $aNeg1 : $a >= $len)) {
-					#src/jotun/utils/Dice.hx:387: characters 6-11
+					#src/jotun/utils/Dice.hx:395: characters 6-11
 					break;
 				}
-				#src/jotun/utils/Dice.hx:389: characters 5-32
+				#src/jotun/utils/Dice.hx:397: characters 5-32
 				$copy->offsetSet($copy->length, ($data->arr[$a] ?? null));
-				#src/jotun/utils/Dice.hx:390: characters 5-8
+				#src/jotun/utils/Dice.hx:398: characters 5-8
 				++$a;
 			}
 		} else {
-			#src/jotun/utils/Dice.hx:392: characters 12-17
+			#src/jotun/utils/Dice.hx:400: characters 12-17
 			$aNeg = $a < 0;
 			$bNeg = $b < 0;
-			#src/jotun/utils/Dice.hx:392: lines 392-399
+			#src/jotun/utils/Dice.hx:400: lines 400-407
 			if (($aNeg !== $bNeg ? $aNeg : $a > $b)) {
-				#src/jotun/utils/Dice.hx:393: lines 393-398
+				#src/jotun/utils/Dice.hx:401: lines 401-406
 				while (true) {
-					#src/jotun/utils/Dice.hx:393: characters 11-16
+					#src/jotun/utils/Dice.hx:401: characters 11-16
 					$aNeg = $a < 0;
 					$bNeg = $b < 0;
-					#src/jotun/utils/Dice.hx:393: lines 393-398
+					#src/jotun/utils/Dice.hx:401: lines 401-406
 					if (!(($aNeg !== $bNeg ? $aNeg : $a > $b))) {
 						break;
 					}
-					#src/jotun/utils/Dice.hx:394: characters 9-16
+					#src/jotun/utils/Dice.hx:402: characters 9-16
 					$aNeg1 = $len < 0;
 					$bNeg1 = $a < 0;
-					#src/jotun/utils/Dice.hx:394: lines 394-396
+					#src/jotun/utils/Dice.hx:402: lines 402-404
 					if (($aNeg1 !== $bNeg1 ? $aNeg1 : $len > $a)) {
-						#src/jotun/utils/Dice.hx:395: characters 6-33
+						#src/jotun/utils/Dice.hx:403: characters 6-33
 						$copy->offsetSet($copy->length, ($data->arr[$a] ?? null));
 					}
-					#src/jotun/utils/Dice.hx:397: characters 5-8
+					#src/jotun/utils/Dice.hx:405: characters 5-8
 					--$a;
 				}
 			}
 		}
-		#src/jotun/utils/Dice.hx:400: characters 3-14
+		#src/jotun/utils/Dice.hx:408: characters 3-14
 		return $copy;
 	}
 
@@ -442,31 +442,31 @@ class Dice {
 	 * @return mixed[]|\Array_hx
 	 */
 	public static function Map ($data, $props) {
-		#src/jotun/utils/Dice.hx:404: characters 3-34
+		#src/jotun/utils/Dice.hx:412: characters 3-34
 		$mapped = new \Array_hx();
-		#src/jotun/utils/Dice.hx:405: lines 405-417
+		#src/jotun/utils/Dice.hx:413: lines 413-425
 		Dice::Values($data, function ($v) use (&$mapped, &$props) {
-			#src/jotun/utils/Dice.hx:406: characters 4-24
+			#src/jotun/utils/Dice.hx:414: characters 4-24
 			$o = new HxAnon();
-			#src/jotun/utils/Dice.hx:407: characters 4-23
+			#src/jotun/utils/Dice.hx:415: characters 4-23
 			$f = false;
-			#src/jotun/utils/Dice.hx:408: lines 408-416
+			#src/jotun/utils/Dice.hx:416: lines 416-424
 			Dice::Values($props, function ($v2) use (&$o, &$f, &$mapped, &$v) {
-				#src/jotun/utils/Dice.hx:409: lines 409-415
+				#src/jotun/utils/Dice.hx:417: lines 417-423
 				if (\Reflect::hasField($v, $v2)) {
-					#src/jotun/utils/Dice.hx:410: characters 6-51
+					#src/jotun/utils/Dice.hx:418: characters 6-51
 					\Reflect::setField($o, $v2, \Reflect::field($v, $v2));
-					#src/jotun/utils/Dice.hx:411: lines 411-414
+					#src/jotun/utils/Dice.hx:419: lines 419-422
 					if ($f === false) {
-						#src/jotun/utils/Dice.hx:412: characters 7-15
+						#src/jotun/utils/Dice.hx:420: characters 7-15
 						$f = true;
-						#src/jotun/utils/Dice.hx:413: characters 7-21
+						#src/jotun/utils/Dice.hx:421: characters 7-21
 						$mapped->arr[$mapped->length++] = $o;
 					}
 				}
 			});
 		});
-		#src/jotun/utils/Dice.hx:418: characters 3-16
+		#src/jotun/utils/Dice.hx:426: characters 3-16
 		return $mapped;
 	}
 
@@ -617,7 +617,7 @@ class Dice {
 	 * @return mixed
 	 */
 	public static function Random ($data) {
-		#src/jotun/utils/Dice.hx:321: characters 3-52
+		#src/jotun/utils/Dice.hx:329: characters 3-52
 		return ($data->arr[(int)((\mt_rand() / \mt_getrandmax() * $data->length))] ?? null);
 	}
 
@@ -703,6 +703,24 @@ class Dice {
 	}
 
 	/**
+	 * @param mixed[]|\Array_hx $data
+	 * @param mixed $obj
+	 * @param array $props
+	 * 
+	 * @return mixed
+	 */
+	public static function Search ($data, $obj, ...$props) {
+		#src/jotun/utils/Dice.hx:316: lines 316-320
+		return Dice::Values($data, function ($v) use (&$obj, &$props) {
+			#src/jotun/utils/Dice.hx:317: lines 317-319
+			return !Dice::Values($props, function ($v1) use (&$obj, &$v) {
+				#src/jotun/utils/Dice.hx:318: characters 5-39
+				return Boot::equal(\Reflect::field($v, $v1), $obj);
+			})->completed;
+		})->value;
+	}
+
+	/**
 	 * Sort all data in a vector, case insensitive, special characteres of a string will be changed for better result (á=a,é=e,ñ=n,...etc)
 	 * @param	data
 	 * @param	key
@@ -717,72 +735,72 @@ class Dice {
 	 * @return mixed
 	 */
 	public static function Sort ($data, $key = null, $numeric = false, $copy = false) {
-		#src/jotun/utils/Dice.hx:340: lines 340-378
+		#src/jotun/utils/Dice.hx:348: lines 348-386
 		if ($numeric === null) {
 			$numeric = false;
 		}
 		if ($copy === null) {
 			$copy = false;
 		}
-		#src/jotun/utils/Dice.hx:341: characters 3-64
+		#src/jotun/utils/Dice.hx:349: characters 3-64
 		$r = ($copy === true ? (new \Array_hx())->concat($data) : $data);
-		#src/jotun/utils/Dice.hx:342: lines 342-376
+		#src/jotun/utils/Dice.hx:350: lines 350-384
 		if ($numeric) {
-			#src/jotun/utils/Dice.hx:344: lines 344-354
+			#src/jotun/utils/Dice.hx:352: lines 352-362
 			if ($key !== null) {
-				#src/jotun/utils/Dice.hx:345: lines 345-347
+				#src/jotun/utils/Dice.hx:353: lines 353-355
 				ArraySort::sort($r, function ($a, $b) use (&$key) {
-					#src/jotun/utils/Dice.hx:346: characters 13-67
+					#src/jotun/utils/Dice.hx:354: characters 13-67
 					if (\Reflect::field($a, $key) < \Reflect::field($b, $key)) {
-						#src/jotun/utils/Dice.hx:346: characters 61-63
+						#src/jotun/utils/Dice.hx:354: characters 61-63
 						return -1;
 					} else {
-						#src/jotun/utils/Dice.hx:346: characters 66-67
+						#src/jotun/utils/Dice.hx:354: characters 66-67
 						return 1;
 					}
 				});
 			} else {
-				#src/jotun/utils/Dice.hx:351: lines 351-353
+				#src/jotun/utils/Dice.hx:359: lines 359-361
 				ArraySort::sort($r, function ($a, $b) {
-					#src/jotun/utils/Dice.hx:352: characters 13-27
+					#src/jotun/utils/Dice.hx:360: characters 13-27
 					if ($a < $b) {
-						#src/jotun/utils/Dice.hx:352: characters 21-23
+						#src/jotun/utils/Dice.hx:360: characters 21-23
 						return -1;
 					} else {
-						#src/jotun/utils/Dice.hx:352: characters 26-27
+						#src/jotun/utils/Dice.hx:360: characters 26-27
 						return 1;
 					}
 				});
 			}
 		} else {
-			#src/jotun/utils/Dice.hx:357: characters 4-28
+			#src/jotun/utils/Dice.hx:365: characters 4-28
 			$cache = new HxAnon();
-			#src/jotun/utils/Dice.hx:358: lines 358-363
+			#src/jotun/utils/Dice.hx:366: lines 366-371
 			$cached = function ($q) use (&$cache) {
-				#src/jotun/utils/Dice.hx:359: lines 359-361
+				#src/jotun/utils/Dice.hx:367: lines 367-369
 				if (!\Reflect::hasField($cache, $q)) {
-					#src/jotun/utils/Dice.hx:360: characters 6-52
+					#src/jotun/utils/Dice.hx:368: characters 6-52
 					\Reflect::setField($cache, $q, SearchTag::clear($q));
 				}
-				#src/jotun/utils/Dice.hx:362: characters 5-35
+				#src/jotun/utils/Dice.hx:370: characters 5-35
 				return \Reflect::field($cache, $q);
 			};
-			#src/jotun/utils/Dice.hx:365: lines 365-375
+			#src/jotun/utils/Dice.hx:373: lines 373-383
 			if ($key !== null) {
-				#src/jotun/utils/Dice.hx:366: lines 366-368
+				#src/jotun/utils/Dice.hx:374: lines 374-376
 				ArraySort::sort($r, function ($a, $b) use (&$cached, &$key) {
-					#src/jotun/utils/Dice.hx:367: characters 6-90
+					#src/jotun/utils/Dice.hx:375: characters 6-90
 					return \Reflect::compare($cached(\Reflect::field($a, $key)), $cached(\Reflect::field($b, $key)));
 				});
 			} else {
-				#src/jotun/utils/Dice.hx:372: lines 372-374
+				#src/jotun/utils/Dice.hx:380: lines 380-382
 				ArraySort::sort($r, function ($a, $b) use (&$cached) {
-					#src/jotun/utils/Dice.hx:373: characters 6-49
+					#src/jotun/utils/Dice.hx:381: characters 6-49
 					return \Reflect::compare($cached($a), $cached($b));
 				});
 			}
 		}
-		#src/jotun/utils/Dice.hx:377: characters 3-11
+		#src/jotun/utils/Dice.hx:385: characters 3-11
 		return $r;
 	}
 
@@ -893,9 +911,9 @@ class Dice {
 	 * @return void
 	 */
 	public function __construct ($data) {
-		#src/jotun/utils/Dice.hx:496: characters 3-19
+		#src/jotun/utils/Dice.hx:504: characters 3-19
 		$this->data = $data;
-		#src/jotun/utils/Dice.hx:497: characters 3-10
+		#src/jotun/utils/Dice.hx:505: characters 3-10
 		$this->reset();
 	}
 
@@ -903,7 +921,7 @@ class Dice {
 	 * @return mixed
 	 */
 	public function current () {
-		#src/jotun/utils/Dice.hx:505: characters 3-22
+		#src/jotun/utils/Dice.hx:513: characters 3-22
 		return ($this->data->arr[$this->cursor] ?? null);
 	}
 
@@ -911,7 +929,7 @@ class Dice {
 	 * @return bool
 	 */
 	public function next () {
-		#src/jotun/utils/Dice.hx:501: characters 3-32
+		#src/jotun/utils/Dice.hx:509: characters 3-32
 		return $this->cursor++ < $this->data->length;
 	}
 
@@ -919,7 +937,7 @@ class Dice {
 	 * @return void
 	 */
 	public function reset () {
-		#src/jotun/utils/Dice.hx:509: characters 3-14
+		#src/jotun/utils/Dice.hx:517: characters 3-14
 		$this->cursor = -1;
 	}
 }

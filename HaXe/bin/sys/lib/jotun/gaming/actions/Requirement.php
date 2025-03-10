@@ -22,7 +22,7 @@ class Requirement extends Resolution {
 	/**
 	 * @var RequirementQueryGroup
 	 */
-	static public $commands;
+	static public $codex;
 
 	/**
 	 * @var int
@@ -106,8 +106,8 @@ class Requirement extends Resolution {
 		}
 		#src/jotun/gaming/actions/Requirement.hx:43: lines 43-45
 		if (Utils::isValid(Boot::dynamicField($data, 'id'))) {
-			#src/jotun/gaming/actions/Requirement.hx:44: characters 4-41
-			SpellController::saveRequirement($this);
+			#src/jotun/gaming/actions/Requirement.hx:44: characters 4-36
+			SpellCodex::saveRequirement($this);
 		}
 	}
 
@@ -128,8 +128,8 @@ class Requirement extends Resolution {
 		if (Utils::isValid($this->query)) {
 			#src/jotun/gaming/actions/Requirement.hx:53: characters 4-37
 			$context->registerRequirement($this);
-			#src/jotun/gaming/actions/Requirement.hx:54: characters 4-63
-			$sec = Boot::dynamicField(Requirement::$commands->eventRun($this->query, $context), 'result');
+			#src/jotun/gaming/actions/Requirement.hx:54: characters 4-64
+			$sec = Boot::dynamicField(Requirement::$codex->verification($this->query, $context), 'result');
 			#src/jotun/gaming/actions/Requirement.hx:55: lines 55-61
 			if ($sec !== null) {
 				#src/jotun/gaming/actions/Requirement.hx:56: lines 56-60
@@ -170,7 +170,7 @@ class Requirement extends Resolution {
 
 
 		self::$cache = new HxAnon();
-		self::$commands = new RequirementQueryGroup();
+		self::$codex = new RequirementQueryGroup();
 	}
 }
 

@@ -35,7 +35,7 @@ class Resolution {
 	 */
 	public $breakon;
 	/**
-	 * @var Spells
+	 * @var SpellGroup
 	 */
 	public $fail;
 	/**
@@ -51,7 +51,7 @@ class Resolution {
 	 */
 	public $reverse;
 	/**
-	 * @var Spells
+	 * @var SpellGroup
 	 */
 	public $then;
 
@@ -92,13 +92,13 @@ class Resolution {
 		}
 		#src/jotun/gaming/actions/Resolution.hx:47: lines 47-49
 		if (Boot::dynamicField($data, 'then') !== null) {
-			#src/jotun/gaming/actions/Resolution.hx:48: characters 4-49
-			$this->then = new Spells(($this->_type??'null') . ":then", Boot::dynamicField($data, 'then'));
+			#src/jotun/gaming/actions/Resolution.hx:48: characters 4-53
+			$this->then = new SpellGroup(($this->_type??'null') . ":then", Boot::dynamicField($data, 'then'));
 		}
 		#src/jotun/gaming/actions/Resolution.hx:50: lines 50-52
 		if (Boot::dynamicField($data, 'fail') !== null) {
-			#src/jotun/gaming/actions/Resolution.hx:51: characters 4-49
-			$this->fail = new Spells(($this->_type??'null') . ":fail", Boot::dynamicField($data, 'fail'));
+			#src/jotun/gaming/actions/Resolution.hx:51: characters 4-53
+			$this->fail = new SpellGroup(($this->_type??'null') . ":fail", Boot::dynamicField($data, 'fail'));
 		}
 		#src/jotun/gaming/actions/Resolution.hx:53: characters 3-15
 		$this->id = Boot::dynamicField($data, 'id');
@@ -174,12 +174,12 @@ class Resolution {
 			if ($result) {
 				#src/jotun/gaming/actions/Resolution.hx:60: lines 60-62
 				if ($this->then !== null) {
-					#src/jotun/gaming/actions/Resolution.hx:61: characters 6-23
-					$this->then->run($context);
+					#src/jotun/gaming/actions/Resolution.hx:61: characters 6-27
+					$this->then->execute($context);
 				}
 			} else if ($this->fail !== null) {
-				#src/jotun/gaming/actions/Resolution.hx:65: characters 6-23
-				$this->fail->run($context);
+				#src/jotun/gaming/actions/Resolution.hx:65: characters 6-27
+				$this->fail->execute($context);
 			}
 			#src/jotun/gaming/actions/Resolution.hx:68: characters 4-19
 			--$context->ident;

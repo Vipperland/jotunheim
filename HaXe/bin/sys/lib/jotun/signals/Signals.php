@@ -11,7 +11,7 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Signals implements ISignals {
+class Signals {
 	/**
 	 * @var mixed[]|\Array_hx
 	 */
@@ -36,7 +36,7 @@ class Signals implements ISignals {
 	/**
 	 * @param string $n
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function _c ($n) {
 		#src/jotun/signals/Signals.hx:15: lines 15-16
@@ -52,7 +52,7 @@ class Signals implements ISignals {
 	 * @param string $name
 	 * @param \Closure $handler
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function add ($name, $handler = null) {
 		#src/jotun/signals/Signals.hx:38: characters 3-31
@@ -76,9 +76,19 @@ class Signals implements ISignals {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function dispose () {
+		#src/jotun/signals/Signals.hx:57: characters 3-16
+		$this->object = null;
+		#src/jotun/signals/Signals.hx:58: characters 3-12
+		$this->_l = null;
+	}
+
+	/**
 	 * @param string $name
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function get ($name) {
 		#src/jotun/signals/Signals.hx:30: characters 3-18
@@ -99,7 +109,7 @@ class Signals implements ISignals {
 	 * @param string $name
 	 * @param \Closure $handler
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function remove ($name, $handler = null) {
 		#src/jotun/signals/Signals.hx:34: characters 3-34

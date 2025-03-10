@@ -10,7 +10,7 @@ use \php\Boot;
 /**
  * @author Rafael Moreira
  */
-interface IExtCommand extends ICommand {
+interface IExtCommand {
 	/**
 	 * Execute the command
 	 * @param	handler
@@ -21,10 +21,11 @@ interface IExtCommand extends ICommand {
 	 * @param \Closure $handler
 	 * @param mixed $type
 	 * @param mixed[]|\Array_hx $parameters
+	 * @param mixed[]|\Array_hx $contruct
 	 * 
 	 * @return IExtCommand
 	 */
-	public function execute ($handler = null, $type = null, $parameters = null) ;
+	public function execute ($handler = null, $type = null, $parameters = null, $contruct = null) ;
 
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)
@@ -33,7 +34,7 @@ interface IExtCommand extends ICommand {
 	 * 
 	 * @param \Closure $handler
 	 * 
-	 * @return ICommand
+	 * @return IExtCommand
 	 */
 	public function fetch ($handler) ;
 

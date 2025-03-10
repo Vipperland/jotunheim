@@ -262,8 +262,8 @@ class Image {
 					#src/jotun/php/file/Image.hx:84: characters 15-75
 					$img = imagecreatefromjpeg($file);
 				} else if ($__hx__switch === 3) {
-					#src/jotun/php/file/Image.hx:85: characters 15-74
-					$img = imagecreatefrompng($file);
+					#src/jotun/php/file/Image.hx:85: characters 15-75
+					$img = @imagecreatefrompng($file);
 				} else if ($__hx__switch === 6) {
 					#src/jotun/php/file/Image.hx:86: characters 15-75
 					$img = imagecreatefromwbmp($file);

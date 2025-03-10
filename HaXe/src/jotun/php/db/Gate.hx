@@ -1,4 +1,5 @@
 package jotun.php.db;
+import haxe.extern.EitherType;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
 import jotun.php.db.Token;
@@ -40,7 +41,7 @@ class Gate {
 	/**
 	 * Last created command
 	 */
-	public var command:ICommand;
+	public var command:EitherType<ICommand,IExtCommand>;
 	
 	/**
 	 * Connection and Execution Errors
@@ -109,7 +110,8 @@ class Gate {
 			_token = token;
 			try {
 				_db = Database.connect(token.host, token.user, token.pass, token.options);
-				setPdoAttributes(true);
+				_db.setAttribute(php.Syntax.code('\\PDO::ATTR_ERRMODE'), php.Syntax.code('\\PDO::ERRMODE_EXCEPTION'));
+				setPdoAttributes(false, true, true);
 			}catch (e:Dynamic) {
 				errors[errors.length] = new Error(e.getCode(), e.getMessage());
 			}
@@ -127,11 +129,7 @@ class Gate {
 	 * @return
 	 */
 	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
-		var pdo:Statement = null;
-		if (isOpen()) {
-			pdo = _db.prepare(query, Lib.toPhpArray(options == null ? [] : options));
-		}
-		command = new Command(pdo, query, parameters, _errors, _log);
+		command = new Command(isOpen() ? _db.prepare(query, Lib.toPhpArray(options == null ? [] : options)) : null, query, parameters, _errors, _log);
 		return command;
 	}
 	
@@ -141,8 +139,8 @@ class Gate {
 	 * @param	parameters
 	 * @return
 	 */
-	public function query(query:String, ?parameters:Dynamic = null):IExtCommand {
-		command = new ExtCommand(_db, query, parameters, _errors, _log);
+	public function query(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):IExtCommand {
+		command = new ExtCommand(isOpen() ? _db.prepare(query, Lib.toPhpArray(options == null ? [] : options)) : null, query, parameters, _errors, _log);
 		return cast command;
 	}
 	
@@ -171,11 +169,10 @@ class Gate {
 	 * @param	value
 	 * @return
 	 */
-	public function setPdoAttributes(value:Bool):Gate {
-		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_STRINGIFY_FETCHES'), value);
-		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_EMULATE_PREPARES'), value);
-		_db.setAttribute(php.Syntax.code('\\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), value);
-		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_ERRMODE'), php.Syntax.code('\\PDO::ERRMODE_EXCEPTION'));
+	public function setPdoAttributes(stringify:Bool, emulate:Bool, buffered:Bool):Gate {
+		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_STRINGIFY_FETCHES'), stringify);
+		_db.setAttribute(php.Syntax.code('\\PDO::ATTR_EMULATE_PREPARES'), emulate);
+		_db.setAttribute(php.Syntax.code('\\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), buffered);
 		return this;
 	}
 	

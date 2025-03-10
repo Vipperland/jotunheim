@@ -29,7 +29,7 @@ class RequirementQueryGroup extends QueryGroup {
 	 * 
 	 * @return mixed
 	 */
-	public function eventRun ($query, $context) {
+	public function verification ($query, $context) {
 		#src/jotun/gaming/actions/RequirementQueryGroup.hx:16: lines 16-41
 		$_gthis = $this;
 		#src/jotun/gaming/actions/RequirementQueryGroup.hx:17: characters 3-27
@@ -46,8 +46,8 @@ class RequirementQueryGroup extends QueryGroup {
 					$context->registerRequirementQuery($single);
 					#src/jotun/gaming/actions/RequirementQueryGroup.hx:23: lines 23-30
 					Dice::All($_gthis->units, function ($p, $o) use (&$context, &$single, &$result, &$idx) {
-						#src/jotun/gaming/actions/RequirementQueryGroup.hx:24: characters 7-28
-						$o->ioContext = $context;
+						#src/jotun/gaming/actions/RequirementQueryGroup.hx:24: characters 7-29
+						$o->invocation = $context;
 						#src/jotun/gaming/actions/RequirementQueryGroup.hx:25: lines 25-27
 						if ($context->debug) {
 							#src/jotun/gaming/actions/RequirementQueryGroup.hx:26: characters 8-104
@@ -66,8 +66,8 @@ class RequirementQueryGroup extends QueryGroup {
 		} else {
 			#src/jotun/gaming/actions/RequirementQueryGroup.hx:34: lines 34-38
 			Dice::Values($this->units, function ($o) use (&$query, &$context, &$result) {
-				#src/jotun/gaming/actions/RequirementQueryGroup.hx:35: characters 5-26
-				$o->ioContext = $context;
+				#src/jotun/gaming/actions/RequirementQueryGroup.hx:35: characters 5-27
+				$o->invocation = $context;
 				#src/jotun/gaming/actions/RequirementQueryGroup.hx:36: characters 5-26
 				$o->proc($query, $result);
 				#src/jotun/gaming/actions/RequirementQueryGroup.hx:37: characters 5-14

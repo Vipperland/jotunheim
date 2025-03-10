@@ -1,11 +1,13 @@
 package jotun.php.db.tools;
+import jotun.errors.ErrorDescriptior;
+import jotun.php.db.pdo.Statement;
 
 /**
  * @author Rafael Moreira
  */
 
-interface IExtCommand extends ICommand {
-	
+interface IExtCommand {
+
 	/**
 	 * An Array of all returned data
 	 */
@@ -18,14 +20,14 @@ interface IExtCommand extends ICommand {
 	 * @param	parameters
 	 * @return
 	 */
-	public function execute (?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>) : IExtCommand;
+	public function execute (?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>, ?contruct:Array<Dynamic>) : IExtCommand;
 	
 	/**
 	 * Shortcut only, Similar to Dice.Values(command.result, handler)
 	 * @param	handler
 	 * @return
 	 */
-	public function fetch (handler:Dynamic->Bool) : ICommand;
+	public function fetch (handler:Dynamic->Bool) : IExtCommand;
 	
 	/**
 	 * Count result length by COUNT(*) property or result length
@@ -41,5 +43,6 @@ interface IExtCommand extends ICommand {
 	 * @return
 	 */
 	public function find(param:String, values:Array<Dynamic>, ?limit:UInt = 0):Array<Dynamic>;
+	
 	
 }

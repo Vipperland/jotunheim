@@ -15,6 +15,11 @@ use \jotun\tools\Utils;
  */
 class SpellCasting {
 	/**
+	 * @var int
+	 */
+	static public $_channeling = 0;
+
+	/**
 	 * @var SpellCastAction
 	 */
 	public $action;
@@ -23,9 +28,9 @@ class SpellCasting {
 	 */
 	public $chain;
 	/**
-	 * @var SpellController
+	 * @var SpellCodex
 	 */
-	public $controller;
+	public $codex;
 	/**
 	 * @var IDataProvider
 	 */
@@ -87,50 +92,50 @@ class SpellCasting {
 	 * @param string $name
 	 * @param mixed $data
 	 * @param IDataProvider $provider
-	 * @param SpellController $controller
+	 * @param SpellCodex $codex
 	 * @param bool $debug
 	 * 
 	 * @return void
 	 */
-	public function __construct ($name, $data, $provider, $controller, $debug) {
-		#src/jotun/gaming/actions/SpellCasting.hx:50: characters 3-21
-		$this->origin = $data;
-		#src/jotun/gaming/actions/SpellCasting.hx:51: characters 3-19
-		$this->name = $name;
+	public function __construct ($name, $data, $provider, $codex, $debug) {
 		#src/jotun/gaming/actions/SpellCasting.hx:52: characters 3-21
+		$this->origin = $data;
+		#src/jotun/gaming/actions/SpellCasting.hx:53: characters 3-19
+		$this->name = $name;
+		#src/jotun/gaming/actions/SpellCasting.hx:54: characters 3-21
 		$this->debug = $debug;
-		#src/jotun/gaming/actions/SpellCasting.hx:53: characters 3-21
+		#src/jotun/gaming/actions/SpellCasting.hx:55: characters 3-21
 		$this->ended = false;
-		#src/jotun/gaming/actions/SpellCasting.hx:54: characters 3-16
+		#src/jotun/gaming/actions/SpellCasting.hx:56: characters 3-16
 		$this->log = new \Array_hx();
-		#src/jotun/gaming/actions/SpellCasting.hx:55: characters 3-17
-		$this->ident = 0;
-		#src/jotun/gaming/actions/SpellCasting.hx:56: characters 3-17
-		$this->chain = 0;
 		#src/jotun/gaming/actions/SpellCasting.hx:57: characters 3-17
+		$this->ident = 0;
+		#src/jotun/gaming/actions/SpellCasting.hx:58: characters 3-17
+		$this->chain = 0;
+		#src/jotun/gaming/actions/SpellCasting.hx:59: characters 3-17
 		$this->ticks = 0;
-		#src/jotun/gaming/actions/SpellCasting.hx:58: characters 3-38
+		#src/jotun/gaming/actions/SpellCasting.hx:60: characters 3-38
 		$this->event = new HxAnon(["current" => null]);
-		#src/jotun/gaming/actions/SpellCasting.hx:59: characters 3-60
+		#src/jotun/gaming/actions/SpellCasting.hx:61: characters 3-60
 		$this->action = new HxAnon([
 			"target" => null,
 			"count" => 0,
 			"queries" => 0,
 		]);
-		#src/jotun/gaming/actions/SpellCasting.hx:60: characters 3-65
+		#src/jotun/gaming/actions/SpellCasting.hx:62: characters 3-65
 		$this->requirement = new HxAnon([
 			"target" => null,
 			"count" => 0,
 			"queries" => 0,
 		]);
-		#src/jotun/gaming/actions/SpellCasting.hx:61: characters 3-20
+		#src/jotun/gaming/actions/SpellCasting.hx:63: characters 3-20
 		$this->history = new \Array_hx();
-		#src/jotun/gaming/actions/SpellCasting.hx:62: characters 3-31
-		$this->dataProvider = $provider;
-		#src/jotun/gaming/actions/SpellCasting.hx:63: characters 3-34
-		$this->currentProvider = $provider;
 		#src/jotun/gaming/actions/SpellCasting.hx:64: characters 3-31
-		$this->controller = $controller;
+		$this->dataProvider = $provider;
+		#src/jotun/gaming/actions/SpellCasting.hx:65: characters 3-34
+		$this->currentProvider = $provider;
+		#src/jotun/gaming/actions/SpellCasting.hx:66: characters 3-21
+		$this->codex = $codex;
 	}
 
 	/**
@@ -140,7 +145,7 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function addLog ($i, $message) {
-		#src/jotun/gaming/actions/SpellCasting.hx:93: characters 3-72
+		#src/jotun/gaming/actions/SpellCasting.hx:95: characters 3-72
 		$this->log->offsetSet($this->log->length, (Utils::prefix("", $this->ident + $this->chain + $i, "\x09")??'null') . ($message??'null'));
 	}
 
@@ -148,12 +153,12 @@ class SpellCasting {
 	 * @return Action
 	 */
 	public function previous () {
-		#src/jotun/gaming/actions/SpellCasting.hx:106: lines 106-110
+		#src/jotun/gaming/actions/SpellCasting.hx:111: lines 111-115
 		if ($this->action->count > 1) {
-			#src/jotun/gaming/actions/SpellCasting.hx:107: characters 4-41
+			#src/jotun/gaming/actions/SpellCasting.hx:112: characters 4-41
 			return ($this->history->arr[$this->action->count - 2] ?? null);
 		} else {
-			#src/jotun/gaming/actions/SpellCasting.hx:109: characters 4-15
+			#src/jotun/gaming/actions/SpellCasting.hx:114: characters 4-15
 			return null;
 		}
 	}
@@ -164,11 +169,11 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function registerAction ($a) {
-		#src/jotun/gaming/actions/SpellCasting.hx:72: characters 3-20
+		#src/jotun/gaming/actions/SpellCasting.hx:74: characters 3-20
 		$this->action->target = $a;
-		#src/jotun/gaming/actions/SpellCasting.hx:73: characters 3-17
+		#src/jotun/gaming/actions/SpellCasting.hx:75: characters 3-17
 		++$this->action->count;
-		#src/jotun/gaming/actions/SpellCasting.hx:74: characters 3-23
+		#src/jotun/gaming/actions/SpellCasting.hx:76: characters 3-23
 		$_this = $this->history;
 		$_this->arr[$_this->length++] = $a;
 	}
@@ -179,19 +184,19 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function registerActionQuery ($q) {
-		#src/jotun/gaming/actions/SpellCasting.hx:78: characters 3-19
+		#src/jotun/gaming/actions/SpellCasting.hx:80: characters 3-19
 		$this->action->query = $q;
-		#src/jotun/gaming/actions/SpellCasting.hx:79: characters 3-19
+		#src/jotun/gaming/actions/SpellCasting.hx:81: characters 3-19
 		++$this->action->queries;
 	}
 
 	/**
-	 * @param Spells $e
+	 * @param SpellGroup $e
 	 * 
 	 * @return void
 	 */
 	public function registerEvent ($e) {
-		#src/jotun/gaming/actions/SpellCasting.hx:68: characters 3-20
+		#src/jotun/gaming/actions/SpellCasting.hx:70: characters 3-20
 		$this->event->current = $e;
 	}
 
@@ -201,9 +206,9 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function registerRequirement ($r) {
-		#src/jotun/gaming/actions/SpellCasting.hx:83: characters 3-25
+		#src/jotun/gaming/actions/SpellCasting.hx:85: characters 3-25
 		$this->requirement->target = $r;
-		#src/jotun/gaming/actions/SpellCasting.hx:84: characters 3-22
+		#src/jotun/gaming/actions/SpellCasting.hx:86: characters 3-22
 		++$this->requirement->count;
 	}
 
@@ -213,9 +218,9 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function registerRequirementQuery ($q) {
-		#src/jotun/gaming/actions/SpellCasting.hx:88: characters 3-24
+		#src/jotun/gaming/actions/SpellCasting.hx:90: characters 3-24
 		$this->requirement->query = $q;
-		#src/jotun/gaming/actions/SpellCasting.hx:89: characters 3-24
+		#src/jotun/gaming/actions/SpellCasting.hx:91: characters 3-24
 		++$this->requirement->queries;
 	}
 
@@ -226,17 +231,23 @@ class SpellCasting {
 	 * @return void
 	 */
 	public function release ($resolution, $result) {
-		#src/jotun/gaming/actions/SpellCasting.hx:97: characters 3-68
+		#src/jotun/gaming/actions/SpellCasting.hx:99: characters 3-68
 		$chain = ($result ? $resolution->then : $resolution->fail);
-		#src/jotun/gaming/actions/SpellCasting.hx:98: lines 98-102
+		#src/jotun/gaming/actions/SpellCasting.hx:100: lines 100-107
 		if ($chain !== null) {
-			#src/jotun/gaming/actions/SpellCasting.hx:99: characters 4-91
-			$temp = \Reflect::field(Spells::patch(new HxAnon(["_onActionReleased" => $chain])), "_onActionReleased");
-			#src/jotun/gaming/actions/SpellCasting.hx:100: characters 4-52
+			#src/jotun/gaming/actions/SpellCasting.hx:101: characters 4-50
+			$cid = "_channeling:" . (SpellCasting::$_channeling??'null');
+			#src/jotun/gaming/actions/SpellCasting.hx:102: characters 4-17
+			++SpellCasting::$_channeling;
+			#src/jotun/gaming/actions/SpellCasting.hx:103: characters 4-79
+			$temp = \Reflect::field(SpellGroup::patch(new HxAnon(["_onActionReleased" => $chain])), $cid);
+			#src/jotun/gaming/actions/SpellCasting.hx:104: characters 4-30
 			$value = $temp;
-			\Reflect::setField($this->controller->events, "_onActionReleased", $value);
-			#src/jotun/gaming/actions/SpellCasting.hx:101: characters 4-63
-			$this->controller->call("_onActionReleased", $this->origin, $this->dataProvider);
+			\Reflect::setField($this->codex->index, $cid, $value);
+			#src/jotun/gaming/actions/SpellCasting.hx:105: characters 4-44
+			$this->codex->invoke($cid, $this->origin, $this->dataProvider);
+			#src/jotun/gaming/actions/SpellCasting.hx:106: characters 4-27
+			\Reflect::deleteField($this->codex->index, $cid);
 		}
 	}
 }

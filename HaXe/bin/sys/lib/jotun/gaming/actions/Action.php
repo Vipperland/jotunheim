@@ -22,7 +22,7 @@ class Action extends Resolution {
 	/**
 	 * @var ActionQueryGroup
 	 */
-	static public $commands;
+	static public $codex;
 
 	/**
 	 * @var Requirement[]|\Array_hx
@@ -123,8 +123,8 @@ class Action extends Resolution {
 		Dice::All(Boot::dynamicField($data, 'require'), function ($p, $v) use (&$i, &$_gthis, &$type) {
 			#src/jotun/gaming/actions/Action.hx:62: lines 62-64
 			if (is_string($v)) {
-				#src/jotun/gaming/actions/Action.hx:63: characters 5-43
-				$v = SpellController::loadRequirement($v);
+				#src/jotun/gaming/actions/Action.hx:63: characters 5-38
+				$v = SpellCodex::loadRequirement($v);
 			}
 			#src/jotun/gaming/actions/Action.hx:65: lines 65-72
 			if ($v !== null) {
@@ -155,8 +155,8 @@ class Action extends Resolution {
 		}
 		#src/jotun/gaming/actions/Action.hx:84: lines 84-86
 		if (Utils::isValid(Boot::dynamicField($data, 'id'))) {
-			#src/jotun/gaming/actions/Action.hx:85: characters 4-36
-			SpellController::saveAction($this);
+			#src/jotun/gaming/actions/Action.hx:85: characters 4-31
+			SpellCodex::saveAction($this);
 		}
 	}
 
@@ -166,7 +166,7 @@ class Action extends Resolution {
 	 * 
 	 * @return bool
 	 */
-	public function run ($context, $position) {
+	public function invoke ($context, $position) {
 		#src/jotun/gaming/actions/Action.hx:90: characters 3-12
 		$this->connect();
 		#src/jotun/gaming/actions/Action.hx:92: characters 3-26
@@ -203,8 +203,8 @@ class Action extends Resolution {
 			$context->registerAction($this);
 			#src/jotun/gaming/actions/Action.hx:111: lines 111-113
 			if (Utils::isValid($this->query)) {
-				#src/jotun/gaming/actions/Action.hx:112: characters 5-38
-				Action::$commands->eventRun($this->query, $context);
+				#src/jotun/gaming/actions/Action.hx:112: characters 5-37
+				Action::$codex->invocation($this->query, $context);
 			}
 		}
 		#src/jotun/gaming/actions/Action.hx:115: characters 3-35
@@ -223,7 +223,7 @@ class Action extends Resolution {
 
 
 		self::$cache = new HxAnon();
-		self::$commands = new ActionQueryGroup();
+		self::$codex = new ActionQueryGroup();
 	}
 }
 

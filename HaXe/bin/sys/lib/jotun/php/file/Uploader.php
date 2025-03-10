@@ -25,6 +25,10 @@ class Uploader {
 	 */
 	static public $_autoRename;
 	/**
+	 * @var mixed
+	 */
+	static public $_callbacks;
+	/**
 	 * @var \Closure
 	 */
 	static public $_log_method;
@@ -47,11 +51,11 @@ class Uploader {
 	 * @return void
 	 */
 	public static function _delete ($image) {
-		#src/jotun/php/file/Uploader.hx:184: characters 3-17
+		#src/jotun/php/file/Uploader.hx:200: characters 3-17
 		$image->delete();
-		#src/jotun/php/file/Uploader.hx:185: characters 3-18
+		#src/jotun/php/file/Uploader.hx:201: characters 3-18
 		$image->dispose();
-		#src/jotun/php/file/Uploader.hx:186: characters 3-35
+		#src/jotun/php/file/Uploader.hx:202: characters 3-35
 		Uploader::_log("deleted", new HxAnon(["file" => $image]));
 	}
 
@@ -62,9 +66,9 @@ class Uploader {
 	 * @return void
 	 */
 	public static function _log ($action, $message) {
-		#src/jotun/php/file/Uploader.hx:49: lines 49-51
+		#src/jotun/php/file/Uploader.hx:52: lines 52-54
 		if (Uploader::$_log_method !== null) {
-			#src/jotun/php/file/Uploader.hx:50: characters 4-32
+			#src/jotun/php/file/Uploader.hx:53: characters 4-32
 			(Uploader::$_log_method)($action, $message);
 		}
 	}
@@ -77,22 +81,22 @@ class Uploader {
 	 * @return string
 	 */
 	public static function _rename ($o, $p, $t) {
-		#src/jotun/php/file/Uploader.hx:190: characters 3-38
+		#src/jotun/php/file/Uploader.hx:206: characters 3-38
 		$n = HxString::split($o, ".");
-		#src/jotun/php/file/Uploader.hx:191: characters 18-25
+		#src/jotun/php/file/Uploader.hx:207: characters 18-25
 		if ($n->length > 0) {
 			$n->length--;
 		}
-		#src/jotun/php/file/Uploader.hx:191: characters 3-26
+		#src/jotun/php/file/Uploader.hx:207: characters 3-26
 		$e = \array_pop($n->arr);
-		#src/jotun/php/file/Uploader.hx:192: lines 192-194
+		#src/jotun/php/file/Uploader.hx:208: lines 208-210
 		if ($p !== null) {
-			#src/jotun/php/file/Uploader.hx:193: characters 4-19
+			#src/jotun/php/file/Uploader.hx:209: characters 4-19
 			$n->offsetSet($n->length, $p);
 		}
-		#src/jotun/php/file/Uploader.hx:195: characters 3-28
+		#src/jotun/php/file/Uploader.hx:211: characters 3-28
 		$n->arr[$n->length++] = ($t === null ? $e : $t);
-		#src/jotun/php/file/Uploader.hx:196: characters 3-21
+		#src/jotun/php/file/Uploader.hx:212: characters 3-21
 		return $n->join(".");
 	}
 
@@ -100,39 +104,42 @@ class Uploader {
 	 * @return void
 	 */
 	public static function _verify () {
-		#src/jotun/php/file/Uploader.hx:80: characters 3-30
+		#src/jotun/php/file/Uploader.hx:93: characters 3-30
 		$partName = null;
-		#src/jotun/php/file/Uploader.hx:81: characters 3-30
+		#src/jotun/php/file/Uploader.hx:94: characters 3-30
 		$lastFile = null;
-		#src/jotun/php/file/Uploader.hx:82: characters 3-36
+		#src/jotun/php/file/Uploader.hx:95: characters 3-36
 		$fileStream = null;
-		#src/jotun/php/file/Uploader.hx:85: lines 85-115
+		#src/jotun/php/file/Uploader.hx:98: lines 98-133
 		Jotun::$domain->parseFiles(function ($part, $name) use (&$partName, &$fileStream, &$lastFile) {
-			#src/jotun/php/file/Uploader.hx:88: lines 88-107
+			#src/jotun/php/file/Uploader.hx:101: lines 101-125
 			if (Utils::isValid($name)) {
-				#src/jotun/php/file/Uploader.hx:89: lines 89-104
+				#src/jotun/php/file/Uploader.hx:102: lines 102-122
 				if (($name !== null) && ($lastFile !== $name)) {
-					#src/jotun/php/file/Uploader.hx:90: characters 7-22
+					#src/jotun/php/file/Uploader.hx:103: characters 7-22
 					$partName = $part;
-					#src/jotun/php/file/Uploader.hx:91: characters 7-22
+					#src/jotun/php/file/Uploader.hx:104: characters 7-22
 					$lastFile = $name;
-					#src/jotun/php/file/Uploader.hx:93: lines 93-95
+					#src/jotun/php/file/Uploader.hx:106: lines 106-108
 					if ($fileStream !== null) {
-						#src/jotun/php/file/Uploader.hx:94: characters 8-26
+						#src/jotun/php/file/Uploader.hx:107: characters 8-26
 						$fileStream->close();
 					}
-					#src/jotun/php/file/Uploader.hx:97: characters 24-45
+					#src/jotun/php/file/Uploader.hx:110: characters 24-45
 					$_this = HxString::split($name, ".");
 					if ($_this->length > 0) {
 						$_this->length--;
 					}
-					#src/jotun/php/file/Uploader.hx:97: characters 7-46
+					#src/jotun/php/file/Uploader.hx:110: characters 7-46
 					$ext = \array_pop($_this->arr);
-					#src/jotun/php/file/Uploader.hx:98: characters 7-89
+					#src/jotun/php/file/Uploader.hx:111: characters 7-31
 					$nName = null;
-					#src/jotun/php/file/Uploader.hx:98: characters 26-88
-					if (Uploader::$_autoRename) {
-						#src/jotun/php/file/Uploader.hx:98: characters 40-50
+					#src/jotun/php/file/Uploader.hx:112: lines 112-116
+					if ((Uploader::$_callbacks !== null) && \Reflect::hasField(Uploader::$_callbacks, $ext)) {
+						#src/jotun/php/file/Uploader.hx:113: characters 8-47
+						$nName = \Reflect::field(Uploader::$_callbacks, $ext)($part, $name);
+					} else if (Uploader::$_autoRename) {
+						#src/jotun/php/file/Uploader.hx:115: characters 30-40
 						$nName1 = null;
 						if (Jotun::$time === null) {
 							$nName1 = "null";
@@ -140,121 +147,120 @@ class Uploader {
 							$int = Jotun::$time;
 							$nName1 = \Std::string(($int < 0 ? 4294967296.0 + $int : $int + 0.0));
 						}
-						#src/jotun/php/file/Uploader.hx:98: characters 7-89
+						#src/jotun/php/file/Uploader.hx:115: characters 30-71
 						$nName = ($nName1??'null') . "_" . (Key::GEN(8)??'null') . "." . ($ext??'null');
 					} else {
+						#src/jotun/php/file/Uploader.hx:115: characters 74-78
 						$nName = $name;
 					}
-					#src/jotun/php/file/Uploader.hx:100: characters 7-51
+					#src/jotun/php/file/Uploader.hx:118: characters 7-51
 					$fileStream = File::write((Uploader::$_path??'null') . ($nName??'null'), true);
-					#src/jotun/php/file/Uploader.hx:101: characters 7-58
+					#src/jotun/php/file/Uploader.hx:119: characters 7-58
 					$file = new FileInfo($ext, $name, $nName);
-					#src/jotun/php/file/Uploader.hx:102: characters 7-28
+					#src/jotun/php/file/Uploader.hx:120: characters 7-28
 					Uploader::$files->add($part, $file);
-					#src/jotun/php/file/Uploader.hx:103: characters 7-29
+					#src/jotun/php/file/Uploader.hx:121: characters 7-29
 					Uploader::_log("uploaded", $file);
 				}
 			} else {
-				#src/jotun/php/file/Uploader.hx:106: characters 6-23
+				#src/jotun/php/file/Uploader.hx:124: characters 6-23
 				$fileStream = null;
 			}
 		}, function ($bytes, $pos, $len) use (&$fileStream) {
-			#src/jotun/php/file/Uploader.hx:111: lines 111-113
+			#src/jotun/php/file/Uploader.hx:129: lines 129-131
 			if ($fileStream !== null) {
-				#src/jotun/php/file/Uploader.hx:112: characters 6-51
+				#src/jotun/php/file/Uploader.hx:130: characters 6-51
 				$fileStream->writeBytes($bytes, 0, $bytes->length);
 			}
 		});
-		#src/jotun/php/file/Uploader.hx:118: lines 118-120
+		#src/jotun/php/file/Uploader.hx:136: lines 136-138
 		if ($fileStream !== null) {
-			#src/jotun/php/file/Uploader.hx:119: characters 4-22
+			#src/jotun/php/file/Uploader.hx:137: characters 4-22
 			$fileStream->close();
 		}
-		#src/jotun/php/file/Uploader.hx:123: lines 123-179
+		#src/jotun/php/file/Uploader.hx:141: lines 141-195
 		if (Uploader::$_sizes !== null) {
-			#src/jotun/php/file/Uploader.hx:124: characters 4-34
+			#src/jotun/php/file/Uploader.hx:142: characters 4-34
 			$image = new Image();
-			#src/jotun/php/file/Uploader.hx:125: lines 125-178
+			#src/jotun/php/file/Uploader.hx:143: lines 143-194
 			Dice::Values(Uploader::$files->list, function ($v) use (&$image) {
-				#src/jotun/php/file/Uploader.hx:126: lines 126-177
+				#src/jotun/php/file/Uploader.hx:144: lines 144-193
 				if ($v->get_image()) {
-					#src/jotun/php/file/Uploader.hx:127: characters 6-18
+					#src/jotun/php/file/Uploader.hx:145: characters 6-18
 					$v->sizes = new \Array_hx();
-					#src/jotun/php/file/Uploader.hx:128: characters 6-25
+					#src/jotun/php/file/Uploader.hx:146: characters 6-25
 					$delete = false;
-					#src/jotun/php/file/Uploader.hx:132: lines 132-172
-					Dice::All(Uploader::$_sizes, function ($p, $trfm) use (&$delete, &$v, &$image) {
-						#src/jotun/php/file/Uploader.hx:134: characters 7-39
+					#src/jotun/php/file/Uploader.hx:150: lines 150-188
+					Dice::All(Uploader::$_sizes, function ($p, $resizeRule) use (&$delete, &$v, &$image) {
+						#src/jotun/php/file/Uploader.hx:152: characters 7-39
 						$o = (Uploader::$_path??'null') . ($v->output??'null');
-						#src/jotun/php/file/Uploader.hx:136: characters 7-20
+						#src/jotun/php/file/Uploader.hx:154: characters 7-20
 						$image->open($o);
-						#src/jotun/php/file/Uploader.hx:138: characters 7-45
-						$create = Boot::dynamicField($trfm, 'create') === true;
-						#src/jotun/php/file/Uploader.hx:139: characters 7-113
-						$resize = (Boot::dynamicField($trfm, 'width') !== null) && (Boot::dynamicField($trfm, 'height') !== null) && $image->isOutBounds(Boot::dynamicField($trfm, 'width'), Boot::dynamicField($trfm, 'height'));
-						#src/jotun/php/file/Uploader.hx:140: characters 7-67
-						$convert = (Boot::dynamicField($trfm, 'type') !== null) && ($v->type !== Boot::dynamicField($trfm, 'type'));
-						#src/jotun/php/file/Uploader.hx:141: characters 7-49
-						$rename = Boot::dynamicField($trfm, 'renameFunc') !== null;
-						#src/jotun/php/file/Uploader.hx:143: lines 143-145
-						if (Boot::dynamicField($trfm, 'path') !== null) {
-							#src/jotun/php/file/Uploader.hx:144: characters 8-32
-							$o = \Std::string(Boot::dynamicField($trfm, 'path')) . ($v->output??'null');
+						#src/jotun/php/file/Uploader.hx:156: characters 7-51
+						$create = Boot::dynamicField($resizeRule, 'create') === true;
+						#src/jotun/php/file/Uploader.hx:157: characters 7-137
+						$resize = (Boot::dynamicField($resizeRule, 'width') !== null) && (Boot::dynamicField($resizeRule, 'height') !== null) && $image->isOutBounds(Boot::dynamicField($resizeRule, 'width'), Boot::dynamicField($resizeRule, 'height'));
+						#src/jotun/php/file/Uploader.hx:158: characters 7-79
+						$convert = (Boot::dynamicField($resizeRule, 'type') !== null) && ($v->type !== Boot::dynamicField($resizeRule, 'type'));
+						#src/jotun/php/file/Uploader.hx:159: characters 7-53
+						$rename = Boot::dynamicField($resizeRule, 'callback') !== null;
+						#src/jotun/php/file/Uploader.hx:161: lines 161-163
+						if (Boot::dynamicField($resizeRule, 'path') !== null) {
+							#src/jotun/php/file/Uploader.hx:162: characters 8-38
+							$o = \Std::string(Boot::dynamicField($resizeRule, 'path')) . ($v->output??'null');
 						}
-						#src/jotun/php/file/Uploader.hx:147: lines 147-149
+						#src/jotun/php/file/Uploader.hx:165: lines 165-169
 						if ($rename) {
-							#src/jotun/php/file/Uploader.hx:148: characters 8-45
-							$o = Uploader::_rename($o, Boot::dynamicField($trfm, 'sufix'), Boot::dynamicField($trfm, 'type'));
+							#src/jotun/php/file/Uploader.hx:166: characters 8-34
+							$o = $resizeRule->callback($o);
+						} else {
+							#src/jotun/php/file/Uploader.hx:168: characters 8-57
+							$o = Uploader::_rename($o, Boot::dynamicField($resizeRule, 'sufix'), Boot::dynamicField($resizeRule, 'type'));
 						}
-						#src/jotun/php/file/Uploader.hx:151: lines 151-153
-						if (Boot::dynamicField($trfm, 'renameFunc') !== null) {
-							#src/jotun/php/file/Uploader.hx:152: characters 8-30
-							$o = $trfm->renameFunc($o);
-						}
-						#src/jotun/php/file/Uploader.hx:155: lines 155-157
+						#src/jotun/php/file/Uploader.hx:171: lines 171-173
 						if ($resize) {
-							#src/jotun/php/file/Uploader.hx:156: characters 8-42
-							$image->fit(Boot::dynamicField($trfm, 'width'), Boot::dynamicField($trfm, 'height'));
+							#src/jotun/php/file/Uploader.hx:172: characters 8-54
+							$image->fit(Boot::dynamicField($resizeRule, 'width'), Boot::dynamicField($resizeRule, 'height'));
 						}
-						#src/jotun/php/file/Uploader.hx:159: lines 159-166
+						#src/jotun/php/file/Uploader.hx:175: lines 175-182
 						if ($create || $rename || $resize || $convert) {
-							#src/jotun/php/file/Uploader.hx:160: characters 8-46
-							$image->save($o, Boot::dynamicField($trfm, 'type'), Boot::dynamicField($trfm, 'quality'));
-							#src/jotun/php/file/Uploader.hx:161: lines 161-163
-							if (Boot::dynamicField($trfm, 'id') === null) {
-								#src/jotun/php/file/Uploader.hx:162: characters 9-51
-								$trfm->id = ($image->width??'null') . "x" . ($image->height??'null');
+							#src/jotun/php/file/Uploader.hx:176: characters 8-58
+							$image->save($o, Boot::dynamicField($resizeRule, 'type'), Boot::dynamicField($resizeRule, 'quality'));
+							#src/jotun/php/file/Uploader.hx:177: lines 177-179
+							if (Boot::dynamicField($resizeRule, 'id') === null) {
+								#src/jotun/php/file/Uploader.hx:178: characters 9-57
+								$resizeRule->id = ($image->width??'null') . "x" . ($image->height??'null');
 							}
-							#src/jotun/php/file/Uploader.hx:164: characters 8-90
+							#src/jotun/php/file/Uploader.hx:180: characters 8-102
 							$_this = $v->sizes;
 							$x = new HxAnon([
 								"width" => $image->width,
-								"image" => Boot::dynamicField($trfm, 'height'),
+								"image" => Boot::dynamicField($resizeRule, 'height'),
 								"url" => $o,
-								"id" => Boot::dynamicField($trfm, 'id'),
+								"id" => Boot::dynamicField($resizeRule, 'id'),
 							]);
 							$_this->arr[$_this->length++] = $x;
-							#src/jotun/php/file/Uploader.hx:165: characters 8-115
+							#src/jotun/php/file/Uploader.hx:181: characters 8-121
 							Uploader::_log("changed", new HxAnon([
 								"file" => $v,
-								"size" => $trfm,
+								"size" => $resizeRule,
 								"created" => $create,
 								"rename" => $rename,
 								"resize" => $resize,
 								"convert" => $convert,
 							]));
 						}
-						#src/jotun/php/file/Uploader.hx:168: lines 168-170
-						if (!$delete && Boot::dynamicField($trfm, 'delete')) {
-							#src/jotun/php/file/Uploader.hx:169: characters 8-21
+						#src/jotun/php/file/Uploader.hx:184: lines 184-186
+						if (!$delete && Boot::dynamicField($resizeRule, 'delete')) {
+							#src/jotun/php/file/Uploader.hx:185: characters 8-21
 							$delete = true;
 						}
 					});
-					#src/jotun/php/file/Uploader.hx:173: lines 173-176
+					#src/jotun/php/file/Uploader.hx:189: lines 189-192
 					if ($delete && $image->isValid()) {
-						#src/jotun/php/file/Uploader.hx:174: characters 7-35
+						#src/jotun/php/file/Uploader.hx:190: characters 7-35
 						$image->open((Uploader::$_path??'null') . ($v->output??'null'));
-						#src/jotun/php/file/Uploader.hx:175: characters 7-21
+						#src/jotun/php/file/Uploader.hx:191: characters 7-21
 						Uploader::_delete($image);
 					}
 				}
@@ -268,21 +274,21 @@ class Uploader {
 	 * @return void
 	 */
 	public static function createPath ($q) {
-		#src/jotun/php/file/Uploader.hx:36: characters 3-21
+		#src/jotun/php/file/Uploader.hx:39: characters 3-21
 		$p = "";
-		#src/jotun/php/file/Uploader.hx:37: lines 37-45
+		#src/jotun/php/file/Uploader.hx:40: lines 40-48
 		Dice::Values(HxString::split($q, "/"), function ($v) use (&$q, &$p) {
-			#src/jotun/php/file/Uploader.hx:38: lines 38-44
+			#src/jotun/php/file/Uploader.hx:41: lines 41-47
 			if (mb_strlen($v) > 0) {
-				#src/jotun/php/file/Uploader.hx:39: characters 5-17
+				#src/jotun/php/file/Uploader.hx:42: characters 5-17
 				$p = ($p??'null') . ($v??'null') . "/";
-				#src/jotun/php/file/Uploader.hx:40: characters 10-30
+				#src/jotun/php/file/Uploader.hx:43: characters 10-30
 				\clearstatcache(true, $p);
-				#src/jotun/php/file/Uploader.hx:40: lines 40-43
+				#src/jotun/php/file/Uploader.hx:43: lines 43-46
 				if (!\file_exists($p) || !FileSystem::isDirectory($p)) {
-					#src/jotun/php/file/Uploader.hx:41: characters 6-77
+					#src/jotun/php/file/Uploader.hx:44: characters 6-77
 					mkdir($p,0777);
-					#src/jotun/php/file/Uploader.hx:42: characters 6-29
+					#src/jotun/php/file/Uploader.hx:45: characters 6-29
 					Uploader::_log("path:created", $q);
 				}
 			}
@@ -295,49 +301,67 @@ class Uploader {
 	 * @return void
 	 */
 	public static function onLog ($method) {
-		#src/jotun/php/file/Uploader.hx:32: characters 3-23
+		#src/jotun/php/file/Uploader.hx:35: characters 3-23
 		Uploader::$_log_method = $method;
 	}
 
 	/**
 	 * @param string $path
-	 * @param mixed[]|\Array_hx $sizes
+	 * @param mixed[]|\Array_hx $rules
 	 * @param bool $rename
 	 * 
 	 * @return FileCollection
 	 */
-	public static function save ($path, $sizes = null, $rename = true) {
-		#src/jotun/php/file/Uploader.hx:54: lines 54-76
+	public static function save ($path, $rules = null, $rename = true) {
+		#src/jotun/php/file/Uploader.hx:57: lines 57-89
 		if ($rename === null) {
 			$rename = true;
 		}
-		#src/jotun/php/file/Uploader.hx:56: characters 3-23
+		#src/jotun/php/file/Uploader.hx:59: characters 3-23
 		Uploader::$_autoRename = $rename;
-		#src/jotun/php/file/Uploader.hx:58: lines 58-61
+		#src/jotun/php/file/Uploader.hx:61: lines 61-64
 		if (Uploader::$_path !== $path) {
-			#src/jotun/php/file/Uploader.hx:59: characters 4-20
+			#src/jotun/php/file/Uploader.hx:62: characters 4-20
 			Uploader::createPath($path);
-			#src/jotun/php/file/Uploader.hx:60: characters 4-16
+			#src/jotun/php/file/Uploader.hx:63: characters 4-16
 			Uploader::$_path = $path;
 		}
-		#src/jotun/php/file/Uploader.hx:63: lines 63-71
-		if ($sizes !== null) {
-			#src/jotun/php/file/Uploader.hx:64: characters 4-18
-			Uploader::$_sizes = $sizes;
-			#src/jotun/php/file/Uploader.hx:65: lines 65-69
-			Dice::Values(Uploader::$_sizes, function ($q) {
-				#src/jotun/php/file/Uploader.hx:66: lines 66-68
+		#src/jotun/php/file/Uploader.hx:66: lines 66-81
+		if ($rules !== null) {
+			#src/jotun/php/file/Uploader.hx:67: characters 4-20
+			Uploader::$_callbacks = new HxAnon();
+			#src/jotun/php/file/Uploader.hx:68: characters 4-15
+			Uploader::$_sizes = new \Array_hx();
+			#src/jotun/php/file/Uploader.hx:69: lines 69-79
+			Dice::Values($rules, function ($q) {
+				#src/jotun/php/file/Uploader.hx:70: lines 70-72
 				if (Boot::dynamicField($q, 'path') !== null) {
-					#src/jotun/php/file/Uploader.hx:67: characters 6-24
+					#src/jotun/php/file/Uploader.hx:71: characters 6-24
 					Uploader::createPath(Boot::dynamicField($q, 'path'));
 				}
+				#src/jotun/php/file/Uploader.hx:73: lines 73-75
+				if (Boot::dynamicField($q, 'resize')) {
+					#src/jotun/php/file/Uploader.hx:74: characters 6-20
+					$_this = Uploader::$_sizes;
+					$_this->arr[$_this->length++] = $q;
+				}
+				#src/jotun/php/file/Uploader.hx:76: lines 76-78
+				if ((Boot::dynamicField($q, 'filter') !== null) && (Boot::dynamicField($q, 'callback') !== null)) {
+					#src/jotun/php/file/Uploader.hx:77: characters 6-42
+					$value = Boot::dynamicField($q, 'callback');
+					\Reflect::setField(Uploader::$_callbacks, Boot::dynamicField($q, 'filter'), $value);
+				}
 			});
-			#src/jotun/php/file/Uploader.hx:70: characters 4-30
-			Uploader::_log("image:sizes", $sizes);
+			#src/jotun/php/file/Uploader.hx:80: characters 4-31
+			Uploader::_log("upload:rules", $rules);
 		}
-		#src/jotun/php/file/Uploader.hx:73: characters 3-12
+		#src/jotun/php/file/Uploader.hx:83: characters 3-12
 		Uploader::_verify();
-		#src/jotun/php/file/Uploader.hx:75: characters 3-15
+		#src/jotun/php/file/Uploader.hx:85: characters 3-20
+		Uploader::$_callbacks = null;
+		#src/jotun/php/file/Uploader.hx:86: characters 3-16
+		Uploader::$_sizes = null;
+		#src/jotun/php/file/Uploader.hx:88: characters 3-15
 		return Uploader::$files;
 	}
 

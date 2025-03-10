@@ -29,7 +29,7 @@ class ActionQueryGroup extends QueryGroup {
 	 * 
 	 * @return mixed
 	 */
-	public function eventRun ($query, $context) {
+	public function invocation ($query, $context) {
 		#src/jotun/gaming/actions/ActionQueryGroup.hx:16: lines 16-37
 		$_gthis = $this;
 		#src/jotun/gaming/actions/ActionQueryGroup.hx:17: characters 3-27
@@ -42,8 +42,8 @@ class ActionQueryGroup extends QueryGroup {
 				$context->registerActionQuery($single);
 				#src/jotun/gaming/actions/ActionQueryGroup.hx:21: lines 21-24
 				Dice::Values($_gthis->units, function ($o) use (&$context, &$single, &$result) {
-					#src/jotun/gaming/actions/ActionQueryGroup.hx:22: characters 6-27
-					$o->ioContext = $context;
+					#src/jotun/gaming/actions/ActionQueryGroup.hx:22: characters 6-28
+					$o->invocation = $context;
 					#src/jotun/gaming/actions/ActionQueryGroup.hx:23: characters 6-28
 					$o->proc($single, $result);
 				});
@@ -56,8 +56,8 @@ class ActionQueryGroup extends QueryGroup {
 		} else {
 			#src/jotun/gaming/actions/ActionQueryGroup.hx:30: lines 30-34
 			Dice::Values($this->units, function ($o) use (&$query, &$context, &$result) {
-				#src/jotun/gaming/actions/ActionQueryGroup.hx:31: characters 5-26
-				$o->ioContext = $context;
+				#src/jotun/gaming/actions/ActionQueryGroup.hx:31: characters 5-27
+				$o->invocation = $context;
 				#src/jotun/gaming/actions/ActionQueryGroup.hx:32: characters 5-26
 				$o->proc($query, $result);
 				#src/jotun/gaming/actions/ActionQueryGroup.hx:33: characters 5-14

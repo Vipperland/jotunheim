@@ -161,7 +161,7 @@ class Header {
 	 */
 	public function allowHeaders (...$headers) {
 		#src/jotun/net/Header.hx:63: characters 3-78
-		\header("Access-Control-Allow-Methods" . ": " . (\Array_hx::wrap($headers)->join(", ")??'null'));
+		\header("Access-Control-Allow-Headers" . ": " . (\Array_hx::wrap($headers)->join(", ")??'null'));
 	}
 
 	/**

@@ -11,18 +11,18 @@ use \php\Boot;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Flow implements IFlow {
+class Flow {
 	/**
 	 * @var mixed
 	 */
 	public $data;
 	/**
-	 * @var IPipe
+	 * @var Pipe
 	 */
 	public $pipe;
 
 	/**
-	 * @param IPipe $pipe
+	 * @param Pipe $pipe
 	 * @param mixed $data
 	 * 
 	 * @return void

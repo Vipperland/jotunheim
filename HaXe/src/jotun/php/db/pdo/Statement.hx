@@ -19,7 +19,7 @@ extern class Statement
 	public function fetch(?fetch_style : Int = 4, ?cursor_orientation : Int = 0, ?cursor_offset : Int = 0) : Dynamic;
 	public function fetchAll(?fetch_style : Int) : NativeArray;
 	public function fetchColumn(?column_number : Int = 0) : String;
-	public function fetchObject(?class_name : String) : Dynamic;
+	public function fetchObject(?class_name : String, ?constructArgs : Array<Dynamic> = null) : Dynamic;
 	public function getAttribute(attribute : Int) : Dynamic;
 	public function getColumnMeta(column : Int) : NativeArray;
 	public function nextRowset() : Bool;

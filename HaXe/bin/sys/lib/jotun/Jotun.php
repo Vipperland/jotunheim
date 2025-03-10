@@ -72,7 +72,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function log ($q, $type = -1) {
-		#src/jotun/Jotun.hx:294: characters 3-23
+		#src/jotun/Jotun.hx:293: characters 3-23
 		if ($type === null) {
 			$type = -1;
 		}
@@ -98,12 +98,12 @@ class Jotun {
 	 * @return void
 	 */
 	public static function module ($file, $content = null, $handler = null) {
-		#src/jotun/Jotun.hx:265: lines 265-269
+		#src/jotun/Jotun.hx:264: lines 264-268
 		if (HxString::indexOf($file, "http") === -1) {
-			#src/jotun/Jotun.hx:266: characters 5-28
+			#src/jotun/Jotun.hx:265: characters 5-28
 			Jotun::$resources->prepare($file);
 		} else {
-			#src/jotun/Jotun.hx:268: characters 5-42
+			#src/jotun/Jotun.hx:267: characters 5-42
 			Jotun::$loader->module($file, $content, $handler);
 		}
 	}
@@ -124,7 +124,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function request ($url, $data = null, $method = "post", $handler = null, $headers = null) {
-		#src/jotun/Jotun.hx:281: characters 4-55
+		#src/jotun/Jotun.hx:280: characters 4-55
 		if ($method === null) {
 			$method = "post";
 		}
@@ -137,7 +137,7 @@ class Jotun {
 	 * @return void
 	 */
 	public static function require ($file) {
-		#src/jotun/Jotun.hx:255: characters 4-51
+		#src/jotun/Jotun.hx:254: characters 4-51
 		require_once($file);
 	}
 

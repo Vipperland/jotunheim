@@ -7,50 +7,15 @@ namespace jotun\php\db\tools;
 
 use \php\Boot;
 use \haxe\Exception;
-use \jotun\utils\Dice;
 use \jotun\errors\ErrorDescriptior;
 use \jotun\errors\Error;
 use \jotun\php\db\pdo\Statement;
-use \php\_Boot\HxString;
 
 /**
  * ...
  * @author Rafael Moreira
  */
-class Command implements ICommand {
-	/**
-	 * @var ErrorDescriptior[]|\Array_hx
-	 */
-	public $_errors;
-	/**
-	 * @var \Closure
-	 */
-	public $_log;
-	/**
-	 * @var mixed[]|\Array_hx
-	 */
-	public $_parameters;
-	/**
-	 * @var string
-	 */
-	public $_query;
-	/**
-	 * @var ErrorDescriptior[]|\Array_hx
-	 */
-	public $errors;
-	/**
-	 * @var mixed[]|\Array_hx
-	 */
-	public $result;
-	/**
-	 * @var Statement
-	 */
-	public $statement;
-	/**
-	 * @var bool
-	 */
-	public $success;
-
+class Command extends CommandCore implements ICommand {
 	/**
 	 * @param Statement $statement
 	 * @param string $query
@@ -61,71 +26,8 @@ class Command implements ICommand {
 	 * @return void
 	 */
 	public function __construct ($statement, $query, $parameters, $errors, $log) {
-		#src/jotun/php/db/tools/Command.hx:37: characters 3-13
-		$this->_log = $log;
-		#src/jotun/php/db/tools/Command.hx:38: characters 3-19
-		$this->_errors = $errors;
-		#src/jotun/php/db/tools/Command.hx:39: characters 3-17
-		$this->_query = $query;
-		#src/jotun/php/db/tools/Command.hx:40: characters 3-29
-		$this->statement = $statement;
-		#src/jotun/php/db/tools/Command.hx:41: lines 41-43
-		if ($parameters !== null) {
-			#src/jotun/php/db/tools/Command.hx:42: characters 4-20
-			$this->bind($parameters);
-		}
-	}
-
-	/**
-	 * @param mixed $v
-	 * 
-	 * @return int
-	 */
-	public function _getType ($v) {
-		#src/jotun/php/db/tools/Command.hx:47: lines 47-59
-		if (is_string($v)) {
-			#src/jotun/php/db/tools/Command.hx:48: characters 4-46
-			return \PDO::PARAM_STR;
-		} else if ((is_float($v) || is_int($v))) {
-			#src/jotun/php/db/tools/Command.hx:50: characters 4-46
-			return \PDO::PARAM_STR;
-		} else if (Boot::isOfType($v, Boot::getClass('Int'))) {
-			#src/jotun/php/db/tools/Command.hx:52: characters 4-46
-			return \PDO::PARAM_INT;
-		} else if (is_bool($v)) {
-			#src/jotun/php/db/tools/Command.hx:54: characters 4-46
-			return \PDO::PARAM_INT;
-		} else if ($v === null) {
-			#src/jotun/php/db/tools/Command.hx:56: characters 4-47
-			return \PDO::PARAM_NULL;
-		} else {
-			#src/jotun/php/db/tools/Command.hx:58: characters 4-46
-			return \PDO::PARAM_STR;
-		}
-	}
-
-	/**
-	 * @param mixed[]|\Array_hx $parameters
-	 * 
-	 * @return ICommand
-	 */
-	public function bind ($parameters) {
-		#src/jotun/php/db/tools/Command.hx:62: lines 62-71
-		$_gthis = $this;
-		#src/jotun/php/db/tools/Command.hx:63: characters 3-27
-		$this->_parameters = $parameters;
-		#src/jotun/php/db/tools/Command.hx:64: lines 64-69
-		if ($this->statement !== null) {
-			#src/jotun/php/db/tools/Command.hx:65: lines 65-68
-			Dice::All($parameters, function ($p, $v) use (&$_gthis) {
-				#src/jotun/php/db/tools/Command.hx:66: characters 5-45
-				$_gthis->statement->bindValue(1 + $p, $v, $_gthis->_getType($v));
-				#src/jotun/php/db/tools/Command.hx:67: characters 5-40
-				\Reflect::setField($_gthis->_parameters, $p, $v);
-			});
-		}
-		#src/jotun/php/db/tools/Command.hx:70: characters 3-14
-		return $this;
+		#src/jotun/php/db/tools/Command.hx:15: lines 15-45
+		parent::__construct($statement, $query, $parameters, $errors, $log);
 	}
 
 	/**
@@ -136,111 +38,62 @@ class Command implements ICommand {
 	 * @return ICommand
 	 */
 	public function execute ($handler = null, $type = null, $parameters = null) {
-		#src/jotun/php/db/tools/Command.hx:74: lines 74-97
+		#src/jotun/php/db/tools/Command.hx:18: lines 18-41
 		if ($this->statement !== null) {
-			#src/jotun/php/db/tools/Command.hx:75: characters 4-29
+			#src/jotun/php/db/tools/Command.hx:19: characters 4-29
 			$p = null;
-			#src/jotun/php/db/tools/Command.hx:76: lines 76-78
+			#src/jotun/php/db/tools/Command.hx:20: lines 20-22
 			if ($parameters !== null) {
-				#src/jotun/php/db/tools/Command.hx:77: characters 5-35
+				#src/jotun/php/db/tools/Command.hx:21: characters 5-35
 				$p = $parameters->arr;
 			}
-			#src/jotun/php/db/tools/Command.hx:79: lines 79-91
+			#src/jotun/php/db/tools/Command.hx:23: lines 23-35
 			try {
-				#src/jotun/php/db/tools/Command.hx:80: characters 5-35
+				#src/jotun/php/db/tools/Command.hx:24: characters 5-35
 				$this->success = $this->statement->execute($p);
-				#src/jotun/php/db/tools/Command.hx:81: lines 81-83
+				#src/jotun/php/db/tools/Command.hx:25: lines 25-27
 				if (!$this->success) {
-					#src/jotun/php/db/tools/Command.hx:82: characters 6-12
+					#src/jotun/php/db/tools/Command.hx:26: characters 6-12
 					$tmp = $this->get_errors();
-					#src/jotun/php/db/tools/Command.hx:82: characters 13-26
+					#src/jotun/php/db/tools/Command.hx:26: characters 13-26
 					$tmp1 = $this->get_errors()->length;
-					#src/jotun/php/db/tools/Command.hx:82: characters 40-61
+					#src/jotun/php/db/tools/Command.hx:26: characters 40-61
 					$tmp2 = $this->statement->errorCode();
-					#src/jotun/php/db/tools/Command.hx:82: characters 6-102
+					#src/jotun/php/db/tools/Command.hx:26: characters 6-102
 					$tmp->offsetSet($tmp1, new Error($tmp2, \Array_hx::wrap($this->statement->errorInfo())));
 				}
-				#src/jotun/php/db/tools/Command.hx:84: characters 5-26
+				#src/jotun/php/db/tools/Command.hx:28: characters 5-26
 				$this->statement = null;
 			} catch(\Throwable $_g) {
-				#src/jotun/php/db/tools/Command.hx:85: characters 12-13
+				#src/jotun/php/db/tools/Command.hx:29: characters 12-13
 				$e = Exception::caught($_g)->unwrap();
-				#src/jotun/php/db/tools/Command.hx:86: lines 86-90
+				#src/jotun/php/db/tools/Command.hx:30: lines 30-34
 				if (is_string($e)) {
-					#src/jotun/php/db/tools/Command.hx:87: characters 6-45
+					#src/jotun/php/db/tools/Command.hx:31: characters 6-45
 					$this->get_errors()->offsetSet($this->get_errors()->length, new Error(0, $e));
 				} else {
-					#src/jotun/php/db/tools/Command.hx:89: characters 6-12
+					#src/jotun/php/db/tools/Command.hx:33: characters 6-12
 					$tmp = $this->get_errors();
-					#src/jotun/php/db/tools/Command.hx:89: characters 13-26
+					#src/jotun/php/db/tools/Command.hx:33: characters 13-26
 					$tmp1 = $this->get_errors()->length;
-					#src/jotun/php/db/tools/Command.hx:89: characters 40-51
+					#src/jotun/php/db/tools/Command.hx:33: characters 40-51
 					$tmp2 = $e->getCode();
-					#src/jotun/php/db/tools/Command.hx:89: characters 6-68
+					#src/jotun/php/db/tools/Command.hx:33: characters 6-68
 					$tmp->offsetSet($tmp1, new Error($tmp2, $e->getMessage()));
 				}
 			}
-			#src/jotun/php/db/tools/Command.hx:92: lines 92-94
+			#src/jotun/php/db/tools/Command.hx:36: lines 36-38
 			if ($this->_log !== null) {
-				#src/jotun/php/db/tools/Command.hx:93: characters 5-50
+				#src/jotun/php/db/tools/Command.hx:37: characters 5-50
 				($this->_log)(((($this->success ? "[1]" : "[0]"))??'null') . " " . ($this->log()??'null'));
 			}
 		} else {
-			#src/jotun/php/db/tools/Command.hx:96: characters 4-83
+			#src/jotun/php/db/tools/Command.hx:40: characters 4-83
 			$this->get_errors()->offsetSet($this->get_errors()->length, new Error(0, "A connection with database is required."));
 		}
-		#src/jotun/php/db/tools/Command.hx:98: characters 3-14
+		#src/jotun/php/db/tools/Command.hx:42: characters 3-14
 		return $this;
-	}
-
-	/**
-	 * @return ErrorDescriptior[]|\Array_hx
-	 */
-	public function get_errors () {
-		#src/jotun/php/db/tools/Command.hx:34: characters 58-72
-		return $this->_errors;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function log () {
-		#src/jotun/php/db/tools/Command.hx:101: lines 101-115
-		$_gthis = $this;
-		#src/jotun/php/db/tools/Command.hx:102: characters 3-44
-		$r = HxString::split($this->_query, "?");
-		#src/jotun/php/db/tools/Command.hx:103: lines 103-113
-		if ($this->_parameters !== null) {
-			#src/jotun/php/db/tools/Command.hx:104: lines 104-112
-			Dice::All($r, function ($p, $v) use (&$r, &$_gthis) {
-				#src/jotun/php/db/tools/Command.hx:105: lines 105-111
-				if ($p < $_gthis->_parameters->length) {
-					#src/jotun/php/db/tools/Command.hx:106: characters 6-37
-					$e = ($_gthis->_parameters->arr[$p] ?? null);
-					#src/jotun/php/db/tools/Command.hx:107: lines 107-109
-					if (is_string($e)) {
-						#src/jotun/php/db/tools/Command.hx:108: characters 7-24
-						$e = "\"" . \Std::string($e) . "\"";
-					}
-					#src/jotun/php/db/tools/Command.hx:110: characters 6-18
-					$r->offsetSet($p, ($v??'null') . \Std::string($e));
-				}
-			});
-		}
-		#src/jotun/php/db/tools/Command.hx:114: characters 3-20
-		return $r->join("");
-	}
-
-	/**
-	 * @return string
-	 */
-	public function query () {
-		#src/jotun/php/db/tools/Command.hx:118: characters 3-16
-		return $this->_query;
 	}
 }
 
 Boot::registerClass(Command::class, 'jotun.php.db.tools.Command');
-Boot::registerGetters('jotun\\php\\db\\tools\\Command', [
-	'errors' => true
-]);

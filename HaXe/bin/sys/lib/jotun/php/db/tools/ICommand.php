@@ -6,30 +6,12 @@
 namespace jotun\php\db\tools;
 
 use \php\Boot;
-use \jotun\errors\ErrorDescriptior;
 
 /**
  * @author Rafael Moreira
  */
-interface ICommand {
+interface ICommand extends ICommandCore {
 	/**
-	 * Flush arguments to query
-	 * @param	arguments
-	 * @return
-	 * 
-	 * @param mixed[]|\Array_hx $arguments
-	 * 
-	 * @return ICommand
-	 */
-	public function bind ($arguments) ;
-
-	/**
-	 * Execute the command
-	 * @param	handler
-	 * @param	type
-	 * @param	parameters
-	 * @return
-	 * 
 	 * @param \Closure $handler
 	 * @param mixed $type
 	 * @param mixed[]|\Array_hx $parameters
@@ -37,29 +19,6 @@ interface ICommand {
 	 * @return ICommand
 	 */
 	public function execute ($handler = null, $type = null, $parameters = null) ;
-
-	/**
-	 * @return ErrorDescriptior[]|\Array_hx
-	 */
-	public function get_errors () ;
-
-	/**
-	 * The final value of the query
-	 * 
-	 * @return string
-	 */
-	public function log () ;
-
-	/**
-	 * The base value of the query
-	 * @return
-	 * 
-	 * @return string
-	 */
-	public function query () ;
 }
 
 Boot::registerClass(ICommand::class, 'jotun.php.db.tools.ICommand');
-Boot::registerGetters('jotun\\php\\db\\tools\\ICommand', [
-	'errors' => true
-]);

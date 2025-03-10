@@ -64,8 +64,8 @@ class QueryBuilder {
 		$q = "";
 		#src/jotun/php/db/tools/QueryBuilder.hx:167: lines 167-168
 		if ($clause !== null) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:168: characters 4-68
-			$q = ($q??'null') . " WHERE " . ($this->_conditions($clause, $parameters, " || ", false)??'null');
+			#src/jotun/php/db/tools/QueryBuilder.hx:168: characters 4-93
+			$q = ($q??'null') . " WHERE " . ((($clause === null ? "1" : $this->_conditions($clause, $parameters, " || ", false)))??'null');
 		}
 		#src/jotun/php/db/tools/QueryBuilder.hx:169: lines 169-170
 		if ($order !== null) {
@@ -385,11 +385,11 @@ class QueryBuilder {
 			$update = "RESTRICT";
 		}
 		if ($key === null) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:272: characters 4-81
-			return $this->_gate->query("ALTER TABLE " . ($table??'null') . " DROP FOREIGN KEY " . ($reference??'null'));
+			#src/jotun/php/db/tools/QueryBuilder.hx:272: characters 4-83
+			return $this->_gate->prepare("ALTER TABLE " . ($table??'null') . " DROP FOREIGN KEY " . ($reference??'null'));
 		} else {
-			#src/jotun/php/db/tools/QueryBuilder.hx:274: characters 4-230
-			return $this->_gate->query("ALTER TABLE " . ($table??'null') . " ADD CONSTRAINT " . ($reference??'null') . " FOREIGN KEY (" . ($key??'null') . ") REFERENCES " . ($target??'null') . "(" . ($field??'null') . ") ON DELETE " . (\mb_strtoupper($delete)??'null') . " ON UPDATE " . (\mb_strtoupper($update)??'null') . ";");
+			#src/jotun/php/db/tools/QueryBuilder.hx:274: characters 4-232
+			return $this->_gate->prepare("ALTER TABLE " . ($table??'null') . " ADD CONSTRAINT " . ($reference??'null') . " FOREIGN KEY (" . ($key??'null') . ") REFERENCES " . ($target??'null') . "(" . ($field??'null') . ") ON DELETE " . (\mb_strtoupper($delete)??'null') . " ON UPDATE " . (\mb_strtoupper($update)??'null') . ";");
 		}
 	}
 

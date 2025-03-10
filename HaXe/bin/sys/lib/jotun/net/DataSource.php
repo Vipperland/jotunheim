@@ -161,6 +161,18 @@ class DataSource {
 		#src/jotun/net/DataSource.hx:39: characters 3-21
 		return $this->get($q, $alt);
 	}
+
+	/**
+	 * @return string
+	 */
+	public function toString () {
+		#src/jotun/net/DataSource.hx:69: characters 10-30
+		return Json::phpJsonEncode($this->data, null, null);
+	}
+
+	public function __toString() {
+		return $this->toString();
+	}
 }
 
 Boot::registerClass(DataSource::class, 'jotun.net.DataSource');

@@ -12,7 +12,7 @@ use \jotun\utils\Dice;
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
-class Pipe implements IPipe {
+class Pipe {
 	/**
 	 * @var mixed[]|\Array_hx
 	 */
@@ -26,7 +26,7 @@ class Pipe implements IPipe {
 	 */
 	public $calls;
 	/**
-	 * @var IFlow
+	 * @var Flow
 	 */
 	public $current;
 	/**
@@ -34,7 +34,7 @@ class Pipe implements IPipe {
 	 */
 	public $enabled;
 	/**
-	 * @var ISignals
+	 * @var Signals
 	 */
 	public $host;
 	/**
@@ -70,7 +70,7 @@ class Pipe implements IPipe {
 	/**
 	 * @param \Closure $handler
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function add ($handler) {
 		#src/jotun/signals/Pipe.hx:34: lines 34-36
@@ -86,7 +86,7 @@ class Pipe implements IPipe {
 	/**
 	 * @param mixed $data
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function call ($data = null) {
 		#src/jotun/signals/Pipe.hx:56: lines 56-70
@@ -118,7 +118,7 @@ class Pipe implements IPipe {
 	}
 
 	/**
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function disconnect () {
 		#src/jotun/signals/Pipe.hx:49: lines 49-52
@@ -135,7 +135,7 @@ class Pipe implements IPipe {
 	/**
 	 * @param \Closure $handler
 	 * 
-	 * @return IPipe
+	 * @return Pipe
 	 */
 	public function remove ($handler) {
 		#src/jotun/signals/Pipe.hx:41: characters 3-43
