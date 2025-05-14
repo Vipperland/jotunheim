@@ -4014,7 +4014,12 @@ jotun_data_BlobCache.create = function(name,data,weakRef) {
 };
 jotun_data_BlobCache.setWeak = function(name) {
 	var blob = Reflect.field(jotun_data_BlobCache._BlobRefs,name);
-	var tmp = blob != null;
+	if(blob != null) {
+		blob.weak = true;
+		if(blob.usage == 0) {
+			jotun_data_BlobCache.revoke(name);
+		}
+	}
 };
 jotun_data_BlobCache.revoke = function(name) {
 	if(Object.prototype.hasOwnProperty.call(jotun_data_BlobCache._BlobRefs,name)) {
@@ -10400,6 +10405,7 @@ jotun_utils_Filler.to = function(value,data,sufix) {
 	} else {
 		r = jotun_utils_Filler._apply(sufix,value,data);
 	}
+	r = r.split("{{?").join("{{");
 	return r;
 };
 jotun_utils_Filler.splitter = function(value,split,glue,each) {
@@ -10539,7 +10545,7 @@ jotun_utils_Reactor._react_clear = function(o,attr,prop) {
 jotun_utils_Reactor._react_commit_up = function(o) {
 	if(o.data.__co == null) {
 		o.data.__co = 0;
-		o.attribute("jtn-commit","true");
+		o.attribute("o-commit","true");
 	}
 	++o.data.__co;
 };
@@ -10547,26 +10553,26 @@ jotun_utils_Reactor._react_commit_down = function(o) {
 	--o.data.__co;
 	if(o.data.__co == 0) {
 		Reflect.deleteField(o.data,"__co");
-		o.clearAttribute("jtn-commit");
+		o.clearAttribute("o-commit");
 	}
 };
 jotun_utils_Reactor._react_fill_after = function(to) {
-	to.all("[jtn-commit]").add(to).each(function(o) {
+	to.all("[o-commit]").add(to).each(function(o) {
 		o.data.__cf = true;
 		jotun_utils_Reactor._react_fill_data(to.data,null,o);
 		jotun_utils_Reactor._react_fill_attr(to.data,null,o);
 		jotun_utils_Reactor._react_fill_style(to.data,null,o);
 		jotun_utils_Reactor._react_fill_class(to.data,null,o);
-		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"jtn-show-if");
-		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"jtn-hide-if");
+		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"o-show-if");
+		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"o-hide-if");
 		o.data.__cf = false;
 	});
 };
 jotun_utils_Reactor._react_fill_data = function(data,path,o) {
-	if(o.hasAttribute("jtn-data")) {
+	if(o.hasAttribute("o-data")) {
 		if(path != null) {
 			if(o.data.__qd == null) {
-				o.data.__qd = o.attribute("jtn-data");
+				o.data.__qd = o.attribute("o-data");
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qd = o.data.__qd.split("{{" + path + "}}").join(data);
@@ -10582,7 +10588,7 @@ jotun_utils_Reactor._react_fill_data = function(data,path,o) {
 				}
 				Reflect.deleteField(o.data,"__qd");
 				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-data");
+				jotun_utils_Reactor._react_clear(o,"o-single","o-data");
 			}
 		}
 	}
@@ -10598,17 +10604,19 @@ jotun_utils_Reactor._react_fill_visibility = function(data,path,o,attr) {
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qv = o.data.__qv.split("{{" + path + "}}").join(data);
-			o.data.__qvs += 1;
+			if(data) {
+				o.data.__qvs += 1;
+			}
 		}
 		if(o.data.__qv != null) {
 			if(o.data.__cf || o.data.__qv.indexOf("{{") == -1) {
 				if(o.data.__qvs >= o.data.__qvt) {
-					if(attr == "jtn-show-if") {
+					if(attr == "o-show-if") {
 						o.show();
 					} else {
 						o.hide();
 					}
-				} else if(attr == "jtn-show-if") {
+				} else if(attr == "o-show-if") {
 					o.hide();
 				} else {
 					o.show();
@@ -10617,13 +10625,13 @@ jotun_utils_Reactor._react_fill_visibility = function(data,path,o,attr) {
 				Reflect.deleteField(o.data,"__qvt");
 				Reflect.deleteField(o.data,"__qvs");
 				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"jtn-single",attr);
+				jotun_utils_Reactor._react_clear(o,"o-single",attr);
 			}
 		}
 	}
 };
 jotun_utils_Reactor._react_fill_class = function(data,path,o) {
-	if(o.hasAttribute("jtn-class")) {
+	if(o.hasAttribute("o-class")) {
 		if(path != null) {
 			if(o.data.__qc == null) {
 				if(!o.data.__qcs) {
@@ -10631,11 +10639,11 @@ jotun_utils_Reactor._react_fill_class = function(data,path,o) {
 					if(o.hasAttribute("class")) {
 						var cf = o.attribute("class");
 						if(cf.length > 0) {
-							o.attribute("jtn-class",Std.string(o.attribute("class")) + " " + Std.string(o.attribute("jtn-class")));
+							o.attribute("o-class",Std.string(o.attribute("class")) + " " + Std.string(o.attribute("o-class")));
 						}
 					}
 				}
-				o.data.__qc = o.attribute("jtn-class");
+				o.data.__qc = o.attribute("o-class");
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qc = o.data.__qc.split("{{" + path + "}}").join(data);
@@ -10645,16 +10653,16 @@ jotun_utils_Reactor._react_fill_class = function(data,path,o) {
 				o.attribute("class",o.data.__qc);
 				Reflect.deleteField(o.data,"__qc");
 				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-class");
+				jotun_utils_Reactor._react_clear(o,"o-single","o-class");
 			}
 		}
 	}
 };
 jotun_utils_Reactor._react_fill_attr = function(data,path,o) {
-	if(o.hasAttribute("jtn-attr")) {
+	if(o.hasAttribute("o-attr")) {
 		if(path != null) {
 			if(o.data.__qa == null) {
-				o.data.__qa = o.attribute("jtn-attr");
+				o.data.__qa = o.attribute("o-attr");
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qa = o.data.__qa.split("{{" + path + "}}").join(data);
@@ -10663,20 +10671,22 @@ jotun_utils_Reactor._react_fill_attr = function(data,path,o) {
 			if(o.data.__cf || o.data.__qa.indexOf("{{") == -1) {
 				jotun_utils_Dice.Values(o.data.__qa.split(";"),function(v) {
 					v = v.split(":");
-					o.attribute(v.shift(),v.join(":"));
+					if(v.length > 1) {
+						o.attribute(v.shift(),v.join(":"));
+					}
 				});
 				Reflect.deleteField(o.data,"__qa");
 				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-attr");
+				jotun_utils_Reactor._react_clear(o,"o-single","o-attr");
 			}
 		}
 	}
 };
 jotun_utils_Reactor._react_fill_style = function(data,path,o) {
-	if(o.hasAttribute("jtn-style")) {
+	if(o.hasAttribute("o-style")) {
 		if(path != null) {
 			if(o.data.__qs == null) {
-				o.data.__qs = o.attribute("jtn-style");
+				o.data.__qs = o.attribute("o-style");
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qs = o.data.__qs.split("{{" + path + "}}").join(data);
@@ -10685,34 +10695,37 @@ jotun_utils_Reactor._react_fill_style = function(data,path,o) {
 			if(o.data.__cf || o.data.__qs.indexOf("{{") == -1) {
 				jotun_utils_Dice.Values(o.data.__qs.split(";"),function(v) {
 					v = v.split(":");
-					o.style(v.shift(),v.join(":"));
+					if(v.length > 1) {
+						o.style(v.shift(),v.join(":"));
+					}
 				});
 				Reflect.deleteField(o.data,"__qs");
 				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"jtn-single","jtn-style");
+				jotun_utils_Reactor._react_clear(o,"o-single","o-style");
 			}
 		}
 	}
 };
 jotun_utils_Reactor._react_fill = function(to,data,path) {
 	if(typeof(data) == "string" || typeof(data) == "number" || typeof(data) == "boolean") {
-		to.all("[jtn-data*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+		to.all("[o-data*=\"{{" + path + "}}\"]").add(to).each(function(o) {
 			jotun_utils_Reactor._react_fill_data(data,path,o);
 		});
-		to.all("[jtn-attr*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+		to.all("[o-attr*=\"{{" + path + "}}\"]").add(to).each(function(o) {
 			jotun_utils_Reactor._react_fill_attr(data,path,o);
 		});
-		to.all("[jtn-style*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+		to.all("[o-style*=\"{{" + path + "}}\"]").add(to).each(function(o) {
 			jotun_utils_Reactor._react_fill_style(data,path,o);
 		});
-		to.all("[jtn-class*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+		to.all("[o-class*=\"{{" + path + "}}\"]").add(to).each(function(o) {
 			jotun_utils_Reactor._react_fill_class(data,path,o);
 		});
-		to.all("[jtn-show-if*=\"{{" + path + "}}\"]").add(to).each(function(o) {
-			jotun_utils_Reactor._react_fill_visibility(data,path,o,"jtn-show-if");
+		data = data != "" && data != false && data != 0 && data != "0" ? 1 : 0;
+		to.all("[o-show-if*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+			jotun_utils_Reactor._react_fill_visibility(data,path,o,"o-show-if");
 		});
-		to.all("[jtn-hide-if*=\"{{" + path + "}}\"]").add(to).each(function(o) {
-			jotun_utils_Reactor._react_fill_visibility(data,path,o,"jtn-hide-if");
+		to.all("[o-hide-if*=\"{{" + path + "}}\"]").add(to).each(function(o) {
+			jotun_utils_Reactor._react_fill_visibility(data,path,o,"o-hide-if");
 		});
 	} else {
 		if(path == "") {

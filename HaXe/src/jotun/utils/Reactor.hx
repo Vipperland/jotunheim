@@ -28,7 +28,7 @@ class Reactor {
 	static private function _react_commit_up(o:Displayable){
 		if (o.data.__co == null){
 			o.data.__co = 0;
-			o.attribute('jtn-commit', 'true');
+			o.attribute('o-commit', 'true');
 		}
 		++o.data.__co;
 	}
@@ -37,34 +37,34 @@ class Reactor {
 		--o.data.__co;
 		if (o.data.__co == 0){
 			Reflect.deleteField(o.data, '__co');
-			o.clearAttribute('jtn-commit');
+			o.clearAttribute('o-commit');
 		}
 	}
 	
 	static private function _react_fill_after(to:Displayable):Void {
-		to.all('[jtn-commit]').add(to).each(function(o:Displayable){
+		to.all('[o-commit]').add(to).each(function(o:Displayable){
 			o.data.__cf = true;
 			_react_fill_data(to.data, null, o);
 			_react_fill_attr(to.data, null, o);
 			_react_fill_style(to.data, null, o);
 			_react_fill_class(to.data, null, o);
-			_react_fill_visibility(to.data, null, o, 'jtn-show-if');
-			_react_fill_visibility(to.data, null, o, 'jtn-hide-if');
+			_react_fill_visibility(to.data, null, o, 'o-show-if');
+			_react_fill_visibility(to.data, null, o, 'o-hide-if');
 			o.data.__cf = false;
 		});
 	}
 	
 	/**
-	 * jtn-data="{{a}} {{b}} {{c}} ..."
+	 * o-data="{{a}} {{b}} {{c}} ..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
 	 */
 	static private function _react_fill_data(data:Dynamic, path:String, o:Displayable){
-		if (o.hasAttribute('jtn-data')){
+		if (o.hasAttribute('o-data')){
 			if(path != null){
 				if (o.data.__qd == null){
-					o.data.__qd = o.attribute('jtn-data');
+					o.data.__qd = o.attribute('o-data');
 					_react_commit_up(o);
 				}
 				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
@@ -79,7 +79,7 @@ class Reactor {
 					}
 					Reflect.deleteField(o.data, '__qd');
 					_react_commit_down(o);
-					_react_clear(o, 'jtn-single', 'jtn-data');
+					_react_clear(o, 'o-single', 'o-data');
 				}
 			}
 		}
@@ -102,18 +102,20 @@ class Reactor {
 					_react_commit_up(o);
 				}
 				o.data.__qv = o.data.__qv.split('{{' + path + '}}').join(data);
-				o.data.__qvs += 1;
+				if (data){
+					o.data.__qvs += 1;
+				}
 			}
 			if(o.data.__qv != null){
 				if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
 					if (o.data.__qvs >= o.data.__qvt){
-						if (attr == 'jtn-show-if'){
+						if (attr == 'o-show-if'){
 							o.show();
 						}else{
 							o.hide();
 						}
 					}else{
-						if (attr == 'jtn-show-if'){
+						if (attr == 'o-show-if'){
 							o.hide();
 						}else{
 							o.show();
@@ -123,20 +125,20 @@ class Reactor {
 					Reflect.deleteField(o.data, '__qvt');
 					Reflect.deleteField(o.data, '__qvs');
 					_react_commit_down(o);
-					_react_clear(o, 'jtn-single', attr);
+					_react_clear(o, 'o-single', attr);
 				}
 			}
 		}
 	}
 	
 	/**
-	 * jtn-class="{{a}} {{b}} {{c}} ..."
+	 * o-class="{{a}} {{b}} {{c}} ..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
 	 */
 	static private function _react_fill_class(data:Dynamic, path:String, o:Displayable){
-		if (o.hasAttribute('jtn-class')){
+		if (o.hasAttribute('o-class')){
 			if(path != null){
 				if (o.data.__qc == null){
 					if(!o.data.__qcs){
@@ -144,11 +146,11 @@ class Reactor {
 						if(o.hasAttribute('class')){
 							var cf:String = o.attribute('class');
 							if (cf.length > 0){
-								o.attribute('jtn-class', o.attribute('class') + ' ' + o.attribute('jtn-class'));
+								o.attribute('o-class', o.attribute('class') + ' ' + o.attribute('o-class'));
 							}
 						}
 					}
-					o.data.__qc = o.attribute('jtn-class');
+					o.data.__qc = o.attribute('o-class');
 					_react_commit_up(o);
 				}
 				o.data.__qc = o.data.__qc.split('{{' + path + '}}').join(data);
@@ -158,23 +160,23 @@ class Reactor {
 					o.attribute('class', o.data.__qc);
 					Reflect.deleteField(o.data, '__qc');
 					_react_commit_down(o);
-					_react_clear(o, 'jtn-single', 'jtn-class');
+					_react_clear(o, 'o-single', 'o-class');
 				}
 			}
 		}
 	}
 	
 	/**
-	 * jtn-attr="attrA:{{a}},attrB:{{b}},attrC:{{c}},..."
+	 * o-attr="attrA:{{a}},attrB:{{b}},attrC:{{c}},..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
 	 */
 	static private function _react_fill_attr(data:Dynamic, path:String, o:Displayable){
-		if (o.hasAttribute('jtn-attr')){
+		if (o.hasAttribute('o-attr')){
 			if(path != null){
 				if (o.data.__qa == null){
-					o.data.__qa = o.attribute('jtn-attr');
+					o.data.__qa = o.attribute('o-attr');
 					_react_commit_up(o);
 				}
 				o.data.__qa = o.data.__qa.split('{{' + path + '}}').join(data);
@@ -183,27 +185,29 @@ class Reactor {
 				if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
 					Dice.Values(o.data.__qa.split(';'), function(v:Dynamic){
 						v = v.split(":");
-						o.attribute(v.shift(), v.join(":"));
+						if (v.length > 1){
+							o.attribute(v.shift(), v.join(":"));
+						}
 					});
 					Reflect.deleteField(o.data, '__qa');
 					_react_commit_down(o);
-					_react_clear(o, 'jtn-single', 'jtn-attr');
+					_react_clear(o, 'o-single', 'o-attr');
 				}
 			}
 		}
 	}
 	
 	/**
-	 * jtn-style="paramA:{{a}},paramB:{{b}},paramC:{{c}},..."
+	 * o-style="paramA:{{a}},paramB:{{b}},paramC:{{c}},..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
 	 */
 	static private function _react_fill_style(data:Dynamic, path:String, o:Displayable){
-		if (o.hasAttribute('jtn-style')){
+		if (o.hasAttribute('o-style')){
 			if(path != null){
 				if (o.data.__qs == null){
-					o.data.__qs = o.attribute('jtn-style');
+					o.data.__qs = o.attribute('o-style');
 					_react_commit_up(o);
 				}
 				o.data.__qs = o.data.__qs.split('{{' + path + '}}').join(data);
@@ -212,11 +216,13 @@ class Reactor {
 				if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
 					Dice.Values(o.data.__qs.split(';'), function(v:Dynamic){
 						v = v.split(":");
-						o.style(v.shift(), v.join(":"));
+						if (v.length > 1){
+							o.style(v.shift(), v.join(":"));
+						}
 					});
 					Reflect.deleteField(o.data, '__qs');
 					_react_commit_down(o);
-					_react_clear(o, 'jtn-single', 'jtn-style');
+					_react_clear(o, 'o-single', 'o-style');
 				}
 			}
 		}
@@ -225,26 +231,27 @@ class Reactor {
 	static private function _react_fill(to:Displayable, data:Dynamic, path:String){
 		if (Std.isOfType(data, String) || Std.isOfType(data, Float) || Std.isOfType(data, Bool)){
 			// Simple write content
-			to.all('[jtn-data*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+			to.all('[o-data*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_data(data, path, o);
 			});
 			// Write object attributes
-			to.all('[jtn-attr*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+			to.all('[o-attr*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_attr(data, path, o);
 			});
 			// Write object styles
-			to.all('[jtn-style*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+			to.all('[o-style*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_style(data, path, o);
 			});
 			// Write object classes
-			to.all('[jtn-class*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+			to.all('[o-class*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
 				_react_fill_class(data, path, o);
 			});
-			to.all('[jtn-show-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
-				_react_fill_visibility(data, path, o, 'jtn-show-if');
+			data = data != "" && data != false && data != 0 && data != "0" ? 1 : 0;
+			to.all('[o-show-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+				_react_fill_visibility(data, path, o, 'o-show-if');
 			});
-			to.all('[jtn-hide-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
-				_react_fill_visibility(data, path, o, 'jtn-hide-if');
+			to.all('[o-hide-if*="{{' + path + '}}"]').add(to).each(function(o:Displayable){
+				_react_fill_visibility(data, path, o, 'o-hide-if');
 			});
 		}else {
 			path = path == '' ? '' : path + '.';
@@ -258,15 +265,15 @@ class Reactor {
 	}
 	
 	/**
-	 * jtn-single, remove attribute on apply, usage: jtn-[cmd]="{{a}} {{b}} ..."
-	 * jtn-data*={{prop}}
-	 * jtn-attr*={{prop}}
-	 * jtn-style*={{prop}}
-	 * jtn-class*={{prop}}
-	 * jtn-show-if*={{prop}}
-	 * jtn-show-if-score
-	 * jtn-hide-if*={{prop}}
-	 * jtn-hide-if-score
+	 * o-single, remove attribute on apply, usage: o-[cmd]="{{a}} {{b}} ..."
+	 * o-data*={{prop}}
+	 * o-attr*={{prop}}
+	 * o-style*={{prop}}
+	 * o-class*={{prop}}
+	 * o-show-if*={{prop}}
+	 * o-show-if-score
+	 * o-hide-if*={{prop}}
+	 * o-hide-if-score
 	 * 
 	 * @param	to
 	 * @param	data

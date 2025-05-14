@@ -52,6 +52,7 @@ class Filler{
 		}else {
 			r = _apply(sufix, value, data);
 		}
+		r = r.split("{{?").join("{{");
 		return r;
 	}
 	
