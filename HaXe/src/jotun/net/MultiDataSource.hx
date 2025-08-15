@@ -14,6 +14,4 @@ class MultiDataSource extends DataSource {
 		super(data);
 	}
 	
-	
-	
 }

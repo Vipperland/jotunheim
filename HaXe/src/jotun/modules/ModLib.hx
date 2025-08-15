@@ -109,6 +109,10 @@ class ModLib {
 		}
 	}
 	
+	public function list(method:String->Void):Void {
+		Dice.Params(CACHE, method);
+	}
+	
 	/**
 	 * Register a module
 	 * 	

@@ -365,7 +365,7 @@ class Dice {
 			var cache:Dynamic = { };
 			function cached(q:String):String {
 				if(!Reflect.hasField(cache, q)){
-					Reflect.setField(cache, q, SearchTag.clear(q));
+					Reflect.setField(cache, q, Utils.tag(q));
 				}
 				return Reflect.field(cache, q);
 			}

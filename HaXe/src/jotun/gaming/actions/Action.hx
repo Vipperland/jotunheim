@@ -79,7 +79,7 @@ class Action extends Resolution {
 		}
 		// Action aways break on success if not defined
 		if(breakon == null){
-			breakon = data.require > 0;
+			breakon = 'never';
 		}
 		if (Utils.isValid(data.id)){
 			SpellCodex.saveAction(this);

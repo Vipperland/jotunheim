@@ -1357,6 +1357,8 @@ jotun_net_Loader.prototype = {
 				try {
 					if(handler.before != null) {
 						handler.data = handler.before(data);
+					} else {
+						handler.data = data;
 					}
 					_gthis._endFetch(request,response,handler);
 				} catch( _g ) {
@@ -1383,7 +1385,7 @@ jotun_net_Loader.prototype = {
 		if(content.indexOf(type) == -1) {
 			if(type == null) {
 				return !jotun_utils_Dice.Values(rest,function(v) {
-					return content.indexOf(v) != -1;
+					return v.indexOf(content) != -1;
 				}).completed;
 			} else {
 				return false;
@@ -1560,19 +1562,19 @@ jotun_net_Loader.prototype = {
 	,__class__: jotun_net_Loader
 };
 var jotun_data_Logger = function() {
-	this._level = new jotun_logical_Flag(31);
+	this._levels = [1,1,1,1,1,0,1,0,0];
 	this._events = [];
 	this._events[0] = $bind(this,this.query);
 };
 jotun_data_Logger.__name__ = "jotun.data.Logger";
 jotun_data_Logger.prototype = {
 	_events: null
-	,_level: null
+	,_levels: null
 	,enable: function(i) {
-		this._level.put(i);
+		this._levels[i] = 1;
 	}
 	,disable: function(i) {
-		this._level.drop(i);
+		this._levels[i] = 0;
 	}
 	,mute: function() {
 		if(Lambda.indexOf(this._events,$bind(this,this.query)) != -1) {
@@ -1588,7 +1590,7 @@ jotun_data_Logger.prototype = {
 		this._events[this._events.length] = handler;
 	}
 	,push: function(q,type) {
-		if(!this._level.test(type)) {
+		if(this._levels[type] != 1) {
 			return;
 		}
 		jotun_utils_Dice.Values(this._events,function(v) {
@@ -1599,7 +1601,7 @@ jotun_data_Logger.prototype = {
 		console.log.apply(null,q);
 	}
 	,query: function(q,type) {
-		if(!this._level.test(type)) {
+		if(this._levels[type] != 1) {
 			return;
 		}
 		var t = "";
@@ -1618,7 +1620,7 @@ jotun_data_Logger.prototype = {
 				t = "[!ERROR!] ";
 				break;
 			case 4:
-				t = "[//TODO*] ";
+				t = "[MODULES] ";
 				break;
 			case 5:
 				t = "[$QUERY*] ";
@@ -1630,10 +1632,9 @@ jotun_data_Logger.prototype = {
 				t = "[OBSOLET] ";
 				break;
 			case 8:
-				t = "[MODULES] ";
+				t = "[//TODO*] ";
 				break;
 			default:
-				t = "";
 			}
 		}
 		q = [t,q];
@@ -1742,6 +1743,9 @@ jotun_modules_ModLib.prototype = {
 		if(this.exists(module)) {
 			Reflect.deleteField(jotun_modules_ModLib.CACHE,module);
 		}
+	}
+	,list: function(method) {
+		jotun_utils_Dice.Params(jotun_modules_ModLib.CACHE,method);
 	}
 	,register: function(file,content) {
 		var _gthis = this;
@@ -2909,6 +2913,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	,enable: function() {
 		this.style("pointerEvents","all");
 		Reflect.deleteField(this.data,"__disabled");
+		this.css("/disabled");
 		this.events.each(function(v) {
 			v.enabled = true;
 			return false;
@@ -2917,6 +2922,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	,disable: function() {
 		this.style("pointerEvents","none");
 		this.data["__disabled"] = true;
+		this.css("disabled");
 		this.events.each(function(v) {
 			v.enabled = false;
 			return false;
@@ -3785,13 +3791,21 @@ jotun_css_XCode._createGrid = function() {
 		jotun_css_XCode.omnibuild(".shelf","-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;");
 		jotun_css_XCode.omnibuild(".hack,.drawer","-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;");
 		jotun_css_XCode.omnibuild(".drawer","-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;");
-		jotun_css_XCode.omnibuild(".cel","-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;");
-		jotun_css_XCode.omnibuild(".o-left,.o-top-left,.o-bottom-left","-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;");
-		jotun_css_XCode.omnibuild(".a-middle,.o-middle","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
+		var s = "-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;";
+		jotun_css_XCode.omnibuild(".hack > .cel",s + "max-height:100%;max-width:100%;");
+		jotun_css_XCode.omnibuild(".hack > .h-cel",s + "max-width:100%;:100%;");
+		jotun_css_XCode.omnibuild(".hack > .v-cel",s + "max-height:100%;");
+		jotun_css_XCode.omnibuild(".drawer > .cel",s + "max-height:100%;width:fit-content;");
+		jotun_css_XCode.omnibuild(".shelf > .cel",s + "max-width:100%;height:fit-content;");
+		jotun_css_XCode.omnibuild(".drawer > .fill.cel",s + "width:100%;");
+		jotun_css_XCode.omnibuild(".shelf > .fill.cel",s + "height:100%;");
+		jotun_css_XCode.omnibuild(".o-left,.o-top-left","-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;");
+		jotun_css_XCode.omnibuild(".a-middle,.o-middle,.o-top,.o-bottom","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
 		jotun_css_XCode.omnibuild(".o-right,.o-top-right,o-bottom-right","-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;");
 		jotun_css_XCode.omnibuild(".o-top,.o-top-left,.o-top-right","-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;");
-		jotun_css_XCode.omnibuild(".x-middle,.o-middle","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
-		jotun_css_XCode.omnibuild(".o-bottom,.o-bottom-left,.o-bottom-right","justify-content:end;");
+		jotun_css_XCode.omnibuild(".x-middle,.o-middle,.o-right,.o-left","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
+		jotun_css_XCode.omnibuild(".o-bottom-right","justify-content:end;");
+		jotun_css_XCode.omnibuild(".o-bottom-left,.o-bottom,.o-bottom-right","align-items:end;");
 		jotun_css_XCode.omnibuild(".o-distribute","-ms-flex-pack:distribute;justify-content: space-around;");
 		jotun_css_XCode.omnibuild(".o-justify","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
 		jotun_css_XCode.omnibuild(".shelf.o-reverse,.hack.o-stack","-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;");
@@ -3803,8 +3817,11 @@ jotun_css_XCode._createGrid = function() {
 			jotun_css_XCode.omnibuild(".tag-" + a,"-webkit-box-ordinal-group:" + a + ";-ms-flex-order:" + a + ";order:" + a + ";");
 			var m = a / b * 100 - .001;
 			var t = m.toFixed(5) + "%";
-			var s = "flex-basis:" + t + ";max-width:" + t + "";
-			jotun_css_XCode.omnibuild(".cel-" + a,s);
+			jotun_css_XCode.omnibuild(".hack > .cel-" + a,"flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
+			jotun_css_XCode.omnibuild(".drawer > .cel-" + a,"flex-basis:" + t + ";max-height:" + t + ";width:fit-content;height:fit-content");
+			jotun_css_XCode.omnibuild(".shelf > .cel-" + a,"flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
+			jotun_css_XCode.omnibuild(".drawer > .fill.cel-" + a,"width:100%");
+			jotun_css_XCode.omnibuild(".shelf > .fill.cel-" + a,"height:100%");
 			if(a < b) {
 				jotun_css_XCode.omnibuild(".r-cell-" + a,"margin-left:" + t);
 				jotun_css_XCode.omnibuild(".l-cell-" + a,"margin-right:" + t);
@@ -3919,7 +3936,7 @@ jotun_css_XCode.imageFilter = function(id,data,width,height,x,y,replace) {
 		jotun_css_XCode._filters.appendHtml(end);
 	}
 };
-jotun_css_XCode.stroke = function(id,text,color,strenght,blur) {
+jotun_css_XCode.blur = function(id,text,color,strenght,blur) {
 	var l = jotun_tools_Utils.getValidOne(strenght,1);
 	var b = jotun_tools_Utils.getValidOne(blur,1);
 	var x = 0;
@@ -3942,6 +3959,43 @@ jotun_css_XCode.stroke = function(id,text,color,strenght,blur) {
 		}
 	}
 	jotun_css_XCode.omnibuild(id,(text ? "text-shadow" : "box-shadow") + ":" + s.join(","));
+	return id;
+};
+jotun_css_XCode.stroke = function(id,text,color,width,distance,direction,quality,blur) {
+	if(blur == null) {
+		blur = 0;
+	}
+	if(quality == null) {
+		quality = 1;
+	}
+	if(direction == null) {
+		direction = 90;
+	}
+	if(distance == null) {
+		distance = 1;
+	}
+	var r = [];
+	var y = 0;
+	var tx = 0;
+	var ty = 0;
+	var w = 0;
+	var o = 360 / (width * 100 * quality);
+	var ofx = 0;
+	var ofy = 0;
+	var pi = Math.PI / 180;
+	if(distance > 0) {
+		ofx = Math.cos(pi * direction) * distance;
+		ofy = Math.sin(pi * direction) * distance;
+	}
+	while(y < 360) {
+		y += o;
+		tx = Math.cos(pi * y) * width;
+		ty = Math.sin(pi * y) * width;
+		r[r.length] = tx.toFixed(5) + "rem" + " " + ty.toFixed(5) + "rem" + " 0 " + color;
+		r[r.length] = (tx + ofx).toFixed(5) + "rem" + " " + (ty + ofy).toFixed(5) + "rem" + " 0 " + color;
+	}
+	var q = (text ? "text-shadow" : "box-shadow") + ":" + r.join(",");
+	jotun_css_XCode.omnibuild(id,q);
 	return id;
 };
 jotun_css_XCode.shadow = function(id,text,color,distance,direction,float,steps,multiplier) {
@@ -4265,7 +4319,7 @@ jotun_dom_Dialog.prototype = $extend(jotun_dom_Display.prototype,{
 });
 var jotun_dom_Document = function() {
 	this.__keys = { };
-	this.__cursor__ = { x : 0, y : 0};
+	this.__cursor__ = { x : 0, y : 0, mx : 0, my : 0};
 	this.__scroll__ = { x : 0, y : 0};
 	if(jotun_dom_Document.__doc__ == null) {
 		jotun_dom_Display.call(this,window.document);
@@ -4356,6 +4410,18 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		window.scroll({ top : y, left : x, behavior : ease ? "smooth" : "auto"});
 	}
+	,goTop: function(ease) {
+		if(ease == null) {
+			ease = true;
+		}
+		this.scroll(this.getScroll().x,0,ease);
+	}
+	,goBottom: function(ease) {
+		if(ease == null) {
+			ease = true;
+		}
+		this.scroll(this.getScroll().x,0,ease);
+	}
 	,addScroll: function(x,y,ease) {
 		if(ease == null) {
 			ease = true;
@@ -4421,9 +4487,17 @@ jotun_dom_Document.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		this.__cursor__.enabled = true;
 		window.addEventListener("mousemove",function(e) {
+			_gthis.__cursor__.mx = _gthis.__cursor__.x;
+			_gthis.__cursor__.my = _gthis.__cursor__.y;
 			_gthis.__cursor__.x = e.clientX;
 			_gthis.__cursor__.y = e.clientY;
 		});
+	}
+	,cursorMovedX: function() {
+		return this.__cursor__.x - this.__cursor__.mx;
+	}
+	,cursorMovedY: function() {
+		return this.__cursor__.y - this.__cursor__.my;
 	}
 	,cursorX: function() {
 		return this.__cursor__.x;
@@ -4899,7 +4973,7 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		}
 		return q;
 	}
-	,clear: function(background) {
+	,clear: function() {
 		this.value("");
 	}
 	,isValid: function() {
@@ -6066,15 +6140,7 @@ jotun_gaming_actions_Resolution.prototype = {
 		if(this.breakon == "never") {
 			return false;
 		}
-		if(this.breakon != result) {
-			if(result) {
-				return this.breakon == null;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
-		}
+		return this.breakon == result;
 	}
 	,release: function(result,context) {
 		if(this._stopped) {
@@ -6182,7 +6248,7 @@ var jotun_gaming_actions_Action = $hx_exports["Jtn"]["Action"] = function(type,d
 		this.target = data.target | 0;
 	}
 	if(this.breakon == null) {
-		this.breakon = data.require > 0;
+		this.breakon = "never";
 	}
 	if(jotun_tools_Utils.isValid(data.id)) {
 		jotun_gaming_actions_SpellCodex.saveAction(this);
@@ -6411,6 +6477,20 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 		var v = this._isempty(value) || jotun_tools_Utils.boolean(value);
 		if(a != v) {
 			this.getDataProvider().setSwitch(name,v);
+		}
+		return this;
+	}
+	,toggleswitch: function(name) {
+		var a = this.getDataProvider().getSwitch(name);
+		this.getDataProvider().setSwitch(name,!a);
+		return this;
+	}
+	,define: function(name,a,rule,b) {
+		a = this.getDataProvider().getVar(a);
+		b = this.getDataProvider().getVar(b);
+		var v = this._resolve(a,rule,b);
+		if(a != v) {
+			this.getDataProvider().setVar(name,v);
 		}
 		return this;
 	}
@@ -6742,6 +6822,11 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 	,isswitch: function(name,value) {
 		var a = this.getDataProvider().getSwitch(name);
 		return (this._isempty(value) || jotun_tools_Utils.boolean(value)) == a;
+	}
+	,compare: function(name,rule,name2) {
+		name = this.getDataProvider().getVar(name);
+		name2 = this.getDataProvider().getVar(name2);
+		return this._resolve(name,rule,name2);
 	}
 	,hasrequestcontext: function() {
 		return this.invocation.requestProvider != null;
@@ -8729,6 +8814,19 @@ jotun_net_DataSource.prototype = {
 	,merge: function(data) {
 		jotun_utils_Dice.Blend(data,this.data);
 	}
+	,list: function(names) {
+		var _gthis = this;
+		var result = { values : { }, missing : [], success : false};
+		jotun_utils_Dice.Values(names,function(name) {
+			if(_gthis.exists(name)) {
+				result.values[name] = _gthis.get(name);
+			} else {
+				result.missing.push(name);
+			}
+		});
+		result.success = result.missing.length == 0;
+		return result;
+	}
 	,exists: function(q) {
 		if(this.data != null) {
 			return Object.prototype.hasOwnProperty.call(this.data,q);
@@ -9921,6 +10019,20 @@ jotun_tools_Utils.range = function(value) {
 	}
 	return r;
 };
+jotun_tools_Utils.tag = function(value,space) {
+	if(space == null) {
+		space = "";
+	}
+	var i = 0;
+	var l = jotun_tools_Utils._TAG_REPLACE.length;
+	while(i < l) {
+		value = value.split(jotun_tools_Utils._TAG_REPLACE[i][0]).join(jotun_tools_Utils._TAG_REPLACE[i][1]);
+		++i;
+	}
+	value = value.split(" ").join(space);
+	value = value.split("\t").join(space);
+	return value;
+};
 jotun_tools_Utils.toFixed = function(n,i,s) {
 	if(s == null) {
 		s = ".";
@@ -10231,7 +10343,7 @@ jotun_utils_Dice.Sort = function(data,key,numeric,copy) {
 		var cache = { };
 		var cached = function(q) {
 			if(!Object.prototype.hasOwnProperty.call(cache,q)) {
-				var value = jotun_utils_SearchTag.clear(q);
+				var value = jotun_tools_Utils.tag(q);
 				cache[q] = value;
 			}
 			return Reflect.field(cache,q);
@@ -10754,93 +10866,6 @@ jotun_utils_Reactor.listen = function(handler) {
 jotun_utils_Reactor.unlisten = function(handler) {
 	HxOverrides.remove(jotun_utils_Reactor._listeners,handler);
 };
-var jotun_utils_SearchTag = $hx_exports["J_SearchTag"] = function(tags) {
-	tags = [];
-	this.add(tags);
-};
-jotun_utils_SearchTag.__name__ = "jotun.utils.SearchTag";
-jotun_utils_SearchTag.create = function(value) {
-	if(!((value) instanceof jotun_utils_SearchTag)) {
-		value = new jotun_utils_SearchTag(value);
-	}
-	return value;
-};
-jotun_utils_SearchTag._clear = function(data,space) {
-	var i = 0;
-	var l = jotun_utils_SearchTag._M.length;
-	while(i < l) {
-		data = data.split(jotun_utils_SearchTag._M[i][0]).join(jotun_utils_SearchTag._M[i][1]);
-		++i;
-	}
-	data = data.split(" ").join(space);
-	data = data.split("\t").join(space);
-	return data;
-};
-jotun_utils_SearchTag.clear = function(data,space) {
-	if(space == null) {
-		space = "+";
-	}
-	data = Std.string(data).toLowerCase();
-	return jotun_utils_SearchTag._clear(data,space);
-};
-jotun_utils_SearchTag.prototype = {
-	tags: null
-	,_tag: function() {
-		return "|" + this.tags.join("|") + "|";
-	}
-	,add: function(values) {
-		var _gthis = this;
-		if(!((values) instanceof Array)) {
-			values = [values];
-		}
-		jotun_utils_Dice.Values(values,function(v) {
-			v = jotun_utils_SearchTag._clear(v,"+");
-			var iof = Lambda.indexOf(_gthis.tags,v);
-			if(iof == -1) {
-				_gthis.tags[_gthis.tags.length] = v;
-			}
-		});
-	}
-	,remove: function(values) {
-		var _gthis = this;
-		values = jotun_utils_SearchTag.create(values).tags;
-		jotun_utils_Dice.Values(values,function(v) {
-			var iof = Lambda.indexOf(_gthis.tags,v);
-			if(iof != -1) {
-				_gthis.tags.splice(iof,1);
-			}
-		});
-	}
-	,compare: function(values,equality) {
-		if(equality == null) {
-			equality = false;
-		}
-		var tag = this._tag();
-		values = jotun_utils_SearchTag.create(values).tags;
-		var total = values.length;
-		var count = jotun_utils_Dice.Values(values,function(v) {
-			if(equality) {
-				return tag.indexOf("|" + v + "|") == -1;
-			} else {
-				return tag.indexOf(v) != -1;
-			}
-		}).keys;
-		return UInt.toFloat(count) / UInt.toFloat(total) * 100;
-	}
-	,equal: function(values) {
-		var tag = this._tag();
-		return jotun_utils_Dice.Values(jotun_utils_SearchTag.create(values).tags,function(v) {
-			return tag.indexOf("|" + v + "|") == -1;
-		}).completed;
-	}
-	,contains: function(values) {
-		var tag = this._tag();
-		return !jotun_utils_Dice.Values(jotun_utils_SearchTag.create(values).tags,function(v) {
-			return tag.indexOf(v) != -1;
-		}).completed;
-	}
-	,__class__: jotun_utils_SearchTag
-};
 var jotun_utils_Singularity = $hx_exports["Singularity"] = function() { };
 jotun_utils_Singularity.__name__ = "jotun.utils.Singularity";
 jotun_utils_Singularity._selfActivate = function() {
@@ -11304,6 +11329,33 @@ jotun_utils_Table.prototype = {
 	}
 	,__class__: jotun_utils_Table
 };
+var jotun_utils_Validator = $hx_exports["Jtn"]["Validator"] = function() { };
+jotun_utils_Validator.__name__ = "jotun.utils.Validator";
+jotun_utils_Validator.email = function(value) {
+	return new EReg("^[a-z0-9!'#$%&*+/=?^_`{|}~-]+(?:\\.[a-z0-9!'#$%&*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-zA-Z]{2,}$","giu").match(value);
+};
+jotun_utils_Validator.number = function(value) {
+	return new EReg("^\\d{1,}$","").match(value);
+};
+jotun_utils_Validator.username = function(value) {
+	return new EReg("^[A-Za-z0-9._-]{6,24}$","").match(value);
+};
+jotun_utils_Validator.password = function(value) {
+	return new EReg("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}|(?=.*?[#?!@$%^&*-_])$","giu").match(value);
+};
+jotun_utils_Validator.date = function(value) {
+	if(value == null) {
+		return false;
+	}
+	if(typeof(value) == "number") {
+		return value > 0;
+	}
+	if(!new EReg("\\d{1,2}/\\d{1,2}/\\d{4}","").match(value)) {
+		return new EReg("\\d{4}/\\d{1,2}/\\d{1,2}","").match(value);
+	} else {
+		return true;
+	}
+};
 var js_Boot = function() { };
 js_Boot.__name__ = "js.Boot";
 js_Boot.getClass = function(o) {
@@ -11659,9 +11711,9 @@ jotun_gaming_dataform_SparkWriter.SET = ":";
 jotun_gaming_dataform_SparkWriter.TYPE = "q";
 jotun_gaming_dataform_SparkWriter.SPACE = " ";
 jotun_logical_Flag._bits = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+jotun_tools_Utils._TAG_REPLACE = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["ñ","n"]];
 jotun_tools_Utils._typeOf = { A : jotun_dom_A, AUDIO : jotun_dom_Audio, BODY : jotun_dom_Body, BUTTON : jotun_dom_Button, CANVAS : jotun_dom_Canvas, CAPTION : jotun_dom_Caption, DATALIST : jotun_dom_DataList, DIV : jotun_dom_Div, DISPLAY : jotun_dom_Display, DOCUMENT : jotun_dom_Document, FORM : jotun_dom_Form, H1 : jotun_dom_H1, H2 : jotun_dom_H2, H3 : jotun_dom_H3, H4 : jotun_dom_H4, H5 : jotun_dom_H5, H6 : jotun_dom_H6, HEAD : jotun_dom_Head, HTML : jotun_dom_Html, IFRAME : jotun_dom_IFrame, IMG : jotun_dom_Img, INPUT : jotun_dom_Input, LABEL : jotun_dom_Label, LI : jotun_dom_LI, LINK : jotun_dom_Link, MEDIA : jotun_dom_Media, META : jotun_dom_Meta, OL : jotun_dom_OL, OPTGROUP : jotun_dom_OptGroup, OPTION : jotun_dom_Option, PICTURE : jotun_dom_Picture, SCRIPT : jotun_dom_Script, SELECT : jotun_dom_Select, SOURCE : jotun_dom_Source, SPAN : jotun_dom_Span, STYLE : jotun_dom_Style, SVG : jotun_dom_Svg, TEXT : jotun_dom_Text, TEXTAREA : jotun_dom_TextArea, TITLE : jotun_dom_Title, TRACK : jotun_dom_Track, UL : jotun_dom_UL, VIDEO : jotun_dom_Video};
 jotun_utils_Reactor._listeners = [];
-jotun_utils_SearchTag._M = [["á","a"],["ã","a"],["â","a"],["à","a"],["ê","e"],["é","e"],["è","e"],["î","i"],["í","i"],["ì","i"],["õ","o"],["ô","o"],["ó","o"],["ò","o"],["ú","u"],["ù","u"],["û","u"],["ç","c"],["ñ","n"]];
 jotun_utils_Singularity._channel = "jotumhein";
 jotun_utils_Singularity.signals = new jotun_signals_Signals(jotun_utils_Singularity);
 jotun_utils_Table._trash = [];

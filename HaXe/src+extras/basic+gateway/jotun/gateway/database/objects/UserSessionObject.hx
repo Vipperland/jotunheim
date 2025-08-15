@@ -32,9 +32,9 @@ import jotun.utils.Omnitools;
  */
 class UserSessionObject extends ZoneCoreObject implements IPassCarrier {
 
-	static public inline var OAUTH_HEAD_IN:String = "(y)=>";
+	static public var OAUTH_HEAD_IN:String = "(y)=>";
 	
-	static public inline var OAUTH_HEAD_OUT:String = "(y)<=";
+	static public var OAUTH_HEAD_OUT:String = "(y)<=";
 	
 	/**
 	 * User id

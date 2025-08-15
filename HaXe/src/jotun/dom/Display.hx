@@ -424,6 +424,7 @@ class Display extends Query implements Displayable {
 	public function enable():Void {
 		style('pointerEvents', 'all');
 		Reflect.deleteField(data, '__disabled');
+		css('/disabled');
 		events.each(function(v:EventGroup):Bool {
 			v.enabled = true;
 			return false;
@@ -433,6 +434,7 @@ class Display extends Query implements Displayable {
 	public function disable():Void {
 		style('pointerEvents', 'none');
 		Reflect.setField(data, '__disabled', true);
+		css('disabled');
 		events.each(function(v:EventGroup):Bool {
 			v.enabled = false;
 			return false;

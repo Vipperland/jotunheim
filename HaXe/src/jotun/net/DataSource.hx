@@ -1,6 +1,7 @@
 package jotun.net;
 import haxe.DynamicAccess;
 import haxe.Json;
+import haxe.macro.Type;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -51,6 +52,23 @@ class DataSource {
 		Dice.Blend(data, this.data);
 	}
 	
+	public function list(names:Array<String>):ListResult {
+		var result:ListResult = {
+			values: { },
+			missing: [ ],
+			success: false,
+		};
+		Dice.Values(names, function(name:String){
+			if (exists(name)){
+				result.values.set(name, get(name));
+			}else{
+				result.missing.push(name);
+			}
+		});
+		result.success = result.missing.length == 0;
+		return result;
+	}
+	
 	public function exists(q:String):Bool {
 		return data != null && data.exists(q);
 	}
@@ -69,4 +87,10 @@ class DataSource {
 		return Json.stringify(data);
 	}
 	
+}
+
+typedef ListResult = {
+	var values:DynamicAccess<Dynamic>;
+	var missing:Array<String>;
+	var success:Bool;
 }

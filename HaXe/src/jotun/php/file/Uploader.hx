@@ -168,12 +168,17 @@ class Uploader {
 							o = _rename(o, resizeRule.sufix, resizeRule.type);
 						}
 						
+						if(convert){
+							o = o.split('.' + v.type).join('.' + resizeRule.type);
+						}
+						
 						if(resize){
 							image.fit(resizeRule.width, resizeRule.height);
 						}
 						
 						if (create || rename || resize || convert){
 							image.save(o, resizeRule.type, resizeRule.quality);
+							_log('saving', { name: o, type: resizeRule.type });
 							if(resizeRule.id == null){
 								resizeRule.id = image.width + 'x' + image.height;
 							}

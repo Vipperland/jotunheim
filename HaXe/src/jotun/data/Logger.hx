@@ -28,14 +28,14 @@ class Logger {
 	
 	private var _events:Array<Dynamic->Int->Void>;
 	
-	private var _level:Flag = new Flag((1<<MESSAGE) | (1<<SYSTEM) | (1<<WARNING) | (1<<ERROR) | (1<<MODULE));
+	private var _levels:Array<Int> = [1,1,1,1,1,0,1,0,0];
 	
 	public function enable(i:Int):Void {
-		_level.put(i);
+		_levels[i] = 1;
 	}
 	
 	public function disable(i:Int):Void {
-		_level.drop(i);
+		_levels[i] = 0;
 	}
 	
 	public function new() {
@@ -64,7 +64,7 @@ class Logger {
 	}
 	
 	public function push(q:Dynamic, type:Int) {
-		if (!_level.test(type)){
+		if (_levels[type] != 1){
 			return;
 		}
 		Dice.Values(_events, function(v:Dynamic->Int->Void) {
@@ -81,21 +81,21 @@ class Logger {
 	}
 	
 	public function query(q:Dynamic, type:Int):Void {
-		if (!_level.test(type)){
+		if (_levels[type] != 1){
 			return;
 		}
 		var t:String = "";
-		if(type != null){
-			t = switch(type) {
-				case 0 : "[MESSAGE] ";
-				case 1 : "[>SYSTEM] ";
-				case 2 : "[WARNING] ";
-				case 3 : "[!ERROR!] ";
-				case 4 : "[//TODO*] ";
-				case 5 : "[$QUERY*] ";
-				case 6 : "[BRDCAST] ";
-				case 7 : "[OBSOLET] ";
-				case 8 : "[MODULES] ";
+		if (type != null){
+			switch(type) {
+				case MESSAGE : t = "[MESSAGE] ";
+				case SYSTEM : t = "[>SYSTEM] ";
+				case WARNING : t = "[WARNING] ";
+				case ERROR : t = "[!ERROR!] ";
+				case TODO : t = "[//TODO*] ";
+				case QUERY : t = "[$QUERY*] ";
+				case BROADCAST : t = "[BRDCAST] ";
+				case OBSOLETE : t = "[OBSOLET] ";
+				case MODULE : t = "[MODULES] ";
 				default : "";
 			}
 		}

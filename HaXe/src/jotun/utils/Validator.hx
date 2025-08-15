@@ -4,6 +4,7 @@ package jotun.utils;
  * ...
  * @author 
  */
+@:expose("Jtn.Validator")
 class Validator {
 
 	static public function email(value:String):Bool {

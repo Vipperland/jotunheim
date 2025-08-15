@@ -132,7 +132,7 @@ class Input extends Display {
 		return q;
 	}
 	
-	public function clear(?background:String):Void {
+	public function clear():Void {
 		value('');
 	}
 	

@@ -62,6 +62,8 @@ class Loader implements ILoader {
 				try{
 					if(handler.before != null){
 						handler.data = handler.before(data);
+					}else{
+						handler.data = data;
 					}
 					_endFetch(request, response, handler);
 				}catch(e:Error){
@@ -78,7 +80,7 @@ class Loader implements ILoader {
 	
 	private function _matchType(type:String, content:String, ...rest:String):Bool {
 		return content.indexOf(type) != -1 || (type == null && !Dice.Values(rest, function(v:String):Bool {
-			return content.indexOf(v) != -1;
+			return v.indexOf(content) != -1;
 		} ).completed);
 	}
 	

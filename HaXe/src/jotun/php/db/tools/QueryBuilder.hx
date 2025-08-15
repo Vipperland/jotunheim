@@ -162,14 +162,20 @@ class QueryBuilder {
 	 * @param	limit
 	 * @return
 	 */
-	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String):String {
+	private function _assembleBody(?clause:Dynamic, ?parameters:Array<Dynamic>, ?order:Dynamic, ?limit:String, ?group:String):String {
 		var q:String = "";
-		if (clause != null)
+		if (clause != null){
 			q += " WHERE " + (clause == null ? "1" : _conditions(clause , parameters, " || ", false));
-		if (order != null)
+		}
+		if (group != null){
+			q += " GROUP BY " + group;
+		}
+		if (order != null){
 			q += " ORDER BY " + _order(order);
-		if (limit != null)
+		}
+		if (limit != null){
 			q += " LIMIT " + limit;
+		}
 		return q;
 	}
 	
@@ -193,7 +199,7 @@ class QueryBuilder {
 	 * @param	limit
 	 * @return
 	 */
-	public function find(fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String):IExtCommand {
+	public function find(fields:Dynamic, table:Dynamic, ?clause:Dynamic, ?order:Dynamic, ?limit:String, ?group:String):IExtCommand {
 		if (Std.isOfType(fields, Array)) {
 			fields = fields.join(",");
 		}
@@ -203,7 +209,7 @@ class QueryBuilder {
 			table = main + ' ' + table.join(" ");
 		}
 		var parameters:Dynamic = [];
-		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit) + ";", parameters);
+		return _gate.query("SELECT " + fields + " FROM " + table + _assembleBody(clause, parameters, order, limit, group) + ";", parameters);
 	}
 	
 	/**

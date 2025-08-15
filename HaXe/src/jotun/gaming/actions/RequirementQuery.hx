@@ -185,6 +185,19 @@ class RequirementQuery extends Query {
 		return (_isempty(value) || Utils.boolean(value)) == a;
 	}
 	
+	/**
+	 * Compara duas variáveis
+	 * @param	name
+	 * @param	rule
+	 * @param	name2
+	 * @return
+	 */
+	public function compare(name:String, rule:String, name2:String):Bool {
+		name = getDataProvider().getVar(name);
+		name2 = getDataProvider().getVar(name2);
+		return _resolve(name, rule, name2);
+	}
+	
 	
 	public function hasrequestcontext():Bool {
 		return invocation.requestProvider != null;

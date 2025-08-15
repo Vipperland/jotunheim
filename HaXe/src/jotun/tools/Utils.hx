@@ -4,6 +4,7 @@ import jotun.Jotun;
 import jotun.math.Point;
 import jotun.utils.IColor;
 import jotun.utils.IDiceRoll;
+import jotun.utils.Validator;
 
 #if js
 
@@ -70,7 +71,6 @@ import jotun.utils.IDiceRoll;
 	import jotun.idb.WebDBAssist;
 	import jotun.idb.WebDBTable;
 	import jotun.math.JMath;
-	import jotun.utils.SearchTag;
 	import jotun.utils.Singularity;
 	import jotun.signals.Observer;
 #end
@@ -91,6 +91,17 @@ import jotun.utils.Dice;
 @:expose("Jtn.Utils")
 class Utils{
 	
+		
+	private static var _TAG_REPLACE:Dynamic = [
+		['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], 
+		['ê', 'e'], ['é', 'e'], ['è', 'e'], 
+		['î', 'i'], ['í', 'i'], ['ì', 'i'], 
+		['õ', 'o'], ['ô', 'o'], ['ó', 'o'], ['ò', 'o'],
+		['ú', 'u'], ['ù', 'u'], ['û', 'u'], 
+		['ç', 'c'], ['ñ', 'n']
+	];
+	
+		
 	#if js
 		public static function matchMedia(value:String):Bool {
 			return Browser.window.matchMedia(value).matches;
@@ -524,6 +535,19 @@ class Utils{
 		}
 		return r;
 	}
+	
+	public static function tag(value:String, space:String = ''):String {
+		var i:Int = 0;
+		var l:Int = _TAG_REPLACE.length;
+		while (i < l) {
+			value = value.split(_TAG_REPLACE[i][0]).join(_TAG_REPLACE[i][1]);
+			++i;
+		}
+		value = value.split(" ").join(space);
+		value = value.split("\t").join(space);
+		return value;
+	}
+	
 	
 	#if php 
 		

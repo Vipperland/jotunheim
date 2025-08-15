@@ -141,8 +141,8 @@ class DataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function find (?fields:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : ExtQuery {
-		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), _name, clause, order, limit).execute(null, _class).result);
+	public function find (?fields:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null, ?group:String = null) : ExtQuery {
+		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), _name, clause, order, limit, group).execute(null, _class).result);
 	}
 
 	/**
@@ -153,12 +153,12 @@ class DataTable {
 	 * @param	limit
 	 * @return
 	 */
-	public function findJoin(?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null) : ExtQuery {
+	public function findJoin(?fields:Dynamic, tables:Dynamic, ?clause:Dynamic = null, ?order:Dynamic = null, ?limit:String = null, ?group:String = null) : ExtQuery {
 		if (!Std.isOfType(tables, Array)){
 			tables = [tables];
 		}
 		tables.unshift(_name);
-		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), tables, clause, order, limit).execute(null, _class).result);
+		return new ExtQuery(this, _gate.builder.find(_checkRestriction(fields), tables, clause, order, limit, group).execute(null, _class).result);
 	}
 
 	/**
@@ -166,8 +166,8 @@ class DataTable {
 	 * @param	clause
 	 * @return
 	 */
-	public function findOne (?fields:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
-		return find(fields, clause, order, Limit.ONE).first();
+	public function findOne (?fields:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null, ?group:String = null) : Dynamic {
+		return find(fields, clause, order, Limit.ONE, group).first();
 	}
 
 	/**
@@ -177,8 +177,8 @@ class DataTable {
 	 * @param	order
 	 * @return
 	 */
-	public function findOneJoin (?fields:Dynamic, tables:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null) : Dynamic {
-		return findJoin(fields, tables, clause, order, Limit.ONE).first();
+	public function findOneJoin (?fields:Dynamic, tables:Dynamic, ?clause:Dynamic=null, ?order:Dynamic = null, ?group:String = null) : Dynamic {
+		return findJoin(fields, tables, clause, order, Limit.ONE, group).first();
 	}
 
 	/**

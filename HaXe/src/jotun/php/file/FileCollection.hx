@@ -1,4 +1,5 @@
 package jotun.php.file;
+import jotun.php.file.FileInfo;
 import jotun.utils.Dice;
 
 /**
@@ -85,6 +86,17 @@ class FileCollection {
 	
 	public function each(method:FileInfo->Void):Void {
 		Dice.Values(list, method);
+	}
+	
+	public function extract(nametag:String):Array<String> {
+		var paths:Array<String> = [];
+		each(function (file:FileInfo){
+			var size:IFileSizeInfo = file.get(nametag);
+			if (size != null){
+				paths.push(size.url);
+			}
+		});
+		return paths;
 	}
 	
 }

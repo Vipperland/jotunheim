@@ -77,7 +77,7 @@ class Resolution {
 		if(breakon == BREAK_NEVER){
 			return false;
 		}
-		return breakon == result || (result && breakon == null);
+		return breakon == result;
 	}
 	
 	/**

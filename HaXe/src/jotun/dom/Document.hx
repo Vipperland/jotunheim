@@ -35,7 +35,7 @@ class Document extends Display {
 	
 	private var __scroll__:Dynamic = { x:0, y:0 };
 	
-	private var __cursor__:Dynamic = { x:0, y:0 };
+	private var __cursor__:Dynamic = { x:0, y:0, mx:0, my:0 };
 	
 	private var __keys:DynamicAccess<Dynamic> = { };
 	
@@ -140,12 +140,20 @@ class Document extends Display {
 	 * @param	x
 	 * @param	y
 	 */
-	public function scroll(x:Int, y:Int, ease:Bool = true):Void {
+	public function scroll(x:Float, y:Float, ease:Bool = true):Void {
 		Browser.window.scroll(cast {
 			top:y,
 			left:x,
 			behavior: ease ? 'smooth' : 'auto',
 		});
+	}
+	
+	public function goTop(ease:Bool = true):Void {
+		this.scroll(getScroll().x, 0, ease);
+	}
+	
+	public function goBottom(ease:Bool = true):Void {
+		this.scroll(getScroll().x, 0, ease);
 	}
 	
 	/**
@@ -229,9 +237,27 @@ class Document extends Display {
 		}
 		__cursor__.enabled = true;
 		Browser.window.addEventListener('mousemove', function(e:js.html.MouseEvent) {
+			__cursor__.mx = __cursor__.x;
+			__cursor__.my = __cursor__.y;
 			__cursor__.x = e.clientX;
 			__cursor__.y = e.clientY;
 		});
+	}
+	
+	/**
+	 * Current clientX
+	 * @return
+	 */
+	public function cursorMovedX():Int {
+		return cast __cursor__.x - __cursor__.mx;
+	}
+	
+	/**
+	 * Current clientY
+	 * @return
+	 */
+	public function cursorMovedY():Int {
+		return cast __cursor__.y - __cursor__.my;
 	}
 	
 	/**

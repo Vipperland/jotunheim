@@ -91,15 +91,24 @@ class XCode {
 			omnibuild('.hack,.drawer', '-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;');
 			omnibuild('.drawer', '-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;');
 			// Auto grow
-			omnibuild('.cel', '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;max-width:100%;');
+			
+			var s:String = '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;';
+			omnibuild('.hack > .cel', s + 'max-height:100%;max-width:100%;');
+			omnibuild('.hack > .h-cel', s + 'max-width:100%;:100%;');
+			omnibuild('.hack > .v-cel', s + 'max-height:100%;');
+			omnibuild('.drawer > .cel', s + 'max-height:100%;width:fit-content;');
+			omnibuild('.shelf > .cel', s + 'max-width:100%;height:fit-content;');
+			omnibuild('.drawer > .fill.cel', s + 'width:100%;');
+			omnibuild('.shelf > .fill.cel', s + 'height:100%;');
 			// Pack will align left, center or right
-			omnibuild('.o-left,.o-top-left,.o-bottom-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
-			omnibuild('.a-middle,.o-middle', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
+			omnibuild('.o-left,.o-top-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
+			omnibuild('.a-middle,.o-middle,.o-top,.o-bottom', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
 			omnibuild('.o-right,.o-top-right,o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
 			// Lift will align top, middle and bottom
 			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
-			omnibuild('.x-middle,.o-middle', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
-			omnibuild('.o-bottom,.o-bottom-left,.o-bottom-right', 'justify-content:end;');
+			omnibuild('.x-middle,.o-middle,.o-right,.o-left', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
+			omnibuild('.o-bottom-right', 'justify-content:end;');
+			omnibuild('.o-bottom-left,.o-bottom,.o-bottom-right', 'align-items:end;');
 			// Fill empty spaces around the cells
 			omnibuild('.o-distribute', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
@@ -117,8 +126,11 @@ class XCode {
 				// Create cel values (from 1 to 12), the .001 value fix some gaps between the cells
 				var m:Float = cast (a / b * 100 - .001);
 				var t:String = (cast m).toFixed(5) + '%';
-				var s:String = "flex-basis:" + t + ";max-width:" + t + "";
-				omnibuild('.cel-' + a, s);
+				omnibuild('.hack > .cel-' + a, "flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
+				omnibuild('.drawer > .cel-' + a, "flex-basis:" + t + ";max-height:" + t + ";width:fit-content;height:fit-content");
+				omnibuild('.shelf > .cel-' + a, "flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
+				omnibuild('.drawer > .fill.cel-' + a, "width:100%");
+				omnibuild('.shelf > .fill.cel-' + a, "height:100%");
 				if (a < b) {
 					omnibuild('.r-cell-' + a, 'margin-left:' + t);
 					omnibuild('.l-cell-' + a, 'margin-right:' + t);
@@ -278,7 +290,7 @@ class XCode {
 		}
 	}
 	
-	static public function stroke(id:String, text:Bool, color:String, ?strenght:Int, ?blur:Int):String {
+	static public function blur(id:String, text:Bool, color:String, ?strenght:Int, ?blur:Int):String {
 		var l:Int = Utils.getValidOne(strenght, 1);
 		var b:Int = Utils.getValidOne(blur, 1);
 		var x:Int = 0;
@@ -302,6 +314,33 @@ class XCode {
 			}
 		}
 		omnibuild(id, (text ? 'text-shadow' : 'box-shadow') + ':' + s.join(','));
+		return id;
+	}
+	
+	static public function stroke(id:String, text:Bool, color:String, width:Float, distance:Float = 1, direction:Int = 90, quality:Float = 1, blur:Int = 0):String {
+		var r:Array<String> = [];
+		var y:Float = 0;
+		var tx:Float = 0;
+		var ty:Float = 0;
+		var w:Int = 0;
+		var o:Float = 360/(width * 100 * quality);
+		
+		var ofx:Float = 0;
+		var ofy:Float = 0;
+		var pi:Float = Math.PI / 180;
+		if (distance > 0){
+			ofx = Math.cos(pi * direction) * distance;
+			ofy = Math.sin(pi * direction) * distance;
+		}
+		while (y < 360) {
+			y += o;
+			tx = Math.cos(pi * y) * width;
+			ty = Math.sin(pi * y) * width;
+			r[r.length] = (cast tx).toFixed(5) + 'rem' + ' ' + (cast ty).toFixed(5) + 'rem' + ' 0 ' + color;
+			r[r.length] = (cast tx + ofx).toFixed(5) + 'rem' + ' ' + (cast ty + ofy).toFixed(5) + 'rem' + ' 0 ' + color;
+		}
+		var q:String = (text ? 'text-shadow' : 'box-shadow') + ':' + r.join(',');
+		omnibuild(id, q);
 		return id;
 	}
 	

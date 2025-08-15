@@ -271,6 +271,37 @@ class ActionQuery extends Query {
 		return this;
 	}
 	
+	/**
+	 * Invert Swith value
+	 * @param	name
+	 * @param	value
+	 * @return
+	 */
+	public function toggleswitch(name:String):ActionQuery {
+		var a:Bool = getDataProvider().getSwitch(name);
+		getDataProvider().setSwitch(name, !a);
+		return this;
+	}
+	
+	/**
+	   Set variable with resolved value of A and B
+		setfloat var_name * 2 // effect: var_name*=2
+		setfloat var_name / 2 // effect: var_name/=2
+	   @param	name
+	   @param	rule
+	   @param	value
+	**/
+	public function define(name:String, a:String, rule:String, b:String):ActionQuery {
+		a = getDataProvider().getVar(a);
+		b = getDataProvider().getVar(b);
+		var v:Dynamic = _resolve(a, rule, b);
+		if (a != v) {
+			getDataProvider().setVar(name, v);
+		}
+		return this;
+	}
+
+	
 	#if js
 	
 	/**
