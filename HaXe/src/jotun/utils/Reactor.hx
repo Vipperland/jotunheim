@@ -27,35 +27,93 @@ class Reactor {
 	
 	static private function _react_commit_up(o:Displayable){
 		if (o.data.__co == null){
-			o.data.__co = 0;
+			o.data.__co = true;
 			o.attribute('o-commit', 'true');
 		}
-		++o.data.__co;
 	}
 	
-	static private function _react_commit_down(o:Displayable){
-		--o.data.__co;
-		if (o.data.__co == 0){
-			Reflect.deleteField(o.data, '__co');
-			o.clearAttribute('o-commit');
+	static private function _strip(q:String):String {
+		var result:Array<String> = q.split('{{');
+		if(result.length > 0){
+			Dice.All(result, function(q:Int, v:String):Void {
+				result[q] = v.split('}}')[1];
+			});
+		}
+		return result.join('');
+	}
+	
+	static private function _commit(data:Dynamic, o:Displayable){
+		if(o.data.__qa){
+			Dice.Values(o.data.__qa.split(';'), function(v:Dynamic){
+				if(v.length > 3){
+					v = v.split(":");
+					o.attribute(v.shift(), v.join(":"));
+				}
+			});
+			Reflect.deleteField(o.data, '__qa');
+			_react_clear(o, 'o-single', 'o-attr');
+		}
+		if(o.data.__qc != null){
+			o.css(_strip(o.data.__qc));
+			Reflect.deleteField(o.data, '__qc');
+			_react_clear(o, 'o-single', 'o-class');
+		}
+		if(o.data.__qd != null){
+			o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
+			if (Std.isOfType(o, Input)){
+				o.value(o.data.__qd);
+			}else{
+				o.writeHtml(o.data.__qd);
+			}
+			Reflect.deleteField(o.data, '__qd');
+			_react_clear(o, 'o-single', 'o-data');
+		}
+		if(o.data.__qs != null){
+			Dice.Values(o.data.__qs.split(';'), function(v:Dynamic){
+				v = v.split(":");
+				o.style(v.shift(), v.join(":"));
+			});
+			Reflect.deleteField(o.data, '__qs');
+			_react_clear(o, 'o-single', 'o-style');
 		}
 	}
 	
-	static private function _react_fill_after(to:Displayable):Void {
+	static private function _commit_visibility(data:Dynamic, o:Displayable, attr:String, foo:Dynamic){
+		if (o.data.__qv != null &&  o.data.__qv == attr){
+			if (o.data.__qvs >= o.data.__qvt){
+				if (attr == 'o-show-if'){
+					o.show();
+				}else{
+					o.hide();
+				}
+			}else{
+				if (attr == 'o-show-if'){
+					o.hide();
+				}else{
+					o.show();
+				}
+			}
+			Reflect.deleteField(o.data, '__qv');
+			Reflect.deleteField(o.data, '__qvt');
+			Reflect.deleteField(o.data, '__qvs');
+		}
+	}
+	
+	static private function _react_fill_after(to:Displayable, data:Dynamic):Void {
 		to.all('[o-commit]').add(to).each(function(o:Displayable){
-			o.data.__cf = true;
-			_react_fill_data(to.data, null, o);
-			_react_fill_attr(to.data, null, o);
-			_react_fill_style(to.data, null, o);
-			_react_fill_class(to.data, null, o);
-			_react_fill_visibility(to.data, null, o, 'o-show-if');
-			_react_fill_visibility(to.data, null, o, 'o-hide-if');
-			o.data.__cf = false;
+			_commit(to.data, o);
+			_commit(to.data, o);
+			_commit(to.data, o);
+			_commit(to.data, o);
+			_commit_visibility(to.data, o, 'o-show-if', data);
+			_commit_visibility(to.data, o, 'o-hide-if', data);
+			Reflect.deleteField(o.data, '__co');
+			o.clearAttribute('o-commit');
 		});
 	}
 	
 	/**
-	 * o-data="{{a}} {{b}} {{c}} ..."
+	 * pipadata="{{a}} {{b}} {{c}} ..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
@@ -69,19 +127,7 @@ class Reactor {
 				}
 				o.data.__qd = o.data.__qd.split('{{' + path + '}}').join(data);
 			}
-			if(o.data.__qd != null){
-				if (o.data.__cf || o.data.__qd.indexOf('{{') == -1){
-					o.data.__qd = Std.isOfType(o.data.__qd, String) ? Utils.rnToBr(o.data.__qd) : o.data.__qd;
-					if (Std.isOfType(o, Input)){
-						o.value(o.data.__qd);
-					}else{
-						o.writeHtml(o.data.__qd);
-					}
-					Reflect.deleteField(o.data, '__qd');
-					_react_commit_down(o);
-					_react_clear(o, 'o-single', 'o-data');
-				}
-			}
+			
 		}
 	}
 	
@@ -92,47 +138,24 @@ class Reactor {
 	 * @param	o
 	 * @param	attr
 	 */
-	static private function _react_fill_visibility(data:Dynamic, path:String, o:Displayable, attr:String){
+	static private function _react_fill_visibility(data:Bool, path:String, o:Displayable, attr:String){
 		if (o.hasAttribute(attr)){
 			if(path != null){
 				if (o.data.__qv == null){
-					o.data.__qv = o.attribute(attr);
-					o.data.__qvt = o.hasAttribute(attr + '-score') ? o.attribute(attr + '-score') : o.data.__qv.split(',').length;
+					o.data.__qv = attr;
+					o.data.__qvt = o.hasAttribute('o-score') ? o.attribute('o-score') : o.attribute(attr).split(',').length;
 					o.data.__qvs = 0;
 					_react_commit_up(o);
 				}
-				o.data.__qv = o.data.__qv.split('{{' + path + '}}').join(data);
 				if (data){
 					o.data.__qvs += 1;
-				}
-			}
-			if(o.data.__qv != null){
-				if (o.data.__cf || o.data.__qv.indexOf('{{') == -1){
-					if (o.data.__qvs >= o.data.__qvt){
-						if (attr == 'o-show-if'){
-							o.show();
-						}else{
-							o.hide();
-						}
-					}else{
-						if (attr == 'o-show-if'){
-							o.hide();
-						}else{
-							o.show();
-						}
-					}
-					Reflect.deleteField(o.data, '__qv');
-					Reflect.deleteField(o.data, '__qvt');
-					Reflect.deleteField(o.data, '__qvs');
-					_react_commit_down(o);
-					_react_clear(o, 'o-single', attr);
 				}
 			}
 		}
 	}
 	
 	/**
-	 * o-class="{{a}} {{b}} {{c}} ..."
+	 * pipaclass="{{a}} {{b}} {{c}} ..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
@@ -141,33 +164,17 @@ class Reactor {
 		if (o.hasAttribute('o-class')){
 			if(path != null){
 				if (o.data.__qc == null){
-					if(!o.data.__qcs){
-						o.data.__qcs = true;
-						if(o.hasAttribute('class')){
-							var cf:String = o.attribute('class');
-							if (cf.length > 0){
-								o.attribute('o-class', o.attribute('class') + ' ' + o.attribute('o-class'));
-							}
-						}
-					}
 					o.data.__qc = o.attribute('o-class');
 					_react_commit_up(o);
 				}
 				o.data.__qc = o.data.__qc.split('{{' + path + '}}').join(data);
 			}
-			if(o.data.__qc){
-				if (o.data.__cf || o.data.__qc.indexOf('{{') == -1){
-					o.attribute('class', o.data.__qc);
-					Reflect.deleteField(o.data, '__qc');
-					_react_commit_down(o);
-					_react_clear(o, 'o-single', 'o-class');
-				}
-			}
+			
 		}
 	}
 	
 	/**
-	 * o-attr="attrA:{{a}},attrB:{{b}},attrC:{{c}},..."
+	 * pipaattr="attrA:{{a}},attrB:{{b}},attrC:{{c}},..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
@@ -181,24 +188,11 @@ class Reactor {
 				}
 				o.data.__qa = o.data.__qa.split('{{' + path + '}}').join(data);
 			}
-			if(o.data.__qa){
-				if (o.data.__cf || o.data.__qa.indexOf('{{') == -1){
-					Dice.Values(o.data.__qa.split(';'), function(v:Dynamic){
-						v = v.split(":");
-						if (v.length > 1){
-							o.attribute(v.shift(), v.join(":"));
-						}
-					});
-					Reflect.deleteField(o.data, '__qa');
-					_react_commit_down(o);
-					_react_clear(o, 'o-single', 'o-attr');
-				}
-			}
 		}
 	}
 	
 	/**
-	 * o-style="paramA:{{a}},paramB:{{b}},paramC:{{c}},..."
+	 * pipastyle="paramA:{{a}},paramB:{{b}},paramC:{{c}},..."
 	 * @param	data
 	 * @param	path
 	 * @param	o
@@ -211,19 +205,6 @@ class Reactor {
 					_react_commit_up(o);
 				}
 				o.data.__qs = o.data.__qs.split('{{' + path + '}}').join(data);
-			}
-			if(o.data.__qs != null){
-				if(o.data.__cf || o.data.__qs.indexOf('{{') == -1){
-					Dice.Values(o.data.__qs.split(';'), function(v:Dynamic){
-						v = v.split(":");
-						if (v.length > 1){
-							o.style(v.shift(), v.join(":"));
-						}
-					});
-					Reflect.deleteField(o.data, '__qs');
-					_react_commit_down(o);
-					_react_clear(o, 'o-single', 'o-style');
-				}
 			}
 		}
 	}

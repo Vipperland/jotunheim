@@ -872,11 +872,15 @@ class Display extends Query implements Displayable {
 	}
 	
 	public function previous():Displayable {
-		return Utils.displayFrom(element.previousElementSibling);
+		var index:Int = this.index();
+		if(index == 0){
+			return null;
+		}
+		return parent().getChild(index - 1);
 	}
 	
 	public function next():Displayable {
-		return Utils.displayFrom(element.nextElementSibling);
+		return parent().getChild(this.index() + 1);
 	}
 	
 	public function run(method:Displayable->Void):Displayable {
