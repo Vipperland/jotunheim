@@ -84,8 +84,11 @@ class Observer {
 		});
 	}
 	
+	
 	public function clear():Void {
-		_radar = [];
+		Dice.Values(_radar, function(v:Displayable){
+			remove(v);
+		});
 	}
 	
 }

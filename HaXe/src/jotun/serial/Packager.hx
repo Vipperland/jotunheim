@@ -64,10 +64,11 @@ class Packager {
 	 * @return
 	 */
 	public static function md5Encode(o:Dynamic, ?base64:Bool):String {
-		if (Std.isOfType(o, String))
+		if (Std.isOfType(o, String)){
 			return Md5.encode(o);
-		else
+		} else{
 			return Md5.encode(base64 ? encodeBase64(o) : jsonEncode(o));
+		}
 	}
 	
 	//

@@ -1697,7 +1697,10 @@ jotun_signals_Observer.prototype = {
 		});
 	}
 	,clear: function() {
-		this._radar = [];
+		var _gthis = this;
+		jotun_utils_Dice.Values(this._radar,function(v) {
+			_gthis.remove(v);
+		});
 	}
 	,__class__: jotun_signals_Observer
 };
@@ -3331,10 +3334,14 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return { left : this.element.scrollLeft, top : this.element.scrollTop, offsetX : this.element.offsetLeft, offsetY : this.element.offsetTop, x : this.element.offsetLeft - window.scrollX, y : this.element.offsetTop - window.scrollY};
 	}
 	,previous: function() {
-		return jotun_tools_Utils.displayFrom(this.element.previousElementSibling);
+		var index = this.index();
+		if(index == 0) {
+			return null;
+		}
+		return this.parent().getChild(index - 1);
 	}
 	,next: function() {
-		return jotun_tools_Utils.displayFrom(this.element.nextElementSibling);
+		return this.parent().getChild(this.index() + 1);
 	}
 	,run: function(method) {
 		method(this);
@@ -10656,28 +10663,83 @@ jotun_utils_Reactor._react_clear = function(o,attr,prop) {
 };
 jotun_utils_Reactor._react_commit_up = function(o) {
 	if(o.data.__co == null) {
-		o.data.__co = 0;
+		o.data.__co = true;
 		o.attribute("o-commit","true");
 	}
-	++o.data.__co;
 };
-jotun_utils_Reactor._react_commit_down = function(o) {
-	--o.data.__co;
-	if(o.data.__co == 0) {
-		Reflect.deleteField(o.data,"__co");
-		o.clearAttribute("o-commit");
+jotun_utils_Reactor._strip = function(q) {
+	var result = q.split("{{");
+	if(result.length > 0) {
+		jotun_utils_Dice.All(result,function(q,v) {
+			result[q] = v.split("}}")[1];
+		});
+	}
+	return result.join("");
+};
+jotun_utils_Reactor._commit = function(data,o) {
+	if(o.data.__qa) {
+		jotun_utils_Dice.Values(o.data.__qa.split(";"),function(v) {
+			if(v.length > 3) {
+				v = v.split(":");
+				o.attribute(v.shift(),v.join(":"));
+			}
+		});
+		Reflect.deleteField(o.data,"__qa");
+		jotun_utils_Reactor._react_clear(o,"o-single","o-attr");
+	}
+	if(o.data.__qc != null) {
+		o.css(jotun_utils_Reactor._strip(o.data.__qc));
+		Reflect.deleteField(o.data,"__qc");
+		jotun_utils_Reactor._react_clear(o,"o-single","o-class");
+	}
+	if(o.data.__qd != null) {
+		var tmp = typeof(o.data.__qd) == "string" ? jotun_tools_Utils.rnToBr(o.data.__qd) : o.data.__qd;
+		o.data.__qd = tmp;
+		if(((o) instanceof jotun_dom_Input)) {
+			o.value(o.data.__qd);
+		} else {
+			o.writeHtml(o.data.__qd);
+		}
+		Reflect.deleteField(o.data,"__qd");
+		jotun_utils_Reactor._react_clear(o,"o-single","o-data");
+	}
+	if(o.data.__qs != null) {
+		jotun_utils_Dice.Values(o.data.__qs.split(";"),function(v) {
+			v = v.split(":");
+			o.style(v.shift(),v.join(":"));
+		});
+		Reflect.deleteField(o.data,"__qs");
+		jotun_utils_Reactor._react_clear(o,"o-single","o-style");
 	}
 };
-jotun_utils_Reactor._react_fill_after = function(to) {
+jotun_utils_Reactor._commit_visibility = function(data,o,attr,foo) {
+	if(o.data.__qv != null && o.data.__qv == attr) {
+		if(o.data.__qvs >= o.data.__qvt) {
+			if(attr == "o-show-if") {
+				o.show();
+			} else {
+				o.hide();
+			}
+		} else if(attr == "o-show-if") {
+			o.hide();
+		} else {
+			o.show();
+		}
+		Reflect.deleteField(o.data,"__qv");
+		Reflect.deleteField(o.data,"__qvt");
+		Reflect.deleteField(o.data,"__qvs");
+	}
+};
+jotun_utils_Reactor._react_fill_after = function(to,data) {
 	to.all("[o-commit]").add(to).each(function(o) {
-		o.data.__cf = true;
-		jotun_utils_Reactor._react_fill_data(to.data,null,o);
-		jotun_utils_Reactor._react_fill_attr(to.data,null,o);
-		jotun_utils_Reactor._react_fill_style(to.data,null,o);
-		jotun_utils_Reactor._react_fill_class(to.data,null,o);
-		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"o-show-if");
-		jotun_utils_Reactor._react_fill_visibility(to.data,null,o,"o-hide-if");
-		o.data.__cf = false;
+		jotun_utils_Reactor._commit(to.data,o);
+		jotun_utils_Reactor._commit(to.data,o);
+		jotun_utils_Reactor._commit(to.data,o);
+		jotun_utils_Reactor._commit(to.data,o);
+		jotun_utils_Reactor._commit_visibility(to.data,o,"o-show-if",data);
+		jotun_utils_Reactor._commit_visibility(to.data,o,"o-hide-if",data);
+		Reflect.deleteField(o.data,"__co");
+		o.clearAttribute("o-commit");
 	});
 };
 jotun_utils_Reactor._react_fill_data = function(data,path,o) {
@@ -10689,55 +10751,20 @@ jotun_utils_Reactor._react_fill_data = function(data,path,o) {
 			}
 			o.data.__qd = o.data.__qd.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__qd != null) {
-			if(o.data.__cf || o.data.__qd.indexOf("{{") == -1) {
-				var tmp = typeof(o.data.__qd) == "string" ? jotun_tools_Utils.rnToBr(o.data.__qd) : o.data.__qd;
-				o.data.__qd = tmp;
-				if(((o) instanceof jotun_dom_Input)) {
-					o.value(o.data.__qd);
-				} else {
-					o.writeHtml(o.data.__qd);
-				}
-				Reflect.deleteField(o.data,"__qd");
-				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"o-single","o-data");
-			}
-		}
 	}
 };
 jotun_utils_Reactor._react_fill_visibility = function(data,path,o,attr) {
 	if(o.hasAttribute(attr)) {
 		if(path != null) {
 			if(o.data.__qv == null) {
-				o.data.__qv = o.attribute(attr);
-				var tmp = o.hasAttribute(attr + "-score") ? o.attribute(attr + "-score") : o.data.__qv.split(",").length;
+				o.data.__qv = attr;
+				var tmp = o.hasAttribute("o-score") ? o.attribute("o-score") : o.attribute(attr).split(",").length;
 				o.data.__qvt = tmp;
 				o.data.__qvs = 0;
 				jotun_utils_Reactor._react_commit_up(o);
 			}
-			o.data.__qv = o.data.__qv.split("{{" + path + "}}").join(data);
 			if(data) {
 				o.data.__qvs += 1;
-			}
-		}
-		if(o.data.__qv != null) {
-			if(o.data.__cf || o.data.__qv.indexOf("{{") == -1) {
-				if(o.data.__qvs >= o.data.__qvt) {
-					if(attr == "o-show-if") {
-						o.show();
-					} else {
-						o.hide();
-					}
-				} else if(attr == "o-show-if") {
-					o.hide();
-				} else {
-					o.show();
-				}
-				Reflect.deleteField(o.data,"__qv");
-				Reflect.deleteField(o.data,"__qvt");
-				Reflect.deleteField(o.data,"__qvs");
-				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"o-single",attr);
 			}
 		}
 	}
@@ -10746,27 +10773,10 @@ jotun_utils_Reactor._react_fill_class = function(data,path,o) {
 	if(o.hasAttribute("o-class")) {
 		if(path != null) {
 			if(o.data.__qc == null) {
-				if(!o.data.__qcs) {
-					o.data.__qcs = true;
-					if(o.hasAttribute("class")) {
-						var cf = o.attribute("class");
-						if(cf.length > 0) {
-							o.attribute("o-class",Std.string(o.attribute("class")) + " " + Std.string(o.attribute("o-class")));
-						}
-					}
-				}
 				o.data.__qc = o.attribute("o-class");
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qc = o.data.__qc.split("{{" + path + "}}").join(data);
-		}
-		if(o.data.__qc) {
-			if(o.data.__cf || o.data.__qc.indexOf("{{") == -1) {
-				o.attribute("class",o.data.__qc);
-				Reflect.deleteField(o.data,"__qc");
-				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"o-single","o-class");
-			}
 		}
 	}
 };
@@ -10779,19 +10789,6 @@ jotun_utils_Reactor._react_fill_attr = function(data,path,o) {
 			}
 			o.data.__qa = o.data.__qa.split("{{" + path + "}}").join(data);
 		}
-		if(o.data.__qa) {
-			if(o.data.__cf || o.data.__qa.indexOf("{{") == -1) {
-				jotun_utils_Dice.Values(o.data.__qa.split(";"),function(v) {
-					v = v.split(":");
-					if(v.length > 1) {
-						o.attribute(v.shift(),v.join(":"));
-					}
-				});
-				Reflect.deleteField(o.data,"__qa");
-				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"o-single","o-attr");
-			}
-		}
 	}
 };
 jotun_utils_Reactor._react_fill_style = function(data,path,o) {
@@ -10802,19 +10799,6 @@ jotun_utils_Reactor._react_fill_style = function(data,path,o) {
 				jotun_utils_Reactor._react_commit_up(o);
 			}
 			o.data.__qs = o.data.__qs.split("{{" + path + "}}").join(data);
-		}
-		if(o.data.__qs != null) {
-			if(o.data.__cf || o.data.__qs.indexOf("{{") == -1) {
-				jotun_utils_Dice.Values(o.data.__qs.split(";"),function(v) {
-					v = v.split(":");
-					if(v.length > 1) {
-						o.style(v.shift(),v.join(":"));
-					}
-				});
-				Reflect.deleteField(o.data,"__qs");
-				jotun_utils_Reactor._react_commit_down(o);
-				jotun_utils_Reactor._react_clear(o,"o-single","o-style");
-			}
 		}
 	}
 };
@@ -10855,7 +10839,7 @@ jotun_utils_Reactor._react_fill = function(to,data,path) {
 };
 jotun_utils_Reactor.apply = function(to,data) {
 	jotun_utils_Reactor._react_fill(to,data,"");
-	jotun_utils_Reactor._react_fill_after(to);
+	jotun_utils_Reactor._react_fill_after(to,data);
 	jotun_utils_Reactor._dispatch(to);
 };
 jotun_utils_Reactor.listen = function(handler) {

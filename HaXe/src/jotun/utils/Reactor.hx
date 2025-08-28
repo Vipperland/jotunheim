@@ -261,7 +261,7 @@ class Reactor {
 	 */
 	static public function apply(to:Displayable, data:Dynamic):Void{
 		_react_fill(to, data, '');
-		_react_fill_after(to);
+		_react_fill_after(to, data);
 		_dispatch(to);
 	}
 	
