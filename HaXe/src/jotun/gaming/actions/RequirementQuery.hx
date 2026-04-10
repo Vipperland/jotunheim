@@ -120,12 +120,18 @@ class RequirementQuery extends Query {
 		return isvar(name, rule, value);
 	}
 	
-	public function isodd():Bool {
-		return Std.int(Math.random() * 2) == 0;
+	public function isodd(name:String):Bool {
+		var a:Int = Std.int(getDataProvider().getVar(name));
+		return a % 2 != 0;
 	}
-	
-	public function iseven():Bool {
-		return Std.int(Math.random() * 2) == 1;
+
+	public function iseven(name:String):Bool {
+		var a:Int = Std.int(getDataProvider().getVar(name));
+		return a % 2 == 0;
+	}
+
+	public function coinflip():Bool {
+		return Std.int(Math.random() * 2) == 0;
 	}
 	
 	/**
@@ -231,7 +237,7 @@ class RequirementQuery extends Query {
 	 * @return
 	 */
 	public function isactionid(...ids:String):Bool {
-		if(invocation.action != null && invocation.action.target != null && invocation.action.target.id != null){
+		if(invocation.action == null || invocation.action.target == null || invocation.action.target.id == null){
 			return false;
 		}
 		return !Dice.Values(ids, function(v:String){
@@ -264,7 +270,6 @@ class RequirementQuery extends Query {
 	 * @return
 	 */
 	public function isafteranyaction(...ids:String):Bool {
-		var matches:Int = 0;
 		return !Dice.Values(ids, function(id:String):Bool {
 			return !Dice.Values(invocation.history, function(a:Action):Bool {
 				return id != null && id.length > 0 && a.id == id;

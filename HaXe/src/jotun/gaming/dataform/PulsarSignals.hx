@@ -17,6 +17,6 @@ class PulsarSignals {
 	
 	public static var LINK_DELETED:String = 'link_deleted';
 	
-	public static var SPARK_DELETED:String = 'link_deleted';
+	public static var SPARK_DELETED:String = 'spark_deleted';
 	
 }

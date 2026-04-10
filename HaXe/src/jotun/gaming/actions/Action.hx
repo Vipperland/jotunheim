@@ -1,6 +1,7 @@
 package jotun.gaming.actions;
 import haxe.DynamicAccess;
 import jotun.gaming.actions.SpellCasting;
+import jotun.gaming.actions.SpellCodex;
 import jotun.objects.QueryGroup;
 import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.Requirement;
@@ -14,30 +15,34 @@ import jotun.utils.Dice;
  */
 @:expose("Jtn.Action")
 class Action extends Resolution {
-	
+
 	public static var cache:DynamicAccess<Action> = {};
-	
+
 	public static var codex:ActionQueryGroup = new ActionQueryGroup();
-	
+
 	static public function createFromQueries(id:String, queries:Array<Dynamic>, breakon:Dynamic = null):Dynamic {
 		return { id:id, "@": queries, breakon: breakon };
 	}
-	
+
 	public static function save(action:Action):Void {
 		cache.set(action.id, action);
 	}
-	
+
 	public static function load(id:String):Action {
 		return cache.get(id);
 	}
-	
+
+	public static function clear():Void {
+		cache = {};
+	}
+
 	public var require:Array<Requirement>;
-	
+
 	public var target:Int;
-	
+
 	/**
 	 * Parse action from object data
-	 * 
+	 *
 	 * 	// Object definition
 		{
 			"id": STRING	 					// same id will replace previous
@@ -49,26 +54,20 @@ class Action extends Resolution {
 			"fail" : ARRAY						// Actions to execute if FAILED state (will ignore reverse state)
 			"*" : STRING | ARRAY				// Queries to execute if SUCCESS (before then and fail, ignore reverse state)
 		}
-	 * 
+	 *
 	 * @param	type
 	 * @param	data
 	 */
 	public function new(type:String, data:Dynamic) {
-		super(type, data, "@");
+		super(type, data, Resolution.QUERY_PARAM_ACTION);
 		// Construct Requirement Objects
 		require = [];
-		var i:Int = 0;
 		Dice.All(data.require, function(p:Dynamic, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
 				v = SpellCodex.loadRequirement(v);
 			}
 			if(v != null){
-				if (Std.isOfType(v, Requirement)){
-					require[i] = cast v;
-				}else{
-					require[i] = new Requirement(type + '[' + p + ']', v);
-				}
-				++i;
+				require.push(Std.isOfType(v, Requirement) ? cast v : new Requirement(type + '[' + p + ']', v));
 			}
 		});
 		// Required condition resolution
@@ -79,13 +78,13 @@ class Action extends Resolution {
 		}
 		// Action aways break on success if not defined
 		if(breakon == null){
-			breakon = 'never';
+			breakon = Resolution.BREAK_NEVER;
 		}
 		if (Utils.isValid(data.id)){
 			SpellCodex.saveAction(this);
 		}
 	}
-	
+
 	public function invoke(context:SpellCasting, position:Int):Bool {
 		connect();
 		// Check requirements
@@ -114,9 +113,9 @@ class Action extends Resolution {
 		}
 		return resolve(success, context);
 	}
-	
+
 	private static function _log(evt:Action, context:SpellCasting, success:Bool, score:Int, position:Int):Void {
 		context.addLog(0, "↑ " + (success ? "SUCCESS" : "FAILED") + " ACTION " + (evt.willBreakOn(success) ? "[x]" : "[>]") + " " + (Utils.isValid(evt.id) ? "#{" + evt.id + "} ": "") + "[" + position + "] " + (evt.target != 0 ? "score:" + score + "/" + evt.target + " ": "") + "queries:" + evt.length());
 	}
-	
+
 }

@@ -179,7 +179,7 @@ class Pulsar {
 			var x:PulsarLink = _getOrCreate(name);
 			// Create an unique ID
 			if(isIndexable(name)){
-				while (o.id == null && !x.exists(o.id)){
+				while (o.id == null || x.exists(o.id)){
 					o.id = Key.GEN(ID_SIZE);
 				}
 			}

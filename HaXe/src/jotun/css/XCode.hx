@@ -131,9 +131,11 @@ class XCode {
 				omnibuild('.shelf > .cel-' + a, "flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
 				omnibuild('.drawer > .fill.cel-' + a, "width:100%");
 				omnibuild('.shelf > .fill.cel-' + a, "height:100%");
-				if (a < b) {
-					omnibuild('.r-cell-' + a, 'margin-left:' + t);
-					omnibuild('.l-cell-' + a, 'margin-right:' + t);
+				if (a > 0) {
+					omnibuild('.l-cel-' + a, 'margin-left:' + t);
+					omnibuild('.r-cel-' + a, 'margin-right:' + t);
+					omnibuild('.t-cel-' + a, 'margin-top:' + t);
+					omnibuild('.b-cel-' + a, 'margin-bottom:' + t);
 				}
 				++a;
 			}

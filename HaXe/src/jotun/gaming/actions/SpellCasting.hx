@@ -13,6 +13,10 @@ import jotun.tools.Utils;
 class SpellCasting {
 	
 	private static var _channeling:Int = 0;
+
+	private static var _channelingDepth:Int = 0;
+
+	private static inline var MAX_CHANNELING_DEPTH:Int = 32;
 	
 	public var debug:Bool;
 	
@@ -96,14 +100,19 @@ class SpellCasting {
 	}
 	
 	public function release(resolution:Resolution, result:Bool):Void {
-		var chain:Dynamic = (result ? resolution.then : resolution.fail);
+		var chain:SpellGroup = result ? resolution.then : resolution.fail;
 		if (chain != null){
+			if (_channelingDepth >= MAX_CHANNELING_DEPTH){
+				trace('[SpellCasting] Max channeling depth (' + MAX_CHANNELING_DEPTH + ') reached, aborting release.');
+				return;
+			}
 			var cid:String = '_channeling:' + _channeling;
 			++_channeling;
-			var temp:Dynamic = SpellGroup.patch({ _onActionReleased: chain }).get(cid);
-			codex.index.set(cid, temp);
-			codex.invoke(cid, origin, dataProvider );
+			++_channelingDepth;
+			codex.index.set(cid, chain);
+			codex.invoke(cid, origin, dataProvider);
 			codex.index.remove(cid);
+			--_channelingDepth;
 		}
 	}
 	

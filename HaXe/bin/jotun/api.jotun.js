@@ -3829,9 +3829,11 @@ jotun_css_XCode._createGrid = function() {
 			jotun_css_XCode.omnibuild(".shelf > .cel-" + a,"flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
 			jotun_css_XCode.omnibuild(".drawer > .fill.cel-" + a,"width:100%");
 			jotun_css_XCode.omnibuild(".shelf > .fill.cel-" + a,"height:100%");
-			if(a < b) {
-				jotun_css_XCode.omnibuild(".r-cell-" + a,"margin-left:" + t);
-				jotun_css_XCode.omnibuild(".l-cell-" + a,"margin-right:" + t);
+			if(a > 0) {
+				jotun_css_XCode.omnibuild(".l-cel-" + a,"margin-left:" + t);
+				jotun_css_XCode.omnibuild(".r-cel-" + a,"margin-right:" + t);
+				jotun_css_XCode.omnibuild(".t-cel-" + a,"margin-top:" + t);
+				jotun_css_XCode.omnibuild(".b-cel-" + a,"margin-bottom:" + t);
 			}
 			++a;
 		}
@@ -5972,7 +5974,7 @@ jotun_gaming_Spritesheet.prototype = {
 	}
 	,_registerFrame: function(blob) {
 		if(this._current.filename != null) {
-			this._labels[this._current.filename] = this._frames.length;
+			this._labels[this._current.filename] = blob;
 			if(this._onlabel != null) {
 				this._onlabel(this,this._current.filename);
 			}
@@ -5984,7 +5986,7 @@ jotun_gaming_Spritesheet.prototype = {
 		this._cropNext();
 	}
 	,getAsImage: function(label) {
-		return jotun_dom_Img.fromBlob(this.getAsBlob(this._labels[label]));
+		return jotun_dom_Img.fromBlob(this.getAsBlob(label));
 	}
 	,getAsBlob: function(label) {
 		if(typeof(label) == "string") {
@@ -5999,8 +6001,10 @@ jotun_gaming_Spritesheet.prototype = {
 		}
 		if(filter != null) {
 			var result = new jotun_dom_Sprite(null,loop,optimal);
-			jotun_utils_Dice.Values(this._labels,function(p,v) {
-				result.addFrame(v);
+			jotun_utils_Dice.All(this._labels,function(p,v) {
+				if(p.indexOf(filter) != -1) {
+					result.addFrame(v);
+				}
 			});
 			return result;
 		} else {
@@ -6147,7 +6151,15 @@ jotun_gaming_actions_Resolution.prototype = {
 		if(this.breakon == "never") {
 			return false;
 		}
-		return this.breakon == result;
+		if(this.breakon != result) {
+			if(result) {
+				return this.breakon == null;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
 	}
 	,release: function(result,context) {
 		if(this._stopped) {
@@ -6235,18 +6247,12 @@ var jotun_gaming_actions_Action = $hx_exports["Jtn"]["Action"] = function(type,d
 	var _gthis = this;
 	jotun_gaming_actions_Resolution.call(this,type,data,"@");
 	this.require = [];
-	var i = 0;
 	jotun_utils_Dice.All(data.require,function(p,v) {
 		if(typeof(v) == "string") {
 			v = jotun_gaming_actions_SpellCodex.loadRequirement(v);
 		}
 		if(v != null) {
-			if(((v) instanceof jotun_gaming_actions_Requirement)) {
-				_gthis.require[i] = v;
-			} else {
-				_gthis.require[i] = new jotun_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v);
-			}
-			i += 1;
+			_gthis.require.push(((v) instanceof jotun_gaming_actions_Requirement) ? v : new jotun_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v));
 		}
 	});
 	if(this.target == null) {
@@ -6270,6 +6276,9 @@ jotun_gaming_actions_Action.save = function(action) {
 };
 jotun_gaming_actions_Action.load = function(id) {
 	return jotun_gaming_actions_Action.cache[id];
+};
+jotun_gaming_actions_Action.clear = function() {
+	jotun_gaming_actions_Action.cache = { };
 };
 jotun_gaming_actions_Action._log = function(evt,context,success,score,position) {
 	var tmp = evt.willBreakOn(success) ? "[x]" : "[>]";
@@ -6408,8 +6417,11 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 		console.log("src/jotun/gaming/actions/ActionQuery.hx:129:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.invocation));
 		return this;
 	}
+	,loadAction: function(id) {
+		return jotun_gaming_actions_SpellCodex.loadAction(id);
+	}
 	,call: function(id) {
-		var action = jotun_gaming_actions_SpellCodex.loadAction(id);
+		var action = this.loadAction(id);
 		if(action != null) {
 			action.invoke(this.invocation,0);
 		}
@@ -6460,7 +6472,7 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 			rule = null;
 		}
 		if(typeof(a) == "string") {
-			return this.setstr(a,rule,value);
+			return this.setstr(name,rule,value);
 		} else if(typeof(a) == "boolean") {
 			return this.setswitch(name,value);
 		} else {
@@ -6597,7 +6609,11 @@ jotun_gaming_actions_BasicDataProvider.prototype = {
 		}
 	}
 	,getFloat: function(name) {
-		return parseFloat(this.getVar(name));
+		if(this.hasVar(name)) {
+			return parseFloat(Std.string(this.getVar(name)));
+		} else {
+			return 0.0;
+		}
 	}
 	,getSwitch: function(name) {
 		return this.getInt(name) > 0;
@@ -6639,9 +6655,7 @@ jotun_gaming_actions_RequirementQueryGroup.prototype = $extend(jotun_objects_Que
 					context.registerRequirementQuery(single);
 					jotun_utils_Dice.All(_gthis.units,function(p,o) {
 						o.invocation = context;
-						if(context.debug) {
-							context.addLog(1,single + " [" + p + "] == " + o.proc(["@result",single],result).result[idx]);
-						}
+						context.addLog(1,single + " [" + p + "] == " + o.proc(["@result",single],result).result[idx]);
 						idx += 1;
 						o.flush();
 					});
@@ -6681,6 +6695,9 @@ jotun_gaming_actions_Requirement.save = function(requirement) {
 };
 jotun_gaming_actions_Requirement.load = function(id) {
 	return Reflect.field(jotun_gaming_actions_Requirement.cache,id);
+};
+jotun_gaming_actions_Requirement.clear = function() {
+	jotun_gaming_actions_Requirement.cache = { };
 };
 jotun_gaming_actions_Requirement._log = function(evt,context,success,score,reversed,position) {
 	var tmp = jotun_tools_Utils.isValid(evt.id) ? "#{" + evt.id + "} " : "";
@@ -6804,11 +6821,16 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		var value = this.rng() * a_max + a_min;
 		return this.isvar(name,rule,value);
 	}
-	,isodd: function() {
-		return (Math.random() * 2 | 0) == 0;
+	,isodd: function(name) {
+		var a = this.getDataProvider().getVar(name) | 0;
+		return a % 2 != 0;
 	}
-	,iseven: function() {
-		return (Math.random() * 2 | 0) == 1;
+	,iseven: function(name) {
+		var a = this.getDataProvider().getVar(name) | 0;
+		return a % 2 == 0;
+	}
+	,coinflip: function() {
+		return (Math.random() * 2 | 0) == 0;
 	}
 	,isvar: function(name,rule,value) {
 		var a = this.getDataProvider().getVar(name);
@@ -6862,7 +6884,7 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		var ids = new Array($l>0?$l-0:0);
 		for(var $i=0;$i<$l;++$i){ids[$i-0]=arguments[$i];}
 		var _gthis = this;
-		if(this.invocation.action != null && this.invocation.action.target != null && this.invocation.action.target.id != null) {
+		if(this.invocation.action == null || this.invocation.action.target == null || this.invocation.action.target.id == null) {
 			return false;
 		}
 		return !jotun_utils_Dice.Values(ids,function(v) {
@@ -6889,7 +6911,6 @@ jotun_gaming_actions_RequirementQuery.prototype = $extend(jotun_objects_Query.pr
 		var ids = new Array($l>0?$l-0:0);
 		for(var $i=0;$i<$l;++$i){ids[$i-0]=arguments[$i];}
 		var _gthis = this;
-		var matches = 0;
 		return !jotun_utils_Dice.Values(ids,function(id) {
 			return !jotun_utils_Dice.Values(_gthis.invocation.history,function(a) {
 				if(id != null && id.length > 0) {
@@ -6967,12 +6988,17 @@ jotun_gaming_actions_SpellCasting.prototype = {
 	,release: function(resolution,result) {
 		var chain = result ? resolution.then : resolution.fail;
 		if(chain != null) {
+			if(jotun_gaming_actions_SpellCasting._channelingDepth >= 32) {
+				console.log("src/jotun/gaming/actions/SpellCasting.hx:106:","[SpellCasting] Max channeling depth (" + 32 + ") reached, aborting release.");
+				return;
+			}
 			var cid = "_channeling:" + jotun_gaming_actions_SpellCasting._channeling;
 			++jotun_gaming_actions_SpellCasting._channeling;
-			var temp = jotun_gaming_actions_SpellGroup.patch({ _onActionReleased : chain})[cid];
-			this.codex.index[cid] = temp;
+			++jotun_gaming_actions_SpellCasting._channelingDepth;
+			this.codex.index[cid] = chain;
 			this.codex.invoke(cid,this.origin,this.dataProvider);
 			Reflect.deleteField(this.codex.index,cid);
+			--jotun_gaming_actions_SpellCasting._channelingDepth;
 		}
 	}
 	,previous: function() {
@@ -7075,7 +7101,8 @@ jotun_gaming_actions_SpellCodex.prototype = {
 	,_chain: null
 	,invoke: function(name,data,provider) {
 		var context = jotun_gaming_actions_SpellCodex.createContext(name,data,provider,this);
-		if(Object.prototype.hasOwnProperty.call(this.index,name)) {
+		var group = this.index[name];
+		if(group != null) {
 			context.chain = this._position;
 			this._chain[this._chain.length] = context;
 			if(this._position > 0) {
@@ -7083,7 +7110,7 @@ jotun_gaming_actions_SpellCodex.prototype = {
 			}
 			++this._position;
 			this._onCallBefore(context);
-			Reflect.field(this.index,name).execute(context);
+			group.execute(context);
 			--this._position;
 			this._onCallAfter(context);
 			if(this._position == 0) {
@@ -7110,7 +7137,7 @@ var jotun_gaming_actions_SpellGroup = $hx_exports["Jtn"]["SpellGroup"] = functio
 	this._init(data,0);
 };
 jotun_gaming_actions_SpellGroup.__name__ = "jotun.gaming.actions.SpellGroup";
-jotun_gaming_actions_SpellGroup.patch = function(data,validate,priority) {
+jotun_gaming_actions_SpellGroup.patch = function(data,validate,priority,io) {
 	var patched = { };
 	if(data != null) {
 		if(priority != null) {
@@ -7207,7 +7234,7 @@ jotun_gaming_actions_SpellGroup.prototype = {
 		if(this.canWait()) {
 			this._unblock();
 			this._is_waiting = true;
-			if(time == null && time <= 0) {
+			if(time == null || time <= 0) {
 				time = 3600;
 			}
 			this._delayed = jotun_Jotun.timer.delayed($bind(this,this.release),time,0);
@@ -7225,10 +7252,10 @@ jotun_gaming_actions_SpellGroup.prototype = {
 	}
 	,_innerCasting: function() {
 		var _gthis = this;
+		this._context.registerEvent(this);
 		var a = null;
 		jotun_utils_Dice.Count(this._cursor_pos,this._data.length,function(current,max,completed) {
 			++_gthis._cursor_pos;
-			_gthis._context.registerEvent(_gthis);
 			a = _gthis._data[current];
 			if(a.willBreakOn(a.invoke(_gthis._context,current))) {
 				_gthis._is_waiting = false;
@@ -7671,7 +7698,7 @@ jotun_gaming_dataform_Pulsar.prototype = {
 		if(name != null && name.length > 0) {
 			var x = this._getOrCreate(name);
 			if(jotun_gaming_dataform_Pulsar.isIndexable(name)) {
-				while(o.id == null && !x.exists(o.id)) o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_Pulsar.ID_SIZE);
+				while(o.id == null || x.exists(o.id)) o.id = jotun_tools_Key.GEN(jotun_gaming_dataform_Pulsar.ID_SIZE);
 			}
 			x.insert(o);
 		} else {
@@ -11645,6 +11672,9 @@ jotun_gaming_SpritesheetLibrary.EVENT_COMPLETED = "completed";
 jotun_gaming_SpritesheetLibrary.EVENT_PROGRESS = "progress";
 jotun_gaming_actions_Resolution.BREAK_ALWAYS = "always";
 jotun_gaming_actions_Resolution.BREAK_NEVER = "never";
+jotun_gaming_actions_Resolution.QUERY_PARAM_ACTION = "@";
+jotun_gaming_actions_Resolution.QUERY_PARAM_REQUIREMENT = "*";
+jotun_gaming_actions_Resolution.QUERY_RESULT_MARKER = "@result";
 jotun_gaming_actions_Action.cache = { };
 jotun_gaming_actions_Action.codex = new jotun_gaming_actions_ActionQueryGroup();
 jotun_gaming_actions_ActionQuery.RULE_EQUAL = "=";
@@ -11681,6 +11711,8 @@ jotun_gaming_actions_RequirementQuery.RULE_RANDOM_DIFFENT = "#!";
 jotun_gaming_actions_RequirementQuery.RULE_RANDOM_GREAT_OR = "#>";
 jotun_gaming_actions_RequirementQuery.RULE_RANDOM_LESS_OR = "#<";
 jotun_gaming_actions_SpellCasting._channeling = 0;
+jotun_gaming_actions_SpellCasting._channelingDepth = 0;
+jotun_gaming_actions_SpellCasting.MAX_CHANNELING_DEPTH = 32;
 jotun_gaming_dataform_Pulsar.BLOCK_SIZE = 64;
 jotun_gaming_dataform_Pulsar.ID_SIZE = 32;
 jotun_gaming_dataform_Pulsar._dictio = { "*" : { "Construct" : jotun_gaming_dataform_Spark, Properties : null, Indexable : false, Tag : false}};
@@ -11689,7 +11721,7 @@ jotun_gaming_dataform_PulsarSignals.SPARK_CREATED = "spark_created";
 jotun_gaming_dataform_PulsarSignals.LINK_UPDATED = "link_updated";
 jotun_gaming_dataform_PulsarSignals.SPARK_UPDATED = "spark_updated";
 jotun_gaming_dataform_PulsarSignals.LINK_DELETED = "link_deleted";
-jotun_gaming_dataform_PulsarSignals.SPARK_DELETED = "link_deleted";
+jotun_gaming_dataform_PulsarSignals.SPARK_DELETED = "spark_deleted";
 jotun_gaming_dataform_SparkWriter.PROP = "|";
 jotun_gaming_dataform_SparkWriter.SET = ":";
 jotun_gaming_dataform_SparkWriter.TYPE = "q";

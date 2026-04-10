@@ -1,118 +1,326 @@
 <!DOCTYPE html>
+	
 <html lang="en">
+	
 	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 		<meta charset="utf-8"/>
 		<title>Sirius::Automator</title>
 		<meta name="description" content=""/>
-		<link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700" rel="stylesheet">
 		<script type="text/javascript" src="jotun/api.jotun.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300&display=swap" rel="stylesheet">
 		<style>  
+		
 			body,html {
 				width:100%;
-				height:100%;
-				font-family: Tahoma;
-				background-color:#000000;
-				font-family: 'Amatic SC', cursive;
-			}
-			.test3d {
-				width: 100vw;
-				height: 100vh;
-				text-align: center;
-			}
-			
-			.test3d .content {
-				width: 300px;
-				text-align: center;
-				position: absolute;
-			}
-			
-			.test3d .text{
-				text-align: center;
-				color: #ffffff;
-				font-size: 48px;
-				width:100%;
-				margin-top: 20px;
-				display: block;
-			}
-			
-			.test3d .text .info{
-				min-height: 60px;
-				max-height: 40vh;
-				overflow-y: auto;
-			}
-			
-			.test3d .text .title{
-				font-weight: 700;
-			}
-			
-			.images {
+				height:100vh;
+				font-family: "Raleway", sans-serif;
+				background-color:#FFFFFF;
 				position: relative;
+				font-size: 20px;
 			}
 			
-			.fixed {
-				float: left;
+			body {
+				height:100vh;
+				background-color: #000000;
 			}
+			
+			.year {
+				padding: 5px;
+				background-color: #EFEFEF;
+				height: 100%;
+				width: 80px;
+				text-align: center;
+			}
+			
+			.month {
+				padding: 5px;
+				background-color: #DDDDDD;
+				height: 100%;
+				width: 60px;
+				text-align: center;
+			}
+			
+			.day {
+				padding: 5px;
+				background-color: #CECECE;
+				height: 100%;
+				width: 60px;
+				text-align: center;
+			}
+			
+			.age {
+				padding: 5px;
+				background-color: #373737;
+				color: #FFFFFF;
+				height: 100%;
+				width: 60px;
+				text-align: center;
+			}
+			
+			.time {
+				padding: 5px;
+				background-color: #027369;
+				color: #FFFFFF;
+				height: 100%;
+				width: 150px;
+				text-align: center;
+			}
+			
+			.tag {
+				padding: 5px;
+				background-color: #A42854;
+				color: #FFFFFF;
+				width: 200px;
+				text-align: center;
+			}
+			
+			.tag:nth-child(even) {
+				background-color: #97244D;
+			}
+			
+			.calendar {
+				witdh: 100%;
+			}
+			
+			.tag[author-id] + .tag[author-id] {
+				margin-left: unset;
+			}
+			
+			.tag[author-id="Osvaldo"] {
+				margin-left: 0px;
+			}
+			
+			.tag[author-id="Nivaldo"] {
+				margin-left: 200px;
+			}
+			
+			.tag[author-id="Carlos"] {
+				margin-left: 400px;
+			}
+			
+			.tag[author-id="Rogerio"] {
+				margin-left: 600px;
+			}
+			
+			.tag[author-id="5"] {
+				margin-left: 800px;
+			}
+			
+			.tag[author-id="6"] {
+				margin-left: 1000px;
+			}
+			
+			.tag[author-id="7"] {
+				margin-left: 1200px;
+			}
+			
+			.tag[author-id="8"] {
+				margin-left: 1400px;
+			}
+			
+			.tag[author-id="9"] {
+				margin-left: 1600px;
+			}
+			
+			.tag[author-id="10"] {
+				margin-left: 1800px;
+			}
+			
+			.tag[author-id="11"] {
+				margin-left: 2000px;
+			}
+			
+		</style> 
 		
-		</style>
 	</head>
-	<body xcode xcache>
-		<div class="test3d hack o-middle">
-			<div class="content">
-				<div class="images">
-					<img class="filter-target" src="./assets/img/sirius.png"/>
-				</div>
-				<br/>
-				<div class="text">
-					<span class="title">Jotumhein</span><br/>
-					<div class="info" contenteditable></div>
+	<body xcode class="drawer">
+		
+		<div class="diary drawer">
+			<div class="cel fill shelf o-middle hidden" hidden message="SAMPLE===================================">
+				<div class="year drawer fill a-middle">2015</div>
+				<div class="year-content cel drawer a-middle">
+					<div class="cel fill shelf o-middle">
+						<div class="age drawer fill a-middle">15</div>
+						<div class="age-content cel drawer a-middle">
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">03</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="age drawer fill a-middle">15yo</div>
+										<div class="day drawer fill a-middle">22</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">03:00~08:00</div>
+													<div class="time">03:00~08:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag">Osvaldo</span>
+														<span class="tag">Nivaldo</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="content">
-				<div class="images">
-					<img class="filter-target" src="./assets/img/sirius.png"/>
-				</div>
-				<br/>
-				<div class="text">
-					<span class="title">Jotumhein</span><br/>
-					<div class="info" contenteditable></div>
+			<div class="cel fill shelf o-middle">
+				<div class="year drawer fill a-middle">2015</div>
+				<div class="year-content cel drawer a-middle">
+					<div class="cel fill shelf o-middle">
+						<div class="age drawer fill a-middle">15</div>
+						<div class="age-content cel drawer a-middle">
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">3</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">22</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">01:00~07:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag" author-id="Osvaldo">1</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">4</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">19</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">02:00~08:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag" author-id="Nivaldo">2</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">5</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">16</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">01:00~09:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag" author-id="Nivaldo">2</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">9</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">12</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">00:00~10:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<div class="shelf cel">
+															<span class="tag" author-id="Nivaldo">2</span>
+															<span class="tag" author-id="Carlos">3</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="content">
-				<div class="images">
-					<img class="filter-target" src="./assets/img/sirius.png"/>
-				</div>
-				<br/>
-				<div class="text">
-					<span class="title">Jotumhein</span><br/>
-					<div class="info" contenteditable></div>
+			<div class="cel fill shelf o-middle">
+				<div class="year drawer fill a-middle">2016</div>
+				<div class="year-content cel drawer a-middle">
+					<div class="cel fill shelf o-middle">
+						<div class="age drawer fill a-middle">15</div>
+						<div class="age-content cel drawer a-middle">
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">1</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">30</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">01:00~07:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag" author-id="Rogerio">4</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="cel fill shelf o-middle">
+						<div class="age drawer fill a-middle">16</div>
+						<div class="age-content cel drawer a-middle">
+							<div class="cel fill shelf o-middle">
+								<div class="month drawer fill a-middle">1</div>
+								<div class="month-content cel drawer a-middle">
+									<div class="cel fill shelf o-middle">
+										<div class="day drawer fill a-middle">30</div>
+										<div class="day-content cel drawer a-middle">
+											<div class="cel shelf o-middle">
+												<div class="drawer fill a-middle">
+													<div class="time">01:00~07:00</div>
+												</div>
+												<div class="time-content cel fill drawer a-middle">
+													<div class="matchings drawer cel fill">
+														<span class="tag" author-id="Porteiro">5</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-		<script type="module">
-			import {Realms} from './modules/dist/classes/core/Realms.class.js';
-			Realms.expose();
-			Realms.events.listen('*', function(e){
-				if(e.event == 'oauthstatus'){
-					return;
-				}
-				if(e.event == 'request' && e.data && e.data.authentication){
-					e.authentication = e.data.authentication.toString();
-				}
-				if(e.event == 'singularity'){
-					e.singularity = Singularity.toString();
-				}
-				trace(e);
-			});
-			Realms.open({
-				name: 'test.realms',
-				pulsar: true,
-				db: {
-					name:'JotunTest',
-					version: 1,
-					structure: {},
-				}
-			});
-		</script>
-	</body>                                                                               
+		
+	</body>
 </html>

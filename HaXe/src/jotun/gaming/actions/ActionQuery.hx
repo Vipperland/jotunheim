@@ -132,13 +132,17 @@ class ActionQuery extends Query {
 	
 	// =========================================== Call dialog chain ====================================================================================
 
+	public function loadAction(id:String):Action {
+		return SpellCodex.loadAction(id);
+	}
+
 	/**
 	 * Call a registered Event chain
 	 * @param	events
 	 * @return
 	 */
 	public function call(id:String):ActionQuery {
-		var action:Action = SpellCodex.loadAction(id);
+		var action:Action = loadAction(id);
 		if(action != null){
 			action.invoke(invocation, 0);
 		}
@@ -228,7 +232,7 @@ class ActionQuery extends Query {
 			rule = null;
 		}
 		if (Std.isOfType(a, String)) {
-			return setstr(a, rule, value);
+			return setstr(name, rule, value);
 		} else if (Std.isOfType(a, Bool)) {
 			return setswitch(name, value);
 		} else {

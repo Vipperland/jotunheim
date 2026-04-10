@@ -19,7 +19,7 @@ import jotun.utils.IDiceRoll;
  */
 @:expose("Jtn.SpellGroup")
 class SpellGroup {
-	
+
 	/**
 	 * Create a patch with events data
 	 * @param	data			Object of names array of event chain
@@ -56,7 +56,7 @@ class SpellGroup {
 		}
 		return patched;
 	}
-	
+
 	private var _data:Array<Action>;
 	private var _type:String;
 	private var _save:Int->Resolution->Void;
@@ -67,13 +67,13 @@ class SpellGroup {
 	#if js
 	private var _delayed:DelayedCall;
 	#end
-	
+
 	public function new(type:String, data:Array<Dynamic>) {
 		_type = type;
 		_data = [];
 		_init(data, 0);
 	}
-	
+
 	public function _init(data:Array<Dynamic>, ?index:UInt):Void {
 		if(data.length == 0){
 			return;
@@ -105,35 +105,35 @@ class SpellGroup {
 			toConcat = null;
 		}
 	}
-	
+
 	public function getType():String {
 		return _type;
 	}
-	
+
 	public function matchType(q:String):Bool {
 		return _type == q;
 	}
-	
+
 	#if js
-	
+
 	private function _unblock():Void {
 		if (_delayed != null){
 			_delayed.cancel();
 			_delayed = null;
 		}
 	}
-	
+
 	public function wait(?time:Float):Void {
 		if(canWait()){
 			_unblock();
 			_is_waiting = true;
-			if(time == null && time <= 0){
+			if(time == null || time <= 0){
 				time = 3600;
 			}
 			_delayed = Jotun.timer.delayed(release, time, 0);
 		}
 	}
-	
+
 	public function release():Void {
 		_unblock();
 		if (_is_waiting){
@@ -141,18 +141,18 @@ class SpellGroup {
 			_innerCasting();
 		}
 	}
-	
+
 	public function canWait():Bool {
 		return _cursor_pos < _data.length;
 	}
-	
+
 	#end
-	
+
 	private function _innerCasting():Void {
+		_context.registerEvent(this);
 		var a:Action = null;
 		Dice.Count(_cursor_pos, _data.length, function(current:Int, max:Int, completed:Bool):Bool {
 			++_cursor_pos;
-			_context.registerEvent(this);
 			a = _data[current];
 			if (a.willBreakOn(a.invoke(_context, current))){
 				_is_waiting = false;
@@ -172,7 +172,7 @@ class SpellGroup {
 			_context = null;
 		}
 	}
-	
+
 	public function execute(context:SpellCasting):Void {
 		_is_waiting = false;
 		_cursor_pos = 0;
@@ -180,7 +180,7 @@ class SpellGroup {
 		++context.ident;
 		_innerCasting();
 	}
-	
+
 	private static function _log(evt:SpellGroup, context:SpellCasting):Void {
 		var a:Int = evt._data.length;
 		context.addLog(0, (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
@@ -188,18 +188,18 @@ class SpellGroup {
 			context.addLog(1, "├ ACTION \"" + context.parent.action.query + "\"");
 		}
 	}
-	
+
 	public function length():Int {
 		return _data.length;
 	}
-	
+
 	public function learn(action:Action, ?index:Int):Void {
 		if(index == null || index < 0 || index > _data.length){
 			index = _data.length;
 		}
 		_init([action], index);
 	}
-	
+
 	public function getIndexOf(action:EitherType<Action,String>):Int {
 		if(Std.isOfType(action, String)){
 			action = SpellCodex.loadAction(action);
@@ -209,13 +209,13 @@ class SpellGroup {
 		});
 		return roll.completed ? _data.length : roll.param;
 	}
-	
+
 	public function learnAfter(action:Action, search:EitherType<Action,String>):Void {
 		learn(action, getIndexOf(search) + 1);
 	}
-	
+
 	public function learnBefore(action:Action, search:EitherType<Action,String>):Void {
 		learn(action, getIndexOf(search) - 1);
 	}
-	
+
 }

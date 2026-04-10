@@ -15,30 +15,30 @@ import jotun.utils.Dice;
  */
 @:expose("Jtn.SpellCodex")
 class SpellCodex  {
-	
+
 	static private var _rAction:String->Action;
 	static private var _wAction:Action->Void;
-	
+
 	static private var _rRequirement:String->Requirement;
 	static private var _wRequirement:Requirement->Void;
-	
+
 	static private var _debug:Bool;
-	
+
 	static public function createContext(name:String, data:Dynamic, provider:IDataProvider, controller:SpellCodex):SpellCasting {
 		return new SpellCasting(name, data, provider, controller, _debug);
 	}
-	
+
 	static public function cacheController(saveAction:Action->Void, loadAction:String->Action, saveRequirement:Requirement->Void, loadRequirement:String->Requirement):Void {
 		_wAction = saveAction;
 		_rAction = loadAction;
 		_wRequirement = saveRequirement;
 		_rRequirement = loadRequirement;
 	}
-	
+
 	static public function loadAction(id:String):Action {
 		return _rAction != null ? _rAction(id) : Action.load(id);
 	}
-	
+
 	static public function saveAction(a:Action):Void {
 		if (_wAction != null){
 			_wAction(a);
@@ -46,11 +46,11 @@ class SpellCodex  {
 			Action.save(a);
 		}
 	}
-	
+
 	static public function loadRequirement(id:String):Requirement {
 		return _rRequirement != null ? _rRequirement(id) : Requirement.load(id);
 	}
-	
+
 	static public function saveRequirement(r:Requirement):Void {
 		if (_wRequirement != null){
 			_wRequirement(r);
@@ -58,31 +58,32 @@ class SpellCodex  {
 			Requirement.save(r);
 		}
 	}
-	
+
 	public var index:DynamicAccess<SpellGroup>;
-	
+
 	private function _onCallBefore(context:SpellCasting):Void { }
-	
+
 	private function _onCallAfter(context:SpellCasting):Void { }
-	
+
 	private function _onChainEnd(chain:Array<SpellCasting>):Void { }
-	
+
 	public function new(data:Dynamic, ?debug:Bool, ?validate:String->DynamicAccess<Dynamic>->String, ?priority:Array<String>) {
 		_debug = debug == true;
 		index = SpellGroup.patch(data, validate, priority);
 	}
-	
+
 	public function setDebug(mode:Bool):Void {
 		_debug = mode;
 	}
-	
+
 	private var _position:Int = 0;
-	
+
 	private var _chain:Array<SpellCasting> = [];
-	
+
 	public function invoke(name:String, ?data:Dynamic, ?provider:IDataProvider):Bool {
 		var context:SpellCasting = createContext(name, data, provider, this);
-		if (Reflect.hasField(index, name)){
+		var group:SpellGroup = index.get(name);
+		if (group != null){
 			context.chain = _position;
 			_chain[_chain.length] = context;
 			if (_position > 0){
@@ -90,7 +91,7 @@ class SpellCodex  {
 			}
 			++_position;
 			_onCallBefore(context);
-			Reflect.field(index, name).execute(context);
+			group.execute(context);
 			--_position;
 			_onCallAfter(context);
 			if (_position == 0){
@@ -108,5 +109,5 @@ class SpellCodex  {
 			return false;
 		}
 	}
-	
+
 }

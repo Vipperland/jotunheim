@@ -84,7 +84,7 @@ class Spritesheet {
 	
 	private function _registerFrame(blob:Blob):Void {
 		if(_current.filename != null){
-			_labels.set(_current.filename, _frames.length);
+			_labels.set(_current.filename, blob);
 			if(_onlabel != null){
 				_onlabel(this, _current.filename);
 			}
@@ -97,9 +97,9 @@ class Spritesheet {
 	}
 	
 	public function getAsImage(label:Dynamic):Img {
-		return Img.fromBlob(getAsBlob(_labels.get(label)));
+		return Img.fromBlob(getAsBlob(label));
 	}
-	
+
 	public function getAsBlob(label:Dynamic):Blob {
 		if(Std.isOfType(label, String)){
 			return _labels.get(label);
@@ -111,8 +111,10 @@ class Spritesheet {
 	public function getAsSprite(?filter:String, ?loop:Bool = false, ?optimal:Bool):Sprite {
 		if (filter != null){
 			var result:Sprite = new Sprite(null, loop, optimal);
-			Dice.Values(_labels, function(p:String, v:Blob):Void{
-				result.addFrame(v);
+			Dice.All(_labels, function(p:String, v:Blob):Void{
+				if(p.indexOf(filter) != -1){
+					result.addFrame(v);
+				}
 			});
 			return result;
 		}else{

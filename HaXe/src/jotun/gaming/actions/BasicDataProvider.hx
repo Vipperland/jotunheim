@@ -51,7 +51,7 @@ class BasicDataProvider implements IDataProvider {
 	}
 	
 	public function getFloat(name:String):Float {
-		return Std.parseFloat(getVar(name));
+		return hasVar(name) ? Std.parseFloat(Std.string(getVar(name))) : 0.0;
 	}
 	
 	public function getSwitch(name:String):Bool {
