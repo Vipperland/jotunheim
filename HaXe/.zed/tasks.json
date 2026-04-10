@@ -1,0 +1,21 @@
+[
+	{
+		"label": "Compile HAXE (Release)",
+		"command": "haxe --each -cp src -js $output -main jotun.Jotun",
+		"env": {
+			"output": "./bin/jotun/api.jotun.js",
+		},
+	},
+	{
+		"label": "Compile HAXE (Build)",
+		"command": "haxe -debug --each -cp src -js $output -main jotun.Jotun",
+		"env": {
+			"output": "\"./bin/jotun/api.jotun.js\"",
+		},
+	},
+	{
+		"label": "Open in Browser",
+		"command": "start \"https://jotunheim.dev.localhost/",
+		"env": {},
+	},
+]
