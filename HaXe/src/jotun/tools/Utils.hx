@@ -92,7 +92,7 @@ import jotun.utils.Dice;
 class Utils{
 	
 		
-	private static var _TAG_REPLACE:Dynamic = [
+	private static var _TAG_REPLACE:Array<Array<String>> = [
 		['á', 'a'], ['ã', 'a'], ['â', 'a'], ['à', 'a'], 
 		['ê', 'e'], ['é', 'e'], ['è', 'e'], 
 		['î', 'i'], ['í', 'i'], ['ì', 'i'], 
@@ -148,7 +148,7 @@ class Utils{
 		 * @return
 		 */
 		static public function displayFrom(t:Element):Displayable {
-			var id:UInt = null;
+			var id:Null<UInt> = null;
 			var type:String = null;
 			if (t.hasAttribute != null) {
 				id = (cast t)._uid;
@@ -561,10 +561,38 @@ class Utils{
 		
 	#elseif js
 		
+		
+		/**
+		 * Convert a DD/MM/AAAA date format to unixtime
+		 * @param	date
+		 * @return
+		 */
+		static public function dmYToUnixtime(date:String):Float {
+			if (date != null && date.length == 10){
+				var darr:Array<String> = date.split("/").join("-").split("-");
+				if (darr[0].length != 4){
+					darr.reverse();
+				}
+				date = darr.join("-");
+				return Date.fromString(date).getTime();
+			}else {
+				return 0;
+			}
+		}
+		
+		static public function toTime(date:Dynamic, format:String = "%H:%M:%S"):String {
+			if (Std.isOfType(date, Date)){
+				return DateTools.format(date, format);
+			}else{
+				return DateTools.format(Date.fromTime(date), format);
+			}
+		}
+		
+	
 		static public function toFixed(n:Float, i:Int, s:String = '.'):String {
 			var a:String = (cast n).toFixed(i);
 			if (s != '.'){
-				a = a.split('.').join('s');
+				a = a.split('.').join(s);
 			}
 			return a;
 		}

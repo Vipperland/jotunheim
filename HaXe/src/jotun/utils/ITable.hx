@@ -31,7 +31,7 @@ interface ITable {
 	public function add(obj:Displayable):ITable;
 	
 	/**
-	 * Return all elements with contains a specific value
+	 * Return all elements that contain a specific value
 	 * @param	q
 	 * @return
 	 */
@@ -122,6 +122,12 @@ interface ITable {
 	public function hide () : ITable;
 	
 	/**
+	 * Disable all elements
+	 * @return
+	 */
+	public function disable():ITable;
+	
+	/**
 	 * Remove all elements from parent element
 	 * @return
 	 */
@@ -194,8 +200,11 @@ interface ITable {
 	 * @param	tables
 	 * @return
 	 */
-	public function merge (?tables:Array<Table>) : ITable;
+	public function merge (?tables:Array<ITable>) : ITable;
 	
+	/// Event
+	public function onAbort (?handler:Activation->Void, ?mode:Dynamic) : ITable;
+
 	/// Event
 	public function onBlur (?handler:Activation->Void, ?mode:Dynamic) : ITable;
 

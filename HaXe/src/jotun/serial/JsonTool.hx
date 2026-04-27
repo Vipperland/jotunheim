@@ -13,24 +13,25 @@ import jotun.tools.Utils;
 @:expose('J_Json')
 class JsonTool {
 	
+	static public var SKIP_PREFIX:String = null;
+	
 	static public var noReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic {
 		return b;
 	}
 	
-	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic { 
-		if (Std.isOfType(a, String)) {
-			if (a.substr(0, 1) == "_") {
-				return null;
-			}
-		}else if (Std.isOfType(b, Flag)) {
+	static public var customReplacer:Dynamic->Dynamic->Dynamic = function (a:Dynamic, b:Dynamic):Dynamic {
+		if (SKIP_PREFIX != null && Std.isOfType(a, String) && a.substr(0, 1) == SKIP_PREFIX) {
+			return null;
+		}
+		if (Std.isOfType(b, Flag)) {
 			return b.value;
 		}
 		#if !php
-		else if(Std.isOfType(b, Displayable)){
+		if (Std.isOfType(b, Displayable)) {
 			return b.typeOf();
 		}
 		#end
-		return b; 
+		return b;
 	};
 	
 	static public function clone(obj:Dynamic, ?replacer:Dynamic->Dynamic->Dynamic):Dynamic {
@@ -171,7 +172,7 @@ class JsonTool {
 		for (i in 0...len) {
 			var f = fields[i];
 			var value = Reflect.field(v, f);
-			if (value != null && !Reflect.isFunction(value) && !(Std.isOfType(f, String) && f.substr(0, 1) == "_")){
+			if (value != null && !Reflect.isFunction(value) && !(Std.isOfType(f, String) && f.substr(0, 1) == SKIP_PREFIX)){
 				if (first) {
 					nind++;
 					first = false;
@@ -188,7 +189,7 @@ class JsonTool {
 				write(f, value);
 			}
 			if (i == last) {
-				nind--;
+				if (!first) nind--;
 				newl();
 				ipad();
 			}

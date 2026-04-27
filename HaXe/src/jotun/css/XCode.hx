@@ -89,12 +89,12 @@ class XCode {
 			omnibuild('.shelf,.hack,.drawer', 'display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;');
 			omnibuild('.shelf', '-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;');
 			omnibuild('.hack,.drawer', '-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;');
-			omnibuild('.drawer', '-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;');
+			omnibuild('.drawer', '-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;flex-wrap:nowrap;');
 			// Auto grow
 			
 			var s:String = '-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;';
 			omnibuild('.hack > .cel', s + 'max-height:100%;max-width:100%;');
-			omnibuild('.hack > .h-cel', s + 'max-width:100%;:100%;');
+			omnibuild('.hack > .h-cel', s + 'max-width:100%;max-height:100%;');
 			omnibuild('.hack > .v-cel', s + 'max-height:100%;');
 			omnibuild('.drawer > .cel', s + 'max-height:100%;width:fit-content;');
 			omnibuild('.shelf > .cel', s + 'max-width:100%;height:fit-content;');
@@ -102,13 +102,13 @@ class XCode {
 			omnibuild('.shelf > .fill.cel', s + 'height:100%;');
 			// Pack will align left, center or right
 			omnibuild('.o-left,.o-top-left', '-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;');
-			omnibuild('.a-middle,.o-middle,.o-top,.o-bottom', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
-			omnibuild('.o-right,.o-top-right,o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
+			omnibuild('.a-middle,.o-middle,.o-top', '-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;');
+			omnibuild('.o-right,.o-top-right,.o-bottom,.o-bottom-right', '-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;');
 			// Lift will align top, middle and bottom
 			omnibuild('.o-top,.o-top-left,.o-top-right', '-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;');
 			omnibuild('.x-middle,.o-middle,.o-right,.o-left', '-webkit-box-align:center;-ms-flex-align:center;align-items:center;');
 			omnibuild('.o-bottom-right', 'justify-content:end;');
-			omnibuild('.o-bottom-left,.o-bottom,.o-bottom-right', 'align-items:end;');
+			omnibuild('.o-bottom-left,.o-bottom-right', 'align-items:end;');
 			// Fill empty spaces around the cells
 			omnibuild('.o-distribute', '-ms-flex-pack:distribute;justify-content: space-around;');
 			// Fill empty spaces between the cells
@@ -131,12 +131,10 @@ class XCode {
 				omnibuild('.shelf > .cel-' + a, "flex-basis:" + t + ";max-width:" + t + ";width:fit-content;height:fit-content");
 				omnibuild('.drawer > .fill.cel-' + a, "width:100%");
 				omnibuild('.shelf > .fill.cel-' + a, "height:100%");
-				if (a > 0) {
-					omnibuild('.l-cel-' + a, 'margin-left:' + t);
-					omnibuild('.r-cel-' + a, 'margin-right:' + t);
-					omnibuild('.t-cel-' + a, 'margin-top:' + t);
-					omnibuild('.b-cel-' + a, 'margin-bottom:' + t);
-				}
+				omnibuild('.l-cel-' + a, 'margin-left:' + t);
+				omnibuild('.r-cel-' + a, 'margin-right:' + t);
+				omnibuild('.t-cel-' + a, 'margin-top:' + t);
+				omnibuild('.b-cel-' + a, 'margin-bottom:' + t);
 				++a;
 			}
 			_inits.grid = true;
@@ -300,19 +298,16 @@ class XCode {
 		var t:String = Utils.getValidOne(blur, 1) + 'px ' + color;
 		while (x < l) {
 			++x;
-			if(x != 0){
-				var xs:String = x + 'px';
-				s[s.length] = '-' + xs + ' 0 ' + t;
-				s[s.length] = '0 ' + xs + ' ' + t;
-				s[s.length] = '' + xs + ' 0 ' + t;
-				s[s.length] = '0 -' + xs + ' ' + t;
-				if (x % 2 == 0){
-					//xs = Std.int(x/2) + 'px';
-					s[s.length] = '-' + xs + ' -' + xs + ' ' + t;
-					s[s.length] = '' + xs + ' -' + xs + ' ' + t;
-					s[s.length] = '-' + xs + ' ' + xs + ' ' + t;
-					s[s.length] = '' + xs + ' ' + xs + ' ' + t;
-				}
+			var xs:String = x + 'px';
+			s[s.length] = '-' + xs + ' 0 ' + t;
+			s[s.length] = '0 ' + xs + ' ' + t;
+			s[s.length] = '' + xs + ' 0 ' + t;
+			s[s.length] = '0 -' + xs + ' ' + t;
+			if (x % 2 == 0){
+				s[s.length] = '-' + xs + ' -' + xs + ' ' + t;
+				s[s.length] = '' + xs + ' -' + xs + ' ' + t;
+				s[s.length] = '-' + xs + ' ' + xs + ' ' + t;
+				s[s.length] = '' + xs + ' ' + xs + ' ' + t;
 			}
 		}
 		omnibuild(id, (text ? 'text-shadow' : 'box-shadow') + ':' + s.join(','));
@@ -399,10 +394,11 @@ class XCode {
 		}
 		var css:String = '@keyframes ' + name + '{';
 		var len:Int = values.length;
+		var last:Int = len > 1 ? len - 1 : 1;
 		Dice.All(values, function(p:Int, v:String):Void {
-			css += Std.int(p / len) + '%{' + v + '}'; 
+			css += Std.int(p * 100 / last) + '%{' + v + '}';
 		});
-		css += '} animation: ' + name + ' ' + time + 's linear infinite; /*EOF ' + name + '*/';
+		css += '}';
 		_motions.appendHtml(css);
 	}
 	

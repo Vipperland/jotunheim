@@ -8,6 +8,100 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var DateTools = function() { };
+DateTools.__name__ = "DateTools";
+DateTools.__format_get = function(d,e) {
+	switch(e) {
+	case "%":
+		return "%";
+	case "A":
+		return DateTools.DAY_NAMES[d.getDay()];
+	case "B":
+		return DateTools.MONTH_NAMES[d.getMonth()];
+	case "C":
+		return StringTools.lpad(Std.string(d.getFullYear() / 100 | 0),"0",2);
+	case "D":
+		return DateTools.__format(d,"%m/%d/%y");
+	case "F":
+		return DateTools.__format(d,"%Y-%m-%d");
+	case "M":
+		return StringTools.lpad(Std.string(d.getMinutes()),"0",2);
+	case "R":
+		return DateTools.__format(d,"%H:%M");
+	case "S":
+		return StringTools.lpad(Std.string(d.getSeconds()),"0",2);
+	case "T":
+		return DateTools.__format(d,"%H:%M:%S");
+	case "Y":
+		return Std.string(d.getFullYear());
+	case "a":
+		return DateTools.DAY_SHORT_NAMES[d.getDay()];
+	case "d":
+		return StringTools.lpad(Std.string(d.getDate()),"0",2);
+	case "e":
+		return Std.string(d.getDate());
+	case "b":case "h":
+		return DateTools.MONTH_SHORT_NAMES[d.getMonth()];
+	case "H":case "k":
+		return StringTools.lpad(Std.string(d.getHours()),e == "H" ? "0" : " ",2);
+	case "I":case "l":
+		var hour = d.getHours() % 12;
+		return StringTools.lpad(Std.string(hour == 0 ? 12 : hour),e == "I" ? "0" : " ",2);
+	case "m":
+		return StringTools.lpad(Std.string(d.getMonth() + 1),"0",2);
+	case "n":
+		return "\n";
+	case "p":
+		if(d.getHours() > 11) {
+			return "PM";
+		} else {
+			return "AM";
+		}
+		break;
+	case "r":
+		return DateTools.__format(d,"%I:%M:%S %p");
+	case "s":
+		return Std.string(d.getTime() / 1000 | 0);
+	case "t":
+		return "\t";
+	case "u":
+		var t = d.getDay();
+		if(t == 0) {
+			return "7";
+		} else if(t == null) {
+			return "null";
+		} else {
+			return "" + t;
+		}
+		break;
+	case "w":
+		return Std.string(d.getDay());
+	case "y":
+		return StringTools.lpad(Std.string(d.getFullYear() % 100),"0",2);
+	default:
+		throw new haxe_exceptions_NotImplementedException("Date.format %" + e + "- not implemented yet.",null,{ fileName : "DateTools.hx", lineNumber : 101, className : "DateTools", methodName : "__format_get"});
+	}
+};
+DateTools.__format = function(d,f) {
+	var r_b = "";
+	var p = 0;
+	while(true) {
+		var np = f.indexOf("%",p);
+		if(np < 0) {
+			break;
+		}
+		var len = np - p;
+		r_b += len == null ? HxOverrides.substr(f,p,null) : HxOverrides.substr(f,p,len);
+		r_b += Std.string(DateTools.__format_get(d,HxOverrides.substr(f,np + 1,1)));
+		p = np + 2;
+	}
+	var len = f.length - p;
+	r_b += len == null ? HxOverrides.substr(f,p,null) : HxOverrides.substr(f,p,len);
+	return r_b;
+};
+DateTools.format = function(d,f) {
+	return DateTools.__format(d,f);
+};
 var EReg = function(r,opt) {
 	this.r = new RegExp(r,opt.split("u").join(""));
 };
@@ -354,11 +448,17 @@ haxe_Exception.prototype = $extend(Error.prototype,{
 	,unwrap: function() {
 		return this.__nativeException;
 	}
+	,toString: function() {
+		return this.get_message();
+	}
+	,get_message: function() {
+		return this.message;
+	}
 	,get_native: function() {
 		return this.__nativeException;
 	}
 	,__class__: haxe_Exception
-	,__properties__: {get_native:"get_native"}
+	,__properties__: {get_native:"get_native",get_message:"get_message"}
 });
 var haxe_Timer = function(time_ms) {
 	var me = this;
@@ -937,6 +1037,34 @@ haxe_ds_StringMap.prototype = {
 	h: null
 	,__class__: haxe_ds_StringMap
 };
+var haxe_exceptions_PosException = function(message,previous,pos) {
+	haxe_Exception.call(this,message,previous);
+	if(pos == null) {
+		this.posInfos = { fileName : "(unknown)", lineNumber : 0, className : "(unknown)", methodName : "(unknown)"};
+	} else {
+		this.posInfos = pos;
+	}
+};
+haxe_exceptions_PosException.__name__ = "haxe.exceptions.PosException";
+haxe_exceptions_PosException.__super__ = haxe_Exception;
+haxe_exceptions_PosException.prototype = $extend(haxe_Exception.prototype,{
+	posInfos: null
+	,toString: function() {
+		return "" + haxe_Exception.prototype.toString.call(this) + " in " + this.posInfos.className + "." + this.posInfos.methodName + " at " + this.posInfos.fileName + ":" + this.posInfos.lineNumber;
+	}
+	,__class__: haxe_exceptions_PosException
+});
+var haxe_exceptions_NotImplementedException = function(message,previous,pos) {
+	if(message == null) {
+		message = "Not implemented";
+	}
+	haxe_exceptions_PosException.call(this,message,previous,pos);
+};
+haxe_exceptions_NotImplementedException.__name__ = "haxe.exceptions.NotImplementedException";
+haxe_exceptions_NotImplementedException.__super__ = haxe_exceptions_PosException;
+haxe_exceptions_NotImplementedException.prototype = $extend(haxe_exceptions_PosException.prototype,{
+	__class__: haxe_exceptions_NotImplementedException
+});
 var haxe_io_Error = $hxEnums["haxe.io.Error"] = { __ename__:true,__constructs__:null
 	,Blocked: {_hx_name:"Blocked",_hx_index:0,__enum__:"haxe.io.Error",toString:$estr}
 	,Overflow: {_hx_name:"Overflow",_hx_index:1,__enum__:"haxe.io.Error",toString:$estr}
@@ -3797,7 +3925,7 @@ jotun_css_XCode._createGrid = function() {
 		jotun_css_XCode.omnibuild(".shelf,.hack,.drawer","display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;");
 		jotun_css_XCode.omnibuild(".shelf","-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;");
 		jotun_css_XCode.omnibuild(".hack,.drawer","-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;");
-		jotun_css_XCode.omnibuild(".drawer","-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;");
+		jotun_css_XCode.omnibuild(".drawer","-webkit-box-direction:column;-ms-flex-direction:column;flex-direction:column;flex-wrap:nowrap;");
 		var s = "-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1;-ms-flex-preferred-size:0;flex-basis:0;";
 		jotun_css_XCode.omnibuild(".hack > .cel",s + "max-height:100%;max-width:100%;");
 		jotun_css_XCode.omnibuild(".hack > .h-cel",s + "max-width:100%;:100%;");
@@ -3807,12 +3935,12 @@ jotun_css_XCode._createGrid = function() {
 		jotun_css_XCode.omnibuild(".drawer > .fill.cel",s + "width:100%;");
 		jotun_css_XCode.omnibuild(".shelf > .fill.cel",s + "height:100%;");
 		jotun_css_XCode.omnibuild(".o-left,.o-top-left","-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;text-align:start;");
-		jotun_css_XCode.omnibuild(".a-middle,.o-middle,.o-top,.o-bottom","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
-		jotun_css_XCode.omnibuild(".o-right,.o-top-right,o-bottom-right","-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;");
+		jotun_css_XCode.omnibuild(".a-middle,.o-middle,.o-top","-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;");
+		jotun_css_XCode.omnibuild(".o-right,.o-top-right,.o-bottom,.o-bottom-right","-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;text-align:end;");
 		jotun_css_XCode.omnibuild(".o-top,.o-top-left,.o-top-right","-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;");
 		jotun_css_XCode.omnibuild(".x-middle,.o-middle,.o-right,.o-left","-webkit-box-align:center;-ms-flex-align:center;align-items:center;");
 		jotun_css_XCode.omnibuild(".o-bottom-right","justify-content:end;");
-		jotun_css_XCode.omnibuild(".o-bottom-left,.o-bottom,.o-bottom-right","align-items:end;");
+		jotun_css_XCode.omnibuild(".o-bottom-left,.o-bottom-right","align-items:end;");
 		jotun_css_XCode.omnibuild(".o-distribute","-ms-flex-pack:distribute;justify-content: space-around;");
 		jotun_css_XCode.omnibuild(".o-justify","-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content: space-between;");
 		jotun_css_XCode.omnibuild(".shelf.o-reverse,.hack.o-stack","-webkit-box-direction:reverse;-ms-flex-direction:row-reverse;flex-direction:row-reverse;");
@@ -7137,7 +7265,7 @@ var jotun_gaming_actions_SpellGroup = $hx_exports["Jtn"]["SpellGroup"] = functio
 	this._init(data,0);
 };
 jotun_gaming_actions_SpellGroup.__name__ = "jotun.gaming.actions.SpellGroup";
-jotun_gaming_actions_SpellGroup.patch = function(data,validate,priority,io) {
+jotun_gaming_actions_SpellGroup.patch = function(data,validate,priority) {
 	var patched = { };
 	if(data != null) {
 		if(priority != null) {
@@ -9225,8 +9353,8 @@ jotun_serial_JsonTool.noReplacer = function(a,b) {
 	return b;
 };
 jotun_serial_JsonTool.customReplacer = function(a,b) {
-	if(typeof(a) == "string") {
-		if(a.substr(0,1) == "_") {
+	if(jotun_serial_JsonTool.SKIP_PREFIX != null && typeof(a) == "string") {
+		if(a.substr(0,1) == jotun_serial_JsonTool.SKIP_PREFIX) {
 			return null;
 		}
 	} else if(((b) instanceof jotun_logical_Flag)) {
@@ -9372,7 +9500,7 @@ jotun_serial_JsonTool.prototype = {
 			var i = _g++;
 			var f = fields[i];
 			var value = Reflect.field(v,f);
-			if(value != null && !Reflect.isFunction(value) && !(typeof(f) == "string" && HxOverrides.substr(f,0,1) == "_")) {
+			if(value != null && !Reflect.isFunction(value) && !(typeof(f) == "string" && HxOverrides.substr(f,0,1) == jotun_serial_JsonTool.SKIP_PREFIX)) {
 				if(first) {
 					this.nind++;
 					first = false;
@@ -10067,6 +10195,28 @@ jotun_tools_Utils.tag = function(value,space) {
 	value = value.split("\t").join(space);
 	return value;
 };
+jotun_tools_Utils.dmYToUnixtime = function(date) {
+	if(date != null && date.length == 10) {
+		var darr = date.split("/").join("-").split("-");
+		if(darr[0].length != 4) {
+			darr.reverse();
+		}
+		date = darr.join("-");
+		return HxOverrides.strDate(date).getTime();
+	} else {
+		return 0;
+	}
+};
+jotun_tools_Utils.toTime = function(date,format) {
+	if(format == null) {
+		format = "%H:%M:%S";
+	}
+	if(((date) instanceof Date)) {
+		return DateTools.format(date,format);
+	} else {
+		return DateTools.format(new Date(date),format);
+	}
+};
 jotun_tools_Utils.toFixed = function(n,i,s) {
 	if(s == null) {
 		s = ".";
@@ -10635,6 +10785,7 @@ jotun_utils_ITable.prototype = {
 	,attributes: null
 	,show: null
 	,hide: null
+	,disable: null
 	,remove: null
 	,clear: null
 	,addTo: null
@@ -11222,6 +11373,11 @@ jotun_utils_Table.prototype = {
 			v.addToBody();
 		});
 	}
+	,disable: function() {
+		return this.each(function(v) {
+			v.disable();
+		});
+	}
 	,length: function() {
 		return this.content.length;
 	}
@@ -11608,6 +11764,10 @@ var Bool = Boolean;
 var Class = { };
 var Enum = { };
 js_Boot.__toStr = ({ }).toString;
+DateTools.DAY_SHORT_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+DateTools.DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+DateTools.MONTH_SHORT_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+DateTools.MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 jotun_tools_Key.TABLE = "abcdefghijklmnopqrstuvwxyz0123456789";

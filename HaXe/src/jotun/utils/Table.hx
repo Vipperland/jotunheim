@@ -1,7 +1,6 @@
 package jotun.utils;
 
-import haxe.ds.Either;
-import haxe.Log;
+import jotun.dom.Input;
 import js.Browser;
 import js.html.Element;
 import js.html.HTMLCollection;
@@ -11,7 +10,6 @@ import jotun.dom.Displayable;
 import jotun.events.Activation;
 import jotun.tools.Utils;
 import jotun.utils.ITable;
-import js.html.Text;
 
 /**
  * ...
@@ -39,8 +37,6 @@ class Table implements ITable {
 		}
 	}
 	
-	//static public function em
-	
 	static public function empty():ITable {
 		return new Table().reset();
 	}
@@ -66,11 +62,13 @@ class Table implements ITable {
 		var len:UInt = result.length;
 		if(len > 0){
 			var ind:UInt = 0;
+			var cnt:UInt = 0;
 			while(ind < len){
 				element = cast result.item(ind);
 				if (element != null && element.nodeName != '#text'){
 					obj = Utils.displayFrom(element);
-					content[ind] = obj;
+					content[cnt] = obj;
+					++cnt;
 				}
 				++ind;
 			}
@@ -144,7 +142,7 @@ class Table implements ITable {
 	}
 	
 	public function style(p:Dynamic, v:Dynamic):ITable {
-		each(function(v:Displayable) { v.style(p, v); } );
+		each(function(el:Displayable) { el.style(p, v); } );
 		return this;
 	}
 	
@@ -182,6 +180,10 @@ class Table implements ITable {
 		return each(function(v:Displayable) { v.addToBody(); } );
 	}
 	
+	public function disable():ITable {
+		return each(function(v:Displayable) { v.disable(); } );
+	}
+	
 	public function length():Int {
 		return content.length;
 	}
@@ -204,11 +206,11 @@ class Table implements ITable {
 		return each(function(v:Displayable) { v.events.on(name, handler, mode); });
 	}
 	
-	public function merge(?tables:Array<Table>):ITable {
+	public function merge(?tables:Array<ITable>):ITable {
 		var t:ITable = Table.empty();
 		if (tables == null) tables = [];
 		tables[tables.length] = this;
-		Dice.Values(tables, function(v:Table) {
+		Dice.Values(tables, function(v:ITable) {
 			t.content = t.content.concat(v.content);
 		});
 		return t;
