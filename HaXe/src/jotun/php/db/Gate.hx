@@ -22,33 +22,33 @@ import php.Lib;
  * @author Rafael Moreira
  */
 class Gate {
-	
+
 	private var _db:Connection;
-	
+
 	private var _token:Token;
-	
+
 	private var _tables:Dynamic;
-	
+
 	private var _errors:Array<ErrorDescriptior>;
-	
+
 	private var _onLog:Array<String->Void>;
-	
+
 	/**
 	 * Fast bulk command
 	 */
 	public var builder:QueryBuilder;
-	
+
 	/**
 	 * Last created command
 	 */
 	public var command:EitherType<ICommand,IExtCommand>;
-	
+
 	/**
 	 * Connection and Execution Errors
 	 */
 	public var errors(get, null):Array<ErrorDescriptior>;
 	public function get_errors():Array<ErrorDescriptior> { return _errors; }
-	
+
 	/**
 	   Name of Selected database
 	   @return
@@ -56,7 +56,7 @@ class Gate {
 	public function getName():String {
 		return _token.db;
 	}
-	
+
 	/**
 	   LAst inserted column value
 	   @param	field
@@ -72,14 +72,14 @@ class Gate {
 			default : return r;
 		}
 	}
-	
+
 	public function new() {
 		_errors = [];
 		_onLog = [];
 		_tables = { };
 		builder = new QueryBuilder(this);
 	}
-	
+
 	/**
 	 * If the connection is available
 	 * @return
@@ -87,7 +87,7 @@ class Gate {
 	public function isOpen():Bool {
 		return _db != null && errors.length == 0;
 	}
-	
+
 	/**
 	 * register query execution
 	 * @param	handler
@@ -99,7 +99,7 @@ class Gate {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Open a connection
 	 * @param	token
@@ -119,7 +119,7 @@ class Gate {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * The query to execute
 	 * @param	query
@@ -132,9 +132,9 @@ class Gate {
 		command = new Command(isOpen() ? _db.prepare(query, Lib.toPhpArray(options == null ? [] : options)) : null, query, parameters, _errors, _log);
 		return command;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param	query
 	 * @param	parameters
 	 * @return
@@ -143,7 +143,7 @@ class Gate {
 		command = new ExtCommand(isOpen() ? _db.prepare(query, Lib.toPhpArray(options == null ? [] : options)) : null, query, parameters, _errors, _log);
 		return cast command;
 	}
-	
+
 	/**
 	 * Show all fields of a table
 	 * @param	table
@@ -163,7 +163,7 @@ class Gate {
 		});
 		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute().result;
 	}
-	
+
 	/**
 	 * Enable/Disable INT to String conversions
 	 * @param	value
@@ -175,7 +175,7 @@ class Gate {
 		_db.setAttribute(php.Syntax.code('\\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY'), buffered);
 		return this;
 	}
-	
+
 	/**
 	 * Shotcut to table statements and methods
 	 * @param	table
@@ -187,7 +187,7 @@ class Gate {
 		}
 		return Reflect.field(_tables, table);
 	}
-	
+
 	/**
 	   Get name of all tables in the selected database
 	   @return
@@ -199,7 +199,7 @@ class Gate {
 		});
 		return r;
 	}
-	
+
 	/**
 	   Get all DataTable objects from the selected database
 	   @return
@@ -211,7 +211,7 @@ class Gate {
 		});
 		return r;
 	}
-	
+
 	/**
 	   LAst inserted column value
 	   @param	field
@@ -221,11 +221,11 @@ class Gate {
 	public function ifTableExists(table:String):Bool {
 		return getTableNames().indexOf(table) != -1;
 	}
-	
+
 	private function _log(message:String):Void {
 		Dice.Values(_onLog, function(v:String->Void){
 			v(message);
 		});
 	}
-	
+
 }
