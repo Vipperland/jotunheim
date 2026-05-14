@@ -1,6 +1,5 @@
 package jotun.net;
 import haxe.Rest;
-import jotun.gaming.dataform.Pulsar;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
 import jotun.utils.Dice;
@@ -21,8 +20,6 @@ class Header {
 	static public var TEXT:String = 'text/plain; charset=utf-8';
 	
 	static public var JSON:String = 'application/json; charset=utf-8';
-	
-	static public var PULSAR:String = 'text/pulsar; charset=utf-8';
 	
 	static public var JSONP:String = 'application/javascript; charset=utf-8';
 	
@@ -73,7 +70,10 @@ class Header {
 	}
 	
 	public function setFreeAccess():Void {
-		allowOrigin('*');
+		var origin:String = getClientHeader('ORIGIN');
+		if (origin != null) {
+			allowOrigin(origin);
+		}
 		allowMethods('POST', 'GET', 'DELETE', 'PUT', 'PATCH', 'OPTIONS');
 		allowHeaders('Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Request-With');
 		allowCredentials(true);
@@ -109,13 +109,6 @@ class Header {
 				data = data.join('\n');
 			}
 			_writeData(data, encode, chunk);
-		}
-	}
-	
-	public function setPulsar(?data:Pulsar, ?encode:Bool, ?chunk:Int):Void {
-		content(PULSAR);
-		if (data != null){
-			_writeData(data.toString(encode), encode, chunk);
 		}
 	}
 	
@@ -205,7 +198,7 @@ class Header {
 	}
 	
 	public function readCookie(name:String):String {
-		return Global.session_get_cookie_params()[name];
+		return Global._COOKIE[name];
 	}
 	
 	public function writeCookie(name:String, value:String, ?expire:UInt = 0, ?domain:String = null, ?secure:Bool = false, ?http:Bool = false):Void {

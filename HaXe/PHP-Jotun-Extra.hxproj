@@ -16,15 +16,15 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="src+extras\gateway" />
-    <class path="src+extras\basic+gateway" />
+    <class path="xsrc\gateway" />
+    <class path="xsrc\basic+gateway" />
   </classpaths>
   <!-- Build options -->
   <build>
     <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
-    <option mainClass="+extras.gateway.jotun.gateway.GatewayCore" />
+    <option mainClass="jotun.gateway.GatewayCore" />
     <option enabledebug="False" />
     <option additional="" />
   </build>
@@ -40,6 +40,8 @@
     <compile path="server\jotun\admin\ServerMain.hx" />
     <compile path="samples\server\CustomGateway.hx" />
     <compile path="src+extras\gateway\jotun\gateway\GatewayCore.hx" />
+    <compile path="src_extras\gateway\jotun\gateway\GatewayCore.hx" />
+    <compile path="xsrc\gateway\jotun\gateway\GatewayCore.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

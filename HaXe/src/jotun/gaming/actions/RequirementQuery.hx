@@ -13,7 +13,7 @@ import jotun.utils.Dice;
  */
 @:expose("Jtn.RequirementQuery")
 class RequirementQuery extends Query {
-	
+
 	public static var RULE_EQUAL:String = "=";
 	public static var RULE_DIFFERENT:String = "!=";
 	public static var RULE_LESS:String = "<";
@@ -25,36 +25,36 @@ class RequirementQuery extends Query {
 	public static var RULE_CONTAIN:String = "*=";
 	public static var RULE_INSIDE:String = "~=";
 	public static var RULE_RANDOM_EQUAL:String = "#=";
-	public static var RULE_RANDOM_DIFFENT:String = "#!";
+	public static var RULE_RANDOM_DIFFERENT:String = "#!";
 	public static var RULE_RANDOM_GREAT_OR:String = "#>";
 	public static var RULE_RANDOM_LESS_OR:String = "#<";
-	
+
 	public function getDataProvider():IDataProvider {
 		return invocation.currentProvider;
 	}
-	
+
 	private function _isempty(value:Dynamic):Bool {
 		return value == null || value == "";
 	}
-	
+
 	private function _INT(value:Dynamic, alt:Int):Int {
 		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
 		return o != null ? o : alt;
 	}
-	
+
 	private function _FLOAT(value:Dynamic, alt:Float):Float {
 		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.isOfType(value, Float) ? value : null;
 		return o != null ? o : alt;
 	}
-	
+
 	public function rng():Float {
 		return Math.random();
 	}
-	
+
 	private function _rule(rule:String, alt:String):String {
 		return rule != null ? rule : alt;
 	}
-	
+
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Bool {
 		if (r == null) {
 			r = "=";
@@ -92,13 +92,19 @@ class RequirementQuery extends Query {
 			default : a == v;
 		}
 	}
-	
+
+	override private function _beforeProc(obj:Query):Void {
+		if(Std.isOfType(obj, RequirementQuery)) {
+			(cast obj).invocation = invocation;
+		}
+	}
+
 	public var invocation:SpellCasting;
-	
+
 	public function new() {
 		super();
 	}
-	
+
 	// =========================================== VARIABLE VERIFICATIONS ====================================================================================
 
 	/**
@@ -119,7 +125,7 @@ class RequirementQuery extends Query {
 		var value:Float = (rng() * a_max + a_min);
 		return isvar(name, rule, value);
 	}
-	
+
 	public function isodd(name:String):Bool {
 		var a:Int = Std.int(getDataProvider().getVar(name));
 		return a % 2 != 0;
@@ -133,7 +139,7 @@ class RequirementQuery extends Query {
 	public function coinflip():Bool {
 		return Std.int(Math.random() * 2) == 0;
 	}
-	
+
 	/**
 	 * Match a Variable Value
 	 * Rules:
@@ -158,7 +164,7 @@ class RequirementQuery extends Query {
 		}
 		return _resolve(a, rule, _FLOAT(value, 0));
 	}
-	
+
 	/**
 	 * Match a String Value
 	 * Rules:
@@ -179,7 +185,7 @@ class RequirementQuery extends Query {
 		}
 		return _resolve(a, rule, value);
 	}
-	
+
 	/**
 	 * Check if switch is TRUE or FALSE
 	 * @param	name
@@ -190,7 +196,7 @@ class RequirementQuery extends Query {
 		var a:Bool = getDataProvider().getSwitch(name);
 		return (_isempty(value) || Utils.boolean(value)) == a;
 	}
-	
+
 	/**
 	 * Compara duas variáveis
 	 * @param	name
@@ -203,21 +209,13 @@ class RequirementQuery extends Query {
 		name2 = getDataProvider().getVar(name2);
 		return _resolve(name, rule, name2);
 	}
-	
-	
-	public function hasrequestcontext():Bool {
-		return invocation.requestProvider != null;
-	}
-	
-	public function isrequestcontext():Bool {
-		return hasrequestcontext() && invocation.requestProvider == invocation.currentProvider;
-	}
-	
+
+
 	public function ismaincontext():Bool {
 		return invocation.dataProvider == invocation.currentProvider;
 	}
-	
-	
+
+
 	// =========================================== CONTEXT VERIFICATIONS ====================================================================================
 
 	/**
@@ -230,9 +228,9 @@ class RequirementQuery extends Query {
 			return v == invocation.origin.type;
 		}).completed;
 	}
-	
+
 	/**
-	 * Check if 
+	 * Check if
 	 * @param	...ids
 	 * @return
 	 */
@@ -244,9 +242,9 @@ class RequirementQuery extends Query {
 			return v == invocation.action.target.id;
 		}).completed;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param	hits
 	 * @param	...ids
 	 * @return
@@ -263,9 +261,9 @@ class RequirementQuery extends Query {
 			return matches >= hits;
 		}).completed;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param	...ids
 	 * @return
 	 */
@@ -275,15 +273,15 @@ class RequirementQuery extends Query {
 				return id != null && id.length > 0 && a.id == id;
 			}).completed;
 		}).completed;
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public function isdebug():Bool {
 		return invocation.debug;
 	}
-	
+
 }

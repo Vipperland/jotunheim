@@ -21,6 +21,18 @@ class Resolution {
 	 * @var string
 	 */
 	const BREAK_NEVER = "never";
+	/**
+	 * @var string
+	 */
+	const QUERY_PARAM_ACTION = "@";
+	/**
+	 * @var string
+	 */
+	const QUERY_PARAM_REQUIREMENT = "*";
+	/**
+	 * @var string
+	 */
+	const QUERY_RESULT_MARKER = "@result";
 
 	/**
 	 * @var bool
@@ -63,44 +75,44 @@ class Resolution {
 	 * @return void
 	 */
 	public function __construct ($type, $data, $param) {
-		#src/jotun/gaming/actions/Resolution.hx:34: characters 3-15
+		#src/jotun/gaming/actions/Resolution.hx:38: characters 3-15
 		$this->_type = $type;
-		#src/jotun/gaming/actions/Resolution.hx:35: characters 3-40
+		#src/jotun/gaming/actions/Resolution.hx:39: characters 3-40
 		$this->reverse = Utils::boolean(Boot::dynamicField($data, 'reverse'));
-		#src/jotun/gaming/actions/Resolution.hx:36: characters 3-25
+		#src/jotun/gaming/actions/Resolution.hx:40: characters 3-25
 		$this->breakon = Boot::dynamicField($data, 'breakon');
-		#src/jotun/gaming/actions/Resolution.hx:37: lines 37-46
+		#src/jotun/gaming/actions/Resolution.hx:41: lines 41-50
 		if (\Reflect::hasField($data, $param)) {
-			#src/jotun/gaming/actions/Resolution.hx:38: characters 4-50
+			#src/jotun/gaming/actions/Resolution.hx:42: characters 4-50
 			$qset = \Reflect::field($data, $param);
-			#src/jotun/gaming/actions/Resolution.hx:39: characters 4-36
+			#src/jotun/gaming/actions/Resolution.hx:43: characters 4-36
 			\Reflect::deleteField($data, $param);
-			#src/jotun/gaming/actions/Resolution.hx:40: lines 40-45
+			#src/jotun/gaming/actions/Resolution.hx:44: lines 44-49
 			if (($qset instanceof \Array_hx)) {
-				#src/jotun/gaming/actions/Resolution.hx:41: characters 5-17
+				#src/jotun/gaming/actions/Resolution.hx:45: characters 5-17
 				$this->query = $qset;
-				#src/jotun/gaming/actions/Resolution.hx:42: characters 5-29
+				#src/jotun/gaming/actions/Resolution.hx:46: characters 5-39
 				$_this = $this->query;
 				$_this->length = \array_unshift($_this->arr, "@result");
 			} else if (Utils::isValid($qset)) {
-				#src/jotun/gaming/actions/Resolution.hx:44: characters 5-30
+				#src/jotun/gaming/actions/Resolution.hx:48: characters 5-40
 				$this->query = \Array_hx::wrap([
 					"@result",
 					$qset,
 				]);
 			}
 		}
-		#src/jotun/gaming/actions/Resolution.hx:47: lines 47-49
+		#src/jotun/gaming/actions/Resolution.hx:51: lines 51-53
 		if (Boot::dynamicField($data, 'then') !== null) {
-			#src/jotun/gaming/actions/Resolution.hx:48: characters 4-53
+			#src/jotun/gaming/actions/Resolution.hx:52: characters 4-53
 			$this->then = new SpellGroup(($this->_type??'null') . ":then", Boot::dynamicField($data, 'then'));
 		}
-		#src/jotun/gaming/actions/Resolution.hx:50: lines 50-52
+		#src/jotun/gaming/actions/Resolution.hx:54: lines 54-56
 		if (Boot::dynamicField($data, 'fail') !== null) {
-			#src/jotun/gaming/actions/Resolution.hx:51: characters 4-53
+			#src/jotun/gaming/actions/Resolution.hx:55: characters 4-53
 			$this->fail = new SpellGroup(($this->_type??'null') . ":fail", Boot::dynamicField($data, 'fail'));
 		}
-		#src/jotun/gaming/actions/Resolution.hx:53: characters 3-15
+		#src/jotun/gaming/actions/Resolution.hx:57: characters 3-15
 		$this->id = Boot::dynamicField($data, 'id');
 	}
 
@@ -110,7 +122,7 @@ class Resolution {
 	 * @return void
 	 */
 	public function connect () {
-		#src/jotun/gaming/actions/Resolution.hx:99: characters 3-19
+		#src/jotun/gaming/actions/Resolution.hx:103: characters 3-19
 		$this->_stopped = false;
 	}
 
@@ -121,7 +133,7 @@ class Resolution {
 	 * @return void
 	 */
 	public function disconnect () {
-		#src/jotun/gaming/actions/Resolution.hx:107: characters 3-18
+		#src/jotun/gaming/actions/Resolution.hx:111: characters 3-18
 		$this->_stopped = true;
 	}
 
@@ -129,12 +141,12 @@ class Resolution {
 	 * @return int
 	 */
 	public function length () {
-		#src/jotun/gaming/actions/Resolution.hx:111: characters 10-46
+		#src/jotun/gaming/actions/Resolution.hx:115: characters 10-46
 		if ($this->query !== null) {
-			#src/jotun/gaming/actions/Resolution.hx:111: characters 26-42
+			#src/jotun/gaming/actions/Resolution.hx:115: characters 26-42
 			return $this->query->length - 1;
 		} else {
-			#src/jotun/gaming/actions/Resolution.hx:111: characters 45-46
+			#src/jotun/gaming/actions/Resolution.hx:115: characters 45-46
 			return 0;
 		}
 	}
@@ -150,11 +162,11 @@ class Resolution {
 	 * @return void
 	 */
 	public function release ($result, $context) {
-		#src/jotun/gaming/actions/Resolution.hx:89: lines 89-92
+		#src/jotun/gaming/actions/Resolution.hx:93: lines 93-96
 		if ($this->_stopped) {
-			#src/jotun/gaming/actions/Resolution.hx:90: characters 4-20
+			#src/jotun/gaming/actions/Resolution.hx:94: characters 4-20
 			$this->_stopped = false;
-			#src/jotun/gaming/actions/Resolution.hx:91: characters 4-33
+			#src/jotun/gaming/actions/Resolution.hx:95: characters 4-33
 			$context->release($this, $result);
 		}
 	}
@@ -166,30 +178,30 @@ class Resolution {
 	 * @return bool
 	 */
 	public function resolve ($result, $context) {
-		#src/jotun/gaming/actions/Resolution.hx:57: lines 57-69
+		#src/jotun/gaming/actions/Resolution.hx:61: lines 61-73
 		if (!$this->_stopped) {
-			#src/jotun/gaming/actions/Resolution.hx:58: characters 4-19
+			#src/jotun/gaming/actions/Resolution.hx:62: characters 4-19
 			++$context->ident;
-			#src/jotun/gaming/actions/Resolution.hx:59: lines 59-67
+			#src/jotun/gaming/actions/Resolution.hx:63: lines 63-71
 			if ($result) {
-				#src/jotun/gaming/actions/Resolution.hx:60: lines 60-62
+				#src/jotun/gaming/actions/Resolution.hx:64: lines 64-66
 				if ($this->then !== null) {
-					#src/jotun/gaming/actions/Resolution.hx:61: characters 6-27
+					#src/jotun/gaming/actions/Resolution.hx:65: characters 6-27
 					$this->then->execute($context);
 				}
 			} else if ($this->fail !== null) {
-				#src/jotun/gaming/actions/Resolution.hx:65: characters 6-27
+				#src/jotun/gaming/actions/Resolution.hx:69: characters 6-27
 				$this->fail->execute($context);
 			}
-			#src/jotun/gaming/actions/Resolution.hx:68: characters 4-19
+			#src/jotun/gaming/actions/Resolution.hx:72: characters 4-19
 			--$context->ident;
 		}
-		#src/jotun/gaming/actions/Resolution.hx:70: characters 10-36
+		#src/jotun/gaming/actions/Resolution.hx:74: characters 10-36
 		if ($this->reverse) {
-			#src/jotun/gaming/actions/Resolution.hx:70: characters 20-27
+			#src/jotun/gaming/actions/Resolution.hx:74: characters 20-27
 			return !$result;
 		} else {
-			#src/jotun/gaming/actions/Resolution.hx:70: characters 30-36
+			#src/jotun/gaming/actions/Resolution.hx:74: characters 30-36
 			return $result;
 		}
 	}
@@ -200,28 +212,28 @@ class Resolution {
 	 * @return bool
 	 */
 	public function willBreakOn ($result) {
-		#src/jotun/gaming/actions/Resolution.hx:74: lines 74-76
+		#src/jotun/gaming/actions/Resolution.hx:78: lines 78-80
 		if ($this->_stopped || ($this->breakon === "always")) {
-			#src/jotun/gaming/actions/Resolution.hx:75: characters 4-15
+			#src/jotun/gaming/actions/Resolution.hx:79: characters 4-15
 			return true;
 		}
-		#src/jotun/gaming/actions/Resolution.hx:77: lines 77-79
+		#src/jotun/gaming/actions/Resolution.hx:81: lines 81-83
 		if ($this->breakon === "never") {
-			#src/jotun/gaming/actions/Resolution.hx:78: characters 4-16
+			#src/jotun/gaming/actions/Resolution.hx:82: characters 4-16
 			return false;
 		}
-		#src/jotun/gaming/actions/Resolution.hx:80: characters 10-58
+		#src/jotun/gaming/actions/Resolution.hx:84: characters 10-58
 		if ($this->breakon !== $result) {
-			#src/jotun/gaming/actions/Resolution.hx:80: characters 31-58
+			#src/jotun/gaming/actions/Resolution.hx:84: characters 31-58
 			if ($result) {
-				#src/jotun/gaming/actions/Resolution.hx:80: characters 42-57
+				#src/jotun/gaming/actions/Resolution.hx:84: characters 42-57
 				return $this->breakon === null;
 			} else {
-				#src/jotun/gaming/actions/Resolution.hx:80: characters 31-58
+				#src/jotun/gaming/actions/Resolution.hx:84: characters 31-58
 				return false;
 			}
 		} else {
-			#src/jotun/gaming/actions/Resolution.hx:80: characters 10-58
+			#src/jotun/gaming/actions/Resolution.hx:84: characters 10-58
 			return true;
 		}
 	}

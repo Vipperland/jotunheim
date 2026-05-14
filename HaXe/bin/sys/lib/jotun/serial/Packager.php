@@ -130,7 +130,7 @@ class Packager {
 	 * @return string
 	 */
 	public static function md5Encode ($o, $base64 = null) {
-		#src/jotun/serial/Packager.hx:67: lines 67-70
+		#src/jotun/serial/Packager.hx:67: lines 67-71
 		if (is_string($o)) {
 			#src/jotun/serial/Packager.hx:68: characters 4-24
 			return \md5($o);

@@ -40,10 +40,18 @@ class Requirement extends Resolution {
 	 * @return void
 	 */
 	public static function _log ($evt, $context, $success, $score, $reversed, $position) {
-		#src/jotun/gaming/actions/Requirement.hx:72: characters 78-128
+		#src/jotun/gaming/actions/Requirement.hx:77: characters 78-128
 		$tmp = (Utils::isValid($evt->id) ? "#{" . ($evt->id??'null') . "} " : "");
-		#src/jotun/gaming/actions/Requirement.hx:72: characters 3-252
+		#src/jotun/gaming/actions/Requirement.hx:77: characters 3-252
 		$context->addLog(0, ((($success ? "└ SUCCESS" : "ꭙ FAILED"))??'null') . " REQUIREMENT " . ($tmp??'null') . "[" . ($position??'null') . "]" . ((($reversed ? " REVERSED" : ""))??'null') . " score:" . ($score??'null') . "/" . ($evt->target??'null') . " queries:" . ($evt->length()??'null'));
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function clear () {
+		#src/jotun/gaming/actions/Requirement.hx:31: characters 3-13
+		Requirement::$cache = new HxAnon();
 	}
 
 	/**
@@ -54,7 +62,7 @@ class Requirement extends Resolution {
 	 * @return mixed
 	 */
 	public static function createFromQueries ($id, $queries, $breakon = null) {
-		#src/jotun/gaming/actions/Requirement.hx:18: characters 3-51
+		#src/jotun/gaming/actions/Requirement.hx:19: characters 3-51
 		return new HxAnon([
 			"id" => $id,
 			"*" => $queries,
@@ -68,7 +76,7 @@ class Requirement extends Resolution {
 	 * @return Requirement
 	 */
 	public static function load ($id) {
-		#src/jotun/gaming/actions/Requirement.hx:26: characters 3-39
+		#src/jotun/gaming/actions/Requirement.hx:27: characters 3-39
 		return \Reflect::field(Requirement::$cache, $id);
 	}
 
@@ -78,7 +86,7 @@ class Requirement extends Resolution {
 	 * @return void
 	 */
 	public static function save ($requirement) {
-		#src/jotun/gaming/actions/Requirement.hx:22: characters 3-55
+		#src/jotun/gaming/actions/Requirement.hx:23: characters 3-55
 		\Reflect::setField(Requirement::$cache, $requirement->id, $requirement);
 	}
 
@@ -89,24 +97,24 @@ class Requirement extends Resolution {
 	 * @return void
 	 */
 	public function __construct ($type, $data) {
-		#src/jotun/gaming/actions/Requirement.hx:32: characters 3-25
+		#src/jotun/gaming/actions/Requirement.hx:37: characters 3-56
 		parent::__construct($type, $data, "*");
-		#src/jotun/gaming/actions/Requirement.hx:34: lines 34-38
+		#src/jotun/gaming/actions/Requirement.hx:39: lines 39-43
 		if (Boot::dynamicField($data, 'target') === null) {
-			#src/jotun/gaming/actions/Requirement.hx:35: characters 4-21
+			#src/jotun/gaming/actions/Requirement.hx:40: characters 4-21
 			$this->target = $this->length();
 		} else {
-			#src/jotun/gaming/actions/Requirement.hx:37: characters 4-33
+			#src/jotun/gaming/actions/Requirement.hx:42: characters 4-33
 			$this->target = (int)(Boot::dynamicField($data, 'target'));
 		}
-		#src/jotun/gaming/actions/Requirement.hx:40: lines 40-42
+		#src/jotun/gaming/actions/Requirement.hx:45: lines 45-47
 		if ($this->breakon === null) {
-			#src/jotun/gaming/actions/Requirement.hx:41: characters 4-21
+			#src/jotun/gaming/actions/Requirement.hx:46: characters 4-36
 			$this->breakon = "never";
 		}
-		#src/jotun/gaming/actions/Requirement.hx:43: lines 43-45
+		#src/jotun/gaming/actions/Requirement.hx:48: lines 48-50
 		if (Utils::isValid(Boot::dynamicField($data, 'id'))) {
-			#src/jotun/gaming/actions/Requirement.hx:44: characters 4-36
+			#src/jotun/gaming/actions/Requirement.hx:49: characters 4-36
 			SpellCodex::saveRequirement($this);
 		}
 	}
@@ -118,43 +126,43 @@ class Requirement extends Resolution {
 	 * @return bool
 	 */
 	public function verify ($context, $position) {
-		#src/jotun/gaming/actions/Requirement.hx:49: characters 3-12
+		#src/jotun/gaming/actions/Requirement.hx:54: characters 3-12
 		$this->connect();
-		#src/jotun/gaming/actions/Requirement.hx:50: characters 3-23
+		#src/jotun/gaming/actions/Requirement.hx:55: characters 3-23
 		$res = true;
-		#src/jotun/gaming/actions/Requirement.hx:51: characters 3-22
+		#src/jotun/gaming/actions/Requirement.hx:56: characters 3-22
 		$score = 0;
-		#src/jotun/gaming/actions/Requirement.hx:52: lines 52-63
+		#src/jotun/gaming/actions/Requirement.hx:57: lines 57-68
 		if (Utils::isValid($this->query)) {
-			#src/jotun/gaming/actions/Requirement.hx:53: characters 4-37
+			#src/jotun/gaming/actions/Requirement.hx:58: characters 4-37
 			$context->registerRequirement($this);
-			#src/jotun/gaming/actions/Requirement.hx:54: characters 4-64
+			#src/jotun/gaming/actions/Requirement.hx:59: characters 4-64
 			$sec = Boot::dynamicField(Requirement::$codex->verification($this->query, $context), 'result');
-			#src/jotun/gaming/actions/Requirement.hx:55: lines 55-61
+			#src/jotun/gaming/actions/Requirement.hx:60: lines 60-66
 			if ($sec !== null) {
-				#src/jotun/gaming/actions/Requirement.hx:56: lines 56-60
+				#src/jotun/gaming/actions/Requirement.hx:61: lines 61-65
 				Dice::Values($sec, function ($v) use (&$score) {
-					#src/jotun/gaming/actions/Requirement.hx:57: lines 57-59
+					#src/jotun/gaming/actions/Requirement.hx:62: lines 62-64
 					if (Utils::boolean($v)) {
-						#src/jotun/gaming/actions/Requirement.hx:58: characters 7-14
+						#src/jotun/gaming/actions/Requirement.hx:63: characters 7-14
 						$score += 1;
 					}
 				});
 			}
-			#src/jotun/gaming/actions/Requirement.hx:62: characters 10-25
+			#src/jotun/gaming/actions/Requirement.hx:67: characters 10-25
 			$b = $this->target;
 			$aNeg = $score < 0;
 			$bNeg = $b < 0;
 			$res = ($aNeg !== $bNeg ? $aNeg : $score >= $b);
 		}
-		#src/jotun/gaming/actions/Requirement.hx:64: characters 3-30
+		#src/jotun/gaming/actions/Requirement.hx:69: characters 3-30
 		$res = $this->resolve($res, $context);
-		#src/jotun/gaming/actions/Requirement.hx:65: lines 65-67
+		#src/jotun/gaming/actions/Requirement.hx:70: lines 70-72
 		if ($context->debug) {
-			#src/jotun/gaming/actions/Requirement.hx:66: characters 4-54
+			#src/jotun/gaming/actions/Requirement.hx:71: characters 4-54
 			Requirement::_log($this, $context, $res, $score, $this->reverse, $position);
 		}
-		#src/jotun/gaming/actions/Requirement.hx:68: characters 3-13
+		#src/jotun/gaming/actions/Requirement.hx:73: characters 3-13
 		return $res;
 	}
 

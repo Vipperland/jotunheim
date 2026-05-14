@@ -35,9 +35,9 @@ class SpellCasting {
 	public var origin:Dynamic;
 	
 	public var parent:SpellCasting;
-	
+
 	public var event:SpellCastContext;
-	
+
 	public var action:SpellCastAction;
 	
 	public var requirement:SpellCastRequirement;
@@ -45,10 +45,8 @@ class SpellCasting {
 	public var history:Array<Action>;
 	
 	public var currentProvider:IDataProvider;
-	
+
 	public var dataProvider:IDataProvider;
-	
-	public var requestProvider:IDataProvider;
 	
 	public var codex:SpellCodex;
 	
@@ -73,7 +71,7 @@ class SpellCasting {
 	public function registerEvent(e:SpellGroup):Void {
 		event.current = e;
 	}
-	
+
 	public function registerAction(a:Action):Void {
 		action.target = a;
 		++action.count;

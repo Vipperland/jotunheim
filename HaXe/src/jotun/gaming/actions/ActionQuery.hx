@@ -2,9 +2,7 @@ package jotun.gaming.actions;
 import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.Action;
-import jotun.gaming.actions.BasicDataProvider;
 import jotun.gaming.actions.SpellCodex;
-import jotun.net.IRequest;
 import jotun.objects.Query;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -33,15 +31,29 @@ class ActionQuery extends Query {
 	public static var RULE_BIT_XOR:String = "!";
 	public static var RULE_POW:String = "^";
 	public static var RULE_RANDOM:String = "#";
-	
+
 	public function getDataProvider():IDataProvider {
 		return invocation.currentProvider;
 	}
-	
+
 	private function _isempty(value:Dynamic):Bool {
 		return value == null || value == "";
 	}
-	
+
+	private function _BOOL(value:Dynamic):Bool {
+		return Utils.boolean(value);
+	}
+
+	private function _INT(value:Dynamic, ?alt:Int):Int {
+		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
+		return o != null ? o : alt;
+	}
+
+	private function _FLOAT(value:Dynamic, ?alt:Float):Float {
+		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.isOfType(value, Float) ? value : null;
+		return o != null ? o : alt;
+	}
+
 	private function _PARAMS(value:String):Dynamic {
 		var params:Dynamic = {};
 		if(value != null){
@@ -55,25 +67,19 @@ class ActionQuery extends Query {
 		}
 		return params;
 	}
-	
-	private function _BOOL(value:Dynamic):Bool {
-		return Utils.boolean(value);
+
+	private function _JOIN(values:Array<Dynamic>):String {
+		return values.join(' ');
 	}
-	
-	private function _INT(value:Dynamic, ?alt:Int):Int {
-		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
-		return o != null ? o : alt;
+
+	private function _ASJSON(values:Array<Dynamic>):String {
+		return Json.stringify(_JOIN(values));
 	}
-	
-	private function _FLOAT(value:Dynamic, ?alt:Float):Float {
-		var o:Float = Std.isOfType(value, String) ? Std.parseFloat(value) : Std.isOfType(value, Float) ? value : null;
-		return o != null ? o : alt;
-	}
-	
+
 	public function rng():Float {
 		return Math.random();
 	}
-	
+
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Dynamic {
 		if (r == null) {
 			r = "=";
@@ -115,21 +121,24 @@ class ActionQuery extends Query {
 			default : a;
 		}
 	}
-	
+
+	override private function _beforeProc(obj:Query):Void {
+		if(Std.isOfType(obj, ActionQuery)) {
+			(cast obj).invocation = invocation;
+		}
+	}
+
 	public var invocation:SpellCasting;
-	
-	/**
-	 * 
-	 */
+
 	public function new() {
 		super();
 	}
-	
+
 	public function tracer(messages:Rest<String>):ActionQuery {
 		trace("[ActionQuery:tracer] " + Filler.to(messages.toArray().join(" "), invocation));
 		return this;
 	}
-	
+
 	// =========================================== Call dialog chain ====================================================================================
 
 	public function loadAction(id:String):Action {
@@ -148,7 +157,7 @@ class ActionQuery extends Query {
 		}
 		return this;
 	}
-	
+
 	// =========================================== VARIABLE MANIPULATION ====================================================================================
 
 	/**
@@ -274,7 +283,7 @@ class ActionQuery extends Query {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Invert Swith value
 	 * @param	name
@@ -286,7 +295,7 @@ class ActionQuery extends Query {
 		getDataProvider().setSwitch(name, !a);
 		return this;
 	}
-	
+
 	/**
 	   Set variable with resolved value of A and B
 		setfloat var_name * 2 // effect: var_name*=2
@@ -305,85 +314,18 @@ class ActionQuery extends Query {
 		return this;
 	}
 
-	
 	#if js
-	
-	/**
-	 * Wait specified time, only wait at event level
-	 * @param	time
-	 * @return
-	 */
+
 	public function wait(?time:Float):ActionQuery {
 		invocation.event.current.wait(time);
 		return this;
 	}
-	
-	/**
-	 * Release if is on waiting state
-	 * @return
-	 */
+
 	public function release():ActionQuery {
 		invocation.event.current.release();
 		return this;
 	}
-	
-	/**
-	 * Call a url, and wait a maximum of 30 seconds
-	 * @param	url
-	 * @param	method
-	 * @param	data
-	 * @return
-	 */
-	public function preparerequest(url:String, ?method:String, ?data:String):ActionQuery {
-		resetcontext();
-		Jotun.request(url, Utils.isValid(data) ? Json.parse(data) : null, method, _actRequest);
-		return wait(30);
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public function resetcontext():ActionQuery {
-		invocation.requestProvider = null;
-		invocation.currentProvider = invocation.dataProvider;
-		return this;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public function setrequestcontext():ActionQuery {
-		invocation.currentProvider = invocation.requestProvider;
-		return this;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public function setmaincontext():ActionQuery {
-		invocation.currentProvider = invocation.dataProvider;
-		return this;
-	}
-	
-	/**
-	 * 
-	 * @param	request
-	 */
-	private function _actRequest(request:IRequest):Void {
-		if(request.success){
-			if (request.getHeader('Content-Type') == 'application/json'){
-				invocation.requestProvider = new BasicDataProvider(request.object());
-			}else{
-				invocation.requestProvider = new BasicDataProvider({ message:request.data });
-			}
-			setrequestcontext();
-		}
-		release();
-	}
-	
+
 	#end
-	
+
 }

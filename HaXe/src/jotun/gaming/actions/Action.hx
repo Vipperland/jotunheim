@@ -76,10 +76,7 @@ class Action extends Resolution {
 		}else{
 			target = Std.int(data.target);
 		}
-		// Action aways break on success if not defined
-		if(breakon == null){
-			breakon = Resolution.BREAK_NEVER;
-		}
+		// Action always break on success if not defined
 		if (Utils.isValid(data.id)){
 			SpellCodex.saveAction(this);
 		}

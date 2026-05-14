@@ -268,14 +268,45 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function call ($id) {
-		#src/jotun/gaming/actions/ActionQuery.hx:141: characters 3-49
-		$action = SpellCodex::loadAction($id);
-		#src/jotun/gaming/actions/ActionQuery.hx:142: lines 142-144
+		#src/jotun/gaming/actions/ActionQuery.hx:145: characters 3-38
+		$action = $this->loadAction($id);
+		#src/jotun/gaming/actions/ActionQuery.hx:146: lines 146-148
 		if ($action !== null) {
-			#src/jotun/gaming/actions/ActionQuery.hx:143: characters 4-32
+			#src/jotun/gaming/actions/ActionQuery.hx:147: characters 4-32
 			$action->invoke($this->invocation, 0);
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:145: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:149: characters 3-14
+		return $this;
+	}
+
+	/**
+	 * Set variable with resolved value of A and B
+	 * setfloat var_name * 2 // effect: var_name*=2
+	 * setfloat var_name / 2 // effect: var_name/=2
+	 * @param	name
+	 * @param	rule
+	 * @param	value
+	 * 
+	 * @param string $name
+	 * @param string $a
+	 * @param string $rule
+	 * @param string $b
+	 * 
+	 * @return ActionQuery
+	 */
+	public function define ($name, $a, $rule, $b) {
+		#src/jotun/gaming/actions/ActionQuery.hx:299: characters 3-34
+		$a = $this->getDataProvider()->getVar($a);
+		#src/jotun/gaming/actions/ActionQuery.hx:300: characters 3-34
+		$b = $this->getDataProvider()->getVar($b);
+		#src/jotun/gaming/actions/ActionQuery.hx:301: characters 3-40
+		$v = $this->_resolve($a, $rule, $b);
+		#src/jotun/gaming/actions/ActionQuery.hx:302: lines 302-304
+		if ($a !== $v) {
+			#src/jotun/gaming/actions/ActionQuery.hx:303: characters 4-37
+			$this->getDataProvider()->setVar($name, $v);
+		}
+		#src/jotun/gaming/actions/ActionQuery.hx:305: characters 3-14
 		return $this;
 	}
 
@@ -285,6 +316,16 @@ class ActionQuery extends Query {
 	public function getDataProvider () {
 		#src/jotun/gaming/actions/ActionQuery.hx:38: characters 3-36
 		return $this->invocation->currentProvider;
+	}
+
+	/**
+	 * @param string $id
+	 * 
+	 * @return Action
+	 */
+	public function loadAction ($id) {
+		#src/jotun/gaming/actions/ActionQuery.hx:136: characters 3-35
+		return SpellCodex::loadAction($id);
 	}
 
 	/**
@@ -310,25 +351,25 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setfloat ($name, $rule, $value) {
-		#src/jotun/gaming/actions/ActionQuery.hx:182: characters 3-50
+		#src/jotun/gaming/actions/ActionQuery.hx:186: characters 3-50
 		$a = $this->getDataProvider()->getFloat($name);
-		#src/jotun/gaming/actions/ActionQuery.hx:183: lines 183-186
+		#src/jotun/gaming/actions/ActionQuery.hx:187: lines 187-190
 		if ($this->_isempty($value) && !$this->_isempty($rule)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:184: characters 4-24
+			#src/jotun/gaming/actions/ActionQuery.hx:188: characters 4-24
 			$value = $this->_FLOAT($rule);
-			#src/jotun/gaming/actions/ActionQuery.hx:185: characters 4-15
+			#src/jotun/gaming/actions/ActionQuery.hx:189: characters 4-15
 			$rule = null;
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:187: characters 3-34
+		#src/jotun/gaming/actions/ActionQuery.hx:191: characters 3-34
 		$v = $this->_FLOAT($value, 0);
-		#src/jotun/gaming/actions/ActionQuery.hx:188: characters 3-27
+		#src/jotun/gaming/actions/ActionQuery.hx:192: characters 3-27
 		$v = $this->_resolve($a, $rule, $v);
-		#src/jotun/gaming/actions/ActionQuery.hx:189: lines 189-191
+		#src/jotun/gaming/actions/ActionQuery.hx:193: lines 193-195
 		if (!Boot::equal($a, $v)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:190: characters 4-37
+			#src/jotun/gaming/actions/ActionQuery.hx:194: characters 4-37
 			$this->getDataProvider()->setVar($name, $v);
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:192: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:196: characters 3-14
 		return $this;
 	}
 
@@ -347,25 +388,25 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setint ($name, $rule, $value) {
-		#src/jotun/gaming/actions/ActionQuery.hx:204: characters 3-48
+		#src/jotun/gaming/actions/ActionQuery.hx:208: characters 3-48
 		$a = $this->getDataProvider()->getInt($name);
-		#src/jotun/gaming/actions/ActionQuery.hx:205: lines 205-208
+		#src/jotun/gaming/actions/ActionQuery.hx:209: lines 209-212
 		if ($this->_isempty($value) && !$this->_isempty($rule)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:206: characters 4-22
+			#src/jotun/gaming/actions/ActionQuery.hx:210: characters 4-22
 			$value = $this->_INT($rule);
-			#src/jotun/gaming/actions/ActionQuery.hx:207: characters 4-15
+			#src/jotun/gaming/actions/ActionQuery.hx:211: characters 4-15
 			$rule = null;
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:209: characters 3-32
+		#src/jotun/gaming/actions/ActionQuery.hx:213: characters 3-32
 		$v = $this->_INT($value, 0);
-		#src/jotun/gaming/actions/ActionQuery.hx:210: characters 3-27
+		#src/jotun/gaming/actions/ActionQuery.hx:214: characters 3-27
 		$v = $this->_resolve($a, $rule, $v);
-		#src/jotun/gaming/actions/ActionQuery.hx:211: lines 211-213
+		#src/jotun/gaming/actions/ActionQuery.hx:215: lines 215-217
 		if (!Boot::equal($a, $v)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:212: characters 4-46
+			#src/jotun/gaming/actions/ActionQuery.hx:216: characters 4-46
 			$this->getDataProvider()->setVar($name, (int)($v));
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:214: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:218: characters 3-14
 		return $this;
 	}
 
@@ -388,26 +429,26 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setrng ($name, $rule, $min, $max = null, $float = null) {
-		#src/jotun/gaming/actions/ActionQuery.hx:161: lines 161-164
+		#src/jotun/gaming/actions/ActionQuery.hx:165: lines 165-168
 		if ($max === null) {
-			#src/jotun/gaming/actions/ActionQuery.hx:162: characters 4-13
+			#src/jotun/gaming/actions/ActionQuery.hx:166: characters 4-13
 			$max = $min;
-			#src/jotun/gaming/actions/ActionQuery.hx:163: characters 4-11
+			#src/jotun/gaming/actions/ActionQuery.hx:167: characters 4-11
 			$min = 0;
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:165: characters 3-37
+		#src/jotun/gaming/actions/ActionQuery.hx:169: characters 3-37
 		$f = Utils::boolean($float);
-		#src/jotun/gaming/actions/ActionQuery.hx:166: characters 3-33
+		#src/jotun/gaming/actions/ActionQuery.hx:170: characters 3-33
 		$a_min = $this->_FLOAT($min);
-		#src/jotun/gaming/actions/ActionQuery.hx:167: characters 3-55
+		#src/jotun/gaming/actions/ActionQuery.hx:171: characters 3-55
 		$a_max = $this->_FLOAT($max) + (($f ? 0 : 1)) - $a_min;
-		#src/jotun/gaming/actions/ActionQuery.hx:168: characters 3-43
+		#src/jotun/gaming/actions/ActionQuery.hx:172: characters 3-43
 		$value = $this->rng() * $a_max + $a_min;
-		#src/jotun/gaming/actions/ActionQuery.hx:169: characters 39-70
+		#src/jotun/gaming/actions/ActionQuery.hx:173: characters 39-70
 		$tmp = ($f ? $value : (int)($value));
-		#src/jotun/gaming/actions/ActionQuery.hx:169: characters 3-71
+		#src/jotun/gaming/actions/ActionQuery.hx:173: characters 3-71
 		(($f ? Boot::getInstanceClosure($this, 'setfloat') : Boot::getInstanceClosure($this, 'setint')))($name, $rule, $tmp);
-		#src/jotun/gaming/actions/ActionQuery.hx:170: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:174: characters 3-14
 		return $this;
 	}
 
@@ -425,23 +466,23 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setstr ($name, $rule, $value) {
-		#src/jotun/gaming/actions/ActionQuery.hx:247: characters 3-49
+		#src/jotun/gaming/actions/ActionQuery.hx:251: characters 3-49
 		$a = $this->getDataProvider()->getStr($name);
-		#src/jotun/gaming/actions/ActionQuery.hx:248: lines 248-251
+		#src/jotun/gaming/actions/ActionQuery.hx:252: lines 252-255
 		if ($this->_isempty($value)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:249: characters 4-16
+			#src/jotun/gaming/actions/ActionQuery.hx:253: characters 4-16
 			$value = $rule;
-			#src/jotun/gaming/actions/ActionQuery.hx:250: characters 4-15
+			#src/jotun/gaming/actions/ActionQuery.hx:254: characters 4-15
 			$rule = null;
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:252: characters 3-35
+		#src/jotun/gaming/actions/ActionQuery.hx:256: characters 3-35
 		$value = $this->_resolve($a, $rule, $value);
-		#src/jotun/gaming/actions/ActionQuery.hx:253: lines 253-255
+		#src/jotun/gaming/actions/ActionQuery.hx:257: lines 257-259
 		if ($a !== $value) {
-			#src/jotun/gaming/actions/ActionQuery.hx:254: characters 4-41
+			#src/jotun/gaming/actions/ActionQuery.hx:258: characters 4-41
 			$this->getDataProvider()->setStr($name, $value);
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:256: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:260: characters 3-14
 		return $this;
 	}
 
@@ -457,16 +498,16 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setswitch ($name, $value) {
-		#src/jotun/gaming/actions/ActionQuery.hx:266: characters 3-50
+		#src/jotun/gaming/actions/ActionQuery.hx:270: characters 3-50
 		$a = $this->getDataProvider()->getSwitch($name);
-		#src/jotun/gaming/actions/ActionQuery.hx:267: characters 3-56
+		#src/jotun/gaming/actions/ActionQuery.hx:271: characters 3-56
 		$v = $this->_isempty($value) || Utils::boolean($value);
-		#src/jotun/gaming/actions/ActionQuery.hx:268: lines 268-270
+		#src/jotun/gaming/actions/ActionQuery.hx:272: lines 272-274
 		if ($a !== $v) {
-			#src/jotun/gaming/actions/ActionQuery.hx:269: characters 4-40
+			#src/jotun/gaming/actions/ActionQuery.hx:273: characters 4-40
 			$this->getDataProvider()->setSwitch($name, $v);
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:271: characters 3-14
+		#src/jotun/gaming/actions/ActionQuery.hx:275: characters 3-14
 		return $this;
 	}
 
@@ -484,26 +525,45 @@ class ActionQuery extends Query {
 	 * @return ActionQuery
 	 */
 	public function setvar ($name, $rule, $value) {
-		#src/jotun/gaming/actions/ActionQuery.hx:225: characters 3-50
+		#src/jotun/gaming/actions/ActionQuery.hx:229: characters 3-50
 		$a = $this->getDataProvider()->getVar($name);
-		#src/jotun/gaming/actions/ActionQuery.hx:226: lines 226-229
+		#src/jotun/gaming/actions/ActionQuery.hx:230: lines 230-233
 		if ($this->_isempty($value)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:227: characters 4-16
+			#src/jotun/gaming/actions/ActionQuery.hx:231: characters 4-16
 			$value = $rule;
-			#src/jotun/gaming/actions/ActionQuery.hx:228: characters 4-15
+			#src/jotun/gaming/actions/ActionQuery.hx:232: characters 4-15
 			$rule = null;
 		}
-		#src/jotun/gaming/actions/ActionQuery.hx:230: lines 230-236
+		#src/jotun/gaming/actions/ActionQuery.hx:234: lines 234-240
 		if (is_string($a)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:231: characters 4-33
-			return $this->setstr($a, $rule, $value);
+			#src/jotun/gaming/actions/ActionQuery.hx:235: characters 4-36
+			return $this->setstr($name, $rule, $value);
 		} else if (is_bool($a)) {
-			#src/jotun/gaming/actions/ActionQuery.hx:233: characters 4-33
+			#src/jotun/gaming/actions/ActionQuery.hx:237: characters 4-33
 			return $this->setswitch($name, $value);
 		} else {
-			#src/jotun/gaming/actions/ActionQuery.hx:235: characters 4-36
+			#src/jotun/gaming/actions/ActionQuery.hx:239: characters 4-36
 			return $this->setint($name, $rule, $value);
 		}
+	}
+
+	/**
+	 * Invert Swith value
+	 * @param	name
+	 * @param	value
+	 * @return
+	 * 
+	 * @param string $name
+	 * 
+	 * @return ActionQuery
+	 */
+	public function toggleswitch ($name) {
+		#src/jotun/gaming/actions/ActionQuery.hx:285: characters 3-50
+		$a = $this->getDataProvider()->getSwitch($name);
+		#src/jotun/gaming/actions/ActionQuery.hx:286: characters 3-40
+		$this->getDataProvider()->setSwitch($name, !$a);
+		#src/jotun/gaming/actions/ActionQuery.hx:287: characters 3-14
+		return $this;
 	}
 
 	/**

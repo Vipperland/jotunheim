@@ -56,28 +56,34 @@ class QueryBuilder {
 	 * @param mixed[]|\Array_hx $parameters
 	 * @param mixed $order
 	 * @param string $limit
+	 * @param string $group
 	 * 
 	 * @return string
 	 */
-	public function _assembleBody ($clause = null, $parameters = null, $order = null, $limit = null) {
+	public function _assembleBody ($clause = null, $parameters = null, $order = null, $limit = null, $group = null) {
 		#src/jotun/php/db/tools/QueryBuilder.hx:166: characters 3-21
 		$q = "";
-		#src/jotun/php/db/tools/QueryBuilder.hx:167: lines 167-168
+		#src/jotun/php/db/tools/QueryBuilder.hx:167: lines 167-169
 		if ($clause !== null) {
 			#src/jotun/php/db/tools/QueryBuilder.hx:168: characters 4-93
 			$q = ($q??'null') . " WHERE " . ((($clause === null ? "1" : $this->_conditions($clause, $parameters, " || ", false)))??'null');
 		}
-		#src/jotun/php/db/tools/QueryBuilder.hx:169: lines 169-170
+		#src/jotun/php/db/tools/QueryBuilder.hx:170: lines 170-172
+		if ($group !== null) {
+			#src/jotun/php/db/tools/QueryBuilder.hx:171: characters 4-29
+			$q = ($q??'null') . " GROUP BY " . ($group??'null');
+		}
+		#src/jotun/php/db/tools/QueryBuilder.hx:173: lines 173-175
 		if ($order !== null) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:170: characters 4-37
+			#src/jotun/php/db/tools/QueryBuilder.hx:174: characters 4-37
 			$q = ($q??'null') . " ORDER BY " . ($this->_order($order)??'null');
 		}
-		#src/jotun/php/db/tools/QueryBuilder.hx:171: lines 171-172
+		#src/jotun/php/db/tools/QueryBuilder.hx:176: lines 176-178
 		if ($limit !== null) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:172: characters 4-26
+			#src/jotun/php/db/tools/QueryBuilder.hx:177: characters 4-26
 			$q = ($q??'null') . " LIMIT " . ($limit??'null');
 		}
-		#src/jotun/php/db/tools/QueryBuilder.hx:173: characters 3-11
+		#src/jotun/php/db/tools/QueryBuilder.hx:179: characters 3-11
 		return $q;
 	}
 
@@ -286,9 +292,9 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function add ($table, $parameters = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:183: characters 3-35
+		#src/jotun/php/db/tools/QueryBuilder.hx:189: characters 3-35
 		$dataset = new \Array_hx();
-		#src/jotun/php/db/tools/QueryBuilder.hx:184: characters 3-124
+		#src/jotun/php/db/tools/QueryBuilder.hx:190: characters 3-124
 		return $this->_gate->prepare("INSERT INTO " . ($table??'null') . ($this->_insert($parameters, $dataset)??'null') . ($this->_assembleBody(null, $dataset)??'null') . ";", $dataset);
 	}
 
@@ -310,26 +316,26 @@ class QueryBuilder {
 	 * @return mixed[]|\Array_hx
 	 */
 	public function copy ($from, $to, $clause = null, $filter = null, $limit = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:245: lines 245-257
+		#src/jotun/php/db/tools/QueryBuilder.hx:251: lines 251-263
 		$_gthis = $this;
-		#src/jotun/php/db/tools/QueryBuilder.hx:246: characters 3-69
+		#src/jotun/php/db/tools/QueryBuilder.hx:252: characters 3-69
 		$entries = $this->find("*", $from, $clause, null, $limit)->result;
-		#src/jotun/php/db/tools/QueryBuilder.hx:247: characters 3-34
+		#src/jotun/php/db/tools/QueryBuilder.hx:253: characters 3-34
 		$result = new \Array_hx();
-		#src/jotun/php/db/tools/QueryBuilder.hx:248: lines 248-255
+		#src/jotun/php/db/tools/QueryBuilder.hx:254: lines 254-261
 		Dice::Values($entries, function ($v) use (&$to, &$filter, &$_gthis, &$result) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:249: lines 249-251
+			#src/jotun/php/db/tools/QueryBuilder.hx:255: lines 255-257
 			if ($filter !== null) {
-				#src/jotun/php/db/tools/QueryBuilder.hx:250: characters 5-18
+				#src/jotun/php/db/tools/QueryBuilder.hx:256: characters 5-18
 				$v = $filter($v);
 			}
-			#src/jotun/php/db/tools/QueryBuilder.hx:252: lines 252-254
+			#src/jotun/php/db/tools/QueryBuilder.hx:258: lines 258-260
 			if ($_gthis->add($to, $v)->success) {
-				#src/jotun/php/db/tools/QueryBuilder.hx:253: characters 5-30
+				#src/jotun/php/db/tools/QueryBuilder.hx:259: characters 5-30
 				$result->offsetSet($result->length, $v);
 			}
 		});
-		#src/jotun/php/db/tools/QueryBuilder.hx:256: characters 3-16
+		#src/jotun/php/db/tools/QueryBuilder.hx:262: characters 3-16
 		return $result;
 	}
 
@@ -349,9 +355,9 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function delete ($table, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:232: characters 3-31
+		#src/jotun/php/db/tools/QueryBuilder.hx:238: characters 3-31
 		$parameters = new \Array_hx();
-		#src/jotun/php/db/tools/QueryBuilder.hx:233: characters 3-115
+		#src/jotun/php/db/tools/QueryBuilder.hx:239: characters 3-115
 		return $this->_gate->prepare("DELETE FROM " . ($table??'null') . ($this->_assembleBody($clause, $parameters, $order, $limit)??'null') . ";", $parameters);
 	}
 
@@ -377,7 +383,7 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function fKey ($table, $reference, $key = null, $target = null, $field = null, $delete = "RESTRICT", $update = "RESTRICT") {
-		#src/jotun/php/db/tools/QueryBuilder.hx:271: lines 271-275
+		#src/jotun/php/db/tools/QueryBuilder.hx:277: lines 277-281
 		if ($delete === null) {
 			$delete = "RESTRICT";
 		}
@@ -385,10 +391,10 @@ class QueryBuilder {
 			$update = "RESTRICT";
 		}
 		if ($key === null) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:272: characters 4-83
+			#src/jotun/php/db/tools/QueryBuilder.hx:278: characters 4-83
 			return $this->_gate->prepare("ALTER TABLE " . ($table??'null') . " DROP FOREIGN KEY " . ($reference??'null'));
 		} else {
-			#src/jotun/php/db/tools/QueryBuilder.hx:274: characters 4-232
+			#src/jotun/php/db/tools/QueryBuilder.hx:280: characters 4-232
 			return $this->_gate->prepare("ALTER TABLE " . ($table??'null') . " ADD CONSTRAINT " . ($reference??'null') . " FOREIGN KEY (" . ($key??'null') . ") REFERENCES " . ($target??'null') . "(" . ($field??'null') . ") ON DELETE " . (\mb_strtoupper($delete)??'null') . " ON UPDATE " . (\mb_strtoupper($update)??'null') . ";");
 		}
 	}
@@ -407,28 +413,29 @@ class QueryBuilder {
 	 * @param mixed $clause
 	 * @param mixed $order
 	 * @param string $limit
+	 * @param string $group
 	 * 
 	 * @return IExtCommand
 	 */
-	public function find ($fields, $table, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:197: lines 197-199
+	public function find ($fields, $table, $clause = null, $order = null, $limit = null, $group = null) {
+		#src/jotun/php/db/tools/QueryBuilder.hx:203: lines 203-205
 		if (($fields instanceof \Array_hx)) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:198: characters 4-29
+			#src/jotun/php/db/tools/QueryBuilder.hx:204: characters 4-29
 			$fields = $fields->join(",");
 		}
-		#src/jotun/php/db/tools/QueryBuilder.hx:200: characters 3-27
+		#src/jotun/php/db/tools/QueryBuilder.hx:206: characters 3-27
 		$joinner = "";
-		#src/jotun/php/db/tools/QueryBuilder.hx:201: lines 201-204
+		#src/jotun/php/db/tools/QueryBuilder.hx:207: lines 207-210
 		if (($table instanceof \Array_hx)) {
-			#src/jotun/php/db/tools/QueryBuilder.hx:202: characters 4-37
+			#src/jotun/php/db/tools/QueryBuilder.hx:208: characters 4-37
 			$main = $table->shift();
-			#src/jotun/php/db/tools/QueryBuilder.hx:203: characters 4-40
+			#src/jotun/php/db/tools/QueryBuilder.hx:209: characters 4-40
 			$table = \Std::string($main) . " " . \Std::string($table->join(" "));
 		}
-		#src/jotun/php/db/tools/QueryBuilder.hx:205: characters 3-31
+		#src/jotun/php/db/tools/QueryBuilder.hx:211: characters 3-31
 		$parameters = new \Array_hx();
-		#src/jotun/php/db/tools/QueryBuilder.hx:206: characters 3-128
-		return $this->_gate->query("SELECT " . \Std::string($fields) . " FROM " . \Std::string($table) . ($this->_assembleBody($clause, $parameters, $order, $limit)??'null') . ";", $parameters);
+		#src/jotun/php/db/tools/QueryBuilder.hx:212: characters 3-135
+		return $this->_gate->query("SELECT " . \Std::string($fields) . " FROM " . \Std::string($table) . ($this->_assembleBody($clause, $parameters, $order, $limit, $group)??'null') . ";", $parameters);
 	}
 
 	/**
@@ -443,7 +450,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function fullOuterJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:364: characters 3-44
+		#src/jotun/php/db/tools/QueryBuilder.hx:370: characters 3-44
 		return "FULL " . ($this->outerJoin($table, $clause)??'null');
 	}
 
@@ -459,7 +466,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function innerJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:314: characters 3-40
+		#src/jotun/php/db/tools/QueryBuilder.hx:320: characters 3-40
 		return "INNER " . ($this->join($table, $clause)??'null');
 	}
 
@@ -475,7 +482,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function join ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:304: characters 3-123
+		#src/jotun/php/db/tools/QueryBuilder.hx:310: characters 3-123
 		return "JOIN " . (((($table instanceof DataTable) ? Boot::dynamicField($table, 'name') : $table))??'null') . " ON " . ($this->_conditions($clause, new \Array_hx(), " || ", true)??'null');
 	}
 
@@ -491,7 +498,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function leftJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:334: characters 3-39
+		#src/jotun/php/db/tools/QueryBuilder.hx:340: characters 3-39
 		return "LEFT " . ($this->join($table, $clause)??'null');
 	}
 
@@ -507,7 +514,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function leftOuterJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:344: characters 3-44
+		#src/jotun/php/db/tools/QueryBuilder.hx:350: characters 3-44
 		return "LEFT " . ($this->outerJoin($table, $clause)??'null');
 	}
 
@@ -523,7 +530,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function outerJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:324: characters 3-40
+		#src/jotun/php/db/tools/QueryBuilder.hx:330: characters 3-40
 		return "OUTER " . ($this->join($table, $clause)??'null');
 	}
 
@@ -539,7 +546,7 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function rename ($table, $to) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:294: characters 3-89
+		#src/jotun/php/db/tools/QueryBuilder.hx:300: characters 3-89
 		return $this->_gate->prepare("RENAME TABLE :oldname TO :newname", new HxAnon([
 			"oldname" => $table,
 			"newname" => $to,
@@ -558,7 +565,7 @@ class QueryBuilder {
 	 * @return string
 	 */
 	public function rightOuterJoin ($table, $clause = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:354: characters 3-45
+		#src/jotun/php/db/tools/QueryBuilder.hx:360: characters 3-45
 		return "RIGHT " . ($this->outerJoin($table, $clause)??'null');
 	}
 
@@ -572,7 +579,7 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function truncate ($table) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:284: characters 3-57
+		#src/jotun/php/db/tools/QueryBuilder.hx:290: characters 3-57
 		return $this->_gate->prepare("TRUNCATE :table", new HxAnon(["table" => $table]));
 	}
 
@@ -594,9 +601,9 @@ class QueryBuilder {
 	 * @return ICommand
 	 */
 	public function update ($table, $clause = null, $parameters = null, $order = null, $limit = null) {
-		#src/jotun/php/db/tools/QueryBuilder.hx:219: characters 3-35
+		#src/jotun/php/db/tools/QueryBuilder.hx:225: characters 3-35
 		$dataset = new \Array_hx();
-		#src/jotun/php/db/tools/QueryBuilder.hx:220: characters 3-148
+		#src/jotun/php/db/tools/QueryBuilder.hx:226: characters 3-148
 		return $this->_gate->prepare("UPDATE " . ($table??'null') . " SET " . ($this->_updateSet($parameters, $dataset)??'null') . ($this->_assembleBody($clause, $dataset, $order, $limit)??'null') . ";", $dataset);
 	}
 }

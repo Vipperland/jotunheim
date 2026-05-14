@@ -68,6 +68,8 @@ class ModLib {
 	
 	public var onBufferRequest:String->String->String;
 	
+	public var onHeadBind:String->String->String->Void;
+	
 	private var _predata:Array<String->Dynamic->Dynamic>;
 	
 	private function _sanitize(name:String, data:Dynamic):Dynamic {
@@ -187,6 +189,9 @@ class ModLib {
 							Jotun.log("	ModLib => !!! OVERRIDING " + path, Logger.MODULE);
 						}
 						var end:Int = v.indexOf("/EOF;");
+						if (end == -1){
+							end = v.indexOf("/EOL;");
+						}
 						content = StringTools.trim(v.substring(i + 2, end == -1 ? v.length : end));
 						if (mod.type == null || mod.type == 'null' || mod.type == "html") {
 							content = content.split('\r\n').join('\n').split('\r').join('\n');
@@ -264,6 +269,9 @@ class ModLib {
 							#if js
 								// ============================= JS ONLY =============================
 								else if (mod.type == 'style' || mod.type == 'css' || mod.type == 'script' || mod.type == 'javascript') {
+									if(onHeadBind != null){
+										onHeadBind(file, content, mod.type);
+									}
 									Jotun.document.head.bind(content, mod.type, mod.name);
 									content = '';
 								}

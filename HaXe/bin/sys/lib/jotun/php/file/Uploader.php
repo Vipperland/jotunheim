@@ -51,11 +51,11 @@ class Uploader {
 	 * @return void
 	 */
 	public static function _delete ($image) {
-		#src/jotun/php/file/Uploader.hx:200: characters 3-17
+		#src/jotun/php/file/Uploader.hx:205: characters 3-17
 		$image->delete();
-		#src/jotun/php/file/Uploader.hx:201: characters 3-18
+		#src/jotun/php/file/Uploader.hx:206: characters 3-18
 		$image->dispose();
-		#src/jotun/php/file/Uploader.hx:202: characters 3-35
+		#src/jotun/php/file/Uploader.hx:207: characters 3-35
 		Uploader::_log("deleted", new HxAnon(["file" => $image]));
 	}
 
@@ -81,22 +81,22 @@ class Uploader {
 	 * @return string
 	 */
 	public static function _rename ($o, $p, $t) {
-		#src/jotun/php/file/Uploader.hx:206: characters 3-38
+		#src/jotun/php/file/Uploader.hx:211: characters 3-38
 		$n = HxString::split($o, ".");
-		#src/jotun/php/file/Uploader.hx:207: characters 18-25
+		#src/jotun/php/file/Uploader.hx:212: characters 18-25
 		if ($n->length > 0) {
 			$n->length--;
 		}
-		#src/jotun/php/file/Uploader.hx:207: characters 3-26
+		#src/jotun/php/file/Uploader.hx:212: characters 3-26
 		$e = \array_pop($n->arr);
-		#src/jotun/php/file/Uploader.hx:208: lines 208-210
+		#src/jotun/php/file/Uploader.hx:213: lines 213-215
 		if ($p !== null) {
-			#src/jotun/php/file/Uploader.hx:209: characters 4-19
+			#src/jotun/php/file/Uploader.hx:214: characters 4-19
 			$n->offsetSet($n->length, $p);
 		}
-		#src/jotun/php/file/Uploader.hx:211: characters 3-28
+		#src/jotun/php/file/Uploader.hx:216: characters 3-28
 		$n->arr[$n->length++] = ($t === null ? $e : $t);
-		#src/jotun/php/file/Uploader.hx:212: characters 3-21
+		#src/jotun/php/file/Uploader.hx:217: characters 3-21
 		return $n->join(".");
 	}
 
@@ -178,19 +178,19 @@ class Uploader {
 			#src/jotun/php/file/Uploader.hx:137: characters 4-22
 			$fileStream->close();
 		}
-		#src/jotun/php/file/Uploader.hx:141: lines 141-195
+		#src/jotun/php/file/Uploader.hx:141: lines 141-200
 		if (Uploader::$_sizes !== null) {
 			#src/jotun/php/file/Uploader.hx:142: characters 4-34
 			$image = new Image();
-			#src/jotun/php/file/Uploader.hx:143: lines 143-194
+			#src/jotun/php/file/Uploader.hx:143: lines 143-199
 			Dice::Values(Uploader::$files->list, function ($v) use (&$image) {
-				#src/jotun/php/file/Uploader.hx:144: lines 144-193
+				#src/jotun/php/file/Uploader.hx:144: lines 144-198
 				if ($v->get_image()) {
 					#src/jotun/php/file/Uploader.hx:145: characters 6-18
 					$v->sizes = new \Array_hx();
 					#src/jotun/php/file/Uploader.hx:146: characters 6-25
 					$delete = false;
-					#src/jotun/php/file/Uploader.hx:150: lines 150-188
+					#src/jotun/php/file/Uploader.hx:150: lines 150-193
 					Dice::All(Uploader::$_sizes, function ($p, $resizeRule) use (&$delete, &$v, &$image) {
 						#src/jotun/php/file/Uploader.hx:152: characters 7-39
 						$o = (Uploader::$_path??'null') . ($v->output??'null');
@@ -218,20 +218,30 @@ class Uploader {
 							$o = Uploader::_rename($o, Boot::dynamicField($resizeRule, 'sufix'), Boot::dynamicField($resizeRule, 'type'));
 						}
 						#src/jotun/php/file/Uploader.hx:171: lines 171-173
+						if ($convert) {
+							#src/jotun/php/file/Uploader.hx:172: characters 8-61
+							$o = HxString::split($o, "." . ($v->type??'null'))->join("." . \Std::string(Boot::dynamicField($resizeRule, 'type')));
+						}
+						#src/jotun/php/file/Uploader.hx:175: lines 175-177
 						if ($resize) {
-							#src/jotun/php/file/Uploader.hx:172: characters 8-54
+							#src/jotun/php/file/Uploader.hx:176: characters 8-54
 							$image->fit(Boot::dynamicField($resizeRule, 'width'), Boot::dynamicField($resizeRule, 'height'));
 						}
-						#src/jotun/php/file/Uploader.hx:175: lines 175-182
+						#src/jotun/php/file/Uploader.hx:179: lines 179-187
 						if ($create || $rename || $resize || $convert) {
-							#src/jotun/php/file/Uploader.hx:176: characters 8-58
+							#src/jotun/php/file/Uploader.hx:180: characters 8-58
 							$image->save($o, Boot::dynamicField($resizeRule, 'type'), Boot::dynamicField($resizeRule, 'quality'));
-							#src/jotun/php/file/Uploader.hx:177: lines 177-179
+							#src/jotun/php/file/Uploader.hx:181: characters 8-58
+							Uploader::_log("saving", new HxAnon([
+								"name" => $o,
+								"type" => Boot::dynamicField($resizeRule, 'type'),
+							]));
+							#src/jotun/php/file/Uploader.hx:182: lines 182-184
 							if (Boot::dynamicField($resizeRule, 'id') === null) {
-								#src/jotun/php/file/Uploader.hx:178: characters 9-57
+								#src/jotun/php/file/Uploader.hx:183: characters 9-57
 								$resizeRule->id = ($image->width??'null') . "x" . ($image->height??'null');
 							}
-							#src/jotun/php/file/Uploader.hx:180: characters 8-102
+							#src/jotun/php/file/Uploader.hx:185: characters 8-102
 							$_this = $v->sizes;
 							$x = new HxAnon([
 								"width" => $image->width,
@@ -240,7 +250,7 @@ class Uploader {
 								"id" => Boot::dynamicField($resizeRule, 'id'),
 							]);
 							$_this->arr[$_this->length++] = $x;
-							#src/jotun/php/file/Uploader.hx:181: characters 8-121
+							#src/jotun/php/file/Uploader.hx:186: characters 8-121
 							Uploader::_log("changed", new HxAnon([
 								"file" => $v,
 								"size" => $resizeRule,
@@ -250,17 +260,17 @@ class Uploader {
 								"convert" => $convert,
 							]));
 						}
-						#src/jotun/php/file/Uploader.hx:184: lines 184-186
+						#src/jotun/php/file/Uploader.hx:189: lines 189-191
 						if (!$delete && Boot::dynamicField($resizeRule, 'delete')) {
-							#src/jotun/php/file/Uploader.hx:185: characters 8-21
+							#src/jotun/php/file/Uploader.hx:190: characters 8-21
 							$delete = true;
 						}
 					});
-					#src/jotun/php/file/Uploader.hx:189: lines 189-192
+					#src/jotun/php/file/Uploader.hx:194: lines 194-197
 					if ($delete && $image->isValid()) {
-						#src/jotun/php/file/Uploader.hx:190: characters 7-35
+						#src/jotun/php/file/Uploader.hx:195: characters 7-35
 						$image->open((Uploader::$_path??'null') . ($v->output??'null'));
-						#src/jotun/php/file/Uploader.hx:191: characters 7-21
+						#src/jotun/php/file/Uploader.hx:196: characters 7-21
 						Uploader::_delete($image);
 					}
 				}

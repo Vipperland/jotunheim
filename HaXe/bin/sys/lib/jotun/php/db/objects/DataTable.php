@@ -253,12 +253,13 @@ class DataTable {
 	 * @param mixed $clause
 	 * @param mixed $order
 	 * @param string $limit
+	 * @param string $group
 	 * 
 	 * @return ExtQuery
 	 */
-	public function find ($fields = null, $clause = null, $order = null, $limit = null) {
-		#src/jotun/php/db/objects/DataTable.hx:145: characters 3-133
-		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $this->_name, $clause, $order, $limit)->execute(null, $this->_class)->result);
+	public function find ($fields = null, $clause = null, $order = null, $limit = null, $group = null) {
+		#src/jotun/php/db/objects/DataTable.hx:145: characters 3-140
+		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $this->_name, $clause, $order, $limit, $group)->execute(null, $this->_class)->result);
 	}
 
 	/**
@@ -274,10 +275,11 @@ class DataTable {
 	 * @param mixed $clause
 	 * @param mixed $order
 	 * @param string $limit
+	 * @param string $group
 	 * 
 	 * @return ExtQuery
 	 */
-	public function findJoin ($fields, $tables, $clause = null, $order = null, $limit = null) {
+	public function findJoin ($fields, $tables, $clause = null, $order = null, $limit = null, $group = null) {
 		#src/jotun/php/db/objects/DataTable.hx:157: lines 157-159
 		if (!($tables instanceof \Array_hx)) {
 			#src/jotun/php/db/objects/DataTable.hx:158: characters 4-21
@@ -285,8 +287,8 @@ class DataTable {
 		}
 		#src/jotun/php/db/objects/DataTable.hx:160: characters 3-24
 		$tables->unshift($this->_name);
-		#src/jotun/php/db/objects/DataTable.hx:161: characters 3-134
-		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $tables, $clause, $order, $limit)->execute(null, $this->_class)->result);
+		#src/jotun/php/db/objects/DataTable.hx:161: characters 3-141
+		return new ExtQuery($this, $this->_gate->builder->find($this->_checkRestriction($fields), $tables, $clause, $order, $limit, $group)->execute(null, $this->_class)->result);
 	}
 
 	/**
@@ -297,12 +299,13 @@ class DataTable {
 	 * @param mixed $fields
 	 * @param mixed $clause
 	 * @param mixed $order
+	 * @param string $group
 	 * 
 	 * @return mixed
 	 */
-	public function findOne ($fields = null, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:170: characters 3-56
-		return $this->find($fields, $clause, $order, Limit::$ONE)->first();
+	public function findOne ($fields = null, $clause = null, $order = null, $group = null) {
+		#src/jotun/php/db/objects/DataTable.hx:170: characters 3-63
+		return $this->find($fields, $clause, $order, Limit::$ONE, $group)->first();
 	}
 
 	/**
@@ -316,12 +319,13 @@ class DataTable {
 	 * @param mixed $tables
 	 * @param mixed $clause
 	 * @param mixed $order
+	 * @param string $group
 	 * 
 	 * @return mixed
 	 */
-	public function findOneJoin ($fields, $tables, $clause = null, $order = null) {
-		#src/jotun/php/db/objects/DataTable.hx:181: characters 3-68
-		return $this->findJoin($fields, $tables, $clause, $order, Limit::$ONE)->first();
+	public function findOneJoin ($fields, $tables, $clause = null, $order = null, $group = null) {
+		#src/jotun/php/db/objects/DataTable.hx:181: characters 3-75
+		return $this->findJoin($fields, $tables, $clause, $order, Limit::$ONE, $group)->first();
 	}
 
 	/**

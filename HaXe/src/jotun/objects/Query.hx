@@ -8,23 +8,23 @@ import jotun.utils.Dice;
  */
 @:expose('J_Query')
 class Query extends Resolve implements IQuery {
-	
+
 	private var _buffer:QueryBuffer;
-	
+
 	private var _flush:DynamicAccess<Query>;
-	
+
 	public var editable:Bool;
-	
+
 	public function new(?editable:Bool){
 		this.editable = editable == true;
 		_flush = { };
 		super();
 	}
-	
+
 	public function log():Array<String> {
 		return _buffer.log;
 	}
-	
+
 	public function flush():Void {
 		_buffer.flush();
 		Dice.All(_flush, function(p:String, v:Query):Void {
@@ -32,7 +32,7 @@ class Query extends Resolve implements IQuery {
 			Reflect.deleteField(_flush, p);
 		});
 	}
-	
+
 	/**
 	 * methodName|property ...parameters|value
 	 * parameters are separated by 'TAB'
@@ -46,16 +46,18 @@ class Query extends Resolve implements IQuery {
 		_batchExec(data);
 		return _buffer.data;
 	}
-	
+
+	private function _beforeProc(obj:Query):Void { }
+
 	private function _innerProc(data:Dynamic, buffer:QueryBuffer):Void {
 		_buffer = buffer;
 		_batchExec(data);
 	}
-	
+
 	private function _batchExec(data:Dynamic):Void {
 		Dice.Values(Std.isOfType(data, Array) ? data : data.split('\n'), _exec);
 	}
-	
+
 	private function _strip(q:String):String {
 		while (q.indexOf('\t\t') != -1){
 			q = q.split('\t\t').join(' ');
@@ -66,7 +68,7 @@ class Query extends Resolve implements IQuery {
 		}
 		return q;
 	}
-	
+
 	private function _changeContext(prop:String):Void {
 		if (!Reflect.hasField(_buffer.data, prop)){
 			_buffer.now = [];
@@ -75,7 +77,7 @@ class Query extends Resolve implements IQuery {
 			_buffer.now = Reflect.field(_buffer.data, prop);
 		}
 	}
-	
+
 	private function _exec(q:String):Void {
 		// Clear double tabs
 		q = _strip(q);
@@ -99,13 +101,14 @@ class Query extends Resolve implements IQuery {
 					var iofs:Int = q.indexOf(" ");
 					if(iofs == -1 || iofd < q.indexOf(" ")){
 						var subq:Array<String> = q.split(".");
-						var q:String = subq.shift();
-						if(Reflect.hasField(this, q)){
-							var obj:Query = Reflect.field(this, q);
+						var key:String = subq.shift();
+						if(Reflect.hasField(this, key)){
+							var obj:Query = Reflect.field(this, key);
 							if (Std.isOfType(obj, Query)){
+								_beforeProc(obj);
 								obj._innerProc(subq.join("."), _buffer);
-								if(!_flush.exists(q)){
-									_flush.set(q, obj);
+								if(!_flush.exists(key)){
+									_flush.set(key, obj);
 								}
 								return;
 							}
@@ -121,7 +124,7 @@ class Query extends Resolve implements IQuery {
 				var isMethod:Bool = true;
 				var o:Dynamic = null;
 				// Check if method or property exists
-				#if js 
+				#if js
 					o = Reflect.getProperty(this, method);
 					isMethod = Reflect.isFunction(o);
 				#elseif php
@@ -151,7 +154,7 @@ class Query extends Resolve implements IQuery {
 			}
 		}
 	}
-	
+
 }
 
 class QueryBuffer {
@@ -166,7 +169,7 @@ class QueryBuffer {
 		now = [];
 		log = [];
 	}
-	
+
 	public function add(o:Dynamic):Void {
 		if(now != null){
 			now[now.length] = o;

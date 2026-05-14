@@ -4,7 +4,6 @@ package jotun.net;
 	import php.Lib;
 	import php.NativeArray;
 #end
-import jotun.gaming.dataform.Pulsar;
 import jotun.net.DataSource;
 import jotun.net.IDomainData;
 
@@ -29,8 +28,6 @@ interface IDomain {
 		public var server:IDomainData;
 		
 		public var input:DataSource;
-		
-		public var pulsar:Pulsar;
 		
 		public var domain:String;
 		

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Devland\\\\Tools\\\\Frameworks\\\\Sirius\\\\HaXe\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-Table FullName)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Devland\\\\Pipa\\\\Classic\\\\REPO\\\\webview\\\\workspace\\\\bin\\\\modules\\\\dist\\\\engine\\\\behavioral\" -File)",
+      "Bash(Select-Object Name)",
+      "Bash(Sort-Object Name)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Devland\\\\RimProject\\\\2086_Awakening\\\\RP_WEB\\\\src\\\\rim\\\\events\\\\actions\\\\\" -File | Select-Object Name)",
+      "Bash(find \"D:/Devland/RimProject/2086_Awakening/RP_WEB/src\" -name \"CustomActionQuery.hx\" -o -name \"CustomRequirementQuery.hx\")"
+    ]
+  }
+}

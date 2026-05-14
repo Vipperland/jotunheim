@@ -68,27 +68,27 @@ class Filler {
 	 * @return int
 	 */
 	public static function extractNumber ($value) {
-		#src/jotun/utils/Filler.hx:93: characters 3-21
+		#src/jotun/utils/Filler.hx:94: characters 3-21
 		$s = "";
-		#src/jotun/utils/Filler.hx:94: characters 3-18
+		#src/jotun/utils/Filler.hx:95: characters 3-18
 		$i = 0;
-		#src/jotun/utils/Filler.hx:95: lines 95-100
+		#src/jotun/utils/Filler.hx:96: lines 96-101
 		while (true) {
-			#src/jotun/utils/Filler.hx:95: characters 10-26
+			#src/jotun/utils/Filler.hx:96: characters 10-26
 			$b = mb_strlen($value);
 			$aNeg = $b < 0;
 			$bNeg = $i < 0;
-			#src/jotun/utils/Filler.hx:95: lines 95-100
+			#src/jotun/utils/Filler.hx:96: lines 96-101
 			if (!(($aNeg !== $bNeg ? $aNeg : $b > $i))) {
 				break;
 			}
-			#src/jotun/utils/Filler.hx:96: characters 4-50
+			#src/jotun/utils/Filler.hx:97: characters 4-50
 			$j = \Std::parseInt(\mb_substr($value, $i, 1));
-			#src/jotun/utils/Filler.hx:97: characters 4-7
+			#src/jotun/utils/Filler.hx:98: characters 4-7
 			++$i;
-			#src/jotun/utils/Filler.hx:98: lines 98-99
+			#src/jotun/utils/Filler.hx:99: lines 99-100
 			if ($j !== null) {
-				#src/jotun/utils/Filler.hx:99: characters 10-11
+				#src/jotun/utils/Filler.hx:100: characters 10-11
 				$s1 = null;
 				if ($j === null) {
 					$s1 = "null";
@@ -96,18 +96,18 @@ class Filler {
 					$int = $j;
 					$s1 = \Std::string(($int < 0 ? 4294967296.0 + $int : $int + 0.0));
 				}
-				#src/jotun/utils/Filler.hx:99: characters 5-16
+				#src/jotun/utils/Filler.hx:100: characters 5-16
 				$s = ($s??'null') . ($s1??'null') . "";
 			}
 		}
-		#src/jotun/utils/Filler.hx:101: characters 3-22
+		#src/jotun/utils/Filler.hx:102: characters 3-22
 		$i = \Std::parseInt($s);
-		#src/jotun/utils/Filler.hx:102: characters 10-27
+		#src/jotun/utils/Filler.hx:103: characters 10-27
 		if ($i === null) {
-			#src/jotun/utils/Filler.hx:102: characters 22-23
+			#src/jotun/utils/Filler.hx:103: characters 22-23
 			return 0;
 		} else {
-			#src/jotun/utils/Filler.hx:102: characters 26-27
+			#src/jotun/utils/Filler.hx:103: characters 26-27
 			return $i;
 		}
 	}
@@ -128,27 +128,27 @@ class Filler {
 	 * @return string
 	 */
 	public static function splitter ($value, $split, $glue, $each = null) {
-		#src/jotun/utils/Filler.hx:67: characters 3-45
+		#src/jotun/utils/Filler.hx:68: characters 3-45
 		$r = HxString::split($value, $split);
-		#src/jotun/utils/Filler.hx:68: lines 68-78
+		#src/jotun/utils/Filler.hx:69: lines 69-79
 		if ($r->length > 1) {
-			#src/jotun/utils/Filler.hx:69: lines 69-77
+			#src/jotun/utils/Filler.hx:70: lines 70-78
 			Dice::All($r, function ($p, $v) use (&$glue, &$each, &$r) {
-				#src/jotun/utils/Filler.hx:70: lines 70-76
+				#src/jotun/utils/Filler.hx:71: lines 71-77
 				if ($p < $glue->length) {
-					#src/jotun/utils/Filler.hx:71: characters 6-30
+					#src/jotun/utils/Filler.hx:72: characters 6-30
 					$e = ($glue->arr[$p] ?? null);
-					#src/jotun/utils/Filler.hx:72: lines 72-74
+					#src/jotun/utils/Filler.hx:73: lines 73-75
 					if ($each !== null) {
-						#src/jotun/utils/Filler.hx:73: characters 7-18
+						#src/jotun/utils/Filler.hx:74: characters 7-18
 						$e = $each($e);
 					}
-					#src/jotun/utils/Filler.hx:75: characters 6-18
+					#src/jotun/utils/Filler.hx:76: characters 6-18
 					$r->offsetSet($p, ($v??'null') . \Std::string($e));
 				}
 			});
 		}
-		#src/jotun/utils/Filler.hx:79: characters 3-20
+		#src/jotun/utils/Filler.hx:80: characters 3-20
 		return $r->join("");
 	}
 
@@ -162,9 +162,9 @@ class Filler {
 	 * @return string
 	 */
 	public static function splitterTo ($value, $data, $split, $glue, $each = null) {
-		#src/jotun/utils/Filler.hx:83: characters 3-26
+		#src/jotun/utils/Filler.hx:84: characters 3-26
 		$value = Filler::to($value, $data);
-		#src/jotun/utils/Filler.hx:84: characters 3-44
+		#src/jotun/utils/Filler.hx:85: characters 3-44
 		return Filler::splitter($value, $split, $glue, $each);
 	}
 
@@ -200,7 +200,9 @@ class Filler {
 			#src/jotun/utils/Filler.hx:53: characters 4-34
 			$r = Filler::_apply($sufix, $value, $data);
 		}
-		#src/jotun/utils/Filler.hx:55: characters 3-11
+		#src/jotun/utils/Filler.hx:55: characters 3-32
+		$r = HxString::split($r, "{{?")->join("{{");
+		#src/jotun/utils/Filler.hx:56: characters 3-11
 		return $r;
 	}
 }

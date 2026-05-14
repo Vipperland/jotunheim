@@ -5,7 +5,6 @@ import jotun.gaming.actions.Action;
 import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.SpellCodex;
 import jotun.gaming.actions.SpellCasting;
-import jotun.gaming.actions.Resolution;
 #if js
 import jotun.timer.DelayedCall;
 #end
@@ -59,8 +58,6 @@ class SpellGroup {
 
 	private var _data:Array<Action>;
 	private var _type:String;
-	private var _save:Int->Resolution->Void;
-	private var _load:Int->String->Resolution;
 	private var _is_waiting:Bool;
 	private var _cursor_pos:Int;
 	private var _context:SpellCasting;
@@ -184,7 +181,7 @@ class SpellGroup {
 	private static function _log(evt:SpellGroup, context:SpellCasting):Void {
 		var a:Int = evt._data.length;
 		context.addLog(0, (context.chain > 0 ? "└ " : "") + "≈ EVENT " + (a == 0 ? "" : "CHAIN ") + evt._type + (a == 0 ? " [!] Empty" : " @" + a));
-		if (context.chain > 0 && context.parent.action != null && context.parent.action.query != null){
+		if (context.chain > 0 && context.parent != null && context.parent.action != null && context.parent.action.query != null){
 			context.addLog(1, "├ ACTION \"" + context.parent.action.query + "\"");
 		}
 	}

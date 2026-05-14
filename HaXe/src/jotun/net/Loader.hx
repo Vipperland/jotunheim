@@ -3,7 +3,6 @@ import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.errors.Error;
-import jotun.gaming.dataform.Pulsar;
 import jotun.net.HttpRequest;
 import jotun.net.Request;
 import jotun.tools.Utils;
@@ -92,7 +91,6 @@ class Loader implements ILoader {
 	 * @return
 	 */
 	public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):IRequestHandler {
-		var forceType:String = null;
 		if(data == null){
 			data = cast { }
 		}
@@ -113,7 +111,7 @@ class Loader implements ILoader {
 			handler = { };
 		}else{
 			if(handler.type != null){
-				handler.type == handler.type.toLowerCase();
+				handler.type = handler.type.toLowerCase();
 			}
 			if(handler.abort != null){
 				data.signal = handler.abort.signal;
@@ -164,11 +162,7 @@ class Loader implements ILoader {
 							if(handler.module){
 								Jotun.resources.register(url, data);
 								return data;
-							}else if (handler.pulsar){
-								// Parse PULSAR instructions
-								return Pulsar.create(data);
 							}else {
-								// Return plain text
 								return data;
 							}
 						}

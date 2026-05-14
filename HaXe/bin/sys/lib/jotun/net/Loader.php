@@ -41,27 +41,27 @@ class Loader implements ILoader {
 	 * @return void
 	 */
 	public function module ($file, $data = null, $handler = null) {
-		#src/jotun/net/Loader.hx:187: characters 3-37
+		#src/jotun/net/Loader.hx:189: characters 3-37
 		$r = $this->_getReq($file);
-		#src/jotun/net/Loader.hx:191: lines 191-196
+		#src/jotun/net/Loader.hx:193: lines 193-198
 		$r->onData = function ($d) use (&$file, &$handler) {
-			#src/jotun/net/Loader.hx:192: characters 4-37
+			#src/jotun/net/Loader.hx:194: characters 4-37
 			Jotun::$resources->register($file, $d);
-			#src/jotun/net/Loader.hx:193: lines 193-195
+			#src/jotun/net/Loader.hx:195: lines 195-197
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:194: characters 5-46
+				#src/jotun/net/Loader.hx:196: characters 5-46
 				$handler(new Request(true, $d, null, $file));
 			}
 		};
-		#src/jotun/net/Loader.hx:197: lines 197-201
+		#src/jotun/net/Loader.hx:199: lines 199-203
 		$r->onError = function ($d) use (&$file, &$handler) {
-			#src/jotun/net/Loader.hx:198: lines 198-200
+			#src/jotun/net/Loader.hx:200: lines 200-202
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:199: characters 5-62
+				#src/jotun/net/Loader.hx:201: characters 5-62
 				$handler(new Request(false, null, new Error(-1, $d), $file));
 			}
 		};
-		#src/jotun/net/Loader.hx:215: characters 4-20
+		#src/jotun/net/Loader.hx:217: characters 4-20
 		$r->request(false);
 	}
 
@@ -75,60 +75,60 @@ class Loader implements ILoader {
 	 * @return void
 	 */
 	public function request ($url, $data = null, $method = "POST", $handler = null, $headers = null) {
-		#src/jotun/net/Loader.hx:222: lines 222-291
+		#src/jotun/net/Loader.hx:224: lines 224-293
 		if ($method === null) {
 			$method = "POST";
 		}
-		#src/jotun/net/Loader.hx:225: lines 225-227
+		#src/jotun/net/Loader.hx:227: lines 227-229
 		if ($method !== null) {
-			#src/jotun/net/Loader.hx:226: characters 4-33
+			#src/jotun/net/Loader.hx:228: characters 4-33
 			$method = \mb_strtoupper($method);
 		}
-		#src/jotun/net/Loader.hx:228: characters 3-39
+		#src/jotun/net/Loader.hx:230: characters 3-39
 		$is_post = $method === "POST";
-		#src/jotun/net/Loader.hx:229: characters 3-37
+		#src/jotun/net/Loader.hx:231: characters 3-37
 		$is_get = $method === "GET";
-		#src/jotun/net/Loader.hx:230: characters 3-49
+		#src/jotun/net/Loader.hx:232: characters 3-49
 		$is_data = is_string($data);
-		#src/jotun/net/Loader.hx:232: lines 232-234
+		#src/jotun/net/Loader.hx:234: lines 234-236
 		if ($is_get && ($data !== null)) {
-			#src/jotun/net/Loader.hx:233: characters 4-72
+			#src/jotun/net/Loader.hx:235: characters 4-72
 			$url = ($url??'null') . ((((HxString::indexOf($url, "?") === -1 ? "?" : "&"))??'null') . (Utils::paramsOf($data)??'null'));
 		}
-		#src/jotun/net/Loader.hx:236: characters 3-36
+		#src/jotun/net/Loader.hx:238: characters 3-36
 		$r = $this->_getReq($url);
-		#src/jotun/net/Loader.hx:241: lines 241-247
+		#src/jotun/net/Loader.hx:243: lines 243-249
 		if (!$is_data && ($data !== null)) {
-			#src/jotun/net/Loader.hx:245: characters 5-35
+			#src/jotun/net/Loader.hx:247: characters 5-35
 			Dice::All($data, Boot::getInstanceClosure($r, 'setParameter'));
 		}
-		#src/jotun/net/Loader.hx:248: lines 248-252
+		#src/jotun/net/Loader.hx:250: lines 250-254
 		if ($headers !== null) {
-			#src/jotun/net/Loader.hx:249: lines 249-251
+			#src/jotun/net/Loader.hx:251: lines 251-253
 			Dice::All($headers, function ($p, $v) use (&$r) {
-				#src/jotun/net/Loader.hx:250: characters 5-22
+				#src/jotun/net/Loader.hx:252: characters 5-22
 				$r->setHeader($p, $v);
 			});
 		}
-		#src/jotun/net/Loader.hx:253: lines 253-273
+		#src/jotun/net/Loader.hx:255: lines 255-275
 		$r->onData = function ($d) use (&$url, &$r, &$handler) {
-			#src/jotun/net/Loader.hx:254: lines 254-272
+			#src/jotun/net/Loader.hx:256: lines 256-274
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:255: characters 5-42
+				#src/jotun/net/Loader.hx:257: characters 5-42
 				$hdrs = $r->responseHeaders;
-				#src/jotun/net/Loader.hx:270: characters 6-52
+				#src/jotun/net/Loader.hx:272: characters 6-52
 				$handler(new Request(true, $d, null, $url, $hdrs));
 			}
 		};
-		#src/jotun/net/Loader.hx:274: lines 274-278
+		#src/jotun/net/Loader.hx:276: lines 276-280
 		$r->onError = function ($d) use (&$handler) {
-			#src/jotun/net/Loader.hx:275: lines 275-277
+			#src/jotun/net/Loader.hx:277: lines 277-279
 			if ($handler !== null) {
-				#src/jotun/net/Loader.hx:276: characters 5-56
+				#src/jotun/net/Loader.hx:278: characters 5-56
 				$handler(new Request(false, null, new Error(-1, $d)));
 			}
 		};
-		#src/jotun/net/Loader.hx:288: characters 4-22
+		#src/jotun/net/Loader.hx:290: characters 4-22
 		$r->request($is_post);
 	}
 }

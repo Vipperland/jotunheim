@@ -41,58 +41,58 @@ import jotun.utils.Dice;
  */
 @:expose('Jotun')
 class Jotun {
-	
+
 	/** @private */
 	static private var _loaded:Bool = false;
-	
+
 	/// Global resource loader
 	static public var resources:ModLib = new ModLib();
-	
+
 	/// Domain information
 	static public var domain:IDomain = new Domain();
-	
-	
+
+
 	static public var params:DataSource = null;
-	
+
 	/// Debug tools
 	static public var logger:Logger = new Logger();
-	
-	
+
+
 	#if js
-		
+
 		/** @private */
 		static private var _initialized:Bool;
-		
+
 		static public function main():Void {
 			if (!_initialized){
 				_initialized = _preInit();
 			}
 		}
-		
+
 		/// Global resource loader
 		static public var loader:ILoader = new Loader();
-		
+
 		/// Main document (if available)
 		static public var document:Document;
-		
+
 		/// Main timer
 		static public var timer:Timer = new Timer();
-		
+
 		/// Main timer
 		static public var cache:DisplayCache = new DisplayCache();
-		
+
 		/// Main timer
 		static public var observer:Observer = new Observer();
-		
+
 		/// Browser information
 		static public var agent:Agent = new Agent();
-		
-		/// 
+
+		///
 		static public var broadcast:Broadcast = Broadcast.ME();
-		
+
 		/** @private */
 		static private var _loadPool:Array<Dynamic>;
-		
+
 		/** @private */
 		static private function _loadController(e:Event):Void {
 			if (!_loaded){
@@ -100,6 +100,7 @@ class Jotun {
 				agent.update();
 				document.checkBody();
 				log("Jotun API => READY", 1);
+				CommonsActionQuery.register();
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
@@ -108,7 +109,7 @@ class Jotun {
 				Reflect.deleteField(Jotun, 'main');
 			}
 		}
-		
+
 		/** @private */
 		static private function _preInit():Bool {
 			if (!_initialized) {
@@ -127,7 +128,7 @@ class Jotun {
 			}
 			return true;
 		}
-		
+
 		/**
 		 * QuerySelector a single display
 		 * @param	q
@@ -148,7 +149,7 @@ class Jotun {
 			}
 			return t;
 		}
-		
+
 		/**
 		 * Do a QuerySelectorAll and return a display Table
 		 * @param	q
@@ -169,13 +170,13 @@ class Jotun {
 				main();
 			}
 			if (handler != null) {
-				if (!_loaded && _loadPool != null) 
+				if (!_loaded && _loadPool != null)
 					_loadPool[_loadPool.length] = handler;
 				else
 					handler();
 			}
 		}
-		
+
 		static public function inject(value:Dynamic, ?data:Dynamic, ?handler:Script->Void):Void {
 			if (!Std.isOfType(value, Array)){
 				value = [value];
@@ -191,7 +192,7 @@ class Jotun {
 				}
 			});
 		}
-		
+
 		static public function stylish(value:String, ?data:Dynamic, ?handler:Style->Void):Void {
 			if (value.indexOf('.css') == -1){
 				Style.fromString(value, data);
@@ -199,7 +200,7 @@ class Jotun {
 				Style.fromUrl(value, data, handler);
 			}
 		}
-		
+
 		/**
 		 * Runtime status
 		 */
@@ -207,7 +208,7 @@ class Jotun {
 			log("Jotun API => STATUS " + (_initialized ? 'READY ' : '') + Utils.toString(agent, true), 1);
 			return agent;
 		}
-		
+
 		/**
 		 * Call a URL with POST/GET/BINARY capabilities
 		 * @param	url
@@ -218,7 +219,7 @@ class Jotun {
 		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic):Void {
 			run(function() { loader.request(url, data, method, handler, headers, progress, options); } );
 		}
-		
+
 		/**
 		 * Load an external or internal module content
 		 * @param	file
@@ -232,28 +233,28 @@ class Jotun {
 				handler(null);
 			}
 		}
-		
-		
+
+
 		static public function create(html:String, ?data:Dynamic, ?at:Int):Displayable {
 			return document.body.mount(html, data, at);
 		}
-		
+
 	#elseif php
-		
+
 		static public function main() {  }
-		
+
 		static public var header:Header = new Header();
-		
+
 		static public var gate:Gate = new Gate();
-		
+
 		static public var loader:ILoader = new Loader();
-		
+
 		static public var time:UInt = php.Syntax.codeDeref('time()');
-		
+
 		static public function require(file:String):Void {
 			php.Syntax.codeDeref('require_once({0})', file);
 		}
-		
+
 		/**
 		 * Load an external or internal module content
 		 * @param	file
@@ -267,8 +268,8 @@ class Jotun {
 				loader.module(file, content, handler);
 			}
 		}
-		
-		
+
+
 		/**
 		 * Call a URL with POST/GET/BINARY capabilities
 		 * @param	url
@@ -279,10 +280,10 @@ class Jotun {
 		static public function request(url:String, ?data:Dynamic, ?method:String = 'post', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
 			loader.request(url, data, method, handler, headers);
 		}
-		
+
 	#end
-	
-	
+
+
 	/**
 	 * Level controlled log
 	 * @param	q
@@ -292,5 +293,5 @@ class Jotun {
 	static public function log(q:Dynamic, type:UInt = -1):Void {
 		logger.push(q, type);
 	}
-	
+
 }

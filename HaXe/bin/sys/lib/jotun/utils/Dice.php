@@ -779,8 +779,8 @@ class Dice {
 			$cached = function ($q) use (&$cache) {
 				#src/jotun/utils/Dice.hx:367: lines 367-369
 				if (!\Reflect::hasField($cache, $q)) {
-					#src/jotun/utils/Dice.hx:368: characters 6-52
-					\Reflect::setField($cache, $q, SearchTag::clear($q));
+					#src/jotun/utils/Dice.hx:368: characters 6-46
+					\Reflect::setField($cache, $q, Utils::tag($q));
 				}
 				#src/jotun/utils/Dice.hx:370: characters 5-35
 				return \Reflect::field($cache, $q);

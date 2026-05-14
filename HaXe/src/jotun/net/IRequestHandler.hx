@@ -14,7 +14,6 @@ typedef IRequestHandler = {
 	var ?error:DOMError;
 	var ?module:Bool;
 	var ?promise:Null<Promise<Dynamic>>;
-	var ?pulsar:Bool;
 	var ?request:js.html.Request;
 	var ?response:js.html.Response;
 	var ?type:Null<String>;

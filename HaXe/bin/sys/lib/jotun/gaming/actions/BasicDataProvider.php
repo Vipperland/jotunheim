@@ -79,8 +79,14 @@ class BasicDataProvider implements IDataProvider {
 	 * @return float
 	 */
 	public function getFloat ($name) {
-		#src/jotun/gaming/actions/BasicDataProvider.hx:54: characters 3-38
-		return \Std::parseFloat($this->getVar($name));
+		#src/jotun/gaming/actions/BasicDataProvider.hx:54: characters 10-71
+		if ($this->hasVar($name)) {
+			#src/jotun/gaming/actions/BasicDataProvider.hx:54: characters 25-65
+			return \Std::parseFloat(\Std::string($this->getVar($name)));
+		} else {
+			#src/jotun/gaming/actions/BasicDataProvider.hx:54: characters 68-71
+			return 0.0;
+		}
 	}
 
 	/**

@@ -41,6 +41,7 @@ interface IDomainData extends IResolve {
 	public var SERVER_PROTOCOL:String;
 	public var REQUEST_METHOD:String;
 	public var HTTP_ORIGIN:String;
+	public var HTTP_CONTENT_TYPE:String;
 	public var QUERY_STRING:String;
 	public var REQUEST_URI:String;
 	public var SCRIPT_NAME:String;

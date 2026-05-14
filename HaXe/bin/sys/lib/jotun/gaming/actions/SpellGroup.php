@@ -213,14 +213,14 @@ class SpellGroup {
 	public function _innerCasting () {
 		#src/jotun/gaming/actions/SpellGroup.hx:151: lines 151-174
 		$_gthis = $this;
-		#src/jotun/gaming/actions/SpellGroup.hx:152: characters 3-23
+		#src/jotun/gaming/actions/SpellGroup.hx:152: characters 3-31
+		$this->_context->registerEvent($this);
+		#src/jotun/gaming/actions/SpellGroup.hx:153: characters 3-23
 		$a = null;
-		#src/jotun/gaming/actions/SpellGroup.hx:153: lines 153-163
+		#src/jotun/gaming/actions/SpellGroup.hx:154: lines 154-163
 		Dice::Count($this->_cursor_pos, $this->_data->length, function ($current, $max, $completed) use (&$_gthis, &$a) {
-			#src/jotun/gaming/actions/SpellGroup.hx:154: characters 4-17
+			#src/jotun/gaming/actions/SpellGroup.hx:155: characters 4-17
 			++$_gthis->_cursor_pos;
-			#src/jotun/gaming/actions/SpellGroup.hx:155: characters 4-32
-			$_gthis->_context->registerEvent($_gthis);
 			#src/jotun/gaming/actions/SpellGroup.hx:156: characters 4-22
 			$a = ($_gthis->_data->arr[$current] ?? null);
 			#src/jotun/gaming/actions/SpellGroup.hx:157: lines 157-162

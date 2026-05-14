@@ -76,9 +76,6 @@ import jotun.utils.Validator;
 #end
 
 import jotun.gaming.actions.SpellGroup;
-import jotun.gaming.dataform.Pulsar;
-import jotun.gaming.dataform.SparkWriter;
-import jotun.gaming.dataform.Spark;
 import jotun.serial.Packager;
 import jotun.logical.Flag;
 import jotun.logical.BigFlag;
@@ -172,20 +169,6 @@ class Utils{
 			}else{
 				return js.Syntax.construct(OC, t);
 			}
-		}
-		
-		/**
-		 * Fast version of displayFrom, always return a IDisplay from that object
-		 * Note: The display can't be converted to any other Jotun DOM object, only if disposed before the new selection.
-		 * @param	t
-		 * @return
-		 */
-		static public function getDisplay(t:Element):Displayable {
-			var id:UInt = t.hasAttribute != null && t.hasAttribute('jtn-id') ? Std.parseInt(t.getAttribute('jtn-id')) : null;
-			if (id != null){
-				return Display.fromGC(id);
-			}
-			return new Display(t);
 		}
 		
 		/**
@@ -329,57 +312,6 @@ class Utils{
 	 */
 	static public function toString(o:Dynamic, ?json:Bool):String {
 		return json == true ? Json.stringify(o) : Std.string(o);
-	}
-	
-	/**
-	 * data.split('{').join('').split('}').join('<br/>')
-	 * @param	o
-	 * @return
-	 */
-	static public function toJtnString(o:Dynamic, type:Bool = true, ?html:Bool):String {
-		return _jstring(o, '', '', type, html);
-	}
-	
-	static private function _codex(i:String, n:String, c:String, p:String, v:Dynamic, t:Bool, h:Bool, r:Bool):String {
-		return (h ? '<div class="prop"><span>' : '') + i + p + (t ? (h ? '<span class="' + c + '">' : '') + ":" + n + (h ? '</span>' : '') : '') + "=" + (h && r ? '</span><span class="' + c + ' value">' : '') + v + (h && r ? '</span>' : '') + (h ? '</div>' : "\n");
-	}
-	
-	static private function _codexWrap(i:String, ls:String, rs:String, v:Dynamic, t:Bool, h:Bool):String {
-		return ls + (h ? '<br/>' : "\n") + _jstring(v, i, '', t, h) + i +rs;
-	}
-	
-	/** @private */
-	static public function _jstring(o:Dynamic, i:String, b:String, t:Bool, h:Bool):String {
-		if (h){
-			b += '<div class="block">';
-		}
-		i = i + (h ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '\t');
-		Dice.All(o, function(p:String, v:Dynamic):Void {
-			if (v == null){
-				b += i + p + ":* = null\n";
-			}
-			else if (Std.isOfType(v, String)){
-				b += _codex(i, 'String', 'string', p, v, t, h, true);
-			}
-			else if (Std.isOfType(v, Bool)){
-				b += _codex(i, 'Bool', 'bool', p, v, t, h, true);
-			}
-			else if (Std.isOfType(v, Int)){
-				b += _codex(i, 'Int', 'int', p, v, t, h, true);
-			}
-			else if (Std.isOfType(v, Float)){
-				b += _codex(i, 'Float', 'float', p, v, t, h, true);
-			}
-			else if (Std.isOfType(v, Array)){
-				b += _codex(i,  'Array(' + v.length + ')', 'array', p,  _codexWrap(i, '[', ']',v, t, h) , t, h, false);
-			} else{
-				b += _codex(i,  'Object', 'object', p,  _codexWrap(i, '{', '}',v, t, h) , t, h, false);
-			}
-		});
-		if (h){
-			b += '</div>';
-		}
-		return b;
 	}
 	
 	/**

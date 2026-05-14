@@ -6,7 +6,6 @@
 namespace jotun\data;
 
 use \php\Boot;
-use \jotun\logical\Flag;
 use \jotun\utils\Dice;
 
 /**
@@ -56,16 +55,26 @@ class Logger {
 	 */
 	public $_events;
 	/**
-	 * @var Flag
+	 * @var int[]|\Array_hx
 	 */
-	public $_level;
+	public $_levels;
 
 	/**
 	 * @return void
 	 */
 	public function __construct () {
-		#src/jotun/data/Logger.hx:31: characters 28-106
-		$this->_level = new Flag(31);
+		#src/jotun/data/Logger.hx:31: characters 35-54
+		$this->_levels = \Array_hx::wrap([
+			1,
+			1,
+			1,
+			1,
+			1,
+			0,
+			1,
+			0,
+			0,
+		]);
 		#src/jotun/data/Logger.hx:42: characters 3-15
 		$this->_events = new \Array_hx();
 		#src/jotun/data/Logger.hx:46: characters 4-45
@@ -79,7 +88,7 @@ class Logger {
 	 */
 	public function disable ($i) {
 		#src/jotun/data/Logger.hx:38: characters 3-17
-		$this->_level->drop($i);
+		$this->_levels->offsetSet($i, 0);
 	}
 
 	/**
@@ -98,8 +107,8 @@ class Logger {
 	 * @return void
 	 */
 	public function enable ($i) {
-		#src/jotun/data/Logger.hx:34: characters 3-16
-		$this->_level->put($i);
+		#src/jotun/data/Logger.hx:34: characters 3-17
+		$this->_levels->offsetSet($i, 1);
 	}
 
 	/**
@@ -131,7 +140,7 @@ class Logger {
 	 */
 	public function push ($q, $type) {
 		#src/jotun/data/Logger.hx:67: lines 67-69
-		if (!$this->_level->test($type)) {
+		if (($this->_levels->arr[$type] ?? null) !== 1) {
 			#src/jotun/data/Logger.hx:68: characters 4-10
 			return;
 		}
@@ -150,7 +159,7 @@ class Logger {
 	 */
 	public function query ($q, $type) {
 		#src/jotun/data/Logger.hx:84: lines 84-86
-		if (!$this->_level->test($type)) {
+		if (($this->_levels->arr[$type] ?? null) !== 1) {
 			#src/jotun/data/Logger.hx:85: characters 4-10
 			return;
 		}
@@ -160,35 +169,33 @@ class Logger {
 		if ($type !== null) {
 			#src/jotun/data/Logger.hx:89: lines 89-100
 			if ($type === 0) {
-				#src/jotun/data/Logger.hx:90: characters 14-26
+				#src/jotun/data/Logger.hx:90: characters 20-36
 				$t = "[MESSAGE] ";
 			} else if ($type === 1) {
-				#src/jotun/data/Logger.hx:91: characters 14-26
+				#src/jotun/data/Logger.hx:91: characters 19-35
 				$t = "[>SYSTEM] ";
 			} else if ($type === 2) {
-				#src/jotun/data/Logger.hx:92: characters 14-26
+				#src/jotun/data/Logger.hx:92: characters 20-36
 				$t = "[WARNING] ";
 			} else if ($type === 3) {
-				#src/jotun/data/Logger.hx:93: characters 14-26
+				#src/jotun/data/Logger.hx:93: characters 18-34
 				$t = "[!ERROR!] ";
 			} else if ($type === 4) {
-				#src/jotun/data/Logger.hx:94: characters 14-26
-				$t = "[//TODO*] ";
+				#src/jotun/data/Logger.hx:98: characters 19-35
+				$t = "[MODULES] ";
 			} else if ($type === 5) {
-				#src/jotun/data/Logger.hx:95: characters 14-26
+				#src/jotun/data/Logger.hx:95: characters 18-34
 				$t = "[\$QUERY*] ";
 			} else if ($type === 6) {
-				#src/jotun/data/Logger.hx:96: characters 14-26
+				#src/jotun/data/Logger.hx:96: characters 22-38
 				$t = "[BRDCAST] ";
 			} else if ($type === 7) {
-				#src/jotun/data/Logger.hx:97: characters 14-26
+				#src/jotun/data/Logger.hx:97: characters 21-37
 				$t = "[OBSOLET] ";
 			} else if ($type === 8) {
-				#src/jotun/data/Logger.hx:98: characters 14-26
-				$t = "[MODULES] ";
+				#src/jotun/data/Logger.hx:94: characters 17-33
+				$t = "[//TODO*] ";
 			} else {
-				#src/jotun/data/Logger.hx:99: characters 15-17
-				$t = "";
 			}
 		}
 		#src/jotun/data/Logger.hx:106: characters 3-10

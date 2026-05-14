@@ -57,6 +57,10 @@ class Resolution {
 		id = data.id;
 	}
 
+	public function isInterrupted():Bool {
+		return _stopped;
+	}
+
 	public function resolve(result:Bool, context:SpellCasting):Bool {
 		if(!_stopped){
 			++context.ident;

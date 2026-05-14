@@ -1,8 +1,5 @@
-package jotun.gateway;
+package;
 import jotun.Jotun;
-import jotun.gaming.dataform.Pulsar;
-import jotun.gaming.dataform.PulsarLink;
-import jotun.gaming.dataform.Spark;
 import jotun.net.Domain;
 import jotun.php.db.Clause;
 import jotun.php.db.Token;

@@ -15,7 +15,6 @@ package jotun.net;
 
 import haxe.Json;
 import haxe.io.Bytes;
-import jotun.gaming.dataform.Pulsar;
 import jotun.net.DataSource;
 import jotun.utils.Dice;
 import jotun.tools.Utils;
@@ -41,8 +40,6 @@ class Domain implements IDomain {
 		public var server:IDomainData;
 		
 		public var input:DataSource;
-		
-		public var pulsar:Pulsar;
 		
 		public var domain:String;
 		
@@ -76,13 +73,12 @@ class Domain implements IDomain {
 			client = Web.getClientIP();
 			
 			var boundary:String = _getMultipartKey();
-			
-			switch (server.CONTENT_TYPE){
-				case 'application/json' : {
+
+			var _ct:String = server.CONTENT_TYPE;
+			if (_ct == null || _ct.length == 0) _ct = server.HTTP_CONTENT_TYPE;
+			if (_ct != null) {
+				if (_ct.indexOf('application/json') != -1) {
 					input = new DataSource(_getJsonInput());
-				}
-				case 'plain/pulsar' : {
-					pulsar = Pulsar.create(getInput());
 				}
 			}
 			
@@ -130,10 +126,13 @@ class Domain implements IDomain {
 		
 		private function _getJsonInput():Dynamic {
 			var data:String = getInput();
-			if(data != null && data.substr(0, 4) == '----'){
+			if (data == null || data.length == 0) return null;
+			if (data.substr(0, 4) == '----') return null;
+			try {
+				return Json.parse(data);
+			} catch (e:Dynamic) {
 				return null;
 			}
-			return data != null ? Json.parse(data) : null;
 		}
 		
 		/**

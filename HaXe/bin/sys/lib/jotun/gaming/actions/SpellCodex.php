@@ -195,49 +195,51 @@ class SpellCodex {
 	public function invoke ($name, $data = null, $provider = null) {
 		#src/jotun/gaming/actions/SpellCodex.hx:84: characters 3-72
 		$context = SpellCodex::createContext($name, $data, $provider, $this);
-		#src/jotun/gaming/actions/SpellCodex.hx:85: lines 85-109
-		if (\Reflect::hasField($this->index, $name)) {
-			#src/jotun/gaming/actions/SpellCodex.hx:86: characters 4-29
+		#src/jotun/gaming/actions/SpellCodex.hx:85: characters 3-42
+		$group = \Reflect::field($this->index, $name);
+		#src/jotun/gaming/actions/SpellCodex.hx:86: lines 86-110
+		if ($group !== null) {
+			#src/jotun/gaming/actions/SpellCodex.hx:87: characters 4-29
 			$context->chain = $this->_position;
-			#src/jotun/gaming/actions/SpellCodex.hx:87: characters 4-35
+			#src/jotun/gaming/actions/SpellCodex.hx:88: characters 4-35
 			$this->_chain->offsetSet($this->_chain->length, $context);
-			#src/jotun/gaming/actions/SpellCodex.hx:88: lines 88-90
+			#src/jotun/gaming/actions/SpellCodex.hx:89: lines 89-91
 			if ($this->_position > 0) {
-				#src/jotun/gaming/actions/SpellCodex.hx:89: characters 5-41
+				#src/jotun/gaming/actions/SpellCodex.hx:90: characters 5-41
 				$context->parent = ($this->_chain->arr[$this->_position - 1] ?? null);
 			}
-			#src/jotun/gaming/actions/SpellCodex.hx:91: characters 4-15
+			#src/jotun/gaming/actions/SpellCodex.hx:92: characters 4-15
 			++$this->_position;
-			#src/jotun/gaming/actions/SpellCodex.hx:92: characters 4-26
+			#src/jotun/gaming/actions/SpellCodex.hx:93: characters 4-26
 			$this->_onCallBefore($context);
-			#src/jotun/gaming/actions/SpellCodex.hx:93: characters 4-47
-			\Reflect::field($this->index, $name)->execute($context);
-			#src/jotun/gaming/actions/SpellCodex.hx:94: characters 4-15
+			#src/jotun/gaming/actions/SpellCodex.hx:94: characters 4-26
+			$group->execute($context);
+			#src/jotun/gaming/actions/SpellCodex.hx:95: characters 4-15
 			--$this->_position;
-			#src/jotun/gaming/actions/SpellCodex.hx:95: characters 4-25
+			#src/jotun/gaming/actions/SpellCodex.hx:96: characters 4-25
 			$this->_onCallAfter($context);
-			#src/jotun/gaming/actions/SpellCodex.hx:96: lines 96-100
+			#src/jotun/gaming/actions/SpellCodex.hx:97: lines 97-101
 			if ($this->_position === 0) {
-				#src/jotun/gaming/actions/SpellCodex.hx:97: characters 5-25
+				#src/jotun/gaming/actions/SpellCodex.hx:98: characters 5-25
 				$context->ended = true;
-				#src/jotun/gaming/actions/SpellCodex.hx:98: characters 5-24
+				#src/jotun/gaming/actions/SpellCodex.hx:99: characters 5-24
 				$this->_onChainEnd($this->_chain);
-				#src/jotun/gaming/actions/SpellCodex.hx:99: characters 5-16
+				#src/jotun/gaming/actions/SpellCodex.hx:100: characters 5-16
 				$this->_chain = new \Array_hx();
 			}
-			#src/jotun/gaming/actions/SpellCodex.hx:101: characters 4-15
+			#src/jotun/gaming/actions/SpellCodex.hx:102: characters 4-15
 			return true;
 		} else {
-			#src/jotun/gaming/actions/SpellCodex.hx:103: lines 103-107
+			#src/jotun/gaming/actions/SpellCodex.hx:104: lines 104-108
 			if (SpellCodex::$_debug) {
-				#src/jotun/gaming/actions/SpellCodex.hx:104: characters 5-27
+				#src/jotun/gaming/actions/SpellCodex.hx:105: characters 5-27
 				$this->_onCallBefore($context);
-				#src/jotun/gaming/actions/SpellCodex.hx:105: characters 5-112
+				#src/jotun/gaming/actions/SpellCodex.hx:106: characters 5-112
 				$context->addLog(0, "≈ EVENT " . ($name??'null') . " [!] Not Found on " . (\Type::getClassName(\Type::getClass($this))??'null') . ". ");
-				#src/jotun/gaming/actions/SpellCodex.hx:106: characters 5-26
+				#src/jotun/gaming/actions/SpellCodex.hx:107: characters 5-26
 				$this->_onCallAfter($context);
 			}
-			#src/jotun/gaming/actions/SpellCodex.hx:108: characters 4-16
+			#src/jotun/gaming/actions/SpellCodex.hx:109: characters 4-16
 			return false;
 		}
 	}

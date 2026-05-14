@@ -27,13 +27,13 @@ class FileCollection {
 	 * @return void
 	 */
 	public function __construct () {
-		#src/jotun/php/file/FileCollection.hx:12: characters 29-31
+		#src/jotun/php/file/FileCollection.hx:13: characters 29-31
 		$this->named = new HxAnon();
-		#src/jotun/php/file/FileCollection.hx:10: characters 36-38
+		#src/jotun/php/file/FileCollection.hx:11: characters 36-38
 		$this->list = new \Array_hx();
-		#src/jotun/php/file/FileCollection.hx:15: characters 3-12
+		#src/jotun/php/file/FileCollection.hx:16: characters 3-12
 		$this->list = new \Array_hx();
-		#src/jotun/php/file/FileCollection.hx:16: characters 3-13
+		#src/jotun/php/file/FileCollection.hx:17: characters 3-13
 		$this->named = new \Array_hx();
 	}
 
@@ -48,11 +48,11 @@ class FileCollection {
 	 * @return void
 	 */
 	public function add ($part, $file) {
-		#src/jotun/php/file/FileCollection.hx:25: characters 3-27
+		#src/jotun/php/file/FileCollection.hx:26: characters 3-27
 		$this->list->offsetSet($this->list->length, $file);
-		#src/jotun/php/file/FileCollection.hx:26: lines 26-28
+		#src/jotun/php/file/FileCollection.hx:27: lines 27-29
 		if ($part !== null) {
-			#src/jotun/php/file/FileCollection.hx:27: characters 4-39
+			#src/jotun/php/file/FileCollection.hx:28: characters 4-39
 			\Reflect::setField($this->named, $part, $file);
 		}
 	}
@@ -63,8 +63,30 @@ class FileCollection {
 	 * @return void
 	 */
 	public function each ($method) {
-		#src/jotun/php/file/FileCollection.hx:87: characters 3-28
+		#src/jotun/php/file/FileCollection.hx:88: characters 3-28
 		Dice::Values($this->list, $method);
+	}
+
+	/**
+	 * @param string $nametag
+	 * 
+	 * @return string[]|\Array_hx
+	 */
+	public function extract ($nametag) {
+		#src/jotun/php/file/FileCollection.hx:92: characters 3-32
+		$paths = new \Array_hx();
+		#src/jotun/php/file/FileCollection.hx:93: lines 93-98
+		$this->each(function ($file) use (&$paths, &$nametag) {
+			#src/jotun/php/file/FileCollection.hx:94: characters 4-47
+			$size = $file->get($nametag);
+			#src/jotun/php/file/FileCollection.hx:95: lines 95-97
+			if ($size !== null) {
+				#src/jotun/php/file/FileCollection.hx:96: characters 5-25
+				$paths->arr[$paths->length++] = $size->url;
+			}
+		});
+		#src/jotun/php/file/FileCollection.hx:99: characters 3-15
+		return $paths;
 	}
 
 	/**
@@ -77,16 +99,16 @@ class FileCollection {
 	 * @return FileInfo
 	 */
 	public function getByIndex ($index) {
-		#src/jotun/php/file/FileCollection.hx:46: characters 11-30
+		#src/jotun/php/file/FileCollection.hx:47: characters 11-30
 		$a = $this->list->length;
 		$aNeg = $a < 0;
 		$bNeg = $index < 0;
-		#src/jotun/php/file/FileCollection.hx:46: characters 10-52
+		#src/jotun/php/file/FileCollection.hx:47: characters 10-52
 		if (($aNeg !== $bNeg ? $aNeg : $a > $index)) {
-			#src/jotun/php/file/FileCollection.hx:46: characters 34-45
+			#src/jotun/php/file/FileCollection.hx:47: characters 34-45
 			return ($this->list->arr[$index] ?? null);
 		} else {
-			#src/jotun/php/file/FileCollection.hx:46: characters 48-52
+			#src/jotun/php/file/FileCollection.hx:47: characters 48-52
 			return null;
 		}
 	}
@@ -101,7 +123,7 @@ class FileCollection {
 	 * @return FileInfo
 	 */
 	public function getByName ($name) {
-		#src/jotun/php/file/FileCollection.hx:37: characters 3-36
+		#src/jotun/php/file/FileCollection.hx:38: characters 3-36
 		return \Reflect::field($this->named, $name);
 	}
 
@@ -115,32 +137,32 @@ class FileCollection {
 	 * @return mixed
 	 */
 	public function getByType ($type = "*") {
-		#src/jotun/php/file/FileCollection.hx:68: lines 68-84
+		#src/jotun/php/file/FileCollection.hx:69: lines 69-85
 		if ($type === null) {
 			$type = "*";
 		}
-		#src/jotun/php/file/FileCollection.hx:69: characters 3-41
+		#src/jotun/php/file/FileCollection.hx:70: characters 3-41
 		$r = ($type === "*" ? new HxAnon() : new \Array_hx());
-		#src/jotun/php/file/FileCollection.hx:70: lines 70-82
+		#src/jotun/php/file/FileCollection.hx:71: lines 71-83
 		Dice::Values($this->list, function ($v) use (&$r, &$type) {
-			#src/jotun/php/file/FileCollection.hx:71: lines 71-81
+			#src/jotun/php/file/FileCollection.hx:72: lines 72-82
 			if ($type === "*") {
-				#src/jotun/php/file/FileCollection.hx:73: lines 73-75
+				#src/jotun/php/file/FileCollection.hx:74: lines 74-76
 				if ($v->type === $type) {
-					#src/jotun/php/file/FileCollection.hx:74: characters 6-21
+					#src/jotun/php/file/FileCollection.hx:75: characters 6-21
 					$r[Boot::dynamicField($r, 'length')] = $v;
 				}
 			} else {
-				#src/jotun/php/file/FileCollection.hx:78: lines 78-79
+				#src/jotun/php/file/FileCollection.hx:79: lines 79-80
 				if (!\Reflect::hasField($r, $v->type)) {
-					#src/jotun/php/file/FileCollection.hx:79: characters 6-37
+					#src/jotun/php/file/FileCollection.hx:80: characters 6-37
 					\Reflect::setField($r, $v->type, new \Array_hx());
 				}
-				#src/jotun/php/file/FileCollection.hx:80: characters 5-37
+				#src/jotun/php/file/FileCollection.hx:81: characters 5-37
 				\Reflect::field($r, $v->type)->push($v);
 			}
 		});
-		#src/jotun/php/file/FileCollection.hx:83: characters 3-11
+		#src/jotun/php/file/FileCollection.hx:84: characters 3-11
 		return $r;
 	}
 
@@ -151,17 +173,17 @@ class FileCollection {
 	 * @return string[]|\Array_hx
 	 */
 	public function getFileNames () {
-		#src/jotun/php/file/FileCollection.hx:54: characters 3-28
+		#src/jotun/php/file/FileCollection.hx:55: characters 3-28
 		$r = new \Array_hx();
-		#src/jotun/php/file/FileCollection.hx:55: lines 55-59
+		#src/jotun/php/file/FileCollection.hx:56: lines 56-60
 		Dice::Values($this->list, function ($v) use (&$r) {
-			#src/jotun/php/file/FileCollection.hx:56: lines 56-58
+			#src/jotun/php/file/FileCollection.hx:57: lines 57-59
 			if ($v->type === "image") {
-				#src/jotun/php/file/FileCollection.hx:57: characters 5-27
+				#src/jotun/php/file/FileCollection.hx:58: characters 5-27
 				$r->offsetSet($r->length, $v->output);
 			}
 		});
-		#src/jotun/php/file/FileCollection.hx:60: characters 3-11
+		#src/jotun/php/file/FileCollection.hx:61: characters 3-11
 		return $r;
 	}
 }

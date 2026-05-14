@@ -80,12 +80,12 @@ class ModLib {
 	 * @return mixed
 	 */
 	public function buffer ($name = null) {
-		#src/jotun/modules/ModLib.hx:373: lines 373-377
+		#src/jotun/modules/ModLib.hx:380: lines 380-384
 		if (($name !== null) && ($name !== "")) {
-			#src/jotun/modules/ModLib.hx:374: characters 11-33
+			#src/jotun/modules/ModLib.hx:381: characters 11-33
 			return \Reflect::field(ModLib::$DATA->objects, $name);
 		} else {
-			#src/jotun/modules/ModLib.hx:376: characters 4-22
+			#src/jotun/modules/ModLib.hx:383: characters 4-22
 			return ModLib::$DATA->buffer;
 		}
 	}
@@ -117,38 +117,38 @@ class ModLib {
 	 * @return void
 	 */
 	public function export ($name, $data = null) {
-		#src/jotun/modules/ModLib.hx:414: lines 414-433
+		#src/jotun/modules/ModLib.hx:421: lines 421-440
 		$_gthis = $this;
-		#src/jotun/modules/ModLib.hx:415: characters 4-38
+		#src/jotun/modules/ModLib.hx:422: characters 4-38
 		echo("<noscript jtn-module>");
-		#src/jotun/modules/ModLib.hx:416: lines 416-431
+		#src/jotun/modules/ModLib.hx:423: lines 423-438
 		if (($name instanceof \Array_hx)) {
-			#src/jotun/modules/ModLib.hx:417: lines 417-427
+			#src/jotun/modules/ModLib.hx:424: lines 424-434
 			Dice::Values($name, function ($v) use (&$name, &$data, &$_gthis) {
-				#src/jotun/modules/ModLib.hx:418: lines 418-426
+				#src/jotun/modules/ModLib.hx:425: lines 425-433
 				if (is_string($v)) {
-					#src/jotun/modules/ModLib.hx:419: characters 7-54
+					#src/jotun/modules/ModLib.hx:426: characters 7-54
 					echo(\Std::string("[Module:{\"name\":\"" . \Std::string($name) . "\"}]\x0D"));
-					#src/jotun/modules/ModLib.hx:420: characters 7-29
+					#src/jotun/modules/ModLib.hx:427: characters 7-29
 					$_gthis->print($_gthis->get($name, $data));
 				} else if (\Reflect::hasField($v, "info")) {
-					#src/jotun/modules/ModLib.hx:422: characters 7-28
+					#src/jotun/modules/ModLib.hx:429: characters 7-28
 					echo("[Module:");
-					#src/jotun/modules/ModLib.hx:423: characters 7-40
+					#src/jotun/modules/ModLib.hx:430: characters 7-40
 					echo(\Std::string(Json::phpJsonEncode(Boot::dynamicField($v, 'info'), null, null)));
-					#src/jotun/modules/ModLib.hx:424: characters 7-23
+					#src/jotun/modules/ModLib.hx:431: characters 7-23
 					echo("]\x0D");
-					#src/jotun/modules/ModLib.hx:425: characters 7-28
+					#src/jotun/modules/ModLib.hx:432: characters 7-28
 					$_gthis->print(Boot::dynamicField($v, 'name'), Boot::dynamicField($v, 'data'));
 				}
 			});
 		} else {
-			#src/jotun/modules/ModLib.hx:429: characters 5-52
+			#src/jotun/modules/ModLib.hx:436: characters 5-52
 			echo(\Std::string("[Module:{\"name\":\"" . \Std::string($name) . "\"}]\x0D"));
-			#src/jotun/modules/ModLib.hx:430: characters 5-20
+			#src/jotun/modules/ModLib.hx:437: characters 5-20
 			$this->get($name, $data);
 		}
-		#src/jotun/modules/ModLib.hx:432: characters 4-28
+		#src/jotun/modules/ModLib.hx:439: characters 4-28
 		echo("</noscript>");
 	}
 
@@ -166,29 +166,29 @@ class ModLib {
 	 * @return string
 	 */
 	public function get ($name, $data = null, $alt = null) {
-		#src/jotun/modules/ModLib.hx:336: characters 3-28
+		#src/jotun/modules/ModLib.hx:343: characters 3-28
 		$name = \mb_strtolower($name);
-		#src/jotun/modules/ModLib.hx:337: lines 337-339
+		#src/jotun/modules/ModLib.hx:344: lines 344-346
 		if (!$this->exists($name)) {
-			#src/jotun/modules/ModLib.hx:338: characters 11-122
+			#src/jotun/modules/ModLib.hx:345: characters 11-122
 			if ($alt !== null) {
-				#src/jotun/modules/ModLib.hx:338: characters 25-28
+				#src/jotun/modules/ModLib.hx:345: characters 25-28
 				return $alt;
 			} else {
-				#src/jotun/modules/ModLib.hx:338: characters 31-122
+				#src/jotun/modules/ModLib.hx:345: characters 31-122
 				return "<span style='color:#ff0000;font-weight:bold;'>Undefined [Module:" . ($name??'null') . "]</span><br/>";
 			}
 		}
-		#src/jotun/modules/ModLib.hx:340: characters 3-40
+		#src/jotun/modules/ModLib.hx:347: characters 3-40
 		$content = \Reflect::field(ModLib::$CACHE, $name);
-		#src/jotun/modules/ModLib.hx:341: characters 3-31
+		#src/jotun/modules/ModLib.hx:348: characters 3-31
 		$data = $this->_sanitize($name, $data);
-		#src/jotun/modules/ModLib.hx:342: characters 10-61
+		#src/jotun/modules/ModLib.hx:349: characters 10-61
 		if ($data !== null) {
-			#src/jotun/modules/ModLib.hx:342: characters 27-51
+			#src/jotun/modules/ModLib.hx:349: characters 27-51
 			return Filler::to($content, $data);
 		} else {
-			#src/jotun/modules/ModLib.hx:342: characters 54-61
+			#src/jotun/modules/ModLib.hx:349: characters 54-61
 			return $content;
 		}
 	}
@@ -199,8 +199,18 @@ class ModLib {
 	 * @return string
 	 */
 	public function image ($name) {
-		#src/jotun/modules/ModLib.hx:369: characters 10-31
+		#src/jotun/modules/ModLib.hx:376: characters 10-31
 		return \Reflect::field(ModLib::$DATA->images, $name);
+	}
+
+	/**
+	 * @param \Closure $method
+	 * 
+	 * @return void
+	 */
+	public function list ($method) {
+		#src/jotun/modules/ModLib.hx:113: characters 3-29
+		Dice::Params(ModLib::$CACHE, $method);
 	}
 
 	/**
@@ -215,28 +225,28 @@ class ModLib {
 	 * @return mixed
 	 */
 	public function object ($name, $data = null) {
-		#src/jotun/modules/ModLib.hx:352: lines 352-364
+		#src/jotun/modules/ModLib.hx:359: lines 359-371
 		if (\Reflect::hasField(ModLib::$DATA->objects, $name)) {
-			#src/jotun/modules/ModLib.hx:353: characters 11-33
+			#src/jotun/modules/ModLib.hx:360: characters 11-33
 			$data = \Reflect::field(ModLib::$DATA->objects, $name);
 		} else {
-			#src/jotun/modules/ModLib.hx:355: characters 4-41
+			#src/jotun/modules/ModLib.hx:362: characters 4-41
 			$val = $this->get($name, $data, "");
-			#src/jotun/modules/ModLib.hx:356: lines 356-363
+			#src/jotun/modules/ModLib.hx:363: lines 363-370
 			if ($val !== null) {
-				#src/jotun/modules/ModLib.hx:357: lines 357-362
+				#src/jotun/modules/ModLib.hx:364: lines 364-369
 				try {
-					#src/jotun/modules/ModLib.hx:358: characters 6-28
+					#src/jotun/modules/ModLib.hx:365: characters 6-28
 					$data = Json::phpJsonDecode($val);
 				} catch(\Throwable $_g) {
-					#src/jotun/modules/ModLib.hx:360: characters 6-89
+					#src/jotun/modules/ModLib.hx:367: characters 6-89
 					Jotun::log("\x09ModLib => Can't create object for [Module:" . ($name??'null') . "]", 3);
-					#src/jotun/modules/ModLib.hx:361: characters 6-17
+					#src/jotun/modules/ModLib.hx:368: characters 6-17
 					$data = null;
 				}
 			}
 		}
-		#src/jotun/modules/ModLib.hx:365: characters 3-14
+		#src/jotun/modules/ModLib.hx:372: characters 3-14
 		return $data;
 	}
 
@@ -266,24 +276,24 @@ class ModLib {
 	 * @return bool
 	 */
 	public function prepare ($file) {
-		#src/jotun/modules/ModLib.hx:389: characters 8-47
+		#src/jotun/modules/ModLib.hx:396: characters 8-47
 		$tmp = null;
 		if ($file !== null) {
-			#src/jotun/modules/ModLib.hx:389: characters 24-47
+			#src/jotun/modules/ModLib.hx:396: characters 24-47
 			\clearstatcache(true, $file);
-			#src/jotun/modules/ModLib.hx:389: characters 8-47
+			#src/jotun/modules/ModLib.hx:396: characters 8-47
 			$tmp = \file_exists($file);
 		} else {
 			$tmp = false;
 		}
-		#src/jotun/modules/ModLib.hx:389: lines 389-392
+		#src/jotun/modules/ModLib.hx:396: lines 396-399
 		if ($tmp) {
-			#src/jotun/modules/ModLib.hx:390: characters 5-42
+			#src/jotun/modules/ModLib.hx:397: characters 5-42
 			$this->register($file, File::getContent($file));
-			#src/jotun/modules/ModLib.hx:391: characters 5-16
+			#src/jotun/modules/ModLib.hx:398: characters 5-16
 			return true;
 		}
-		#src/jotun/modules/ModLib.hx:393: characters 4-16
+		#src/jotun/modules/ModLib.hx:400: characters 4-16
 		return false;
 	}
 
@@ -300,7 +310,7 @@ class ModLib {
 	 * @return void
 	 */
 	public function print ($name, $data = null) {
-		#src/jotun/modules/ModLib.hx:404: characters 4-30
+		#src/jotun/modules/ModLib.hx:411: characters 4-30
 		echo(\Std::string($this->get($name, $data)));
 	}
 
@@ -346,220 +356,225 @@ class ModLib {
 	 * @return void
 	 */
 	public function register ($file, $content) {
-		#src/jotun/modules/ModLib.hx:148: lines 148-326
+		#src/jotun/modules/ModLib.hx:152: lines 152-333
 		$_gthis = $this;
-		#src/jotun/modules/ModLib.hx:149: characters 3-55
+		#src/jotun/modules/ModLib.hx:153: characters 3-55
 		$content = HxString::split($content, "[module:{")->join("[!MOD!]");
-		#src/jotun/modules/ModLib.hx:150: characters 3-55
+		#src/jotun/modules/ModLib.hx:154: characters 3-55
 		$content = HxString::split($content, "[Module:{")->join("[!MOD!]");
-		#src/jotun/modules/ModLib.hx:151: characters 3-52
+		#src/jotun/modules/ModLib.hx:155: characters 3-52
 		$sur = HxString::split($content, "[!MOD!]");
-		#src/jotun/modules/ModLib.hx:152: characters 3-34
+		#src/jotun/modules/ModLib.hx:156: characters 3-34
 		$total = $sur->length - 1;
-		#src/jotun/modules/ModLib.hx:153: characters 3-21
+		#src/jotun/modules/ModLib.hx:157: characters 3-21
 		$count = 0;
-		#src/jotun/modules/ModLib.hx:154: characters 3-22
+		#src/jotun/modules/ModLib.hx:158: characters 3-22
 		$errors = 0;
-		#src/jotun/modules/ModLib.hx:155: characters 3-21
+		#src/jotun/modules/ModLib.hx:159: characters 3-21
 		$fdata = 0;
-		#src/jotun/modules/ModLib.hx:156: characters 3-21
+		#src/jotun/modules/ModLib.hx:160: characters 3-21
 		$pdata = 0;
-		#src/jotun/modules/ModLib.hx:157: lines 157-325
+		#src/jotun/modules/ModLib.hx:161: lines 161-332
 		if ($sur->length > 1) {
-			#src/jotun/modules/ModLib.hx:158: characters 4-87
+			#src/jotun/modules/ModLib.hx:162: characters 4-87
 			Jotun::log("ModLib => PARSING " . ($file??'null') . " MODULES (~" . ($total??'null') . ")", 4);
-			#src/jotun/modules/ModLib.hx:162: lines 162-286
+			#src/jotun/modules/ModLib.hx:166: lines 166-293
 			Dice::All($sur, function ($p, $v) use (&$fdata, &$count, &$errors, &$total, &$file, &$_gthis, &$content, &$pdata) {
-				#src/jotun/modules/ModLib.hx:163: lines 163-284
+				#src/jotun/modules/ModLib.hx:167: lines 167-291
 				if ($p > 0) {
-					#src/jotun/modules/ModLib.hx:164: characters 6-13
+					#src/jotun/modules/ModLib.hx:168: characters 6-13
 					$count += 1;
-					#src/jotun/modules/ModLib.hx:165: characters 6-34
+					#src/jotun/modules/ModLib.hx:169: characters 6-34
 					$i = HxString::indexOf($v, "}]");
-					#src/jotun/modules/ModLib.hx:166: lines 166-283
+					#src/jotun/modules/ModLib.hx:170: lines 170-290
 					if ($i !== -1) {
-						#src/jotun/modules/ModLib.hx:167: characters 7-61
+						#src/jotun/modules/ModLib.hx:171: characters 7-61
 						$mod = Json::phpJsonDecode("{" . (\mb_substr($v, 0, $i)??'null') . "}");
-						#src/jotun/modules/ModLib.hx:168: characters 7-30
+						#src/jotun/modules/ModLib.hx:172: characters 7-30
 						$path = $file;
-						#src/jotun/modules/ModLib.hx:169: lines 169-171
+						#src/jotun/modules/ModLib.hx:173: lines 173-175
 						if ($mod->type === "//") {
-							#src/jotun/modules/ModLib.hx:170: characters 8-20
+							#src/jotun/modules/ModLib.hx:174: characters 8-20
 							return false;
 						}
-						#src/jotun/modules/ModLib.hx:172: lines 172-181
+						#src/jotun/modules/ModLib.hx:176: lines 176-185
 						if ($mod->name === null) {
-							#src/jotun/modules/ModLib.hx:173: characters 8-23
+							#src/jotun/modules/ModLib.hx:177: characters 8-23
 							$mod->name = $file;
 						} else if ($mod->name === "[]") {
-							#src/jotun/modules/ModLib.hx:175: characters 8-20
+							#src/jotun/modules/ModLib.hx:179: characters 8-20
 							$path = ($path??'null') . "[]";
 						} else {
-							#src/jotun/modules/ModLib.hx:177: characters 8-30
+							#src/jotun/modules/ModLib.hx:181: characters 8-30
 							$path = ($path??'null') . "#" . ($mod->name??'null');
-							#src/jotun/modules/ModLib.hx:178: lines 178-180
+							#src/jotun/modules/ModLib.hx:182: lines 182-184
 							if ($mod->type !== "data") {
-								#src/jotun/modules/ModLib.hx:179: characters 9-93
+								#src/jotun/modules/ModLib.hx:183: characters 9-93
 								Jotun::log("\x09@ BLOCK: " . ($mod->name??'null') . " (" . ($count??'null') . "/" . ($total??'null') . ")", 4);
 							}
 						}
-						#src/jotun/modules/ModLib.hx:182: lines 182-184
+						#src/jotun/modules/ModLib.hx:186: lines 186-188
 						if ($_gthis->exists($mod->name)) {
-							#src/jotun/modules/ModLib.hx:183: characters 8-69
+							#src/jotun/modules/ModLib.hx:187: characters 8-69
 							Jotun::log("\x09ModLib => !!! OVERRIDING " . ($path??'null'), 4);
 						}
-						#src/jotun/modules/ModLib.hx:185: characters 7-40
+						#src/jotun/modules/ModLib.hx:189: characters 7-40
 						$end = HxString::indexOf($v, "/EOF;");
-						#src/jotun/modules/ModLib.hx:186: characters 17-81
+						#src/jotun/modules/ModLib.hx:190: lines 190-192
+						if ($end === -1) {
+							#src/jotun/modules/ModLib.hx:191: characters 8-32
+							$end = HxString::indexOf($v, "/EOL;");
+						}
+						#src/jotun/modules/ModLib.hx:193: characters 17-81
 						$content = \trim(HxString::substring($v, $i + 2, ($end === -1 ? mb_strlen($v) : $end)));
-						#src/jotun/modules/ModLib.hx:187: lines 187-195
+						#src/jotun/modules/ModLib.hx:194: lines 194-202
 						if (($mod->type === null) || ($mod->type === "null") || ($mod->type === "html")) {
-							#src/jotun/modules/ModLib.hx:188: characters 8-73
+							#src/jotun/modules/ModLib.hx:195: characters 8-73
 							$content = HxString::split(HxString::split($content, "\x0D\x0A")->join("\x0A"), "\x0D")->join("\x0A");
-							#src/jotun/modules/ModLib.hx:189: lines 189-191
+							#src/jotun/modules/ModLib.hx:196: lines 196-198
 							while (\mb_substr($content, 0, 1) === "\x0D") {
-								#src/jotun/modules/ModLib.hx:190: characters 9-55
+								#src/jotun/modules/ModLib.hx:197: characters 9-55
 								$content = HxString::substring($content, 1, mb_strlen($content));
 							}
-							#src/jotun/modules/ModLib.hx:192: lines 192-194
+							#src/jotun/modules/ModLib.hx:199: lines 199-201
 							while (\mb_substr($content, -1, null) === "\x0A") {
-								#src/jotun/modules/ModLib.hx:193: characters 9-59
+								#src/jotun/modules/ModLib.hx:200: characters 9-59
 								$content = HxString::substring($content, 0, mb_strlen($content) - 1);
 							}
 						}
-						#src/jotun/modules/ModLib.hx:196: lines 196-225
+						#src/jotun/modules/ModLib.hx:203: lines 203-232
 						if ($mod->require !== null) {
-							#src/jotun/modules/ModLib.hx:197: characters 8-42
+							#src/jotun/modules/ModLib.hx:204: characters 8-42
 							$incT = $mod->require->length;
-							#src/jotun/modules/ModLib.hx:198: characters 8-25
+							#src/jotun/modules/ModLib.hx:205: characters 8-25
 							$incC = 1;
-							#src/jotun/modules/ModLib.hx:199: characters 8-94
+							#src/jotun/modules/ModLib.hx:206: characters 8-94
 							Jotun::log("\x09\x09> INCLUDING MODULES IN '" . ($mod->name??'null') . "' (" . ($incT??'null') . ")", 4);
-							#src/jotun/modules/ModLib.hx:200: lines 200-224
+							#src/jotun/modules/ModLib.hx:207: lines 207-231
 							Dice::Values($mod->require, function ($v) use (&$incC, &$mod, &$_gthis, &$content) {
-								#src/jotun/modules/ModLib.hx:201: lines 201-222
+								#src/jotun/modules/ModLib.hx:208: lines 208-229
 								if ($_gthis->exists($v)) {
-									#src/jotun/modules/ModLib.hx:203: lines 203-216
+									#src/jotun/modules/ModLib.hx:210: lines 210-223
 									Dice::All(HxString::split($content, "{{@include:" . ($v??'null') . ",data:{"), function ($p, $v2) use (&$mod, &$_gthis, &$content, &$v) {
-										#src/jotun/modules/ModLib.hx:204: lines 204-215
+										#src/jotun/modules/ModLib.hx:211: lines 211-222
 										if ($p > 0) {
-											#src/jotun/modules/ModLib.hx:205: characters 12-51
+											#src/jotun/modules/ModLib.hx:212: characters 12-51
 											$pieces = (HxString::split($v2, "}}}")->arr[0] ?? null);
-											#src/jotun/modules/ModLib.hx:206: lines 206-214
+											#src/jotun/modules/ModLib.hx:213: lines 213-221
 											try {
-												#src/jotun/modules/ModLib.hx:207: characters 13-78
+												#src/jotun/modules/ModLib.hx:214: characters 13-78
 												$data = Json::phpJsonDecode("{" . ($pieces??'null') . "}");
-												#src/jotun/modules/ModLib.hx:208: lines 208-210
+												#src/jotun/modules/ModLib.hx:215: lines 215-217
 												if (!($data instanceof \Array_hx)) {
-													#src/jotun/modules/ModLib.hx:209: characters 14-41
+													#src/jotun/modules/ModLib.hx:216: characters 14-41
 													$value = $mod->name;
 													\Reflect::setField($data, "@name", $value);
 												}
-												#src/jotun/modules/ModLib.hx:211: characters 13-103
+												#src/jotun/modules/ModLib.hx:218: characters 13-103
 												$content = HxString::split($content, "{{@include:" . ($v??'null') . ",data:{" . ($pieces??'null') . "}}}")->join($_gthis->get($v, $data));
 											} catch(\Error $e) {
-												#src/jotun/modules/ModLib.hx:213: characters 13-96
+												#src/jotun/modules/ModLib.hx:220: characters 13-96
 												Jotun::log("\x09\x09\x09ERROR: Can't parse module include data for " . ($v??'null') . ".", 3);
 											}
 										}
 									});
-									#src/jotun/modules/ModLib.hx:218: characters 10-72
+									#src/jotun/modules/ModLib.hx:225: characters 10-72
 									$content = HxString::split($content, "{{@include:" . ($v??'null') . "}}")->join($_gthis->get($v));
-									#src/jotun/modules/ModLib.hx:219: characters 10-72
+									#src/jotun/modules/ModLib.hx:226: characters 10-72
 									Jotun::log("\x09\x09\x09+ INCLUDED '" . ($v??'null') . "' #" . ($incC??'null'), 4);
 								} else {
-									#src/jotun/modules/ModLib.hx:221: characters 10-70
+									#src/jotun/modules/ModLib.hx:228: characters 10-70
 									Jotun::log("\x09\x09\x09- MISSING '" . ($v??'null') . "' #" . ($incC??'null'), 3);
 								}
-								#src/jotun/modules/ModLib.hx:223: characters 9-15
+								#src/jotun/modules/ModLib.hx:230: characters 9-15
 								$incC += 1;
 							});
 						}
-						#src/jotun/modules/ModLib.hx:226: lines 226-229
+						#src/jotun/modules/ModLib.hx:233: lines 233-236
 						if ($mod->data !== null) {
-							#src/jotun/modules/ModLib.hx:227: characters 19-39
+							#src/jotun/modules/ModLib.hx:234: characters 19-39
 							$tmp = Json::phpJsonDecode($mod->data);
-							#src/jotun/modules/ModLib.hx:227: characters 8-39
+							#src/jotun/modules/ModLib.hx:234: characters 8-39
 							$mod->data = $tmp;
-							#src/jotun/modules/ModLib.hx:228: characters 8-46
+							#src/jotun/modules/ModLib.hx:235: characters 8-46
 							$content = Filler::to($content, $mod->data);
 						}
-						#src/jotun/modules/ModLib.hx:230: lines 230-234
+						#src/jotun/modules/ModLib.hx:237: lines 237-241
 						if ($mod->replace !== null) {
-							#src/jotun/modules/ModLib.hx:231: lines 231-233
+							#src/jotun/modules/ModLib.hx:238: lines 238-240
 							Dice::Values($mod->replace, function ($v) use (&$content) {
-								#src/jotun/modules/ModLib.hx:232: characters 9-49
+								#src/jotun/modules/ModLib.hx:239: characters 9-49
 								$content = HxString::split($content, ($v->arr[0] ?? null))->join(($v->arr[1] ?? null));
 							});
 						}
-						#src/jotun/modules/ModLib.hx:235: lines 235-270
+						#src/jotun/modules/ModLib.hx:242: lines 242-277
 						if ($mod->type !== null) {
-							#src/jotun/modules/ModLib.hx:236: lines 236-269
+							#src/jotun/modules/ModLib.hx:243: lines 243-276
 							if ($mod->type === "data") {
-								#src/jotun/modules/ModLib.hx:237: lines 237-258
+								#src/jotun/modules/ModLib.hx:244: lines 244-265
 								try {
-									#src/jotun/modules/ModLib.hx:238: lines 238-243
+									#src/jotun/modules/ModLib.hx:245: lines 245-250
 									if ($_gthis->onBufferRequest !== null) {
-										#src/jotun/modules/ModLib.hx:239: characters 11-51
+										#src/jotun/modules/ModLib.hx:246: characters 11-51
 										$content = ($_gthis->onBufferRequest)($file, $content);
-										#src/jotun/modules/ModLib.hx:240: lines 240-242
+										#src/jotun/modules/ModLib.hx:247: lines 247-249
 										if ($content === null) {
-											#src/jotun/modules/ModLib.hx:241: characters 12-24
+											#src/jotun/modules/ModLib.hx:248: characters 12-24
 											return false;
 										}
 									}
-									#src/jotun/modules/ModLib.hx:244: characters 10-39
+									#src/jotun/modules/ModLib.hx:251: characters 10-39
 									$content = Json::phpJsonDecode($content);
-									#src/jotun/modules/ModLib.hx:245: lines 245-253
+									#src/jotun/modules/ModLib.hx:252: lines 252-260
 									if ($mod->name === "[]") {
-										#src/jotun/modules/ModLib.hx:246: characters 11-18
+										#src/jotun/modules/ModLib.hx:253: characters 11-18
 										$pdata += 1;
-										#src/jotun/modules/ModLib.hx:247: characters 11-83
+										#src/jotun/modules/ModLib.hx:254: characters 11-83
 										Jotun::log("\x09@ PUSH: {...} (" . ($count??'null') . "/" . ($total??'null') . ")", 4);
-										#src/jotun/modules/ModLib.hx:248: characters 11-36
+										#src/jotun/modules/ModLib.hx:255: characters 11-36
 										$_this = ModLib::$DATA->buffer;
 										$_this->arr[$_this->length++] = $content;
 									} else {
-										#src/jotun/modules/ModLib.hx:250: characters 11-18
+										#src/jotun/modules/ModLib.hx:257: characters 11-18
 										$fdata += 1;
-										#src/jotun/modules/ModLib.hx:251: characters 11-97
+										#src/jotun/modules/ModLib.hx:258: characters 11-97
 										Jotun::log("\x09@ DATA:  {" . ($mod->name??'null') . "} (" . ($count??'null') . "/" . ($total??'null') . ")", 4);
-										#src/jotun/modules/ModLib.hx:252: characters 11-46
+										#src/jotun/modules/ModLib.hx:259: characters 11-46
 										\Reflect::setField(ModLib::$DATA->objects, $mod->name, $content);
 									}
-									#src/jotun/modules/ModLib.hx:254: characters 10-22
+									#src/jotun/modules/ModLib.hx:261: characters 10-22
 									return false;
 								} catch(\Throwable $_g) {
-									#src/jotun/modules/ModLib.hx:255: characters 17-18
+									#src/jotun/modules/ModLib.hx:262: characters 17-18
 									$e = Exception::caught($_g)->unwrap();
-									#src/jotun/modules/ModLib.hx:256: characters 10-18
+									#src/jotun/modules/ModLib.hx:263: characters 10-18
 									$errors += 1;
-									#src/jotun/modules/ModLib.hx:257: characters 10-117
+									#src/jotun/modules/ModLib.hx:264: characters 10-117
 									Jotun::log("\x09\x09ERROR! Can't parse DATA.objects[" . ($mod->name??'null') . "] \x0A\x0A " . ($content??'null') . "\x0A\x0A" . \Std::string($e), 3);
 								}
 							} else if ($mod->type === "image") {
-								#src/jotun/modules/ModLib.hx:268: characters 9-43
+								#src/jotun/modules/ModLib.hx:275: characters 9-43
 								\Reflect::setField(ModLib::$DATA->images, $mod->name, $content);
 							}
 						}
-						#src/jotun/modules/ModLib.hx:278: characters 7-45
+						#src/jotun/modules/ModLib.hx:285: characters 7-45
 						$n = \mb_strtolower($mod->name);
-						#src/jotun/modules/ModLib.hx:279: characters 7-28
+						#src/jotun/modules/ModLib.hx:286: characters 7-28
 						\Reflect::setField(ModLib::$CACHE, $n, $content);
-						#src/jotun/modules/ModLib.hx:280: characters 7-36
+						#src/jotun/modules/ModLib.hx:287: characters 7-36
 						\Reflect::setField(ModLib::$DATA->paths, "@" . ($n??'null'), $path);
 					} else {
-						#src/jotun/modules/ModLib.hx:282: characters 7-99
+						#src/jotun/modules/ModLib.hx:289: characters 7-99
 						Jotun::log("\x09ModLib => CONFIG ERROR " . ($file??'null') . "(" . (\mb_substr($v, 0, 15)??'null') . "...)", 3);
 					}
 				}
-				#src/jotun/modules/ModLib.hx:285: characters 5-17
+				#src/jotun/modules/ModLib.hx:292: characters 5-17
 				return false;
 			});
-			#src/jotun/modules/ModLib.hx:299: characters 4-166
+			#src/jotun/modules/ModLib.hx:306: characters 4-166
 			Jotun::log("\x09! PARSED: " . ($count - $errors) . "/" . ($total??'null') . ", Data: " . ($fdata + $pdata) . " ([]:" . ($pdata??'null') . ",@:" . ($pdata??'null') . "), Errors: " . ($errors??'null'), 4);
 		} else {
-			#src/jotun/modules/ModLib.hx:323: characters 5-43
+			#src/jotun/modules/ModLib.hx:330: characters 5-43
 			\Reflect::setField(ModLib::$CACHE, \mb_strtolower($file), $content);
 		}
 	}
