@@ -5,7 +5,6 @@ import haxe.extern.EitherType;
 import jotun.dom.Displayable;
 import jotun.events.EventDispatcher;
 import jotun.math.Point;
-import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.objects.IQuery;
 import jotun.objects.IResolve;

@@ -1,5 +1,6 @@
 package jotun.gaming.actions;
 import jotun.Jotun;
+import jotun.utils.Filler;
 
 /**
  * DOM manipulation sub-module for ActionQuery.
@@ -42,27 +43,27 @@ class DomActionQuery extends ActionQuery {
 	}
 
 	public function mount(module:String, ?params:String):DomActionQuery {
-		if (current != null) current.mount(module, params != null ? _PARAMS(params) : null);
+		if (current != null) current.mount(module, params != null ? _PARAMS(params) : invocation.origin);
 		return this;
 	}
 
 	public function writeText(...values:String):DomActionQuery {
-		if (current != null) current.writeText(_JOIN(values.toArray()));
+		if (current != null) current.writeText(Filler.to(_JOIN(values.toArray()), invocation.origin));
 		return this;
 	}
 
 	public function writeHtml(...values:String):DomActionQuery {
-		if (current != null) current.writeHtml(_JOIN(values.toArray()));
+		if (current != null) current.writeHtml(Filler.to(_JOIN(values.toArray()), invocation.origin));
 		return this;
 	}
 
 	public function appendText(...values:String):DomActionQuery {
-		if (current != null) current.appendText(_JOIN(values.toArray()));
+		if (current != null) current.appendText(Filler.to(_JOIN(values.toArray()), invocation.origin));
 		return this;
 	}
 
 	public function appendHtml(...values:String):DomActionQuery {
-		if (current != null) current.appendHtml(_JOIN(values.toArray()));
+		if (current != null) current.appendHtml(Filler.to(_JOIN(values.toArray()), invocation.origin));
 		return this;
 	}
 
@@ -74,12 +75,33 @@ class DomActionQuery extends ActionQuery {
 	}
 
 	public function attribute(...values:String):DomActionQuery {
-		if (current != null) current.attribute(haxe.Json.parse(values.toArray().join(' ')));
+		if (current != null && values.length > 0) current.attribute(haxe.Json.parse(values.toArray().join(' ')));
 		return this;
 	}
 
 	public function style(...values:String):DomActionQuery {
-		if (current != null) current.style(haxe.Json.parse(values.toArray().join(' ')));
+		if (current != null && values.length > 0) current.style(haxe.Json.parse(values.toArray().join(' ')));
+		return this;
+	}
+
+	public function readattr(attr:String, name:String):DomActionQuery {
+		if (current != null) {
+			var v:Dynamic = current.attribute(attr);
+			if (v != null) getDataProvider().setVar(name, v);
+		}
+		return this;
+	}
+
+	public function readvalue(name:String):DomActionQuery {
+		if (current != null) {
+			var v:Dynamic = current.value();
+			if (v != null) getDataProvider().setVar(name, v);
+		}
+		return this;
+	}
+
+	public function readcount(query:String, name:String):DomActionQuery {
+		getDataProvider().setVar(name, Jotun.all(query).length());
 		return this;
 	}
 

@@ -37,6 +37,10 @@ class RequirementQuery extends Query {
 		return value == null || value == "";
 	}
 
+	private function _JOIN(values:Array<Dynamic>):String {
+		return values.join(' ');
+	}
+
 	private function _INT(value:Dynamic, alt:Int):Int {
 		var o:Int = Std.isOfType(value, String) ? Std.parseInt(value) : Std.isOfType(value, Int) ? value >> 0 : null;
 		return o != null ? o : alt;
@@ -124,6 +128,14 @@ class RequirementQuery extends Query {
 		var a_max:Float = _FLOAT(max, 0) + (f ? 0 : 1) - a_min;
 		var value:Float = (rng() * a_max + a_min);
 		return isvar(name, rule, value);
+	}
+
+	public function isnull(name:String):Bool {
+		return _isempty(getDataProvider().getVar(name));
+	}
+
+	public function isnotnull(name:String):Bool {
+		return !_isempty(getDataProvider().getVar(name));
 	}
 
 	public function isodd(name:String):Bool {

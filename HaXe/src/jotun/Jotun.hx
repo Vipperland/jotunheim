@@ -2,12 +2,13 @@ package jotun;
 
 import haxe.macro.Expr;
 import jotun.data.Logger;
+import jotun.gaming.actions.CommonsActionQuery;
+import jotun.gaming.actions.CommonsRequirementQuery;
 import jotun.modules.ModLib;
 import jotun.net.DataSource;
 import jotun.net.Domain;
 import jotun.net.IDomain;
 import jotun.net.ILoader;
-import jotun.net.IProgress;
 import jotun.net.IRequest;
 import jotun.net.Loader;
 import jotun.tools.Utils;
@@ -101,6 +102,7 @@ class Jotun {
 				document.checkBody();
 				log("Jotun API => READY", 1);
 				CommonsActionQuery.register();
+				CommonsRequirementQuery.register();
 				Dice.Values(_loadPool, function(v:Dynamic) { if (v != null) v(); });
 				_loadPool = null;
 				Browser.document.removeEventListener("DOMContentLoaded", _loadController);
@@ -216,8 +218,8 @@ class Jotun {
 		 * @param	handler
 		 * @param	method
 		 */
-		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null, ?progress:IProgress->Void = null, ?options:Dynamic):Void {
-			run(function() { loader.request(url, data, method, handler, headers, progress, options); } );
+		static public function request(url:String, ?data:Dynamic, ?method:String = 'POST', ?handler:IRequest->Void, ?headers:Dynamic = null):Void {
+			run(function() { loader.request(url, data, method, handler, headers); } );
 		}
 
 		/**
@@ -226,9 +228,9 @@ class Jotun {
 		 * @param	content
 		 * @param	handler
 		 */
-		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void, ?progress:IProgress->Void = null):Void {
+		static public function module(file:String, name:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 			if (name == null || !resources.exists(name)){
-				loader.module(file, data, handler, progress);
+				loader.module(file, data, handler);
 			}else{
 				handler(null);
 			}

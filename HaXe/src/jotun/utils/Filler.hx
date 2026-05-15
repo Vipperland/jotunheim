@@ -1,5 +1,4 @@
 package jotun.utils;
-import haxe.Log;
 import jotun.tools.Utils;
 
 /**

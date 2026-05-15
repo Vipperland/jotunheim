@@ -5,7 +5,7 @@ import js.Browser;
 import js.lib.Error;
 import js.html.Blob;
 import js.html.ImageElement;
-import js.html.XMLHttpRequest;
+import js.html.AbortController;
 import jotun.tools.Utils;
 
 /**
@@ -14,37 +14,37 @@ import jotun.tools.Utils;
  */
 @:expose("Jtn.Img")
 class Img extends Display {
-	
+
 	private var _blob:String;
-	
+
 	static public function get(q:String):Img {
 		return cast Jotun.one(q);
 	}
-	
+
 	static public function urlToBlob(url:String):Img {
 		var img:Img = new Img();
 		img.loadBinary(url);
 		return img;
 	}
-	
+
 	static public function fromBlob(blob:Blob):Img {
 		var img:Img = new Img();
 		img.src(Utils.fileToURL(blob));
 		return img;
 	}
-	
-	private var _loader:XMLHttpRequest;
-	
+
+	private var _loader:AbortController;
+
 	public function new(?q:Dynamic) {
 		if (q == null) q = Browser.document.createImageElement();
 		super(q, null);
 	}
-	
+
 	public function blob(name:String):Img {
 		src(BlobCache.load(name));
 		return this;
 	}
-	
+
 	public function src(?value:Dynamic):String {
 		if (_blob != null){
 			BlobCache.revoke(_blob);
@@ -75,44 +75,38 @@ class Img extends Display {
 			return (cast element).src;
 		}
 	}
-	
+
 	public function alt(?value:String):String {
 		if (value != null) (cast element).alt = value;
 		return (cast element).alt;
 	}
-	
+
 	public function loadBinary(url:String):Void {
 		abort();
-		_loader = new XMLHttpRequest();
-		_loader.open('GET', url, true);
-		_loader.responseType = cast "arraybuffer";
-		_loader.send(null);
-		_loader.onload = function(e:Dynamic){
-			var blob:Blob = new Blob([e.target.response], {type: 'image/svg-xml'});
-			src(blob);
-			events.progress().call(false, true, {completed:true});
-			abort();
-		}
-		_loader.onprogress = function(e:Dynamic){
-			events.progress().call(false, true, e);
-		}
-		_loader.onerror = function(e:Dynamic){
-			events.error().call(false, true, e);
-			abort();
-		}
+		_loader = new AbortController();
+		Jotun.loader.fetch(url, cast { method: 'GET' }, {
+			abort: _loader,
+			complete: function(r:jotun.net.Response):Void {
+				_loader = null;
+				if (r.success) {
+					src(r.data.content);
+					events.progress().call(false, true, { completed: true });
+				} else {
+					events.error().call(false, true, r.error);
+				}
+			}
+		});
 	}
-	
+
 	private function abort():Void {
-		if (_loader != null){
+		if (_loader != null) {
 			_loader.abort();
-			_loader.onload = null;
-			_loader.onprogress = null;
-			_loader.onerror = null;
 			_loader = null;
 		}
 	}
-	
+
 	override public function dispose():Void {
+		abort();
 		if(cast (element, ImageElement).src.indexOf('blob:') == 0){
 			if(_blob != null){
 				BlobCache.revoke(_blob);
@@ -120,5 +114,5 @@ class Img extends Display {
 		}
 		super.dispose();
 	}
-	
+
 }

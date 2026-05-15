@@ -3,6 +3,7 @@ import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.Action;
 import jotun.gaming.actions.SpellCodex;
+import jotun.math.RNG;
 import jotun.objects.Query;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
@@ -76,8 +77,16 @@ class ActionQuery extends Query {
 		return Json.stringify(_JOIN(values));
 	}
 
+	private var _rng:RNG = null;
+
+	public function seed(value:Float):ActionQuery {
+		if (_rng == null) _rng = new RNG(value);
+		else _rng.set(value);
+		return this;
+	}
+
 	public function rng():Float {
-		return Math.random();
+		return _rng != null ? _rng.get() : Math.random();
 	}
 
 	private function _resolve(a:Dynamic, r:String, v:Dynamic):Dynamic {
@@ -311,6 +320,25 @@ class ActionQuery extends Query {
 		if (a != v) {
 			getDataProvider().setVar(name, v);
 		}
+		return this;
+	}
+
+	public function clamp(name:String, min:Float, max:Float):ActionQuery {
+		var v:Float = _FLOAT(getDataProvider().getFloat(name), min);
+		var c:Float = Math.max(min, Math.min(max, v));
+		if (v != c) getDataProvider().setVar(name, c);
+		return this;
+	}
+
+	public function copyto(source:String, target:String):ActionQuery {
+		getDataProvider().setVar(target, getDataProvider().getVar(source));
+		return this;
+	}
+
+	public function swap(nameA:String, nameB:String):ActionQuery {
+		var a:Dynamic = getDataProvider().getVar(nameA);
+		getDataProvider().setVar(nameA, getDataProvider().getVar(nameB));
+		getDataProvider().setVar(nameB, a);
 		return this;
 	}
 

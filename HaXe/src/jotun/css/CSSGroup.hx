@@ -1,9 +1,7 @@
 package jotun.css;
 
-import haxe.Log;
 import js.Browser;
 import js.html.StyleElement;
-import js.html.StyleSheet;
 import jotun.dom.Style;
 
 /**

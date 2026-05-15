@@ -1,5 +1,4 @@
 package jotun.data;
-import haxe.Log;
 #if js
 	import jotun.dom.Displayable;
 	import js.Syntax;

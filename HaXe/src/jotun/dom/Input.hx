@@ -1,5 +1,4 @@
 package jotun.dom;
-import haxe.Log;
 import jotun.Jotun;
 import jotun.tools.Utils;
 import jotun.utils.IDiceRoll;
@@ -11,7 +10,6 @@ import js.html.FileReader;
 import js.html.InputElement;
 import js.RegExp;
 import jotun.dom.Img;
-import jotun.events.Activation;
 import jotun.utils.Dice;
 
 /**

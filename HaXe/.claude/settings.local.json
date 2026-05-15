@@ -9,7 +9,10 @@
       "Bash(Select-Object Name)",
       "Bash(Sort-Object Name)",
       "Bash(Get-ChildItem -Path \"D:\\\\Devland\\\\RimProject\\\\2086_Awakening\\\\RP_WEB\\\\src\\\\rim\\\\events\\\\actions\\\\\" -File | Select-Object Name)",
-      "Bash(find \"D:/Devland/RimProject/2086_Awakening/RP_WEB/src\" -name \"CustomActionQuery.hx\" -o -name \"CustomRequirementQuery.hx\")"
+      "Bash(find \"D:/Devland/RimProject/2086_Awakening/RP_WEB/src\" -name \"CustomActionQuery.hx\" -o -name \"CustomRequirementQuery.hx\")",
+      "Bash(findstr -i \"jotun.hx\\\\|Jotun.hx\")",
+      "Bash(Remove-Item \"D:\\\\Devland\\\\Tools\\\\Frameworks\\\\Sirius\\\\HaXe\\\\src\\\\jotun\\\\net\\\\BulkLoader.hx\", \"D:\\\\Devland\\\\Tools\\\\Frameworks\\\\Sirius\\\\HaXe\\\\src\\\\jotun\\\\net\\\\ModBulkLoader.hx\", \"D:\\\\Devland\\\\Tools\\\\Frameworks\\\\Sirius\\\\HaXe\\\\src\\\\jotun\\\\net\\\\BlobBulkLoader.hx\")",
+      "Bash(grep -v \"\\\\.hx:[[:space:]]*//\")"
     ]
   }
 }

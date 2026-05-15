@@ -1,5 +1,4 @@
 package jotun.events;
-import haxe.Log;
 import jotun.dom.Displayable;
 import jotun.events.EventGroup;
 import jotun.utils.Dice;
