@@ -27,7 +27,7 @@ class ImageLib {
 		Dice.Values(files, function(v:Dynamic) {
 			var img:IImage = new Image(v);
 			if(img.isValid())
-				content[content.length] = img;
+				content.push(img);
 		});
 		
 		return this;

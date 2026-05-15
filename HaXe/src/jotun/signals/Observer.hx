@@ -56,7 +56,7 @@ class Observer {
 		}
 		if (target != null && _radar.indexOf(target) == -1){
 			target.setProp('__onsigh', handler);
-			_radar[_radar.length] = target;
+			_radar.push(target);
 		}
 	}
 	

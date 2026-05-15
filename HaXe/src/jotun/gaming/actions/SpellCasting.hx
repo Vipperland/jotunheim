@@ -94,7 +94,7 @@ class SpellCasting {
 	}
 	
 	public function addLog(i:Int, message:String):Void {
-		log[log.length] = Utils.prefix("", ident + chain + i, '\t') + message;
+		log.push(Utils.prefix("", ident + chain + i, '\t') + message);
 	}
 	
 	public function release(resolution:Resolution, result:Bool):Void {

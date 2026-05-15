@@ -1,4 +1,5 @@
 package jotun.net;
+import haxe.DynamicAccess;
 
 #if js
 	import js.Browser;
@@ -85,7 +86,7 @@ class Domain implements IDomain {
 			Jotun.params = new DataSource(_getParams());
 			
 			if (boundary != null) {
-				Reflect.deleteField(Jotun.params.data, boundary);
+				Jotun.params.data.remove(boundary);
 				boundary = boundary.split("\r\n")[0];
 				_getRawData(boundary, Jotun.params.data);
 			}
@@ -149,7 +150,7 @@ class Domain implements IDomain {
 				for( p in ~/[;&]/g.split(params) ) {
 					var a = p.split("=");
 					var n = a.shift();
-					Reflect.setField(h, StringTools.urlDecode(n),StringTools.urlDecode(a.join("=")));
+					(cast h:DynamicAccess<String>).set(StringTools.urlDecode(n), StringTools.urlDecode(a.join("=")));
 				}
 				return h;
 			#else
@@ -163,7 +164,7 @@ class Domain implements IDomain {
 		 * @param	data
 		 * @return
 		 */
-		private function _getRawData(boundary:String, ?data:Dynamic):Dynamic {
+		private function _getRawData(boundary:String, ?data:DynamicAccess<Dynamic>):DynamicAccess<Dynamic> {
 			if (data == null) {
 				data = {};
 			}
@@ -180,12 +181,12 @@ class Domain implements IDomain {
 						var value:String = point[1].split("\r\n")[0];
 						if (param.length > 0 && value.length > 0 && value != "null") {
 							if (param.indexOf("[]") == -1){
-								Reflect.setField(data, param, value);
+								data.set(param, value);
 							} else {
-								if (!Reflect.hasField(data, param)) {
-									Reflect.setField(data, param, []);
+								if (!data.exists(param)) {
+									data.set(param, []);
 								}
-								Reflect.field(data, param).push(value);
+								(data.get(param):Array<Dynamic>).push(value);
 							}
 						}
 					}

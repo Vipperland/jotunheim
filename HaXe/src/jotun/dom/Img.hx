@@ -53,7 +53,6 @@ class Img extends Display {
 		var a:ImageElement;
 		if (value != null) {
 			var src:String = null;
-			var evt:Dynamic = {};
 			if (Std.isOfType(value, Blob)){
 				_blob = BlobCache.create('blob:' + id(), value, true);
 			}else if (value.indexOf('<svg') != -1 && value.indexOf('</svg>') != -1){
@@ -66,9 +65,8 @@ class Img extends Display {
 			}
 			value = (cast element).src;
 			if (src != value){
-				evt.src = src;
 				(cast element).src = src;
-				events.change().call(false, true, evt);
+				events.change().call(false, true, {src: src});
 			}
 			return value;
 		}else{

@@ -36,7 +36,7 @@ class EventGroup {
 	public function new(dispatcher:EventDispatcher, name:String) {
 		this.dispatcher = dispatcher;
 		this.name = name;
-		this.enabled = !dispatcher.target.isEnabled();
+		this.enabled = dispatcher.target.isEnabled();
 		this.propagation = true;
 		this.events = [];
 	}

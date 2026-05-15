@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 import jotun.gaming.actions.SpellCodex;
 import jotun.objects.QueryGroup;
 import jotun.tools.Utils;
@@ -11,7 +12,7 @@ import jotun.utils.Dice;
 @:expose("Jtn.Requirement")
 class Requirement extends Resolution {
 
-	public static var cache:Dynamic = {};
+	public static var cache:DynamicAccess<Requirement> = {};
 
 	public static var codex:RequirementQueryGroup = new RequirementQueryGroup();
 
@@ -20,11 +21,11 @@ class Requirement extends Resolution {
 	}
 
 	public static function save(requirement:Requirement):Void {
-		Reflect.setField(cache, requirement.id, requirement);
+		cache.set(requirement.id, requirement);
 	}
 
 	public static function load(id:String):Requirement {
-		return cast Reflect.field(cache, id);
+		return cache.get(id);
 	}
 
 	public static function clear():Void {

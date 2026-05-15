@@ -29,7 +29,7 @@ class Query extends Resolve implements IQuery {
 		_buffer.flush();
 		Dice.All(_flush, function(p:String, v:Query):Void {
 			v.flush();
-			Reflect.deleteField(_flush, p);
+			_flush.remove(p);
 		});
 	}
 
@@ -70,11 +70,12 @@ class Query extends Resolve implements IQuery {
 	}
 
 	private function _changeContext(prop:String):Void {
-		if (!Reflect.hasField(_buffer.data, prop)){
+		var d:DynamicAccess<Array<Dynamic>> = cast _buffer.data;
+		if (!d.exists(prop)){
 			_buffer.now = [];
-			Reflect.setField(_buffer.data, prop, _buffer.now);
+			d.set(prop, _buffer.now);
 		}else{
-			_buffer.now = Reflect.field(_buffer.data, prop);
+			_buffer.now = d.get(prop);
 		}
 	}
 
@@ -172,7 +173,7 @@ class QueryBuffer {
 
 	public function add(o:Dynamic):Void {
 		if(now != null){
-			now[now.length] = o;
+			now.push(o);
 		}
 	}
 }

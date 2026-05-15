@@ -1020,14 +1020,6 @@ haxe_ds_ArraySort.swap = function(a,i,j) {
 	a[i] = a[j];
 	a[j] = tmp;
 };
-var haxe_ds_List = function() {
-	this.length = 0;
-};
-haxe_ds_List.__name__ = "haxe.ds.List";
-haxe_ds_List.prototype = {
-	length: null
-	,__class__: haxe_ds_List
-};
 var haxe_ds_StringMap = function() {
 	this.h = Object.create(null);
 };
@@ -1122,15 +1114,8 @@ jotun_tools_Agent.prototype = {
 			window.document.cookie = "#validating#";
 			this.cookies = window.document.cookie.indexOf("#validating#") != -1;
 		}
-		var tmp;
-		var o = window;
-		if(!Object.prototype.hasOwnProperty.call(o,"$")) {
-			var o = window;
-			tmp = Object.prototype.hasOwnProperty.call(o,"jQuery");
-		} else {
-			tmp = true;
-		}
-		this.jQuery = tmp;
+		var win = window;
+		this.jQuery = Object.prototype.hasOwnProperty.call(win,"$") || Object.prototype.hasOwnProperty.call(win,"jQuery");
 		this.display = jotun_tools_Utils.screenOrientation();
 		var platform = $global.navigator.platform.toLowerCase();
 		if(["macintosh","macintel","macppc","mac68k"].indexOf(platform) != -1) {
@@ -1175,13 +1160,13 @@ var jotun_net_Broadcast = $hx_exports["Jtn"]["Broadcast"] = function() {
 	var _gthis = this;
 	if(jotun_net_Broadcast.__me__ == null) {
 		jotun_net_Broadcast._uid = jotun_tools_Key.GEN(24);
-		var o = window;
-		if(Object.prototype.hasOwnProperty.call(o,"BroadcastChannel")) {
+		var this1 = window;
+		if(Object.prototype.hasOwnProperty.call(this1,"BroadcastChannel")) {
 			this._channels = { };
 		} else {
 			window.addEventListener("storage",function(e) {
 				var channel = e.key;
-				var events = Reflect.field(_gthis._listeners,channel);
+				var events = _gthis._listeners[channel];
 				if(events != null && events.length > 0) {
 					var data = e.newValue;
 					if(data != null) {
@@ -1214,13 +1199,13 @@ jotun_net_Broadcast.prototype = {
 	,disconnect: function() {
 		var _gthis = this;
 		jotun_utils_Dice.All(this._channels,function(p,v) {
-			jotun_utils_Dice.Values(Reflect.field(_gthis._listeners,p),function(v1) {
+			jotun_utils_Dice.Values(_gthis._listeners[p],function(v1) {
 				_gthis.unlisten(p,v1);
 			});
 		});
 	}
 	,_openChannel: function(name) {
-		var bc = Reflect.field(this._channels,name);
+		var bc = this._channels[name];
 		if(bc == null) {
 			bc = new BroadcastChannel(name);
 			bc.onmessage = $bind(this,this._onChannelMsg);
@@ -1235,13 +1220,13 @@ jotun_net_Broadcast.prototype = {
 		if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
 			jotun_Jotun.log(["<< CHANNEL {" + channel + "} @ DATA RECEIVED",data],6);
 		}
-		jotun_utils_Dice.Values(Reflect.field(this._listeners,channel),function(handler) {
+		jotun_utils_Dice.Values(this._listeners[channel],function(handler) {
 			handler(data);
 		});
 	}
 	,listen: function(channel,handler) {
 		if(handler != null) {
-			var events = Reflect.field(this._listeners,channel);
+			var events = this._listeners[channel];
 			if(events == null) {
 				if(this._channels != null) {
 					this._openChannel(channel);
@@ -1258,14 +1243,14 @@ jotun_net_Broadcast.prototype = {
 		}
 	}
 	,unlisten: function(channel,handler) {
-		var events = Reflect.field(this._listeners,channel);
+		var events = this._listeners[channel];
 		if(events != null && handler != null) {
 			var iof = Lambda.indexOf(events,handler);
 			if(iof != -1) {
 				events.splice(iof,1);
 				if(events.length == 0) {
 					if(this._channels != null) {
-						Reflect.field(this._channels,channel).close();
+						this._channels[channel].close();
 						Reflect.deleteField(this._channels,channel);
 					}
 					if(!this._muted && HxOverrides.substr(channel,0,12) != "singularity.") {
@@ -1304,7 +1289,7 @@ jotun_tools_Key.COUNTER = function(id) {
 	if(!Object.prototype.hasOwnProperty.call(jotun_tools_Key._cts,id)) {
 		jotun_tools_Key._cts[id] = 0;
 	} else {
-		v = Reflect.field(jotun_tools_Key._cts,id);
+		v = jotun_tools_Key._cts[id];
 		jotun_tools_Key._cts[id] = v + 1;
 	}
 	return v;
@@ -1632,7 +1617,7 @@ jotun_net_Loader.prototype = {
 var jotun_data_Logger = function() {
 	this._levels = [1,1,1,1,1,0,1,0,0];
 	this._events = [];
-	this._events[0] = $bind(this,this.query);
+	this._events.push($bind(this,this.query));
 };
 jotun_data_Logger.__name__ = "jotun.data.Logger";
 jotun_data_Logger.prototype = {
@@ -1655,7 +1640,7 @@ jotun_data_Logger.prototype = {
 		}
 	}
 	,listen: function(handler) {
-		this._events[this._events.length] = handler;
+		this._events.push(handler);
 	}
 	,push: function(q,type) {
 		if(this._levels[type] != 1) {
@@ -1742,7 +1727,7 @@ jotun_signals_Observer.prototype = {
 		}
 		if(target != null && this._radar.indexOf(target) == -1) {
 			target.setProp("__onsigh",handler);
-			this._radar[this._radar.length] = target;
+			this._radar.push(target);
 		}
 	}
 	,remove: function(target) {
@@ -1791,7 +1776,7 @@ jotun_modules_ModLib.prototype = {
 	}
 	,onMount: function(handler) {
 		if(Lambda.indexOf(this._onMount,handler) == -1) {
-			this._onMount[this._onMount.length] = handler;
+			this._onMount.push(handler);
 		}
 	}
 	,onBufferRequest: null
@@ -1805,11 +1790,11 @@ jotun_modules_ModLib.prototype = {
 	}
 	,onDataRequest: function(handler) {
 		if(Lambda.indexOf(this._predata,handler) == -1) {
-			this._predata[this._predata.length] = handler;
+			this._predata.push(handler);
 		}
 	}
 	,exists: function(module) {
-		return jotun_modules_ModLib.CACHE[module.toLowerCase()];
+		return Object.prototype.hasOwnProperty.call(jotun_modules_ModLib.CACHE,module.toLowerCase());
 	}
 	,remove: function(module) {
 		if(this.exists(module)) {
@@ -1942,7 +1927,7 @@ jotun_modules_ModLib.prototype = {
 							}
 						}
 						if(mod.target != null) {
-							mountAfter[mountAfter.length] = mod;
+							mountAfter.push(mod);
 						}
 						var n = mod.name.toLowerCase();
 						jotun_modules_ModLib.CACHE[n] = content;
@@ -1962,7 +1947,7 @@ jotun_modules_ModLib.prototype = {
 					});
 				});
 			}
-			jotun_Jotun.log("\t! PARSED: " + (count - errors) + "/" + total + ", Data: " + (fdata + pdata) + " ([]:" + pdata + ",@:" + pdata + "), Errors: " + errors,4);
+			jotun_Jotun.log("\t! PARSED: " + (count - errors) + "/" + total + ", Data: " + (fdata + pdata) + " ([]:" + pdata + ",@:" + fdata + "), Errors: " + errors,4);
 		} else {
 			var ext = file.split(".").pop();
 			switch(ext) {
@@ -2105,8 +2090,8 @@ jotun_timer_Timer.prototype = {
 			target = 240;
 		}
 		this._p_target = target;
-		var target = 1000 / this._p_target;
-		var diff = target / this._p_target;
+		var interval = 1000 / this._p_target;
+		var diff = interval / this._p_target;
 		var count = 0;
 		var channel = null;
 		while(count < 60) {
@@ -2116,7 +2101,7 @@ jotun_timer_Timer.prototype = {
 			} else {
 				channel = this._channels[count];
 			}
-			channel.update(target,diff * count);
+			channel.update(interval,diff * count);
 			++count;
 		}
 	}
@@ -2127,7 +2112,7 @@ jotun_timer_Timer.prototype = {
 		return this._channels[this._current_channel++].channel;
 	}
 	,isActive: function() {
-		return this._paused;
+		return !this._paused;
 	}
 	,getCPS: function() {
 		return this._p_target;
@@ -2250,7 +2235,7 @@ jotun_Jotun.run = function(handler) {
 	}
 	if(handler != null) {
 		if(!jotun_Jotun._loaded && jotun_Jotun._loadPool != null) {
-			jotun_Jotun._loadPool[jotun_Jotun._loadPool.length] = handler;
+			jotun_Jotun._loadPool.push(handler);
 		} else {
 			handler();
 		}
@@ -2381,17 +2366,20 @@ jotun_css_CSSGroup.prototype = {
 	,exists: function(id,content,mode) {
 		var k = mode != null ? mode.toUpperCase() : this.getMode(id);
 		id = (HxOverrides.substr(id,0,1) == "." ? "" : ".") + id + "{";
-		var a = Object.prototype.hasOwnProperty.call(this,k) ? Reflect.field(this,k).innerHTML : this.CM.innerHTML;
-		var b = Reflect.field(this,"style" + k);
+		var self = this;
+		var a = Object.prototype.hasOwnProperty.call(self,k) ? self[k].innerHTML : this.CM.innerHTML;
+		var b = self["style" + k];
 		return this._checkSelector(id,a + b,content);
 	}
 	,add: function(css,mode) {
 		var p = "style" + (mode != null ? mode.toUpperCase() : "");
-		this[p] = Std.string(Reflect.field(this,p)) + css;
+		var self = this;
+		self[p] = Std.string(self[p]) + css;
 	}
 	,set: function(id,style,mode) {
 		var p = "style" + (mode != null ? mode.toUpperCase() : "");
-		this[p] = Std.string(Reflect.field(this,p)) + this._add(id,style);
+		var self = this;
+		self[p] = Std.string(self[p]) + this._add(id,style);
 	}
 	,build: function() {
 		this._write(this.CM,this.style,"");
@@ -2486,11 +2474,12 @@ jotun_objects_Query.prototype = $extend(jotun_objects_Resolve.prototype,{
 		return q;
 	}
 	,_changeContext: function(prop) {
-		if(!Object.prototype.hasOwnProperty.call(this._buffer.data,prop)) {
+		var d = this._buffer.data;
+		if(!Object.prototype.hasOwnProperty.call(d,prop)) {
 			this._buffer.now = [];
-			this._buffer.data[prop] = this._buffer.now;
+			d[prop] = this._buffer.now;
 		} else {
-			this._buffer.now = Reflect.field(this._buffer.data,prop);
+			this._buffer.now = d[prop];
 		}
 	}
 	,_exec: function(q) {
@@ -2660,8 +2649,9 @@ var jotun_dom_Display = $hx_exports["Jtn"]["Display"] = function(q,t) {
 	if(q == null) {
 		q = window.document.createElement("div");
 	}
-	if(Object.prototype.hasOwnProperty.call(q,"element")) {
-		this.element = q.element;
+	var qd = q;
+	if(Object.prototype.hasOwnProperty.call(qd,"element")) {
+		this.element = qd["element"];
 	} else {
 		this.element = q;
 	}
@@ -2669,7 +2659,7 @@ var jotun_dom_Display = $hx_exports["Jtn"]["Display"] = function(q,t) {
 		this._getattr = this.element.getAttribute != null;
 		this._setattr = this.element.setAttribute != null;
 		this._uid = this.element._uid != null ? this.element._uid : this.attribute("jtn-id",jotun_dom_Display._CNT++) | 0;
-		jotun_dom_Display._DATA[this._uid] = this;
+		jotun_dom_Display._DATA["" + (this._uid == null ? "null" : Std.string(UInt.toFloat(this._uid)))] = this;
 	}
 	this.element._uid = this._uid;
 	this.data = this.element.data = { };
@@ -2682,7 +2672,7 @@ jotun_dom_Display.ofKind = function(q) {
 	return jotun_tools_Utils.displayFrom(window.document.createElement(q));
 };
 jotun_dom_Display.fromGC = function(id) {
-	return Reflect.field(jotun_dom_Display._DATA,"" + (id == null ? "null" : Std.string(UInt.toFloat(id))));
+	return jotun_dom_Display._DATA["" + (id == null ? "null" : Std.string(UInt.toFloat(id)))];
 };
 jotun_dom_Display.clearCache = function() {
 	var count = 0;
@@ -2747,7 +2737,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 			if(step.delay != null && step.delay > 0) {
 				this.data._timeline = jotun_Jotun.timer.delayed($bind(this,this._tickMotion),step.delay,0,steps);
 			} else {
-				$bind(this,this._tickMotion).apply(null,steps);
+				$bind(this,this._tickMotion).apply(this,steps);
 			}
 			if(step.callback != null) {
 				step.callback(this);
@@ -2762,7 +2752,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		}
 	}
 	,_style_get: function(p) {
-		return Reflect.field(this.trueStyle(),p);
+		return this.trueStyle()[p];
 	}
 	,perspective: function(value,origin) {
 		if(origin == null) {
@@ -2866,7 +2856,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		if(at == null) {
 			at = -1;
 		}
-		q["_parent"] = this;
+		q._parent = this;
 		this._children = null;
 		if(at != -1) {
 			var sw = this.element.childNodes.item(at);
@@ -2916,7 +2906,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this.removeChildAt(0);
 	}
 	,removeLastChild: function() {
-		return this.removeChildAt(this.length());
+		return this.removeChildAt(this.length() - 1);
 	}
 	,removeChildren: function(min) {
 		if(min == null) {
@@ -3012,7 +3002,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		});
 	}
 	,isEnabled: function() {
-		return this.data.__disabled == true;
+		return this.data.__disabled != true;
 	}
 	,cursor: function(q) {
 		this.style("cursor",q == true ? "pointer" : q == null ? "none" : q);
@@ -3073,12 +3063,13 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	}
 	,attribute: function(name,value) {
 		if(name != null) {
-			var t = Reflect.field(this.element,name);
+			var el = this.element;
+			var t = el[name];
 			if(t != null) {
 				if(value != null) {
-					this.element[name] = value;
+					el[name] = value;
 				}
-				return Reflect.field(this.element,name);
+				return el[name];
 			}
 			if(value != null) {
 				if(this._setattr) {
@@ -3099,8 +3090,9 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	,clearAttribute: function(name) {
 		var value = null;
 		if(this.hasAttribute(name)) {
-			if(Object.prototype.hasOwnProperty.call(this.element,name)) {
-				Reflect.deleteField(this.element,name);
+			var el = this.element;
+			if(Object.prototype.hasOwnProperty.call(el,name)) {
+				Reflect.deleteField(el,name);
 			} else {
 				value = this.attribute(name);
 				this.element.removeAttribute(name);
@@ -3132,7 +3124,6 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this.attribute("value");
 	}
 	,writeText: function(q) {
-		this.empty(false);
 		this.element.innerText = q;
 		return this;
 	}
@@ -3141,12 +3132,11 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this;
 	}
 	,writeHtml: function(q) {
-		this.empty(false);
 		this.element.innerHTML = q;
 		return this;
 	}
 	,appendHtml: function(q) {
-		this.element.innerHTML += Std.string(q);
+		this.element.insertAdjacentHTML("beforeend",q);
 		return this;
 	}
 	,colorTransform: function(r,g,b,a) {
@@ -3195,11 +3185,7 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 		return this.trueStyle();
 	}
 	,trueStyle: function() {
-		if(window.document.defaultView.opener != null) {
-			return window.document.defaultView.getComputedStyle(this.element);
-		} else {
-			return window.getComputedStyle(this.element);
-		}
+		return window.getComputedStyle(this.element);
 	}
 	,mount: function(q,data,at) {
 		if(at == null) {
@@ -3288,11 +3274,10 @@ jotun_dom_Display.prototype = $extend(jotun_objects_Query.prototype,{
 	}
 	,alpha: function(value) {
 		if(value != null) {
-			value = 1 - value;
-			this.element.style.opacity = "" + (1 - value);
+			this.element.style.opacity = "" + value;
 			return value;
 		} else {
-			return 1 - parseFloat(this.element.style.opacity);
+			return parseFloat(this.element.style.opacity);
 		}
 	}
 	,isFullyVisible: function() {
@@ -3544,6 +3529,217 @@ jotun_dom_Style.prototype = $extend(jotun_dom_Display.prototype,{
 	}
 	,__class__: jotun_dom_Style
 });
+var js_Boot = function() { };
+js_Boot.__name__ = "js.Boot";
+js_Boot.getClass = function(o) {
+	if(o == null) {
+		return null;
+	} else if(((o) instanceof Array)) {
+		return Array;
+	} else {
+		var cl = o.__class__;
+		if(cl != null) {
+			return cl;
+		}
+		var name = js_Boot.__nativeClassName(o);
+		if(name != null) {
+			return js_Boot.__resolveNativeClass(name);
+		}
+		return null;
+	}
+};
+js_Boot.__string_rec = function(o,s) {
+	if(o == null) {
+		return "null";
+	}
+	if(s.length >= 5) {
+		return "<...>";
+	}
+	var t = typeof(o);
+	if(t == "function" && (o.__name__ || o.__ename__)) {
+		t = "object";
+	}
+	switch(t) {
+	case "function":
+		return "<function>";
+	case "object":
+		if(o.__enum__) {
+			var e = $hxEnums[o.__enum__];
+			var con = e.__constructs__[o._hx_index];
+			var n = con._hx_name;
+			if(con.__params__) {
+				s = s + "\t";
+				return n + "(" + ((function($this) {
+					var $r;
+					var _g = [];
+					{
+						var _g1 = 0;
+						var _g2 = con.__params__;
+						while(true) {
+							if(!(_g1 < _g2.length)) {
+								break;
+							}
+							var p = _g2[_g1];
+							_g1 = _g1 + 1;
+							_g.push(js_Boot.__string_rec(o[p],s));
+						}
+					}
+					$r = _g;
+					return $r;
+				}(this))).join(",") + ")";
+			} else {
+				return n;
+			}
+		}
+		if(((o) instanceof Array)) {
+			var str = "[";
+			s += "\t";
+			var _g = 0;
+			var _g1 = o.length;
+			while(_g < _g1) {
+				var i = _g++;
+				str += (i > 0 ? "," : "") + js_Boot.__string_rec(o[i],s);
+			}
+			str += "]";
+			return str;
+		}
+		var tostr;
+		try {
+			tostr = o.toString;
+		} catch( _g ) {
+			return "???";
+		}
+		if(tostr != null && tostr != Object.toString && typeof(tostr) == "function") {
+			var s2 = o.toString();
+			if(s2 != "[object Object]") {
+				return s2;
+			}
+		}
+		var str = "{\n";
+		s += "\t";
+		var hasp = o.hasOwnProperty != null;
+		var k = null;
+		for( k in o ) {
+		if(hasp && !o.hasOwnProperty(k)) {
+			continue;
+		}
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
+			continue;
+		}
+		if(str.length != 2) {
+			str += ", \n";
+		}
+		str += s + k + " : " + js_Boot.__string_rec(o[k],s);
+		}
+		s = s.substring(1);
+		str += "\n" + s + "}";
+		return str;
+	case "string":
+		return o;
+	default:
+		return String(o);
+	}
+};
+js_Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) {
+		return false;
+	}
+	if(cc == cl) {
+		return true;
+	}
+	var intf = cc.__interfaces__;
+	if(intf != null) {
+		var _g = 0;
+		var _g1 = intf.length;
+		while(_g < _g1) {
+			var i = _g++;
+			var i1 = intf[i];
+			if(i1 == cl || js_Boot.__interfLoop(i1,cl)) {
+				return true;
+			}
+		}
+	}
+	return js_Boot.__interfLoop(cc.__super__,cl);
+};
+js_Boot.__instanceof = function(o,cl) {
+	if(cl == null) {
+		return false;
+	}
+	switch(cl) {
+	case Array:
+		return ((o) instanceof Array);
+	case Bool:
+		return typeof(o) == "boolean";
+	case Dynamic:
+		return o != null;
+	case Float:
+		return typeof(o) == "number";
+	case Int:
+		if(typeof(o) == "number") {
+			return ((o | 0) === o);
+		} else {
+			return false;
+		}
+		break;
+	case String:
+		return typeof(o) == "string";
+	default:
+		if(o != null) {
+			if(typeof(cl) == "function") {
+				if(js_Boot.__downcastCheck(o,cl)) {
+					return true;
+				}
+			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
+				if(((o) instanceof cl)) {
+					return true;
+				}
+			}
+		} else {
+			return false;
+		}
+		if(cl == Class ? o.__name__ != null : false) {
+			return true;
+		}
+		if(cl == Enum ? o.__ename__ != null : false) {
+			return true;
+		}
+		return o.__enum__ != null ? $hxEnums[o.__enum__] == cl : false;
+	}
+};
+js_Boot.__downcastCheck = function(o,cl) {
+	if(!((o) instanceof cl)) {
+		if(cl.__isInterface__) {
+			return js_Boot.__interfLoop(js_Boot.getClass(o),cl);
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+};
+js_Boot.__implements = function(o,iface) {
+	return js_Boot.__interfLoop(js_Boot.getClass(o),iface);
+};
+js_Boot.__cast = function(o,t) {
+	if(o == null || js_Boot.__instanceof(o,t)) {
+		return o;
+	} else {
+		throw haxe_Exception.thrown("Cannot cast " + Std.string(o) + " to " + Std.string(t));
+	}
+};
+js_Boot.__nativeClassName = function(o) {
+	var name = js_Boot.__toStr.call(o).slice(8,-1);
+	if(name == "Object" || name == "Function" || name == "Math" || name == "JSON") {
+		return null;
+	}
+	return name;
+};
+js_Boot.__isNativeObj = function(o) {
+	return js_Boot.__nativeClassName(o) != null;
+};
+js_Boot.__resolveNativeClass = function(name) {
+	return $global[name];
+};
 var jotun_events_EventDispatcher = $hx_exports["Jtn"]["EventDispatcher"] = function(q) {
 	q.data._events = { };
 	this.target = q;
@@ -3564,13 +3760,13 @@ jotun_events_EventDispatcher.prototype = {
 			dis.prepare(this.target);
 			this._e()[name] = dis;
 		} else {
-			dis = Reflect.field(this._e(),name);
+			dis = this._e()[name];
 		}
 		return dis;
 	}
 	,hasEvent: function(name) {
-		var o = this._e();
-		return Object.prototype.hasOwnProperty.call(o,name);
+		var this1 = this._e();
+		return Object.prototype.hasOwnProperty.call(this1,name);
 	}
 	,apply: function() {
 		var _gthis = this;
@@ -4032,15 +4228,15 @@ jotun_css_XCode.blur = function(id,text,color,strenght,blur) {
 	while(x < l) {
 		++x;
 		var xs = x + "px";
-		s[s.length] = "-" + xs + " 0 " + t;
-		s[s.length] = "0 " + xs + " " + t;
-		s[s.length] = "" + xs + " 0 " + t;
-		s[s.length] = "0 -" + xs + " " + t;
+		s.push("-" + xs + " 0 " + t);
+		s.push("0 " + xs + " " + t);
+		s.push("" + xs + " 0 " + t);
+		s.push("0 -" + xs + " " + t);
 		if(x % 2 == 0) {
-			s[s.length] = "-" + xs + " -" + xs + " " + t;
-			s[s.length] = "" + xs + " -" + xs + " " + t;
-			s[s.length] = "-" + xs + " " + xs + " " + t;
-			s[s.length] = "" + xs + " " + xs + " " + t;
+			s.push("-" + xs + " -" + xs + " " + t);
+			s.push("" + xs + " -" + xs + " " + t);
+			s.push("-" + xs + " " + xs + " " + t);
+			s.push("" + xs + " " + xs + " " + t);
 		}
 	}
 	jotun_css_XCode.omnibuild(id,(text ? "text-shadow" : "box-shadow") + ":" + s.join(","));
@@ -4076,8 +4272,8 @@ jotun_css_XCode.stroke = function(id,text,color,width,distance,direction,quality
 		y += o;
 		tx = Math.cos(pi * y) * width;
 		ty = Math.sin(pi * y) * width;
-		r[r.length] = tx.toFixed(5) + "rem" + " " + ty.toFixed(5) + "rem" + " 0 " + color;
-		r[r.length] = (tx + ofx).toFixed(5) + "rem" + " " + (ty + ofy).toFixed(5) + "rem" + " 0 " + color;
+		r.push(tx.toFixed(5) + "rem" + " " + ty.toFixed(5) + "rem" + " 0 " + color);
+		r.push((tx + ofx).toFixed(5) + "rem" + " " + (ty + ofy).toFixed(5) + "rem" + " 0 " + color);
 	}
 	var q = (text ? "text-shadow" : "box-shadow") + ":" + r.join(",");
 	jotun_css_XCode.omnibuild(id,q);
@@ -4110,7 +4306,7 @@ jotun_css_XCode.shadow = function(id,text,color,distance,direction,float,steps,m
 		}
 		tx = cos * y;
 		ty = sin * y;
-		r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 " + jotun_tools_Utils.colorToCss(cc,.85 - y / z * c);
+		r.push((tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 " + jotun_tools_Utils.colorToCss(cc,.85 - y / z * c));
 	}
 	y = 0;
 	var oX = cos * z;
@@ -4122,7 +4318,7 @@ jotun_css_XCode.shadow = function(id,text,color,distance,direction,float,steps,m
 		}
 		tx = cos * y + oX;
 		ty = sin * y + oY;
-		r[r.length] = (tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 rgb(0 0 0/.1)";
+		r.push((tx == 0 ? "0" : Math.round(tx) + "px") + " " + (ty == 0 ? "0" : Math.round(ty) + "px") + " 0 rgb(0 0 0/.1)");
 	}
 	var q = (text ? "text-shadow" : "box-shadow") + ":" + r.join(",");
 	jotun_css_XCode.omnibuild(id,q);
@@ -4149,11 +4345,13 @@ jotun_data_BlobCache.create = function(name,data,weakRef) {
 		weakRef = true;
 	}
 	jotun_data_BlobCache.revoke(name);
-	jotun_data_BlobCache._BlobRefs[name] = { blob : data, url : URL.createObjectURL(data), usage : 0, weak : weakRef};
+	var this1 = jotun_data_BlobCache._BlobRefs;
+	var value = { blob : data, url : URL.createObjectURL(data), usage : 0, weak : weakRef};
+	this1.h[name] = value;
 	return name;
 };
 jotun_data_BlobCache.setWeak = function(name) {
-	var blob = Reflect.field(jotun_data_BlobCache._BlobRefs,name);
+	var blob = jotun_data_BlobCache._BlobRefs.h[name];
 	if(blob != null) {
 		blob.weak = true;
 		if(blob.usage == 0) {
@@ -4162,22 +4360,25 @@ jotun_data_BlobCache.setWeak = function(name) {
 	}
 };
 jotun_data_BlobCache.revoke = function(name) {
-	if(Object.prototype.hasOwnProperty.call(jotun_data_BlobCache._BlobRefs,name)) {
-		URL.revokeObjectURL(Reflect.field(jotun_data_BlobCache._BlobRefs,name).url);
-		Reflect.deleteField(jotun_data_BlobCache._BlobRefs,name);
+	var blob = jotun_data_BlobCache._BlobRefs.h[name];
+	if(blob != null) {
+		URL.revokeObjectURL(blob.url);
+		var _this = jotun_data_BlobCache._BlobRefs;
+		if(Object.prototype.hasOwnProperty.call(_this.h,name)) {
+			delete(_this.h[name]);
+		}
 	}
 };
 jotun_data_BlobCache.load = function(name) {
-	var blob = Reflect.field(jotun_data_BlobCache._BlobRefs,name);
+	var blob = jotun_data_BlobCache._BlobRefs.h[name];
 	if(blob != null) {
 		++blob.usage;
 		return blob.url;
-	} else {
-		return null;
 	}
+	return null;
 };
 jotun_data_BlobCache.unload = function(name) {
-	var blob = Reflect.field(jotun_data_BlobCache._BlobRefs,name);
+	var blob = jotun_data_BlobCache._BlobRefs.h[name];
 	if(blob != null) {
 		if(--blob.usage <= 0) {
 			blob.usage = 0;
@@ -4188,22 +4389,19 @@ jotun_data_BlobCache.unload = function(name) {
 	}
 };
 jotun_data_BlobCache.flush = function() {
-	jotun_utils_Dice.All(jotun_data_BlobCache._BlobRefs,function(p,v) {
-		jotun_data_BlobCache.revoke(p);
-	});
+	var h = jotun_data_BlobCache._BlobRefs.h;
+	var blob_h = h;
+	var blob_keys = Object.keys(h);
+	var blob_length = blob_keys.length;
+	var blob_current = 0;
+	while(blob_current < blob_length) {
+		var blob = blob_h[blob_keys[blob_current++]];
+		URL.revokeObjectURL(blob.url);
+	}
+	jotun_data_BlobCache._BlobRefs.h = Object.create(null);
 };
 jotun_data_BlobCache.image = function(name) {
 	return new jotun_dom_Img().blob(name);
-};
-var jotun_data__$BlobCache_IBlobInfo = function() { };
-jotun_data__$BlobCache_IBlobInfo.__name__ = "jotun.data._BlobCache.IBlobInfo";
-jotun_data__$BlobCache_IBlobInfo.__isInterface__ = true;
-jotun_data__$BlobCache_IBlobInfo.prototype = {
-	blob: null
-	,url: null
-	,usage: null
-	,weak: null
-	,__class__: jotun_data__$BlobCache_IBlobInfo
 };
 var jotun_dom_A = $hx_exports["Jtn"]["A"] = function(q) {
 	if(q == null) {
@@ -4227,13 +4425,13 @@ jotun_dom_A.prototype = $extend(jotun_dom_Display.prototype,{
 		return this.attribute("href").split(jotun_Jotun.domain.host).pop();
 	}
 	,url: function() {
-		return Reflect.field(this.element,"pathname");
+		return this.element.pathname;
 	}
 	,link: function() {
-		var _gthis = this;
+		var ae = this.element;
 		var uri = { };
 		jotun_utils_Dice.Values(["href","protocol","host","hostname","port","pathname","search","hash"],function(v) {
-			uri[v] = Reflect.field(_gthis.element,v);
+			uri[v] = ae[v];
 		});
 		return uri;
 	}
@@ -4881,7 +5079,6 @@ jotun_dom_Img.prototype = $extend(jotun_dom_Display.prototype,{
 		var a;
 		if(value != null) {
 			var src = null;
-			var evt = { };
 			if(((value) instanceof Blob)) {
 				var tmp = this.id();
 				this._blob = jotun_data_BlobCache.create("blob:" + (tmp == null ? "null" : Std.string(UInt.toFloat(tmp))),value,true);
@@ -4896,9 +5093,8 @@ jotun_dom_Img.prototype = $extend(jotun_dom_Display.prototype,{
 			}
 			value = this.element.src;
 			if(src != value) {
-				evt.src = src;
 				this.element.src = src;
-				this.events.change().call(false,true,evt);
+				this.events.change().call(false,true,{ src : src});
 			}
 			return value;
 		} else {
@@ -5139,13 +5335,11 @@ jotun_dom_Input.prototype = $extend(jotun_dom_Display.prototype,{
 		return o;
 	}
 	,filesToObject: function(o) {
-		if(o == null) {
-			o = { };
-		}
+		var result = o != null ? o : { };
 		jotun_utils_Dice.All(this.filesToArray(),function(p,v) {
-			o["file_" + p] = v;
+			result["file_" + p] = v;
 		});
-		return o;
+		return result;
 	}
 	,__class__: jotun_dom_Input
 	,__properties__: {get__object:"get__object"}
@@ -5475,7 +5669,7 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		if(t != null && t.length() > 0) {
 			t.each(function(v) {
 				var o = v;
-				r[r.length] = o.value();
+				r.push(o.value());
 			});
 		}
 		if(r.length <= 1) {
@@ -5522,7 +5716,7 @@ jotun_dom_Select.prototype = $extend(jotun_dom_Display.prototype,{
 		jotun_dom_Select._themes[name] = jotun_tools_Utils.getValidOne(content,this.element.innerHTML);
 	}
 	,loadTheme: function(name) {
-		this.element.innerHTML = Reflect.field(jotun_dom_Select._themes,name);
+		this.element.innerHTML = jotun_dom_Select._themes != null ? jotun_dom_Select._themes[name] : "";
 		this.events.change().call();
 	}
 	,control: function(handler) {
@@ -5681,12 +5875,13 @@ jotun_dom_Svg.prototype = $extend(jotun_dom_Display.prototype,{
 	}
 	,attribute: function(name,value) {
 		if(name != null) {
-			var t = Reflect.field(this.element,name);
+			var el = this.element;
+			var t = el[name];
 			if(t != null) {
 				if(value != null) {
-					this.element[name] = value;
+					el[name] = value;
 				}
-				return Reflect.field(this.element,name);
+				return el[name];
 			}
 			if(value != null) {
 				if(this._setattr) {
@@ -5703,8 +5898,9 @@ jotun_dom_Svg.prototype = $extend(jotun_dom_Display.prototype,{
 	,clearAttribute: function(name) {
 		var value = null;
 		if(this.hasAttribute(name)) {
-			if(Object.prototype.hasOwnProperty.call(this.element,name)) {
-				Reflect.deleteField(this.element,name);
+			var el = this.element;
+			if(Object.prototype.hasOwnProperty.call(el,name)) {
+				Reflect.deleteField(el,name);
 			} else {
 				value = this.attribute(name);
 				this.element.removeAttributeNS(null,name);
@@ -5891,7 +6087,7 @@ jotun_events_Event.prototype = {
 var jotun_events_EventGroup = $hx_exports["Jtn"]["EventGroup"] = function(dispatcher,name) {
 	this.dispatcher = dispatcher;
 	this.name = name;
-	this.enabled = !dispatcher.target.isEnabled();
+	this.enabled = dispatcher.target.isEnabled();
 	this.propagation = true;
 	this.events = [];
 };
@@ -6166,9 +6362,10 @@ var jotun_gaming_actions_Resolution = function(type,data,param) {
 	this._type = type;
 	this.reverse = jotun_tools_Utils.boolean(data.reverse);
 	this.breakon = data.breakon;
-	if(Object.prototype.hasOwnProperty.call(data,param)) {
-		var qset = Reflect.field(data,param);
-		Reflect.deleteField(data,param);
+	var d = data;
+	if(Object.prototype.hasOwnProperty.call(d,param)) {
+		var qset = d[param];
+		Reflect.deleteField(d,param);
 		if(((qset) instanceof Array)) {
 			this.query = qset;
 			this.query.unshift("@result");
@@ -6261,7 +6458,7 @@ jotun_objects_QueryGroup.prototype = {
 	units: null
 	,add: function(o) {
 		if(this.units.indexOf(o) == -1) {
-			this.units[this.units.length] = o;
+			this.units.push(o);
 		}
 	}
 	,remove: function(o) {
@@ -6326,7 +6523,7 @@ var jotun_gaming_actions_Action = $hx_exports["Jtn"]["Action"] = function(type,d
 			_gthis.require.push(((v) instanceof jotun_gaming_actions_Requirement) ? v : new jotun_gaming_actions_Requirement(type + "[" + Std.string(p) + "]",v));
 		}
 	});
-	if(this.target == null) {
+	if(data.target == null) {
 		this.target = this.require.length;
 	} else {
 		this.target = data.target | 0;
@@ -6507,7 +6704,7 @@ jotun_gaming_actions_ActionQuery.prototype = $extend(jotun_objects_Query.prototy
 		var $l=arguments.length;
 		var messages = new Array($l>0?$l-0:0);
 		for(var $i=0;$i<$l;++$i){messages[$i-0]=arguments[$i];}
-		console.log("src/jotun/gaming/actions/ActionQuery.hx:147:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.invocation));
+		console.log("src/jotun/gaming/actions/ActionQuery.hx:148:","[ActionQuery:tracer] " + jotun_utils_Filler.to(messages.slice().join(" "),this.invocation));
 		return this;
 	}
 	,loadAction: function(id) {
@@ -7271,7 +7468,7 @@ jotun_gaming_actions_Requirement.save = function(requirement) {
 	jotun_gaming_actions_Requirement.cache[requirement.id] = requirement;
 };
 jotun_gaming_actions_Requirement.load = function(id) {
-	return Reflect.field(jotun_gaming_actions_Requirement.cache,id);
+	return jotun_gaming_actions_Requirement.cache[id];
 };
 jotun_gaming_actions_Requirement.clear = function() {
 	jotun_gaming_actions_Requirement.cache = { };
@@ -7363,7 +7560,7 @@ jotun_gaming_actions_SpellCasting.prototype = {
 		++this.requirement.queries;
 	}
 	,addLog: function(i,message) {
-		this.log[this.log.length] = jotun_tools_Utils.prefix("",this.ident + this.chain + i,"\t") + message;
+		this.log.push(jotun_tools_Utils.prefix("",this.ident + this.chain + i,"\t") + message);
 	}
 	,release: function(resolution,result) {
 		var chain = result ? resolution.then : resolution.fail;
@@ -7484,7 +7681,7 @@ jotun_gaming_actions_SpellCodex.prototype = {
 		var group = this.index[name];
 		if(group != null) {
 			context.chain = this._position;
-			this._chain[this._chain.length] = context;
+			this._chain.push(context);
 			if(this._position > 0) {
 				context.parent = this._chain[this._position - 1];
 			}
@@ -7569,11 +7766,7 @@ jotun_gaming_actions_SpellGroup.prototype = {
 		if(data.length == 0) {
 			return;
 		}
-		var toConcat = null;
-		if(UInt.gt(this._data.length,index)) {
-			toConcat = this._data.splice(0,index);
-		}
-		var i = index;
+		var i = index == null ? 0 : index;
 		var r = { };
 		jotun_utils_Dice.All(data,function(p,v) {
 			if(typeof(v) == "string") {
@@ -7586,15 +7779,11 @@ jotun_gaming_actions_SpellGroup.prototype = {
 					_gthis._data[i] = new jotun_gaming_actions_Action(_gthis._type + "[" + p + "]",v);
 				}
 				if(v.id != null) {
-					r[v.id] = 1;
+					r[v.id] = true;
 				}
 				i += 1;
 			}
 		});
-		if(toConcat != null) {
-			this._data = this._data.concat(toConcat);
-			toConcat = null;
-		}
 	}
 	,getType: function() {
 		return this._type;
@@ -7667,7 +7856,9 @@ jotun_gaming_actions_SpellGroup.prototype = {
 		if(index == null || index < 0 || index > this._data.length) {
 			index = this._data.length;
 		}
-		this._init([action],index);
+		if(action.id == null || this.getIndexOf(action) >= this._data.length) {
+			this._data.splice(index,0,action);
+		}
 	}
 	,getIndexOf: function(action) {
 		if(typeof(action) == "string") {
@@ -7690,293 +7881,6 @@ jotun_gaming_actions_SpellGroup.prototype = {
 	}
 	,__class__: jotun_gaming_actions_SpellGroup
 };
-var jotun_idb_WebDB = $hx_exports["Jtn"]["WebDB"] = function(db,error,upgrade) {
-	this._tables = [];
-	this._need_upgrade = upgrade;
-	this._db = db;
-	this._error = error;
-};
-jotun_idb_WebDB.__name__ = "jotun.idb.WebDB";
-jotun_idb_WebDB.open = function(name,options,handler) {
-	var request = window.indexedDB.open(name,options);
-	request.onsuccess = function(e) {
-		handler(new jotun_idb_WebDB(request.result,null,false));
-	};
-	request.onerror = function(e) {
-		handler(new jotun_idb_WebDB(null,request.error,false));
-	};
-	request.onupgradeneeded = function(e) {
-		handler(new jotun_idb_WebDB(request.result,null,true));
-	};
-};
-jotun_idb_WebDB.prototype = {
-	_db: null
-	,_error: null
-	,_need_upgrade: null
-	,_tables: null
-	,_transaction: null
-	,isOpen: function() {
-		return this._db != null;
-	}
-	,isUpgradeNeeded: function() {
-		return this._need_upgrade;
-	}
-	,getError: function() {
-		return this._error;
-	}
-	,createTable: function(name,options) {
-		this._regTable(name,this._db.createObjectStore(name,options));
-		return this.table(name);
-	}
-	,getTables: function(name,mode,handler) {
-		var _gthis = this;
-		if(typeof(name) == "string") {
-			if(name == "*") {
-				name = this._db.objectStoreNames;
-			} else {
-				name = [name];
-			}
-		}
-		if(mode.toLowerCase() == "r") {
-			mode = "readonly";
-		} else {
-			mode = "readwrite";
-		}
-		this._transaction = this._db.transaction(name,mode);
-		jotun_utils_Dice.Values(name,function(v) {
-			_gthis._regTable(v,_gthis._transaction.objectStore(v));
-		});
-		if(handler != null) {
-			this._transaction.oncomplete = function(e) {
-				handler(_gthis);
-			};
-			this._transaction.onerror = function(e) {
-				_gthis._error = _gthis._transaction.error;
-				handler(_gthis);
-			};
-		}
-	}
-	,_regTable: function(name,store) {
-		this._tables[name] = new jotun_idb_WebDBTable(name,this._db,store);
-	}
-	,table: function(name) {
-		return Reflect.field(this._tables,name);
-	}
-	,__class__: jotun_idb_WebDB
-};
-var jotun_idb_WebDBAssist = function(name,version,layout) {
-	this._name = name;
-	this._version = version;
-	this._layout = layout;
-};
-jotun_idb_WebDBAssist.__name__ = "jotun.idb.WebDBAssist";
-jotun_idb_WebDBAssist.prototype = {
-	_ready: null
-	,_db: null
-	,_name: null
-	,_version: null
-	,_layout: null
-	,_open: function(handler) {
-		var _gthis = this;
-		if(this._db == null) {
-			jotun_idb_WebDB.open(this._name,this._version,function(db) {
-				_gthis._db = db;
-				if(_gthis._db.isUpgradeNeeded()) {
-					jotun_utils_Dice.All(_gthis._layout,function(p,v) {
-						var t = db.createTable(p,v.create);
-						jotun_utils_Dice.All(v.indexes,function(p1,v1) {
-							t.addIndex(Std.string(p1) + "_idx",p1,v1.indexes[p1]);
-						});
-					});
-				} else {
-					if(!_gthis._ready) {
-						_gthis._ready = true;
-						_gthis._layout = null;
-					}
-					handler(_gthis._db);
-				}
-			});
-		}
-	}
-	,table: function(name,mode,handler) {
-		var _gthis = this;
-		if(this._db != null) {
-			try {
-				this._db.getTables(name,jotun_tools_Utils.getValidOne(mode,"rw"));
-				handler(this._db.table(name));
-			} catch( _g ) {
-				handler(null);
-			}
-		} else {
-			this._open(function(db) {
-				_gthis.table(name,mode,handler);
-			});
-		}
-	}
-	,put: function(tableName,key,value) {
-		this.table(tableName,"w",function(t1) {
-			if(t1 != null) {
-				if(key != null) {
-					key += "";
-					value._uid = key;
-					t1.add(value);
-				} else {
-					key = value._uid;
-					if(key != null) {
-						t1.get(key,function(t2) {
-							var res = t2.getResult();
-							if(res != null) {
-								t2.put(value);
-							} else {
-								t2.add(value);
-							}
-						});
-					}
-				}
-			}
-		});
-	}
-	,get: function(tableName,key,handler) {
-		var data = null;
-		this.table(tableName,"r",function(t1) {
-			if(t1 != null) {
-				t1.get("" + key,function(res) {
-					data = res.getResult();
-					if(handler != null) {
-						handler(data);
-					}
-				});
-			} else if(handler != null) {
-				handler(null);
-			}
-		});
-		return data;
-	}
-	,upd: function(tableName,value) {
-		this.table(tableName,"w",function(table) {
-			if(value._uid != null) {
-				table.put(value);
-			}
-		});
-	}
-	,del: function(tableName,key) {
-		if(typeof(key) != "string") {
-			if(typeof(key) == "number" || typeof(key) == "number" && ((key | 0) === key)) {
-				key = "" + Std.string(key);
-			} else {
-				key = key._uid;
-			}
-		}
-		if(key != null) {
-			this.table(tableName,"w",function(t1) {
-				if(t1 != null) {
-					t1.delete(key);
-				}
-			});
-		}
-	}
-	,each: function(tableName,handler) {
-		this.table(tableName,"rw",function(t1) {
-			if(t1 != null) {
-				t1.each(handler);
-			}
-		});
-	}
-	,__class__: jotun_idb_WebDBAssist
-};
-var jotun_idb_WebDBTable = function(name,db,store) {
-	this._db = db;
-	this._name = name;
-	this._table = store;
-};
-jotun_idb_WebDBTable.__name__ = "jotun.idb.WebDBTable";
-jotun_idb_WebDBTable.prototype = {
-	_db: null
-	,_name: null
-	,_table: null
-	,_error: null
-	,_result: null
-	,_request_io: function(r,handler) {
-		var _gthis = this;
-		if(handler != null) {
-			r.onsuccess = function(e) {
-				_gthis._result = e.target.result;
-				handler(_gthis);
-			};
-			r.onerror = function(e) {
-				_gthis._error = r.error;
-				handler(_gthis);
-			};
-		}
-		return r;
-	}
-	,destroy: function() {
-		this._db.deleteObjectStore(this._name);
-	}
-	,addIndex: function(key,path,props) {
-		this._table.createIndex(key,path,props);
-	}
-	,deleteIndex: function(key) {
-		this._table.deleteIndex(key);
-	}
-	,index: function(key) {
-		this._table.index(key);
-	}
-	,count: function(key,handler) {
-		this._error = null;
-		return this._request_io(this._table.count(key),handler);
-	}
-	,clear: function(handler) {
-		this._error = null;
-		return this._request_io(this._table.clear(),handler);
-	}
-	,'delete': function(key,handler) {
-		this._error = null;
-		return this._request_io(this._table.delete(key),handler);
-	}
-	,add: function(data,key,handler) {
-		this._error = null;
-		return this._request_io(this._table.add(data,key),handler);
-	}
-	,put: function(data,key,handler) {
-		this._error = null;
-		return this._request_io(this._table.put(data,key),handler);
-	}
-	,get: function(key,handler) {
-		this._error = null;
-		return this._request_io(this._table.get(key),handler);
-	}
-	,getAll: function(key,limit,handler) {
-		this._error = null;
-		return this._request_io(this._table.getAll(key,limit),handler);
-	}
-	,getAllKeys: function(key,limit,handler) {
-		this._error = null;
-		return this._request_io(this._table.getAllKeys(key,limit),handler);
-	}
-	,openCursor: function(key,direction,handler) {
-		this._error = null;
-		return this._request_io(this._table.openCursor(key,direction),handler);
-	}
-	,openKeyCursor: function(key,direction,handler) {
-		this._error = null;
-		return this._request_io(this._table.openKeyCursor(key,direction),handler);
-	}
-	,each: function(handler) {
-		var _gthis = this;
-		this._error = null;
-		return this._request_io(this._table.openCursor(),function(h) {
-			handler(_gthis._result);
-		});
-	}
-	,isSuccess: function() {
-		return this._error == null;
-	}
-	,getResult: function() {
-		return this._result;
-	}
-	,__class__: jotun_idb_WebDBTable
-};
 var jotun_logical_BigFlag = $hx_exports["Jtn"]["BigFlag"] = function(length) {
 	this._parts = [];
 	this._build(length);
@@ -7998,8 +7902,7 @@ jotun_logical_BigFlag.prototype = {
 		}
 	}
 	,_bit: function(bit) {
-		while(bit > 31) bit -= 32;
-		return bit;
+		return bit % 32;
 	}
 	,_get: function(i) {
 		i = i / 32 | 0;
@@ -8007,26 +7910,26 @@ jotun_logical_BigFlag.prototype = {
 	}
 	,set: function(bit,value) {
 		if(value) {
-			this._get(bit).put(this._bit(bit));
+			this._get(bit).put(bit % 32);
 		} else {
-			this._get(bit).drop(this._bit(bit));
+			this._get(bit).drop(bit % 32);
 		}
 		return this;
 	}
 	,put: function(bit) {
-		this._get(bit).put(this._bit(bit));
+		this._get(bit).put(bit % 32);
 		return this;
 	}
 	,drop: function(bit) {
-		this._get(bit).drop(this._bit(bit));
+		this._get(bit).drop(bit % 32);
 		return this;
 	}
 	,toggle: function(bit) {
-		this._get(bit).toggle(this._bit(bit));
+		this._get(bit).toggle(bit % 32);
 		return this;
 	}
 	,test: function(bit) {
-		return this._get(bit).test(this._bit(bit));
+		return this._get(bit).test(bit % 32);
 	}
 	,part: function(index) {
 		return this._parts[index];
@@ -8039,14 +7942,10 @@ jotun_logical_BigFlag.prototype = {
 		if(offset == null) {
 			offset = 0;
 		}
-		var f = this._bit(offset);
 		var o = value.length;
 		while(o-- > 0) {
-			var p = o + offset | 0;
-			this._get(p).set(f,HxOverrides.substr(value,o,1) == "1");
-			if(++f > 31) {
-				f -= 32;
-			}
+			var p = o + offset;
+			this._get(p).set(p % 32,HxOverrides.substr(value,o,1) == "1");
 		}
 		return this;
 	}
@@ -8148,7 +8047,7 @@ jotun_logical_Flag.FLength = function(hash) {
 jotun_logical_Flag.prototype = {
 	value: null
 	,toggle: function(bit) {
-		this.value = jotun_logical_Flag.FToggle(this.value,bit);
+		this.value = jotun_logical_Flag.FToggle(this.value,1 << bit);
 		return this;
 	}
 	,put: function(bit) {
@@ -8176,7 +8075,7 @@ jotun_logical_Flag.prototype = {
 			bits = jotun_logical_Flag._bits;
 		}
 		jotun_utils_Dice.Values(bits,function(v) {
-			_gthis.put(1 << v);
+			_gthis.put(v);
 		});
 		return this;
 	}
@@ -8186,7 +8085,7 @@ jotun_logical_Flag.prototype = {
 			bits = jotun_logical_Flag._bits;
 		}
 		jotun_utils_Dice.Values(bits,function(v) {
-			_gthis.drop(1 << v);
+			_gthis.drop(v);
 		});
 		return this;
 	}
@@ -8562,9 +8461,11 @@ jotun_net_DataSource.prototype = {
 		}
 	}
 	,isEmpty: function() {
-		return jotun_utils_Dice.Params(this.data,function(p) {
+		if(this.data != null) {
+			return Reflect.fields(this.data).length == 0;
+		} else {
 			return true;
-		}).completed;
+		}
 	}
 	,remove: function(q) {
 		Reflect.deleteField(this.data,q);
@@ -8660,7 +8561,11 @@ jotun_net_Request.prototype = {
 		}
 	}
 	,getHeader: function(name) {
-		return Reflect.field(this.headers,name.toLowerCase());
+		if(this.headers != null) {
+			return this.headers[name.toLowerCase()];
+		} else {
+			return null;
+		}
 	}
 	,__class__: jotun_net_Request
 };
@@ -8695,7 +8600,7 @@ jotun_objects_QueryBuffer.prototype = {
 	}
 	,add: function(o) {
 		if(this.now != null) {
-			this.now[this.now.length] = o;
+			this.now.push(o);
 		}
 	}
 	,__class__: jotun_objects_QueryBuffer
@@ -9049,13 +8954,15 @@ jotun_signals_Signals.prototype = {
 	_l: null
 	,object: null
 	,_c: function(n) {
-		if(!this.has(n)) {
-			this._l[n] = new jotun_signals_Pipe(n,this);
+		if(!Object.prototype.hasOwnProperty.call(this._l.h,n)) {
+			var this1 = this._l;
+			var value = new jotun_signals_Pipe(n,this);
+			this1.h[n] = value;
 		}
-		return Reflect.field(this._l,n);
+		return this._l.h[n];
 	}
 	,has: function(name) {
-		return Object.prototype.hasOwnProperty.call(this._l,name);
+		return Object.prototype.hasOwnProperty.call(this._l.h,name);
 	}
 	,get: function(name) {
 		return this._c(name);
@@ -9078,7 +8985,7 @@ jotun_signals_Signals.prototype = {
 				this.get(name).reset();
 			}
 		} else {
-			this._l = [];
+			this._l = new haxe_ds_StringMap();
 		}
 	}
 	,dispose: function() {
@@ -9094,7 +9001,7 @@ var jotun_timer_DelayedCall = function(timer,method,delay,repeat,args) {
 	this._method = method;
 	this._timer = timer;
 	this._time = 0;
-	this._args = args;
+	this._args = args != null ? args : [];
 	this._proxy = $bind(this,this._tick).bind(this);
 	this._timer.add(this._proxy);
 };
@@ -9168,11 +9075,7 @@ jotun_timer__$Timer_FrameChannelProxy.prototype = {
 	,channel: null
 	,processes: null
 	,update: function(target,time) {
-		if(this.time != null && this.time != 0) {
-			this.time = this.time / this.target * time;
-		} else {
-			this.time = time;
-		}
+		this.time = this.time != 0 ? this.time / this.target * time : time;
 		this.target = target;
 	}
 	,tick: function(time) {
@@ -9298,9 +9201,9 @@ jotun_tools_Utils.getQueryParams = function(value) {
 	jotun_utils_Dice.Values(value.split("&"),function(v) {
 		var data = v.split("=");
 		if(data.length > 1) {
-			var field = decodeURIComponent(data[0].split("+").join(" "));
+			var key = decodeURIComponent(data[0].split("+").join(" "));
 			var value = decodeURIComponent(data[1].split("+").join(" "));
-			params[field] = value;
+			params[key] = value;
 		}
 	});
 	return params;
@@ -9312,10 +9215,9 @@ jotun_tools_Utils.createQueryParams = function(url,value,encode) {
 	var q = [];
 	jotun_utils_Dice.All(value,function(p,v) {
 		if(typeof(v) == "string" || typeof(v) == "number" || typeof(v) == "boolean") {
-			q[q.length] = p + "=" + (encode ? encodeURIComponent(v) : v);
+			q.push(p + "=" + (encode ? encodeURIComponent(v) : v));
 		} else if(((v) instanceof Array)) {
 			var q1 = q;
-			var q2 = q.length;
 			var tmp;
 			if(encode) {
 				var s = v.join(";");
@@ -9323,7 +9225,7 @@ jotun_tools_Utils.createQueryParams = function(url,value,encode) {
 			} else {
 				tmp = v.join(";");
 			}
-			q1[q2] = p + "=" + tmp;
+			q1.push(p + "=" + tmp);
 		}
 	});
 	if(url == null) {
@@ -9342,7 +9244,7 @@ jotun_tools_Utils.clearArray = function(path,filter) {
 	var copy = [];
 	jotun_utils_Dice.Values(path,function(v) {
 		if(v != null && v != "" && (filter == null || filter(v))) {
-			copy[copy.length] = v;
+			copy.push(v);
 		}
 	});
 	return copy;
@@ -9456,7 +9358,7 @@ jotun_tools_Utils.paramsOf = function(o) {
 			} else if(typeof(v) != "string") {
 				v = JSON.stringify(v);
 			}
-			r[r.length] = p + "=" + encodeURIComponent(v);
+			r.push(p + "=" + encodeURIComponent(v));
 		}
 	});
 	return r.join("&");
@@ -9744,7 +9646,7 @@ jotun_utils_Dice.Remove = function(table,values,limit) {
 		jotun_utils_Dice.Values(values,function(v) {
 			if(values(v) == true) {
 				if(HxOverrides.remove(table,v)) {
-					r[r.length] = v;
+					r.push(v);
 					if(limit > 0) {
 						limit -= 1;
 					}
@@ -9758,7 +9660,7 @@ jotun_utils_Dice.Remove = function(table,values,limit) {
 		}
 		jotun_utils_Dice.Values(values,function(v) {
 			if(HxOverrides.remove(table,v)) {
-				r[r.length] = v;
+				r.push(v);
 			}
 		});
 	}
@@ -9839,13 +9741,13 @@ jotun_utils_Dice.Sort = function(data,key,numeric,copy) {
 			});
 		}
 	} else {
-		var cache = { };
+		var cache_h = Object.create(null);
 		var cached = function(q) {
-			if(!Object.prototype.hasOwnProperty.call(cache,q)) {
+			if(!Object.prototype.hasOwnProperty.call(cache_h,q)) {
 				var value = jotun_tools_Utils.tag(q);
-				cache[q] = value;
+				cache_h[q] = value;
 			}
-			return Reflect.field(cache,q);
+			return cache_h[q];
 		};
 		if(key != null) {
 			haxe_ds_ArraySort.sort(r,function(a,b) {
@@ -9873,13 +9775,13 @@ jotun_utils_Dice.List = function(data,a,b) {
 			if(UInt.gte(a,len)) {
 				break;
 			}
-			copy[copy.length] = data[a];
+			copy.push(data[a]);
 			++a;
 		}
 	} else if(UInt.gt(a,b)) {
 		while(UInt.gt(a,b)) {
 			if(UInt.gt(len,a)) {
-				copy[copy.length] = data[a];
+				copy.push(data[a]);
 			}
 			--a;
 		}
@@ -10008,9 +9910,10 @@ jotun_utils_Filler.to = function(value,data,sufix) {
 	var r = "";
 	if(((data) instanceof Array)) {
 		jotun_utils_Dice.All(data,function(p,v) {
-			v["%0"] = p;
-			r += jotun_utils_Filler._apply(sufix,value,v);
-			Reflect.deleteField(v,"%0");
+			var vo = v;
+			vo["%0"] = p;
+			r += jotun_utils_Filler._apply(sufix,value,vo);
+			Reflect.deleteField(vo,"%0");
 		});
 	} else {
 		r = jotun_utils_Filler._apply(sufix,value,data);
@@ -10169,7 +10072,7 @@ jotun_utils_Reactor._strip = function(q) {
 	}
 	return result.join("");
 };
-jotun_utils_Reactor._commit = function(data,o) {
+jotun_utils_Reactor._commit = function(o) {
 	if(o.data.__qa) {
 		jotun_utils_Dice.Values(o.data.__qa.split(";"),function(v) {
 			if(v.length > 3) {
@@ -10205,7 +10108,7 @@ jotun_utils_Reactor._commit = function(data,o) {
 		jotun_utils_Reactor._react_clear(o,"o-single","o-style");
 	}
 };
-jotun_utils_Reactor._commit_visibility = function(data,o,attr,foo) {
+jotun_utils_Reactor._commit_visibility = function(o,attr) {
 	if(o.data.__qv != null && o.data.__qv == attr) {
 		if(o.data.__qvs >= o.data.__qvt) {
 			if(attr == "o-show-if") {
@@ -10225,12 +10128,9 @@ jotun_utils_Reactor._commit_visibility = function(data,o,attr,foo) {
 };
 jotun_utils_Reactor._react_fill_after = function(to,data) {
 	to.all("[o-commit]").add(to).each(function(o) {
-		jotun_utils_Reactor._commit(to.data,o);
-		jotun_utils_Reactor._commit(to.data,o);
-		jotun_utils_Reactor._commit(to.data,o);
-		jotun_utils_Reactor._commit(to.data,o);
-		jotun_utils_Reactor._commit_visibility(to.data,o,"o-show-if",data);
-		jotun_utils_Reactor._commit_visibility(to.data,o,"o-hide-if",data);
+		jotun_utils_Reactor._commit(o);
+		jotun_utils_Reactor._commit_visibility(o,"o-show-if");
+		jotun_utils_Reactor._commit_visibility(o,"o-hide-if");
 		Reflect.deleteField(o.data,"__co");
 		o.clearAttribute("o-commit");
 	});
@@ -10514,9 +10414,10 @@ jotun_utils_Singularity.isActive = function() {
 	return jotun_utils_Singularity._is_active == true;
 };
 jotun_utils_Singularity.fetch = function(o) {
+	var oc = o;
 	jotun_utils_Dice.Values(["onMain","onConnect","onDisconnect","onSync","onInstance","onVisibility"],function(v) {
-		if(Object.prototype.hasOwnProperty.call(o,v)) {
-			jotun_utils_Singularity.signals.add(v,Reflect.field(o,v));
+		if(Object.prototype.hasOwnProperty.call(oc,v)) {
+			jotun_utils_Singularity.signals.add(v,oc[v]);
 		}
 	});
 };
@@ -10559,7 +10460,7 @@ jotun_utils_Table.prototype = {
 		return this;
 	}
 	,add: function(obj) {
-		this.content[this.content.length] = obj;
+		this.content.push(obj);
 		return this;
 	}
 	,fill: function(result) {
@@ -10720,7 +10621,7 @@ jotun_utils_Table.prototype = {
 		if(tables == null) {
 			tables = [];
 		}
-		tables[tables.length] = this;
+		tables.push(this);
 		jotun_utils_Dice.Values(tables,function(v) {
 			t.content = t.content.concat(v.content);
 		});
@@ -10731,7 +10632,7 @@ jotun_utils_Table.prototype = {
 			o.dispose();
 		});
 		this.content = null;
-		jotun_utils_Table._trash[jotun_utils_Table._trash.length] = this;
+		jotun_utils_Table._trash.push(this);
 	}
 	,onAbort: function(handler,mode) {
 		return this.on("abort",handler,mode);
@@ -10840,217 +10741,6 @@ jotun_utils_Validator.date = function(value) {
 		return true;
 	}
 };
-var js_Boot = function() { };
-js_Boot.__name__ = "js.Boot";
-js_Boot.getClass = function(o) {
-	if(o == null) {
-		return null;
-	} else if(((o) instanceof Array)) {
-		return Array;
-	} else {
-		var cl = o.__class__;
-		if(cl != null) {
-			return cl;
-		}
-		var name = js_Boot.__nativeClassName(o);
-		if(name != null) {
-			return js_Boot.__resolveNativeClass(name);
-		}
-		return null;
-	}
-};
-js_Boot.__string_rec = function(o,s) {
-	if(o == null) {
-		return "null";
-	}
-	if(s.length >= 5) {
-		return "<...>";
-	}
-	var t = typeof(o);
-	if(t == "function" && (o.__name__ || o.__ename__)) {
-		t = "object";
-	}
-	switch(t) {
-	case "function":
-		return "<function>";
-	case "object":
-		if(o.__enum__) {
-			var e = $hxEnums[o.__enum__];
-			var con = e.__constructs__[o._hx_index];
-			var n = con._hx_name;
-			if(con.__params__) {
-				s = s + "\t";
-				return n + "(" + ((function($this) {
-					var $r;
-					var _g = [];
-					{
-						var _g1 = 0;
-						var _g2 = con.__params__;
-						while(true) {
-							if(!(_g1 < _g2.length)) {
-								break;
-							}
-							var p = _g2[_g1];
-							_g1 = _g1 + 1;
-							_g.push(js_Boot.__string_rec(o[p],s));
-						}
-					}
-					$r = _g;
-					return $r;
-				}(this))).join(",") + ")";
-			} else {
-				return n;
-			}
-		}
-		if(((o) instanceof Array)) {
-			var str = "[";
-			s += "\t";
-			var _g = 0;
-			var _g1 = o.length;
-			while(_g < _g1) {
-				var i = _g++;
-				str += (i > 0 ? "," : "") + js_Boot.__string_rec(o[i],s);
-			}
-			str += "]";
-			return str;
-		}
-		var tostr;
-		try {
-			tostr = o.toString;
-		} catch( _g ) {
-			return "???";
-		}
-		if(tostr != null && tostr != Object.toString && typeof(tostr) == "function") {
-			var s2 = o.toString();
-			if(s2 != "[object Object]") {
-				return s2;
-			}
-		}
-		var str = "{\n";
-		s += "\t";
-		var hasp = o.hasOwnProperty != null;
-		var k = null;
-		for( k in o ) {
-		if(hasp && !o.hasOwnProperty(k)) {
-			continue;
-		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
-			continue;
-		}
-		if(str.length != 2) {
-			str += ", \n";
-		}
-		str += s + k + " : " + js_Boot.__string_rec(o[k],s);
-		}
-		s = s.substring(1);
-		str += "\n" + s + "}";
-		return str;
-	case "string":
-		return o;
-	default:
-		return String(o);
-	}
-};
-js_Boot.__interfLoop = function(cc,cl) {
-	if(cc == null) {
-		return false;
-	}
-	if(cc == cl) {
-		return true;
-	}
-	var intf = cc.__interfaces__;
-	if(intf != null) {
-		var _g = 0;
-		var _g1 = intf.length;
-		while(_g < _g1) {
-			var i = _g++;
-			var i1 = intf[i];
-			if(i1 == cl || js_Boot.__interfLoop(i1,cl)) {
-				return true;
-			}
-		}
-	}
-	return js_Boot.__interfLoop(cc.__super__,cl);
-};
-js_Boot.__instanceof = function(o,cl) {
-	if(cl == null) {
-		return false;
-	}
-	switch(cl) {
-	case Array:
-		return ((o) instanceof Array);
-	case Bool:
-		return typeof(o) == "boolean";
-	case Dynamic:
-		return o != null;
-	case Float:
-		return typeof(o) == "number";
-	case Int:
-		if(typeof(o) == "number") {
-			return ((o | 0) === o);
-		} else {
-			return false;
-		}
-		break;
-	case String:
-		return typeof(o) == "string";
-	default:
-		if(o != null) {
-			if(typeof(cl) == "function") {
-				if(js_Boot.__downcastCheck(o,cl)) {
-					return true;
-				}
-			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
-				if(((o) instanceof cl)) {
-					return true;
-				}
-			}
-		} else {
-			return false;
-		}
-		if(cl == Class ? o.__name__ != null : false) {
-			return true;
-		}
-		if(cl == Enum ? o.__ename__ != null : false) {
-			return true;
-		}
-		return o.__enum__ != null ? $hxEnums[o.__enum__] == cl : false;
-	}
-};
-js_Boot.__downcastCheck = function(o,cl) {
-	if(!((o) instanceof cl)) {
-		if(cl.__isInterface__) {
-			return js_Boot.__interfLoop(js_Boot.getClass(o),cl);
-		} else {
-			return false;
-		}
-	} else {
-		return true;
-	}
-};
-js_Boot.__implements = function(o,iface) {
-	return js_Boot.__interfLoop(js_Boot.getClass(o),iface);
-};
-js_Boot.__cast = function(o,t) {
-	if(o == null || js_Boot.__instanceof(o,t)) {
-		return o;
-	} else {
-		throw haxe_Exception.thrown("Cannot cast " + Std.string(o) + " to " + Std.string(t));
-	}
-};
-js_Boot.__nativeClassName = function(o) {
-	var name = js_Boot.__toStr.call(o).slice(8,-1);
-	if(name == "Object" || name == "Function" || name == "Math" || name == "JSON") {
-		return null;
-	}
-	return name;
-};
-js_Boot.__isNativeObj = function(o) {
-	return js_Boot.__nativeClassName(o) != null;
-};
-js_Boot.__resolveNativeClass = function(name) {
-	return $global[name];
-};
 function $getIterator(o) { if( o instanceof Array ) return new haxe_iterators_ArrayIterator(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 $global.$haxeUID |= 0;
@@ -11129,7 +10819,7 @@ jotun_dom_Display._CNT = 0;
 jotun_dom_Display._DATA = { };
 jotun_css_XCode.css = new jotun_css_CSSGroup();
 jotun_css_XCode._inits = { reset : false, grid : false};
-jotun_data_BlobCache._BlobRefs = new haxe_ds_List();
+jotun_data_BlobCache._BlobRefs = new haxe_ds_StringMap();
 jotun_dom_Input.icons = { };
 jotun_dom_Select.layout = "<option value=\"{{value}}\">{{label}}</option>";
 jotun_dom_UL.LAYOUT = "<li class=\"{{class}}\">{{label}}</li>";

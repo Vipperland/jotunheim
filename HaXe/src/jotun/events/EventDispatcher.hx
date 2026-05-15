@@ -1,4 +1,5 @@
 package jotun.events;
+import haxe.DynamicAccess;
 import jotun.dom.Displayable;
 import jotun.events.EventGroup;
 import jotun.utils.Dice;
@@ -24,8 +25,8 @@ class EventDispatcher {
 	public var target : Displayable;
 	
 	/** @private */
-	private function _e():Dynamic {
-		return target.data._events;
+	private function _e():DynamicAccess<EventGroup> {
+		return cast target.data._events;
 	}
 	
 	/**
@@ -49,9 +50,9 @@ class EventDispatcher {
 		if (!hasEvent(name)) {
 			dis = new EventGroup(this, name);
 			dis.prepare(target);
-			Reflect.setField(_e(), name, dis);
+			_e().set(name, dis);
 		}else {
-			dis = Reflect.field(_e(), name);
+			dis = _e().get(name);
 		}
 		return dis;
 	}
@@ -62,7 +63,7 @@ class EventDispatcher {
 	 * @return
 	 */
 	public function hasEvent(name:String):Bool {
-		return Reflect.hasField(_e(), name);
+		return _e().exists(name);
 	}
 	
 	

@@ -60,7 +60,7 @@ class ModLib {
 		 */
 		public function onMount(handler:Displayable->String->Void):Void {
 			if (Lambda.indexOf(_onMount, handler) == -1){
-				_onMount[_onMount.length] = handler;
+				_onMount.push(handler);
 			}
 		}
 		
@@ -92,7 +92,7 @@ class ModLib {
 	 */
 	public function onDataRequest(handler:String->Dynamic->Dynamic):Void {
 		if (Lambda.indexOf(_predata, handler) == -1){
-			_predata[_predata.length] = handler;
+			_predata.push(handler);
 		}
 	}
 	
@@ -102,7 +102,7 @@ class ModLib {
 	 * @return
 	 */
 	public function exists(module:String):Bool {
-		return CACHE.get(module.toLowerCase());
+		return CACHE.exists(module.toLowerCase());
 	}
 	
 	public function remove(module:String):Void {
@@ -283,7 +283,7 @@ class ModLib {
 						#if js
 							// ============================= JS ONLY =============================
 							if (mod.target != null) {
-								mountAfter[mountAfter.length] = mod;
+								mountAfter.push(mod);
 							}
 							// ***
 						#end
@@ -308,7 +308,7 @@ class ModLib {
 					});
 				}
 			#end
-			Jotun.log("	! PARSED: " + (count - errors) + "/" + total + ", Data: " + (fdata + pdata) + " ([]:" + pdata + ",@:" + pdata + "), Errors: " + errors, Logger.MODULE);
+			Jotun.log("	! PARSED: " + (count - errors) + "/" + total + ", Data: " + (fdata + pdata) + " ([]:" + pdata + ",@:" + fdata + "), Errors: " + errors, Logger.MODULE);
 		}else {
 			#if js
 				// ============================= JS ONLY =============================
@@ -428,8 +428,8 @@ class ModLib {
 			if (Std.isOfType(name, Array)){
 				Dice.Values(name, function(v:Dynamic){
 					if(Std.isOfType(v, String)){
-						Lib.print('[Module:{"name":"' + name + '"}]\r');
-						print(get(name, data));
+						Lib.print('[Module:{"name":"' + v + '"}]\r');
+						print(v, data);
 					}else if(Reflect.hasField(v, 'info')){
 						Lib.print('[Module:');
 						Lib.print(Json.stringify(v.info));

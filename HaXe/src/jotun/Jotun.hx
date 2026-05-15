@@ -2,8 +2,6 @@ package jotun;
 
 import haxe.macro.Expr;
 import jotun.data.Logger;
-import jotun.gaming.actions.CommonsActionQuery;
-import jotun.gaming.actions.CommonsRequirementQuery;
 import jotun.modules.ModLib;
 import jotun.net.DataSource;
 import jotun.net.Domain;
@@ -28,6 +26,8 @@ import jotun.utils.Dice;
 	import jotun.timer.Timer;
 	import jotun.tools.Agent;
 	import jotun.tools.DisplayCache;
+	import jotun.gaming.actions.CommonsActionQuery;
+	import jotun.gaming.actions.CommonsRequirementQuery;
 #elseif php
 	import php.Lib;
 	import jotun.php.db.Gate;
@@ -173,7 +173,7 @@ class Jotun {
 			}
 			if (handler != null) {
 				if (!_loaded && _loadPool != null)
-					_loadPool[_loadPool.length] = handler;
+					_loadPool.push(handler);
 				else
 					handler();
 			}

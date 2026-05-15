@@ -1,12 +1,9 @@
 package jotun.data;
 #if js
-	import jotun.dom.Displayable;
 	import js.Syntax;
 #elseif php
 	import php.Lib;
 #end
-import jotun.logical.Flag;
-import jotun.net.IRequest;
 import jotun.utils.Dice;
 
 /**
@@ -39,11 +36,7 @@ class Logger {
 	
 	public function new() {
 		_events = [];
-		#if js 
-			_events[0] = query;
-		#elseif php
-			Reflect.setField(_events, "query", query);
-		#end
+		_events.push(query);
 	}
 	
 	public function mute():Void {
@@ -59,7 +52,7 @@ class Logger {
 	}
 	
 	public function listen(handler:Dynamic->Int->Void):Void {
-		_events[_events.length] = handler;
+		_events.push(handler);
 	}
 	
 	public function push(q:Dynamic, type:Int) {

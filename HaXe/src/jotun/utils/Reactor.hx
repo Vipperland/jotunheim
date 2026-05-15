@@ -42,7 +42,7 @@ class Reactor {
 		return result.join('');
 	}
 	
-	static private function _commit(data:Dynamic, o:Displayable){
+	static private function _commit(o:Displayable){
 		if(o.data.__qa){
 			Dice.Values(o.data.__qa.split(';'), function(v:Dynamic){
 				if(v.length > 3){
@@ -78,7 +78,7 @@ class Reactor {
 		}
 	}
 	
-	static private function _commit_visibility(data:Dynamic, o:Displayable, attr:String, foo:Dynamic){
+	static private function _commit_visibility(o:Displayable, attr:String){
 		if (o.data.__qv != null &&  o.data.__qv == attr){
 			if (o.data.__qvs >= o.data.__qvt){
 				if (attr == 'o-show-if'){
@@ -101,12 +101,9 @@ class Reactor {
 	
 	static private function _react_fill_after(to:Displayable, data:Dynamic):Void {
 		to.all('[o-commit]').add(to).each(function(o:Displayable){
-			_commit(to.data, o);
-			_commit(to.data, o);
-			_commit(to.data, o);
-			_commit(to.data, o);
-			_commit_visibility(to.data, o, 'o-show-if', data);
-			_commit_visibility(to.data, o, 'o-hide-if', data);
+			_commit(o);
+			_commit_visibility(o, 'o-show-if');
+			_commit_visibility(o, 'o-hide-if');
 			Reflect.deleteField(o.data, '__co');
 			o.clearAttribute('o-commit');
 		});

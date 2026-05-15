@@ -27,11 +27,8 @@ class BigFlag {
 		}
 	}
 	
-	private function _bit(bit:Int):Int {
-		while(bit > 31){
-			bit -= 32;
-		}
-		return bit;
+	private inline function _bit(bit:Int):Int {
+		return bit % 32;
 	}
 	
 	private function _get(i:Int):Flag {
@@ -82,14 +79,10 @@ class BigFlag {
 	}
 	
 	public function flush(value:String, offset:Int = 0):BigFlag {
-		var f:Int = _bit(offset);
 		var o:Int = value.length;
-		while (o-- > 0){
-			var p:Int = Std.int(o + offset);
-			_get(p).set(f, value.substr(o, 1) == '1');
-			if(++f > 31){
-				f -= 32;
-			}
+		while (o-- > 0) {
+			var p:Int = o + offset;
+			_get(p).set(_bit(p), value.substr(o, 1) == '1');
 		}
 		return this;
 	}

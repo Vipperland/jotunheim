@@ -32,7 +32,7 @@ class ExtQuery extends Query {
 		return one(data.length - 1);
 	}
 	
-	public function slice():Dynamic {
+	public function dequeue():Dynamic {
 		return (data.length > 0) ? data.shift() : null;
 	}
 	

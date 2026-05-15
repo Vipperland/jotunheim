@@ -48,7 +48,7 @@ class Omnitools {
 	}
 	
 	static public function verifyPwdHash(pwd:String, hash:String):Bool {
-		return Syntax.codeDeref('password_verify({0}, {1})', pwd, hash) == pwd;
+		return (cast Syntax.codeDeref('password_verify({0}, {1})', pwd, hash) : Bool);
 	}
 	
 	/**

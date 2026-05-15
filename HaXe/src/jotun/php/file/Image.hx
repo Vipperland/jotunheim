@@ -87,8 +87,8 @@ class Image {
 				}
 			}else {
 				img = php.Syntax.codeDeref('imagecreatefromstring({0})', file);
-				width = php.Syntax.codeDeref('imagesx({0})', _res);
-				height = php.Syntax.codeDeref('imagesy({0})', _res);
+				width = php.Syntax.codeDeref('imagesx({0})', img);
+				height = php.Syntax.codeDeref('imagesy({0})', img);
 			}
 			_res = img;
 		}
@@ -143,7 +143,7 @@ class Image {
 				y = 0;
 			}
 			var tx:Int = x + width;
-			var ty:Int = y + width;
+			var ty:Int = y + height;
 			// Check dimension
 			if (tx > this.width){
 				tx = this.width;
@@ -183,7 +183,7 @@ class Image {
 	}
 	
 	public function isOutBounds(width:Int, height:Int):Bool {
-		return (this.width <= width && this.height <= height) == false;
+		return this.width > width || this.height > height;
 	}
 	
 	/**
@@ -214,7 +214,7 @@ class Image {
 		return false;
 	}
 	
-	public function delete():Void {
+	public function destroy():Void {
 		FileSystem.deleteFile(name);
 	}
 	

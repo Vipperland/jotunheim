@@ -1,4 +1,5 @@
 package jotun.dom;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.tools.Utils;
 import jotun.utils.IDiceRoll;
@@ -219,11 +220,11 @@ class Input extends Display {
 	}
 	
 	public function filesToObject(?o:Dynamic):Dynamic {
-		if (o == null){ o = {}; }
+		var result:DynamicAccess<Dynamic> = o != null ? cast o : {};
 		Dice.All(filesToArray(), function(p:String, v:Blob):Void {
-			Reflect.setField(o, 'file_' + p, v);
+			result.set('file_' + p, v);
 		});
-		return o;
+		return result;
 	}
 	
 }

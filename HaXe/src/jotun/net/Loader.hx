@@ -9,30 +9,29 @@ import jotun.utils.Dice;
 
 #if js
 
-	import jotun.data.BlobCache;
-	import jotun.dom.Link;
+import jotun.data.BlobCache;
+import jotun.dom.Link;
 
-	import js.Syntax;
-	import js.html.AbortController;
-	import js.html.Blob;
-	import js.html.DOMError;
-	import js.html.FormData;
-	import js.html.RequestInit;
-	import js.html.Response;
-	import js.lib.Promise;
+import js.Syntax;
+import js.html.AbortController;
+import js.html.Blob;
+import js.html.DOMError;
+import js.html.FormData;
+import js.html.RequestInit;
+import js.html.Response;
+import js.lib.Promise;
 
-	typedef IBlobContent = {
-		var blob:Bool;
-		var content:Blob;
-		var name:String;
-	}
+typedef IBlobContent = {
+	var blob:Bool;
+	var content:Blob;
+	var name:String;
+}
 
 #elseif php
 
-	import haxe.Http;
+import haxe.Http;
 
 #end
-
 
 /**
  * ...
@@ -40,35 +39,35 @@ import jotun.utils.Dice;
  */
 class Loader implements ILoader {
 
-	public function new(){
+	public function new() {
 	}
 
 	#if js
 
 	private function _endFetch(request:js.html.Request, response:Response, handler:IRequestHandler):Void {
-		if(handler.complete != null){
+		if (handler.complete != null) {
 			handler.complete(new jotun.net.Response(request, response, handler.data, handler.error));
 		}
 	}
 
 	private function _runFetch(request:js.html.Request, response:Response, handler:IRequestHandler):Void {
-		if(handler.promise != null){
+		if (handler.promise != null) {
 			handler.promise.then(function(data:Dynamic):Void {
 				try{
-					if(handler.before != null){
+					if (handler.before != null) {
 						handler.data = handler.before(data);
-					}else{
+					} else{
 						handler.data = data;
 					}
 					_endFetch(request, response, handler);
-				}catch(e:Error){
+				} catch (e:Error) {
 					Promise.reject(e);
 				}
-			}).catchError(function(error:DOMError):Void{
+			}).catchError(function(error:DOMError):Void {
 				handler.error = error;
 				_endFetch(request, response, handler);
 			});
-		}else{
+		} else{
 			_endFetch(request, response, handler);
 		}
 	}
@@ -87,45 +86,45 @@ class Loader implements ILoader {
 	 * @return
 	 */
 	public function fetch(url:String, ?data:Null<RequestInit>, ?handler:Null<IRequestHandler>):IRequestHandler {
-		if(data == null){
+		if (data == null) {
 			data = cast { }
 		}
-		if (data.body != null){
-			if(data.method != null){
+		if (data.body != null) {
+			if (data.method != null) {
 				data.method = data.method.toUpperCase();
 			}
-			if(data.method == null || data.method == 'GET'){
+			if (data.method == null || data.method == 'GET') {
 				url = Utils.createQueryParams(url, data.body);
-				Reflect.deleteField(data, 'body');
-			}else if(data.method == 'POST'){
-				if(!Std.isOfType(data.body, String)){
+				(cast data:DynamicAccess<Dynamic>).remove('body');
+			} else if (data.method == 'POST') {
+				if (!Std.isOfType(data.body, String)) {
 					data.body = Json.stringify(data.body);
 				}
 			}
 		}
-		if(handler == null){
+		if (handler == null) {
 			handler = { };
-		}else{
-			if(handler.type != null){
+		} else{
+			if (handler.type != null) {
 				handler.type = handler.type.toLowerCase();
 			}
-			if(handler.abort != null){
+			if (handler.abort != null) {
 				data.signal = handler.abort.signal;
 			}
 		}
 		handler.request = new js.html.Request(url, data);
 		Syntax.code("fetch({0})", handler.request).then(function(response:Response):Void {
-			if(!response.bodyUsed){
+			if (!response.bodyUsed) {
 				var request:js.html.Request = handler.request;
 				var content:String = response.headers.get('Content-Type');
-				if (_matchType(handler.type, content, 'application/json')){
+				if (_matchType(handler.type, content, 'application/json')) {
 					// Parse JSON object
 					handler.promise = response.json();
 					_runFetch(request, response, handler);
-				}else if (_matchType(handler.type, content, 'multipart/form-data')){
+				} else if (_matchType(handler.type, content, 'multipart/form-data')) {
 					// Parse FORMDATA
 					handler.promise = response.formData();
-					if (handler.before == null){
+					if (handler.before == null) {
 						handler.before = function(data:FormData):Dynamic {
 							var res:DynamicAccess<Dynamic> = { };
 							data.forEach(function(p:String, v:Dynamic):Void{
@@ -135,36 +134,36 @@ class Loader implements ILoader {
 						}
 					}
 					_runFetch(request, response, handler);
-				}else if (_matchType(handler.type, content, 'image/', 'audio/', 'video/')){
+				} else if (_matchType(handler.type, content, 'image/', 'audio/', 'video/')) {
 					handler.promise = response.blob();
-					if (handler.before == null){
+					if (handler.before == null) {
 						handler.before = function(blob:Blob):IBlobContent {
 							var name:String = request.url.split('/').pop().split('?')[0];
 							BlobCache.create(name, blob, false);
 							return { blob:true, content:blob, name:name };
 						}
 					}
-					_runFetch(request, response, handler, );
-				}else if (_matchType(handler.type, content, 'text/css')){
+					_runFetch(request, response, handler);
+				} else if (_matchType(handler.type, content, 'text/css')) {
 					handler.promise = response.blob();
-					if(handler.before == null){
+					if (handler.before == null) {
 						handler.before = Link.fromBlob;
 					}
 					_runFetch(request, response, handler);
-				}else if (_matchType(handler.type, content, 'text/')){
+				} else if (_matchType(handler.type, content, 'text/')) {
 					handler.promise = response.text();
-					if (handler.before == null){
+					if (handler.before == null) {
 						handler.before = function(data:String):Dynamic {
-							if(handler.module){
+							if (handler.module) {
 								Jotun.resources.register(url, data);
 								return data;
-							}else {
+							} else {
 								return data;
 							}
 						}
 					}
 					_runFetch(request, response, handler);
-				}else {
+				} else {
 					_runFetch(request, response, handler);
 				}
 			}
@@ -173,7 +172,7 @@ class Loader implements ILoader {
 	}
 
 	#end
-	
+
 	public function module(file:String, ?data:Dynamic, ?handler:IRequest->Void):Void {
 		#if js
 		fetch(file, cast { method: 'GET' }, {
@@ -214,10 +213,22 @@ class Loader implements ILoader {
 			url += ((url.indexOf('?') == -1) ? '?' : '&') + Utils.paramsOf(data);
 		}
 		var r:Http = new Http(url);
-		if (!is_data && data != null) Dice.All(data, r.setParameter);
-		if (headers != null) Dice.All(headers, function(p:String, v:Dynamic):Void { r.setHeader(p, v); });
-		r.onData = function(d) { if (handler != null) handler(new Request(true, d, null, url, r.responseHeaders)); }
-		r.onError = function(d) { if (handler != null) handler(new Request(false, null, new Error(-1, d))); }
+		if (!is_data && data != null) {
+			Dice.All(data, r.setParameter);
+		}
+		if (headers != null) {
+			Dice.All(headers, function(p:String, v:Dynamic):Void { r.setHeader(p, v); });
+		}
+		r.onData = function(d) {
+			if (handler != null) {
+				handler(new Request(true, d, null, url, cast r.responseHeaders));
+			} 
+		}
+		r.onError = function(d) {
+			if (handler != null) {
+				handler(new Request(false, null, new Error(-1, d))); 
+			}
+		}
 		r.request(is_post);
 		#end
 	}

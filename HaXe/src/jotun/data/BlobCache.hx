@@ -1,6 +1,5 @@
 package jotun.data;
 import jotun.dom.Img;
-import jotun.utils.Dice;
 import js.html.Blob;
 import js.html.URL;
 
@@ -11,11 +10,11 @@ import js.html.URL;
 @:expose('BlobCache')
 class BlobCache {
 
-	private static var _BlobRefs:List<IBlobInfo> = new List<IBlobInfo>();
-	
+	private static var _BlobRefs:Map<String, IBlobInfo> = new Map<String, IBlobInfo>();
+
 	public static function create(name:String, data:Blob, weakRef:Bool = true):String {
 		revoke(name);
-		Reflect.setField(_BlobRefs, name, {
+		_BlobRefs.set(name, {
 			blob: data,
 			url: URL.createObjectURL(data),
 			usage: 0,
@@ -23,58 +22,56 @@ class BlobCache {
 		});
 		return name;
 	}
-	
+
 	public static function setWeak(name:String):Void {
-		var blob:IBlobInfo = Reflect.field(_BlobRefs, name);
-		if (blob != null){
+		var blob:IBlobInfo = _BlobRefs.get(name);
+		if (blob != null) {
 			blob.weak = true;
-			if(blob.usage == 0){
-				revoke(name);
-			}
+			if (blob.usage == 0) revoke(name);
 		}
 	}
-	
+
 	public static function revoke(name:String):Void {
-		if(Reflect.hasField(_BlobRefs, name)){
-			URL.revokeObjectURL(Reflect.field(_BlobRefs, name).url);
-			Reflect.deleteField(_BlobRefs, name);
+		var blob:IBlobInfo = _BlobRefs.get(name);
+		if (blob != null) {
+			URL.revokeObjectURL(blob.url);
+			_BlobRefs.remove(name);
 		}
 	}
-	
+
 	public static function load(name:String):String {
-		var blob:IBlobInfo = Reflect.field(_BlobRefs, name);
-		if(blob != null){
+		var blob:IBlobInfo = _BlobRefs.get(name);
+		if (blob != null) {
 			++blob.usage;
 			return blob.url;
-		}else{
-			return null;
 		}
+		return null;
 	}
-	
+
 	public static function unload(name:String):Void {
-		var blob:IBlobInfo = Reflect.field(_BlobRefs, name);
-		if(blob != null){
-			if(--blob.usage <= 0){
+		var blob:IBlobInfo = _BlobRefs.get(name);
+		if (blob != null) {
+			if (--blob.usage <= 0) {
 				blob.usage = 0;
-				if(blob.weak){
-					revoke(name);
-				}
+				if (blob.weak) revoke(name);
 			}
 		}
 	}
-	
+
 	public static function flush():Void {
-		Dice.All(_BlobRefs, function(p:String, v:IBlobInfo):Void {
-			revoke(p);
-		});
+		for (blob in _BlobRefs) {
+			URL.revokeObjectURL(blob.url);
+		}
+		_BlobRefs.clear();
 	}
-	
+
 	public static function image(name:String):Img {
 		return new Img().blob(name);
 	}
-	
+
 }
-private interface IBlobInfo {
+
+private typedef IBlobInfo = {
 	var blob:Blob;
 	var url:String;
 	var usage:Int;

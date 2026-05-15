@@ -1,4 +1,5 @@
 package jotun.utils;
+import haxe.DynamicAccess;
 import jotun.tools.Utils;
 
 /**
@@ -39,9 +40,10 @@ class Filler{
 		var r:String = "";
 		if (Std.isOfType(data, Array)) {
 			Dice.All(data, function(p:Int, v:Dynamic):Void {
-				Reflect.setField(v, '%0', p);
-				r += _apply(sufix, value, v);
-				Reflect.deleteField(v, '%0');
+				var vo:DynamicAccess<Dynamic> = cast v;
+				vo.set('%0', p);
+				r += _apply(sufix, value, vo);
+				vo.remove('%0');
 			});
 		}else {
 			r = _apply(sufix, value, data);

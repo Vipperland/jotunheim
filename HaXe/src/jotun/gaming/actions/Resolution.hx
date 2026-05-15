@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 import haxe.extern.EitherType;
 import jotun.tools.Utils;
 
@@ -38,9 +39,10 @@ class Resolution {
 		_type = type;
 		reverse = Utils.boolean(data.reverse);
 		breakon = data.breakon;
-		if(Reflect.hasField(data, param)){
-			var qset:Dynamic = Reflect.field(data, param);
-			Reflect.deleteField(data, param);
+		var d:DynamicAccess<Dynamic> = cast data;
+		if(d.exists(param)){
+			var qset:Dynamic = d.get(param);
+			d.remove(param);
 			if (Std.isOfType(qset, Array)){
 				query = qset;
 				query.unshift(QUERY_RESULT_MARKER);

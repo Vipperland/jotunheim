@@ -13,7 +13,7 @@ import jotun.utils.Dice;
  * @author Rafael Moreira
  */
 class Command extends CommandCore implements ICommand {
-	
+
 	public function execute(?handler:Dynamic->Bool, ?type:Dynamic, ?parameters:Array<Dynamic>):ICommand {
 		if (statement != null){
 			var p:NativeArray = null;
@@ -23,23 +23,23 @@ class Command extends CommandCore implements ICommand {
 			try {
 				success = statement.execute(p);
 				if (!success) {
-					errors[errors.length] = new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo()));
+					errors.push(new Error(statement.errorCode(), Lib.toHaxeArray(statement.errorInfo())));
 				}
 				this.statement = null;
 			}catch (e:Dynamic) {
 				if (Std.isOfType(e, String)) {
-					errors[errors.length] = new Error(0, e);
+					errors.push(new Error(0, e));
 				}else {
-					errors[errors.length] = new Error(e.getCode(), e.getMessage());
+					errors.push(new Error(e.getCode(), e.getMessage()));
 				}
 			}
 			if (_log != null) {
 				_log((success ? "[1]" : "[0]") + " " + log());
 			}
 		}else {
-			errors[errors.length] = new Error(0, "A connection with database is required.");
+			errors.push(new Error(0, "A connection with database is required."));
 		}
 		return this;
 	}
-	
+
 }

@@ -1,7 +1,6 @@
 package jotun.net;
 import haxe.DynamicAccess;
 import haxe.Json;
-import haxe.macro.Type;
 import jotun.tools.Utils;
 import jotun.utils.Dice;
 
@@ -74,9 +73,7 @@ class DataSource {
 	}
 	
 	public function isEmpty():Bool {
-		return Dice.Params(data, function(p:String){
-			return true;
-		}).completed;
+		return data == null || data.keys().length == 0;
 	}
 	
 	public function remove(q:String):Void {

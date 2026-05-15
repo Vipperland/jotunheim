@@ -1,4 +1,5 @@
 package jotun.net;
+import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.errors.Error;
 
@@ -16,9 +17,9 @@ class Request implements IRequest {
 	
 	public var error:Error;
 	
-	public var headers:Dynamic;
+	public var headers:DynamicAccess<String>;
 
-	public function new(success:Bool, data:String, ?error:Error, ?url:String, ?headers:Dynamic) {
+	public function new(success:Bool, data:String, ?error:Error, ?url:String, ?headers:DynamicAccess<String>) {
 		this.url = url;
 		this.error = error;
 		this.data = data;
@@ -33,7 +34,7 @@ class Request implements IRequest {
 	}
 	
 	public function getHeader(name:String):String {
-		return Reflect.field(headers, name.toLowerCase());
+		return headers != null ? headers.get(name.toLowerCase()) : null;
 	}
 	
 }

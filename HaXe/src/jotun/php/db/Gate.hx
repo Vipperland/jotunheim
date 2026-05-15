@@ -3,7 +3,7 @@ import haxe.extern.EitherType;
 import jotun.errors.Error;
 import jotun.errors.ErrorDescriptior;
 import jotun.php.db.Token;
-import jotun.php.db.objects.DataTable;
+import haxe.DynamicAccess;
 import jotun.php.db.objects.DataTable;
 import jotun.php.db.pdo.Connection;
 import jotun.php.db.pdo.Database;
@@ -27,7 +27,7 @@ class Gate {
 
 	private var _token:Token;
 
-	private var _tables:Dynamic;
+	private var _tables:DynamicAccess<DataTable>;
 
 	private var _errors:Array<ErrorDescriptior>;
 
@@ -95,7 +95,7 @@ class Gate {
 	 */
 	public function listen(handler:String->Void):Gate {
 		if (_onLog.indexOf(handler) == -1){
-			_onLog[_onLog.length] = handler;
+			_onLog.push(handler);
 		}
 		return this;
 	}
@@ -113,7 +113,7 @@ class Gate {
 				_db.setAttribute(php.Syntax.code('\\PDO::ATTR_ERRMODE'), php.Syntax.code('\\PDO::ERRMODE_EXCEPTION'));
 				setPdoAttributes(false, true, true);
 			}catch (e:Dynamic) {
-				errors[errors.length] = new Error(e.getCode(), e.getMessage());
+				errors.push(new Error(e.getCode(), e.getMessage()));
 			}
 			command = null;
 		}
@@ -128,7 +128,7 @@ class Gate {
 	 * @param	options
 	 * @return
 	 */
-	public function prepare(query:String, ?parameters:Dynamic = null, ?options:Dynamic = null):ICommand {
+	public function prepare(query:String, ?parameters:Array<Dynamic>, ?options:Dynamic = null):ICommand {
 		command = new Command(isOpen() ? _db.prepare(query, Lib.toPhpArray(options == null ? [] : options)) : null, query, parameters, _errors, _log);
 		return command;
 	}
@@ -153,15 +153,14 @@ class Gate {
 		if (!Std.isOfType(table, Array)) {
 			table = [table];
 		}
-		var tables:Array<Dynamic> = [];
-		var clausule:Clause = Clause.AND([
-			Clause.EQUAL('TABLE_SCHEMA', _token.db),
-			Clause.OR(tables),
-		]);
+		var tableNames:Array<Dynamic> = [];
 		Dice.Values(table, function(v:String) {
-			tables[tables.length] = Clause.EQUAL('TABLE_NAME', v);
+			tableNames.push(Clause.EQUAL('TABLE_NAME', v));
 		});
-		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", clausule).execute().result;
+		return builder.find("*", "INFORMATION_SCHEMA.COLUMNS", Clause.AND([
+			Clause.EQUAL('TABLE_SCHEMA', _token.db),
+			Clause.OR(tableNames),
+		])).execute().result;
 	}
 
 	/**
@@ -182,10 +181,10 @@ class Gate {
 	 * @return
 	 */
 	public function table(table:String):DataTable {
-		if (!Reflect.hasField(_tables, table)) {
-			Reflect.setField(_tables, table, new DataTable(table, this));
+		if (!_tables.exists(table)) {
+			_tables.set(table, new DataTable(table, this));
 		}
-		return Reflect.field(_tables, table);
+		return _tables.get(table);
 	}
 
 	/**
@@ -204,10 +203,10 @@ class Gate {
 	   Get all DataTable objects from the selected database
 	   @return
 	**/
-	public function getTables():Dynamic {
-		var r:Dynamic = {};
+	public function getTables():DynamicAccess<DataTable> {
+		var r:DynamicAccess<DataTable> = {};
 		Dice.Values(getTableNames(), function(v:String){
-			Reflect.setField(r, v, table(v));
+			r.set(v, table(v));
 		});
 		return r;
 	}
@@ -219,7 +218,10 @@ class Gate {
 	   @return
 	**/
 	public function ifTableExists(table:String):Bool {
-		return getTableNames().indexOf(table) != -1;
+		return builder.find('COUNT(*)', 'INFORMATION_SCHEMA.TABLES', Clause.AND([
+			Clause.EQUAL('TABLE_SCHEMA', _token.db),
+			Clause.EQUAL('TABLE_NAME', table)
+		]), null, Limit.ONE).execute().length() > 0;
 	}
 
 	private function _log(message:String):Void {

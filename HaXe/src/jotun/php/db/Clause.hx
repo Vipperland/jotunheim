@@ -30,7 +30,7 @@ class Clause {
 	 * @return
 	 */
 	static public function OR(conditions:Array<Dynamic>):Clause {
-		return new Clause(conditions, " || ");
+		return new Clause(conditions, " OR ");
 	}
 	
 	/**
@@ -39,7 +39,7 @@ class Clause {
 	 * @return
 	 */
 	static public function AND(conditions:Array<Dynamic>):Clause {
-		return new Clause(conditions, " && ");
+		return new Clause(conditions, " AND ");
 	}
 	
 	/**
@@ -117,7 +117,7 @@ class Clause {
 	 * @return
 	 */
 	static public function NOT_NULL(param:String):Dynamic {
-		return { param:param, condition:"{{p}} != NULL", value:null, skip:true };
+		return { param:param, condition:"{{p}} IS NOT NULL", value:null, skip:true };
 	}
 	
 	/**
@@ -129,7 +129,7 @@ class Clause {
 	static public function IN(param:String, values:Dynamic):Dynamic {
 		if (Std.isOfType(values, Array)){ 
 			var q:Array<String> = [];
-			Dice.All(values, function(p:String, v:Dynamic):Void { q[q.length] = "?"; });
+			Dice.All(values, function(p:String, v:Dynamic):Void { q.push("?"); });
 			return { param:param, condition:"{{p}} IN (" + q.join(',') + ")", value:values };
 		}else{
 			return { param:param, condition:"{{p}} IN (?)", value:values };
@@ -145,7 +145,7 @@ class Clause {
 	static public function NOT_IN(param:String, values:Dynamic):Dynamic {
 		if (Std.isOfType(values, Array)){ 
 			var q:Array<String> = [];
-			Dice.All(values, function(p:String, v:Dynamic):Void { q[q.length] = "?"; });
+			Dice.All(values, function(p:String, v:Dynamic):Void { q.push("?"); });
 			return { param:param, condition:"{{p}} NOT IN (" + q.join(',') + ")", value:values };
 		}else{
 			return { param:param, condition:"{{p}} NOT IN (?)", value:values };
@@ -178,16 +178,6 @@ class Clause {
 	 */
 	static public function FALSE(param:String):Dynamic {
 		return { param:param, condition:"{{p}}=?", value:false };
-	}
-	
-	/**
-	 * IF A!=B
-	 * @param	param
-	 * @param	value
-	 * @return
-	 */
-	static public function DIFF(param:String, value:Dynamic):Dynamic {
-		return { param:param, condition:"{{p}}!=?", value:value };
 	}
 	
 	/**
@@ -265,7 +255,7 @@ class Clause {
 	 */
 	static public function FLAGS(param:String, flags:Array<UInt>, any:Bool = false):Clause {
 		var a:Array<Dynamic> = [];
-		Dice.Values(flags, function(v:UInt):Void { a[a.length] = Clause.FLAG(param, v); });
+		Dice.Values(flags, function(v:UInt):Void { a.push(Clause.FLAG(param, v)); });
 		return any ? Clause.OR(a) : Clause.AND(a);
 	}
 	

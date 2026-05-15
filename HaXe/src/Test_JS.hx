@@ -1,18 +1,13 @@
 package;
 
-import haxe.Json;
 import jotun.Jotun;
-import jotun.idb.WebDB;
-import jotun.serial.Packager;
 
 /**
  * ...
  * @author Rafael Moreira <rafael@gateofsirius.com>
  */
 class Test_JS{
-	
-	static private var _db:WebDB;
-	
+
 	static public function main() {
 		
 		//Jotun.request(

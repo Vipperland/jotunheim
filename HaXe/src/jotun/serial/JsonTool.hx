@@ -1,7 +1,8 @@
 ﻿package jotun.serial;
-#if !php 
+#if !php
 	import jotun.dom.Displayable;
 #end
+import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.logical.Flag;
 import jotun.tools.Utils;
@@ -118,9 +119,9 @@ class JsonTool {
 					addChar(']'.code);
 				} else if (c == haxe.ds.StringMap) {
 					var v:haxe.ds.StringMap<Dynamic> = v;
-					var o = {};
+					var o:DynamicAccess<Dynamic> = {};
 					for (k in v.keys()){
-						Reflect.setField(o, k, v.get(k));
+						o.set(k, v.get(k));
 					}
 					objString(o);
 				} else if (c == Date) {

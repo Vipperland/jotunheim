@@ -26,7 +26,7 @@ class Recycler {
 		if(!object.isDisposed){
 			object.dispose();
 		}
-		_cache[_cache.length] = object;
+		_cache.push(object);
 	}
 	
 	public function get(...rest:Dynamic):Dynamic {

@@ -299,15 +299,15 @@ class XCode {
 		while (x < l) {
 			++x;
 			var xs:String = x + 'px';
-			s[s.length] = '-' + xs + ' 0 ' + t;
-			s[s.length] = '0 ' + xs + ' ' + t;
-			s[s.length] = '' + xs + ' 0 ' + t;
-			s[s.length] = '0 -' + xs + ' ' + t;
+			s.push('-' + xs + ' 0 ' + t);
+			s.push('0 ' + xs + ' ' + t);
+			s.push('' + xs + ' 0 ' + t);
+			s.push('0 -' + xs + ' ' + t);
 			if (x % 2 == 0){
-				s[s.length] = '-' + xs + ' -' + xs + ' ' + t;
-				s[s.length] = '' + xs + ' -' + xs + ' ' + t;
-				s[s.length] = '-' + xs + ' ' + xs + ' ' + t;
-				s[s.length] = '' + xs + ' ' + xs + ' ' + t;
+				s.push('-' + xs + ' -' + xs + ' ' + t);
+				s.push('' + xs + ' -' + xs + ' ' + t);
+				s.push('-' + xs + ' ' + xs + ' ' + t);
+				s.push('' + xs + ' ' + xs + ' ' + t);
 			}
 		}
 		omnibuild(id, (text ? 'text-shadow' : 'box-shadow') + ':' + s.join(','));
@@ -333,8 +333,8 @@ class XCode {
 			y += o;
 			tx = Math.cos(pi * y) * width;
 			ty = Math.sin(pi * y) * width;
-			r[r.length] = (cast tx).toFixed(5) + 'rem' + ' ' + (cast ty).toFixed(5) + 'rem' + ' 0 ' + color;
-			r[r.length] = (cast tx + ofx).toFixed(5) + 'rem' + ' ' + (cast ty + ofy).toFixed(5) + 'rem' + ' 0 ' + color;
+			r.push((cast tx).toFixed(5) + 'rem' + ' ' + (cast ty).toFixed(5) + 'rem' + ' 0 ' + color);
+			r.push((cast tx + ofx).toFixed(5) + 'rem' + ' ' + (cast ty + ofy).toFixed(5) + 'rem' + ' 0 ' + color);
 		}
 		var q:String = (text ? 'text-shadow' : 'box-shadow') + ':' + r.join(',');
 		omnibuild(id, q);
@@ -368,7 +368,7 @@ class XCode {
 			}
 			tx = (cast cos * y);
 			ty = (cast sin * y);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + Utils.colorToCss(cc, .85-(y/z*c));
+			r.push((tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 ' + Utils.colorToCss(cc, .85-(y/z*c)));
 		}
 		y = 0;
 		var oX:Float = cos * z;
@@ -380,7 +380,7 @@ class XCode {
 			}
 			tx = (cast cos * y + oX);
 			ty = (cast sin * y + oY);
-			r[r.length] = (tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgb(0 0 0/.1)';
+			r.push((tx == 0 ? '0' : Math.round(tx) + 'px') + ' ' + (ty == 0 ? '0' : Math.round(ty) + 'px') + ' 0 rgb(0 0 0/.1)');
 		}
 		var q:String = (text ? 'text-shadow' : 'box-shadow') + ':' + r.join(',');
 		omnibuild(id, q);

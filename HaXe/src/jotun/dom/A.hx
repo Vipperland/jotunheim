@@ -1,7 +1,9 @@
 package jotun.dom;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.utils.Dice;
 import js.Browser;
+import js.html.AnchorElement;
 
 
 /**
@@ -31,13 +33,14 @@ class A extends Display {
 	}
 	
 	public function url():String {
-		return Reflect.field(element, 'pathname');
+		return (cast element:AnchorElement).pathname;
 	}
-	
+
 	public function link():Dynamic {
-		var uri = {};
+		var ae:DynamicAccess<String> = cast element;
+		var uri:DynamicAccess<String> = {};
 		Dice.Values(['href', 'protocol', 'host', 'hostname', 'port', 'pathname', 'search', 'hash'], function(v:String){
-			Reflect.setField(uri, v, Reflect.field(element, v));
+			uri.set(v, ae.get(v));
 		});
 		return uri;
 	}

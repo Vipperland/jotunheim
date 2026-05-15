@@ -1,4 +1,6 @@
 package jotun.php.db.objects;
+import haxe.DynamicAccess;
+import jotun.php.db.objects.Column;
 import jotun.php.db.objects.ExtQuery;
 import jotun.php.db.tools.ICommand;
 import jotun.php.db.tools.IExtCommand;
@@ -23,7 +25,7 @@ class DataTable {
 	
 	private var _class:Dynamic;
 	
-	private var _info:Dynamic;
+	private var _info:DynamicAccess<Column>;
 	
 	private var _restrict:UInt;
 	
@@ -42,11 +44,11 @@ class DataTable {
 	/**
 	 * All table fields description
 	 */
-	public function getInfo():Dynamic {
+	public function getInfo():DynamicAccess<Column> {
 		if (_info == null) {
 			_info = { };
 			var r:Array<Dynamic> = _gate.schema(_name);
-			Dice.Values(r, function(v:Dynamic) { Reflect.setField(_info, v.COLUMN_NAME, new Column(v)); });
+			Dice.Values(r, function(v:Dynamic) { _info.set(v.COLUMN_NAME, new Column(v)); });
 		}
 		return _info;
 	}
@@ -120,7 +122,7 @@ class DataTable {
 	public function addAll(?parameters:Dynamic = null) : Array<Query> {
 		var r:Array<Query> = [];
 		Dice.All(parameters, function(p:String, v:Dynamic):Void {
-			r[r.length] = add(v);
+			r.push(add(v));
 		});
 		return r;
 	}
@@ -247,7 +249,7 @@ class DataTable {
 	 * @return
 	 */
 	public function copyOne (toTable:String, ?clause:Dynamic=null, ?order:Dynamic=null) : ExtQuery {
-		return new ExtQuery(this, _gate.builder.copy(_name, toTable, clause, order, Limit.ONE)[0]);
+		return new ExtQuery(this, _gate.builder.copy(_name, toTable, clause, order, Limit.ONE));
 	}
 	
 	/**
@@ -271,18 +273,18 @@ class DataTable {
 	 * @return
 	 */
 	public function clear():Query {
-		return new Query(this, _gate.builder.truncate(_name).success);
+		return new Query(this, _gate.prepare("TRUNCATE TABLE " + _name).execute().success);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param	to
 	 * @return
 	 */
 	public function rename(to:String):Query {
 		var old:String = _name;
 		_name = to;
-		return new Query(this, _gate.builder.rename(old, to).success);
+		return new Query(this, _gate.prepare("RENAME TABLE " + old + " TO " + to).execute().success);
 	}
 	
 	/**
@@ -303,9 +305,9 @@ class DataTable {
 	 * @param	clausule
 	 * @return
 	 */
-	public function sum(field:String, ?clause:Dynamic = null):UInt {
+	public function sum(field:String, ?clause:Dynamic = null):Float {
 		var command:IExtCommand = _gate.builder.find('SUM(' + field + ') as _SumResult_', _name, clause, null, null).execute();
-		return Utils.getValidOne(command.result.length > 0 ? Std.parseInt(Reflect.field(command.result[0], '_SumResult_')) : 0, 0);
+		return command.result.length > 0 ? Std.parseFloat((command.result[0]:DynamicAccess<Dynamic>).get('_SumResult_')) : 0.0;
 	}
 	
 	/**
@@ -314,10 +316,11 @@ class DataTable {
 	 * @return
 	 */
 	public function optimize(paramaters:Dynamic):Dynamic {
-		var desc:Dynamic = getInfo();
+		var desc:DynamicAccess<Column> = getInfo();
+		var p_da:DynamicAccess<Dynamic> = cast paramaters;
 		Dice.All(paramaters, function(p:String, v:Dynamic):Void {
-			if (!Reflect.hasField(desc, p)){
-				Reflect.deleteField(paramaters, p);
+			if (!desc.exists(p)){
+				p_da.remove(p);
 			}
 		});
 		return paramaters;
@@ -397,13 +400,11 @@ class DataTable {
 	 * @return
 	 */
 	public function hasColumn(name:String):Bool {
-		return Reflect.hasField(getInfo(), name);
+		return getInfo().exists(name);
 	}
-	
+
 	public function getColumn(name:String):Column {
-		return hasColumn(name)
-					? Reflect.field(getInfo(), name)
-					: null;
+		return getInfo().get(name);
 	}
 	
 	/**

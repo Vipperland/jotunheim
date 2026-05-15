@@ -71,7 +71,7 @@ class Action extends Resolution {
 			}
 		});
 		// Required condition resolution
-		if (target == null){
+		if (data.target == null){
 			target = require.length;
 		}else{
 			target = Std.int(data.target);

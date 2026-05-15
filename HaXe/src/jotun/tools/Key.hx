@@ -1,4 +1,5 @@
 package jotun.tools;
+import haxe.DynamicAccess;
 import jotun.serial.Packager;
 #if js
 	import js.RegExp;
@@ -13,17 +14,17 @@ class Key {
 	
 	private static var TABLE:String = "abcdefghijklmnopqrstuvwxyz0123456789";
 	
-	static private var _cts:Dynamic = {'global':0};
-	
+	static private var _cts:DynamicAccess<Int> = {'global':0};
+
 	public static function COUNTER(?id:String):Int {
-		if (id == null) 
+		if (id == null)
 			id = 'global';
-		var v:UInt = 0;
-		if (!Reflect.hasField(_cts, id)) 
-			Reflect.setField(_cts, id, 0);
+		var v:Int = 0;
+		if (!_cts.exists(id))
+			_cts.set(id, 0);
 		else {
-			v = Reflect.field(_cts, id);
-			Reflect.setField(_cts, id, v+1);
+			v = _cts.get(id);
+			_cts.set(id, v + 1);
 		}
 		return v;
 	}

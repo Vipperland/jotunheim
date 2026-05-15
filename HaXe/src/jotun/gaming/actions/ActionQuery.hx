@@ -1,4 +1,5 @@
 package jotun.gaming.actions;
+import haxe.DynamicAccess;
 import haxe.Json;
 import haxe.Rest;
 import jotun.gaming.actions.Action;
@@ -55,14 +56,14 @@ class ActionQuery extends Query {
 		return o != null ? o : alt;
 	}
 
-	private function _PARAMS(value:String):Dynamic {
-		var params:Dynamic = {};
+	private function _PARAMS(value:String):DynamicAccess<String> {
+		var params:DynamicAccess<String> = {};
 		if(value != null){
 			value = value.split('+').join(' ');
 			Dice.Values(value.split('&'), function(v:String){
-				var data:Array<Dynamic> = v.split('=');
+				var data:Array<String> = v.split('=');
 				if (data.length > 1){
-					Reflect.setField(params, data[0], data[1]);
+					params.set(data[0], data[1]);
 				}
 			});
 		}

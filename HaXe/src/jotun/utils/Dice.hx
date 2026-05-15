@@ -252,7 +252,7 @@ class Dice {
 			Dice.Values(values, function(v:Dynamic) {
 				if (values(v) == true){
 					if (table.remove(v)){
-						r[r.length] = v;
+						r.push(v);
 						if (limit > 0){
 							--limit;
 						}
@@ -266,7 +266,7 @@ class Dice {
 			}
 			Dice.Values(values, function(v:Dynamic) {
 				if(table.remove(v)){
-					r[r.length] = v;
+					r.push(v);
 				}
 			});
 		}
@@ -362,12 +362,12 @@ class Dice {
 			}
 		}else {
 			// try to cache to minimize cpu usage
-			var cache:Dynamic = { };
+			var cache:Map<String,String> = new Map();
 			function cached(q:String):String {
-				if(!Reflect.hasField(cache, q)){
-					Reflect.setField(cache, q, Utils.tag(q));
+				if(!cache.exists(q)){
+					cache.set(q, Utils.tag(q));
 				}
-				return Reflect.field(cache, q);
+				return cache.get(q);
 			}
 			// objA.key < objB.key
 			if (key != null){
@@ -394,13 +394,13 @@ class Dice {
 				if (a >= len) {
 					break;
 				}
-				copy[copy.length] = data[a];
+				copy.push(data[a]);
 				++a;
 			}
 		}else if(a > b){
 			while (a > b){
 				if (a < len) {
-					copy[copy.length] = data[a];
+					copy.push(data[a]);
 				}
 				--a;
 			}

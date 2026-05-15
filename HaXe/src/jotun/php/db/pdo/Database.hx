@@ -1,5 +1,6 @@
 package jotun.php.db.pdo;
 
+import haxe.DynamicAccess;
 import php.NativeArray;
 
 class Database {
@@ -10,8 +11,9 @@ class Database {
 			pdo = php.Syntax.code("new \\PDO({0},{1},{2})", dsn, user, password);
 		}else {
 			var arr : NativeArray = php.Syntax.codeDeref("array()");
-			for (key in Reflect.fields(options)){
-				arr[untyped key] = Reflect.field(options, key);
+			var opts:DynamicAccess<Dynamic> = cast options;
+			for (key in opts.keys()){
+				arr[untyped key] = opts.get(key);
 			}
 			pdo = php.Syntax.code("new \\PDO({0},{1},{2},{3})", dsn, user, password, arr);
 		}

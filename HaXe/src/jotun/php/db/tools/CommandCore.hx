@@ -63,9 +63,11 @@ class CommandCore implements ICommandCore {
 	public function bind(parameters:Array<Dynamic>):Void {
 		_parameters = parameters;
 		if(statement != null){
-			Dice.All(parameters, function(p:Dynamic, v:Dynamic):Void  {
+			Dice.All(parameters, function(p:Dynamic, v:Dynamic):Void {
+				if(v != null && !Std.isOfType(v, String) && !Std.isOfType(v, Float) && !Std.isOfType(v, Int) && !Std.isOfType(v, Bool)){
+					v = Json.stringify(v);
+				}
 				statement.bindValue(1+p, v, _getType(v));
-				Reflect.setField(_parameters, p, v);
 			});
 		}
 	}

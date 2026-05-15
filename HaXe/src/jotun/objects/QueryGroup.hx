@@ -18,7 +18,7 @@ class QueryGroup {
 	
 	public function add(o:IQuery):Void {
 		if (units.indexOf(o) == -1){
-			units[units.length] = o;
+			units.push(o);
 		}
 	}
 	

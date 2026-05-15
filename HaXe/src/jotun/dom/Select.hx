@@ -1,4 +1,5 @@
 package jotun.dom;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.tools.Utils;
 import jotun.utils.Filler;
@@ -19,7 +20,7 @@ class Select extends Display {
 	
 	static public var layout:String = '<option value="{{value}}">{{label}}</option>';
 	
-	static private var _themes:Dynamic;
+	static private var _themes:DynamicAccess<String>;
 	
 	static public function get(q:String):Select {
 		return cast Jotun.one(q);
@@ -103,7 +104,7 @@ class Select extends Display {
 		if (t != null && t.length() > 0) {
 			t.each(function(v:Displayable) {
 				var o:Option = cast v;
-				r[r.length] = o.value();
+				r.push(o.value());
 			});
 		}
 		return r.length <= 1 ? r[0] : r;
@@ -146,11 +147,11 @@ class Select extends Display {
 		if (_themes == null){
 			_themes = {};
 		}
-		Reflect.setField(_themes, name, Utils.getValidOne(content, element.innerHTML));
+		_themes.set(name, Utils.getValidOne(content, element.innerHTML));
 	}
-	
+
 	public function loadTheme(name:String):Void {
-		element.innerHTML = Reflect.field(_themes, name);
+		element.innerHTML = _themes != null ? _themes.get(name) : '';
 		events.change().call();
 	}
 	

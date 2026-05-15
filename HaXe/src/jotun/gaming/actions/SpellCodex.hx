@@ -85,7 +85,7 @@ class SpellCodex  {
 		var group:SpellGroup = index.get(name);
 		if (group != null){
 			context.chain = _position;
-			_chain[_chain.length] = context;
+			_chain.push(context);
 			if (_position > 0){
 				context.parent = _chain[_position-1];
 			}

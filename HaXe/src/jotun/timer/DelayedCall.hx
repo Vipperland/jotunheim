@@ -37,7 +37,7 @@ class DelayedCall {
 		_method = method;
 		_timer = timer;
 		_time = 0;
-		_args = args;
+		_args = args != null ? args : [];
 		_proxy = Syntax.code("{0}.bind({1})", _tick, this);
 		_timer.add(_proxy);
 	}

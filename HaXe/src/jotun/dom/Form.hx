@@ -1,4 +1,5 @@
 package jotun.dom;
+import haxe.DynamicAccess;
 import jotun.Jotun;
 import jotun.dom.Displayable;
 import jotun.dom.Select;
@@ -31,7 +32,7 @@ class Form extends Display {
 	}
 	
 	public function extract(?handler:String->Dynamic->Displayable->Void):Dynamic {
-		var result:Dynamic = {};
+		var result:DynamicAccess<Dynamic> = {};
 		all('[name]').each(function(o:Displayable):Void {
 			var name:String = o.attribute('name');
 			if (Utils.isValid(name)){
@@ -40,7 +41,7 @@ class Form extends Display {
 					value: o.value(),
 					object: o,
 				};
-				Reflect.setField(result, name, data);
+				result.set(name, data);
 				if (handler != null){
 					handler(name, data.value, o);
 				}

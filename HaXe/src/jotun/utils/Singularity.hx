@@ -274,9 +274,10 @@ class Singularity {
 	}
 	
 	static public function fetch(o:Dynamic):Void {
+		var oc:DynamicAccess<Dynamic> = cast o;
 		Dice.Values(['onMain','onConnect','onDisconnect','onSync','onInstance','onVisibility'], function(v:String):Void {
-			if(Reflect.hasField(o, v)){
-				signals.add(v, Reflect.field(o, v));
+			if(oc.exists(v)){
+				signals.add(v, oc.get(v));
 			}
 		});
 	}

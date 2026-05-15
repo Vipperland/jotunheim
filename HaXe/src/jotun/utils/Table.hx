@@ -52,7 +52,7 @@ class Table implements ITable {
 	}
 	
 	public function add(obj:Displayable):ITable {
-		content[content.length] = obj;
+		content.push(obj);
 		return this;
 	}
 	
@@ -209,7 +209,7 @@ class Table implements ITable {
 	public function merge(?tables:Array<ITable>):ITable {
 		var t:ITable = Table.empty();
 		if (tables == null) tables = [];
-		tables[tables.length] = this;
+		tables.push(this);
 		Dice.Values(tables, function(v:ITable) {
 			t.content = t.content.concat(v.content);
 		});
@@ -219,7 +219,7 @@ class Table implements ITable {
 	public function dispose():Void {
 		each(function(o:Displayable){ o.dispose(); });
 		content = null;
-		_trash[_trash.length] = this;
+		_trash.push(this);
 	}
 	
 	/* ============================== EVENT BATCH ============================================================================================== */

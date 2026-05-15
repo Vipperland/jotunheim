@@ -1,4 +1,5 @@
 package jotun.net;
+import haxe.DynamicAccess;
 import haxe.Rest;
 import jotun.serial.Packager;
 import jotun.serial.JsonTool;
@@ -25,7 +26,7 @@ class Header {
 	
 	static public var hasType:Bool = false;
 	
-	static private var _client_headers:Dynamic;
+	static private var _client_headers:DynamicAccess<String>;
 	
 	static private var _no_compression:Bool;
 	
@@ -136,7 +137,7 @@ class Header {
 				}
 			}
 			if(!_no_compression){
-				var compress:String = getClientHeaders().ACCEPT_ENCODING;
+				var compress:String = getClientHeaders().get('ACCEPT_ENCODING');
 				if (compress.indexOf('x-gzip') != -1){
 					compress = 'x-gzip';
 				}else if (compress.indexOf('gzip') != -1){
@@ -177,20 +178,20 @@ class Header {
 	}
 	
 	public function getClientHeader(name:String):String {
-		return Reflect.field(getClientHeaders(), name.toUpperCase());
+		return getClientHeaders().get(name.toUpperCase());
 	}
-	
-	public function getClientHeaders():Dynamic {
+
+	public function getClientHeaders():DynamicAccess<String> {
 		if(_client_headers == null) {
 			_client_headers = {};
 			var h = Lib.hashOfAssociativeArray(php.Syntax.codeDeref("$_SERVER"));
 			for (k in h.keys()) {
 				var sk:String = k.toUpperCase();
 				if (sk.substr(0, 5) == "HTTP_") {
-					Reflect.setField(_client_headers, sk.substr(5), h.get(k));
+					_client_headers.set(sk.substr(5), h.get(k));
 				// this is also a valid prefix (issue #1883)
 				} else if(sk.substr(0,8) == "CONTENT_" || sk.substr(0,4) == "AUTH") {
-					Reflect.setField(_client_headers, sk, h.get(k));
+					_client_headers.set(sk, h.get(k));
 				}
 			}
 		}
@@ -198,7 +199,7 @@ class Header {
 	}
 	
 	public function readCookie(name:String):String {
-		return Global._COOKIE[name];
+		return php.Web.getCookies().get(name);
 	}
 	
 	public function writeCookie(name:String, value:String, ?expire:UInt = 0, ?domain:String = null, ?secure:Bool = false, ?http:Bool = false):Void {

@@ -123,7 +123,7 @@ class Flag {
 	}
 	
 	public function toggle(bit:UInt):Flag {
-		value = FToggle(value, bit);
+		value = FToggle(value, 1 << bit);
 		return this;
 	}
 	
@@ -155,17 +155,17 @@ class Flag {
 			bits = _bits;
 		}
 		Dice.Values(bits, function(v:UInt){
-			put(1<<v);
+			put(v);
 		});
 		return this;
 	}
-	
+
 	public function dropAll(?bits:Array<UInt>):Flag {
 		if (bits == null) {
 			bits = _bits;
 		}
 		Dice.Values(bits, function(v:UInt){
-			drop(1<<v);
+			drop(v);
 		});
 		return this;
 	}

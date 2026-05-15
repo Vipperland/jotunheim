@@ -1,5 +1,6 @@
 package jotun.css;
 
+import haxe.DynamicAccess;
 import js.Browser;
 import js.html.StyleElement;
 import jotun.dom.Style;
@@ -133,19 +134,22 @@ class CSSGroup{
 	public function exists(id:String, ?content:String, ?mode:String):Bool {
 		var k:String = mode != null ? mode.toUpperCase() : getMode(id);
 		id = (id.substr(0, 1) == "." ? "" : ".") + id + "{";
-		var a:String = Reflect.hasField(this, k) ? Reflect.field(this, k).innerHTML : CM.innerHTML;
-		var b:String = Reflect.field(this, 'style' + k);
+		var self:DynamicAccess<Dynamic> = cast this;
+		var a:String = self.exists(k) ? (self.get(k):StyleElement).innerHTML : CM.innerHTML;
+		var b:String = self.get('style' + k);
 		return _checkSelector(id, a + b, content);
 	}
-	
+
 	public function add(css:String, ?mode:String):Void {
 		var p:String = 'style' + (mode != null ? mode.toUpperCase() : '');
-		Reflect.setField(this, p, Reflect.field(this, p) + css);
+		var self:DynamicAccess<Dynamic> = cast this;
+		self.set(p, self.get(p) + css);
 	}
-	
+
 	public function set(id:String, style:String, ?mode:String):Void {
 		var p:String = 'style' + (mode != null ? mode.toUpperCase() : '');
-		Reflect.setField(this, p, Reflect.field(this, p) + _add(id, style));
+		var self:DynamicAccess<Dynamic> = cast this;
+		self.set(p, self.get(p) + _add(id, style));
 	}
 	
 	public function build() {

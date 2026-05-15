@@ -6,6 +6,7 @@ import jotun.gaming.actions.ActionQuery;
 import jotun.gaming.actions.SpellCodex;
 import jotun.gaming.actions.SpellCasting;
 #if js
+import jotun.Jotun;
 import jotun.timer.DelayedCall;
 #end
 import jotun.tools.Utils;
@@ -39,7 +40,7 @@ class SpellGroup {
 							patched.set(v, e);
 						}
 					}
-					Reflect.deleteField(data, v);
+					data.remove(v);
 				});
 			}
 			Dice.All(data, function(p:String, v:Dynamic):Void {
@@ -75,32 +76,24 @@ class SpellGroup {
 		if(data.length == 0){
 			return;
 		}
-		var toConcat:Array<Action> = null;
-		if(index < _data.length){
-			toConcat = _data.splice(0, index);
-		}
-		var i:UInt = index;
-		var r:Dynamic = {};
+		var i:UInt = index == null ? 0 : index;
+		var r:DynamicAccess<Bool> = {};
 		Dice.All(data, function(p:String, v:Dynamic):Void {
 			if (Std.isOfType(v, String)){
 				v = SpellCodex.loadAction(v);
 			}
-			if (v != null && (v.id == null || !Reflect.hasField(r, v.id))){
+			if (v != null && (v.id == null || !r.exists(v.id))){
 				if (Std.isOfType(v, Action)){
 					_data[i] = v;
 				}else{
 					_data[i] = new Action(_type + '[' + p + ']', v);
 				}
 				if (v.id != null){
-					Reflect.setField(r, v.id, 1);
+					r.set(v.id, true);
 				}
 				++i;
 			}
 		});
-		if(toConcat != null){
-			_data = _data.concat(toConcat);
-			toConcat = null;
-		}
 	}
 
 	public function getType():String {
@@ -194,7 +187,9 @@ class SpellGroup {
 		if(index == null || index < 0 || index > _data.length){
 			index = _data.length;
 		}
-		_init([action], index);
+		if(action.id == null || getIndexOf(action) >= _data.length){
+			_data.insert(index, action);
+		}
 	}
 
 	public function getIndexOf(action:EitherType<Action,String>):Int {

@@ -1,4 +1,5 @@
 package jotun.tools;
+import haxe.DynamicAccess;
 import haxe.Json;
 import jotun.Jotun;
 import jotun.math.Point;
@@ -67,15 +68,11 @@ import jotun.utils.Validator;
 	import jotun.dom.Video;
 	import jotun.gaming.Spritesheet;
 	import jotun.gaming.SpritesheetLibrary;
-	import jotun.idb.WebDB;
-	import jotun.idb.WebDBAssist;
-	import jotun.idb.WebDBTable;
 	import jotun.math.JMath;
 	import jotun.utils.Singularity;
 	import jotun.signals.Observer;
 #end
 
-import jotun.gaming.actions.SpellGroup;
 import jotun.serial.Packager;
 import jotun.logical.Flag;
 import jotun.logical.BigFlag;
@@ -192,13 +189,13 @@ class Utils{
 		 */
 		static public function getAttributes(display:Display):Dynamic {
 			var attr:NamedNodeMap = display.element.attributes;
-			var data:Dynamic = {};
+			var data:DynamicAccess<String> = {};
 			if(attr != null){
 				var i:UInt = 0;
 				var len:UInt = attr.length;
 				while (i < len){
 					var a:Attr = attr.item(i);
-					Reflect.setField(data, a.name, a.value);
+					data.set(a.name, a.value);
 					++i;
 				}
 			}
@@ -247,16 +244,16 @@ class Utils{
 	}
 	
 	static public function getQueryParams(value:String):Dynamic {
-		var params:Dynamic = {};
+		var params:DynamicAccess<String> = {};
 		if (value != null){
 			value = value.split('+').join(' ').split('?').pop();
 		} else{
 			return params;
 		}
 		Dice.Values(value.split('&'), function(v:String){
-			var data:Array<Dynamic> = v.split('=');
+			var data:Array<String> = v.split('=');
 			if (data.length > 1){
-				Reflect.setField(params, StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
+				params.set(StringTools.urlDecode(data[0]), StringTools.urlDecode(data[1]));
 			}
 		});
 		return params;
@@ -266,9 +263,9 @@ class Utils{
 		var q:Array<String> = [];
 		Dice.All(value, function(p:String, v:Dynamic):Void {
 			if (Std.isOfType(v, String) || Std.isOfType(v, Float) || Std.isOfType(v, Bool)){
-				q[q.length] = p + '=' + (encode ?StringTools.urlEncode(v) : v);
+				q.push(p + '=' + (encode ? StringTools.urlEncode(v) : v));
 			}else if (Std.isOfType(v, Array)){
-				q[q.length] = p + '=' + (encode ? StringTools.urlEncode(v.join(';')) : v.join(';'));
+				q.push(p + '=' + (encode ? StringTools.urlEncode(v.join(';')) : v.join(';')));
 			}
 		});
 		if (url == null){
@@ -278,9 +275,9 @@ class Utils{
 	}
 	
 	static public function replaceQuery(url:String, params:Dynamic){
-		var current:Dynamic = getQueryParams(url);
+		var current:DynamicAccess<Dynamic> = cast getQueryParams(url);
 		Dice.All(params, function(p:String, v:Dynamic):Void {
-			Reflect.setField(current, p, v);
+			current.set(p, v);
 		});
 		return createQueryParams(url.split('?')[0], current);
 	}
@@ -293,7 +290,7 @@ class Utils{
 		var copy:Array<String> = [];
 		Dice.Values(path, function(v:Dynamic):Void {
 			if (v != null && v != "" && (filter == null || filter(v))) {
-				copy[copy.length] = v;
+				copy.push(v);
 			}
 		});
 		return copy;
@@ -321,7 +318,7 @@ class Utils{
 	 */
 	static public function isValid(o:Dynamic, ?len:UInt = 0):Bool {
 		if (o != null && o != '') {
-			if (o != 'null' && Reflect.hasField(o, 'length'))
+			if (o != 'null' && (cast o:DynamicAccess<Dynamic>).exists('length'))
 				return o.length > len;
 			else
 				return o != 0 && o != false;
@@ -413,7 +410,7 @@ class Utils{
 				}else if (!Std.isOfType(v, String)){
 					v = Json.stringify(v);
 				}
-				r[r.length] = p + '=' + StringTools.urlEncode(v);
+				r.push(p + '=' + StringTools.urlEncode(v));
 			}
 		});
 		return r.join('&');

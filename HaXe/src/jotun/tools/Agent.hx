@@ -1,4 +1,5 @@
 package jotun.tools;
+import haxe.DynamicAccess;
 import js.Browser;
 import jotun.css.CSSGroup;
 import jotun.tools.Utils;
@@ -57,7 +58,8 @@ class Agent {
 			Browser.document.cookie = '#validating#';
 			this.cookies = (Browser.document.cookie.indexOf('#validating#') != -1);
 		}
-		this.jQuery = Reflect.hasField(Browser.window, "$") || Reflect.hasField(Browser.window, "jQuery");
+		var win:DynamicAccess<Dynamic> = cast Browser.window;
+		this.jQuery = win.exists("$") || win.exists("jQuery");
 		this.display = Utils.screenOrientation();
 		
 		var platform:String = Browser.navigator.platform.toLowerCase();

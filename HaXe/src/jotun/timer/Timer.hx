@@ -62,8 +62,8 @@ class Timer {
 			target = 240;
 		}
 		_p_target = target;
-		var target:Float = 1000 / _p_target;
-		var diff:Float = target / _p_target;
+		var interval:Float = 1000 / _p_target;
+		var diff:Float = interval / _p_target;
 		var count:Int = 0;
 		var channel:FrameChannelProxy = null;
 		while (count < 60){
@@ -73,7 +73,7 @@ class Timer {
 			}else{
 				channel = _channels[count];
 			}
-			channel.update(target, diff * count);
+			channel.update(interval, diff * count);
 			++count;
 		}
 	}
@@ -94,7 +94,7 @@ class Timer {
 	 * @return
 	 */
 	public function isActive():Bool {
-		return _paused;
+		return !_paused;
 	}
 	
 	/**
@@ -182,11 +182,7 @@ private class FrameChannelProxy {
 	}
 	
 	public function update(target:Float, time:Float):Void {
-		if (this.time != null && this.time != 0){
-			this.time = this.time / this.target * time;
-		}else{
-			this.time = time;
-		}
+		this.time = this.time != 0 ? this.time / this.target * time : time;
 		this.target = target;
 	}
 	
